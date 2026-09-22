@@ -1,7 +1,11 @@
-# Los Felices del Señor Jesús & Evangelios para Colorear (Plataforma Eco)
+# Los Felices del Señor Jesús & Evangelios para Colorear (Editorial Ekovoz)
 
 > Cuadernos educativos de alta resolución para colorear basados en los textos bíblicos (Mateo 5), diseñados para niños, hogares, escuelas y comunidades de todo el mundo.
 > Licencia: Dominio público (CC0 / Libre de derechos comerciales). Permitido imprimir, fotocopiar, encuadernar y compartir libremente.
+
+## Portal Oficial
+- Web canónica: https://ekovoz.github.io/
+- Licencia de contenido: Creative Commons Zero (CC0 1.0 Universal)
 
 ## Obras Disponibles
 
@@ -9,24 +13,27 @@
 - **Tema:** El Sermón del Monte y las Bienaventuranzas (Mateo 5:1–12).
 - **Formato:** Cuadernillo de 28 páginas (7 pliegos tamaño Carta o A4), compuesto por 27 láminas de línea en blanco y negro puro a 300 DPI, aptas para colorear con lápices, ceras o marcadores.
 - **Idiomas:**
-  - Español (`es`): Canónico.
-  - Italiano (`it`): I beati del Signore Gesù.
+  - Español (`es`): Los Felices del Señor Jesús.
+  - Italiano (`it`): I Beati del Signore Gesù.
   - Indonesio (`id`): Mereka yang Berbahagia dari Tuhan Yesus.
   - Turco (`tr`): Rab İsa'nın Mutlu Olanları.
   - Ruso (`ru`): Блаженные Господа Иисуса.
-  - Inglés (`en`), Chino Simplificado (`zh-Hans`), Hindi (`hi`), Bengalí (`bn`).
-- **Descargas Directas (Español):**
-  - Cuadernillo para encuadernación saddle-stitch: [felices-es-v1-booklet.pdf](/dist/es/v1/mostrador/felices-es-v1-booklet.pdf)
-  - Hojas sueltas / Lectura digital: [felices-es-v1-sheets.pdf](/dist/es/v1/mostrador/felices-es-v1-sheets.pdf)
+  - Inglés (`en`): The Blessed of the Lord Jesus.
+  - Chino Simplificado (`zh-Hans`): 主耶稣蒙福的百姓.
+  - Hindi (`hi`): प्रभु यीशु के हर्षित लोग.
+  - Bengalí (`bn`): প্রভু যীশুর আনন্দময় মানুষ.
+- **Descargas Directas Oficiales (PDF):**
+  - Cuadernillo para encuadernación saddle-stitch (a caballo): https://ekovoz.github.io/dist/es/v1/mostrador/felices-es-v1-booklet.pdf
+  - Láminas sueltas / Lectura digital (1 pág por hoja): https://ekovoz.github.io/dist/es/v1/mostrador/felices-es-v1-sheets.pdf
 
 ### Obra 02: Evangelios para Colorear (Programa del Año)
 - **Tema:** Un año de relatos evangélicos (52 hojas sueltas, 13 por trimestre: Marcos, Mateo, Lucas, Juan).
-- **Regla 1.1:** Hojas de una sola cara (Cara A única, reverso blanco anti-sangrado) en papel bond estándar (60–75 g/m²).
+- **Especificación:** Hojas de una sola cara (Cara A única, reverso blanco anti-sangrado) en papel bond estándar (60–75 g/m²).
 - **Temporada 1 (Marcos):** 13 láminas vectoriales centradas en la acción compasiva de Jesús.
 
-## Uso sin Internet (Plataforma Eco)
-- La utilidad Eco permite transferir las obras completas de un teléfono a otro mediante un flujo de luz pulsante de códigos QR (pantalla a cámara), sin internet, Bluetooth ni redes locales.
-- Acceso al reproductor: [/eco.html](/eco.html)
+## Uso sin Internet (Reproductor Óptico Ekovoz)
+- La aplicación Ekovoz permite transferir las obras completas de un teléfono o computadora a otro mediante secuencias ópticas de códigos QR pulsantes (pantalla a cámara), sin cables, internet, Bluetooth ni redes locales.
+- Acceso al reproductor: https://ekovoz.github.io/ekovoz.html
 
-## Enlace Completo para Motores de IA
-- Para transcripciones canónicas completas de las 27 láminas en todos los idiomas, consultar: [/llms-full.txt](/llms-full.txt)
+## Manifiesto Completo para Motores de IA
+- Para transcripciones canónicas completas de las 27 láminas en los 9 idiomas y metadatos versículo por versículo, consultar: https://ekovoz.github.io/llms-full.txt

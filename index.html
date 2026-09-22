@@ -8,15 +8,30 @@
     <link rel="alternate icon" href="favicon.ico">
     <meta name="description" content="Plataforma editorial de recursos educativos abiertos y libres para colorear, imprimir y compartir.">
     
-    <!-- Metadatos Open Graph para Redes Sociales y Mensajería (WhatsApp, Telegram, Signal) -->
+    <link rel="canonical" href="https://ekovoz.github.io/">
+    <link rel="alternate" hreflang="es" href="https://ekovoz.github.io/">
+    <link rel="alternate" hreflang="it" href="https://ekovoz.github.io/?lang=it">
+    <link rel="alternate" hreflang="id" href="https://ekovoz.github.io/?lang=id">
+    <link rel="alternate" hreflang="tr" href="https://ekovoz.github.io/?lang=tr">
+    <link rel="alternate" hreflang="ru" href="https://ekovoz.github.io/?lang=ru">
+    <link rel="alternate" hreflang="en" href="https://ekovoz.github.io/?lang=en">
+    <link rel="alternate" hreflang="zh-Hans" href="https://ekovoz.github.io/?lang=zh-Hans">
+    <link rel="alternate" hreflang="hi" href="https://ekovoz.github.io/?lang=hi">
+    <link rel="alternate" hreflang="bn" href="https://ekovoz.github.io/?lang=bn">
+    <link rel="alternate" hreflang="x-default" href="https://ekovoz.github.io/">
+
+    <!-- Metadatos Open Graph para Redes Sociales y Mensajería (WhatsApp, Telegram, Facebook, Signal) -->
+    <meta property="og:site_name" content="Ekovoz">
     <meta property="og:type" content="book">
-    <meta property="og:title" content="Cuaderno Infantil para Colorear: Bienaventuranzas (PDF Gratis)">
-    <meta property="og:description" content="27 láminas educativas listas para imprimir en casa o escuela. Sin registros ni anuncios. Disponible en 11 idiomas.">
-    <meta property="og:image" content="/og.png">
+    <meta property="og:url" content="https://ekovoz.github.io/">
+    <meta property="og:title" content="Ekovoz - Recursos Gratis | Free Educational Resources">
+    <meta property="og:description" content="Cuaderno infantil para colorear sobre las Bienaventuranzas (Mateo 5). 27 láminas listas para imprimir y compartir. 100% libre, sin registros ni anuncios. Free educational coloring book.">
+    <meta property="og:image" content="https://ekovoz.github.io/og.png">
+    <meta property="og:image:secure_url" content="https://ekovoz.github.io/og.png">
+    <meta property="og:image:type" content="image/png">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
-    <meta property="og:image:type" content="image/png">
-    <meta property="og:image:alt" content="Cuaderno para colorear Los Felices del Señor Jesús abierto mostrando la lámina de las Bienaventuranzas">
+    <meta property="og:image:alt" content="Cuaderno para colorear Ekovoz abierto mostrando láminas de las Bienaventuranzas">
     <meta property="og:locale" content="es_ES">
     
     <!-- Variantes de Idioma para Redes Sociales -->
@@ -28,17 +43,17 @@
     <meta property="og:locale:alternate" content="zh_CN">
     <meta property="og:locale:alternate" content="hi_IN">
     <meta property="og:locale:alternate" content="bn_BD">
-    <meta property="og:locale:alternate" content="fr_FR">
-    <meta property="og:locale:alternate" content="ar_AR">
 
     <!-- Twitter Cards (X / iMessage) -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Cuaderno Infantil para Colorear: Bienaventuranzas (PDF Gratis)">
-    <meta name="twitter:description" content="27 láminas para imprimir y colorear. Sin registros, sin anuncios. Descarga directa en PDF.">
-    <meta name="twitter:image" content="/og.png">
+    <meta name="twitter:url" content="https://ekovoz.github.io/">
+    <meta name="twitter:title" content="Ekovoz - Recursos Gratis | Free Educational Resources">
+    <meta name="twitter:description" content="27 láminas para imprimir y colorear. Sin registros, sin anuncios. Descarga directa en PDF. Free download.">
+    <meta name="twitter:image" content="https://ekovoz.github.io/og.png">
     <meta name="twitter:image:alt" content="Cuaderno de las Bienaventuranzas abierto">
 
     <link rel="help" href="/llms.txt" type="text/markdown" title="LLM Information">
+    <link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Bengali:wght@500;700&family=Noto+Sans+Devanagari:wght@500;700&family=Noto+Sans+SC:wght@500;700&display=swap" rel="stylesheet">
@@ -47,15 +62,47 @@
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
-      "@type": "Book",
-      "name": "Los Felices del Señor Jesús",
-      "alternateName": ["The Beatitudes Coloring Book", "I Beati del Signore Gesù", "Блаженные Господа Иисуса"],
-      "description": "Cuaderno educativo para colorear sobre las Bienaventuranzas (Mateo 5). 27 láminas de línea para imprimir en casa, escuela o comunidad.",
-      "inLanguage": ["es", "it", "id", "tr", "ru", "en", "zh-Hans", "hi", "bn"],
-      "genre": "Educational Children Coloring Book",
-      "license": "https://creativecommons.org/publicdomain/zero/1.0/",
-      "isAccessibleForFree": true,
-      "bookFormat": "EBook/PDF"
+      "@graph": [
+        {
+          "@type": "WebSite",
+          "@id": "https://ekovoz.github.io/#website",
+          "url": "https://ekovoz.github.io/",
+          "name": "Ekovoz",
+          "description": "Plataforma editorial de recursos educativos abiertos y libres para colorear, imprimir y compartir.",
+          "inLanguage": ["es", "it", "id", "tr", "ru", "en", "zh-Hans", "hi", "bn"]
+        },
+        {
+          "@type": "Book",
+          "@id": "https://ekovoz.github.io/#book",
+          "name": "Los Felices del Señor Jesús",
+          "alternateName": [
+            "The Blessed of the Lord Jesus",
+            "I Beati del Signore Gesù",
+            "Mereka yang Berbahagia dari Tuhan Yesus",
+            "Rab İsa'nın Mutlu Olanları",
+            "Блаженные Господа Иисуса",
+            "主耶稣蒙福的百姓",
+            "प्रभु यीशु के हर्षित लोग",
+            "প্রভু যীশুর আনন্দময় মানুষ"
+          ],
+          "description": "Cuaderno educativo para colorear sobre las Bienaventuranzas (Mateo 5). 27 láminas de línea para imprimir en casa, escuela o comunidad.",
+          "inLanguage": ["es", "it", "id", "tr", "ru", "en", "zh-Hans", "hi", "bn"],
+          "genre": "Educational Children Coloring Book",
+          "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+          "isAccessibleForFree": true,
+          "bookFormat": "EBook/PDF",
+          "potentialAction": [
+            {
+              "@type": "DownloadAction",
+              "target": "https://ekovoz.github.io/dist/es/v1/mostrador/felices-es-v1-sheets.pdf"
+            },
+            {
+              "@type": "ReadAction",
+              "target": "https://ekovoz.github.io/ekovoz.html"
+            }
+          ]
+        }
+      ]
     }
     </script>
 
@@ -764,7 +811,7 @@
             Obra educativa de dominio público basada en el texto de Mateo 5. Libre para imprimir, colorear y compartir.
         </p>
         <div style="margin-top: 1rem; display: flex; justify-content: center; gap: 1.5rem; font-size: 0.85rem;">
-            <button type="button" onclick="openContactModal()" style="background: none; border: none; color: var(--text-muted); cursor: pointer; text-decoration: underline; font-family: inherit; font-size: inherit;">
+            <button type="button" id="footerContactBtn" onclick="openContactModal()" style="background: none; border: none; color: var(--text-muted); cursor: pointer; text-decoration: underline; font-family: inherit; font-size: inherit;">
                 Contacto & Colaboración
             </button>
         </div>
@@ -794,11 +841,11 @@
         </div>
         <div class="modal-actions">
             <button type="button" class="btn-modal-secondary" onclick="closeModal('opticalModal')" id="btnModalClose">Cerrar</button>
-            <a href="/web/ekovoz.html" class="btn-modal-action" id="btnLaunchEco">
+            <a href="/ekovoz.html" class="btn-modal-action" id="btnLaunchEkovoz">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polygon points="5 3 19 12 5 21 5 3"></polygon>
                 </svg>
-                <span id="btnLaunchEcoText">Iniciar Reproductor Ekovoz</span>
+                <span id="btnLaunchEkovozText">Iniciar Reproductor Ekovoz</span>
             </a>
         </div>
     </dialog>
@@ -807,7 +854,7 @@
     <dialog id="previewModal">
         <div class="modal-header">
             <h3 class="modal-title" id="previewModalTitle">Muestra de Láminas para Colorear</h3>
-            <button class="modal-close" onclick="closeModal('previewModal')" aria-label="Cerrar">✕</button>
+            <button class="modal-close" onclick="closeModal('previewModal')" aria-label="Cerrar" id="previewModalCloseBtn">✕</button>
         </div>
         <div class="carousel-view">
             <img id="carouselImg" src="/web/preview/0001.png" alt="Muestra de lámina">
@@ -823,7 +870,7 @@
             <button type="button" class="carousel-btn" onclick="nextSlide()" id="carouselNextBtn">Siguiente →</button>
         </div>
         <div class="modal-actions" style="margin-top: 1rem;">
-            <button type="button" class="btn-modal-secondary" onclick="closeModal('previewModal')">Cerrar</button>
+            <button type="button" class="btn-modal-secondary" onclick="closeModal('previewModal')" id="btnPreviewClose">Cerrar</button>
         </div>
     </dialog>
 
@@ -831,14 +878,14 @@
     <dialog id="plateModal">
         <div class="modal-header">
             <h3 class="modal-title" id="plateModalTitle">Vista Previa en Alta Resolución</h3>
-            <button class="modal-close" onclick="closeModal('plateModal')" aria-label="Cerrar">✕</button>
+            <button class="modal-close" onclick="closeModal('plateModal')" aria-label="Cerrar" id="plateModalCloseBtn">✕</button>
         </div>
         <div class="plate-modal-view">
             <img id="plateModalImg" src="" alt="Lámina en alta resolución">
         </div>
         <p class="plate-modal-caption" id="plateModalCaption"></p>
         <div class="modal-actions" style="margin-top: 1rem;">
-            <button type="button" class="btn-modal-secondary" onclick="closeModal('plateModal')">Cerrar</button>
+            <button type="button" class="btn-modal-secondary" onclick="closeModal('plateModal')" id="btnPlateClose">Cerrar</button>
         </div>
     </dialog>
 
@@ -846,32 +893,32 @@
     <dialog id="contactModal" style="max-width: 480px; width: 90%;">
         <div class="modal-header">
             <h3 class="modal-title" id="contactModalTitle">Contacto & Colaboración Editorial</h3>
-            <button class="modal-close" onclick="closeModal('contactModal')" aria-label="Cerrar">✕</button>
+            <button class="modal-close" onclick="closeModal('contactModal')" aria-label="Cerrar" id="contactCloseBtn">✕</button>
         </div>
         <form action="https://api.web3forms.com/submit" method="POST" id="contactForm" style="display: flex; flex-direction: column; gap: 0.9rem; margin-top: 1rem; text-align: left;">
             <input type="hidden" name="access_key" value="00000000-0000-0000-0000-000000000000">
-            <input type="hidden" name="subject" value="Mensaje desde Ekovoz Editorial">
+            <input type="hidden" name="subject" value="Mensaje desde Ekovoz Editorial" id="contactSubjectInput">
             <input type="hidden" name="from_name" value="Ekovoz Editorial Web">
             <!-- Trampa Honeypot Invisible Anti-Bot -->
             <input type="checkbox" name="botcheck" class="hidden" style="display: none;">
 
             <div style="display: flex; flex-direction: column; gap: 0.35rem;">
-                <label for="contactName" style="font-size: 0.85rem; color: var(--text-secondary); font-weight: 500;">Nombre o Seudónimo</label>
+                <label for="contactName" id="contactNameLabel" style="font-size: 0.85rem; color: var(--text-secondary); font-weight: 500;">Nombre o Seudónimo</label>
                 <input type="text" id="contactName" name="name" required placeholder="Tu nombre" style="padding: 0.65rem 0.85rem; border-radius: 8px; border: 1px solid var(--select-border); background: var(--select-bg); color: var(--text-primary); font-family: inherit;">
             </div>
 
             <div style="display: flex; flex-direction: column; gap: 0.35rem;">
-                <label for="contactEmail" style="font-size: 0.85rem; color: var(--text-secondary); font-weight: 500;">Correo Electrónico (para responderte)</label>
+                <label for="contactEmail" id="contactEmailLabel" style="font-size: 0.85rem; color: var(--text-secondary); font-weight: 500;">Correo Electrónico (para responderte)</label>
                 <input type="email" id="contactEmail" name="email" required placeholder="tu@correo.com" style="padding: 0.65rem 0.85rem; border-radius: 8px; border: 1px solid var(--select-border); background: var(--select-bg); color: var(--text-primary); font-family: inherit;">
             </div>
 
             <div style="display: flex; flex-direction: column; gap: 0.35rem;">
-                <label for="contactMessage" style="font-size: 0.85rem; color: var(--text-secondary); font-weight: 500;">Mensaje o Propuesta de Traducción</label>
+                <label for="contactMessage" id="contactMessageLabel" style="font-size: 0.85rem; color: var(--text-secondary); font-weight: 500;">Mensaje o Propuesta de Traducción</label>
                 <textarea id="contactMessage" name="message" rows="4" required placeholder="¿En qué podemos colaborar o qué idioma te gustaría revisar?" style="padding: 0.65rem 0.85rem; border-radius: 8px; border: 1px solid var(--select-border); background: var(--select-bg); color: var(--text-primary); font-family: inherit; resize: vertical;"></textarea>
             </div>
 
             <div class="modal-actions" style="margin-top: 0.5rem;">
-                <button type="button" class="btn-modal-secondary" onclick="closeModal('contactModal')">Cancelar</button>
+                <button type="button" class="btn-modal-secondary" onclick="closeModal('contactModal')" id="contactCancelBtn">Cancelar</button>
                 <button type="submit" class="btn-modal-action" id="contactSubmitBtn">Enviar Mensaje</button>
             </div>
             <p id="contactStatus" style="font-size: 0.8rem; color: var(--text-muted); text-align: center; margin-top: 0.25rem; min-height: 1.2em;"></p>
@@ -1045,7 +1092,27 @@
                 opticalStep2Title: "Recibir con Cámara",
                 opticalStep2Desc: "Apunta con la cámara de cualquier teléfono hacia esta pantalla para descargar el PDF completo sin conexión de red.",
                 btnLaunchEco: "Iniciar Reproductor Ekovoz",
-                btnModalClose: "Cerrar"
+                btnModalClose: "Cerrar",
+                previewModalTitle: "Muestra de Láminas para Colorear",
+                plateModalTitle: "Vista Previa en Alta Resolución",
+                carouselPrev: "← Anterior",
+                carouselNext: "Siguiente →",
+                contactBtn: "Contacto & Colaboración",
+                contactTitle: "Contacto & Colaboración Editorial",
+                contactCloseAria: "Cerrar",
+                contactSubject: "Mensaje desde Ekovoz Editorial",
+                contactNameLabel: "Nombre o Seudónimo",
+                contactNamePlaceholder: "Tu nombre",
+                contactEmailLabel: "Correo Electrónico (para responderte)",
+                contactEmailPlaceholder: "tu@correo.com",
+                contactMessageLabel: "Mensaje o Propuesta de Traducción",
+                contactMessagePlaceholder: "¿En qué podemos colaborar o qué idioma te gustaría revisar?",
+                contactCancel: "Cancelar",
+                contactSubmit: "Enviar Mensaje",
+                contactSending: "Enviando mensaje...",
+                contactSuccess: "¡Mensaje enviado con éxito! Gracias por comunicarte con nosotros.",
+                contactError: "Error al enviar el mensaje. Inténtalo más tarde.",
+                contactConnectionError: "Error de conexión. Verifica tu conexión a internet."
             },
             "it": {
                 pageTitle: "Ekovoz: Risorse Gratuite",
@@ -1063,11 +1130,31 @@
                 footerNote: "Opera educativa di pubblico dominio basata sul testo di Matteo 5. Libera da stampare, colorare e condividere.",
                 opticalModalTitle: "Trasferimento Ottico (Schermo a Fotocamera)",
                 opticalStep1Title: "Trasmettere sullo Schermo",
-                opticalStep1Desc: "Apri il player Eco su questo schermo per trasmettere l'opera in sequenze ottiche ad alta velocità.",
+                opticalStep1Desc: "Apri il player Ekovoz su questo schermo per trasmettere l'opera in sequenze ottiche ad alta velocità.",
                 opticalStep2Title: "Ricevere con la Fotocamera",
                 opticalStep2Desc: "Inquadra questo schermo con la fotocamera di qualsiasi dispositivo per scaricare il PDF completo senza internet.",
-                btnLaunchEco: "Avvia Player Eco",
-                btnModalClose: "Chiudi"
+                btnLaunchEco: "Avvia Player Ekovoz",
+                btnModalClose: "Chiudi",
+                previewModalTitle: "Esempio di Tavole da Colorare",
+                plateModalTitle: "Anteprima ad Alta Risoluzione",
+                carouselPrev: "← Precedente",
+                carouselNext: "Successivo →",
+                contactBtn: "Contatto & Collaborazione",
+                contactTitle: "Contatto & Collaborazione Editoriale",
+                contactCloseAria: "Chiudi",
+                contactSubject: "Messaggio da Ekovoz Editoriale",
+                contactNameLabel: "Nome o Pseudonimo",
+                contactNamePlaceholder: "Il tuo nome",
+                contactEmailLabel: "Indirizzo Email (per risponderti)",
+                contactEmailPlaceholder: "tu@email.com",
+                contactMessageLabel: "Messaggio o Proposta di Traduzione",
+                contactMessagePlaceholder: "Come possiamo collaborare o quale lingua desideri verificare?",
+                contactCancel: "Annulla",
+                contactSubmit: "Invia Messaggio",
+                contactSending: "Invio del messaggio in corso...",
+                contactSuccess: "Messaggio inviato con successo! Grazie per averci contattato.",
+                contactError: "Errore durante l'invio. Riprova più tardi.",
+                contactConnectionError: "Errore di connessione. Verifica la connessione a Internet."
             },
             "id": {
                 pageTitle: "Ekovoz: Sumber Gratis",
@@ -1085,11 +1172,31 @@
                 footerNote: "Karya pendidikan domain publik berdasarkan Matius 5. Bebas dicetak, diwarnai, dan dibagikan.",
                 opticalModalTitle: "Transfer Optik (Layar ke Kamera)",
                 opticalStep1Title: "Kirim di Layar",
-                opticalStep1Desc: "Buka pemutar Eco di layar ini untuk memproyeksikan buku dalam kode visual berkecepatan tinggi.",
+                opticalStep1Desc: "Buka pemutar Ekovoz di layar ini untuk memproyeksikan buku dalam kode visual berkecepatan tinggi.",
                 opticalStep2Title: "Terima dengan Kamera",
                 opticalStep2Desc: "Arahkan kamera ponsel lain ke layar ini untuk mengunduh PDF secara lengkap tanpa internet.",
-                btnLaunchEco: "Mulai Pemutar Eco",
-                btnModalClose: "Tutup"
+                btnLaunchEco: "Mulai Pemutar Ekovoz",
+                btnModalClose: "Tutup",
+                previewModalTitle: "Contoh Lembar Mewarnai",
+                plateModalTitle: "Pratinjau Resolusi Tinggi",
+                carouselPrev: "← Sebelumnya",
+                carouselNext: "Berikutnya →",
+                contactBtn: "Kontak & Kolaborasi",
+                contactTitle: "Kontak & Kolaborasi Editorial",
+                contactCloseAria: "Tutup",
+                contactSubject: "Pesan dari Editorial Ekovoz",
+                contactNameLabel: "Nama atau Nama Samaran",
+                contactNamePlaceholder: "Nama Anda",
+                contactEmailLabel: "Alamat Email (untuk balasan)",
+                contactEmailPlaceholder: "anda@email.com",
+                contactMessageLabel: "Pesan atau Usulan Terjemahan",
+                contactMessagePlaceholder: "Bagaimana kita bisa berkolaborasi atau bahasa apa yang ingin Anda tinjau?",
+                contactCancel: "Batal",
+                contactSubmit: "Kirim Pesan",
+                contactSending: "Mengirim pesan...",
+                contactSuccess: "Pesan berhasil dikirim! Terima kasih telah menghubungi kami.",
+                contactError: "Gagal mengirim pesan. Silakan coba lagi nanti.",
+                contactConnectionError: "Kesalahan koneksi. Periksa koneksi internet Anda."
             },
             "tr": {
                 pageTitle: "Ekovoz: Ücretsiz Kaynaklar",
@@ -1107,11 +1214,31 @@
                 footerNote: "Matta 5 metnine dayalı kamu malı eğitim eseri. Basmak, boyamak ve paylaşmak serbesttir.",
                 opticalModalTitle: "Optik Aktarım (Ekrandan Kameraya)",
                 opticalStep1Title: "Ekranda Yansıt",
-                opticalStep1Desc: "Kitabı yüksek hızlı optik dizilerle iletmek için bu ekranda Eco oynatıcıyı açın.",
+                opticalStep1Desc: "Kitabı yüksek hızlı optik dizilerle iletmek için bu ekranda Ekovoz oynatıcıyı açın.",
                 opticalStep2Title: "Kamera ile Al",
                 opticalStep2Desc: "İnternet olmadan PDF'yi indirmek için herhangi bir telefon kamerasını bu ekrana yöneltin.",
-                btnLaunchEco: "Eco Oynatıcıyı Başlat",
-                btnModalClose: "Kapat"
+                btnLaunchEco: "Ekovoz Oynatıcıyı Başlat",
+                btnModalClose: "Kapat",
+                previewModalTitle: "Boyama Levhaları Örneği",
+                plateModalTitle: "Yüksek Çözünürlüklü Önizleme",
+                carouselPrev: "← Önceki",
+                carouselNext: "Sonraki →",
+                contactBtn: "İletişim & İş Birliği",
+                contactTitle: "İletişim & Yayın İş Birliği",
+                contactCloseAria: "Kapat",
+                contactSubject: "Ekovoz Yayıncılık İletişim Mesajı",
+                contactNameLabel: "İsim veya Takma Ad",
+                contactNamePlaceholder: "Adınız",
+                contactEmailLabel: "E-posta Adresi (yanıt için)",
+                contactEmailPlaceholder: "adiniz@eposta.com",
+                contactMessageLabel: "Mesaj veya Çeviri Önerisi",
+                contactMessagePlaceholder: "Nasıl iş birliği yapabiliriz veya hangi dili incelemek istersiniz?",
+                contactCancel: "İptal",
+                contactSubmit: "Mesaj Gönder",
+                contactSending: "Mesaj gönderiliyor...",
+                contactSuccess: "Mesaj başarıyla gönderildi! Bizimle iletişime geçtiğiniz için teşekkür ederiz.",
+                contactError: "Mesaj gönderilemedi. Lütfen daha sonra tekrar deneyin.",
+                contactConnectionError: "Bağlantı hatası. İnternet bağlantınızı kontrol edin."
             },
             "ru": {
                 pageTitle: "Ekovoz: Бесплатные ресурсы",
@@ -1129,11 +1256,31 @@
                 footerNote: "Образовательное издание в общественном достоянии на основе Матфея 5. Свободно для печати и распространения.",
                 opticalModalTitle: "Оптическая передача (Экран на камеру)",
                 opticalStep1Title: "Трансляция на экране",
-                opticalStep1Desc: "Откройте плеер Eco на этом экране для передачи книги в виде оптических кодов.",
+                opticalStep1Desc: "Откройте плеер Ekovoz на этом экране для передачи книги в виде оптических кодов.",
                 opticalStep2Title: "Прием камерой",
                 opticalStep2Desc: "Наведите камеру другого телефона на этот экран для полной загрузки книги без интернета.",
-                btnLaunchEco: "Запустить плеер Eco",
-                btnModalClose: "Закрыть"
+                btnLaunchEco: "Запустить плеер Ekovoz",
+                btnModalClose: "Закрыть",
+                previewModalTitle: "Образцы Страниц для Раскрашивания",
+                plateModalTitle: "Предпросмотр в Высоком Разрешении",
+                carouselPrev: "← Назад",
+                carouselNext: "Вперед →",
+                contactBtn: "Контакты и Сотрудничество",
+                contactTitle: "Контакты и Редакционное Сотрудничество",
+                contactCloseAria: "Закрыть",
+                contactSubject: "Сообщение из редакции Ekovoz",
+                contactNameLabel: "Имя или Псевдоним",
+                contactNamePlaceholder: "Ваше имя",
+                contactEmailLabel: "Электронная почта (для ответа)",
+                contactEmailPlaceholder: "vy@email.ru",
+                contactMessageLabel: "Сообщение или Предложение по Переводу",
+                contactMessagePlaceholder: "В чём мы можем сотрудничать или какой язык вы хотите проверить?",
+                contactCancel: "Отмена",
+                contactSubmit: "Отправить Сообщение",
+                contactSending: "Отправка сообщения...",
+                contactSuccess: "Сообщение успешно отправлено! Спасибо за обращение.",
+                contactError: "Ошибка при отправке сообщения. Пожалуйста, попробуйте позже.",
+                contactConnectionError: "Ошибка соединения. Проверьте подключение к интернету."
             },
             "en": {
                 pageTitle: "Ekovoz: Free Resources",
@@ -1151,11 +1298,31 @@
                 footerNote: "Public domain educational work based on Matthew 5. Free to print, color, and share.",
                 opticalModalTitle: "Optical Transfer (Screen to Camera)",
                 opticalStep1Title: "Stream on Screen",
-                opticalStep1Desc: "Launch the Eco player on this display to broadcast the book via high-speed visual codes.",
+                opticalStep1Desc: "Launch the Ekovoz player on this display to broadcast the book via high-speed visual codes.",
                 opticalStep2Title: "Receive with Camera",
                 opticalStep2Desc: "Aim any smartphone camera at this screen to download the complete PDF without internet.",
                 btnLaunchEco: "Launch Ekovoz Player",
-                btnModalClose: "Close"
+                btnModalClose: "Close",
+                previewModalTitle: "Coloring Plates Sample",
+                plateModalTitle: "High-Resolution Preview",
+                carouselPrev: "← Previous",
+                carouselNext: "Next →",
+                contactBtn: "Contact & Collaboration",
+                contactTitle: "Contact & Editorial Collaboration",
+                contactCloseAria: "Close",
+                contactSubject: "Message from Ekovoz Editorial",
+                contactNameLabel: "Name or Pseudonym",
+                contactNamePlaceholder: "Your name",
+                contactEmailLabel: "Email Address (for our reply)",
+                contactEmailPlaceholder: "you@email.com",
+                contactMessageLabel: "Message or Translation Proposal",
+                contactMessagePlaceholder: "How can we collaborate or which language would you like to review?",
+                contactCancel: "Cancel",
+                contactSubmit: "Send Message",
+                contactSending: "Sending message...",
+                contactSuccess: "Message sent successfully! Thank you for contacting us.",
+                contactError: "Error sending message. Please try again later.",
+                contactConnectionError: "Connection error. Please check your internet connection."
             },
             "zh-Hans": {
                 pageTitle: "Ekovoz: 免费资源",
@@ -1173,11 +1340,31 @@
                 footerNote: "基于马太福音第5章的公有领域教育图书。可自由打印、涂色与分享。",
                 opticalModalTitle: "光学传输 (屏幕对摄像头)",
                 opticalStep1Title: "在屏幕上投射",
-                opticalStep1Desc: "在此屏幕上打开 Eco 播放器，以高速视觉光流播送全书。",
+                opticalStep1Desc: "在此屏幕上打开 Ekovoz 播放器，以高速视觉光流播送全书。",
                 opticalStep2Title: "用摄像头接收",
                 opticalStep2Desc: "用另一台手机的摄像头对准此屏幕，无需网络即可完整接收 PDF 文件。",
-                btnLaunchEco: "启动 Eco 播放器",
-                btnModalClose: "关闭"
+                btnLaunchEco: "启动 Ekovoz 播放器",
+                btnModalClose: "关闭",
+                previewModalTitle: "填色图版样品",
+                plateModalTitle: "高分辨率预览",
+                carouselPrev: "← 上一张",
+                carouselNext: "下一张 →",
+                contactBtn: "联系与合作",
+                contactTitle: "联系与编辑合作",
+                contactCloseAria: "关闭",
+                contactSubject: "来自 Ekovoz 编辑部的留言",
+                contactNameLabel: "姓名或笔名",
+                contactNamePlaceholder: "您的名字",
+                contactEmailLabel: "电子邮箱 (以便给您回复)",
+                contactEmailPlaceholder: "you@example.com",
+                contactMessageLabel: "留言或翻译建议",
+                contactMessagePlaceholder: "我们可以如何合作，或者您希望审校哪种语言？"
+                ,contactCancel: "取消",
+                contactSubmit: "发送留言",
+                contactSending: "正在发送留言...",
+                contactSuccess: "留言发送成功！感谢与我们联系。",
+                contactError: "发送失败，请稍后重试。",
+                contactConnectionError: "网络连接错误，请检查您的网络连接。"
             },
             "hi": {
                 pageTitle: "Ekovoz: मुफ़्त संसाधन",
@@ -1195,11 +1382,31 @@
                 footerNote: "मत्ती 5 पर आधारित सार्वजनिक डोमेन शैक्षिक पुस्तक। प्रिंट, रंग भरने और साझा करने के लिए स्वतंत्र।",
                 opticalModalTitle: "ऑप्टिकल ट्रांसफर (स्क्रीन से कैमरा)",
                 opticalStep1Title: "स्क्रीन पर चलाएं",
-                opticalStep1Desc: "तेज गति के प्रकाश कोड द्वारा पुस्तक प्रसारित करने के लिए Eco प्लेयर खोलें।",
+                opticalStep1Desc: "तेज गति के प्रकाश कोड द्वारा पुस्तक प्रसारित करने के लिए Ekovoz प्लेयर खोलें।",
                 opticalStep2Title: "कैमरे से प्राप्त करें",
                 opticalStep2Desc: "बिना इंटरनेट पूरी PDF डाउनलोड करने के लिए किसी भी फोन का कैमरा स्क्रीन की ओर करें।",
-                btnLaunchEco: "Eco प्लेयर शुरू करें",
-                btnModalClose: "बंद करें"
+                btnLaunchEco: "Ekovoz प्लेयर शुरू करें",
+                btnModalClose: "बंद करें",
+                previewModalTitle: "रंग भरने वाले पन्नों का नमूना",
+                plateModalTitle: "उच्च रिज़ॉल्यूशन पूर्वावलोकन",
+                carouselPrev: "← पिछला",
+                carouselNext: "अगला →",
+                contactBtn: "संपर्क और सहयोग",
+                contactTitle: "संपर्क एवं संपादकीय सहयोग",
+                contactCloseAria: "बंद करें",
+                contactSubject: "Ekovoz संपादकीय संदेश",
+                contactNameLabel: "नाम या उपनाम",
+                contactNamePlaceholder: "आपका नाम",
+                contactEmailLabel: "ईमेल पता (उत्तर देने के लिए)",
+                contactEmailPlaceholder: "aapka@email.com",
+                contactMessageLabel: "संदेश या अनुवाद प्रस्ताव",
+                contactMessagePlaceholder: "हम कैसे सहयोग कर सकते हैं या आप किस भाषा की समीक्षा करना चाहते हैं?",
+                contactCancel: "रद्द करें",
+                contactSubmit: "संदेश भेजें",
+                contactSending: "संदेश भेजा जा रहा है...",
+                contactSuccess: "संदेश सफलतापूर्वक भेजा गया! हमसे संपर्क करने के लिए धन्यवाद।",
+                contactError: "संदेश भेजने में त्रुटि। कृपया बाद में पुनः प्रयास करें।",
+                contactConnectionError: "कनेक्शन त्रुटि। कृपया अपना इंटरनेट कनेक्शन जांचें।"
             },
             "bn": {
                 pageTitle: "Ekovoz: বিনামূল্যের সম্পদ",
@@ -1217,11 +1424,31 @@
                 footerNote: "মথি ৫ ভিত্তিক পাবলিক ডোমেন শিক্ষামূলক প্রকাশনা। অবাধে মুদ্রণ, রং করা ও শেয়ারের জন্য উন্মুক্ত।",
                 opticalModalTitle: "আলোকীয় স্থানান্তর (পর্দা থেকে ক্যামেরা)",
                 opticalStep1Title: "পর্দায় সম্প্রচার",
-                opticalStep1Desc: "উচ্চগতির আলোকীয় কোডে বইটি সম্প্রচার করতে Eco প্লেয়ার খুলুন।",
+                opticalStep1Desc: "উচ্চগতির আলোকীয় কোডে বইটি সম্প্রচার করতে Ekovoz প্লেয়ার খুলুন।",
                 opticalStep2Title: "ক্যামেরা দিয়ে গ্রহণ",
                 opticalStep2Desc: "ইন্টারনেট ছাড়া সম্পূর্ণ PDF পেতে ক্যামেরার সাহায্যে পর্দায় তাকান।",
-                btnLaunchEco: "Eco প্লেয়ার খুলুন",
-                btnModalClose: "বন্ধ করুন"
+                btnLaunchEco: "Ekovoz প্লেয়ার খুলুন",
+                btnModalClose: "বন্ধ করুন",
+                previewModalTitle: "রং করার পাতার নমুনা",
+                plateModalTitle: "উচ্চ রেজোলিউশন প্রিভিউ",
+                carouselPrev: "← পূর্ববর্তী",
+                carouselNext: "পরবর্তী →",
+                contactBtn: "যোগাযোগ ও সহযোগিতা",
+                contactTitle: "যোগাযোগ ও সম্পাদকীয় সহযোগিতা",
+                contactCloseAria: "বন্ধ করুন",
+                contactSubject: "Ekovoz সম্পাদকীয় বার্তা",
+                contactNameLabel: "নাম বা ছদ্মনাম",
+                contactNamePlaceholder: "আপনার নাম",
+                contactEmailLabel: "ইমেইল ঠিকানা (উত্তরের জন্য)",
+                contactEmailPlaceholder: "apni@email.com",
+                contactMessageLabel: "বার্তা বা অনুবাদ প্রস্তাব",
+                contactMessagePlaceholder: "আমরা কীভাবে সহযোগিতা করতে পারি বা আপনি কোন ভাষা পর্যালোচনা করতে চান?",
+                contactCancel: "বাতিল",
+                contactSubmit: "বার্তা পাঠান",
+                contactSending: "বার্তা পাঠানো হচ্ছে...",
+                contactSuccess: "বার্তা সফলভাবে পাঠানো হয়েছে! আমাদের সাথে যোগাযোগ করার জন্য ধন্যবাদ।",
+                contactError: "বার্তা পাঠাতে সমস্যা হয়েছে। পরে আবার চেষ্টা করুন।",
+                contactConnectionError: "সংযোগ ত্রুটি। আপনার ইন্টারনেট সংযোগ পরীক্ষা করুন।"
             }
         };
 
@@ -1261,8 +1488,68 @@
             document.getElementById('opticalStep1Desc').innerText = t.opticalStep1Desc;
             document.getElementById('opticalStep2Title').innerText = t.opticalStep2Title;
             document.getElementById('opticalStep2Desc').innerText = t.opticalStep2Desc;
-            document.getElementById('btnLaunchEcoText').innerText = t.btnLaunchEco;
+            if (document.getElementById('btnLaunchEkovozText')) {
+                document.getElementById('btnLaunchEkovozText').innerText = t.btnLaunchEco;
+            }
             document.getElementById('btnModalClose').innerText = t.btnModalClose;
+
+            // Modales de muestra y lámina
+            if (document.getElementById('previewModalTitle')) {
+                document.getElementById('previewModalTitle').innerText = t.previewModalTitle;
+            }
+            if (document.getElementById('plateModalTitle')) {
+                document.getElementById('plateModalTitle').innerText = t.plateModalTitle;
+            }
+            if (document.getElementById('btnPreviewClose')) {
+                document.getElementById('btnPreviewClose').innerText = t.btnModalClose;
+            }
+            if (document.getElementById('btnPlateClose')) {
+                document.getElementById('btnPlateClose').innerText = t.btnModalClose;
+            }
+            if (document.getElementById('carouselPrevBtn')) {
+                document.getElementById('carouselPrevBtn').innerText = t.carouselPrev;
+            }
+            if (document.getElementById('carouselNextBtn')) {
+                document.getElementById('carouselNextBtn').innerText = t.carouselNext;
+            }
+
+            // Localización completa de Contacto & Colaboración
+            if (document.getElementById('footerContactBtn')) {
+                document.getElementById('footerContactBtn').innerText = t.contactBtn;
+            }
+            if (document.getElementById('contactModalTitle')) {
+                document.getElementById('contactModalTitle').innerText = t.contactTitle;
+            }
+            if (document.getElementById('contactCloseBtn')) {
+                document.getElementById('contactCloseBtn').setAttribute('aria-label', t.contactCloseAria);
+            }
+            if (document.getElementById('contactSubjectInput')) {
+                document.getElementById('contactSubjectInput').value = t.contactSubject;
+            }
+            if (document.getElementById('contactNameLabel')) {
+                document.getElementById('contactNameLabel').innerText = t.contactNameLabel;
+            }
+            if (document.getElementById('contactName')) {
+                document.getElementById('contactName').placeholder = t.contactNamePlaceholder;
+            }
+            if (document.getElementById('contactEmailLabel')) {
+                document.getElementById('contactEmailLabel').innerText = t.contactEmailLabel;
+            }
+            if (document.getElementById('contactEmail')) {
+                document.getElementById('contactEmail').placeholder = t.contactEmailPlaceholder;
+            }
+            if (document.getElementById('contactMessageLabel')) {
+                document.getElementById('contactMessageLabel').innerText = t.contactMessageLabel;
+            }
+            if (document.getElementById('contactMessage')) {
+                document.getElementById('contactMessage').placeholder = t.contactMessagePlaceholder;
+            }
+            if (document.getElementById('contactCancelBtn')) {
+                document.getElementById('contactCancelBtn').innerText = t.contactCancel;
+            }
+            if (document.getElementById('contactSubmitBtn')) {
+                document.getElementById('contactSubmitBtn').innerText = t.contactSubmit;
+            }
 
             // Cache-busting automático: ?v={timestamp} para garantizar siempre la versión más fresca
             const cacheBuster = '?v=' + Date.now();
@@ -1295,12 +1582,14 @@
         // Manejo del formulario de contacto con Web3Forms y Honeypot
         document.getElementById('contactForm')?.addEventListener('submit', async function(e) {
             e.preventDefault();
+            const lang = document.getElementById('langSelect').value;
+            const t = translations[lang] || translations["es"];
             const status = document.getElementById('contactStatus');
             const submitBtn = document.getElementById('contactSubmitBtn');
             if (submitBtn) submitBtn.disabled = true;
             if (status) {
                 status.style.color = 'var(--text-secondary)';
-                status.textContent = 'Enviando mensaje...';
+                status.textContent = t.contactSending;
             }
 
             const formData = new FormData(this);
@@ -1313,19 +1602,19 @@
                 if (result.success) {
                     if (status) {
                         status.style.color = '#34d399';
-                        status.textContent = '¡Mensaje enviado con éxito! Gracias por comunicarte con nosotros.';
+                        status.textContent = t.contactSuccess;
                     }
                     setTimeout(() => closeModal('contactModal'), 2500);
                 } else {
                     if (status) {
                         status.style.color = '#f87171';
-                        status.textContent = result.message || 'Error al enviar el mensaje. Inténtalo más tarde.';
+                        status.textContent = result.message || t.contactError;
                     }
                 }
             } catch (err) {
                 if (status) {
                     status.style.color = '#f87171';
-                    status.textContent = 'Error de conexión. Verifica tu conexión a internet.';
+                    status.textContent = t.contactConnectionError;
                 }
             } finally {
                 if (submitBtn) submitBtn.disabled = false;
