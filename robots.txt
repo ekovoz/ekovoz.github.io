@@ -1,7 +1,23 @@
 User-agent: *
 Allow: /
 
-# Directivas para Crawlers de Inteligencia Artificial (LLMs)
+# Motores de Búsqueda Regionales y Globales
+User-agent: Googlebot
+Allow: /
+
+User-agent: YandexBot
+Allow: /
+
+User-agent: Yandex
+Allow: /
+
+User-agent: Baiduspider
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+# Crawlers de Inteligencia Artificial (LLMs)
 User-agent: GPTBot
 Allow: /
 
@@ -27,3 +43,4 @@ User-agent: CCBot
 Allow: /
 
 Sitemap: https://ekovoz.github.io/sitemap.xml
+

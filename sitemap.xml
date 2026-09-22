@@ -1,22 +1,171 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:xhtml="http://www.w3.org/1999/xhtml">
+
+    <!-- Páginas Web Multilingües con Hreflang Recíproco -->
+    <!-- 1. Español (Raíz / Canónica por Defecto) -->
     <url>
         <loc>https://ekovoz.github.io/</loc>
         <lastmod>2026-09-22</lastmod>
         <changefreq>weekly</changefreq>
         <priority>1.0</priority>
         <xhtml:link rel="alternate" hreflang="es" href="https://ekovoz.github.io/" />
-        <xhtml:link rel="alternate" hreflang="it" href="https://ekovoz.github.io/?lang=it" />
-        <xhtml:link rel="alternate" hreflang="id" href="https://ekovoz.github.io/?lang=id" />
-        <xhtml:link rel="alternate" hreflang="tr" href="https://ekovoz.github.io/?lang=tr" />
-        <xhtml:link rel="alternate" hreflang="ru" href="https://ekovoz.github.io/?lang=ru" />
-        <xhtml:link rel="alternate" hreflang="en" href="https://ekovoz.github.io/?lang=en" />
-        <xhtml:link rel="alternate" hreflang="zh-Hans" href="https://ekovoz.github.io/?lang=zh-Hans" />
-        <xhtml:link rel="alternate" hreflang="hi" href="https://ekovoz.github.io/?lang=hi" />
-        <xhtml:link rel="alternate" hreflang="bn" href="https://ekovoz.github.io/?lang=bn" />
+        <xhtml:link rel="alternate" hreflang="it" href="https://ekovoz.github.io/it/" />
+        <xhtml:link rel="alternate" hreflang="id" href="https://ekovoz.github.io/id/" />
+        <xhtml:link rel="alternate" hreflang="tr" href="https://ekovoz.github.io/tr/" />
+        <xhtml:link rel="alternate" hreflang="ru" href="https://ekovoz.github.io/ru/" />
+        <xhtml:link rel="alternate" hreflang="en" href="https://ekovoz.github.io/en/" />
+        <xhtml:link rel="alternate" hreflang="zh-Hans" href="https://ekovoz.github.io/zh/" />
+        <xhtml:link rel="alternate" hreflang="hi" href="https://ekovoz.github.io/hi/" />
+        <xhtml:link rel="alternate" hreflang="bn" href="https://ekovoz.github.io/bn/" />
         <xhtml:link rel="alternate" hreflang="x-default" href="https://ekovoz.github.io/" />
     </url>
+
+    <!-- 2. Italiano -->
+    <url>
+        <loc>https://ekovoz.github.io/it/</loc>
+        <lastmod>2026-09-22</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
+        <xhtml:link rel="alternate" hreflang="es" href="https://ekovoz.github.io/" />
+        <xhtml:link rel="alternate" hreflang="it" href="https://ekovoz.github.io/it/" />
+        <xhtml:link rel="alternate" hreflang="id" href="https://ekovoz.github.io/id/" />
+        <xhtml:link rel="alternate" hreflang="tr" href="https://ekovoz.github.io/tr/" />
+        <xhtml:link rel="alternate" hreflang="ru" href="https://ekovoz.github.io/ru/" />
+        <xhtml:link rel="alternate" hreflang="en" href="https://ekovoz.github.io/en/" />
+        <xhtml:link rel="alternate" hreflang="zh-Hans" href="https://ekovoz.github.io/zh/" />
+        <xhtml:link rel="alternate" hreflang="hi" href="https://ekovoz.github.io/hi/" />
+        <xhtml:link rel="alternate" hreflang="bn" href="https://ekovoz.github.io/bn/" />
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://ekovoz.github.io/" />
+    </url>
+
+    <!-- 3. Ruso (Yandex / Cirílico) -->
+    <url>
+        <loc>https://ekovoz.github.io/ru/</loc>
+        <lastmod>2026-09-22</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
+        <xhtml:link rel="alternate" hreflang="es" href="https://ekovoz.github.io/" />
+        <xhtml:link rel="alternate" hreflang="it" href="https://ekovoz.github.io/it/" />
+        <xhtml:link rel="alternate" hreflang="id" href="https://ekovoz.github.io/id/" />
+        <xhtml:link rel="alternate" hreflang="tr" href="https://ekovoz.github.io/tr/" />
+        <xhtml:link rel="alternate" hreflang="ru" href="https://ekovoz.github.io/ru/" />
+        <xhtml:link rel="alternate" hreflang="en" href="https://ekovoz.github.io/en/" />
+        <xhtml:link rel="alternate" hreflang="zh-Hans" href="https://ekovoz.github.io/zh/" />
+        <xhtml:link rel="alternate" hreflang="hi" href="https://ekovoz.github.io/hi/" />
+        <xhtml:link rel="alternate" hreflang="bn" href="https://ekovoz.github.io/bn/" />
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://ekovoz.github.io/" />
+    </url>
+
+    <!-- 4. Indonesio -->
+    <url>
+        <loc>https://ekovoz.github.io/id/</loc>
+        <lastmod>2026-09-22</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
+        <xhtml:link rel="alternate" hreflang="es" href="https://ekovoz.github.io/" />
+        <xhtml:link rel="alternate" hreflang="it" href="https://ekovoz.github.io/it/" />
+        <xhtml:link rel="alternate" hreflang="id" href="https://ekovoz.github.io/id/" />
+        <xhtml:link rel="alternate" hreflang="tr" href="https://ekovoz.github.io/tr/" />
+        <xhtml:link rel="alternate" hreflang="ru" href="https://ekovoz.github.io/ru/" />
+        <xhtml:link rel="alternate" hreflang="en" href="https://ekovoz.github.io/en/" />
+        <xhtml:link rel="alternate" hreflang="zh-Hans" href="https://ekovoz.github.io/zh/" />
+        <xhtml:link rel="alternate" hreflang="hi" href="https://ekovoz.github.io/hi/" />
+        <xhtml:link rel="alternate" hreflang="bn" href="https://ekovoz.github.io/bn/" />
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://ekovoz.github.io/" />
+    </url>
+
+    <!-- 5. Turco -->
+    <url>
+        <loc>https://ekovoz.github.io/tr/</loc>
+        <lastmod>2026-09-22</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
+        <xhtml:link rel="alternate" hreflang="es" href="https://ekovoz.github.io/" />
+        <xhtml:link rel="alternate" hreflang="it" href="https://ekovoz.github.io/it/" />
+        <xhtml:link rel="alternate" hreflang="id" href="https://ekovoz.github.io/id/" />
+        <xhtml:link rel="alternate" hreflang="tr" href="https://ekovoz.github.io/tr/" />
+        <xhtml:link rel="alternate" hreflang="ru" href="https://ekovoz.github.io/ru/" />
+        <xhtml:link rel="alternate" hreflang="en" href="https://ekovoz.github.io/en/" />
+        <xhtml:link rel="alternate" hreflang="zh-Hans" href="https://ekovoz.github.io/zh/" />
+        <xhtml:link rel="alternate" hreflang="hi" href="https://ekovoz.github.io/hi/" />
+        <xhtml:link rel="alternate" hreflang="bn" href="https://ekovoz.github.io/bn/" />
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://ekovoz.github.io/" />
+    </url>
+
+    <!-- 6. Inglés -->
+    <url>
+        <loc>https://ekovoz.github.io/en/</loc>
+        <lastmod>2026-09-22</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
+        <xhtml:link rel="alternate" hreflang="es" href="https://ekovoz.github.io/" />
+        <xhtml:link rel="alternate" hreflang="it" href="https://ekovoz.github.io/it/" />
+        <xhtml:link rel="alternate" hreflang="id" href="https://ekovoz.github.io/id/" />
+        <xhtml:link rel="alternate" hreflang="tr" href="https://ekovoz.github.io/tr/" />
+        <xhtml:link rel="alternate" hreflang="ru" href="https://ekovoz.github.io/ru/" />
+        <xhtml:link rel="alternate" hreflang="en" href="https://ekovoz.github.io/en/" />
+        <xhtml:link rel="alternate" hreflang="zh-Hans" href="https://ekovoz.github.io/zh/" />
+        <xhtml:link rel="alternate" hreflang="hi" href="https://ekovoz.github.io/hi/" />
+        <xhtml:link rel="alternate" hreflang="bn" href="https://ekovoz.github.io/bn/" />
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://ekovoz.github.io/" />
+    </url>
+
+    <!-- 7. Chino Simplificado (Baidu / Hanzi) -->
+    <url>
+        <loc>https://ekovoz.github.io/zh/</loc>
+        <lastmod>2026-09-22</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
+        <xhtml:link rel="alternate" hreflang="es" href="https://ekovoz.github.io/" />
+        <xhtml:link rel="alternate" hreflang="it" href="https://ekovoz.github.io/it/" />
+        <xhtml:link rel="alternate" hreflang="id" href="https://ekovoz.github.io/id/" />
+        <xhtml:link rel="alternate" hreflang="tr" href="https://ekovoz.github.io/tr/" />
+        <xhtml:link rel="alternate" hreflang="ru" href="https://ekovoz.github.io/ru/" />
+        <xhtml:link rel="alternate" hreflang="en" href="https://ekovoz.github.io/en/" />
+        <xhtml:link rel="alternate" hreflang="zh-Hans" href="https://ekovoz.github.io/zh/" />
+        <xhtml:link rel="alternate" hreflang="hi" href="https://ekovoz.github.io/hi/" />
+        <xhtml:link rel="alternate" hreflang="bn" href="https://ekovoz.github.io/bn/" />
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://ekovoz.github.io/" />
+    </url>
+
+    <!-- 8. Hindi (India / Devanagari) -->
+    <url>
+        <loc>https://ekovoz.github.io/hi/</loc>
+        <lastmod>2026-09-22</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
+        <xhtml:link rel="alternate" hreflang="es" href="https://ekovoz.github.io/" />
+        <xhtml:link rel="alternate" hreflang="it" href="https://ekovoz.github.io/it/" />
+        <xhtml:link rel="alternate" hreflang="id" href="https://ekovoz.github.io/id/" />
+        <xhtml:link rel="alternate" hreflang="tr" href="https://ekovoz.github.io/tr/" />
+        <xhtml:link rel="alternate" hreflang="ru" href="https://ekovoz.github.io/ru/" />
+        <xhtml:link rel="alternate" hreflang="en" href="https://ekovoz.github.io/en/" />
+        <xhtml:link rel="alternate" hreflang="zh-Hans" href="https://ekovoz.github.io/zh/" />
+        <xhtml:link rel="alternate" hreflang="hi" href="https://ekovoz.github.io/hi/" />
+        <xhtml:link rel="alternate" hreflang="bn" href="https://ekovoz.github.io/bn/" />
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://ekovoz.github.io/" />
+    </url>
+
+    <!-- 9. Bengalí (India y Bangladesh) -->
+    <url>
+        <loc>https://ekovoz.github.io/bn/</loc>
+        <lastmod>2026-09-22</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
+        <xhtml:link rel="alternate" hreflang="es" href="https://ekovoz.github.io/" />
+        <xhtml:link rel="alternate" hreflang="it" href="https://ekovoz.github.io/it/" />
+        <xhtml:link rel="alternate" hreflang="id" href="https://ekovoz.github.io/id/" />
+        <xhtml:link rel="alternate" hreflang="tr" href="https://ekovoz.github.io/tr/" />
+        <xhtml:link rel="alternate" hreflang="ru" href="https://ekovoz.github.io/ru/" />
+        <xhtml:link rel="alternate" hreflang="en" href="https://ekovoz.github.io/en/" />
+        <xhtml:link rel="alternate" hreflang="zh-Hans" href="https://ekovoz.github.io/zh/" />
+        <xhtml:link rel="alternate" hreflang="hi" href="https://ekovoz.github.io/hi/" />
+        <xhtml:link rel="alternate" hreflang="bn" href="https://ekovoz.github.io/bn/" />
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://ekovoz.github.io/" />
+    </url>
+
+    <!-- Páginas Funcionales -->
     <url>
         <loc>https://ekovoz.github.io/ekovoz.html</loc>
         <lastmod>2026-09-22</lastmod>
@@ -35,6 +184,9 @@
         <changefreq>weekly</changefreq>
         <priority>0.7</priority>
     </url>
+
+    <!-- Matriz Oficial de 18 Archivos PDF (Indexación Vectorial de Documentos) -->
+    <!-- Español (es) -->
     <url>
         <loc>https://ekovoz.github.io/dist/es/v1/mostrador/felices-es-v1-sheets.pdf</loc>
         <lastmod>2026-09-22</lastmod>
@@ -43,6 +195,118 @@
     </url>
     <url>
         <loc>https://ekovoz.github.io/dist/es/v1/mostrador/felices-es-v1-booklet.pdf</loc>
+        <lastmod>2026-09-22</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.9</priority>
+    </url>
+
+    <!-- Italiano (it) -->
+    <url>
+        <loc>https://ekovoz.github.io/dist/it/v1/mostrador/felices-it-v1-sheets.pdf</loc>
+        <lastmod>2026-09-22</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.9</priority>
+    </url>
+    <url>
+        <loc>https://ekovoz.github.io/dist/it/v1/mostrador/felices-it-v1-booklet.pdf</loc>
+        <lastmod>2026-09-22</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.9</priority>
+    </url>
+
+    <!-- Ruso (ru) -->
+    <url>
+        <loc>https://ekovoz.github.io/dist/ru/v1/mostrador/felices-ru-v1-sheets.pdf</loc>
+        <lastmod>2026-09-22</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.9</priority>
+    </url>
+    <url>
+        <loc>https://ekovoz.github.io/dist/ru/v1/mostrador/felices-ru-v1-booklet.pdf</loc>
+        <lastmod>2026-09-22</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.9</priority>
+    </url>
+
+    <!-- Indonesio (id) -->
+    <url>
+        <loc>https://ekovoz.github.io/dist/id/v1/mostrador/felices-id-v1-sheets.pdf</loc>
+        <lastmod>2026-09-22</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.9</priority>
+    </url>
+    <url>
+        <loc>https://ekovoz.github.io/dist/id/v1/mostrador/felices-id-v1-booklet.pdf</loc>
+        <lastmod>2026-09-22</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.9</priority>
+    </url>
+
+    <!-- Turco (tr) -->
+    <url>
+        <loc>https://ekovoz.github.io/dist/tr/v1/mostrador/felices-tr-v1-sheets.pdf</loc>
+        <lastmod>2026-09-22</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.9</priority>
+    </url>
+    <url>
+        <loc>https://ekovoz.github.io/dist/tr/v1/mostrador/felices-tr-v1-booklet.pdf</loc>
+        <lastmod>2026-09-22</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.9</priority>
+    </url>
+
+    <!-- Inglés (en) -->
+    <url>
+        <loc>https://ekovoz.github.io/dist/en/v1/mostrador/felices-en-v1-sheets.pdf</loc>
+        <lastmod>2026-09-22</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.9</priority>
+    </url>
+    <url>
+        <loc>https://ekovoz.github.io/dist/en/v1/mostrador/felices-en-v1-booklet.pdf</loc>
+        <lastmod>2026-09-22</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.9</priority>
+    </url>
+
+    <!-- Chino Simplificado (zh-Hans) -->
+    <url>
+        <loc>https://ekovoz.github.io/dist/zh-Hans/v1/mostrador/felices-zh-Hans-v1-sheets.pdf</loc>
+        <lastmod>2026-09-22</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.9</priority>
+    </url>
+    <url>
+        <loc>https://ekovoz.github.io/dist/zh-Hans/v1/mostrador/felices-zh-Hans-v1-booklet.pdf</loc>
+        <lastmod>2026-09-22</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.9</priority>
+    </url>
+
+    <!-- Hindi (hi) -->
+    <url>
+        <loc>https://ekovoz.github.io/dist/hi/v1/mostrador/felices-hi-v1-sheets.pdf</loc>
+        <lastmod>2026-09-22</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.9</priority>
+    </url>
+    <url>
+        <loc>https://ekovoz.github.io/dist/hi/v1/mostrador/felices-hi-v1-booklet.pdf</loc>
+        <lastmod>2026-09-22</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.9</priority>
+    </url>
+
+    <!-- Bengalí (bn) -->
+    <url>
+        <loc>https://ekovoz.github.io/dist/bn/v1/mostrador/felices-bn-v1-sheets.pdf</loc>
+        <lastmod>2026-09-22</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.9</priority>
+    </url>
+    <url>
+        <loc>https://ekovoz.github.io/dist/bn/v1/mostrador/felices-bn-v1-booklet.pdf</loc>
         <lastmod>2026-09-22</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.9</priority>

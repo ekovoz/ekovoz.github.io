@@ -1,6 +1,21 @@
 # Corpus Completo de Textos Canónicos: Los Felices del Señor Jesús
 
+## Matriz Oficial de Descargas Directas (18 Archivos PDF)
+
+| Idioma | Código | Título Canónico | Láminas Sueltas (Sheets PDF) | Cuadernillo A Caballo (Booklet PDF) |
+| :--- | :---: | :--- | :--- | :--- |
+| **Español** | `es` | Los Felices del Señor Jesús | [Descargar Sheets](https://ekovoz.github.io/dist/es/v1/mostrador/felices-es-v1-sheets.pdf) | [Descargar Booklet](https://ekovoz.github.io/dist/es/v1/mostrador/felices-es-v1-booklet.pdf) |
+| **Italiano** | `it` | I Beati del Signore Gesù | [Scarica Sheets](https://ekovoz.github.io/dist/it/v1/mostrador/felices-it-v1-sheets.pdf) | [Scarica Booklet](https://ekovoz.github.io/dist/it/v1/mostrador/felices-it-v1-booklet.pdf) |
+| **Indonesio** | `id` | Mereka yang Berbahagia dari Tuhan Yesus | [Unduh Sheets](https://ekovoz.github.io/dist/id/v1/mostrador/felices-id-v1-sheets.pdf) | [Unduh Booklet](https://ekovoz.github.io/dist/id/v1/mostrador/felices-id-v1-booklet.pdf) |
+| **Turco** | `tr` | Rab İsa'nın Mutlu Olanları | [Sheets İndir](https://ekovoz.github.io/dist/tr/v1/mostrador/felices-tr-v1-sheets.pdf) | [Booklet İndir](https://ekovoz.github.io/dist/tr/v1/mostrador/felices-tr-v1-booklet.pdf) |
+| **Ruso** | `ru` | Блаженные Господа Иисуса | [Скачать Sheets](https://ekovoz.github.io/dist/ru/v1/mostrador/felices-ru-v1-sheets.pdf) | [Скачать Booklet](https://ekovoz.github.io/dist/ru/v1/mostrador/felices-ru-v1-booklet.pdf) |
+| **Inglés** | `en` | The Blessed of the Lord Jesus | [Download Sheets](https://ekovoz.github.io/dist/en/v1/mostrador/felices-en-v1-sheets.pdf) | [Download Booklet](https://ekovoz.github.io/dist/en/v1/mostrador/felices-en-v1-booklet.pdf) |
+| **Chino Simplificado** | `zh-Hans` | 主耶稣蒙福的百姓 | [下载 Sheets](https://ekovoz.github.io/dist/zh-Hans/v1/mostrador/felices-zh-Hans-v1-sheets.pdf) | [下载 Booklet](https://ekovoz.github.io/dist/zh-Hans/v1/mostrador/felices-zh-Hans-v1-booklet.pdf) |
+| **Hindi** | `hi` | प्रभु यीशु के हर्षित लोग | [Sheets डाउनलोड करें](https://ekovoz.github.io/dist/hi/v1/mostrador/felices-hi-v1-sheets.pdf) | [Booklet डाउनलोड करें](https://ekovoz.github.io/dist/hi/v1/mostrador/felices-hi-v1-booklet.pdf) |
+| **Bengalí** | `bn` | প্রভু যীশুর আনন্দময় মানুষ | [Sheets ডাউনলোড করুন](https://ekovoz.github.io/dist/bn/v1/mostrador/felices-bn-v1-sheets.pdf) | [Booklet ডাউনলোড করুন](https://ekovoz.github.io/dist/bn/v1/mostrador/felices-bn-v1-booklet.pdf) |
+
 ## Estructura de las 27 Láminas (Mateo 5:1–12)
+
 
 ### Lámina 0001 — Portada
 - **ES:** Los felices del Señor Jesús
