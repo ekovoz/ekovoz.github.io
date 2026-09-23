@@ -1017,9 +1017,7 @@
         <p class="footer-note" id="footerNote">基于马太福音第5章的公有领域教育图书。可自由打印、涂色与分享。</p>
         <div style="margin-top: 1rem; display: flex; justify-content: center; gap: 1.5rem; font-size: 0.85rem;">
             <button type="button" id="footerContactBtn" onclick="openContactModal()"
-                style="background: none; border: none; color: var(--text-muted); cursor: pointer; text-decoration: underline; font-family: inherit; font-size: inherit;">
-                Contacto, Colaboración & Soporte
-            </button>
+                style="background: none; border: none; color: var(--text-muted); cursor: pointer; text-decoration: underline; font-family: inherit; font-size: inherit;">联系与合作</button>
         </div>
     </main>
 
@@ -1127,7 +1125,7 @@
     <!-- Modal 4: Contacto, Colaboración & Soporte con Honeypot Web3Forms -->
     <dialog id="contactModal" style="max-width: 480px; width: 90%;">
         <div class="modal-header">
-            <h3 class="modal-title" id="contactModalTitle">Contacto, Colaboración & Soporte</h3>
+            <h3 class="modal-title" id="contactModalTitle">联系与编辑协作</h3>
             <button class="modal-close" onclick="closeModal('contactModal')" aria-label="Cerrar"
                 id="contactCloseBtn">✕</button>
         </div>
@@ -1141,34 +1139,32 @@
 
             <div style="display: flex; flex-direction: column; gap: 0.35rem;">
                 <label for="contactTopic" id="contactTopicLabel"
-                    style="font-size: 0.85rem; color: var(--text-secondary); font-weight: 500;">Motivo / Topic</label>
+                    style="font-size: 0.85rem; color: var(--text-secondary); font-weight: 500;">事由 / 主题</label>
                 <select id="contactTopic" name="topic"
                     style="padding: 0.65rem 0.85rem; border-radius: 8px; border: 1px solid var(--select-border); background: var(--select-bg); color: var(--text-primary); font-family: inherit;">
-                    <option value="colaboracion" id="optCollab">Colaboración editorial o traducción</option>
-                    <option value="soporte" id="optSupport">Problemas de descarga o lectura (Soporte)</option>
-                    <option value="general" id="optGeneral">Consulta general o sugerencia</option>
+                    <option value="colaboracion" id="optCollab">编辑协作或翻译建议</option>
+                    <option value="soporte" id="optSupport">下载或阅读问题（技术支持）</option>
+                    <option value="general" id="optGeneral">通用咨询或建议</option>
                 </select>
             </div>
 
             <div style="display: flex; flex-direction: column; gap: 0.35rem;">
                 <label for="contactName" id="contactNameLabel"
-                    style="font-size: 0.85rem; color: var(--text-secondary); font-weight: 500;">Nombre o
-                    Seudónimo</label>
+                    style="font-size: 0.85rem; color: var(--text-secondary); font-weight: 500;">姓名或笔名</label>
                 <input type="text" id="contactName" name="name" required placeholder="Tu nombre"
                     style="padding: 0.65rem 0.85rem; border-radius: 8px; border: 1px solid var(--select-border); background: var(--select-bg); color: var(--text-primary); font-family: inherit;">
             </div>
 
             <div style="display: flex; flex-direction: column; gap: 0.35rem;">
                 <label for="contactEmail" id="contactEmailLabel"
-                    style="font-size: 0.85rem; color: var(--text-secondary); font-weight: 500;">Correo Electrónico (para
-                    responderte)</label>
+                    style="font-size: 0.85rem; color: var(--text-secondary); font-weight: 500;">电子邮箱（用于回复）</label>
                 <input type="email" id="contactEmail" name="email" required placeholder="tu@correo.com"
                     style="padding: 0.65rem 0.85rem; border-radius: 8px; border: 1px solid var(--select-border); background: var(--select-bg); color: var(--text-primary); font-family: inherit;">
             </div>
 
             <div style="display: flex; flex-direction: column; gap: 0.35rem;">
                 <label for="contactMessage" id="contactMessageLabel"
-                    style="font-size: 0.85rem; color: var(--text-secondary); font-weight: 500;">Mensaje o Descripción de la Incidencia</label>
+                    style="font-size: 0.85rem; color: var(--text-secondary); font-weight: 500;">留言或翻译建议</label>
                 <textarea id="contactMessage" name="message" rows="4" required
                     placeholder="Escribe tu mensaje, propuesta de traducción o describe la dificultad que tuviste..."
                     style="padding: 0.65rem 0.85rem; border-radius: 8px; border: 1px solid var(--select-border); background: var(--select-bg); color: var(--text-primary); font-family: inherit; resize: vertical;"></textarea>
@@ -1176,16 +1172,14 @@
 
             <div class="modal-actions" style="margin-top: 0.5rem;">
                 <button type="button" class="btn-modal-secondary" onclick="closeModal('contactModal')"
-                    id="contactCancelBtn">Cancelar</button>
-                <button type="submit" class="btn-modal-action" id="contactSubmitBtn">Enviar Mensaje</button>
+                    id="contactCancelBtn">取消</button>
+                <button type="submit" class="btn-modal-action" id="contactSubmitBtn">发送留言</button>
             </div>
 
             <div style="margin-top: 0.5rem; text-align: center; font-size: 0.75rem; color: var(--text-muted);">
-                <span id="githubIssueHint">¿Prefieres reportar un ticket de soporte técnico público?</span>
+                <span id="githubIssueHint">更愿意提交公开的技术支持工单？</span>
                 <a href="https://github.com/ekovoz/ekovoz.github.io/issues/new?title=Incidencia+de+Acceso+o+Descarga&labels=soporte"
-                   target="_blank" rel="noopener noreferrer" style="color: var(--badge-text); text-decoration: underline; margin-left: 0.25rem;" id="linkGithubIssue">
-                   Abrir incidencia en GitHub
-                </a>
+                   target="_blank" rel="noopener noreferrer" style="color: var(--badge-text); text-decoration: underline; margin-left: 0.25rem;" id="linkGithubIssue">在 GitHub 上提出 Issue</a>
             </div>
 
             <p id="contactStatus"
@@ -1599,7 +1593,13 @@
                 "contactSending": "Enviando mensaje...",
                 "contactSuccess": "¡Mensaje enviado con éxito! Gracias por comunicarte con nosotros.",
                 "contactError": "Error al enviar el mensaje. Inténtalo más tarde.",
-                "contactConnectionError": "Error de conexión. Verifica tu conexión a internet."
+                "contactConnectionError": "Error de conexión. Verifica tu conexión a internet.",
+                "contactTopicLabel": "Motivo / Asunto",
+                "optCollab": "Colaboración editorial o traducción",
+                "optSupport": "Problemas de descarga o lectura (Soporte)",
+                "optGeneral": "Consulta general o sugerencia",
+                "githubIssueHint": "¿Prefieres reportar un ticket de soporte técnico público?",
+                "linkGithubIssue": "Abrir incidencia en GitHub"
         },
         "it": {
                 "pageTitle": "Ekovoz: Risorse Gratuite",
@@ -1643,7 +1643,13 @@
                 "contactSending": "Invio del messaggio in corso...",
                 "contactSuccess": "Messaggio inviato con successo! Grazie per averci contattato.",
                 "contactError": "Errore durante l'invio. Riprova più tardi.",
-                "contactConnectionError": "Errore di connessione. Verifica la connessione a Internet."
+                "contactConnectionError": "Errore di connessione. Verifica la connessione a Internet.",
+                "contactTopicLabel": "Motivo / Argomento",
+                "optCollab": "Collaborazione editoriale o traduzione",
+                "optSupport": "Problemi di download o lettura (Supporto)",
+                "optGeneral": "Richiesta generale o suggerimento",
+                "githubIssueHint": "Preferisci segnalare un problema técnico público?",
+                "linkGithubIssue": "Apri una segnalazione su GitHub"
         },
         "id": {
                 "pageTitle": "Ekovoz: Sumber Gratis",
@@ -1687,7 +1693,13 @@
                 "contactSending": "Mengirim pesan...",
                 "contactSuccess": "Pesan berhasil dikirim! Terima kasih telah menghubungi kami.",
                 "contactError": "Gagal mengirim pesan. Silakan coba lagi nanti.",
-                "contactConnectionError": "Kesalahan koneksi. Periksa koneksi internet Anda."
+                "contactConnectionError": "Kesalahan koneksi. Periksa koneksi internet Anda.",
+                "contactTopicLabel": "Alasan / Topik",
+                "optCollab": "Kolaborasi editorial atau penerjemahan",
+                "optSupport": "Masalah unduhan atau pembacaan (Bantuan)",
+                "optGeneral": "Pertanyaan umum atau saran",
+                "githubIssueHint": "Lebih suka melaporkan masalah teknis publik?",
+                "linkGithubIssue": "Buka issue di GitHub"
         },
         "tr": {
                 "pageTitle": "Ekovoz: Ücretsiz Kaynaklar",
@@ -1731,7 +1743,13 @@
                 "contactSending": "Mesaj gönderiliyor...",
                 "contactSuccess": "Mesaj başarıyla gönderildi! Bizimle iletişime geçtiğiniz için teşekkür ederiz.",
                 "contactError": "Mesaj gönderilemedi. Lütfen daha sonra tekrar deneyin.",
-                "contactConnectionError": "Bağlantı hatası. İnternet bağlantınızı kontrol edin."
+                "contactConnectionError": "Bağlantı hatası. İnternet bağlantınızı kontrol edin.",
+                "contactTopicLabel": "Konu / Başlık",
+                "optCollab": "Editoryal iş birliği veya çeviri",
+                "optSupport": "İndirme veya okuma sorunları (Destek)",
+                "optGeneral": "Genel soru veya öneri",
+                "githubIssueHint": "Herkese açık bir teknik sorun bildirmek ister misiniz?",
+                "linkGithubIssue": "GitHub'da sorun açın"
         },
         "ru": {
                 "pageTitle": "Ekovoz: Бесплатные ресурсы",
@@ -1775,7 +1793,13 @@
                 "contactSending": "Отправка сообщения...",
                 "contactSuccess": "Сообщение успешно отправлено! Спасибо за обращение.",
                 "contactError": "Ошибка при отправке сообщения. Пожалуйста, попробуйте позже.",
-                "contactConnectionError": "Ошибка соединения. Проверьте подключение к интернету."
+                "contactConnectionError": "Ошибка соединения. Проверьте подключение к интернету.",
+                "contactTopicLabel": "Тема / Причина",
+                "optCollab": "Редакционное сотрудничество или перевод",
+                "optSupport": "Проблемы со скачиванием или чтением (Поддержка)",
+                "optGeneral": "Общий вопрос или предложение",
+                "githubIssueHint": "Предпочитаете создать публичный запрос о проблеме?",
+                "linkGithubIssue": "Открыть issue на GitHub"
         },
         "en": {
                 "pageTitle": "Ekovoz: Free Resources",
@@ -1819,7 +1843,13 @@
                 "contactSending": "Sending message...",
                 "contactSuccess": "Message sent successfully! Thank you for contacting us.",
                 "contactError": "Error sending message. Please try again later.",
-                "contactConnectionError": "Connection error. Please check your internet connection."
+                "contactConnectionError": "Connection error. Please check your internet connection.",
+                "contactTopicLabel": "Topic / Subject",
+                "optCollab": "Editorial collaboration or translation",
+                "optSupport": "Download or reading issues (Support)",
+                "optGeneral": "General inquiry or suggestion",
+                "githubIssueHint": "Prefer to report a public technical issue?",
+                "linkGithubIssue": "Open issue on GitHub"
         },
         "zh-Hans": {
                 "pageTitle": "Ekovoz: 免费资源",
@@ -1863,7 +1893,13 @@
                 "contactSending": "正在发送留言...",
                 "contactSuccess": "留言发送成功！感谢与我们联系。",
                 "contactError": "发送失败，请稍后重试。",
-                "contactConnectionError": "网络连接错误，请检查您的网络连接。"
+                "contactConnectionError": "网络连接错误，请检查您的网络连接。",
+                "contactTopicLabel": "事由 / 主题",
+                "optCollab": "编辑协作或翻译建议",
+                "optSupport": "下载或阅读问题（技术支持）",
+                "optGeneral": "通用咨询或建议",
+                "githubIssueHint": "更愿意提交公开的技术支持工单？",
+                "linkGithubIssue": "在 GitHub 上提出 Issue"
         },
         "hi": {
                 "pageTitle": "Ekovoz: मुफ़्त संसाधन",
@@ -1907,7 +1943,13 @@
                 "contactSending": "संदेश भेजा जा रहा है...",
                 "contactSuccess": "संदेश सफलतापूर्वक भेजा गया! हमसे संपर्क करने के लिए धन्यवाद।",
                 "contactError": "संदेश भेजने में त्रुटि। कृपया बाद में पुनः प्रयास करें।",
-                "contactConnectionError": "कनेक्शन त्रुटि। कृपया अपना इंटरनेट कनेक्शन जांचें।"
+                "contactConnectionError": "कनेक्शन त्रुटि। कृपया अपना इंटरनेट कनेक्शन जांचें।",
+                "contactTopicLabel": "विषय / कारण",
+                "optCollab": "संपादकीय सहयोग या अनुवाद",
+                "optSupport": "डाउनलोड या पढ़ने में समस्या (सहायता)",
+                "optGeneral": "सामान्य प्रश्न या सुझाव",
+                "githubIssueHint": "सार्वजनिक तकनीकी समस्या दर्ज करना पसंद करते हैं?",
+                "linkGithubIssue": "GitHub पर Issue खोलें"
         },
         "bn": {
                 "pageTitle": "Ekovoz: বিনামূল্যের সম্পদ",
@@ -1951,7 +1993,13 @@
                 "contactSending": "বার্তা পাঠানো হচ্ছে...",
                 "contactSuccess": "বার্তা সফলভাবে পাঠানো হয়েছে! আমাদের সাথে যোগাযোগ করার জন্য ধন্যবাদ।",
                 "contactError": "বার্তা পাঠাতে সমস্যা হয়েছে। পরে আবার চেষ্টা করুন।",
-                "contactConnectionError": "সংযোগ ত্রুটি। আপনার ইন্টারনেট সংযোগ পরীক্ষা করুন।"
+                "contactConnectionError": "সংযোগ ত্রুটি। আপনার ইন্টারনেট সংযোগ পরীক্ষা করুন।",
+                "contactTopicLabel": "বিষয় / কারণ",
+                "optCollab": "সম্পাদনা সহযোগিতা বা অনুবাদ",
+                "optSupport": "ডাউনলোড বা পড়ার সমস্যা (সহায়তা)",
+                "optGeneral": "সাধারণ অনুসন্ধান বা পরামর্শ",
+                "githubIssueHint": "একটি প্রকাশ্য প্রযুক্তিগত সমস্যা রিপোর্ট করতে চান?",
+                "linkGithubIssue": "GitHub-এ Issue খুলুন"
         },
         "ar": {
                 "pageTitle": "إيكوفوز: موارد تعليمية مجانية",
@@ -1995,7 +2043,13 @@
                 "contactSending": "جارٍ إرسال الرسالة...",
                 "contactSuccess": "تم إرسال الرسالة بنجاح! شكراً لتواصلك معنا.",
                 "contactError": "حدث خطأ أثناء الإرسال. يرجى المحاولة لاحقاً.",
-                "contactConnectionError": "خطأ في الاتصال. يرجى التحقق من اتصالك بالإنترنت."
+                "contactConnectionError": "خطأ في الاتصال. يرجى التحقق من اتصالك بالإنترنت.",
+                "contactTopicLabel": "الموضوع / السبب",
+                "optCollab": "تعاون تحريري أو ترجمة",
+                "optSupport": "مشكلات التنزيل أو القراءة (الدعم الفني)",
+                "optGeneral": "استفسار عام أو اقتراح",
+                "githubIssueHint": "هل تفضل فتح تذكرة دعم فني عامة؟",
+                "linkGithubIssue": "فتح مسألة على GitHub"
         },
         "fr": {
                 "pageTitle": "Ekovoz : Ressources Gratuites",
@@ -2039,7 +2093,13 @@
                 "contactSending": "Envoi du message en cours...",
                 "contactSuccess": "Message envoyé avec succès ! Merci de nous avoir contactés.",
                 "contactError": "Erreur lors de l'envoi. Veuillez réessayer plus tard.",
-                "contactConnectionError": "Erreur de connexion. Vérifiez votre connexion Internet."
+                "contactConnectionError": "Erreur de connexion. Vérifiez votre connexion Internet.",
+                "contactTopicLabel": "Motif / Sujet",
+                "optCollab": "Collaboration éditoriale ou traduction",
+                "optSupport": "Problèmes de téléchargement ou lecture (Support)",
+                "optGeneral": "Demande générale ou suggestion",
+                "githubIssueHint": "Vous préférez signaler un problème technique public ?",
+                "linkGithubIssue": "Ouvrir un ticket sur GitHub"
         },
         "pt": {
                 "pageTitle": "Ekovoz: Recursos Gratuitos",
@@ -2083,7 +2143,13 @@
                 "contactSending": "Enviando mensagem...",
                 "contactSuccess": "Mensagem enviada com sucesso! Obrigado por entrar em contato.",
                 "contactError": "Erro ao enviar a mensagem. Tente novamente mais tarde.",
-                "contactConnectionError": "Erro de conexão. Verifique sua conexão com a Internet."
+                "contactConnectionError": "Erro de conexão. Verifique sua conexão com a Internet.",
+                "contactTopicLabel": "Motivo / Assunto",
+                "optCollab": "Colaboração editorial ou tradução",
+                "optSupport": "Problemas de download ou leitura (Suporte)",
+                "optGeneral": "Consulta geral ou sugestão",
+                "githubIssueHint": "Prefere relatar um problema técnico público?",
+                "linkGithubIssue": "Abrir issue no GitHub"
         },
         "ja": {
                 "pageTitle": "Ekovoz: 無料教育リソース",
@@ -2127,7 +2193,13 @@
                 "contactSending": "メッセージを送信中...",
                 "contactSuccess": "メッセージが正常に送信されました！ご連絡ありがとうございます。",
                 "contactError": "送信エラーが発生しました。後でもう一度お試しください。",
-                "contactConnectionError": "接続エラー。インターネット環境をご確認ください。"
+                "contactConnectionError": "接続エラー。インターネット環境をご確認ください。",
+                "contactTopicLabel": "ご用件 / トピック",
+                "optCollab": "編集協力・翻訳のご提案",
+                "optSupport": "ダウンロードや閲覧の不具合（サポート）",
+                "optGeneral": "一般的なお問い合わせ・ご意見",
+                "githubIssueHint": "公開の技術サポートチケットを作成しますか？",
+                "linkGithubIssue": "GitHubでIssueを開く"
         },
         "ko": {
                 "pageTitle": "Ekovoz: 무료 교육 자료",
@@ -2171,7 +2243,13 @@
                 "contactSending": "메시지를 전송하는 중...",
                 "contactSuccess": "메시지가 성공적으로 전송되었습니다! 문의해 주셔서 감사합니다.",
                 "contactError": "전송 중 오류가 발생했습니다. 나중에 다시 시도해 주세요.",
-                "contactConnectionError": "연결 오류입니다. 인터넷 상태를 확인해 주세요."
+                "contactConnectionError": "연결 오류입니다. 인터넷 상태를 확인해 주세요.",
+                "contactTopicLabel": "문의 유형 / 주제",
+                "optCollab": "편집 협력 또는 번역 제안",
+                "optSupport": "다운로드 또는 열람 문제 (기술 지원)",
+                "optGeneral": "일반 문의 또는 제안",
+                "githubIssueHint": "공개 기술 지원 티켓을 등록하시겠습니까?",
+                "linkGithubIssue": "GitHub에서 Issue 열기"
         },
         "ur": {
                 "pageTitle": "ایکوووز: مفت تعلیمی وسائل",
@@ -2215,7 +2293,13 @@
                 "contactSending": "پیغام بھیجا جا رہا ہے...",
                 "contactSuccess": "پیغام کامیابی سے بھیج دیا گیا! رابطہ کرنے کا شکریہ۔",
                 "contactError": "پیغام بھیجنے میں خرابی۔ براہ کرم بعد میں کوشش کریں۔",
-                "contactConnectionError": "کنکشن کی خرابی۔ براہ کرم اپنا انٹرنیٹ چیک کریں۔"
+                "contactConnectionError": "کنکشن کی خرابی۔ براہ کرم اپنا انٹرنیٹ چیک کریں۔",
+                "contactTopicLabel": "موضوع / وجہ",
+                "optCollab": "ادارتی تعاون یا ترجمہ",
+                "optSupport": "ڈاؤن لوڈ یا پڑھنے میں مسئلہ (سپورٹ)",
+                "optGeneral": "عمومی سوال یا تجویز",
+                "githubIssueHint": "کیا آپ پبلک سپورٹ ٹکٹ درج کرنا چاہتے ہیں؟",
+                "linkGithubIssue": "GitHub پر Issue کھولیں"
         },
         "fa": {
                 "pageTitle": "اکووز: منابع آموزشی رایگان",
@@ -2259,7 +2343,13 @@
                 "contactSending": "در حال ارسال پیام...",
                 "contactSuccess": "پیام با موفقیت ارسال شد! با سپاس از تماس شما.",
                 "contactError": "خطا در ارسال پیام. لطفاً بعداً تلاش فرمایید.",
-                "contactConnectionError": "خطای اتصال. لطفاً اتصال اینترنت خود را بررسی کنید."
+                "contactConnectionError": "خطای اتصال. لطفاً اتصال اینترنت خود را بررسی کنید.",
+                "contactTopicLabel": "موضوع / دلیل",
+                "optCollab": "همکاری تحریریه یا ترجمه",
+                "optSupport": "مشکل در دانلود یا خواندن (پشتیبانی)",
+                "optGeneral": "پرسش کلی یا پیشنهاد",
+                "githubIssueHint": "آیا ترجیح می‌دهید یک گزارش فنی عمومی ثبت کنید؟",
+                "linkGithubIssue": "ایجاد Issue در GitHub"
         }
 };
 
@@ -2370,6 +2460,24 @@
             if (document.getElementById('contactSubmitBtn')) {
                 document.getElementById('contactSubmitBtn').innerText = t.contactSubmit;
             }
+            if (document.getElementById('contactTopicLabel') && t.contactTopicLabel) {
+                document.getElementById('contactTopicLabel').innerText = t.contactTopicLabel;
+            }
+            if (document.getElementById('optCollab') && t.optCollab) {
+                document.getElementById('optCollab').innerText = t.optCollab;
+            }
+            if (document.getElementById('optSupport') && t.optSupport) {
+                document.getElementById('optSupport').innerText = t.optSupport;
+            }
+            if (document.getElementById('optGeneral') && t.optGeneral) {
+                document.getElementById('optGeneral').innerText = t.optGeneral;
+            }
+            if (document.getElementById('githubIssueHint') && t.githubIssueHint) {
+                document.getElementById('githubIssueHint').innerText = t.githubIssueHint;
+            }
+            if (document.getElementById('linkGithubIssue') && t.linkGithubIssue) {
+                document.getElementById('linkGithubIssue').innerText = t.linkGithubIssue;
+            }
 
             // Descarga directa canónica de alta velocidad (Fastly CDN de GitHub Pages)
             const distLang = lang === 'zh' ? 'zh-Hans' : lang;
@@ -2468,7 +2576,7 @@
             if ('caches' in window) {
                 caches.keys().then(keys => {
                     keys.forEach(k => {
-                        if (k !== 'ekovoz-v4') {
+                        if (k !== 'ekovoz-v5') {
                             caches.delete(k);
                         }
                     });
@@ -2477,7 +2585,7 @@
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('/sw.js').then(reg => {
                     reg.update();
-                    console.log('[Ekovoz SW] Activo v4:', reg.scope);
+                    console.log('[Ekovoz SW] Activo v5:', reg.scope);
                 }).catch(err => {
                     console.log('[Ekovoz SW] Registro omitido o modo local:', err);
                 });
