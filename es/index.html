@@ -1,17 +1,17 @@
 <!DOCTYPE html>
-<html lang="it" dir="ltr">
+<html lang="es" dir="ltr">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ekovoz: Risorse Gratuite</title>
+    <title>Ekovoz: Recursos Gratis</title>
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link rel="alternate icon" href="favicon.ico">
     <meta name="description"
         content="Plataforma editorial de recursos educativos abiertos y libres para colorear, imprimir y compartir.">
     <link rel="manifest" href="/manifest.webmanifest">
 
-    <link rel="canonical" href="https://ekovoz.github.io/it/">
+    <link rel="canonical" href="https://ekovoz.github.io/es/">
     <link rel="alternate" hreflang="es" href="https://ekovoz.github.io/">
     <link rel="alternate" hreflang="it" href="https://ekovoz.github.io/it/">
     <link rel="alternate" hreflang="id" href="https://ekovoz.github.io/id/">
@@ -33,7 +33,7 @@
     <!-- Metadatos Open Graph para Redes Sociales y Mensajería (WhatsApp, Telegram, Facebook, Signal) -->
     <meta property="og:site_name" content="Ekovoz">
     <meta property="og:type" content="book">
-    <meta property="og:url" content="https://ekovoz.github.io/it/">
+    <meta property="og:url" content="https://ekovoz.github.io/es/">
     <meta property="og:title" content="Ekovoz - Recursos Gratis | Free Educational Resources">
     <meta property="og:description"
         content="Cuaderno infantil para colorear sobre las Bienaventuranzas (Mateo 5). 27 láminas listas para imprimir y compartir. 100% libre, sin registros ni anuncios. Free educational coloring book.">
@@ -44,7 +44,7 @@
     <meta property="og:image:height" content="630">
     <meta property="og:image:alt"
         content="Cuaderno para colorear Ekovoz abierto mostrando láminas de las Bienaventuranzas">
-    <meta property="og:locale" content="it_IT">
+    <meta property="og:locale" content="es_ES">
 
     <!-- Variantes de Idioma para Redes Sociales (15 idiomas alternos canónicos) -->
     <meta property="og:locale:alternate" content="it_IT">
@@ -123,7 +123,7 @@
           "potentialAction": [
             {
               "@type": "DownloadAction",
-              "target": "https://ekovoz.github.io/dist/it/v1/mostrador/felices-it-v1-sheets.pdf"
+              "target": "https://ekovoz.github.io/dist/es/v1/mostrador/felices-es-v1-sheets.pdf"
             },
             {
               "@type": "ReadAction",
@@ -885,10 +885,10 @@
 
 <body>
     <main class="container">
-        <span class="category-badge" id="categoryBadge">Risorsa Aperta di Pubblico Dominio</span>
+        <span class="category-badge" id="categoryBadge">Recurso Abierto de Dominio Público</span>
 
-        <h1 id="workTitle">I Beati del Signore Gesù</h1>
-        <p class="subtitle" id="workDesc">Libretto da Colorare sulle Beatitudini (Matteo 5)</p>
+        <h1 id="workTitle">Los Felices del Señor Jesús</h1>
+        <p class="subtitle" id="workDesc">Cuaderno de las Bienaventuranzas para Colorear (Mateo 5)</p>
 
         <!-- Tríptico Horizontal de Muestra (Decisión 1-A & 8-A) -->
         <div class="triptych-wrapper">
@@ -916,7 +916,7 @@
         </div>
 
                 <div class="language-wrapper">
-            <label for="langSelect" class="sr-only" id="langLabel">Lingua</label>
+            <label for="langSelect" class="sr-only" id="langLabel">Idioma</label>
             <button type="button" class="uls-trigger-btn" id="ulsTriggerBtn" onclick="openLangModal()" aria-haspopup="dialog" aria-expanded="false">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <circle cx="12" cy="12" r="10"></circle>
@@ -932,11 +932,11 @@
 
             <!-- Selector accesible sincronizado para lectores de pantalla y scripts -->
             <select id="langSelect" class="sr-only" onchange="updateUI()">
-                <option value="es">Español</option>
+                <option value="es" selected>Español</option>
                 <option value="en">English</option>
                 <option value="fr">Français</option>
                 <option value="pt">Português</option>
-                <option value="it" selected>Italiano</option>
+                <option value="it">Italiano</option>
                 <option value="id">Bahasa Indonesia</option>
                 <option value="tr">Türkçe</option>
                 <option value="ru">Русский</option>
@@ -955,8 +955,8 @@
         <!-- Botones de Descarga: Jerarquía LTR (Decisiones 1-A y 2-A) -->
         <!-- En LTR: Izquierda = Láminas Sueltas (Sheets), Derecha = Cuadernillo Físico (Booklet) -->
         <div class="actions-group">
-            <a id="linkSheets" href="/dist/it/v1/mostrador/felices-it-v1-sheets.pdf" class="btn-card btn-sheets"
-                download="felices-it-v1-sheets.pdf">
+            <a id="linkSheets" href="/dist/es/v1/mostrador/felices-es-v1-sheets.pdf" class="btn-card btn-sheets"
+                download="felices-es-v1-sheets.pdf">
                 <div class="btn-header">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                         stroke-linejoin="round">
@@ -966,13 +966,13 @@
                         <line x1="16" y1="17" x2="8" y2="17"></line>
                         <polyline points="10 9 9 9 8 9"></polyline>
                     </svg>
-                    <span id="btnTitleSheets">Pagine Singole (PDF)</span>
+                    <span id="btnTitleSheets">Láminas Sueltas (PDF)</span>
                 </div>
-                <span class="btn-subtitle" id="btnSubSheets">Per visualizzare su schermo o colorare foglio per foglio</span>
+                <span class="btn-subtitle" id="btnSubSheets">1 página por hoja · Ideal para colorear</span>
             </a>
 
-            <a id="linkBooklet" href="/dist/it/v1/mostrador/felices-it-v1-booklet.pdf" class="btn-card btn-booklet"
-                download="felices-it-v1-booklet.pdf">
+            <a id="linkBooklet" href="/dist/es/v1/mostrador/felices-es-v1-booklet.pdf" class="btn-card btn-booklet"
+                download="felices-es-v1-booklet.pdf">
                 <div class="btn-header">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                         stroke-linejoin="round">
@@ -980,9 +980,9 @@
                         <path d="M6 6h10"></path>
                         <path d="M6 10h10"></path>
                     </svg>
-                    <span id="btnTitleBooklet">Libretto (PDF)</span>
+                    <span id="btnTitleBooklet">Cuadernillo (PDF)</span>
                 </div>
-                <span class="btn-subtitle" id="btnSubBooklet">Per stampare opuscolo (Fronte-retro e spillato)</span>
+                <span class="btn-subtitle" id="btnSubBooklet">Folleto para doblar y engrapar · A caballo</span>
             </a>
         </div>
 
@@ -1001,7 +1001,7 @@
                     <path d="m6.34 17.66-1.41 1.41"></path>
                     <path d="m19.07 4.93-1.41 1.41"></path>
                 </svg>
-                <span id="opticalTriggerText">Condividi senza fili (Schermo a fotocamera)</span>
+                <span id="opticalTriggerText">Compartir sin cables (Pantalla a cámara)</span>
             </button>
         </div>
 
@@ -1011,10 +1011,10 @@
                 stroke-linejoin="round">
                 <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
             </svg>
-            <span id="offlineBadgeText">100% offline e trasferibile da schermo a fotocamera</span>
+            <span id="offlineBadgeText">100% offline y transferible de pantalla a cámara</span>
         </div>
 
-        <p class="footer-note" id="footerNote">Opera educativa di pubblico dominio basata sul testo di Matteo 5. Libera da stampare, colorare e condividere.</p>
+        <p class="footer-note" id="footerNote">Obra educativa de dominio público basada en el texto de Mateo 5. Libre para imprimir, colorear y compartir.</p>
         <div style="margin-top: 1rem; display: flex; justify-content: center; gap: 1.5rem; font-size: 0.85rem;">
             <button type="button" id="footerContactBtn" onclick="openContactModal()"
                 style="background: none; border: none; color: var(--text-muted); cursor: pointer; text-decoration: underline; font-family: inherit; font-size: inherit;">
@@ -2389,7 +2389,7 @@
         }
 
         window.addEventListener('DOMContentLoaded', () => {
-            const userLang = "it";
+            const userLang = "es";
             const select = document.getElementById('langSelect');
             if (translations[userLang]) {
                 select.value = userLang;

@@ -1,7 +1,7 @@
-// Ekovoz Sovereign Service Worker (v1.0.0) — Zero Dependencies Cache-First
-// Provides 100% offline availability & resilience against network censorship (GFW / Intranet)
+// Ekovoz Sovereign Service Worker (v4.0.0) — Zero Dependencies
+// Network-First for HTML navigation; Native passthrough for PDFs; Offline fallback for assets
 
-const CACHE_NAME = 'ekovoz-v1';
+const CACHE_NAME = 'ekovoz-v4';
 const PRECACHE_ASSETS = [
   '/',
   '/index.html',
@@ -15,12 +15,13 @@ const PRECACHE_ASSETS = [
 ];
 
 self.addEventListener('install', (event) => {
+  self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
       return cache.addAll(PRECACHE_ASSETS).catch((err) => {
         console.warn('[Ekovoz SW] Pre-caching partial warning:', err);
       });
-    }).then(() => self.skipWaiting())
+    })
   );
 });
 
@@ -30,18 +31,52 @@ self.addEventListener('activate', (event) => {
       return Promise.all(
         cacheNames
           .filter((name) => name !== CACHE_NAME)
-          .map((name) => caches.delete(name))
+          .map((name) => {
+            console.log('[Ekovoz SW] Purging old cache:', name);
+            return caches.delete(name);
+          })
       );
     }).then(() => self.clients.claim())
   );
 });
 
 self.addEventListener('fetch', (event) => {
-  // Only cache GET requests
+  // Only handle GET requests
   if (event.request.method !== 'GET') {
     return;
   }
 
+  const url = event.request.url;
+
+  // BYPASS: Never intercept or cache large PDF binaries (/dist/ or .pdf).
+  // Allow the browser's native download engine to handle them directly.
+  if (url.includes('/dist/') || url.endsWith('.pdf')) {
+    return;
+  }
+
+  // 1. Navigation / HTML requests: NETWORK-FIRST with cache fallback
+  if (event.request.mode === 'navigate' || event.request.headers.get('accept')?.includes('text/html')) {
+    event.respondWith(
+      fetch(event.request)
+        .then((networkResponse) => {
+          if (networkResponse && networkResponse.status === 200) {
+            const responseClone = networkResponse.clone();
+            caches.open(CACHE_NAME).then((cache) => {
+              cache.put(event.request, responseClone);
+            });
+          }
+          return networkResponse;
+        })
+        .catch(() => {
+          return caches.match(event.request).then((cachedResponse) => {
+            return cachedResponse || caches.match('/index.html');
+          });
+        })
+    );
+    return;
+  }
+
+  // 2. Static assets (images, icons, manifests): CACHE-FIRST with network fallback
   event.respondWith(
     caches.match(event.request).then((cachedResponse) => {
       if (cachedResponse) {
@@ -59,11 +94,6 @@ self.addEventListener('fetch', (event) => {
         });
 
         return networkResponse;
-      }).catch(() => {
-        // Fallback to root index if navigation fails offline
-        if (event.request.mode === 'navigate') {
-          return caches.match('/index.html');
-        }
       });
     })
   );

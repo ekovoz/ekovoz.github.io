@@ -956,7 +956,7 @@
         <!-- En LTR: Izquierda = Láminas Sueltas (Sheets), Derecha = Cuadernillo Físico (Booklet) -->
         <div class="actions-group">
             <a id="linkSheets" href="/dist/pt/v1/mostrador/felices-pt-v1-sheets.pdf" class="btn-card btn-sheets"
-                download>
+                download="felices-pt-v1-sheets.pdf">
                 <div class="btn-header">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                         stroke-linejoin="round">
@@ -972,7 +972,7 @@
             </a>
 
             <a id="linkBooklet" href="/dist/pt/v1/mostrador/felices-pt-v1-booklet.pdf" class="btn-card btn-booklet"
-                download>
+                download="felices-pt-v1-booklet.pdf">
                 <div class="btn-header">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                         stroke-linejoin="round">
@@ -2371,11 +2371,18 @@
                 document.getElementById('contactSubmitBtn').innerText = t.contactSubmit;
             }
 
-            // Descarga directa de alta velocidad (Fastly CDN público de GitHub Pages)
-            const cacheBuster = '?v=' + Date.now();
+            // Descarga directa canónica de alta velocidad (Fastly CDN de GitHub Pages)
             const distLang = lang === 'zh' ? 'zh-Hans' : lang;
-            document.getElementById('linkSheets').href = `/dist/${distLang}/v1/mostrador/felices-${distLang}-v1-sheets.pdf${cacheBuster}`;
-            document.getElementById('linkBooklet').href = `/dist/${distLang}/v1/mostrador/felices-${distLang}-v1-booklet.pdf${cacheBuster}`;
+            const sheetsLink = document.getElementById('linkSheets');
+            const bookletLink = document.getElementById('linkBooklet');
+            const sheetsName = `felices-${distLang}-v1-sheets.pdf`;
+            const bookletName = `felices-${distLang}-v1-booklet.pdf`;
+
+            sheetsLink.href = `/dist/${distLang}/v1/mostrador/${sheetsName}`;
+            sheetsLink.setAttribute('download', sheetsName);
+
+            bookletLink.href = `/dist/${distLang}/v1/mostrador/${bookletName}`;
+            bookletLink.setAttribute('download', bookletName);
 
             updateCarouselView();
             renderUlsGrid();
@@ -2455,11 +2462,22 @@
             });
         });
 
-        // Registro del Service Worker Autónomo Offline (Cache-First)
+        // Registro del Service Worker Autónomo con Auto-Update y Purga Inmediata
         if ('serviceWorker' in navigator) {
+            // Purga proactiva de cachés arcaicas en el contexto del cliente
+            if ('caches' in window) {
+                caches.keys().then(keys => {
+                    keys.forEach(k => {
+                        if (k !== 'ekovoz-v4') {
+                            caches.delete(k);
+                        }
+                    });
+                });
+            }
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('/sw.js').then(reg => {
-                    console.log('[Ekovoz SW] Activo y en escucha:', reg.scope);
+                    reg.update();
+                    console.log('[Ekovoz SW] Activo v4:', reg.scope);
                 }).catch(err => {
                     console.log('[Ekovoz SW] Registro omitido o modo local:', err);
                 });
