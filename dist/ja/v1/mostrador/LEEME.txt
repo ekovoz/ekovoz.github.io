@@ -1,0 +1,19 @@
+CUADERNO DE COLOREAR BÍBLICO INFANTIL
+Plataforma Ekovoz — Distribución Abierta y Gratuita
+
+1. LÁMINAS INDIVIDUALES (-sheets.pdf):
+   Diseñado para lectura en pantalla, dispositivos móviles o impresión de láminas sueltas.
+   Configuración de impresora:
+   - Impresión a una sola cara (Cara A).
+   - Reverso en blanco para evitar que lápices o marcadores manchen la siguiente hoja.
+
+2. ARCHIVO CUADERNILLO (-booklet.pdf):
+   Diseñado para impresión física en folleto engrapado al centro (7 pliegos / 28 páginas).
+   Configuración de impresora:
+   - Impresión a doble cara (dúplex).
+   - Voltear por el borde corto (flip on short edge).
+   - Al terminar, doble todos los pliegos juntos por las marcas guía centrales y engrape en las dos marcas del lomo (+).
+
+3. USO Y REPARTO:
+   Obra de dominio público basada en el texto de Mateo 5. 100% gratuita y libre de costo.
+   Puede imprimirse, fotocopiarse y compartirse libremente en hogares, escuelas y comunidades.

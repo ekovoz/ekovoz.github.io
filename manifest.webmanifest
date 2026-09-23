@@ -1,0 +1,17 @@
+{
+  "name": "Ekovoz — Motor Editorial Soberano",
+  "short_name": "Ekovoz",
+  "description": "Publicaciones y cuadernillos para colorear de dominio público en 16 idiomas",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#09090b",
+  "theme_color": "#18181b",
+  "icons": [
+    {
+      "src": "/og.png",
+      "sizes": "1200x630",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

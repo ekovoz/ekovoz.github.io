@@ -1,282 +1,510 @@
-# Corpus Completo de Textos Canónicos: Los Felices del Señor Jesús
+# Ekovoz Editorial — Complete Canonical Corpus
 
-## Matriz Oficial de Descargas Directas (18 Archivos PDF)
+========================================
+OBRA: Evangelios para Colorear (Programa del Año - 52 Hojas) (evangelios)
+========================================
 
-| Idioma | Código | Título Canónico | Láminas Sueltas (Sheets PDF) | Cuadernillo A Caballo (Booklet PDF) |
-| :--- | :---: | :--- | :--- | :--- |
-| **Español** | `es` | Los Felices del Señor Jesús | [Descargar Sheets](https://ekovoz.github.io/dist/es/v1/mostrador/felices-es-v1-sheets.pdf) | [Descargar Booklet](https://ekovoz.github.io/dist/es/v1/mostrador/felices-es-v1-booklet.pdf) |
-| **Italiano** | `it` | I Beati del Signore Gesù | [Scarica Sheets](https://ekovoz.github.io/dist/it/v1/mostrador/felices-it-v1-sheets.pdf) | [Scarica Booklet](https://ekovoz.github.io/dist/it/v1/mostrador/felices-it-v1-booklet.pdf) |
-| **Indonesio** | `id` | Mereka yang Berbahagia dari Tuhan Yesus | [Unduh Sheets](https://ekovoz.github.io/dist/id/v1/mostrador/felices-id-v1-sheets.pdf) | [Unduh Booklet](https://ekovoz.github.io/dist/id/v1/mostrador/felices-id-v1-booklet.pdf) |
-| **Turco** | `tr` | Rab İsa'nın Mutlu Olanları | [Sheets İndir](https://ekovoz.github.io/dist/tr/v1/mostrador/felices-tr-v1-sheets.pdf) | [Booklet İndir](https://ekovoz.github.io/dist/tr/v1/mostrador/felices-tr-v1-booklet.pdf) |
-| **Ruso** | `ru` | Блаженные Господа Иисуса | [Скачать Sheets](https://ekovoz.github.io/dist/ru/v1/mostrador/felices-ru-v1-sheets.pdf) | [Скачать Booklet](https://ekovoz.github.io/dist/ru/v1/mostrador/felices-ru-v1-booklet.pdf) |
-| **Inglés** | `en` | The Blessed of the Lord Jesus | [Download Sheets](https://ekovoz.github.io/dist/en/v1/mostrador/felices-en-v1-sheets.pdf) | [Download Booklet](https://ekovoz.github.io/dist/en/v1/mostrador/felices-en-v1-booklet.pdf) |
-| **Chino Simplificado** | `zh-Hans` | 主耶稣蒙福的百姓 | [下载 Sheets](https://ekovoz.github.io/dist/zh-Hans/v1/mostrador/felices-zh-Hans-v1-sheets.pdf) | [下载 Booklet](https://ekovoz.github.io/dist/zh-Hans/v1/mostrador/felices-zh-Hans-v1-booklet.pdf) |
-| **Hindi** | `hi` | प्रभु यीशु के हर्षित लोग | [Sheets डाउनलोड करें](https://ekovoz.github.io/dist/hi/v1/mostrador/felices-hi-v1-sheets.pdf) | [Booklet डाउनलोड करें](https://ekovoz.github.io/dist/hi/v1/mostrador/felices-hi-v1-booklet.pdf) |
-| **Bengalí** | `bn` | প্রভু যীশুর আনন্দময় মানুষ | [Sheets ডাউনলোড করুন](https://ekovoz.github.io/dist/bn/v1/mostrador/felices-bn-v1-sheets.pdf) | [Booklet ডাউনলোড করুন](https://ekovoz.github.io/dist/bn/v1/mostrador/felices-bn-v1-booklet.pdf) |
+[evangelios:1] (es) Mc 1:16-20 — Vengan conmigo y síganme.
+[evangelios:2] (es) Mc 2:1-12 — A ti te digo: Levántate, toma tu camilla.
+[evangelios:3] (es) Mc 4:35-41 — ¡Calla, enmudece!
+[evangelios:4] (es) Mc 5:1-20 — Vete a tu casa, a los tuyos.
+[evangelios:5] (es) Mc 5:21-43 — Niña, a ti te digo, levántate.
+[evangelios:6] (es) Mc 6:30-44 — Denles ustedes mismos de comer.
+[evangelios:7] (es) Mc 6:45-52 — ¡Tened ánimo; yo soy, no temáis!
+[evangelios:8] (es) Mc 9:2-8 — Este es mi Hijo amado; escúchenlo a él.
+[evangelios:9] (es) Mc 10:13-16 — Dejad a los niños venir a mí.
+[evangelios:10] (es) Mc 10:46-52 — Ten confianza; levántate, te llama.
+[evangelios:11] (es) Mc 14:32-42 — No lo que yo quiero, sino lo que tú.
+[evangelios:12] (es) Mc 15:21-32 — Verdaderamente este hombre era Hijo de Dios.
+[evangelios:13] (es) Mc 16:1-8 — No está aquí; miren el lugar donde lo habían puesto.
+[evangelios:14] (es) Mt 2:1-12 — Vimos su estrella en el oriente.
+[evangelios:15] (es) Mt 3:13-17 — Este es mi Hijo amado, en quien tengo complacencia.
+[evangelios:16] (es) Mt 4:1-11 — No solo de pan vivirá el hombre.
+[evangelios:17] (es) Mt 7:24-27 — Cualquiera que me oye estas palabras, y las hace.
+[evangelios:18] (es) Mt 9:9-13 — Sígueme. Y se levantó y le siguió.
+[evangelios:19] (es) Mt 13:31-32 — El grano de mostaza es la más pequeña de todas las semillas.
+[evangelios:20] (es) Mt 14:22-33 — ¡Señor, sálvame! Al momento Jesús extendió la mano.
+[evangelios:21] (es) Mt 18:12-14 — Va por los montes a buscar la que se había descarriado.
+[evangelios:22] (es) Mt 21:1-11 — ¡Hosanna al Hijo de David! ¡Bendito el que viene!
+[evangelios:23] (es) Mt 22:15-22 — Dad a César lo que es de César, y a Dios lo que es de Dios.
+[evangelios:24] (es) Mt 25:1-13 — ¡Aquí viene el esposo; salid a recibirle!
+[evangelios:25] (es) Mt 26:26-29 — Tomad, comed; esto es mi cuerpo.
+[evangelios:26] (es) Mt 28:1-10 — Ha resucitado de los muertos y va delante de ustedes a Galilea.
+[evangelios:27] (es) Lc 1:26-38 — Miren la sierva del Señor; hágase conmigo conforme a tu palabra.
+[evangelios:28] (es) Lc 2:1-20 — Hoy les ha nacido, en la ciudad de David, un Salvador.
+[evangelios:29] (es) Lc 2:41-52 — ¿No sabíais que en los negocios de mi Padre me es necesario estar?
+[evangelios:30] (es) Lc 5:1-11 — Boga mar adentro, y echad vuestras redes para pescar.
+[evangelios:31] (es) Lc 7:11-17 — Joven, a ti te digo, levántate.
+[evangelios:32] (es) Lc 10:25-37 — ¿Quién, pues, de estos tres te parece que fue el prójimo?
+[evangelios:33] (es) Lc 10:38-42 — María ha escogido la buena parte, la cual no le será quitada.
+[evangelios:34] (es) Lc 15:11-32 — Este mi hijo muerto era, y ha revivido; se había perdido, y es hallado.
+[evangelios:35] (es) Lc 17:11-19 — ¿No son diez los que fueron limpiados? Y los nueve, ¿dónde están?
+[evangelios:36] (es) Lc 19:1-10 — Zaqueo, date prisa, desciende, porque hoy es necesario que pose yo en tu casa.
+[evangelios:37] (es) Lc 21:1-4 — Esta viuda pobre echó más que todos.
+[evangelios:38] (es) Lc 23:32-43 — De cierto te digo que hoy estarás conmigo en el paraíso.
+[evangelios:39] (es) Lc 24:13-35 — Y tomó el pan y lo bendijo, lo partió, y les dio.
+[evangelios:40] (es) Jn 1:29-42 — Miren el Cordero de Dios, que quita el pecado del mundo.
+[evangelios:41] (es) Jn 2:1-11 — Hagan todo lo que él les diga.
+[evangelios:42] (es) Jn 4:1-26 — El que bebiere del agua que yo le daré, no tendrá sed jamás.
+[evangelios:43] (es) Jn 5:1-9 — Levántate, toma tu camilla, y anda.
+[evangelios:44] (es) Jn 6:1-14 — Aquí está un muchacho, que tiene cinco panes de cebada y dos pececillos.
+[evangelios:45] (es) Jn 9:1-12 — Fue entonces, y se lavó, y regresó viendo.
+[evangelios:46] (es) Jn 10:1-16 — Yo soy el buen pastor; el buen pastor su vida da por las ovejas.
+[evangelios:47] (es) Jn 11:38-44 — ¡Lázaro, ven fuera!
+[evangelios:48] (es) Jn 12:1-8 — Y la casa se llenó del olor del perfume.
+[evangelios:49] (es) Jn 13:1-15 — Pues si yo, el Señor y el Maestro, he lavado los pies a ustedes, ustedes también deben lavarse los pies unos a otros.
+[evangelios:50] (es) Jn 19:1-5 — ¡Miren el hombre!
+[evangelios:51] (es) Jn 20:11-18 — ¡Raboni! (que quiere decir, Maestro).
+[evangelios:52] (es) Jn 21:1-14 — Echad la red a la derecha de la barca, y hallaréis.
+========================================
+OBRA: Los Felices del Señor Jesús (felices)
+========================================
 
-## Estructura de las 27 Láminas (Mateo 5:1–12)
-
-
-### Lámina 0001 — Portada
-- **ES:** Los felices del Señor Jesús
-- **IT:** I beati del Signore Gesù
-- **ID:** Mereka yang Berbahagia dari Tuhan Yesus
-- **TR:** Rab İsa'nın Mutlu Olanları
-- **RU:** Блаженные Господа Иисуса
-- **EN:** The blessed of the Lord Jesus
-- **ZH-Hans:** 主耶稣蒙福的百姓
-- **HI:** प्रभु यीशु के हर्षित लोग
-- **BN:** প্রভু যীশুর আনন্দময় মানুষ
-
-### Lámina 0005 — Mateo 5:2 (Apertura)
-- **ES:** y abriendo Su boca, les enseñaba diciendo:
-- **IT:** E aperta la bocca, insegnava loro dicendo:
-- **ID:** Maka Yesus pun mulai berbicara dan mengajar mereka, kata-Nya:
-- **TR:** Ve ağzını açıp onlara öğreterek şöyle dedi:
-- **RU:** И Он, отверзши уста Свои, учил их, говоря:
-- **EN:** And he opened his mouth and taught them, saying:
-- **ZH-Hans:** 就开口教训他们，说：
-- **HI:** और वह अपना मुँह खोलकर उन्हें यह उपदेश देने लगा:
-- **BN:** আর তিনি মুখ খুলে তাদের শিক্ষা দিয়ে বলতে লাগলেন:
-
-### Lámina 0006 — Mateo 5:3a (Bienaventuranza 1 - Condición)
-- **ES:** Felices los pobres de espíritu…
-- **IT:** Beati i poveri in spirito…
-- **ID:** Berbahagialah orang yang miskin di hadapan Allah…
-- **TR:** Ne mutlu ruhta yoksul olanlara…
-- **RU:** Блаженны нищие духом…
-- **EN:** Blessed are the poor in spirit…
-- **ZH-Hans:** 虚心的人有福了…
-- **HI:** धन्य हैं वे, जो मन के दीन हैं…
-- **BN:** ধন্য তারা, যারা আত্মায় দরিদ্র…
-
-### Lámina 0007 — Mateo 5:3b (Bienaventuranza 1 - Promesa)
-- **ES:** …pues ellos son el reino del cielo.
-- **IT:** …perché di loro è il regno dei cieli.
-- **ID:** …karena merekalah yang empunya Kerajaan Sorga.
-- **TR:** …çünkü Göklerin Hükümranlığı onlarındır.
-- **RU:** …ибо их есть Царство Небесное.
-- **EN:** …for theirs is the kingdom of heaven.
-- **ZH-Hans:** …因为天国是他们的。
-- **HI:** …क्योंकि स्वर्ग का राज्य उन्हीं का है।
-- **BN:** …কারণ স্বর্গরাজ্য তাদেরই।
-
-### Lámina 0008 — Mateo 5:4a (Bienaventuranza 2 - Condición)
-- **ES:** Felices los que lloran…
-- **IT:** Beati quelli che fanno cordoglio…
-- **ID:** Berbahagialah orang yang berdukacita…
-- **TR:** Ne mutlu yaslı olanlara…
-- **RU:** Блаженны плачущие…
-- **EN:** Blessed are those who mourn…
-- **ZH-Hans:** 哀恸的人有福了…
-- **HI:** धन्य हैं वे, जो शोक करते हैं…
-- **BN:** ধন্য তারা, যারা শোক করে…
-
-### Lámina 0009 — Mateo 5:4b (Bienaventuranza 2 - Promesa)
-- **ES:** …pues serán reconfortados.
-- **IT:** …perché saranno consolati.
-- **ID:** …karena mereka akan dihibur.
-- **TR:** …çünkü onlar teselli edilecekler.
-- **RU:** …ибо они утешатся.
-- **EN:** …for they shall be comforted.
-- **ZH-Hans:** …因为他们必得安慰。
-- **HI:** …क्योंकि वे शांति पाएंगे।
-- **BN:** …কারণ তারা সান্ত্বনা পাবে।
-
-### Lámina 0010 — Mateo 5:5a (Bienaventuranza 3 - Condición)
-- **ES:** Felices los humildes…
-- **IT:** Beati i mansueti…
-- **ID:** Berbahagialah orang yang lemah lembut…
-- **TR:** Ne mutlu uysal olanlara…
-- **RU:** Блаженны кроткие…
-- **EN:** Blessed are the meek…
-- **ZH-Hans:** 温柔的人有福了…
-- **HI:** धन्य हैं वे, जो नम्र हैं…
-- **BN:** ধন্য তারা, যারা নম্র…
-
-### Lámina 0011 — Mateo 5:5b (Bienaventuranza 3 - Promesa)
-- **ES:** …pues serán herederos de la tierra.
-- **IT:** …perché erediteranno la terra.
-- **ID:** …karena mereka akan memiliki bumi.
-- **TR:** …çünkü onlar yeri miras alacaklar.
-- **RU:** …ибо они наследуют землю.
-- **EN:** …for they shall inherit the earth.
-- **ZH-Hans:** …因为他们必承受地土。
-- **HI:** …क्योंकि वे पृथ्वी के वारिस होंगे।
-- **BN:** …কারণ তারা পৃথিবীর অধিকারী হবে।
-
-### Lámina 0012 — Mateo 5:6a (Bienaventuranza 4 - Condición)
-- **ES:** Felices los hambrientos y sedientos de la rectitud…
-- **IT:** Beati coloro che sono affamati e assetati di giustizia…
-- **ID:** Berbahagialah orang yang lapar dan haus akan kebenaran…
-- **TR:** Ne mutlu doğruluğa acıkıp susayanlara…
-- **RU:** Блаженны алчущие и жаждущие правды…
-- **EN:** Blessed are those who hunger and thirst for righteousness…
-- **ZH-Hans:** 饥渴慕义的人有福了…
-- **HI:** धन्य हैं वे, जो धार्मिकता के भूखे और प्यासे हैं…
-- **BN:** ধন্য তারা, যারা ধার্মিকতার জন্য ক্ষুধার্ত ও তৃষ্ণার্ত…
-
-### Lámina 0013 — Mateo 5:6b (Bienaventuranza 4 - Promesa)
-- **ES:** …pues serán satisfechos.
-- **IT:** …perché saranno saziati.
-- **ID:** …karena mereka akan dipuaskan.
-- **TR:** …çünkü onlar doyurulacaklar.
-- **RU:** …ибо они насытятся.
-- **EN:** …for they shall be filled.
-- **ZH-Hans:** …因为他们必得饱足。
-- **HI:** …क्योंकि वे तृप्त किए जाएंगे।
-- **BN:** …কারণ তারা তৃপ্ত হবে।
-
-### Lámina 0014 — Mateo 5:7a (Bienaventuranza 5 - Condición)
-- **ES:** Felices los compasivos…
-- **IT:** Beati i misericordiosi…
-- **ID:** Berbahagialah orang yang murah hatinya…
-- **TR:** Ne mutlu merhametli olanlara…
-- **RU:** Блаженны милостивые…
-- **EN:** Blessed are the merciful…
-- **ZH-Hans:** 怜恤人的人有福了…
-- **HI:** धन्य हैं वे, जो दयावन्त हैं…
-- **BN:** ধন্য তারা, যারা দয়াবান…
-
-### Lámina 0015 — Mateo 5:7b (Bienaventuranza 5 - Promesa)
-- **ES:** …pues ellos recibirán compasión.
-- **IT:** …perché troveranno misericordia.
-- **ID:** …karena mereka akan beroleh kemurahan.
-- **TR:** …çünkü onlara merhamet edilecek.
-- **RU:** …ибо они помилованы будут.
-- **EN:** …for they shall obtain mercy.
-- **ZH-Hans:** …因为他们必蒙怜恤。
-- **HI:** …क्योंकि उन पर दया की जाएगी।
-- **BN:** …কারণ তারা দয়া পাবে।
-
-### Lámina 0016 — Mateo 5:8a (Bienaventuranza 6 - Condición)
-- **ES:** Felices los de limpio corazón…
-- **IT:** Beati i puri di cuore…
-- **ID:** Berbahagialah orang yang suci hatinya…
-- **TR:** Ne mutlu yüreği temiz olanlara…
-- **RU:** Блаженны чистые сердцем…
-- **EN:** Blessed are the pure in heart…
-- **ZH-Hans:** 清心的人有福了…
-- **HI:** धन्य हैं वे, जिनके मन शुद्ध हैं…
-- **BN:** ধন্য তারা, যাদের হৃদয় বিশুদ্ধ…
-
-### Lámina 0017 — Mateo 5:8b (Bienaventuranza 6 - Promesa)
-- **ES:** …pues ellos verán a Dios.
-- **IT:** …perché vedranno Dio.
-- **ID:** …karena mereka akan melihat Allah.
-- **TR:** …çünkü onlar Tanrı'yı görecekler.
-- **RU:** …ибо они Бога узрят.
-- **EN:** …for they shall see God.
-- **ZH-Hans:** …因为他们必得见神。
-- **HI:** …क्योंकि वे परमेश्वर को देखेंगे।
-- **BN:** …কারণ তারা ঈশ্বরকে দেখতে পাবে।
-
-### Lámina 0018 — Mateo 5:9a (Bienaventuranza 7 - Condición)
-- **ES:** Felices los pacificadores…
-- **IT:** Beati gli operatori di pace…
-- **ID:** Berbahagialah orang yang membawa damai…
-- **TR:** Ne mutlu barışı sağlayanlara…
-- **RU:** Блаженны миротворцы…
-- **EN:** Blessed are the peacemakers…
-- **ZH-Hans:** 使人和睦的人有福了…
-- **HI:** धन्य हैं वे, जो मेल करवाने वाले हैं…
-- **BN:** ধন্য তারা, যারা শান্তি স্থাপন করে…
-
-### Lámina 0019 — Mateo 5:9b (Bienaventuranza 7 - Promesa)
-- **ES:** …pues serán llamados hijos de Dios.
-- **IT:** …perché saranno chiamati figli di Dio.
-- **ID:** …karena mereka akan disebut anak-anak Allah.
-- **TR:** …çünkü onlara Tanrı oğulları denecek.
-- **RU:** …ибо они будут наречены сынами Божиими.
-- **EN:** …for they shall be called sons of God.
-- **ZH-Hans:** …因为他们必称为神的儿子。
-- **HI:** …क्योंकि वे परमेश्वर के पुत्र कहलाएंगे।
-- **BN:** …কারণ তারা ঈশ্বরের সন্তান বলে আখ্যাত হবে।
-
-### Lámina 0020 — Mateo 5:10a (Bienaventuranza 8 - Condición)
-- **ES:** Felices los perseguidos debido a la rectitud…
-- **IT:** Beati i perseguitati per motivo di giustizia…
-- **ID:** Berbahagialah orang yang dianiaya oleh sebab kebenaran…
-- **TR:** Ne mutlu doğruluk uğruna zulüm görenlere…
-- **RU:** Блаженны изгнанные за правду…
-- **EN:** Blessed are those who are persecuted for righteousness' sake…
-- **ZH-Hans:** 为义受逼迫的人有福了…
-- **HI:** धन्य हैं वे, जो धार्मिकता के कारण सताए जाते हैं…
-- **BN:** ধন্য তারা, যারা ধার্মিকতার কারণে নির্যাতিত হয়…
-
-### Lámina 0021 — Mateo 5:10b (Bienaventuranza 8 - Promesa)
-- **ES:** …pues ellos son el reino del cielo.
-- **IT:** …perché di loro è il regno dei cieli.
-- **ID:** …karena merekalah yang empunya Kerajaan Sorga.
-- **TR:** …çünkü Göklerin Hükümranlığı onlarındır.
-- **RU:** …ибо их есть Царство Небесное.
-- **EN:** …for theirs is the kingdom of heaven.
-- **ZH-Hans:** …因为天国是他们的。
-- **HI:** …क्योंकि स्वर्ग का राज्य उन्हीं का है।
-- **BN:** …কারণ স্বর্গরাজ্য তাদেরই।
-
-### Lámina 0022 — Mateo 5:11 (Persecución directa)
-- **ES:** Felices son cuando los insultan, persiguen y falsamente dicen toda maldad contra ustedes a causa mía.
-- **IT:** Beati voi, quando vi insulteranno e vi perseguiteranno e, mentendo, diranno contro di voi ogni sorta di male per causa mia.
-- **ID:** Berbahagialah kamu, jika karena Aku kamu dicela dan dianiaya dan kepadamu difitnahkan segala yang jahat.
-- **TR:** Benim yüzümden insanlar size sövüp zulmettikleri, yalan yere size karşı her türlü kötülüğü söyledikleri zaman ne mutlusunuz!
-- **RU:** Блаженны вы, когда будут поносить вас и гнать и всячески неправедно злословить за Меня.
-- **EN:** Blessed are you when others revile you and persecute you and utter all kinds of evil against you falsely on my account.
-- **ZH-Hans:** 人若因我辱骂你们，逼迫你们，捏造各样坏话毁谤你们，你们就有福了！
-- **HI:** धन्य हो तुम, जब मनुष्य मेरे कारण तुम्हारी निन्दा करें, और सताएं और सब प्रकार की झूठी बातें तुम्हारे विरोध में कहें।
-- **BN:** ধন্য তোমরা, যখন লোকে আমার কারণে তোমাদের তিরস্কার ও তাড়না করবে এবং তোমাদের বিরুদ্ধে সর্বপ্রকার মিথ্যা মন্দ কথা বলবে।
-
-### Lámina 0023 — Mateo 5:12a (Gozo y galardón)
-- **ES:** Alégrense y celebren, porque grande es su recompensa en el cielo…
-- **IT:** Rallegratevi e giubilate, perché il vostro premio è grande nei cieli…
-- **ID:** Bersukacita dan bergembiralah, karena upahmu besar di sorga…
-- **TR:** Sevinin, sevinçle coşun! Çünkü göklerdeki ödülünüz büyüktür…
-- **RU:** Радуйтесь и веселитесь, ибо велика ваша награда на небесах…
-- **EN:** Rejoice and be glad, for your reward is great in heaven…
-- **ZH-Hans:** 应当欢喜快乐，因为你们在天上的赏赐是大的…
-- **HI:** आनन्दित और मगन होना, क्योंकि तुम्हारे लिये स्वर्ग में बड़ा फल है…
-- **BN:** আনন্দ কর ও উল্লাসিত হও, কারণ স্বর্গে তোমাদের পুরস্কার প্রচুর…
-
-### Lámina 0024 — Mateo 5:12b (Profetas previos)
-- **ES:** …porque de esta forma persiguieron a los portavoces antes que ustedes.
-- **IT:** …poiché così hanno perseguitato i profeti che sono stati prima di voi.
-- **ID:** …sebab demikian juga telah dianiaya nabi-nabi yang sebelum kamu.
-- **TR:** …çünkü sizden önceki peygamberlere de böyle zulmettiler.
-- **RU:** …ибо так гнали и пророков, бывших прежде вас.
-- **EN:** …for so they persecuted the prophets who were before you.
-- **ZH-Hans:** …在你们以前的先知，人也是这样逼迫他们。
-- **HI:** …क्योंकि उन्होंने उन भविष्यद्वक्ताओं को जो तुम से पहिले थे इसी रीति से सताया था।
-- **BN:** …কেননা তোমাদের পূর্ববর্তী ভাববাদীদেরও তারা একইভাবে তাড়না করেছিল।
-
-### Lámina 0025 — Mateo 5:1a (Marco narrativo 1)
-- **ES:** Cuando vio a las multitudes, subió a la colina y tomó asiento.
-- **IT:** Vedendo le folle, salì sul monte; e messosi a sedere.
-- **ID:** Ketika Yesus melihat orang banyak itu, naiklah Ia ke atas bukit dan setelah Ia duduk.
-- **TR:** İsa kalabalıkları görünce dağa çıktı. Oturunca.
-- **RU:** Увидев народ, Он взошел на гору; и, когда сел.
-- **EN:** Seeing the crowds, he went up on the mountain, and when he sat down.
-- **ZH-Hans:** 耶稣看见这许多的人，就上了山，既已坐下。
-- **HI:** और वह भीड़ को देखकर पहाड़ पर चढ़ गया; और जब बैठ गया।
-- **BN:** আর জনতা দেখে তিনি পাহাড়ের উপরে উঠলেন; এবং যখন বসলেন।
-
-### Lámina 0026 — Mateo 5:1b (Marco narrativo 2)
-- **ES:** Sus aprendices se acercaron a Él,
-- **IT:** I suoi discepoli gli si accostarono,
-- **ID:** Datanglah murid-murid-Nya kepada-Nya,
-- **TR:** Öğrencileri O'na geldi,
-- **RU:** Приступили к Нему ученики Его,
-- **EN:** His disciples came to him,
-- **ZH-Hans:** 门徒到他跟前来，
-- **HI:** तो उसके चेले उसके पास आए,
-- **BN:** তখন তাঁর শিষ্যরা তাঁর কাছে এলেন,
-
-### Lámina 0027 — Colofón y Dedicatoria
-- **ES:** Él indicó que esta obra sea compartida libremente entre sus felices. Los más pequeñitos del reino del cielo.
-- **IT:** Egli ha indicato che quest'opera sia condivisa liberamente tra i suoi beati. I più piccoli del regno dei cieli.
-- **ID:** Dia menyatakan agar karya ini dibagikan secara cuma-cuma di antara mereka yang berbahagia. Yang terkecil dalam Kerajaan Sorga.
-- **TR:** O, bu eserin Kendi mutlu olanları arasında serbestçe paylaşılmasını buyurdu. Göklerin Egemenliğinde en küçük olanlar için.
-- **RU:** Он указал, чтобы этот труд свободно распространялся среди Его блаженных. Наименьших в Царстве Небесном.
-- **EN:** He directed that this work be shared freely among his blessed ones. The least in the kingdom of heaven.
-- **ZH-Hans:** 愿此书在蒙福的人中自由分享。归于天国里最小的子民。
-- **HI:** उन्होंने निर्देश दिया कि यह कृति उनके धन्य लोगों के बीच मुफ्त में बांटी जाए। स्वर्ग के राज्य में सबसे छोटों के लिए।
-- **BN:** তিনি নির্দেশ দিয়েছেন যেন এই কাজটি তাঁর ধন্য মানুষদের মধ্যে বিনামূল্যে শেয়ার করা হয়। স্বর্গরাজ্যের সবচেয়ে ছোটদের জন্য।
+[felices:1] (es) Los felices del Señor Jesús
+[felices:2] (es) 
+[felices:3] (es) 
+[felices:4] (es) 
+[felices:5] (es) y abriendo Su boca, les enseñaba diciendo:
+[felices:6] (es) Felices los pobres de espíritu…
+[felices:7] (es) …pues ellos son el reino del cielo.
+[felices:8] (es) Felices los afligidos…
+[felices:9] (es) …pues serán reconfortados.
+[felices:10] (es) Felices los humildes…
+[felices:11] (es) …pues serán herederos de la tierra.
+[felices:12] (es) Felices los hambrientos y sedientos de la rectitud…
+[felices:13] (es) …pues serán satisfechos.
+[felices:14] (es) Felices los compasivos…
+[felices:15] (es) …pues ellos recibirán compasión.
+[felices:16] (es) Felices los de limpio corazón…
+[felices:17] (es) …pues ellos verán a Dios.
+[felices:18] (es) Felices los pacificadores…
+[felices:19] (es) …pues serán llamados hijos de Dios.
+[felices:20] (es) Felices los perseguidos debido a la rectitud…
+[felices:21] (es) …pues ellos son el reino del cielo.
+[felices:22] (es) Felices son cuando los insultan, persiguen y falsamente dicen toda maldad contra ustedes debido a Mí.
+[felices:23] (es) Alégrense y celebren, porque grande es su recompensa en el cielo…
+[felices:24] (es) …porque de esta forma persiguieron a los portavoces antes que ustedes.
+[felices:25] (es) Cuando vio a las multitudes, subió a la colina y tomó asiento.
+[felices:26] (es) Sus alumnos se acercaron a Él,
+[felices:27] (es) Él indicó que esta obra sea compartida libremente entre sus felices.
+[felices:28] (es) Los más pequeñitos del reino del cielo.
+[felices:1] (it) I beati del Signore Gesù
+[felices:2] (it) 
+[felices:3] (it) 
+[felices:4] (it) 
+[felices:5] (it) E aperta la bocca, insegnava loro dicendo:
+[felices:6] (it) Beati i poveri in spirito…
+[felices:7] (it) …perché di loro è il regno dei cieli.
+[felices:8] (it) Beati quelli che fanno cordoglio…
+[felices:9] (it) …perché saranno consolati.
+[felices:10] (it) Beati i mansueti…
+[felices:11] (it) …perché erediteranno la terra.
+[felices:12] (it) Beati coloro che sono affamati e assetati di giustizia…
+[felices:13] (it) …perché saranno saziati.
+[felices:14] (it) Beati i misericordiosi…
+[felices:15] (it) …perché troveranno misericordia.
+[felices:16] (it) Beati i puri di cuore…
+[felices:17] (it) …perché vedranno Dio.
+[felices:18] (it) Beati gli operatori di pace…
+[felices:19] (it) …perché saranno chiamati figli di Dio.
+[felices:20] (it) Beati i perseguitati per motivo di giustizia…
+[felices:21] (it) …perché di loro è il regno dei cieli.
+[felices:22] (it) Beati voi, quando vi insulteranno e vi perseguiteranno e, mentendo, diranno contro di voi ogni sorta di male per causa mia.
+[felices:23] (it) Rallegratevi e giubilate, perché il vostro premio è grande nei cieli…
+[felices:24] (it) …poiché così hanno perseguitato i profeti che sono stati prima di voi.
+[felices:25] (it) Vedendo le folle, salì sul monte; e messosi a sedere.
+[felices:26] (it) I suoi discepoli gli si accostarono,
+[felices:27] (it) Egli ha indicato che quest'opera sia condivisa liberamente tra i suoi beati. I più piccoli del regno dei cieli.
+[felices:28] (it) Egli ha indicato che quest'opera sia condivisa liberamente tra i suoi beati. I più piccoli del regno dei cieli.
+[felices:1] (id) Mereka yang Berbahagia dari Tuhan Yesus
+[felices:2] (id) 
+[felices:3] (id) 
+[felices:4] (id) 
+[felices:5] (id) Maka Yesus pun mulai berbicara dan mengajar mereka, kata-Nya:
+[felices:6] (id) Berbahagialah orang yang miskin di hadapan Allah…
+[felices:7] (id) …karena merekalah yang empunya Kerajaan Sorga.
+[felices:8] (id) Berbahagialah orang yang berdukacita…
+[felices:9] (id) …karena mereka akan dihibur.
+[felices:10] (id) Berbahagialah orang yang lemah lembut…
+[felices:11] (id) …karena mereka akan memiliki bumi.
+[felices:12] (id) Berbahagialah orang yang lapar dan haus akan kebenaran…
+[felices:13] (id) …karena mereka akan dipuaskan.
+[felices:14] (id) Berbahagialah orang yang murah hatinya…
+[felices:15] (id) …karena mereka akan beroleh kemurahan.
+[felices:16] (id) Berbahagialah orang yang suci hatinya…
+[felices:17] (id) …karena mereka akan melihat Allah.
+[felices:18] (id) Berbahagialah orang yang membawa damai…
+[felices:19] (id) …karena mereka akan disebut anak-anak Allah.
+[felices:20] (id) Berbahagialah orang yang dianiaya oleh sebab kebenaran…
+[felices:21] (id) …karena merekalah yang empunya Kerajaan Sorga.
+[felices:22] (id) Berbahagialah kamu, jika karena Aku kamu dicela dan dianiaya dan kepadamu difitnahkan segala yang jahat.
+[felices:23] (id) Bersukacita dan bergembiralah, karena upahmu besar di sorga…
+[felices:24] (id) …sebab demikian juga telah dianiaya nabi-nabi yang sebelum kamu.
+[felices:25] (id) Ketika Yesus melihat orang banyak itu, naiklah Ia ke atas bukit dan setelah Ia duduk.
+[felices:26] (id) Datanglah murid-murid-Nya kepada-Nya,
+[felices:27] (id) Dia menyatakan agar karya ini dibagikan secara cuma-cuma di antara mereka yang berbahagia. Yang terkecil dalam Kerajaan Sorga.
+[felices:28] (id) Dia menyatakan agar karya ini dibagikan secara cuma-cuma di antara mereka yang berbahagia. Yang terkecil dalam Kerajaan Sorga.
+[felices:1] (tr) Rab İsa'nın Mutlu Olanları
+[felices:2] (tr) 
+[felices:3] (tr) 
+[felices:4] (tr) 
+[felices:5] (tr) Ve ağzını açıp onlara öğreterek şöyle dedi:
+[felices:6] (tr) Ne mutlu ruhta yoksul olanlara…
+[felices:7] (tr) …çünkü Göklerin Hükümranlığı onlarındır.
+[felices:8] (tr) Ne mutlu yaslı olanlara…
+[felices:9] (tr) …çünkü onlar teselli edilecekler.
+[felices:10] (tr) Ne mutlu uysal olanlara…
+[felices:11] (tr) …çünkü onlar yeri miras alacaklar.
+[felices:12] (tr) Ne mutlu doğruluğa acıkıp susayanlara…
+[felices:13] (tr) …çünkü onlar doyurulacaklar.
+[felices:14] (tr) Ne mutlu merhametli olanlara…
+[felices:15] (tr) …çünkü onlara merhamet edilecek.
+[felices:16] (tr) Ne mutlu yüreği temiz olanlara…
+[felices:17] (tr) …çünkü onlar Tanrı'yı görecekler.
+[felices:18] (tr) Ne mutlu barışı sağlayanlara…
+[felices:19] (tr) …çünkü onlara Tanrı oğulları denecek.
+[felices:20] (tr) Ne mutlu doğruluk uğruna zulüm görenlere…
+[felices:21] (tr) …çünkü Göklerin Hükümranlığı onlarındır.
+[felices:22] (tr) Benim yüzümden insanlar size sövüp zulmettikleri, yalan yere size karşı her türlü kötülüğü söyledikleri zaman ne mutlusunuz!
+[felices:23] (tr) Sevinin, sevinçle coşun! Çünkü göklerdeki ödülünüz büyüktür…
+[felices:24] (tr) …çünkü sizden önceki peygamberlere de böyle zulmettiler.
+[felices:25] (tr) İsa kalabalıkları görünce dağa çıktı. Oturunca.
+[felices:26] (tr) Öğrencileri O'na geldi,
+[felices:27] (tr) O, bu eserin Kendi mutlu olanları arasında serbestçe paylaşılmasını buyurdu. Göklerin Egemenliğinde en küçük olanlar için.
+[felices:28] (tr) O, bu eserin Kendi mutlu olanları arasında serbestçe paylaşılmasını buyurdu. Göklerin Egemenliğinde en küçük olanlar için.
+[felices:1] (ru) Блаженные Господа Иисуса
+[felices:2] (ru) 
+[felices:3] (ru) 
+[felices:4] (ru) 
+[felices:5] (ru) И Он, отверзши уста Свои, учил их, говоря:
+[felices:6] (ru) Блаженны нищие духом…
+[felices:7] (ru) …ибо их есть Царство Небесное.
+[felices:8] (ru) Блаженны плачущие…
+[felices:9] (ru) …ибо они утешатся.
+[felices:10] (ru) Блаженны кроткие…
+[felices:11] (ru) …ибо они наследуют землю.
+[felices:12] (ru) Блаженны алчущие и жаждущие правды…
+[felices:13] (ru) …ибо они насытятся.
+[felices:14] (ru) Блаженны милостивые…
+[felices:15] (ru) …ибо они помилованы будут.
+[felices:16] (ru) Блаженны чистые сердцем…
+[felices:17] (ru) …ибо они Бога узрят.
+[felices:18] (ru) Блаженны миротворцы…
+[felices:19] (ru) …ибо они будут наречены сынами Божиими.
+[felices:20] (ru) Блаженны изгнанные за правду…
+[felices:21] (ru) …ибо их есть Царство Небесное.
+[felices:22] (ru) Блаженны вы, когда будут поносить вас и гнать и всячески неправедно злословить за Меня.
+[felices:23] (ru) Радуйтесь и веселитесь, ибо велика ваша награда на небесах…
+[felices:24] (ru) …ибо так гнали и пророков, бывших прежде вас.
+[felices:25] (ru) Увидев народ, Он взошел на гору; и, когда сел.
+[felices:26] (ru) Приступили к Нему ученики Его,
+[felices:27] (ru) Он указал, чтобы этот труд свободно распространялся среди Его блаженных. Наименьших в Царстве Небесном.
+[felices:28] (ru) Он указал, чтобы этот труд свободно распространялся среди Его блаженных. Наименьших в Царстве Небесном.
+[felices:1] (en) The blessed of the Lord Jesus
+[felices:2] (en) 
+[felices:3] (en) 
+[felices:4] (en) 
+[felices:5] (en) and opening His mouth, He taught them, saying:
+[felices:6] (en) Blessed are the poor in spirit...
+[felices:7] (en) …because they are the kingdom of heaven.
+[felices:8] (en) Blessed are the sorrowful...
+[felices:9] (en) …because they will be comforted.
+[felices:10] (en) Blessed are the humble...
+[felices:11] (en) …because they will inherit the earth.
+[felices:12] (en) Blessed are those who are hungry and thirsty for righteousness...
+[felices:13] (en) ...because they will be satisfied.
+[felices:14] (en) Blessed are the compassionate...
+[felices:15] (en) …because they will receive compassion.
+[felices:16] (en) Blessed are the pure of heart...
+[felices:17] (en) …because they will see God.
+[felices:18] (en) Blessed are the peacemakers...
+[felices:19] (en) …because they will be called children of God.
+[felices:20] (en) Blessed are those who are persecuted for the sake of righteousness...
+[felices:21] (en) …because they are the kingdom of heaven.
+[felices:22] (en) Blessed are you when people insult you, persecute you, and falsely say all kinds of evil things about you because of Me.
+[felices:23] (en) Be glad and rejoice because great will be your reward in heaven...
+[felices:24] (en) …because in this same way, the spokespeople who came before you were also persecuted.
+[felices:25] (en) When He saw the crowds, He climbed the hillside and sat down.
+[felices:26] (en) His students came to Him,
+[felices:27] (en) He gave instructions to freely share this work among His joyful.
+[felices:28] (en) The smallest ones in the Kingdom of Heaven.
+[felices:1] (fr) Les heureux du Seigneur Jésus
+[felices:2] (fr) 
+[felices:3] (fr) 
+[felices:4] (fr) 
+[felices:5] (fr) et ouvrant sa bouche, il les enseigna :
+[felices:6] (fr) Heureux les pauvres en esprit...
+[felices:7] (fr) ...car ils sont le royaume des cieux.
+[felices:8] (fr) Heureux les affligés...
+[felices:9] (fr) ...car ils seront réconfortés.
+[felices:10] (fr) Heureux les humbles...
+[felices:11] (fr) ...car ils hériteront la terre.
+[felices:12] (fr) Heureux ceux qui ont faim et soif de justice...
+[felices:13] (fr) ...car ils seront satisfaits.
+[felices:14] (fr) Heureux sont ceux qui témoignent de la compassion...
+[felices:15] (fr) ...car ils recevront de la compassion.
+[felices:16] (fr) Heureux sont ceux qui ont le cœur pur...
+[felices:17] (fr) ...car ils verront Dieu.
+[felices:18] (fr) Heureux sont les artisans de paix...
+[felices:19] (fr) ...car ils seront appelés fils de Dieu.
+[felices:20] (fr) Heureux sont ceux qui sont persécutés à cause de la justice...
+[felices:21] (fr) ...car ils sont le royaume des cieux.
+[felices:22] (fr) Heureux êtes-vous quand les personnes vous insultent, vous persécutent et disent faussement toutes sortes de mauvaises choses à votre sujet à cause de Moi.
+[felices:23] (fr) Soyez dans l'allégresse et réjouissez-vous, car grande sera votre récompense dans les cieux...
+[felices:24] (fr) ...car c'est ainsi que les messagers qui vous ont précédés ont été persécutés.
+[felices:25] (fr) Quand Il vit la foule, Il monta sur le flanc de la colline et s'assit.
+[felices:26] (fr) Ses étudiants vinrent auprès de Lui,
+[felices:27] (fr) Il donna des instructions pour le partage libre de ce travail auprès de ses heureux.
+[felices:28] (fr) Les plus petits dans le royaume des cieux.
+[felices:1] (pt) Os bem-aventurados do Senhor Jesus
+[felices:2] (pt) 
+[felices:3] (pt) 
+[felices:4] (pt) 
+[felices:5] (pt) e, abrindo a sua boca, os ensinava, dizendo:
+[felices:6] (pt) Bem-aventurados os pobres de espírito…
+[felices:7] (pt) …porque deles é o reino dos céus.
+[felices:8] (pt) Bem-aventurados os que choram…
+[felices:9] (pt) …porque eles serão consolados.
+[felices:10] (pt) Bem-aventurados os mansos…
+[felices:11] (pt) …porque eles herdarão a terra.
+[felices:12] (pt) Bem-aventurados os que têm fome e sede de justiça…
+[felices:13] (pt) …porque eles serão fartos.
+[felices:14] (pt) Bem-aventurados os misericordiosos…
+[felices:15] (pt) …porque eles alcançarão misericórdia.
+[felices:16] (pt) Bem-aventurados os limpos de coração…
+[felices:17] (pt) …porque eles verão a Deus.
+[felices:18] (pt) Bem-aventurados os pacificadores…
+[felices:19] (pt) …porque eles serão chamados filhos de Deus.
+[felices:20] (pt) Bem-aventurados os que sofrem perseguição por causa da justiça…
+[felices:21] (pt) …porque deles é o reino dos céus.
+[felices:22] (pt) Bem-aventurados sois vós, quando vos injuriarem e perseguirem, e mentindo, disserem todo o mal contra vós por minha causa.
+[felices:23] (pt) Alegrai-vos e exultai, porque é grande o vosso galardão nos céus…
+[felices:24] (pt) …pois assim perseguiram os profetas que foram antes de vós.
+[felices:25] (pt) E Jesus, vendo a multidão, subiu a um monte, e, assentando-se,
+[felices:26] (pt) aproximaram-se dele os seus discípulos;
+[felices:27] (pt) Ele orientou que esta obra seja compartilhada livremente entre os seus bem-aventurados.
+[felices:28] (pt) Os pequeninos do reino dos céus.
+[felices:1] (zh-Hans) 主耶稣蒙福的百姓
+[felices:2] (zh-Hans) 
+[felices:3] (zh-Hans) 
+[felices:4] (zh-Hans) 
+[felices:5] (zh-Hans) 他开口教导他们，说：
+[felices:6] (zh-Hans) 在灵里贫乏的人的人有福了……
+[felices:7] (zh-Hans) ……因为他们即为天国。
+[felices:8] (zh-Hans) 悲伤的人有福了……
+[felices:9] (zh-Hans) ……因为他们会得到安慰。
+[felices:10] (zh-Hans) 谦逊的人有福了……
+[felices:11] (zh-Hans) ……因为他们将承受地土。
+[felices:12] (zh-Hans) 饥渴慕义的人有福了……
+[felices:13] (zh-Hans) ……因为他们会满意的。
+[felices:14] (zh-Hans) 有同情心的人有福了……
+[felices:15] (zh-Hans) ……因为他们会得到怜悯。
+[felices:16] (zh-Hans) 心灵纯净的人有福了...
+[felices:17] (zh-Hans) ......因为他们会看到上帝。
+[felices:18] (zh-Hans) 和平缔造者有福了……
+[felices:19] (zh-Hans) ……因为他们将被称作神的儿女。
+[felices:20] (zh-Hans) 为求正义而被迫害的人有福了……
+[felices:21] (zh-Hans) ……因为他们即为天国。
+[felices:22] (zh-Hans) 当人们因为我而侮辱你、迫害你、撒谎说你的各种坏话时，你是有福的。
+[felices:23] (zh-Hans) 应当欢喜快乐，因为你们将在天堂中得以赏赐回报……
+[felices:24] (zh-Hans) ……因为同样的，那些比你更早的使者也受到了迫害。
+[felices:25] (zh-Hans) 他看见众人，就爬上山坡坐下。
+[felices:26] (zh-Hans) 他的学生来到他面前，
+[felices:27] (zh-Hans) 他指示要在他喜乐的子民中自由地分享这项工作。
+[felices:28] (zh-Hans) 献给天国中最小的人。
+[felices:1] (ja) 主イエスのさいわいな人々
+[felices:2] (ja) 
+[felices:3] (ja) 
+[felices:4] (ja) 
+[felices:5] (ja) 口を開き、彼らに教えて言われた：
+[felices:6] (ja) 心の貧しい人々は幸いである……
+[felices:7] (ja) ……天の御国はその人たちのものだからです。
+[felices:8] (ja) 悲しむ人々は幸いである……
+[felices:9] (ja) ……その人たちは慰められるからです。
+[felices:10] (ja) 柔和な人々は幸いである……
+[felices:11] (ja) ……その人たちは地を受け継ぐからです。
+[felices:12] (ja) 義に飢え渇く人々は幸いである……
+[felices:13] (ja) ……その人たちは満ち足りるからです。
+[felices:14] (ja) あわれみ深い人々は幸いである……
+[felices:15] (ja) ……その人たちはあわれみを受けるからです。
+[felices:16] (ja) 心の清い人々は幸いである……
+[felices:17] (ja) ……その人たちは神を見るからです。
+[felices:18] (ja) 平和をつくる人々は幸いである……
+[felices:19] (ja) ……その人たちは神の子どもと呼ばれるからです。
+[felices:20] (ja) 義のために迫害されている人々は幸いである……
+[felices:21] (ja) ……天の御国はその人たちのものだからです。
+[felices:22] (ja) わたしのために人々があなたがたをののしり、迫害し、ありとあらゆる悪口を浴びせるとき、あなたがたは幸いです。
+[felices:23] (ja) 喜びなさい、大いに喜べ。天においてあなたがたの受ける報いは大きいからである……
+[felices:24] (ja) ……あなたがたより前にいた預言者たちをも、人々はそのように迫害したのです。
+[felices:25] (ja) イエスはこの群衆を見て、山に登り、座につかれると、
+[felices:26] (ja) 弟子たちがみもとに近寄って来た。
+[felices:27] (ja) 主はこの作品が主の幸いな人々の間で自由に分かち合われることを望まれました。
+[felices:28] (ja) 天の御国において最も小さい者たちへ。
+[felices:1] (ko) 주 예수님의 복된 사람들
+[felices:2] (ko) 
+[felices:3] (ko) 
+[felices:4] (ko) 
+[felices:5] (ko) 입을 열어 그들을 가르쳐 이르시되:
+[felices:6] (ko) 심령이 가난한 자는 복이 있나니…
+[felices:7] (ko) …천국이 그들의 것임이요.
+[felices:8] (ko) 애통하는 자는 복이 있나니…
+[felices:9] (ko) …그들이 위로를 받을 것임이요.
+[felices:10] (ko) 온유한 자는 복이 있나니…
+[felices:11] (ko) …그들이 땅을 기업으로 받을 것임이요.
+[felices:12] (ko) 의에 주리고 목마른 자는 복이 있나니…
+[felices:13] (ko) …그들이 배부를 것임이요.
+[felices:14] (ko) 긍휼히 여기는 자는 복이 있나니…
+[felices:15] (ko) …그들이 긍휼히 여김을 받을 것임이요.
+[felices:16] (ko) 마음이 청결한 자는 복이 있나니…
+[felices:17] (ko) …그들이 하나님을 볼 것임이요.
+[felices:18] (ko) 화평하게 하는 자는 복이 있나니…
+[felices:19] (ko) …그들이 하나님의 아들이라 일컬음을 받을 것임이요.
+[felices:20] (ko) 의를 위하여 박해를 받은 자는 복이 있나니…
+[felices:21] (ko) …천국이 그들의 것임이요.
+[felices:22] (ko) 나로 말미암아 너희를 욕하고 박해하고 거짓으로 너희를 거슬러 모든 악한 말을 할 때에는 너희에게 복이 있나니.
+[felices:23] (ko) 기뻐하고 즐거워하라 하늘에서 너희의 상이 큼이라…
+[felices:24] (ko) …너희 전에 있던 선지자들도 이같이 박해하였느니라.
+[felices:25] (ko) 예수께서 무리를 보시고 산에 올라가 앉으시니
+[felices:26] (ko) 제자들이 나아온지라,
+[felices:27] (ko) 그분께서는 이 작품이 그분의 복된 자들 사이에 자유롭게 공유되기를 명하셨습니다.
+[felices:28] (ko) 천국에서 지극히 작은 자들에게.
+[felices:1] (hi) प्रभु यीशु के हर्षित लोग
+[felices:2] (hi) 
+[felices:3] (hi) 
+[felices:4] (hi) 
+[felices:5] (hi) और अपना मुंह खोलकर, उसने उन्हें यह कहते हुए सिखाया:
+[felices:6] (hi) धन्य हैं आत्मा में गरीब...
+[felices:7] (hi) ... क्योंकि वे स्वर्ग का राज्य हैं।
+[felices:8] (hi) धन्य हैं उदास मन वाले...
+[felices:9] (hi) ... क्योंकि उन्हें आराम मिलेगा।
+[felices:10] (hi) धन्य हैं वे जो विनम्र हैं...
+[felices:11] (hi) ... क्योंकि वे पृथ्वी के वारिस होंगे।
+[felices:12] (hi) धन्य हैं वे जो न्याय के भूखे प्यासे हैं...
+[felices:13] (hi) ... क्योंकि वे संतुष्ट होंगे।
+[felices:14] (hi) धन्य हैं वे जो दयालु हैं ...
+[felices:15] (hi) ... क्योंकि वे करुणा प्राप्त करेंगे।
+[felices:16] (hi) खुशनसीब होते हैं वो जिनका दिल साफ होता है...
+[felices:17] (hi) ... क्योंकि वे भगवान को देखेंगे।
+[felices:18] (hi) धन्य हैं वे जो शांतिदूत हैं...
+[felices:19] (hi) ... क्योंकि वे परमेश्वर की सन्तान कहलाएंगे।
+[felices:20] (hi) धन्य हैं वे जिन्हें न्याय के लिए सताया जाता है...
+[felices:21] (hi) ... क्योंकि वे स्वर्ग का राज्य हैं।
+[felices:22] (hi) आनन्दित रहो जब लोग तुम्हारा अपमान करें, तुम्हें सताएं, और मेरे कारण तुम्हारे बारे में हर तरह की बुरी बातें कहें।
+[felices:23] (hi) आनन्दित और आनन्दित रहो, क्योंकि स्वर्ग में तुम्हारा प्रतिफल महान है ...
+[felices:24] (hi) ... क्योंकि इसी तरह से आपके सामने आने वाले वक्ताओं को भी सताया गया था।
+[felices:25] (hi) भीड़ को देखकर वह पहाड़ी पर चढ़कर बैठ गया।
+[felices:26] (hi) उनके छात्र उनके पास आए,
+[felices:27] (hi) उन्होंने इस काम को अपने आनंदित लोगों के बीच स्वतंत्र रूप से साझा करने का निर्देश दिया।
+[felices:28] (hi) उनके लिए जो स्वर्ग के राज्य में छोटे हैं।
+[felices:1] (bn) প্রভু যীশুর আনন্দময় মানুষ
+[felices:2] (bn) 
+[felices:3] (bn) 
+[felices:4] (bn) 
+[felices:5] (bn) এবং তার মুখ খুলে, তিনি তাদের শিক্ষা দিয়ে, বললেন:
+[felices:6] (bn) সুখী তারাই যারা আত্মার দরিদ্র ...
+[felices:7] (bn) ...কারণ তারা স্বর্গরাজ্য।
+[felices:8] (bn) ধন্য সেই শোককারীরা ...
+[felices:9] (bn) ...কারণ তারা সান্ত্বনা পাবে।
+[felices:10] (bn) ধন্য তারা নম্র ...
+[felices:11] (bn) ...কারণ তারা পৃথিবীর উত্তরাধিকারী হবে।
+[felices:12] (bn) সুখী তারাই যারা ধার্মিকতার জন্য ক্ষুধার্ত ও তৃষ্ণার্ত...
+[felices:13] (bn) ...কারণ তারা সন্তুষ্ট হবে।
+[felices:14] (bn) ধন্য তারা যারা সহানুভূতিশীল ...
+[felices:15] (bn) ... কারণ তাদের করুণা করা হবে।
+[felices:16] (bn) ধন্য যারা হৃদয় বিশুদ্ধ ...
+[felices:17] (bn) ...কারণ তারা ঈশ্বরকে দেখতে পাবে।
+[felices:18] (bn) ধন্য শান্তিরক্ষীরা ...
+[felices:19] (bn) ...কারণ তাদের বলা হবে ঈশ্বরের সন্তান।
+[felices:20] (bn) সুখী তারা যারা ধার্মিকতার জন্য নির্যাতিত হয়...
+[felices:21] (bn) ...কারণ তারা স্বর্গরাজ্য।
+[felices:22] (bn) আনন্দিত হও যখন লোকেরা তোমাকে অপমান করে, তোমাকে নির্যাতন করে এবং মিথ্যাভাবে তোমার সম্পর্কে সব ধরনের খারাপ কথা বলে আমার কারণে।
+[felices:23] (bn) আনন্দিত হও এবং আনন্দ কর, কারণ স্বর্গে তোমার পুরস্কার অনেক বড় ...
+[felices:24] (bn) …কারণ এইভাবে, আপনার আগে আসা মুখপাত্ররাও নির্যাতিত হয়েছিল।
+[felices:25] (bn) যখন তিনি ভিড় দেখলেন, তিনি পাহাড়ের চূড়ায় উঠে বসলেন।
+[felices:26] (bn) তাঁর ছাত্ররা তাঁর কাছে এসেছিল,
+[felices:27] (bn) তিনি এই কাজকে তাঁর আনন্দিতদের মধ্যে অবাধে ভাগ করে নেওয়ার নির্দেশ দিয়েছিলেন।
+[felices:28] (bn) স্বর্গরাজ্যে সবচেয়ে ছোট।
+[felices:1] (ar) شعب الرب يسوع المبتهجون
+[felices:2] (ar) 
+[felices:3] (ar) 
+[felices:4] (ar) 
+[felices:5] (ar) وتحدث ليعلمهم قائلاً
+[felices:6] (ar) المبتهجون هم المدركون لفقرهم الروحي
+[felices:7] (ar) لأنهم ملكوت السموات
+[felices:8] (ar) المبتهجون هم الحَزَانَى
+[felices:9] (ar) لأنهم سيُعزَّون
+[felices:10] (ar) المبتهجون هم المتواضعون
+[felices:11] (ar) لأنهم سيرثون الأرض
+[felices:12] (ar) المبتهجون هم جوعى البِر والمتعطّشون له
+[felices:13] (ar) لأنهم سيُرضون
+[felices:14] (ar) المبتهجون هم الرحماء
+[felices:15] (ar) لأن سيُرحمون
+[felices:16] (ar) المبتهجون هم أنقياء القلب
+[felices:17] (ar) لأنهم سيرون الله
+[felices:18] (ar) المبتهجون هم صانعو السلام
+[felices:19] (ar) لأنهم سيُدعون أولاد الله
+[felices:20] (ar) المبتهجون هم المضطَهَدون في سبيل البِر
+[felices:21] (ar) لأنهم ملكوت السموات
+[felices:22] (ar) أنت المبتهج إذا أهانك الناس واضطهدوك وقالوا عنك كذباً كل أنواع الخبائث بسببي
+[felices:23] (ar) افرح وابتهج لأن أجرك عظيم في الجنة
+[felices:24] (ar) لأنك على خطى من تحدث قبلك؛ فقد تعرضوا هم أيضاً للاضطهاد
+[felices:25] (ar) عندما أبصَر الجموع، صعد إلى جانب التل وجلس
+[felices:26] (ar) أتى تلاميذه إليه
+[felices:27] (ar) فوجههم لمشاركة هذا العمل بحرية بين مبتهجيه
+[felices:28] (ar) إنهم صغار ملكوت السموات
+[felices:1] (ur) خداوند یسوع کے مبارک لوگ
+[felices:2] (ur) 
+[felices:3] (ur) 
+[felices:4] (ur) 
+[felices:5] (ur) اور اپنا منہ کھول کر ان کو یوں تعلیم دینے لگے:
+[felices:6] (ur) مبارک ہیں وہ جو دل کے غریب ہیں…
+[felices:7] (ur) …کیونکہ آسمان کی بادشاہی انہی کی ہے۔
+[felices:8] (ur) مبارک ہیں وہ جو غمگین ہیں…
+[felices:9] (ur) …کیونکہ وہ تسلی پائیں گے۔
+[felices:10] (ur) مبارک ہیں وہ جو حلیم ہیں…
+[felices:11] (ur) …کیونکہ وہ زمین کے وارث ہوں گے۔
+[felices:12] (ur) مبارک ہیں وہ جو راستبازی کے بھوکے اور پیاسے ہیں…
+[felices:13] (ur) …کیونکہ وہ آسودہ ہوں گے۔
+[felices:14] (ur) مبارک ہیں وہ جو رحم دل ہیں…
+[felices:15] (ur) …کیونکہ ان پر رحم کیا جائے گا۔
+[felices:16] (ur) مبارک ہیں وہ جو پاک دل ہیں…
+[felices:17] (ur) …کیونکہ وہ خدا کو دیکھیں گے۔
+[felices:18] (ur) مبارک ہیں وہ جو صلح کرواتے ہیں…
+[felices:19] (ur) …کیونکہ وہ خدا کے بیٹے کہلائیں گے۔
+[felices:20] (ur) مبارک ہیں وہ جو راستبازی کے سبب سے ستائے گئے ہیں…
+[felices:21] (ur) …کیونکہ آسمان کی بادشاہی انہی کی ہے۔
+[felices:22] (ur) جب لوگ میرے سبب سے تم کو لعن طعن کریں گے اور ستائیں گے اور طرح طرح کی بدگوئی کریں گے تو تم مبارک ہو گے۔
+[felices:23] (ur) خوشی کرنا اور نہایت شادمان ہونا کیونکہ آسمان پر تمہارا اجر بڑا ہے…
+[felices:24] (ur) …کیونکہ انہوں نے ان نبیوں کو بھی ستایا جو تم سے پہلے تھے۔
+[felices:25] (ur) وہ بھیڑوں کو دیکھ کر پہاڑ پر چڑھ گیا اور بیٹھ گیا،
+[felices:26] (ur) اور اس کے شاگرد اس کے پاس آئے۔
+[felices:27] (ur) انہوں نے ہدایت دی کہ یہ کام ان کے مبارک لوگوں میں آزادانہ طور پر شیئر کیا جائے۔
+[felices:28] (ur) آسمان کی بادشاہی میں سب سے چھوٹوں کے لیے۔
+[felices:1] (fa) مبارک‌بادهای خداوند عیسی
+[felices:2] (fa) 
+[felices:3] (fa) 
+[felices:4] (fa) 
+[felices:5] (fa) و دهان خود را گشوده، بدیشان تعلیم داده، گفت:
+[felices:6] (fa) خوشابه‌حال مسکینان در روح…
+[felices:7] (fa) …زیرا پادشاهی آسمان از آن ایشان است.
+[felices:8] (fa) خوشابه‌حال ماتم‌زدگان…
+[felices:9] (fa) …زیرا ایشان تسلی خواهند یافت.
+[felices:10] (fa) خوشابه‌حال حلیمان…
+[felices:11] (fa) …زیرا ایشان وارث زمین خواهند شد.
+[felices:12] (fa) خوشابه‌حال گرسنگان و تشنگان عدالت…
+[felices:13] (fa) …زیرا ایشان سیر خواهند شد.
+[felices:14] (fa) خوشابه‌حال رحیمان…
+[felices:15] (fa) …زیرا بر ایشان رحمت خواهد شد.
+[felices:16] (fa) خوشابه‌حال پاک‌دلان…
+[felices:17] (fa) …زیرا ایشان خدا را خواهند دید.
+[felices:18] (fa) خوشابه‌حال صلح‌کنندگان…
+[felices:19] (fa) …زیرا ایشان فرزندان خدا خوانده خواهند شد.
+[felices:20] (fa) خوشابه‌حال آنان که به خاطر عدالت جفا می‌بینند…
+[felices:21] (fa) …زیرا پادشاهی آسمان از آن ایشان است.
+[felices:22] (fa) خوشابه‌حال شما آنگاه که به خاطر من به شما دشنام دهند و جفا رسانند و هر سخن بدی را به دروغ بر شما بگویند.
+[felices:23] (fa) شاد و خرسند باشید، زیرا پاداش شما در آسمان عظیم است…
+[felices:24] (fa) …چرا که پیش از شما بر انبیایی نیز که بودند همین‌گونه جفا می‌رسانیدند.
+[felices:25] (fa) چون عیسی جمعیت‌ها را دید، بر فراز تپه رفت و نشست.
+[felices:26] (fa) و شاگردانش نزد وی آمدند،
+[felices:27] (fa) او فرمان داد که این اثر آزادانه در میان مبارکانش به اشتراک گذاشته شود.
+[felices:28] (fa) کوچک‌ترین‌ها در پادشاهی آسمان.
