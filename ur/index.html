@@ -954,9 +954,8 @@
 
         <!-- Botones de Descarga: Jerarquía LTR (Decisiones 1-A y 2-A) -->
         <!-- En LTR: Izquierda = Láminas Sueltas (Sheets), Derecha = Cuadernillo Físico (Booklet) -->
-        <!-- Descarga directa a través de la red global CDN de GitHub Releases (Conteo nativo server-side) -->
         <div class="actions-group">
-            <a id="linkSheets" href="https://github.com/ekovoz/ekovoz/releases/download/v1.0.0/felices-ur-v1-sheets.pdf" class="btn-card btn-sheets"
+            <a id="linkSheets" href="/dist/ur/v1/mostrador/felices-ur-v1-sheets.pdf" class="btn-card btn-sheets"
                 download>
                 <div class="btn-header">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -972,7 +971,7 @@
                 <span class="btn-subtitle" id="btnSubSheets">اسکرین پر پڑھنے یا ایک ایک کر کے رنگ بھرنے کے لیے</span>
             </a>
 
-            <a id="linkBooklet" href="https://github.com/ekovoz/ekovoz/releases/download/v1.0.0/felices-ur-v1-booklet.pdf" class="btn-card btn-booklet"
+            <a id="linkBooklet" href="/dist/ur/v1/mostrador/felices-ur-v1-booklet.pdf" class="btn-card btn-booklet"
                 download>
                 <div class="btn-header">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -1016,15 +1015,11 @@
         </div>
 
         <p class="footer-note" id="footerNote">متی باب ۵ پر مبنی عوامی ملکیت کا تعلیمی کام۔ پرنٹ، رنگ بھرنے اور شیئر کرنے کے لیے آزاد۔</p>
-        <div style="margin-top: 1rem; display: flex; justify-content: center; gap: 1.5rem; font-size: 0.85rem; flex-wrap: wrap;">
+        <div style="margin-top: 1rem; display: flex; justify-content: center; gap: 1.5rem; font-size: 0.85rem;">
             <button type="button" id="footerContactBtn" onclick="openContactModal()"
                 style="background: none; border: none; color: var(--text-muted); cursor: pointer; text-decoration: underline; font-family: inherit; font-size: inherit;">
-                Contacto & Colaboración
+                Contacto, Colaboración & Soporte
             </button>
-            <a href="https://github.com/ekovoz/ekovoz/issues/new?title=Incidencia+de+Acceso+o+Descarga&labels=soporte"
-                target="_blank" rel="noopener noreferrer" class="support-link" id="footerSupportLink">
-                ¿Problemas de descarga o lectura? Reportar incidencia
-            </a>
         </div>
     </main>
 
@@ -1129,10 +1124,10 @@
         </div>
     </dialog>
 
-    <!-- Modal 4: Contacto Privacy-First con Honeypot Web3Forms -->
+    <!-- Modal 4: Contacto, Colaboración & Soporte con Honeypot Web3Forms -->
     <dialog id="contactModal" style="max-width: 480px; width: 90%;">
         <div class="modal-header">
-            <h3 class="modal-title" id="contactModalTitle">Contacto & Colaboración Editorial</h3>
+            <h3 class="modal-title" id="contactModalTitle">Contacto, Colaboración & Soporte</h3>
             <button class="modal-close" onclick="closeModal('contactModal')" aria-label="Cerrar"
                 id="contactCloseBtn">✕</button>
         </div>
@@ -1143,6 +1138,17 @@
             <input type="hidden" name="from_name" value="Ekovoz Editorial Web">
             <!-- Trampa Honeypot Invisible Anti-Bot -->
             <input type="checkbox" name="botcheck" class="hidden" style="display: none;">
+
+            <div style="display: flex; flex-direction: column; gap: 0.35rem;">
+                <label for="contactTopic" id="contactTopicLabel"
+                    style="font-size: 0.85rem; color: var(--text-secondary); font-weight: 500;">Motivo / Topic</label>
+                <select id="contactTopic" name="topic"
+                    style="padding: 0.65rem 0.85rem; border-radius: 8px; border: 1px solid var(--select-border); background: var(--select-bg); color: var(--text-primary); font-family: inherit;">
+                    <option value="colaboracion" id="optCollab">Colaboración editorial o traducción</option>
+                    <option value="soporte" id="optSupport">Problemas de descarga o lectura (Soporte)</option>
+                    <option value="general" id="optGeneral">Consulta general o sugerencia</option>
+                </select>
+            </div>
 
             <div style="display: flex; flex-direction: column; gap: 0.35rem;">
                 <label for="contactName" id="contactNameLabel"
@@ -1162,10 +1168,9 @@
 
             <div style="display: flex; flex-direction: column; gap: 0.35rem;">
                 <label for="contactMessage" id="contactMessageLabel"
-                    style="font-size: 0.85rem; color: var(--text-secondary); font-weight: 500;">Mensaje o Propuesta de
-                    Traducción</label>
+                    style="font-size: 0.85rem; color: var(--text-secondary); font-weight: 500;">Mensaje o Descripción de la Incidencia</label>
                 <textarea id="contactMessage" name="message" rows="4" required
-                    placeholder="¿En qué podemos colaborar o qué idioma te gustaría revisar?"
+                    placeholder="Escribe tu mensaje, propuesta de traducción o describe la dificultad que tuviste..."
                     style="padding: 0.65rem 0.85rem; border-radius: 8px; border: 1px solid var(--select-border); background: var(--select-bg); color: var(--text-primary); font-family: inherit; resize: vertical;"></textarea>
             </div>
 
@@ -1174,6 +1179,15 @@
                     id="contactCancelBtn">Cancelar</button>
                 <button type="submit" class="btn-modal-action" id="contactSubmitBtn">Enviar Mensaje</button>
             </div>
+
+            <div style="margin-top: 0.5rem; text-align: center; font-size: 0.75rem; color: var(--text-muted);">
+                <span id="githubIssueHint">¿Prefieres reportar un ticket de soporte técnico público?</span>
+                <a href="https://github.com/ekovoz/ekovoz.github.io/issues/new?title=Incidencia+de+Acceso+o+Descarga&labels=soporte"
+                   target="_blank" rel="noopener noreferrer" style="color: var(--badge-text); text-decoration: underline; margin-left: 0.25rem;" id="linkGithubIssue">
+                   Abrir incidencia en GitHub
+                </a>
+            </div>
+
             <p id="contactStatus"
                 style="font-size: 0.8rem; color: var(--text-muted); text-align: center; margin-top: 0.25rem; min-height: 1.2em;">
             </p>
@@ -2357,11 +2371,11 @@
                 document.getElementById('contactSubmitBtn').innerText = t.contactSubmit;
             }
 
-            // Descarga a través de GitHub Releases CDN (conteo nativo en servidor y bypass de cuota mensual)
-            const releaseTag = 'v1.0.0';
-            const releaseBase = `https://github.com/ekovoz/ekovoz/releases/download/${releaseTag}`;
-            document.getElementById('linkSheets').href = `${releaseBase}/felices-${lang}-v1-sheets.pdf`;
-            document.getElementById('linkBooklet').href = `${releaseBase}/felices-${lang}-v1-booklet.pdf`;
+            // Descarga directa de alta velocidad (Fastly CDN público de GitHub Pages)
+            const cacheBuster = '?v=' + Date.now();
+            const distLang = lang === 'zh' ? 'zh-Hans' : lang;
+            document.getElementById('linkSheets').href = `/dist/${distLang}/v1/mostrador/felices-${distLang}-v1-sheets.pdf${cacheBuster}`;
+            document.getElementById('linkBooklet').href = `/dist/${distLang}/v1/mostrador/felices-${distLang}-v1-booklet.pdf${cacheBuster}`;
 
             updateCarouselView();
             renderUlsGrid();
