@@ -1065,7 +1065,20 @@
                 }
             };
 
-            img.src = `/assets/plates_clean/${plateId}.png`;
+            // 1. Mostrar de inmediato la imagen previa optimizada (para evitar recuadro roto o demora de red)
+            img.src = `/web/preview/${plateId}.png`;
+
+            // 2. Cargar en segundo plano la lámina en alta resolución original
+            const hdImg = new Image();
+            hdImg.src = `/assets/plates_clean/${plateId}.png`;
+            hdImg.onload = () => {
+                img.src = hdImg.src;
+            };
+            hdImg.onerror = () => {
+                // Fallback de contingencia: si no carga en HD, prueba preview directa
+                img.src = `/web/preview/${plateId}.png`;
+            };
+
             const dict = plateCaptions[plateId] || {};
             cap.textContent = dict[lang] || dict['es'] || `Lámina ${plateId}`;
             openModal('plateModal');
