@@ -1,7 +1,7 @@
-// Ekovoz Sovereign Service Worker (v5.0.0) — Zero Dependencies
+// Ekovoz Sovereign Service Worker (v7.0.0) — Zero Dependencies
 // Network-First for HTML navigation; Native passthrough for PDFs; Offline fallback for assets
 
-const CACHE_NAME = 'ekovoz-v5';
+const CACHE_NAME = 'ekovoz-v7';
 const PRECACHE_ASSETS = [
   '/',
   '/index.html',
@@ -48,9 +48,9 @@ self.addEventListener('fetch', (event) => {
 
   const url = event.request.url;
 
-  // BYPASS: Never intercept or cache large PDF binaries (/dist/ or .pdf).
+  // BYPASS: Never intercept or cache large PDF binaries (.pdf).
   // Allow the browser's native download engine to handle them directly.
-  if (url.includes('/dist/') || url.endsWith('.pdf')) {
+  if (url.endsWith('.pdf')) {
     return;
   }
 

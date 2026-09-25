@@ -74,11 +74,6 @@
 
     <link rel="help" href="/llms.txt" type="text/markdown" title="LLM Information">
     <link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Bengali:wght@500;700&family=Noto+Sans+Devanagari:wght@500;700&family=Noto+Sans+SC:wght@500;700&display=swap"
-        rel="stylesheet">
 
     <!-- Metadatos Estructurados para Motores de Búsqueda y Modelos de Lenguaje (Schema.org) -->
     <script type="application/ld+json">
@@ -137,26 +132,61 @@
 
     <style>
         :root {
-            --bg-base: #0b0f19;
-            --card-bg: rgba(17, 24, 39, 0.95);
-            --card-border: rgba(255, 255, 255, 0.08);
-            --card-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.85);
-            --text-primary: #f8fafc;
-            --text-secondary: #94a3b8;
-            --text-muted: #64748b;
-            --accent-primary: #4338ca;
-            --accent-primary-hover: #4f46e5;
-            --accent-secondary-bg: #1e293b;
-            --accent-secondary-hover: #334155;
-            --accent-secondary-border: #475569;
-            --accent-amber: #d97706;
-            --accent-amber-light: #f59e0b;
-            --select-bg: #131926;
-            --select-border: #334155;
-            --select-focus: #6366f1;
-            --badge-bg: rgba(99, 102, 241, 0.12);
-            --badge-border: rgba(99, 102, 241, 0.25);
-            --badge-text: #a5b4fc;
+            --bg-canvas: #f8f6f0;
+            --card-bg: #ffffff;
+            --card-border: rgba(28, 25, 23, 0.08);
+            --card-shadow: 0 1px 3px rgba(28, 25, 23, 0.04), 0 8px 24px -4px rgba(28, 25, 23, 0.08), 0 24px 48px -12px rgba(28, 25, 23, 0.12);
+            --text-primary: #1c1917;
+            --text-secondary: #57534e;
+            --text-muted: #78716c;
+            --accent-primary: #1c1917;
+            --accent-primary-hover: #292524;
+            --accent-secondary-bg: #f5f5f4;
+            --accent-secondary-hover: #e7e5e4;
+            --accent-secondary-border: #d6d3d1;
+            --accent-amber: #92400e;
+            --accent-amber-light: #b45309;
+            --badge-bg: rgba(146, 64, 14, 0.08);
+            --badge-border: rgba(146, 64, 14, 0.22);
+            --badge-text: #92400e;
+            --select-bg: #ffffff;
+            --select-border: #d6d3d1;
+            --select-focus: #b45309;
+            --pill-bg: #e7e5e4;
+            --pill-active-bg: #ffffff;
+            --pill-active-text: #1c1917;
+            --focal-frame-bg: #fafaf9;
+            --focal-frame-border: #e7e5e4;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg-canvas: #121316;
+                --card-bg: #1c1917;
+                --card-border: rgba(255, 255, 255, 0.08);
+                --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.6), 0 16px 40px -8px rgba(0, 0, 0, 0.8);
+                --text-primary: #f5f5f4;
+                --text-secondary: #a8a29e;
+                --text-muted: #78716c;
+                --accent-primary: #f5f5f4;
+                --accent-primary-hover: #e7e5e4;
+                --accent-secondary-bg: #292524;
+                --accent-secondary-hover: #44403c;
+                --accent-secondary-border: #57534e;
+                --accent-amber: #f59e0b;
+                --accent-amber-light: #fbbf24;
+                --badge-bg: rgba(245, 158, 11, 0.12);
+                --badge-border: rgba(245, 158, 11, 0.3);
+                --badge-text: #fbbf24;
+                --select-bg: #292524;
+                --select-border: #44403c;
+                --select-focus: #f59e0b;
+                --pill-bg: #292524;
+                --pill-active-bg: #44403c;
+                --pill-active-text: #f5f5f4;
+                --focal-frame-bg: #18181b;
+                --focal-frame-border: #27272a;
+            }
         }
 
         * {
@@ -166,31 +196,41 @@
         }
 
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans", sans-serif;
-            background-color: var(--bg-base);
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+            background-color: var(--bg-canvas);
             background-image:
-                radial-gradient(ellipse at 50% 0%, rgba(67, 56, 202, 0.18) 0%, transparent 60%),
-                radial-gradient(ellipse at 50% 100%, rgba(217, 119, 6, 0.08) 0%, transparent 55%);
+                radial-gradient(ellipse at 50% 0%, rgba(180, 83, 9, 0.03) 0%, transparent 60%),
+                radial-gradient(ellipse at 50% 100%, rgba(146, 64, 14, 0.04) 0%, transparent 60%);
             color: var(--text-primary);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 1.5rem 1rem;
+            padding: 2rem 1rem;
             -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            body {
+                background-image:
+                    radial-gradient(ellipse at 50% 0%, rgba(245, 158, 11, 0.04) 0%, transparent 60%),
+                    radial-gradient(ellipse at 50% 100%, rgba(245, 158, 11, 0.05) 0%, transparent 60%);
+            }
         }
 
         .container {
             width: 100%;
-            max-width: 620px;
+            max-width: 640px;
             background: var(--card-bg);
             border: 1px solid var(--card-border);
             border-radius: 24px;
             padding: 2.25rem 2rem;
             box-shadow: var(--card-shadow);
-            backdrop-filter: blur(16px);
             text-align: center;
+            position: relative;
+            transition: background-color 0.25s ease, border-color 0.25s ease;
         }
 
         .category-badge {
@@ -204,187 +244,258 @@
             border: 1px solid var(--badge-border);
             padding: 0.35rem 0.85rem;
             border-radius: 9999px;
-            margin-bottom: 1.25rem;
-        }
-
-        /* Tríptico Horizontal de Muestra (Decisión 1-A & 8-A) */
-        .triptych-wrapper {
-            margin: 0.75rem auto 1.5rem auto;
-            max-width: 520px;
-            width: 100%;
-        }
-
-        .triptych-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: baseline;
-            margin-bottom: 0.65rem;
-            padding: 0 0.25rem;
-        }
-
-        .triptych-title {
-            font-size: 0.85rem;
-            font-weight: 600;
-            color: var(--text-primary);
-        }
-
-        .triptych-hint {
-            font-size: 0.72rem;
-            color: var(--text-muted);
-        }
-
-        .triptych-cards {
-            display: flex;
-            gap: 0.75rem;
-            justify-content: center;
-        }
-
-        .triptych-card {
-            flex: 1;
-            max-width: 160px;
-            height: 110px;
-            cursor: pointer;
-            position: relative;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 8px 20px -4px rgba(0, 0, 0, 0.5);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
-            background: #000;
-        }
-
-        .triptych-card:hover {
-            transform: translateY(-3px) scale(1.03);
-            box-shadow: 0 14px 28px -6px rgba(67, 56, 202, 0.45);
-            border-color: rgba(99, 102, 241, 0.45);
-        }
-
-        .triptych-card img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            object-position: top center;
-            display: block;
-        }
-
-        .triptych-badge {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: linear-gradient(to top, rgba(11, 15, 25, 0.95) 0%, rgba(11, 15, 25, 0.4) 75%, transparent 100%);
-            padding: 0.8rem 0.25rem 0.35rem 0.25rem;
-            font-size: 0.7rem;
-            font-weight: 600;
-            color: #e2e8f0;
-            text-align: center;
-        }
-
-        /* Modal de Alta Resolución (Decisión 8-A) */
-        #plateModal {
-            max-width: 680px;
-            padding: 1.5rem;
-        }
-
-        .plate-modal-view {
-            background: #ffffff;
-            border-radius: 12px;
-            padding: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            max-height: 68vh;
-            overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-        }
-
-        .plate-modal-view img {
-            max-width: 100%;
-            max-height: 65vh;
-            object-fit: contain;
-            display: block;
-        }
-
-        .plate-modal-caption {
-            font-size: 0.88rem;
-            font-weight: 500;
-            color: #cbd5e1;
-            margin-top: 1rem;
-            text-align: center;
+            margin-bottom: 1.15rem;
         }
 
         h1 {
-            font-size: 1.85rem;
-            font-weight: 700;
+            font-family: "EB Garamond", Garamond, Georgia, "Times New Roman", serif;
+            font-size: 2.15rem;
+            font-weight: 600;
             color: var(--text-primary);
-            margin-bottom: 0.5rem;
-            letter-spacing: -0.025em;
-            line-height: 1.25;
+            margin-bottom: 0.4rem;
+            letter-spacing: -0.015em;
+            line-height: 1.2;
+            font-feature-settings: "liga" 1, "kern" 1;
         }
 
         .subtitle {
             color: var(--text-secondary);
-            font-size: 1rem;
+            font-size: 1.02rem;
             font-weight: 400;
-            margin-bottom: 1.5rem;
-            line-height: 1.5;
+            margin-bottom: 1.25rem;
+            line-height: 1.45;
         }
 
+        /* Segmented Paper Toggle: Carta vs A4 (Decisión 6-B) */
+        .paper-toggle-wrapper {
+            margin: 0.75rem 0 1.25rem 0;
+            display: flex;
+            justify-content: center;
+        }
+
+        .paper-toggle {
+            display: inline-flex;
+            background: var(--pill-bg);
+            padding: 4px;
+            border-radius: 9999px;
+            border: 1px solid var(--card-border);
+            gap: 2px;
+        }
+
+        .paper-toggle-btn {
+            background: transparent;
+            border: none;
+            border-radius: 9999px;
+            padding: 0.45rem 1rem;
+            font-size: 0.84rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-family: inherit;
+        }
+
+        .paper-toggle-btn.active {
+            background: var(--pill-active-bg);
+            color: var(--pill-active-text);
+            font-weight: 600;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+        }
+
+        .paper-sub {
+            font-size: 0.72rem;
+            opacity: 0.75;
+            font-weight: 400;
+        }
+
+        /* Visor Focal de Lámina Abierta (Decisión 4-B & 5-A) */
+        .focal-viewer {
+            margin: 0.5rem auto 1.5rem auto;
+            max-width: 520px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .focal-plate-frame {
+            width: 100%;
+            height: 330px;
+            background: var(--focal-frame-bg);
+            border: 1px solid var(--focal-frame-border);
+            border-radius: 16px;
+            overflow: hidden;
+            position: relative;
+            cursor: zoom-in;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.08);
+            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+        }
+
+        .focal-plate-frame:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 28px -4px rgba(28, 25, 23, 0.12);
+            border-color: rgba(28, 25, 23, 0.25);
+        }
+
+        .focal-plate-frame img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: block;
+            user-select: none;
+            -webkit-user-drag: none;
+        }
+
+        .focal-plate-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(28, 25, 23, 0.88) 0%, rgba(28, 25, 23, 0.55) 65%, transparent 100%);
+            color: #ffffff;
+            padding: 1.25rem 1rem 0.65rem 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            gap: 0.75rem;
+            text-align: left;
+        }
+
+        [dir="rtl"] .focal-plate-overlay {
+            text-align: right;
+        }
+
+        .focal-plate-verse {
+            font-family: "EB Garamond", Garamond, Georgia, serif;
+            font-size: 0.96rem;
+            font-style: italic;
+            line-height: 1.35;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+            flex: 1;
+        }
+
+        .focal-plate-zoom-hint {
+            font-size: 0.72rem;
+            opacity: 0.9;
+            white-space: nowrap;
+            font-family: system-ui, sans-serif;
+            font-style: normal;
+        }
+
+        .focal-controls {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 0.85rem;
+            width: 100%;
+        }
+
+        .focal-btn {
+            background: var(--accent-secondary-bg);
+            border: 1px solid var(--accent-secondary-border);
+            color: var(--text-primary);
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .focal-btn:hover {
+            background: var(--accent-secondary-hover);
+            transform: scale(1.05);
+        }
+
+        .focal-plate-indicator {
+            font-size: 0.84rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            min-width: 120px;
+            text-align: center;
+        }
+
+        .focal-quick-actions {
+            display: flex;
+            gap: 0.65rem;
+            margin-top: 0.75rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-micro-action {
+            background: transparent;
+            border: 1px solid var(--accent-secondary-border);
+            color: var(--text-secondary);
+            border-radius: 9999px;
+            padding: 0.4rem 0.85rem;
+            font-size: 0.82rem;
+            font-weight: 500;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            transition: all 0.15s ease;
+            font-family: inherit;
+        }
+
+        .btn-micro-action:hover {
+            background: var(--accent-secondary-bg);
+            color: var(--text-primary);
+            border-color: var(--text-muted);
+            transform: translateY(-1px);
+        }
+
+        /* Selector de Idioma Wikimedia ULS (Decisión 9-B) */
         .language-wrapper {
-            margin: 1.25rem 0 1.75rem 0;
+            margin: 1.15rem 0 1.5rem 0;
             display: flex;
             flex-direction: column;
             align-items: center;
             gap: 0.45rem;
         }
 
-        .language-label {
-            font-size: 0.8rem;
-            font-weight: 600;
-            color: var(--text-secondary);
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-
-        .select-custom-wrapper {
-            position: relative;
-            width: 100%;
-            max-width: 300px;
-        }
-
-        select {
-            width: 100%;
-            appearance: none;
-            -webkit-appearance: none;
-            background: var(--select-bg);
+        .uls-trigger-btn {
+            background: var(--accent-secondary-bg);
+            border: 1px solid var(--accent-secondary-border);
             color: var(--text-primary);
-            border: 1px solid var(--select-border);
-            padding: 0.7rem 2.4rem 0.7rem 1rem;
-            font-size: 0.95rem;
-            font-weight: 500;
+            padding: 0.65rem 1.25rem;
             border-radius: 12px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.65rem;
             cursor: pointer;
-            transition: border-color 0.2s, box-shadow 0.2s;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
             font-family: inherit;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
         }
 
-        select:hover {
-            border-color: #475569;
+        .uls-trigger-btn:hover {
+            background: var(--accent-secondary-hover);
+            border-color: var(--text-secondary);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(28, 25, 23, 0.08);
         }
 
-        select:focus {
-            outline: none;
-            border-color: var(--select-focus);
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25);
-        }
-
-        .select-chevron {
-            position: absolute;
-            right: 1rem;
-            top: 50%;
-            transform: translateY(-50%);
-            pointer-events: none;
-            color: var(--text-muted);
+        .uls-badge {
+            background: var(--badge-bg);
+            color: var(--badge-text);
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 0.15rem 0.5rem;
+            border-radius: 9999px;
+            border: 1px solid var(--badge-border);
         }
 
         /* Botones de Descarga: Jerarquía LTR (Decisiones 1-A y 2-A) */
@@ -407,7 +518,7 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 1rem 1.15rem;
+            padding: 1.05rem 1.15rem;
             border-radius: 14px;
             text-decoration: none;
             transition: transform 0.15s ease, box-shadow 0.2s ease, border-color 0.2s ease;
@@ -423,38 +534,46 @@
 
         /* Botón Izquierdo: Láminas Individuales (Primario) */
         .btn-sheets {
-            background: linear-gradient(135deg, var(--accent-primary) 0%, #4f46e5 100%);
+            background: var(--accent-primary);
             color: #ffffff;
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            box-shadow: 0 8px 20px -4px rgba(67, 56, 202, 0.45);
+            border: 1px solid rgba(0, 0, 0, 0.2);
+            box-shadow: 0 4px 14px -2px rgba(28, 25, 23, 0.22);
         }
 
         .btn-sheets:hover {
-            box-shadow: 0 12px 24px -4px rgba(79, 70, 229, 0.6);
+            background: var(--accent-primary-hover);
+            box-shadow: 0 8px 20px -3px rgba(28, 25, 23, 0.32);
         }
 
+        
+        @media (prefers-color-scheme: dark) {
+            .btn-sheets {
+                color: #1c1917 !important;
+                border: 1px solid rgba(255, 255, 255, 0.15);
+                box-shadow: 0 4px 14px -2px rgba(0, 0, 0, 0.5);
+            }
+            .btn-modal-action {
+                color: #1c1917 !important;
+            }
+            .step-num {
+                color: #1c1917 !important;
+            }
+            .uls-chip:hover {
+                color: #1c1917 !important;
+            }
+        }
+    
         /* Botón Derecho: Cuadernillo Físico (Secundario Editorial) */
         .btn-booklet {
             background-color: var(--accent-secondary-bg);
-            color: #f1f5f9;
+            color: var(--text-primary);
             border: 1px solid var(--accent-secondary-border);
-            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
         }
 
         .btn-booklet:hover {
             background-color: var(--accent-secondary-hover);
-            border-color: #64748b;
-        }
-
-        .support-link {
-            color: var(--text-muted);
-            text-decoration: underline;
-            font-size: inherit;
-            transition: color 0.2s;
-        }
-
-        .support-link:hover {
-            color: var(--text-primary);
+            border-color: var(--text-muted);
         }
 
         .btn-header {
@@ -478,11 +597,30 @@
             line-height: 1.3;
         }
 
+        .fold-guide-trigger {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            text-decoration: underline;
+            background: none;
+            border: none;
+            cursor: pointer;
+            margin-top: 0.5rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            transition: color 0.15s;
+            font-family: inherit;
+        }
+
+        .fold-guide-trigger:hover {
+            color: var(--accent-amber);
+        }
+
         /* Disparador Modal de Transferencia Óptica (Decisión 6-A) */
         .optical-trigger {
             background: transparent;
-            border: 1px solid rgba(217, 119, 6, 0.35);
-            color: #fbbf24;
+            border: 1px solid rgba(146, 64, 14, 0.3);
+            color: var(--accent-amber);
             padding: 0.65rem 1.1rem;
             border-radius: 9999px;
             font-size: 0.85rem;
@@ -490,16 +628,15 @@
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
-            margin-top: 1.5rem;
+            margin-top: 1.35rem;
             cursor: pointer;
             transition: all 0.2s ease;
             font-family: inherit;
         }
 
         .optical-trigger:hover {
-            background: rgba(217, 119, 6, 0.12);
-            border-color: var(--accent-amber-light);
-            color: #fde68a;
+            background: var(--badge-bg);
+            border-color: var(--accent-amber);
             transform: translateY(-1px);
         }
 
@@ -515,11 +652,11 @@
             align-items: center;
             justify-content: center;
             gap: 0.45rem;
-            margin-top: 1.5rem;
+            margin-top: 1.35rem;
             font-size: 0.8rem;
             color: var(--text-muted);
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.06);
+            background: var(--accent-secondary-bg);
+            border: 1px solid var(--card-border);
             padding: 0.4rem 0.85rem;
             border-radius: 8px;
         }
@@ -533,29 +670,29 @@
         .footer-note {
             font-size: 0.8rem;
             color: var(--text-muted);
-            margin-top: 1.25rem;
+            margin-top: 1.15rem;
             line-height: 1.45;
             max-width: 520px;
             margin-left: auto;
             margin-right: auto;
         }
 
-        /* Estilos de Modales Nativos <dialog> */
+        /* Modales Nativos <dialog> */
         dialog {
             margin: auto;
-            background: #111827;
+            background: var(--card-bg);
             color: var(--text-primary);
-            border: 1px solid rgba(255, 255, 255, 0.15);
+            border: 1px solid var(--card-border);
             border-radius: 20px;
             padding: 2rem;
             max-width: 540px;
             width: 90%;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.9);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
         }
 
         dialog::backdrop {
-            background: rgba(0, 0, 0, 0.75);
-            backdrop-filter: blur(6px);
+            background: rgba(0, 0, 0, 0.65);
+            backdrop-filter: blur(4px);
         }
 
         .modal-header {
@@ -568,7 +705,7 @@
         .modal-title {
             font-size: 1.2rem;
             font-weight: 700;
-            color: #f8fafc;
+            color: var(--text-primary);
         }
 
         .modal-close {
@@ -583,7 +720,7 @@
         }
 
         .modal-close:hover {
-            color: #fff;
+            color: var(--text-primary);
         }
 
         .modal-steps {
@@ -594,6 +731,10 @@
             margin-bottom: 1.5rem;
         }
 
+        [dir="rtl"] .modal-steps {
+            text-align: right;
+        }
+
         .step-item {
             display: flex;
             gap: 0.85rem;
@@ -602,7 +743,7 @@
 
         .step-num {
             background: var(--accent-primary);
-            color: #fff;
+            color: #ffffff;
             width: 28px;
             height: 28px;
             border-radius: 50%;
@@ -618,7 +759,7 @@
         .step-content h4 {
             font-size: 0.95rem;
             font-weight: 600;
-            color: #f1f5f9;
+            color: var(--text-primary);
             margin-bottom: 0.2rem;
         }
 
@@ -637,7 +778,7 @@
 
         .btn-modal-action {
             background: var(--accent-primary);
-            color: #fff;
+            color: #ffffff;
             padding: 0.65rem 1.2rem;
             border-radius: 10px;
             text-decoration: none;
@@ -648,6 +789,7 @@
             gap: 0.4rem;
             border: none;
             cursor: pointer;
+            font-family: inherit;
         }
 
         .btn-modal-action:hover {
@@ -655,138 +797,105 @@
         }
 
         .btn-modal-secondary {
-            background: rgba(255, 255, 255, 0.08);
-            color: #cbd5e1;
+            background: var(--accent-secondary-bg);
+            color: var(--text-primary);
             padding: 0.65rem 1.1rem;
             border-radius: 10px;
             font-weight: 500;
             font-size: 0.9rem;
-            border: none;
+            border: 1px solid var(--accent-secondary-border);
             cursor: pointer;
+            font-family: inherit;
         }
 
         .btn-modal-secondary:hover {
-            background: rgba(255, 255, 255, 0.15);
+            background: var(--accent-secondary-hover);
         }
 
-        /* Estilos del Carrusel de Muestras (Decisión 9-A) */
-        .carousel-view {
-            position: relative;
-            background: #000;
+        /* Micro-instructivo de plegado (Decisión 7-B & GOLD-214) */
+        .fold-steps {
+            display: flex;
+            flex-direction: column;
+            gap: 0.85rem;
+            margin: 1rem 0;
+            text-align: left;
+        }
+
+        [dir="rtl"] .fold-steps {
+            text-align: right;
+        }
+
+        .fold-step {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            background: var(--accent-secondary-bg);
+            border: 1px solid var(--card-border);
+            padding: 0.85rem 1rem;
             border-radius: 12px;
-            overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            margin-bottom: 1rem;
-            max-height: 440px;
+        }
+
+        .fold-icon {
+            color: var(--accent-amber);
+            flex-shrink: 0;
             display: flex;
             align-items: center;
             justify-content: center;
         }
 
-        .carousel-view img {
-            max-width: 100%;
-            max-height: 440px;
-            object-fit: contain;
-            display: block;
-        }
-
-        .carousel-caption {
-            font-size: 0.85rem;
-            color: #cbd5e1;
-            margin-bottom: 1rem;
-            min-height: 2.4em;
-        }
-
-        .carousel-nav {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-top: 0.5rem;
-        }
-
-        .carousel-btn {
-            background: rgba(255, 255, 255, 0.1);
-            color: #fff;
-            border: none;
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
-            cursor: pointer;
+        .fold-text h4 {
+            font-size: 0.9rem;
             font-weight: 600;
-            font-size: 0.85rem;
-            transition: background 0.15s;
-        }
-
-        .carousel-btn:hover {
-            background: rgba(255, 255, 255, 0.2);
-        }
-
-        .carousel-dots {
-            display: flex;
-            gap: 0.4rem;
-        }
-
-        .dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.25);
-            cursor: pointer;
-            transition: background 0.2s, transform 0.2s;
-        }
-
-        .dot.active {
-            background: var(--accent-amber-light);
-            transform: scale(1.3);
-        }
-    
-        /* Universal Language Selector (ULS) Modal & Trigger (Decisión 2-A & 4-A) */
-        .uls-trigger-btn {
-            background: rgba(30, 41, 59, 0.75);
-            border: 1px solid rgba(255, 255, 255, 0.14);
             color: var(--text-primary);
-            padding: 0.65rem 1.25rem;
-            border-radius: 12px;
-            font-size: 0.95rem;
-            font-weight: 600;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.65rem;
-            cursor: pointer;
-            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-            backdrop-filter: blur(8px);
-            font-family: inherit;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+            margin-bottom: 0.2rem;
         }
 
-        .uls-trigger-btn:hover {
-            background: rgba(51, 65, 85, 0.9);
-            border-color: rgba(99, 102, 241, 0.5);
-            transform: translateY(-1px);
-            box-shadow: 0 6px 16px rgba(99, 102, 241, 0.2);
+        .fold-text p {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            line-height: 1.35;
         }
 
-        .uls-badge {
-            background: rgba(99, 102, 241, 0.25);
-            color: #c7d2fe;
-            font-size: 0.75rem;
-            font-weight: 700;
-            padding: 0.15rem 0.5rem;
+        /* Selector Universal de Idiomas (ULS) Wikimedia Ergonomizado */
+        .uls-quick-chips {
+            display: flex;
+            gap: 0.45rem;
+            margin-bottom: 0.85rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .uls-chip {
+            background: var(--accent-secondary-bg);
+            border: 1px solid var(--accent-secondary-border);
+            color: var(--text-primary);
+            padding: 0.35rem 0.8rem;
             border-radius: 9999px;
-            border: 1px solid rgba(99, 102, 241, 0.4);
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            font-family: inherit;
+        }
+
+        .uls-chip:hover {
+            background: var(--accent-primary);
+            color: #ffffff;
+            border-color: var(--text-secondary);
         }
 
         .uls-search-box {
-            margin-bottom: 1.25rem;
+            margin-bottom: 1.15rem;
             position: relative;
         }
 
         .uls-search-box input {
             width: 100%;
             padding: 0.75rem 1rem 0.75rem 2.6rem;
-            background: rgba(15, 23, 42, 0.85);
-            border: 1px solid rgba(255, 255, 255, 0.16);
+            background: var(--accent-secondary-bg);
+            border: 1px solid var(--accent-secondary-border);
             border-radius: 10px;
-            color: #f8fafc;
+            color: var(--text-primary);
             font-size: 0.95rem;
             font-family: inherit;
             outline: none;
@@ -795,7 +904,7 @@
 
         .uls-search-box input:focus {
             border-color: var(--select-focus);
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25);
+            box-shadow: 0 0 0 3px rgba(180, 83, 9, 0.15);
         }
 
         .uls-search-icon {
@@ -817,17 +926,18 @@
         }
 
         .uls-card {
-            background: rgba(30, 41, 59, 0.55);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: var(--accent-secondary-bg);
+            border: 1px solid var(--card-border);
             border-radius: 10px;
             padding: 0.7rem 0.75rem;
+            min-height: 52px;
             text-align: left;
             cursor: pointer;
             transition: all 0.15s ease;
             display: flex;
             flex-direction: column;
             gap: 0.2rem;
-            position: relative;
+            justify-content: center;
         }
 
         [dir="rtl"] .uls-card {
@@ -835,21 +945,21 @@
         }
 
         .uls-card:hover {
-            background: rgba(67, 56, 202, 0.25);
-            border-color: rgba(99, 102, 241, 0.45);
+            background: var(--accent-secondary-hover);
+            border-color: var(--text-secondary);
             transform: translateY(-1px);
         }
 
         .uls-card.active {
-            background: rgba(67, 56, 202, 0.4);
-            border-color: #6366f1;
-            box-shadow: 0 0 0 1px #6366f1;
+            background: var(--card-bg);
+            border-color: var(--text-secondary);
+            box-shadow: 0 0 0 2px var(--accent-primary);
         }
 
         .uls-card-autonym {
             font-size: 0.95rem;
             font-weight: 700;
-            color: #f8fafc;
+            color: var(--text-primary);
             line-height: 1.2;
         }
 
@@ -863,9 +973,68 @@
 
         .uls-card-script {
             font-size: 0.68rem;
-            color: #818cf8;
+            color: var(--accent-amber);
             font-family: monospace;
             text-transform: uppercase;
+        }
+
+        /* Modal Zoom de Lámina en Alta Resolución */
+        #plateModal {
+            max-width: 680px;
+            padding: 1.5rem;
+        }
+
+        .plate-modal-view {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            max-height: 68vh;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+        }
+
+        .plate-modal-view img {
+            max-width: 100%;
+            max-height: 65vh;
+            object-fit: contain;
+            display: block;
+        }
+
+        .plate-modal-caption {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            margin-top: 1rem;
+            text-align: center;
+            font-family: "EB Garamond", Garamond, Georgia, serif;
+            font-style: italic;
+        }
+
+        /* Notificación Toast */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--text-primary);
+            color: var(--card-bg);
+            padding: 0.75rem 1.4rem;
+            border-radius: 9999px;
+            font-size: 0.88rem;
+            font-weight: 600;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+            opacity: 0;
+            pointer-events: none;
+            transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease;
+            z-index: 9999;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
         }
 
         .sr-only {
@@ -880,6 +1049,53 @@
             border: 0;
         }
 
+        /* Reglas de Impresión Directa a 1-Clic (@media print - Decisión 8-B & GOLD-138) */
+        @media print {
+            body {
+                background: #ffffff !important;
+                color: #000000 !important;
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+
+            .container {
+                box-shadow: none !important;
+                border: none !important;
+                padding: 0 !important;
+                max-width: 100% !important;
+                background: #ffffff !important;
+            }
+
+            header, nav, .category-badge, h1, .subtitle, .paper-toggle-wrapper,
+            .language-wrapper, .actions-group, .optical-trigger, .offline-badge,
+            .footer-note, footer, dialog, .focal-controls, .focal-quick-actions,
+            .focal-plate-overlay, .toast, .fold-guide-trigger {
+                display: none !important;
+            }
+
+            .focal-viewer {
+                margin: 0 !important;
+                max-width: 100% !important;
+            }
+
+            .focal-plate-frame {
+                border: none !important;
+                box-shadow: none !important;
+                max-height: none !important;
+                height: 98vh !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+            }
+
+            .focal-plate-frame img {
+                max-width: 100% !important;
+                max-height: 98vh !important;
+                width: auto !important;
+                height: auto !important;
+                object-fit: contain !important;
+            }
+        }
     </style>
 </head>
 
@@ -890,32 +1106,55 @@
         <h1 id="workTitle">خداوند یسوع کے مبارک لوگ</h1>
         <p class="subtitle" id="workDesc">مبارکبادوں کی رنگ بھرنے والی کتاب (متی ۵)</p>
 
-        <!-- Tríptico Horizontal de Muestra (Decisión 1-A & 8-A) -->
-        <div class="triptych-wrapper">
-            <div class="triptych-header">
-                <span class="triptych-title" id="triptychTitle">Láminas Destacadas</span>
-                <span class="triptych-hint" id="triptychHint">Toca cualquier lámina para ver en alta resolución</span>
-            </div>
-            <div class="triptych-cards">
-                <div class="triptych-card" onclick="openPlateModal('0007')" role="button" tabindex="0"
-                    title="Ver Lámina 7 en alta resolución">
-                    <img src="/web/preview/0007.png" alt="Lámina 7 - Mt 5:3b">
-                    <div class="triptych-badge">Mt 5:3b</div>
-                </div>
-                <div class="triptych-card" onclick="openPlateModal('0018')" role="button" tabindex="0"
-                    title="Ver Lámina 18 en alta resolución">
-                    <img src="/web/preview/0018.png" alt="Lámina 18 - Mt 5:9a">
-                    <div class="triptych-badge">Mt 5:9a</div>
-                </div>
-                <div class="triptych-card" onclick="openPlateModal('0016')" role="button" tabindex="0"
-                    title="Ver Lámina 16 en alta resolución">
-                    <img src="/web/preview/0016.png" alt="Lámina 16 - Mt 5:8a">
-                    <div class="triptych-badge">Mt 5:8a</div>
-                </div>
+        <!-- Selector de Formato de Papel: Carta vs A4 (Decisión 6-B) -->
+        <div class="paper-toggle-wrapper">
+            <div class="paper-toggle" role="radiogroup" aria-label="Formato de papel">
+                <button type="button" id="toggleCarta" class="paper-toggle-btn active" role="radio" aria-checked="true" onclick="setPaperFormat('letter')">
+                    <span class="paper-name" id="nameCarta">لیٹر</span>
+                    <span class="paper-sub" id="subCarta">امریکہ</span>
+                </button>
+                <button type="button" id="toggleA4" class="paper-toggle-btn" role="radio" aria-checked="false" onclick="setPaperFormat('a4')">
+                    <span class="paper-name" id="nameA4">A4</span>
+                    <span class="paper-sub" id="subA4">بین الاقوامی</span>
+                </button>
             </div>
         </div>
 
-                <div class="language-wrapper">
+        <!-- Visor Focal de Lámina Abierta con Buffer Virtual ±1 (Decisión 4-B & 5-A) -->
+        <div class="focal-viewer" id="focalViewer">
+            <div class="focal-plate-frame" id="focalPlateFrame" onclick="openActivePlateZoom()" role="button" tabindex="0" title="Ver lámina en alta resolución">
+                <img id="focalPlateImg" src="/dist/ur/v1/mostrador/24.jpg" alt="Lámina para colorear">
+                <div class="focal-plate-overlay">
+                    <span class="focal-plate-verse" id="focalPlateVerse">”…کیونکہ انہوں نے ان نبیوں کو بھی ستایا جو تم سے پہلے تھے“ (متی 5:12b)</span>
+                    <span class="focal-plate-zoom-hint" id="focalPlateZoomHint">🔍 <span id="focalPlateZoomHintText">بڑا کرنے کے لیے ٹیپ کریں</span></span>
+                </div>
+            </div>
+            <div class="focal-controls">
+                <button type="button" class="focal-btn" onclick="prevPlate()" aria-label="Lámina anterior" id="btnPrevPlate">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                    <span class="sr-only">Anterior</span>
+                </button>
+                <div class="focal-plate-indicator">
+                    <span id="plateIndexText">تصویر ۲۴ از ۲۸</span>
+                </div>
+                <button type="button" class="focal-btn" onclick="nextPlate()" aria-label="Lámina siguiente" id="btnNextPlate">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                    <span class="sr-only">Siguiente</span>
+                </button>
+            </div>
+            <div class="focal-quick-actions">
+                <button type="button" class="btn-micro-action" onclick="printActivePlate()" id="btnPrintPlate">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+                    <span id="btnPrintPlateText">یہ تصویر پرنٹ کریں</span>
+                </button>
+                <button type="button" class="btn-micro-action" onclick="shareResource()" id="btnShareWork">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
+                    <span id="btnShareWorkText">شیئر کریں</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="language-wrapper">
             <label for="langSelect" class="sr-only" id="langLabel">زبان</label>
             <button type="button" class="uls-trigger-btn" id="ulsTriggerBtn" onclick="openLangModal()" aria-haspopup="dialog" aria-expanded="false">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -923,7 +1162,7 @@
                     <line x1="2" y1="12" x2="22" y2="12"></line>
                     <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
                 </svg>
-                <span id="ulsCurrentLang">Español</span>
+                <span id="ulsCurrentLang">زبان</span>
                 <span class="uls-badge">16</span>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                     <polyline points="6 9 12 15 18 9"></polyline>
@@ -950,7 +1189,6 @@
                 <option value="fa">فارسی</option>
             </select>
         </div>
-        </div>
 
         <!-- Botones de Descarga: Jerarquía LTR (Decisiones 1-A y 2-A) -->
         <!-- En LTR: Izquierda = Láminas Sueltas (Sheets), Derecha = Cuadernillo Físico (Booklet) -->
@@ -971,19 +1209,22 @@
                 <span class="btn-subtitle" id="btnSubSheets">اسکرین پر پڑھنے یا ایک ایک کر کے رنگ بھرنے کے لیے</span>
             </a>
 
-            <a id="linkBooklet" href="/dist/ur/v1/mostrador/felices-ur-v1-booklet.pdf" class="btn-card btn-booklet"
-                download="felices-ur-v1-booklet.pdf">
-                <div class="btn-header">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round">
-                        <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"></path>
-                        <path d="M6 6h10"></path>
-                        <path d="M6 10h10"></path>
-                    </svg>
-                    <span id="btnTitleBooklet">کتابچہ (PDF)</span>
-                </div>
-                <span class="btn-subtitle" id="btnSubBooklet">درمیان سے فولڈ اور اسٹیپل کر کے کتاب بنانے کے لیے</span>
-            </a>
+            <div style="display: flex; flex-direction: column; flex: 1; align-items: center;">
+                <a id="linkBooklet" href="/dist/ur/v1/mostrador/felices-ur-v1-booklet.pdf" class="btn-card btn-booklet"
+                    download="felices-ur-v1-booklet.pdf" style="width: 100%;">
+                    <div class="btn-header">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round">
+                            <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"></path>
+                            <path d="M6 6h10"></path>
+                            <path d="M6 10h10"></path>
+                        </svg>
+                        <span id="btnTitleBooklet">کتابچہ (PDF)</span>
+                    </div>
+                    <span class="btn-subtitle" id="btnSubBooklet">درمیان سے فولڈ اور اسٹیپل کر کے کتاب بنانے کے لیے</span>
+                </a>
+                <button type="button" class="fold-guide-trigger" onclick="openModal('foldModal')" id="foldGuideTrigger">📖 چاپ اور موڑنے کا طریقہ</button>
+            </div>
         </div>
 
         <!-- Transferencia Óptica Modal (Decisión 6-A) -->
@@ -1021,11 +1262,17 @@
         </div>
     </main>
 
-    <!-- Modal ULS: Selector Universal de Idiomas (Decisión 2-A & 4-A) -->
+    <!-- Modal ULS: Selector Universal de Idiomas (Decisión 2-A & 4-A & 9-B) -->
     <dialog id="langModal" style="max-width: 660px; width: 92%;">
         <div class="modal-header">
             <h3 class="modal-title" id="langModalTitle">Seleccionar Idioma / Select Language</h3>
             <button class="modal-close" onclick="closeModal('langModal')" aria-label="Cerrar">✕</button>
+        </div>
+        <div class="uls-quick-chips">
+            <button type="button" class="uls-chip" onclick="selectLanguage('es')">🇪🇸 Español</button>
+            <button type="button" class="uls-chip" onclick="selectLanguage('en')">🇺🇸 English</button>
+            <button type="button" class="uls-chip" onclick="selectLanguage('zh-Hans')">🇨🇳 简体中文</button>
+            <button type="button" class="uls-chip" onclick="selectLanguage('ar')">🇸🇦 العربية</button>
         </div>
         <div class="uls-search-box">
             <svg class="uls-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -1187,6 +1434,59 @@
             </p>
         </form>
     </dialog>
+
+    <!-- Modal 5: Micro-instructivo de Plegado a Caballo (Decisión 7-B & GOLD-214) -->
+    <dialog id="foldModal" style="max-width: 480px; width: 92%;">
+        <div class="modal-header">
+            <h3 class="modal-title" id="foldModalTitle">چاپ اور موڑنے کا طریقہ</h3>
+            <button class="modal-close" onclick="closeModal('foldModal')" aria-label="Cerrar">✕</button>
+        </div>
+        <div class="fold-steps">
+            <div class="fold-step">
+                <div class="fold-icon">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="18" height="18" rx="2"></rect>
+                        <line x1="12" y1="3" x2="12" y2="21" stroke-dasharray="2 2"></line>
+                    </svg>
+                </div>
+                <div class="fold-text">
+                    <h4 id="foldStep1Title">۱. دونوں طرف پرنٹ کریں</h4>
+                    <p id="foldStep1Desc">پرنٹر سیٹنگز میں شارٹ ایج پر دونوں طرف پرنٹنگ منتخب کریں۔</p>
+                </div>
+            </div>
+            <div class="fold-step">
+                <div class="fold-icon">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"></path>
+                        <path d="M6 6h10"></path>
+                    </svg>
+                </div>
+                <div class="fold-text">
+                    <h4 id="foldStep2Title">۲. درمیان سے موڑیں</h4>
+                    <p id="foldStep2Desc">تمام صفحات کو ترتیب سے رکھیں اور درمیان سے ایک ساتھ موڑیں۔</p>
+                </div>
+            </div>
+            <div class="fold-step">
+                <div class="fold-icon">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="4" y="2" width="16" height="20" rx="2"></rect>
+                        <line x1="4" y1="7" x2="7" y2="7" stroke-width="3"></line>
+                        <line x1="4" y1="17" x2="7" y2="17" stroke-width="3"></line>
+                    </svg>
+                </div>
+                <div class="fold-text">
+                    <h4 id="foldStep3Title">۳. درمیان میں سٹیپل کریں</h4>
+                    <p id="foldStep3Desc">درمیانی موڑ پر ۲ سٹیپل لگائیں۔ رنگ بھرنے کے لیے تیار!</p>
+                </div>
+            </div>
+        </div>
+        <div class="modal-actions">
+            <button type="button" class="btn-modal-action" onclick="closeModal('foldModal')" id="btnFoldDismiss">سمجھ گیا</button>
+        </div>
+    </dialog>
+
+    <div id="toastNotification" class="toast" role="status" aria-live="polite"></div>
+
     <script>
         const languagePacks = [
         {
@@ -1479,6 +1779,698 @@
         }
 };
 
+        // Estado y funciones del Formato de Papel Carta vs A4 (Decisión 6-B)
+        let currentPaperFormat = 'letter';
+
+        function setPaperFormat(fmt) {
+            currentPaperFormat = fmt;
+            const btnCarta = document.getElementById('toggleCarta');
+            const btnA4 = document.getElementById('toggleA4');
+            if (fmt === 'letter') {
+                btnCarta?.classList.add('active');
+                btnCarta?.setAttribute('aria-checked', 'true');
+                btnA4?.classList.remove('active');
+                btnA4?.setAttribute('aria-checked', 'false');
+            } else {
+                btnA4?.classList.add('active');
+                btnA4?.setAttribute('aria-checked', 'true');
+                btnCarta?.classList.remove('active');
+                btnCarta?.setAttribute('aria-checked', 'false');
+            }
+            try {
+                localStorage.setItem('ekovoz_paper', fmt);
+            } catch (_) {}
+            updateDownloadLinks();
+        }
+
+        function updateDownloadLinks() {
+            const lang = document.getElementById('langSelect')?.value || 'es';
+            const distLang = lang === 'zh' ? 'zh-Hans' : lang;
+            const sheetsLink = document.getElementById('linkSheets');
+            const bookletLink = document.getElementById('linkBooklet');
+            if (!sheetsLink || !bookletLink) return;
+
+            const sheetsName = `felices-${distLang}-v1-sheets.pdf`;
+            const bookletName = `felices-${distLang}-v1-booklet.pdf`;
+
+            if (currentPaperFormat === 'a4') {
+                sheetsLink.href = `/dist/${distLang}/v1/campo/a4/${sheetsName}`;
+                bookletLink.href = `/dist/${distLang}/v1/campo/a4/${bookletName}`;
+            } else {
+                sheetsLink.href = `/dist/${distLang}/v1/mostrador/${sheetsName}`;
+                bookletLink.href = `/dist/${distLang}/v1/mostrador/${bookletName}`;
+            }
+            sheetsLink.setAttribute('download', sheetsName);
+            bookletLink.setAttribute('download', bookletName);
+        }
+
+        // Estado y funciones del Visor Focal con Buffer Virtual ±1 (Decisión 4-B & 5-A)
+        let currentPlateIndex = 24; // Inicia en la Lámina 7 destacada
+        const TOTAL_PLATES = 28;
+        let preloadPrev = null;
+        let preloadNext = null;
+
+        const plateVersesData = {
+        "1": {
+                "es": "Los felices del Señor Jesús",
+                "en": "The blessed of the Lord Jesus",
+                "fr": "Les heureux du Seigneur Jésus",
+                "pt": "Os bem-aventurados do Senhor Jesus",
+                "it": "I beati del Signore Gesù",
+                "id": "Mereka yang Berbahagia dari Tuhan Yesus",
+                "tr": "Rab İsa'nın Mutlu Olanları",
+                "ru": "Блаженные Господа Иисуса",
+                "zh-Hans": "主耶稣蒙福的百姓",
+                "zh": "主耶稣蒙福的百姓",
+                "ja": "主イエスのさいわいな人々",
+                "ko": "주 예수님의 복된 사람들",
+                "hi": "प्रभु यीशु के हर्षित लोग",
+                "bn": "প্রভু যীশুর আনন্দময় মানুষ",
+                "ar": "شعب الرب يسوع المبتهجون",
+                "ur": "خداوند یسوع کے مبارک لوگ",
+                "fa": "مبارک‌بادهای خداوند عیسی"
+        },
+        "2": {
+                "es": "Guarda / Respeto",
+                "en": "Flyleaf / Endpaper",
+                "fr": "Garde / Respect",
+                "pt": "Guarda / Respeito",
+                "it": "Guardia / Rispetto",
+                "id": "Halaman Pelindung",
+                "tr": "Kapak İçi / Boş Yaprak",
+                "ru": "Форзац",
+                "zh-Hans": "环衬 / 扉页",
+                "zh": "环衬 / 扉页",
+                "ja": "見返し",
+                "ko": "면지 / 보호지",
+                "hi": "सुरक्षा पृष्ठ",
+                "bn": "ফ্লাইলিফ",
+                "ar": "صفحة الحماية",
+                "ur": "حفاظتی صفحہ",
+                "fa": "صفحه سفید"
+        },
+        "3": {
+                "es": "Separador Gráfico",
+                "en": "Graphic Divider",
+                "fr": "Séparateur Graphique",
+                "pt": "Separador Gráfico",
+                "it": "Separatore Grafico",
+                "id": "Pembatas Grafis",
+                "tr": "Grafik Ayırıcı",
+                "ru": "Графический разделитель",
+                "zh-Hans": "图文分隔页",
+                "zh": "图文分隔页",
+                "ja": "グラフィック扉",
+                "ko": "간지",
+                "hi": "ग्राफिक विभाजक",
+                "bn": "গ্রাফিক বিভাজক",
+                "ar": "فاصل بصري",
+                "ur": "تصویری تقسیم کار",
+                "fa": "جداکننده گرافیکی"
+        },
+        "4": {
+                "es": "Página de Cortesía",
+                "en": "Courtesy Page",
+                "fr": "Page de Courtoisie",
+                "pt": "Página de Cortesia",
+                "it": "Pagina di Cortesia",
+                "id": "Halaman Penghormatan",
+                "tr": "Nezaket Sayfası",
+                "ru": "Авантитул",
+                "zh-Hans": "附赠页 / 献词页",
+                "zh": "附赠页 / 献词页",
+                "ja": "扉絵",
+                "ko": "속표지",
+                "hi": "सौजन्य पृष्ठ",
+                "bn": "সৌজন্য পাতা",
+                "ar": "صفحة التقدير",
+                "ur": "توصیفی صفحہ",
+                "fa": "صفحه ادای احترام"
+        },
+        "5": {
+                "es": "«y abriendo Su boca, les enseñaba diciendo:» (Mt 5:2)",
+                "en": "“and opening His mouth, He taught them, saying:” (Mt 5:2)",
+                "fr": "« et ouvrant sa bouche, il les enseigna : » (Mt 5:2)",
+                "pt": "«e, abrindo a sua boca, os ensinava, dizendo:» (Mt 5:2)",
+                "it": "«E aperta la bocca, insegnava loro dicendo:» (Mt 5:2)",
+                "id": "«Maka Yesus pun mulai berbicara dan mengajar mereka, kata-Nya:» (Mat 5:2)",
+                "tr": "«Ve ağzını açıp onlara öğreterek şöyle dedi:» (Mat 5:2)",
+                "ru": "«И Он, отверзши уста Свои, учил их, говоря:» (Мф 5:2)",
+                "zh-Hans": "“他开口教导他们，说：”（太 5:2）",
+                "zh": "“他开口教导他们，说：”（太 5:2）",
+                "ja": "「口を開き、彼らに教えて言われた：」（マタイ 5:2）",
+                "ko": "“입을 열어 그들을 가르쳐 이르시되:” (마 5:2)",
+                "hi": "“और अपना मुंह खोलकर, उसने उन्हें यह कहते हुए सिखाया:” (मत्ती 5:2)",
+                "bn": "“এবং তার মুখ খুলে, তিনি তাদের শিক্ষা দিয়ে, বললেন:” (মথি 5:2)",
+                "ar": "«وتحدث ليعلمهم قائلاً» (متى 5:2)",
+                "ur": "”اور اپنا منہ کھول کر ان کو یوں تعلیم دینے لگے:“ (متی 5:2)",
+                "fa": "« و دهان خود را گشوده، بدیشان تعلیم داده، گفت: » (متی 5:2)"
+        },
+        "6": {
+                "es": "«Felices los pobres de espíritu…» (Mt 5:3a)",
+                "en": "“Blessed are the poor in spirit” (Mt 5:3a)",
+                "fr": "« Heureux les pauvres en esprit » (Mt 5:3a)",
+                "pt": "«Bem-aventurados os pobres de espírito…» (Mt 5:3a)",
+                "it": "«Beati i poveri in spirito…» (Mt 5:3a)",
+                "id": "«Berbahagialah orang yang miskin di hadapan Allah…» (Mat 5:3a)",
+                "tr": "«Ne mutlu ruhta yoksul olanlara…» (Mat 5:3a)",
+                "ru": "«Блаженны нищие духом…» (Мф 5:3a)",
+                "zh-Hans": "“在灵里贫乏的人的人有福了……”（太 5:3a）",
+                "zh": "“在灵里贫乏的人的人有福了……”（太 5:3a）",
+                "ja": "「心の貧しい人々は幸いである……」（マタイ 5:3a）",
+                "ko": "“심령이 가난한 자는 복이 있나니…” (마 5:3a)",
+                "hi": "“धन्य हैं आत्मा में गरीब” (मत्ती 5:3a)",
+                "bn": "“সুখী তারাই যারা আত্মার দরিদ্র” (মথি 5:3a)",
+                "ar": "«المبتهجون هم المدركون لفقرهم الروحي» (متى 5:3a)",
+                "ur": "”مبارک ہیں وہ جو دل کے غریب ہیں…“ (متی 5:3a)",
+                "fa": "« خوشابه‌حال مسکینان در روح… » (متی 5:3a)"
+        },
+        "7": {
+                "es": "«…pues ellos son el reino del cielo» (Mt 5:3b)",
+                "en": "“…because they are the kingdom of heaven” (Mt 5:3b)",
+                "fr": "« ...car ils sont le royaume des cieux » (Mt 5:3b)",
+                "pt": "«…porque deles é o reino dos céus» (Mt 5:3b)",
+                "it": "«…perché di loro è il regno dei cieli» (Mt 5:3b)",
+                "id": "«…karena merekalah yang empunya Kerajaan Sorga» (Mat 5:3b)",
+                "tr": "«…çünkü Göklerin Hükümranlığı onlarındır» (Mat 5:3b)",
+                "ru": "«…ибо их есть Царство Небесное» (Мф 5:3b)",
+                "zh-Hans": "“……因为他们即为天国”（太 5:3b）",
+                "zh": "“……因为他们即为天国”（太 5:3b）",
+                "ja": "「……天の御国はその人たちのものだからです」（マタイ 5:3b）",
+                "ko": "“…천국이 그들의 것임이요” (마 5:3b)",
+                "hi": "“... क्योंकि वे स्वर्ग का राज्य हैं।” (मत्ती 5:3b)",
+                "bn": "“...কারণ তারা স্বর্গরাজ্য।” (মথি 5:3b)",
+                "ar": "«لأنهم ملكوت السموات» (متى 5:3b)",
+                "ur": "”…کیونکہ آسمان کی بادشاہی انہی کی ہے“ (متی 5:3b)",
+                "fa": "« …زیرا پادشاهی آسمان از آن ایشان است » (متی 5:3b)"
+        },
+        "8": {
+                "es": "«Felices los afligidos…» (Mt 5:4a)",
+                "en": "“Blessed are the sorrowful” (Mt 5:4a)",
+                "fr": "« Heureux les affligés » (Mt 5:4a)",
+                "pt": "«Bem-aventurados os que choram…» (Mt 5:4a)",
+                "it": "«Beati quelli che fanno cordoglio…» (Mt 5:4a)",
+                "id": "«Berbahagialah orang yang berdukacita…» (Mat 5:4a)",
+                "tr": "«Ne mutlu yaslı olanlara…» (Mat 5:4a)",
+                "ru": "«Блаженны плачущие…» (Мф 5:4a)",
+                "zh-Hans": "“悲伤的人有福了……”（太 5:4a）",
+                "zh": "“悲伤的人有福了……”（太 5:4a）",
+                "ja": "「悲しむ人々は幸いである……」（マタイ 5:4a）",
+                "ko": "“애통하는 자는 복이 있나니…” (마 5:4a)",
+                "hi": "“धन्य हैं उदास मन वाले” (मत्ती 5:4a)",
+                "bn": "“ধন্য সেই শোককারীরা” (মথি 5:4a)",
+                "ar": "«المبتهجون هم الحَزَانَى» (متى 5:4a)",
+                "ur": "”مبارک ہیں وہ جو غمگین ہیں…“ (متی 5:4a)",
+                "fa": "« خوشابه‌حال ماتم‌زدگان… » (متی 5:4a)"
+        },
+        "9": {
+                "es": "«…pues serán reconfortados» (Mt 5:4b)",
+                "en": "“…because they will be comforted” (Mt 5:4b)",
+                "fr": "« ...car ils seront réconfortés » (Mt 5:4b)",
+                "pt": "«…porque eles serão consolados» (Mt 5:4b)",
+                "it": "«…perché saranno consolati» (Mt 5:4b)",
+                "id": "«…karena mereka akan dihibur» (Mat 5:4b)",
+                "tr": "«…çünkü onlar teselli edilecekler» (Mat 5:4b)",
+                "ru": "«…ибо они утешатся» (Мф 5:4b)",
+                "zh-Hans": "“……因为他们会得到安慰”（太 5:4b）",
+                "zh": "“……因为他们会得到安慰”（太 5:4b）",
+                "ja": "「……その人たちは慰められるからです」（マタイ 5:4b）",
+                "ko": "“…그들이 위로를 받을 것임이요” (마 5:4b)",
+                "hi": "“... क्योंकि उन्हें आराम मिलेगा।” (मत्ती 5:4b)",
+                "bn": "“...কারণ তারা সান্ত্বনা পাবে।” (মথি 5:4b)",
+                "ar": "«لأنهم سيُعزَّون» (متى 5:4b)",
+                "ur": "”…کیونکہ وہ تسلی پائیں گے“ (متی 5:4b)",
+                "fa": "« …زیرا ایشان تسلی خواهند یافت » (متی 5:4b)"
+        },
+        "10": {
+                "es": "«Felices los humildes…» (Mt 5:5a)",
+                "en": "“Blessed are the humble” (Mt 5:5a)",
+                "fr": "« Heureux les humbles » (Mt 5:5a)",
+                "pt": "«Bem-aventurados os mansos…» (Mt 5:5a)",
+                "it": "«Beati i mansueti…» (Mt 5:5a)",
+                "id": "«Berbahagialah orang yang lemah lembut…» (Mat 5:5a)",
+                "tr": "«Ne mutlu uysal olanlara…» (Mat 5:5a)",
+                "ru": "«Блаженны кроткие…» (Мф 5:5a)",
+                "zh-Hans": "“谦逊的人有福了……”（太 5:5a）",
+                "zh": "“谦逊的人有福了……”（太 5:5a）",
+                "ja": "「柔和な人々は幸いである……」（マタイ 5:5a）",
+                "ko": "“온유한 자는 복이 있나니…” (마 5:5a)",
+                "hi": "“धन्य हैं वे जो विनम्र हैं” (मत्ती 5:5a)",
+                "bn": "“ধন্য তারা নম্র” (মথি 5:5a)",
+                "ar": "«المبتهجون هم المتواضعون» (متى 5:5a)",
+                "ur": "”مبارک ہیں وہ جو حلیم ہیں…“ (متی 5:5a)",
+                "fa": "« خوشابه‌حال حلیمان… » (متی 5:5a)"
+        },
+        "11": {
+                "es": "«…pues serán herederos de la tierra» (Mt 5:5b)",
+                "en": "“…because they will inherit the earth” (Mt 5:5b)",
+                "fr": "« ...car ils hériteront la terre » (Mt 5:5b)",
+                "pt": "«…porque eles herdarão a terra» (Mt 5:5b)",
+                "it": "«…perché erediteranno la terra» (Mt 5:5b)",
+                "id": "«…karena mereka akan memiliki bumi» (Mat 5:5b)",
+                "tr": "«…çünkü onlar yeri miras alacaklar» (Mat 5:5b)",
+                "ru": "«…ибо они наследуют землю» (Мф 5:5b)",
+                "zh-Hans": "“……因为他们将承受地土”（太 5:5b）",
+                "zh": "“……因为他们将承受地土”（太 5:5b）",
+                "ja": "「……その人たちは地を受け継ぐからです」（マタイ 5:5b）",
+                "ko": "“…그들이 땅을 기업으로 받을 것임이요” (마 5:5b)",
+                "hi": "“... क्योंकि वे पृथ्वी के वारिस होंगे।” (मत्ती 5:5b)",
+                "bn": "“...কারণ তারা পৃথিবীর উত্তরাধিকারী হবে।” (মথি 5:5b)",
+                "ar": "«لأنهم سيرثون الأرض» (متى 5:5b)",
+                "ur": "”…کیونکہ وہ زمین کے وارث ہوں گے“ (متی 5:5b)",
+                "fa": "« …زیرا ایشان وارث زمین خواهند شد » (متی 5:5b)"
+        },
+        "12": {
+                "es": "«Felices los hambrientos y sedientos de la rectitud…» (Mt 5:6a)",
+                "en": "“Blessed are those who are hungry and thirsty for righteousness” (Mt 5:6a)",
+                "fr": "« Heureux ceux qui ont faim et soif de justice » (Mt 5:6a)",
+                "pt": "«Bem-aventurados os que têm fome e sede de justiça…» (Mt 5:6a)",
+                "it": "«Beati coloro che sono affamati e assetati di giustizia…» (Mt 5:6a)",
+                "id": "«Berbahagialah orang yang lapar dan haus akan kebenaran…» (Mat 5:6a)",
+                "tr": "«Ne mutlu doğruluğa acıkıp susayanlara…» (Mat 5:6a)",
+                "ru": "«Блаженны алчущие и жаждущие правды…» (Мф 5:6a)",
+                "zh-Hans": "“饥渴慕义的人有福了……”（太 5:6a）",
+                "zh": "“饥渴慕义的人有福了……”（太 5:6a）",
+                "ja": "「義に飢え渇く人々は幸いである……」（マタイ 5:6a）",
+                "ko": "“의에 주리고 목마른 자는 복이 있나니…” (마 5:6a)",
+                "hi": "“धन्य हैं वे जो न्याय के भूखे प्यासे हैं” (मत्ती 5:6a)",
+                "bn": "“সুখী তারাই যারা ধার্মিকতার জন্য ক্ষুধার্ত ও তৃষ্ণার্ত” (মথি 5:6a)",
+                "ar": "«المبتهجون هم جوعى البِر والمتعطّشون له» (متى 5:6a)",
+                "ur": "”مبارک ہیں وہ جو راستبازی کے بھوکے اور پیاسے ہیں…“ (متی 5:6a)",
+                "fa": "« خوشابه‌حال گرسنگان و تشنگان عدالت… » (متی 5:6a)"
+        },
+        "13": {
+                "es": "«…pues serán satisfechos» (Mt 5:6b)",
+                "en": "“...because they will be satisfied” (Mt 5:6b)",
+                "fr": "« ...car ils seront satisfaits » (Mt 5:6b)",
+                "pt": "«…porque eles serão fartos» (Mt 5:6b)",
+                "it": "«…perché saranno saziati» (Mt 5:6b)",
+                "id": "«…karena mereka akan dipuaskan» (Mat 5:6b)",
+                "tr": "«…çünkü onlar doyurulacaklar» (Mat 5:6b)",
+                "ru": "«…ибо они насытятся» (Мф 5:6b)",
+                "zh-Hans": "“……因为他们会满意的”（太 5:6b）",
+                "zh": "“……因为他们会满意的”（太 5:6b）",
+                "ja": "「……その人たちは満ち足りるからです」（マタイ 5:6b）",
+                "ko": "“…그들이 배부를 것임이요” (마 5:6b)",
+                "hi": "“... क्योंकि वे संतुष्ट होंगे।” (मत्ती 5:6b)",
+                "bn": "“...কারণ তারা সন্তুষ্ট হবে।” (মথি 5:6b)",
+                "ar": "«لأنهم سيُرضون» (متى 5:6b)",
+                "ur": "”…کیونکہ وہ آسودہ ہوں گے“ (متی 5:6b)",
+                "fa": "« …زیرا ایشان سیر خواهند شد » (متی 5:6b)"
+        },
+        "14": {
+                "es": "«Felices los compasivos…» (Mt 5:7a)",
+                "en": "“Blessed are the compassionate” (Mt 5:7a)",
+                "fr": "« Heureux sont ceux qui témoignent de la compassion » (Mt 5:7a)",
+                "pt": "«Bem-aventurados os misericordiosos…» (Mt 5:7a)",
+                "it": "«Beati i misericordiosi…» (Mt 5:7a)",
+                "id": "«Berbahagialah orang yang murah hatinya…» (Mat 5:7a)",
+                "tr": "«Ne mutlu merhametli olanlara…» (Mat 5:7a)",
+                "ru": "«Блаженны милостивые…» (Мф 5:7a)",
+                "zh-Hans": "“有同情心的人有福了……”（太 5:7a）",
+                "zh": "“有同情心的人有福了……”（太 5:7a）",
+                "ja": "「あわれみ深い人々は幸いである……」（マタイ 5:7a）",
+                "ko": "“긍휼히 여기는 자는 복이 있나니…” (마 5:7a)",
+                "hi": "“धन्य हैं वे जो दयालु हैं” (मत्ती 5:7a)",
+                "bn": "“ধন্য তারা যারা সহানুভূতিশীল” (মথি 5:7a)",
+                "ar": "«المبتهجون هم الرحماء» (متى 5:7a)",
+                "ur": "”مبارک ہیں وہ جو رحم دل ہیں…“ (متی 5:7a)",
+                "fa": "« خوشابه‌حال رحیمان… » (متی 5:7a)"
+        },
+        "15": {
+                "es": "«…pues ellos recibirán compasión» (Mt 5:7b)",
+                "en": "“…because they will receive compassion” (Mt 5:7b)",
+                "fr": "« ...car ils recevront de la compassion » (Mt 5:7b)",
+                "pt": "«…porque eles alcançarão misericórdia» (Mt 5:7b)",
+                "it": "«…perché troveranno misericordia» (Mt 5:7b)",
+                "id": "«…karena mereka akan beroleh kemurahan» (Mat 5:7b)",
+                "tr": "«…çünkü onlara merhamet edilecek» (Mat 5:7b)",
+                "ru": "«…ибо они помилованы будут» (Мф 5:7b)",
+                "zh-Hans": "“……因为他们会得到怜悯”（太 5:7b）",
+                "zh": "“……因为他们会得到怜悯”（太 5:7b）",
+                "ja": "「……その人たちはあわれみを受けるからです」（マタイ 5:7b）",
+                "ko": "“…그들이 긍휼히 여김을 받을 것임이요” (마 5:7b)",
+                "hi": "“... क्योंकि वे करुणा प्राप्त करेंगे।” (मत्ती 5:7b)",
+                "bn": "“... কারণ তাদের করুণা করা হবে।” (মথি 5:7b)",
+                "ar": "«لأن سيُرحمون» (متى 5:7b)",
+                "ur": "”…کیونکہ ان پر رحم کیا جائے گا“ (متی 5:7b)",
+                "fa": "« …زیرا بر ایشان رحمت خواهد شد » (متی 5:7b)"
+        },
+        "16": {
+                "es": "«Felices los de limpio corazón…» (Mt 5:8a)",
+                "en": "“Blessed are the pure of heart” (Mt 5:8a)",
+                "fr": "« Heureux sont ceux qui ont le cœur pur » (Mt 5:8a)",
+                "pt": "«Bem-aventurados os limpos de coração…» (Mt 5:8a)",
+                "it": "«Beati i puri di cuore…» (Mt 5:8a)",
+                "id": "«Berbahagialah orang yang suci hatinya…» (Mat 5:8a)",
+                "tr": "«Ne mutlu yüreği temiz olanlara…» (Mat 5:8a)",
+                "ru": "«Блаженны чистые сердцем…» (Мф 5:8a)",
+                "zh-Hans": "“心灵纯净的人有福了”（太 5:8a）",
+                "zh": "“心灵纯净的人有福了”（太 5:8a）",
+                "ja": "「心の清い人々は幸いである……」（マタイ 5:8a）",
+                "ko": "“마음이 청결한 자는 복이 있나니…” (마 5:8a)",
+                "hi": "“खुशनसीब होते हैं वो जिनका दिल साफ होता है” (मत्ती 5:8a)",
+                "bn": "“ধন্য যারা হৃদয় বিশুদ্ধ” (মথি 5:8a)",
+                "ar": "«المبتهجون هم أنقياء القلب» (متى 5:8a)",
+                "ur": "”مبارک ہیں وہ جو پاک دل ہیں…“ (متی 5:8a)",
+                "fa": "« خوشابه‌حال پاک‌دلان… » (متی 5:8a)"
+        },
+        "17": {
+                "es": "«…pues ellos verán a Dios» (Mt 5:8b)",
+                "en": "“…because they will see God” (Mt 5:8b)",
+                "fr": "« ...car ils verront Dieu » (Mt 5:8b)",
+                "pt": "«…porque eles verão a Deus» (Mt 5:8b)",
+                "it": "«…perché vedranno Dio» (Mt 5:8b)",
+                "id": "«…karena mereka akan melihat Allah» (Mat 5:8b)",
+                "tr": "«…çünkü onlar Tanrı'yı görecekler» (Mat 5:8b)",
+                "ru": "«…ибо они Бога узрят» (Мф 5:8b)",
+                "zh-Hans": "“......因为他们会看到上帝”（太 5:8b）",
+                "zh": "“......因为他们会看到上帝”（太 5:8b）",
+                "ja": "「……その人たちは神を見るからです」（マタイ 5:8b）",
+                "ko": "“…그들이 하나님을 볼 것임이요” (마 5:8b)",
+                "hi": "“... क्योंकि वे भगवान को देखेंगे।” (मत्ती 5:8b)",
+                "bn": "“...কারণ তারা ঈশ্বরকে দেখতে পাবে।” (মথি 5:8b)",
+                "ar": "«لأنهم سيرون الله» (متى 5:8b)",
+                "ur": "”…کیونکہ وہ خدا کو دیکھیں گے“ (متی 5:8b)",
+                "fa": "« …زیرا ایشان خدا را خواهند دید » (متی 5:8b)"
+        },
+        "18": {
+                "es": "«Felices los pacificadores…» (Mt 5:9a)",
+                "en": "“Blessed are the peacemakers” (Mt 5:9a)",
+                "fr": "« Heureux sont les artisans de paix » (Mt 5:9a)",
+                "pt": "«Bem-aventurados os pacificadores…» (Mt 5:9a)",
+                "it": "«Beati gli operatori di pace…» (Mt 5:9a)",
+                "id": "«Berbahagialah orang yang membawa damai…» (Mat 5:9a)",
+                "tr": "«Ne mutlu barışı sağlayanlara…» (Mat 5:9a)",
+                "ru": "«Блаженны миротворцы…» (Мф 5:9a)",
+                "zh-Hans": "“和平缔造者有福了……”（太 5:9a）",
+                "zh": "“和平缔造者有福了……”（太 5:9a）",
+                "ja": "「平和をつくる人々は幸いである……」（マタイ 5:9a）",
+                "ko": "“화평하게 하는 자는 복이 있나니…” (마 5:9a)",
+                "hi": "“धन्य हैं वे जो शांतिदूत हैं” (मत्ती 5:9a)",
+                "bn": "“ধন্য শান্তিরক্ষীরা” (মথি 5:9a)",
+                "ar": "«المبتهجون هم صانعو السلام» (متى 5:9a)",
+                "ur": "”مبارک ہیں وہ جو صلح کرواتے ہیں…“ (متی 5:9a)",
+                "fa": "« خوشابه‌حال صلح‌کنندگان… » (متی 5:9a)"
+        },
+        "19": {
+                "es": "«…pues serán llamados hijos de Dios» (Mt 5:9b)",
+                "en": "“…because they will be called children of God” (Mt 5:9b)",
+                "fr": "« ...car ils seront appelés fils de Dieu » (Mt 5:9b)",
+                "pt": "«…porque eles serão chamados filhos de Deus» (Mt 5:9b)",
+                "it": "«…perché saranno chiamati figli di Dio» (Mt 5:9b)",
+                "id": "«…karena mereka akan disebut anak-anak Allah» (Mat 5:9b)",
+                "tr": "«…çünkü onlara Tanrı oğulları denecek» (Mat 5:9b)",
+                "ru": "«…ибо они будут наречены сынами Божиими» (Мф 5:9b)",
+                "zh-Hans": "“……因为他们将被称作神的儿女”（太 5:9b）",
+                "zh": "“……因为他们将被称作神的儿女”（太 5:9b）",
+                "ja": "「……その人たちは神の子どもと呼ばれるからです」（マタイ 5:9b）",
+                "ko": "“…그들이 하나님의 아들이라 일컬음을 받을 것임이요” (마 5:9b)",
+                "hi": "“... क्योंकि वे परमेश्वर की सन्तान कहलाएंगे।” (मत्ती 5:9b)",
+                "bn": "“...কারণ তাদের বলা হবে ঈশ্বরের সন্তান।” (মথি 5:9b)",
+                "ar": "«لأنهم سيُدعون أولاد الله» (متى 5:9b)",
+                "ur": "”…کیونکہ وہ خدا کے بیٹے کہلائیں گے“ (متی 5:9b)",
+                "fa": "« …زیرا ایشان فرزندان خدا خوانده خواهند شد » (متی 5:9b)"
+        },
+        "20": {
+                "es": "«Felices los perseguidos debido a la rectitud…» (Mt 5:10a)",
+                "en": "“Blessed are those who are persecuted for the sake of righteousness” (Mt 5:10a)",
+                "fr": "« Heureux sont ceux qui sont persécutés à cause de la justice » (Mt 5:10a)",
+                "pt": "«Bem-aventurados os que sofrem perseguição por causa da justiça…» (Mt 5:10a)",
+                "it": "«Beati i perseguitati per motivo di giustizia…» (Mt 5:10a)",
+                "id": "«Berbahagialah orang yang dianiaya oleh sebab kebenaran…» (Mat 5:10a)",
+                "tr": "«Ne mutlu doğruluk uğruna zulüm görenlere…» (Mat 5:10a)",
+                "ru": "«Блаженны изгнанные за правду…» (Мф 5:10a)",
+                "zh-Hans": "“为求正义而被迫害的人有福了……”（太 5:10a）",
+                "zh": "“为求正义而被迫害的人有福了……”（太 5:10a）",
+                "ja": "「義のために迫害されている人々は幸いである……」（マタイ 5:10a）",
+                "ko": "“의를 위하여 박해를 받은 자는 복이 있나니…” (마 5:10a)",
+                "hi": "“धन्य हैं वे जिन्हें न्याय के लिए सताया जाता है” (मत्ती 5:10a)",
+                "bn": "“সুখী তারা যারা ধার্মিকতার জন্য নির্যাতিত হয়” (মথি 5:10a)",
+                "ar": "«المبتهجون هم المضطَهَدون في سبيل البِر» (متى 5:10a)",
+                "ur": "”مبارک ہیں وہ جو راستبازی کے سبب سے ستائے گئے ہیں…“ (متی 5:10a)",
+                "fa": "« خوشابه‌حال آنان که به خاطر عدالت جفا می‌بینند… » (متی 5:10a)"
+        },
+        "21": {
+                "es": "«…pues ellos son el reino del cielo» (Mt 5:10b)",
+                "en": "“…because they are the kingdom of heaven” (Mt 5:10b)",
+                "fr": "« ...car ils sont le royaume des cieux » (Mt 5:10b)",
+                "pt": "«…porque deles é o reino dos céus» (Mt 5:10b)",
+                "it": "«…perché di loro è il regno dei cieli» (Mt 5:10b)",
+                "id": "«…karena merekalah yang empunya Kerajaan Sorga» (Mat 5:10b)",
+                "tr": "«…çünkü Göklerin Hükümranlığı onlarındır» (Mat 5:10b)",
+                "ru": "«…ибо их есть Царство Небесное» (Мф 5:10b)",
+                "zh-Hans": "“……因为他们即为天国”（太 5:10b）",
+                "zh": "“……因为他们即为天国”（太 5:10b）",
+                "ja": "「……天の御国はその人たちのものだからです」（マタイ 5:10b）",
+                "ko": "“…천국이 그들의 것임이요” (마 5:10b)",
+                "hi": "“... क्योंकि वे स्वर्ग का राज्य हैं।” (मत्ती 5:10b)",
+                "bn": "“...কারণ তারা স্বর্গরাজ্য।” (মথি 5:10b)",
+                "ar": "«لأنهم ملكوت السموات» (متى 5:10b)",
+                "ur": "”…کیونکہ آسمان کی بادشاہی انہی کی ہے“ (متی 5:10b)",
+                "fa": "« …زیرا پادشاهی آسمان از آن ایشان است » (متی 5:10b)"
+        },
+        "22": {
+                "es": "«Felices son cuando los insultan, persiguen y falsamente dicen toda maldad contra ustedes debido a Mí» (Mt 5:11)",
+                "en": "“Blessed are you when people insult you, persecute you, and falsely say all kinds of evil things about you because of Me” (Mt 5:11)",
+                "fr": "« Heureux êtes-vous quand les personnes vous insultent, vous persécutent et disent faussement toutes sortes de mauvaises choses à votre sujet à cause de Moi » (Mt 5:11)",
+                "pt": "«Bem-aventurados sois vós, quando vos injuriarem e perseguirem, e mentindo, disserem todo o mal contra vós por minha causa» (Mt 5:11)",
+                "it": "«Beati voi, quando vi insulteranno e vi perseguiteranno e, mentendo, diranno contro di voi ogni sorta di male per causa mia» (Mt 5:11)",
+                "id": "«Berbahagialah kamu, jika karena Aku kamu dicela dan dianiaya dan kepadamu difitnahkan segala yang jahat» (Mat 5:11)",
+                "tr": "«Benim yüzümden insanlar size sövüp zulmettikleri, yalan yere size karşı her türlü kötülüğü söyledikleri zaman ne mutlusunuz!» (Mat 5:11)",
+                "ru": "«Блаженны вы, когда будут поносить вас и гнать и всячески неправедно злословить за Меня» (Мф 5:11)",
+                "zh-Hans": "“当人们因为我而侮辱你、迫害你、撒谎说你的各种坏话时，你是有福的”（太 5:11）",
+                "zh": "“当人们因为我而侮辱你、迫害你、撒谎说你的各种坏话时，你是有福的”（太 5:11）",
+                "ja": "「わたしのために人々があなたがたをののしり、迫害し、ありとあらゆる悪口を浴びせるとき、あなたがたは幸いです」（マタイ 5:11）",
+                "ko": "“나로 말미암아 너희를 욕하고 박해하고 거짓으로 너희를 거슬러 모든 악한 말을 할 때에는 너희에게 복이 있나니” (마 5:11)",
+                "hi": "“आनन्दित रहो जब लोग तुम्हारा अपमान करें, तुम्हें सताएं, और मेरे कारण तुम्हारे बारे में हर तरह की बुरी बातें कहें।” (मत्ती 5:11)",
+                "bn": "“আনন্দিত হও যখন লোকেরা তোমাকে অপমান করে, তোমাকে নির্যাতন করে এবং মিথ্যাভাবে তোমার সম্পর্কে সব ধরনের খারাপ কথা বলে আমার কারণে।” (মথি 5:11)",
+                "ar": "«أنت المبتهج إذا أهانك الناس واضطهدوك وقالوا عنك كذباً كل أنواع الخبائث بسببي» (متى 5:11)",
+                "ur": "”جب لوگ میرے سبب سے تم کو لعن طعن کریں گے اور ستائیں گے اور طرح طرح کی بدگوئی کریں گے تو تم مبارک ہو گے“ (متی 5:11)",
+                "fa": "« خوشابه‌حال شما آنگاه که به خاطر من به شما دشنام دهند و جفا رسانند و هر سخن بدی را به دروغ بر شما بگویند » (متی 5:11)"
+        },
+        "23": {
+                "es": "«Alégrense y celebren, porque grande es su recompensa en el cielo…» (Mt 5:12a)",
+                "en": "“Be glad and rejoice because great will be your reward in heaven” (Mt 5:12a)",
+                "fr": "« Soyez dans l'allégresse et réjouissez-vous, car grande sera votre récompense dans les cieux » (Mt 5:12a)",
+                "pt": "«Alegrai-vos e exultai, porque é grande o vosso galardão nos céus…» (Mt 5:12a)",
+                "it": "«Rallegratevi e giubilate, perché il vostro premio è grande nei cieli…» (Mt 5:12a)",
+                "id": "«Bersukacita dan bergembiralah, karena upahmu besar di sorga…» (Mat 5:12a)",
+                "tr": "«Sevinin, sevinçle coşun! Çünkü göklerdeki ödülünüz büyüktür…» (Mat 5:12a)",
+                "ru": "«Радуйтесь и веселитесь, ибо велика ваша награда на небесах…» (Мф 5:12a)",
+                "zh-Hans": "“应当欢喜快乐，因为你们将在天堂中得以赏赐回报……”（太 5:12a）",
+                "zh": "“应当欢喜快乐，因为你们将在天堂中得以赏赐回报……”（太 5:12a）",
+                "ja": "「喜びなさい、大いに喜べ。天においてあなたがたの受ける報いは大きいからである……」（マタイ 5:12a）",
+                "ko": "“기뻐하고 즐거워하라 하늘에서 너희의 상이 큼이라…” (마 5:12a)",
+                "hi": "“आनन्दित और आनन्दित रहो, क्योंकि स्वर्ग में तुम्हारा प्रतिफल महान है” (मत्ती 5:12a)",
+                "bn": "“আনন্দিত হও এবং আনন্দ কর, কারণ স্বর্গে তোমার পুরস্কার অনেক বড়” (মথি 5:12a)",
+                "ar": "«افرح وابتهج لأن أجرك عظيم في الجنة» (متى 5:12a)",
+                "ur": "”خوشی کرنا اور نہایت شادمان ہونا کیونکہ آسمان پر تمہارا اجر بڑا ہے…“ (متی 5:12a)",
+                "fa": "« شاد و خرسند باشید، زیرا پاداش شما در آسمان عظیم است… » (متی 5:12a)"
+        },
+        "24": {
+                "es": "«…porque de esta forma persiguieron a los portavoces antes que ustedes» (Mt 5:12b)",
+                "en": "“…because in this same way, the spokespeople who came before you were also persecuted” (Mt 5:12b)",
+                "fr": "« ...car c'est ainsi que les messagers qui vous ont précédés ont été persécutés » (Mt 5:12b)",
+                "pt": "«…pois assim perseguiram os profetas que foram antes de vós» (Mt 5:12b)",
+                "it": "«…poiché così hanno perseguitato i profeti che sono stati prima di voi» (Mt 5:12b)",
+                "id": "«…sebab demikian juga telah dianiaya nabi-nabi yang sebelum kamu» (Mat 5:12b)",
+                "tr": "«…çünkü sizden önceki peygamberlere de böyle zulmettiler» (Mat 5:12b)",
+                "ru": "«…ибо так гнали и пророков, бывших прежде вас» (Мф 5:12b)",
+                "zh-Hans": "“……因为同样的，那些比你更早的使者也受到了迫害”（太 5:12b）",
+                "zh": "“……因为同样的，那些比你更早的使者也受到了迫害”（太 5:12b）",
+                "ja": "「……あなたがたより前にいた預言者たちをも、人々はそのように迫害したのです」（マタイ 5:12b）",
+                "ko": "“…너희 전에 있던 선지자들도 이같이 박해하였느니라” (마 5:12b)",
+                "hi": "“... क्योंकि इसी तरह से आपके सामने आने वाले वक्ताओं को भी सताया गया था।” (मत्ती 5:12b)",
+                "bn": "“…কারণ এইভাবে, আপনার আগে আসা মুখপাত্ররাও নির্যাতিত হয়েছিল।” (মথি 5:12b)",
+                "ar": "«لأنك على خطى من تحدث قبلك؛ فقد تعرضوا هم أيضاً للاضطهاد» (متى 5:12b)",
+                "ur": "”…کیونکہ انہوں نے ان نبیوں کو بھی ستایا جو تم سے پہلے تھے“ (متی 5:12b)",
+                "fa": "« …چرا که پیش از شما بر انبیایی نیز که بودند همین‌گونه جفا می‌رسانیدند » (متی 5:12b)"
+        },
+        "25": {
+                "es": "«Cuando vio a las multitudes, subió a la colina y tomó asiento» (Mt 5:1a)",
+                "en": "“When He saw the crowds, He climbed the hillside and sat down” (Mt 5:1a)",
+                "fr": "« Quand Il vit la foule, Il monta sur le flanc de la colline et s'assit » (Mt 5:1a)",
+                "pt": "«E Jesus, vendo a multidão, subiu a um monte, e, assentando-se,» (Mt 5:1a)",
+                "it": "«Vedendo le folle, salì sul monte; e messosi a sedere» (Mt 5:1a)",
+                "id": "«Ketika Yesus melihat orang banyak itu, naiklah Ia ke atas bukit dan setelah Ia duduk» (Mat 5:1a)",
+                "tr": "«İsa kalabalıkları görünce dağa çıktı. Oturunca» (Mat 5:1a)",
+                "ru": "«Увидев народ, Он взошел на гору; и, когда сел» (Мф 5:1a)",
+                "zh-Hans": "“他看见众人，就爬上山坡坐下”（太 5:1a）",
+                "zh": "“他看见众人，就爬上山坡坐下”（太 5:1a）",
+                "ja": "「イエスはこの群衆を見て、山に登り、座につかれると、」（マタイ 5:1a）",
+                "ko": "“예수께서 무리를 보시고 산에 올라가 앉으시니” (마 5:1a)",
+                "hi": "“भीड़ को देखकर वह पहाड़ी पर चढ़कर बैठ गया।” (मत्ती 5:1a)",
+                "bn": "“যখন তিনি ভিড় দেখলেন, তিনি পাহাড়ের চূড়ায় উঠে বসলেন।” (মথি 5:1a)",
+                "ar": "«عندما أبصَر الجموع، صعد إلى جانب التل وجلس» (متى 5:1a)",
+                "ur": "”وہ بھیڑوں کو دیکھ کر پہاڑ پر چڑھ گیا اور بیٹھ گیا،“ (متی 5:1a)",
+                "fa": "« چون عیسی جمعیت‌ها را دید، بر فراز تپه رفت و نشست » (متی 5:1a)"
+        },
+        "26": {
+                "es": "«Sus alumnos se acercaron a Él,» (Mt 5:1b)",
+                "en": "“His students came to Him,” (Mt 5:1b)",
+                "fr": "« Ses étudiants vinrent auprès de Lui, » (Mt 5:1b)",
+                "pt": "«aproximaram-se dele os seus discípulos;» (Mt 5:1b)",
+                "it": "«I suoi discepoli gli si accostarono,» (Mt 5:1b)",
+                "id": "«Datanglah murid-murid-Nya kepada-Nya,» (Mat 5:1b)",
+                "tr": "«Öğrencileri O'na geldi,» (Mat 5:1b)",
+                "ru": "«Приступили к Нему ученики Его,» (Мф 5:1b)",
+                "zh-Hans": "“他的学生来到他面前，”（太 5:1b）",
+                "zh": "“他的学生来到他面前，”（太 5:1b）",
+                "ja": "「弟子たちがみもとに近寄って来た」（マタイ 5:1b）",
+                "ko": "“제자들이 나아온지라,” (마 5:1b)",
+                "hi": "“उनके छात्र उनके पास आए,” (मत्ती 5:1b)",
+                "bn": "“তাঁর ছাত্ররা তাঁর কাছে এসেছিল,” (মথি 5:1b)",
+                "ar": "«أتى تلاميذه إليه» (متى 5:1b)",
+                "ur": "”اور اس کے شاگرد اس کے پاس آئے“ (متی 5:1b)",
+                "fa": "« و شاگردانش نزد وی آمدند، » (متی 5:1b)"
+        },
+        "27": {
+                "es": "Él indicó que esta obra sea compartida libremente entre sus felices.",
+                "en": "He gave instructions to freely share this work among His joyful.",
+                "fr": "Il donna des instructions pour le partage libre de ce travail auprès de ses heureux.",
+                "pt": "Ele orientou que esta obra seja compartilhada livremente entre os seus bem-aventurados.",
+                "it": "Egli ha indicato che quest'opera sia condivisa liberamente tra i suoi beati. I più piccoli del regno dei cieli.",
+                "id": "Dia menyatakan agar karya ini dibagikan secara cuma-cuma di antara mereka yang berbahagia. Yang terkecil dalam Kerajaan Sorga.",
+                "tr": "O, bu eserin Kendi mutlu olanları arasında serbestçe paylaşılmasını buyurdu. Göklerin Egemenliğinde en küçük olanlar için.",
+                "ru": "Он указал, чтобы этот труд свободно распространялся среди Его блаженных. Наименьших в Царстве Небесном.",
+                "zh-Hans": "他指示要在他喜乐的子民中自由地分享这项工作。",
+                "zh": "他指示要在他喜乐的子民中自由地分享这项工作。",
+                "ja": "主はこの作品が主の幸いな人々の間で自由に分かち合われることを望まれました。",
+                "ko": "그분께서는 이 작품이 그분의 복된 자들 사이에 자유롭게 공유되기를 명하셨습니다.",
+                "hi": "उन्होंने इस काम को अपने आनंदित लोगों के बीच स्वतंत्र रूप से साझा करने का निर्देश दिया।",
+                "bn": "তিনি এই কাজকে তাঁর আনন্দিতদের মধ্যে অবাধে ভাগ করে নেওয়ার নির্দেশ দিয়েছিলেন।",
+                "ar": "فوجههم لمشاركة هذا العمل بحرية بين مبتهجيه",
+                "ur": "انہوں نے ہدایت دی کہ یہ کام ان کے مبارک لوگوں میں آزادانہ طور پر شیئر کیا جائے۔",
+                "fa": "او فرمان داد که این اثر آزادانه در میان مبارکانش به اشتراک گذاشته شود."
+        },
+        "28": {
+                "es": "Los más pequeñitos del reino del cielo.",
+                "en": "The smallest ones in the Kingdom of Heaven.",
+                "fr": "Les plus petits dans le royaume des cieux.",
+                "pt": "Os pequeninos do reino dos céus.",
+                "it": "Egli ha indicato che quest'opera sia condivisa liberamente tra i suoi beati. I più piccoli del regno dei cieli.",
+                "id": "Dia menyatakan agar karya ini dibagikan secara cuma-cuma di antara mereka yang berbahagia. Yang terkecil dalam Kerajaan Sorga.",
+                "tr": "O, bu eserin Kendi mutlu olanları arasında serbestçe paylaşılmasını buyurdu. Göklerin Egemenliğinde en küçük olanlar için.",
+                "ru": "Он указал, чтобы этот труд свободно распространялся среди Его блаженных. Наименьших в Царстве Небесном.",
+                "zh-Hans": "献给天国中最小的人。",
+                "zh": "献给天国中最小的人。",
+                "ja": "天の御国において最も小さい者たちへ。",
+                "ko": "천국에서 지극히 작은 자들에게.",
+                "hi": "उनके लिए जो स्वर्ग के राज्य में छोटे हैं।",
+                "bn": "স্বর্গরাজ্যে সবচেয়ে ছোট।",
+                "ar": "إنهم صغار ملكوت السموات",
+                "ur": "آسمان کی بادشاہی میں سب سے چھوٹوں کے لیے۔",
+                "fa": "کوچک‌ترین‌ها در پادشاهی آسمان."
+        }
+};
+
+        function getPlateUrl(idx) {
+            const lang = document.getElementById('langSelect')?.value || 'es';
+            const distLang = lang === 'zh' ? 'zh-Hans' : lang;
+            const num = String(idx).padStart(2, '0');
+            return `/dist/${distLang}/v1/mostrador/${num}.jpg`;
+        }
+
+        function getPlateVerse(idx, lang) {
+            const cleanLang = lang === 'zh' ? 'zh-Hans' : lang;
+            const d = plateVersesData[idx] || {};
+            return d[cleanLang] || d[lang] || d['es'] || d['en'] || `Lámina ${idx}`;
+        }
+
+        function updateFocalPlate() {
+            const img = document.getElementById('focalPlateImg');
+            const indicator = document.getElementById('plateIndexText');
+            const verse = document.getElementById('focalPlateVerse');
+            const lang = document.getElementById('langSelect')?.value || 'es';
+            const t = translations[lang] || translations['es'] || {};
+            const plateLabel = t.plateLabel || 'Lámina';
+
+            if (img) {
+                img.src = getPlateUrl(currentPlateIndex);
+                img.alt = `${plateLabel} ${currentPlateIndex} / ${TOTAL_PLATES}`;
+            }
+            if (indicator) {
+                indicator.textContent = `${plateLabel} ${currentPlateIndex} / ${TOTAL_PLATES}`;
+            }
+            if (verse) {
+                verse.textContent = getPlateVerse(currentPlateIndex, lang);
+            }
+
+            // Buffer virtual ±1 para conservar memoria RAM <12 MB
+            const prevIdx = currentPlateIndex > 1 ? currentPlateIndex - 1 : TOTAL_PLATES;
+            const nextIdx = currentPlateIndex < TOTAL_PLATES ? currentPlateIndex + 1 : 1;
+
+            preloadPrev = new Image();
+            preloadPrev.src = getPlateUrl(prevIdx);
+
+            preloadNext = new Image();
+            preloadNext.src = getPlateUrl(nextIdx);
+        }
+
+        function nextPlate() {
+            currentPlateIndex = currentPlateIndex < TOTAL_PLATES ? currentPlateIndex + 1 : 1;
+            updateFocalPlate();
+        }
+
+        function prevPlate() {
+            currentPlateIndex = currentPlateIndex > 1 ? currentPlateIndex - 1 : TOTAL_PLATES;
+            updateFocalPlate();
+        }
+
+        function openActivePlateZoom() {
+            const img = document.getElementById('plateModalImg');
+            const cap = document.getElementById('plateModalCaption');
+            const lang = document.getElementById('langSelect')?.value || 'es';
+            const t = translations[lang] || translations['es'] || {};
+            const plateLabel = t.plateLabel || 'Lámina';
+
+            if (img) {
+                img.src = getPlateUrl(currentPlateIndex);
+            }
+            if (cap) {
+                cap.textContent = `${plateLabel} ${currentPlateIndex} · ${getPlateVerse(currentPlateIndex, lang)}`;
+            }
+            openModal('plateModal');
+        }
+
+        function printActivePlate() {
+            window.print();
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toastNotification');
+            if (!toast) return;
+            toast.textContent = msg;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2500);
+        }
+
+        function shareResource() {
+            const lang = document.getElementById('langSelect')?.value || 'es';
+            const t = translations[lang] || translations['es'] || {};
+            const shareData = {
+                title: t.title || 'Los Felices del Señor Jesús',
+                text: t.desc || 'Cuaderno de las Bienaventuranzas para Colorear (Mateo 5)',
+                url: window.location.href
+            };
+            if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
+                navigator.share(shareData).catch(() => {});
+            } else {
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(window.location.href).then(() => {
+                        showToast(t.toastCopied || 'Enlace copiado al portapapeles');
+                    }).catch(() => {
+                        showToast(window.location.href);
+                    });
+                } else {
+                    showToast(window.location.href);
+                }
+            }
+        }
+
         function openPlateModal(plateId) {
             const lang = document.getElementById('langSelect').value || 'es';
             const img = document.getElementById('plateModalImg');
@@ -1552,6 +2544,28 @@
 
         const translations = {
         "es": {
+		"nameCarta": "Carta",
+		"subCarta": "América",
+		"nameA4": "A4",
+		"subA4": "Internacional",
+		"focalVerse": "«…porque de esta forma persiguieron a los portavoces antes que ustedes» (Mt 5:12b)",
+		"plateIndexText": "Lámina 24 de 28",
+		"foldModalTitle": "Cómo Imprimir y Doblar",
+		"foldStep1Title": "1. Imprime frente y vuelta",
+		"foldStep1Desc": "En tu impresora, activa «Doble cara» volteando por el borde corto.",
+		"foldStep2Title": "2. Dobla a la mitad",
+		"foldStep2Desc": "Junta todas las hojas impresas en orden y pliégalas juntas por el centro.",
+		"foldStep3Title": "3. Engrapa en el lomo",
+		"foldStep3Desc": "Aplica 2 grapas en el pliegue central. ¡Listo para colorear!",
+		"btnFoldDismiss": "Entendido",
+		"tapToZoom": "Toca para ampliar",
+		"labelCartaSub": "América",
+		"labelA4Sub": "Internacional",
+		"btnPrintPlate": "Imprimir esta lámina",
+		"btnShare": "Compartir",
+		"toastCopied": "Enlace copiado al portapapeles",
+		"plateLabel": "Lámina",
+		"foldGuideTrigger": "📖 ¿Cómo imprimir y doblar?",
                 "pageTitle": "Ekovoz: Recursos Gratis",
                 "badge": "Recurso Abierto de Dominio Público",
                 "title": "Los Felices del Señor Jesús",
@@ -1599,9 +2613,37 @@
                 "optSupport": "Problemas de descarga o lectura (Soporte)",
                 "optGeneral": "Consulta general o sugerencia",
                 "githubIssueHint": "¿Prefieres reportar un ticket de soporte técnico público?",
-                "linkGithubIssue": "Abrir incidencia en GitHub"
+                "linkGithubIssue": "Abrir incidencia en GitHub",
+                "btnPrintPlate": "Imprimir esta lámina",
+                "btnShare": "Compartir",
+                "toastCopied": "Enlace copiado al portapapeles",
+                "plateLabel": "Lámina",
+                "foldGuideTrigger": "📖 ¿Cómo imprimir y doblar?",
+                "foldModalTitle": "Cómo Imprimir y Doblar"
         },
         "it": {
+		"nameCarta": "Letter",
+		"subCarta": "Americhe",
+		"nameA4": "A4",
+		"subA4": "Internazionale",
+		"focalVerse": "«…poiché così hanno perseguitato i profeti che sono stati prima di voi» (Mt 5:12b)",
+		"plateIndexText": "Tavola 24 di 28",
+		"foldModalTitle": "Come Stampare e Piegare",
+		"foldStep1Title": "1. Stampa fronte e retro",
+		"foldStep1Desc": "Nelle impostazioni della stampante, attiva «Fronte-retro» con capovolgimento sul bordo corto.",
+		"foldStep2Title": "2. Piega a metà",
+		"foldStep2Desc": "Raccogli tutti i fogli stampati in ordine e piegali insieme al centro.",
+		"foldStep3Title": "3. Spillare sul dorso",
+		"foldStep3Desc": "Applica 2 punti metallici lungo la piega centrale. Pronto da colorare!",
+		"btnFoldDismiss": "Ho capito",
+		"tapToZoom": "Tocca per ingrandire",
+		"labelCartaSub": "Americhe",
+		"labelA4Sub": "Internazionale",
+		"btnPrintPlate": "Stampa questa tavola",
+		"btnShare": "Condividi",
+		"toastCopied": "Link copiato negli appunti",
+		"plateLabel": "Tavola",
+		"foldGuideTrigger": "📖 Come stampare e piegare?",
                 "pageTitle": "Ekovoz: Risorse Gratuite",
                 "badge": "Risorsa Aperta di Pubblico Dominio",
                 "title": "I Beati del Signore Gesù",
@@ -1652,6 +2694,28 @@
                 "linkGithubIssue": "Apri una segnalazione su GitHub"
         },
         "id": {
+		"nameCarta": "Letter",
+		"subCarta": "Amerika",
+		"nameA4": "A4",
+		"subA4": "Internasional",
+		"focalVerse": "«…sebab demikian juga telah dianiaya nabi-nabi yang sebelum kamu» (Mat 5:12b)",
+		"plateIndexText": "Lembar 24 dari 28",
+		"foldModalTitle": "Cara Mencetak dan Melipat",
+		"foldStep1Title": "1. Cetak bolak-balik",
+		"foldStep1Desc": "Pada pengaturan printer, pilih «Bolak-balik» membalik pada tepi pendek.",
+		"foldStep2Title": "2. Lipat menjadi dua",
+		"foldStep2Desc": "Kumpulkan semua lembar cetak secara berurutan dan lipat bersama di bagian tengah.",
+		"foldStep3Title": "3. Steples di punggung",
+		"foldStep3Desc": "Beri 2 staples di lipatan tengah. Siap untuk diwarnai!",
+		"btnFoldDismiss": "Mengerti",
+		"tapToZoom": "Ketuk untuk memperbesar",
+		"labelCartaSub": "Amerika",
+		"labelA4Sub": "Internasional",
+		"btnPrintPlate": "Cetak lembar ini",
+		"btnShare": "Bagikan",
+		"toastCopied": "Tautan disalin ke papan klip",
+		"plateLabel": "Lembar",
+		"foldGuideTrigger": "📖 Cara mencetak dan melipat?",
                 "pageTitle": "Ekovoz: Sumber Gratis",
                 "badge": "Sumber Terbuka Domain Publik",
                 "title": "Mereka yang Berbahagia dari Tuhan Yesus",
@@ -1702,6 +2766,28 @@
                 "linkGithubIssue": "Buka issue di GitHub"
         },
         "tr": {
+		"nameCarta": "Letter",
+		"subCarta": "Amerika",
+		"nameA4": "A4",
+		"subA4": "Uluslararası",
+		"focalVerse": "«…çünkü sizden önceki peygamberlere de böyle zulmettiler» (Mat 5:12b)",
+		"plateIndexText": "Levha 24 / 28",
+		"foldModalTitle": "Nasıl Yazdırılır ve Katlanır",
+		"foldStep1Title": "1. Çift taraflı yazdırın",
+		"foldStep1Desc": "Yazıcınızda, kısa kenardan çevirerek «Çift taraflı» seçeneğini etkinleştirin.",
+		"foldStep2Title": "2. Ortadan ikiye katlayın",
+		"foldStep2Desc": "Tüm sayfaları sırayla toplayın ve ortadan birlikte katlayın.",
+		"foldStep3Title": "3. Sırtından zımbalayın",
+		"foldStep3Desc": "Orta kat yerine 2 zımba uygulayın. Boyamaya hazır!",
+		"btnFoldDismiss": "Anladım",
+		"tapToZoom": "Büyütmek için dokunun",
+		"labelCartaSub": "Amerika",
+		"labelA4Sub": "Uluslararası",
+		"btnPrintPlate": "Bu levhayı yazdır",
+		"btnShare": "Paylaş",
+		"toastCopied": "Bağlantı panoya kopyalandı",
+		"plateLabel": "Levha",
+		"foldGuideTrigger": "📖 Nasıl yazdırılır ve katlanır?",
                 "pageTitle": "Ekovoz: Ücretsiz Kaynaklar",
                 "badge": "Kamu Malı Açık Eğitim Kaynağı",
                 "title": "Rab İsa'nın Mutlu Olanları",
@@ -1752,6 +2838,28 @@
                 "linkGithubIssue": "GitHub'da sorun açın"
         },
         "ru": {
+		"nameCarta": "Letter",
+		"subCarta": "Америка",
+		"nameA4": "A4",
+		"subA4": "Международный",
+		"focalVerse": "«…ибо так гнали и пророков, бывших прежде вас» (Мф 5:12b)",
+		"plateIndexText": "Лист 24 из 28",
+		"foldModalTitle": "Как распечатать и сложить",
+		"foldStep1Title": "1. Двусторонняя печать",
+		"foldStep1Desc": "В настройках принтера выберите «Двусторонняя печать» с переворотом по короткому краю.",
+		"foldStep2Title": "2. Сложите пополам",
+		"foldStep2Desc": "Соберите все листы по порядку и согните их вместе по центру.",
+		"foldStep3Title": "3. Скрепите скобами",
+		"foldStep3Desc": "Закрепите 2 скобами по линии сгиба. Готово к раскрашиванию!",
+		"btnFoldDismiss": "Понятно",
+		"tapToZoom": "Нажмите для увеличения",
+		"labelCartaSub": "Америка",
+		"labelA4Sub": "Международный",
+		"btnPrintPlate": "Печать этого листа",
+		"btnShare": "Поделиться",
+		"toastCopied": "Ссылка скопирована в буфер обмена",
+		"plateLabel": "Лист",
+		"foldGuideTrigger": "📖 Как распечатать и сложить?",
                 "pageTitle": "Ekovoz: Бесплатные ресурсы",
                 "badge": "Открытый Образовательный Материал",
                 "title": "Блаженные Господа Иисуса",
@@ -1802,6 +2910,28 @@
                 "linkGithubIssue": "Открыть issue на GitHub"
         },
         "en": {
+		"nameCarta": "Letter",
+		"subCarta": "Americas",
+		"nameA4": "A4",
+		"subA4": "International",
+		"focalVerse": "“…because in this same way, the spokespeople who came before you were also persecuted” (Mt 5:12b)",
+		"plateIndexText": "Plate 24 of 28",
+		"foldModalTitle": "How to Print and Fold",
+		"foldStep1Title": "1. Print double-sided",
+		"foldStep1Desc": "In your printer settings, select «Double-sided» flipping on short edge.",
+		"foldStep2Title": "2. Fold in half",
+		"foldStep2Desc": "Stack all printed pages in order and fold them together along the center.",
+		"foldStep3Title": "3. Staple on spine",
+		"foldStep3Desc": "Apply 2 staples along the center fold. Ready to color!",
+		"btnFoldDismiss": "Got it",
+		"tapToZoom": "Tap to zoom",
+		"labelCartaSub": "Americas",
+		"labelA4Sub": "International",
+		"btnPrintPlate": "Print this plate",
+		"btnShare": "Share",
+		"toastCopied": "Link copied to clipboard",
+		"plateLabel": "Plate",
+		"foldGuideTrigger": "📖 How to print and fold?",
                 "pageTitle": "Ekovoz: Free Resources",
                 "badge": "Public Domain Educational Resource",
                 "title": "The Blessed of the Lord Jesus",
@@ -1849,9 +2979,37 @@
                 "optSupport": "Download or reading issues (Support)",
                 "optGeneral": "General inquiry or suggestion",
                 "githubIssueHint": "Prefer to report a public technical issue?",
-                "linkGithubIssue": "Open issue on GitHub"
+                "linkGithubIssue": "Open issue on GitHub",
+                "btnPrintPlate": "Print this plate",
+                "btnShare": "Share",
+                "toastCopied": "Link copied to clipboard",
+                "plateLabel": "Plate",
+                "foldGuideTrigger": "📖 How to print and fold?",
+                "foldModalTitle": "How to Print and Fold"
         },
         "zh-Hans": {
+		"nameCarta": "信纸",
+		"subCarta": "美洲标准",
+		"nameA4": "A4",
+		"subA4": "国际通用",
+		"focalVerse": "“……因为天国是他们的”（太 5:3b）",
+		"plateIndexText": "图版 7 / 28",
+		"foldModalTitle": "如何打印与折叠",
+		"foldStep1Title": "1. 双面打印",
+		"foldStep1Desc": "在打印机设置中，选择“双面打印”（沿短边翻转）。",
+		"foldStep2Title": "2. 对折装订",
+		"foldStep2Desc": "将所有打印好的纸张按顺序叠齐，沿中缝一起对折。",
+		"foldStep3Title": "3. 书脊装订",
+		"foldStep3Desc": "在中心折缝处订上2枚骑马钉。即可开始涂色！",
+		"btnFoldDismiss": "明白",
+		"tapToZoom": "点击放大",
+		"labelCartaSub": "美洲信纸",
+		"labelA4Sub": "国际A4",
+		"btnPrintPlate": "打印此图版",
+		"btnShare": "分享",
+		"toastCopied": "链接已复制到剪贴板",
+		"plateLabel": "图版",
+		"foldGuideTrigger": "📖 如何打印与折叠？",
                 "pageTitle": "Ekovoz: 免费资源",
                 "badge": "公有领域教育资源",
                 "title": "主耶稣蒙福的百姓",
@@ -1902,6 +3060,28 @@
                 "linkGithubIssue": "在 GitHub 上提出 Issue"
         },
         "hi": {
+		"nameCarta": "लेटर",
+		"subCarta": "अमेरिका",
+		"nameA4": "A4",
+		"subA4": "अंतरराष्ट्रीय",
+		"focalVerse": "“... क्योंकि इसी तरह से आपके सामने आने वाले वक्ताओं को भी सताया गया था।” (मत्ती 5:12b)"…क्योंकि स्वर्ग का राज्य उन्हीं का है\" (मत्ती 5:3b)",
+		"plateIndexText": "चित्र 24 / 28",
+		"foldModalTitle": "प्रिंट और मोड़ने की विधि",
+		"foldStep1Title": "1. दोनों तरफ प्रिंट करें",
+		"foldStep1Desc": "प्रिंटर सेटिंग्स में 'शॉर्ट एज' पर दोनों तरफ प्रिंट चुनें।",
+		"foldStep2Title": "2. बीच से मोड़ें",
+		"foldStep2Desc": "सभी पन्नों को क्रम में रखें और बीच से एक साथ मोड़ें।",
+		"foldStep3Title": "3. बीच में स्टेपल करें",
+		"foldStep3Desc": "बीच की मोड़ पर 2 स्टेपल लगाएं। रंग भरने के लिए तैयार!",
+		"btnFoldDismiss": "समझ गया",
+		"tapToZoom": "बड़ा करने के लिए टैप करें",
+		"labelCartaSub": "लेटर",
+		"labelA4Sub": "अंतरराष्ट्रीय A4",
+		"btnPrintPlate": "यह चित्र प्रिंट करें",
+		"btnShare": "साझा करें",
+		"toastCopied": "लिंक क्लिपबोर्ड पर कॉपी हो गया",
+		"plateLabel": "चित्र",
+		"foldGuideTrigger": "📖 कैसे प्रिंट और मोड़ें?",
                 "pageTitle": "Ekovoz: मुफ़्त संसाधन",
                 "badge": "सार्वजनिक डोमेन शैक्षिक संसाधन",
                 "title": "प्रभु यीशु के हर्षित लोग",
@@ -1952,6 +3132,28 @@
                 "linkGithubIssue": "GitHub पर Issue खोलें"
         },
         "bn": {
+		"nameCarta": "লেটার",
+		"subCarta": "আমেরিকা",
+		"nameA4": "A4",
+		"subA4": "আন্তর্জাতিক",
+		"focalVerse": "“…কারণ এইভাবে, আপনার আগে আসা মুখপাত্ররাও নির্যাতিত হয়েছিল।” (মথি 5:12b)"…কারণ স্বর্গরাজ্য তাদেরই\" (মথি ৫:৩b)",
+		"plateIndexText": "পাতা ২৪ / ২৮",
+		"foldModalTitle": "মুদ্রণ ও ভাঁজ করার নিয়ম",
+		"foldStep1Title": "১. উভয় পিঠে মুদ্রণ",
+		"foldStep1Desc": "প্রিন্টার সেটিংসে 'শর্ট এজ' বেছে উভয় পিঠে প্রিন্ট করুন।",
+		"foldStep2Title": "২. মাঝে ভাঁজ করুন",
+		"foldStep2Desc": "সব পাতা ক্রমানুসারে সাজিয়ে একসাথে মাঝে ভাঁজ করুন।",
+		"foldStep3Title": "৩. মাঝে স্টেপল করুন",
+		"foldStep3Desc": "মাঝখানের ভাঁজে ২টি স্টেপলার পিন লাগান। রঙ করার জন্য প্রস্তুত!",
+		"btnFoldDismiss": "বুঝেছি",
+		"tapToZoom": "বড় করে দেখতে ট্যাপ করুন",
+		"labelCartaSub": "লেটার",
+		"labelA4Sub": "আন্তর্জাতিক A4",
+		"btnPrintPlate": "এই পাতা প্রিন্ট করুন",
+		"btnShare": "শেয়ার করুন",
+		"toastCopied": "লিংক ক্লিপবোর্ডে কপি হয়েছে",
+		"plateLabel": "পাতা",
+		"foldGuideTrigger": "📖 কীভাবে প্রিন্ট ও ভাঁজ করবেন?",
                 "pageTitle": "Ekovoz: বিনামূল্যের সম্পদ",
                 "badge": "পাবলিক ডোমেন শিক্ষা সম্পদ",
                 "title": "প্রভু যীশুর আনন্দময় মানুষ",
@@ -2002,6 +3204,28 @@
                 "linkGithubIssue": "GitHub-এ Issue খুলুন"
         },
         "ar": {
+		"nameCarta": "رسالة",
+		"subCarta": "الأمريكتان",
+		"nameA4": "A4",
+		"subA4": "دولي",
+		"focalVerse": "«لأنك على خطى من تحدث قبلك؛ فقد تعرضوا هم أيضاً للاضطهاد» (متى 5:12b)",
+		"plateIndexText": "لوحة ٢٤ من ٢٨",
+		"foldModalTitle": "كيفية الطباعة والطي",
+		"foldStep1Title": "١. طباعة على الوجهين",
+		"foldStep1Desc": "في إعدادات الطابعة، فعّل «الطباعة على الوجهين» مع التقليب على الحافة القصيرة.",
+		"foldStep2Title": "٢. الطي من المنتصف",
+		"foldStep2Desc": "رتّب الأوراق المطبوعة بالتسلسل واطوها معاً من الوسط.",
+		"foldStep3Title": "٣. التدبيس في المنتصف",
+		"foldStep3Desc": "ضع دبوسين على خط الطي في الوسط. جاهز للتلوين!",
+		"btnFoldDismiss": "فهمت",
+		"tapToZoom": "المس للتكبير",
+		"labelCartaSub": "أمريكا",
+		"labelA4Sub": "دولي",
+		"btnPrintPlate": "طباعة هذه اللوحة",
+		"btnShare": "مشاركة",
+		"toastCopied": "تم نسخ الرابط إلى الحافظة",
+		"plateLabel": "لوحة",
+		"foldGuideTrigger": "📖 كيفية الطباعة والطي؟",
                 "pageTitle": "إيكوفوز: موارد تعليمية مجانية",
                 "badge": "مورد مفتوح في الملك العام",
                 "title": "شعب الرب يسوع المبتهجون",
@@ -2052,6 +3276,28 @@
                 "linkGithubIssue": "فتح مسألة على GitHub"
         },
         "fr": {
+		"nameCarta": "Lettre",
+		"subCarta": "Amériques",
+		"nameA4": "A4",
+		"subA4": "International",
+		"focalVerse": "« ...car c'est ainsi que les messagers qui vous ont précédés ont été persécutés » (Mt 5:12b)",
+		"plateIndexText": "Planche 24 sur 28",
+		"foldModalTitle": "Comment Imprimer et Plier",
+		"foldStep1Title": "1. Imprimer en recto-verso",
+		"foldStep1Desc": "Dans votre imprimante, activez « Recto-verso » en retournant sur le bord court.",
+		"foldStep2Title": "2. Plier en deux",
+		"foldStep2Desc": "Rassemblez les feuilles dans l'ordre et pliez-les ensemble par le milieu.",
+		"foldStep3Title": "3. Agrafer au pli",
+		"foldStep3Desc": "Placez 2 agrafes sur le pli central. Prêt à colorier !",
+		"btnFoldDismiss": "Compris",
+		"tapToZoom": "Toucher pour agrandir",
+		"labelCartaSub": "Amériques",
+		"labelA4Sub": "International",
+		"btnPrintPlate": "Imprimer cette planche",
+		"btnShare": "Partager",
+		"toastCopied": "Lien copié dans le presse-papiers",
+		"plateLabel": "Planche",
+		"foldGuideTrigger": "📖 Comment imprimer et plier ?",
                 "pageTitle": "Ekovoz : Ressources Gratuites",
                 "badge": "Ressource Éducative du Domaine Public",
                 "title": "Les Heureux du Seigneur Jésus",
@@ -2102,6 +3348,28 @@
                 "linkGithubIssue": "Ouvrir un ticket sur GitHub"
         },
         "pt": {
+		"nameCarta": "Carta",
+		"subCarta": "Américas",
+		"nameA4": "A4",
+		"subA4": "Internacional",
+		"focalVerse": "«…pois assim perseguiram os profetas que foram antes de vós» (Mt 5:12b)",
+		"plateIndexText": "Prancha 24 de 28",
+		"foldModalTitle": "Como Imprimir e Dobrar",
+		"foldStep1Title": "1. Imprima frente e verso",
+		"foldStep1Desc": "Na sua impressora, selecione «Frente e verso» virando pela borda curta.",
+		"foldStep2Title": "2. Dobre ao meio",
+		"foldStep2Desc": "Junte todas as folhas impressas em ordem e dobre-as juntas pelo centro.",
+		"foldStep3Title": "3. Grampeie na lombada",
+		"foldStep3Desc": "Aplique 2 grampos na dobra central. Pronto para colorir!",
+		"btnFoldDismiss": "Entendido",
+		"tapToZoom": "Toque para ampliar",
+		"labelCartaSub": "Américas",
+		"labelA4Sub": "Internacional",
+		"btnPrintPlate": "Imprimir esta prancha",
+		"btnShare": "Compartilhar",
+		"toastCopied": "Link copiado para a área de transferência",
+		"plateLabel": "Prancha",
+		"foldGuideTrigger": "📖 Como imprimir e dobrar?",
                 "pageTitle": "Ekovoz: Recursos Gratuitos",
                 "badge": "Recurso Aberto de Domínio Público",
                 "title": "Os Bem-Aventurados do Senhor Jesus",
@@ -2152,6 +3420,28 @@
                 "linkGithubIssue": "Abrir issue no GitHub"
         },
         "ja": {
+		"nameCarta": "レター",
+		"subCarta": "米国規格",
+		"nameA4": "A4",
+		"subA4": "国際規格",
+		"focalVerse": "「……あなたがたより前にいた預言者たちをも、人々はそのように迫害したのです」（マタイ 5:12b）",
+		"plateIndexText": "図版 24 / 28",
+		"foldModalTitle": "印刷と折り方ガイド",
+		"foldStep1Title": "1. 両面印刷",
+		"foldStep1Desc": "プリンター設定で「短辺とじ両面印刷」を選択してください。",
+		"foldStep2Title": "2. 二つ折りにする",
+		"foldStep2Desc": "印刷した用紙を順番に重ね、中央で二つ折りにします。",
+		"foldStep3Title": "3. 背をホチキス留め",
+		"foldStep3Desc": "中央の折り目にホチキスを2箇所留めます。色ぬりの準備完了！",
+		"btnFoldDismiss": "わかりました",
+		"tapToZoom": "タップして拡大",
+		"labelCartaSub": "レター",
+		"labelA4Sub": "国際A4",
+		"btnPrintPlate": "この図版を印刷",
+		"btnShare": "共有する",
+		"toastCopied": "リンクをクリップボードにコピーしました",
+		"plateLabel": "図版",
+		"foldGuideTrigger": "📖 印刷と折り方ガイド",
                 "pageTitle": "Ekovoz: 無料教育リソース",
                 "badge": "パブリックドメインの教育リソース",
                 "title": "主イエスのさいわいな人々",
@@ -2202,6 +3492,28 @@
                 "linkGithubIssue": "GitHubでIssueを開く"
         },
         "ko": {
+		"nameCarta": "레터",
+		"subCarta": "미주",
+		"nameA4": "A4",
+		"subA4": "국제 규격",
+		"focalVerse": "“…너희 전에 있던 선지자들도 이같이 박해하였느니라” (마 5:12b)",
+		"plateIndexText": "도판 24 / 28",
+		"foldModalTitle": "인쇄 및 접는 방법",
+		"foldStep1Title": "1. 양면 인쇄",
+		"foldStep1Desc": "프린터 설정에서 '짧은 쪽으로 넘김' 양면 인쇄를 선택하세요.",
+		"foldStep2Title": "2. 반으로 접기",
+		"foldStep2Desc": "인쇄된 모든 페이지를 순서대로 모아 가운데를 접습니다.",
+		"foldStep3Title": "3. 가운데 스테이플러 고정",
+		"foldStep3Desc": "접힌 선에 스테이플러 2개를 찍습니다. 색칠 준비 완료!",
+		"btnFoldDismiss": "확인",
+		"tapToZoom": "탭하여 확대",
+		"labelCartaSub": "레터",
+		"labelA4Sub": "국제 A4",
+		"btnPrintPlate": "이 도판 인쇄",
+		"btnShare": "공유하기",
+		"toastCopied": "링크가 클립보드에 복사되었습니다",
+		"plateLabel": "도판",
+		"foldGuideTrigger": "📖 인쇄 및 접는 방법",
                 "pageTitle": "Ekovoz: 무료 교육 자료",
                 "badge": "공공 도메인 교육 자료",
                 "title": "주 예수님의 복된 사람들",
@@ -2252,6 +3564,28 @@
                 "linkGithubIssue": "GitHub에서 Issue 열기"
         },
         "ur": {
+		"nameCarta": "لیٹر",
+		"subCarta": "امریکہ",
+		"nameA4": "A4",
+		"subA4": "بین الاقوامی",
+		"focalVerse": "”…کیونکہ انہوں نے ان نبیوں کو بھی ستایا جو تم سے پہلے تھے“ (متی 5:12b)",
+		"plateIndexText": "تصویر ۲۴ از ۲۸",
+		"foldModalTitle": "چاپ اور موڑنے کا طریقہ",
+		"foldStep1Title": "۱. دونوں طرف پرنٹ کریں",
+		"foldStep1Desc": "پرنٹر سیٹنگز میں شارٹ ایج پر دونوں طرف پرنٹنگ منتخب کریں۔",
+		"foldStep2Title": "۲. درمیان سے موڑیں",
+		"foldStep2Desc": "تمام صفحات کو ترتیب سے رکھیں اور درمیان سے ایک ساتھ موڑیں۔",
+		"foldStep3Title": "۳. درمیان میں سٹیپل کریں",
+		"foldStep3Desc": "درمیانی موڑ پر ۲ سٹیپل لگائیں۔ رنگ بھرنے کے لیے تیار!",
+		"btnFoldDismiss": "سمجھ گیا",
+		"tapToZoom": "بڑا کرنے کے لیے ٹیپ کریں",
+		"labelCartaSub": "لیٹر",
+		"labelA4Sub": "بین الاقوامی A4",
+		"btnPrintPlate": "یہ تصویر پرنٹ کریں",
+		"btnShare": "شیئر کریں",
+		"toastCopied": "لنک کلپ بورڈ پر کاپی ہو گیا",
+		"plateLabel": "تصویر",
+		"foldGuideTrigger": "📖 چاپ اور موڑنے کا طریقہ",
                 "pageTitle": "ایکوووز: مفت تعلیمی وسائل",
                 "badge": "عوامی ملکیت کا تعلیمی وسیلہ",
                 "title": "خداوند یسوع کے مبارک لوگ",
@@ -2302,6 +3636,28 @@
                 "linkGithubIssue": "GitHub پر Issue کھولیں"
         },
         "fa": {
+		"nameCarta": "لتر",
+		"subCarta": "آمریکا",
+		"nameA4": "A4",
+		"subA4": "بین‌المللی",
+		"focalVerse": "« …چرا که پیش از شما بر انبیایی نیز که بودند همین‌گونه جفا می‌رسانیدند » (متی 5:12b)",
+		"plateIndexText": "تصویر ۲۴ از ۲۸",
+		"foldModalTitle": "راهنمای چاپ و تا کردن",
+		"foldStep1Title": "۱. چاپ دورو",
+		"foldStep1Desc": "در تنظیمات چاپگر، گزینه «چاپ دورو» با چرخش در لبه کوتاه را فعال کنید.",
+		"foldStep2Title": "۲. تا کردن از وسط",
+		"foldStep2Desc": "همه برگه‌های چاپ‌شده را به ترتیب بچینید و از مرکز تا کنید.",
+		"foldStep3Title": "۳. منگنه کردن عطف",
+		"foldStep3Desc": "۲ منگنه در خط تا مرکزی بزنید. آماده رنگ‌آمیزی است!",
+		"btnFoldDismiss": "متوجه شدم",
+		"tapToZoom": "لمس برای بزرگنمایی",
+		"labelCartaSub": "آمریکا",
+		"labelA4Sub": "بین‌المللی",
+		"btnPrintPlate": "چاپ این تصویر",
+		"btnShare": "اشتراک‌گذاری",
+		"toastCopied": "پیوند در بریده‌دان کپی شد",
+		"plateLabel": "تصویر",
+		"foldGuideTrigger": "📖 راهنمای چاپ و تا کردن",
                 "pageTitle": "اکووز: منابع آموزشی رایگان",
                 "badge": "منبع باز در مالکیت عمومی",
                 "title": "مبارک‌بادهای خداوند عیسی",
@@ -2479,30 +3835,121 @@
                 document.getElementById('linkGithubIssue').innerText = t.linkGithubIssue;
             }
 
-            // Descarga directa canónica de alta velocidad (Fastly CDN de GitHub Pages)
-            const distLang = lang === 'zh' ? 'zh-Hans' : lang;
-            const sheetsLink = document.getElementById('linkSheets');
-            const bookletLink = document.getElementById('linkBooklet');
-            const sheetsName = `felices-${distLang}-v1-sheets.pdf`;
-            const bookletName = `felices-${distLang}-v1-booklet.pdf`;
+            if (document.getElementById('btnPrintPlateText')) {
+                document.getElementById('btnPrintPlateText').innerText = t.btnPrintPlate || "Imprimir esta lámina";
+            }
+            if (document.getElementById('btnShareWorkText')) {
+                document.getElementById('btnShareWorkText').innerText = t.btnShare || "Compartir";
+            }
+            if (document.getElementById('foldGuideTrigger')) {
+                document.getElementById('foldGuideTrigger').innerText = t.foldGuideTrigger || "📖 ¿Cómo imprimir y doblar?";
+            }
+            if (document.getElementById('nameCarta')) {
+                document.getElementById('nameCarta').innerText = t.nameCarta || "Carta";
+            }
+            if (document.getElementById('subCarta')) {
+                document.getElementById('subCarta').innerText = t.subCarta || t.labelCartaSub || "América";
+            }
+            if (document.getElementById('nameA4')) {
+                document.getElementById('nameA4').innerText = t.nameA4 || "A4";
+            }
+            if (document.getElementById('subA4')) {
+                document.getElementById('subA4').innerText = t.subA4 || t.labelA4Sub || "Internacional";
+            }
+            if (document.getElementById('foldModalTitle')) {
+                document.getElementById('foldModalTitle').innerText = t.foldModalTitle || "Cómo Imprimir y Doblar";
+            }
+            if (document.getElementById('foldStep1Title')) {
+                document.getElementById('foldStep1Title').innerText = t.foldStep1Title || "1. Imprime frente y vuelta";
+            }
+            if (document.getElementById('foldStep1Desc')) {
+                document.getElementById('foldStep1Desc').innerText = t.foldStep1Desc || "En tu impresora, activa «Doble cara» volteando por el borde corto.";
+            }
+            if (document.getElementById('foldStep2Title')) {
+                document.getElementById('foldStep2Title').innerText = t.foldStep2Title || "2. Dobla a la mitad";
+            }
+            if (document.getElementById('foldStep2Desc')) {
+                document.getElementById('foldStep2Desc').innerText = t.foldStep2Desc || "Junta todas las hojas impresas en orden y pliégalas juntas por el centro.";
+            }
+            if (document.getElementById('foldStep3Title')) {
+                document.getElementById('foldStep3Title').innerText = t.foldStep3Title || "3. Engrapa en el lomo";
+            }
+            if (document.getElementById('foldStep3Desc')) {
+                document.getElementById('foldStep3Desc').innerText = t.foldStep3Desc || "Aplica 2 grapas en el pliegue central. ¡Listo para colorear!";
+            }
+            if (document.getElementById('btnFoldDismiss')) {
+                document.getElementById('btnFoldDismiss').innerText = t.btnFoldDismiss || "Entendido";
+            }
+            if (document.getElementById('focalPlateZoomHintText')) {
+                document.getElementById('focalPlateZoomHintText').innerText = t.tapToZoom || "Toca para ampliar";
+            }
+            if (document.getElementById('btnPrintPlateText')) {
+                document.getElementById('btnPrintPlateText').innerText = t.btnPrintPlate || "Imprimir esta lámina";
+            }
+            if (document.getElementById('btnShareWorkText')) {
+                document.getElementById('btnShareWorkText').innerText = t.btnShare || "Compartir";
+            }
+            if (document.getElementById('foldGuideTrigger')) {
+                document.getElementById('foldGuideTrigger').innerText = t.foldGuideTrigger || "📖 ¿Cómo imprimir y doblar?";
+            }
 
-            sheetsLink.href = `/dist/${distLang}/v1/mostrador/${sheetsName}`;
-            sheetsLink.setAttribute('download', sheetsName);
-
-            bookletLink.href = `/dist/${distLang}/v1/mostrador/${bookletName}`;
-            bookletLink.setAttribute('download', bookletName);
-
+            updateDownloadLinks();
+            updateFocalPlate();
             updateCarouselView();
             renderUlsGrid();
         }
 
         window.addEventListener('DOMContentLoaded', () => {
+            // Detección inteligente de formato de papel: América -> Carta, Internacional -> A4
+            let initialPaper = 'letter';
+            try {
+                const saved = localStorage.getItem('ekovoz_paper');
+                if (saved === 'letter' || saved === 'a4') {
+                    initialPaper = saved;
+                } else {
+                    const isLetterRegion = /^(en-US|es-US|es-MX|en-CA|es-GT|es-CR|es-SV|es-HN|es-NI|es-PA|es-CO|fil)/i.test(navigator.language || '');
+                    initialPaper = isLetterRegion ? 'letter' : 'a4';
+                }
+            } catch (_) {}
+            setPaperFormat(initialPaper);
+
             const userLang = "ur";
             const select = document.getElementById('langSelect');
-            if (translations[userLang]) {
+            if (select && translations[userLang]) {
                 select.value = userLang;
             }
             updateUI();
+
+            // Gestos táctiles de deslizamiento (Swipe) para dispositivos móviles
+            let touchStartX = 0;
+            let touchEndX = 0;
+            const frame = document.getElementById('focalPlateFrame');
+            if (frame) {
+                frame.addEventListener('touchstart', (e) => {
+                    touchStartX = e.changedTouches[0].screenX;
+                }, { passive: true });
+                frame.addEventListener('touchend', (e) => {
+                    touchEndX = e.changedTouches[0].screenX;
+                    const threshold = 40;
+                    if (touchEndX < touchStartX - threshold) {
+                        nextPlate();
+                    } else if (touchEndX > touchStartX + threshold) {
+                        prevPlate();
+                    }
+                }, { passive: true });
+            }
+
+            // Atajos de teclado ergonómicos: Flechas Izquierda y Derecha
+            window.addEventListener('keydown', (e) => {
+                if (document.querySelector('dialog[open]') || ['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement?.tagName)) {
+                    return;
+                }
+                if (e.key === 'ArrowRight') {
+                    nextPlate();
+                } else if (e.key === 'ArrowLeft') {
+                    prevPlate();
+                }
+            });
         });
 
         function openContactModal() {
@@ -2516,42 +3963,50 @@
             openModal('contactModal');
         }
 
-        // Manejo del formulario de contacto con Web3Forms y Honeypot
+        // Manejo ultra-resiliente del formulario de contacto con Web3Forms y Honeypot
         document.getElementById('contactForm')?.addEventListener('submit', async function (e) {
             e.preventDefault();
-            const lang = document.getElementById('langSelect').value;
+            const lang = document.getElementById('langSelect')?.value || 'es';
             const t = translations[lang] || translations["es"];
             const status = document.getElementById('contactStatus');
             const submitBtn = document.getElementById('contactSubmitBtn');
             if (submitBtn) submitBtn.disabled = true;
             if (status) {
                 status.style.color = 'var(--text-secondary)';
-                status.textContent = t.contactSending;
+                status.textContent = t.contactSending || 'Enviando mensaje...';
             }
 
             const formData = new FormData(this);
             try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 6000); // 6s timeout
                 const response = await fetch('https://api.web3forms.com/submit', {
                     method: 'POST',
-                    body: formData
+                    body: formData,
+                    signal: controller.signal
                 });
+                clearTimeout(timeoutId);
                 const result = await response.json();
                 if (result.success) {
                     if (status) {
-                        status.style.color = '#34d399';
+                        status.style.color = '#10b981';
                         status.textContent = t.contactSuccess;
                     }
                     setTimeout(() => closeModal('contactModal'), 2500);
                 } else {
                     if (status) {
-                        status.style.color = '#f87171';
+                        status.style.color = '#ef4444';
                         status.textContent = result.message || t.contactError;
                     }
                 }
             } catch (err) {
+                // Fallback gracefully en entornos offline o bloqueados por GFW
                 if (status) {
-                    status.style.color = '#f87171';
-                    status.textContent = t.contactConnectionError;
+                    status.style.color = '#ef4444';
+                    status.innerHTML = (t.contactConnectionError || 'Error de conexión.') +
+                        ' <a href="mailto:ekovoz@proton.me?subject=' + encodeURIComponent(formData.get('subject') || 'Contacto') +
+                        '&body=' + encodeURIComponent(formData.get('message') || '') +
+                        '" style="color:var(--badge-text);text-decoration:underline;">Enviar por correo</a>';
                 }
             } finally {
                 if (submitBtn) submitBtn.disabled = false;
@@ -2576,7 +4031,7 @@
             if ('caches' in window) {
                 caches.keys().then(keys => {
                     keys.forEach(k => {
-                        if (k !== 'ekovoz-v5') {
+                        if (k !== 'ekovoz-v6') {
                             caches.delete(k);
                         }
                     });
@@ -2585,7 +4040,7 @@
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('/sw.js').then(reg => {
                     reg.update();
-                    console.log('[Ekovoz SW] Activo v5:', reg.scope);
+                    console.log('[Ekovoz SW] Activo v6:', reg.scope);
                 }).catch(err => {
                     console.log('[Ekovoz SW] Registro omitido o modo local:', err);
                 });
