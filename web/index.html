@@ -401,19 +401,28 @@
             background: var(--accent-secondary-bg);
             border: 1px solid var(--accent-secondary-border);
             color: var(--text-primary);
-            width: 38px;
-            height: 38px;
+            width: 44px;
+            height: 44px;
+            min-width: 44px;
+            min-height: 44px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
             transition: all 0.15s ease;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
         }
 
         .focal-btn:hover {
             background: var(--accent-secondary-hover);
             transform: scale(1.05);
+        }
+
+        .focal-btn:active {
+            transform: scale(0.95);
         }
 
         .focal-plate-indicator {
@@ -422,6 +431,7 @@
             color: var(--text-muted);
             min-width: 120px;
             text-align: center;
+            user-select: none;
         }
 
         .focal-quick-actions {
@@ -437,7 +447,8 @@
             border: 1px solid var(--accent-secondary-border);
             color: var(--text-secondary);
             border-radius: 9999px;
-            padding: 0.4rem 0.85rem;
+            padding: 0.5rem 1rem;
+            min-height: 40px;
             font-size: 0.82rem;
             font-weight: 500;
             cursor: pointer;
@@ -446,6 +457,9 @@
             gap: 0.4rem;
             transition: all 0.15s ease;
             font-family: inherit;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
         }
 
         .btn-micro-action:hover {
@@ -453,6 +467,10 @@
             color: var(--text-primary);
             border-color: var(--text-muted);
             transform: translateY(-1px);
+        }
+
+        .btn-micro-action:active {
+            transform: scale(0.97);
         }
 
         /* Selector de Idioma Wikimedia ULS (Decisión 9-B) */
@@ -1714,15 +1732,29 @@
 
         function openModal(id) {
             const modal = document.getElementById(id);
-            if (modal && typeof modal.showModal === 'function') {
-                modal.showModal();
+            if (!modal) return;
+            try {
+                if (typeof modal.showModal === 'function') {
+                    modal.showModal();
+                } else {
+                    modal.setAttribute('open', '');
+                }
+            } catch (_) {
+                modal.setAttribute('open', '');
             }
         }
 
         function closeModal(id) {
             const modal = document.getElementById(id);
-            if (modal && typeof modal.close === 'function') {
-                modal.close();
+            if (!modal) return;
+            try {
+                if (typeof modal.close === 'function') {
+                    modal.close();
+                } else {
+                    modal.removeAttribute('open');
+                }
+            } catch (_) {
+                modal.removeAttribute('open');
             }
         }
 
@@ -2445,7 +2477,13 @@
         }
 
         function printActivePlate() {
-            window.print();
+            const isTouch = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+            if (isTouch) {
+                const url = getPlateUrl(currentPlateIndex);
+                window.open(url, '_blank');
+            } else {
+                window.print();
+            }
         }
 
         function showToast(msg) {
@@ -2463,21 +2501,19 @@
             const t = translations[lang] || translations['es'] || {};
             const shareData = {
                 title: t.title || 'Los Felices del Señor Jesús',
-                text: t.desc || 'Cuaderno de las Bienaventuranzas para Colorear (Mateo 5)',
+                text: `${t.title || 'Los Felices del Señor Jesús'} — ${getPlateVerse(currentPlateIndex, lang)}`,
                 url: window.location.href
             };
-            if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
+            if (navigator.share) {
                 navigator.share(shareData).catch(() => {});
-            } else {
-                if (navigator.clipboard && navigator.clipboard.writeText) {
-                    navigator.clipboard.writeText(window.location.href).then(() => {
-                        showToast(t.toastCopied || 'Enlace copiado al portapapeles');
-                    }).catch(() => {
-                        showToast(window.location.href);
-                    });
-                } else {
+            } else if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(window.location.href).then(() => {
+                    showToast(t.toastCopied || 'Enlace copiado al portapapeles');
+                }).catch(() => {
                     showToast(window.location.href);
-                }
+                });
+            } else {
+                showToast(window.location.href);
             }
         }
 
@@ -3074,7 +3110,7 @@
 		"subCarta": "अमेरिका",
 		"nameA4": "A4",
 		"subA4": "अंतरराष्ट्रीय",
-		"focalVerse": "“... क्योंकि इसी तरह से आपके सामने आने वाले वक्ताओं को भी सताया गया था।” (मत्ती 5:12b)"…क्योंकि स्वर्ग का राज्य उन्हीं का है\" (मत्ती 5:3b)",
+		"focalVerse": "“... क्योंकि इसी तरह से आपके सामने आने वाले वक्ताओं को भी सताया गया था।” (मत्ती 5:12b)",
 		"plateIndexText": "चित्र 24 / 28",
 		"foldModalTitle": "प्रिंट और मोड़ने की विधि",
 		"foldStep1Title": "1. दोनों तरफ प्रिंट करें",
@@ -3146,7 +3182,7 @@
 		"subCarta": "আমেরিকা",
 		"nameA4": "A4",
 		"subA4": "আন্তর্জাতিক",
-		"focalVerse": "“…কারণ এইভাবে, আপনার আগে আসা মুখপাত্ররাও নির্যাতিত হয়েছিল।” (মথি 5:12b)"…কারণ স্বর্গরাজ্য তাদেরই\" (মথি ৫:৩b)",
+		"focalVerse": "“…কারণ এইভাবে, আপনার আগে আসা মুখপাত্ররাও নির্যাতিত হয়েছিল।” (মথি ৫:12b)",
 		"plateIndexText": "পাতা ২৪ / ২৮",
 		"foldModalTitle": "মুদ্রণ ও ভাঁজ করার নিয়ম",
 		"foldStep1Title": "১. উভয় পিঠে মুদ্রণ",
@@ -3930,21 +3966,28 @@
             }
             updateUI();
 
-            // Gestos táctiles de deslizamiento (Swipe) para dispositivos móviles
+            // Gestos táctiles de deslizamiento (Swipe) ergonómicos para dispositivos móviles
             let touchStartX = 0;
+            let touchStartY = 0;
             let touchEndX = 0;
+            let touchEndY = 0;
             const frame = document.getElementById('focalPlateFrame');
             if (frame) {
                 frame.addEventListener('touchstart', (e) => {
-                    touchStartX = e.changedTouches[0].screenX;
+                    touchStartX = e.changedTouches[0].clientX;
+                    touchStartY = e.changedTouches[0].clientY;
                 }, { passive: true });
                 frame.addEventListener('touchend', (e) => {
-                    touchEndX = e.changedTouches[0].screenX;
-                    const threshold = 40;
-                    if (touchEndX < touchStartX - threshold) {
-                        nextPlate();
-                    } else if (touchEndX > touchStartX + threshold) {
-                        prevPlate();
+                    touchEndX = e.changedTouches[0].clientX;
+                    touchEndY = e.changedTouches[0].clientY;
+                    const diffX = touchEndX - touchStartX;
+                    const diffY = touchEndY - touchStartY;
+                    if (Math.abs(diffX) > 45 && Math.abs(diffX) > Math.abs(diffY) * 1.5) {
+                        if (diffX < 0) {
+                            nextPlate();
+                        } else {
+                            prevPlate();
+                        }
                     }
                 }, { passive: true });
             }

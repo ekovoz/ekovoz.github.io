@@ -1,7 +1,7 @@
-// Ekovoz Sovereign Service Worker (v7.0.0) — Zero Dependencies
+// Ekovoz Sovereign Service Worker (v8.0.0) — Zero Dependencies
 // Network-First for HTML navigation; Native passthrough for PDFs; Offline fallback for assets
 
-const CACHE_NAME = 'ekovoz-v7';
+const CACHE_NAME = 'ekovoz-v8';
 const PRECACHE_ASSETS = [
   '/',
   '/index.html',
