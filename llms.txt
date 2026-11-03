@@ -4,6 +4,7 @@
 
 ## Canonical Works Catalog
 
+- [Sagrada Biblia — Edición Soberana Políglota (66 Libros Canónicos)](https://ekovoz.org/llms/biblia/): 80 plates, class A, license CC0-1.0
 - [Evangelios para Colorear (Programa del Año - 52 Hojas)](https://ekovoz.org/llms/evangelios/): 52 plates, class C, license CC-BY-SA-4.0
 - [Los Felices del Señor Jesús](https://ekovoz.org/llms/felices/): 27 plates, class A, license CC-BY-SA-4.0
 
@@ -13,9 +14,31 @@
 
 ## Multilingual Partitions (Zero Token Bloat)
 
+### Work: Sagrada Biblia — Edición Soberana Políglota (66 Libros Canónicos) (`biblia`)
+
+- [Español - Español](https://ekovoz.org/llms/biblia/es.md): Sagrada Biblia — Edición Soberana Políglota (66 Libros Canónicos) (es) in raw clean Markdown.
+- [Inglés - English](https://ekovoz.org/llms/biblia/en.md): Sagrada Biblia — Edición Soberana Políglota (66 Libros Canónicos) (en) in raw clean Markdown.
+- [Francés - Français](https://ekovoz.org/llms/biblia/fr.md): Sagrada Biblia — Edición Soberana Políglota (66 Libros Canónicos) (fr) in raw clean Markdown.
+- [Portugués - Português](https://ekovoz.org/llms/biblia/pt.md): Sagrada Biblia — Edición Soberana Políglota (66 Libros Canónicos) (pt) in raw clean Markdown.
+- [Italiano - Italiano](https://ekovoz.org/llms/biblia/it.md): Sagrada Biblia — Edición Soberana Políglota (66 Libros Canónicos) (it) in raw clean Markdown.
+- [Indonesio - Bahasa Indonesia](https://ekovoz.org/llms/biblia/id.md): Sagrada Biblia — Edición Soberana Políglota (66 Libros Canónicos) (id) in raw clean Markdown.
+- [Turco - Türkçe](https://ekovoz.org/llms/biblia/tr.md): Sagrada Biblia — Edición Soberana Políglota (66 Libros Canónicos) (tr) in raw clean Markdown.
+- [Ruso - Русский](https://ekovoz.org/llms/biblia/ru.md): Sagrada Biblia — Edición Soberana Políglota (66 Libros Canónicos) (ru) in raw clean Markdown.
+- [Chino Simplificado - 简体中文](https://ekovoz.org/llms/biblia/zh-Hans.md): Sagrada Biblia — Edición Soberana Políglota (66 Libros Canónicos) (zh-Hans) in raw clean Markdown.
+- [Japonés - 日本語](https://ekovoz.org/llms/biblia/ja.md): Sagrada Biblia — Edición Soberana Políglota (66 Libros Canónicos) (ja) in raw clean Markdown.
+- [Coreano - 한국어](https://ekovoz.org/llms/biblia/ko.md): Sagrada Biblia — Edición Soberana Políglota (66 Libros Canónicos) (ko) in raw clean Markdown.
+- [Hindi - हिन्दी](https://ekovoz.org/llms/biblia/hi.md): Sagrada Biblia — Edición Soberana Políglota (66 Libros Canónicos) (hi) in raw clean Markdown.
+- [Bengalí - বাংলা](https://ekovoz.org/llms/biblia/bn.md): Sagrada Biblia — Edición Soberana Políglota (66 Libros Canónicos) (bn) in raw clean Markdown.
+- [Árabe - العربية](https://ekovoz.org/llms/biblia/ar.md): Sagrada Biblia — Edición Soberana Políglota (66 Libros Canónicos) (ar) in raw clean Markdown.
+- [Urdu - اردو](https://ekovoz.org/llms/biblia/ur.md): Sagrada Biblia — Edición Soberana Políglota (66 Libros Canónicos) (ur) in raw clean Markdown.
+- [Persa - فارسی](https://ekovoz.org/llms/biblia/fa.md): Sagrada Biblia — Edición Soberana Políglota (66 Libros Canónicos) (fa) in raw clean Markdown.
+- [Tepehuano del Sur (O'dam) - O'dam](https://ekovoz.org/llms/biblia/stp.md): Sagrada Biblia — Edición Soberana Políglota (66 Libros Canónicos) (stp) in raw clean Markdown.
+- [spa - spa](https://ekovoz.org/llms/biblia/spa.md): Sagrada Biblia — Edición Soberana Políglota (66 Libros Canónicos) (spa) in raw clean Markdown.
+
 ### Work: Evangelios para Colorear (Programa del Año - 52 Hojas) (`evangelios`)
 
 - [Español - Español](https://ekovoz.org/llms/evangelios/es.md): Evangelios para Colorear (Programa del Año - 52 Hojas) (es) in raw clean Markdown.
+- [Tepehuano del Sur (O'dam) - O'dam](https://ekovoz.org/llms/evangelios/stp.md): Evangelios para Colorear (Programa del Año - 52 Hojas) (stp) in raw clean Markdown.
 
 ### Work: Los Felices del Señor Jesús (`felices`)
 
@@ -36,3 +59,19 @@
 - [Urdu - اردو](https://ekovoz.org/llms/felices/ur.md): Los Felices del Señor Jesús (ur) in raw clean Markdown.
 - [Persa - فارسی](https://ekovoz.org/llms/felices/fa.md): Los Felices del Señor Jesús (fa) in raw clean Markdown.
 
+
+# Ekovoz Polyglot Bible — Hierarchical AI Index (< 15 MB Control Plane)
+total_languages: 7164
+regions: 12
+- region_01: https://ekovoz.org/shards/region_01.json (repo: ekovoz-b01)
+- region_02: https://ekovoz.org/shards/region_02.json (repo: ekovoz-b02)
+- region_03: https://ekovoz.org/shards/region_03.json (repo: ekovoz-b03)
+- region_04: https://ekovoz.org/shards/region_04.json (repo: ekovoz-b04)
+- region_05: https://ekovoz.org/shards/region_05.json (repo: ekovoz-b05)
+- region_06: https://ekovoz.org/shards/region_06.json (repo: ekovoz-b06)
+- region_07: https://ekovoz.org/shards/region_07.json (repo: ekovoz-b07)
+- region_08: https://ekovoz.org/shards/region_08.json (repo: ekovoz-b08)
+- region_09: https://ekovoz.org/shards/region_09.json (repo: ekovoz-b09)
+- region_10: https://ekovoz.org/shards/region_10.json (repo: ekovoz-b10)
+- region_11: https://ekovoz.org/shards/region_11.json (repo: ekovoz-b11)
+- region_12: https://ekovoz.org/shards/region_12.json (repo: ekovoz-b12)

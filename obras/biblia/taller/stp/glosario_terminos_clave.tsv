@@ -1,0 +1,309 @@
+term_id	source_lemma	bridge_es	vernacular_stp	domain	g2_score
+KT-001	H0776/אֶרֶץ	tierra	oidha'	IDS-1-210:Physical_World	178.69
+KT-002	G1093/γῆ	tierra	oidha'	IDS-1-210:Physical_World	166.61
+KT-003	H0127/אֲדָמָה	suelo	oidha'	IDS-1-212:Physical_World	350.27
+KT-004	H6083/עָפָר	polvo	oo'	IDS-1-213:Physical_World	431.79
+KT-005	H2344/חוֹל	arena	oo'	IDS-1-215:Physical_World	503.88
+KT-006	H2022/הַר	monte	kavɨk	IDS-1-220:Physical_World	308.77
+KT-007	G3735/ὄρος	monte	kavɨk	IDS-1-220:Physical_World	321.42
+KT-008	H4325/מַיִם	agua	suudai'	IDS-1-310:Physical_World	363.02
+KT-009	G5204/ὕδωρ	agua	suudai'	IDS-1-310:Physical_World	358.61
+KT-010	H0784/אֵשׁ	fuego	tai	IDS-1-810:Physical_World	325.07
+KT-011	G4442/πῦρ	fuego	tai	IDS-1-810:Physical_World	321.72
+KT-012	H0068/אֶבֶן	piedra	jodai	IDS-1-250:Physical_World	303.15
+KT-013	G3037/λίθος	piedra	jodai	IDS-1-250:Physical_World	303.15
+KT-014	H8064/שָׁמַיִם	cielo	tɨkɨr	IDS-1-510:Physical_World	354.88
+KT-015	G3772/οὐρανός	cielo	tɨkɨr	IDS-1-510:Physical_World	350.79
+KT-016	H8121/שֶׁמֶשׁ	sol	tas	IDS-1-520:Physical_World	413.85
+KT-017	H3394/יָרֵחַ	luna	masad	IDS-1-530:Physical_World	511.68
+KT-018	H3556/כּוֹכָב	estrella	si'avag	IDS-1-540:Physical_World	365.33
+KT-019	H0001/אָב	padre	taat	IDS-2-350:Kinship	50.98
+KT-020	G3962/πατήρ	padre	taat	IDS-2-350:Kinship	57.17
+KT-021	H0517/אֵם	madre	naan	IDS-2-360:Kinship	118.63
+KT-022	H1121/בֵּן	hijo	mar	IDS-2-410:Kinship	79.96
+KT-023	G5207/υἱός	hijo	mar	IDS-2-410:Kinship	81.78
+KT-024	H0251/אָח	hermano	xibhɨk	IDS-2-440:Kinship	255.68
+KT-025	G0080/ἀδελφός	hermano	xibhɨk	IDS-2-440:Kinship	294.48
+KT-026	H0376/אִישׁ	hombre	chio'ñ	IDS-2-210:Kinship	197.12
+KT-027	H0802/אִשָּׁה	mujer	u'vɨ	IDS-2-220:Kinship	248.37
+KT-028	H6629/צֹאן	oveja	kaneer	IDS-3-250:Animals	460.27
+KT-029	G4263/πρόβατον	oveja	kaneer	IDS-3-250:Animals	499.54
+KT-030	H5775/עוֹף	ave	u'uuv	IDS-3-580:Animals	424.45
+KT-031	H1709/דָּג	pez	vatop	IDS-3-650:Animals	262.77
+KT-032	H1818/דָּם	sangre	ɨ'ɨr	IDS-4-150:Body	238.07
+KT-033	G0129/αἷμα	sangre	ɨ'ɨr	IDS-4-150:Body	242.48
+KT-034	H3820/לֵב	corazón	i'ii'ñ	IDS-4-440:Body	183.36
+KT-035	G2588/καρδία	corazón	i'ii'ñ	IDS-4-440:Body	204.59
+KT-036	H3027/יָד	mano	novɨ	IDS-4-330:Body	164.65
+KT-037	G5495/χείρ	mano	novɨ	IDS-4-330:Body	171.07
+KT-038	H5869/עַיִן	ojo	vupui	IDS-4-210:Body	344.91
+KT-039	H0241/אֹזֶן	oído	naak	IDS-4-220:Body	258.09
+KT-040	H6310/פֶּה	boca	chin	IDS-4-240:Body	231.13
+KT-041	H1320/בָּשָׂר	carne	chuukug	IDS-4-130:Body	260.46
+KT-042	G4561/σάρξ	carne	chuukug	IDS-4-130:Body	234.88
+KT-043	H3899/לֶחֶם	pan	takarui'	IDS-5-510:Food_Drink	306.95
+KT-044	G0740/ἄρτος	pan	takarui'	IDS-5-510:Food_Drink	311.45
+KT-045	H0398/אָכַל	comer	jugi	IDS-5-110:Food_Drink	355.00
+KT-046	H8354/שָׁתָה	beber	i'i	IDS-5-130:Food_Drink	389.72
+KT-047	H0899/בֶּגֶד	vestido	kutun	IDS-6-120:Clothing	371.82
+KT-048	H1004/בַּיִת	casa	vaak	IDS-7-120:House	165.88
+KT-049	G3624/οἶκος	casa	vaak	IDS-7-120:House	163.07
+KT-050	H6086/עֵץ	árbol	u'u	IDS-8-600:Agriculture	390.53
+KT-051	H2233/זֶרַע	semilla	kai'	IDS-8-310:Agriculture	167.68
+KT-052	H6213/עָשָׂה	hacer	jix duu	IDS-9-110:Physical_Actions	15.25
+KT-053	H1980/הָלַךְ	caminar	jiim	IDS-10-450:Motion	148.19
+KT-054	H1870/דֶּרֶךְ	camino	bhóogɨt	IDS-10-720:Motion	259.85
+KT-055	G3598/ὁδός	camino	bhóogɨt	IDS-10-720:Motion	240.41
+KT-056	H0935/בּוֹא	venir	jix ai	IDS-10-480:Motion	15.25
+KT-057	H5414/נָתַן	dar	jix maa	IDS-11-210:Possession	15.25
+KT-058	G1325/δίδωμι	dar	jix maa	IDS-11-210:Possession	15.25
+KT-059	H4725/מָקוֹם	lugar	pai'	IDS-12-110:Spatial	244.87
+KT-060	H0259/אֶחָד	uno	maa'n	IDS-13-101:Quantity	240.31
+KT-061	H3605/כֹּל	todo	bɨx	IDS-13-140:Quantity	22.34
+KT-062	H3117/יוֹם	día	tas	IDS-14-410:Time	172.54
+KT-063	H3915/לַיְלָה	noche	tukaa'	IDS-14-420:Time	281.01
+KT-064	H7200/רָאָה	ver	jix ñi'	IDS-15-510:Sense_Perception	15.25
+KT-065	H8085/שָׁמַע	oír	jix kai	IDS-15-410:Sense_Perception	106.43
+KT-066	H0216/אוֹר	luz	tas	IDS-15-560:Sense_Perception	416.92
+KT-067	G5457/φῶς	luz	tas	IDS-15-560:Sense_Perception	412.32
+KT-068	H2617/חֶסֶד	amor	xoi'kam	IDS-16-300:Emotion	334.47
+KT-069	G0026/ἀγάπη	amor	xoi'kam	IDS-16-300:Emotion	339.60
+KT-070	H7965/שָׁלוֹם	paz	bhai'x i'ii'ñ	IDS-16-230:Emotion	313.08
+KT-071	G1515/εἰρήνη	paz	bhai'x i'ii'ñ	IDS-16-230:Emotion	308.74
+KT-072	H3045/יָדַע	saber	jix maat	IDS-17-170:Mind_Thought	17.90
+KT-073	G1492/οἶδα	saber	jix maat	IDS-17-170:Mind_Thought	17.57
+KT-074	H0559/אָמַר	decir	jix aa'	IDS-18-210:Speech	15.25
+KT-075	H1697/דָּבָר	palabra	ñi'ook	IDS-18-220:Speech	232.77
+KT-076	G3056/λόγος	palabra	ñi'ook	IDS-18-220:Speech	225.51
+KT-077	H8034/שֵׁם	nombre	tɨɨgɨ'	IDS-18-280:Speech	212.59
+KT-078	H5971/עַם	pueblo	ja'tkam	IDS-19-210:Social_Relations	222.31
+KT-079	H4428/מֶלֶךְ	rey	gɨ'kora'	IDS-19-320:Social_Relations	224.35
+KT-080	G0935/βασιλεύς	rey	gɨ'kora'	IDS-19-320:Social_Relations	235.21
+KT-081	H2719/חֶרֶב	espada	kuchii	IDS-20-240:Warfare	318.65
+KT-082	H6664/צֶדֶק	justicia	bɨx bhai'	IDS-21-110:Law_Judgment	302.37
+KT-083	G1343/δικαιοσύνη	justicia	bɨx bhai'	IDS-21-110:Law_Judgment	345.48
+KT-084	H0430/אֱלֹהִים	Dios	Jawatan Dios	IDS-22-120:Religion_Belief	174.02
+KT-085	G2316/θεός	Dios	Jawatan Dios	IDS-22-120:Religion_Belief	157.26
+KT-086	H7307/רוּחַ	Espíritu	Espíritu	IDS-22-130:Religion_Belief	314.51
+KT-087	G4151/πνεῦμα	Espíritu	Espíritu	IDS-22-130:Religion_Belief	326.20
+KT-088	H3519/כָּבוֹד	gloria	gɨ'kora' tas	IDS-22-140:Religion_Belief	367.02
+KT-089	H3548/כֹּהֵן	sacerdote	sacerdote bhaan Jawatan	IDS-22-180:Religion_Belief	350.09
+KT-090	H4196/מִזְבֵּחַ	altar	altar bhaan Jawatan	IDS-22-170:Religion_Belief	394.99
+KT-091	H2416/חַי	vivir	oidha'	IDS-4-740:Body	379.59
+KT-092	G2222/ζωή	vida	oidha'	IDS-4-740:Body	213.80
+KT-093	H4191/מוּת	morir	jix koi	IDS-4-750:Body	15.25
+KT-094	H6005/G1694	Ancla Immanuel (ISA.7.14->MAT.1.23)	Immanuel (ISA.7.14)	Cita_AT_NT	163.50
+KT-095	H1035/G0965	Ancla Bethlehem (MIC.5.2->MAT.2.6)	Bethlehem (MIC.5.2)	Cita_AT_NT	149.89
+KT-096	H1121/G5207	Ancla ben (HOS.11.1->MAT.2.15)	ben (HOS.11.1)	Cita_AT_NT	94.94
+KT-097	H7354/G4478	Ancla Rachel (JER.31.15->MAT.2.18)	Rachel (JER.31.15)	Cita_AT_NT	157.85
+KT-098	H6437/G2090	Ancla panah (ISA.40.3->MAT.3.3)	panah (ISA.40.3)	Cita_AT_NT	117.53
+KT-099	H3899/G0740	Ancla lechem (DEU.8.3->MAT.4.4)	lechem (DEU.8.3)	Cita_AT_NT	111.24
+KT-100	H4397/G0032	Ancla malak (PSA.91.11->MAT.4.6)	malak (PSA.91.11)	Cita_AT_NT	113.66
+KT-101	H5254/G1598	Ancla nasah (DEU.6.16->MAT.4.7)	nasah (DEU.6.16)	Cita_AT_NT	134.50
+KT-102	H7812/G4352	Ancla shachah (DEU.6.13->MAT.4.10)	shachah (DEU.6.13)	Cita_AT_NT	150.08
+KT-103	H1551/G1056	Ancla Galil (ISA.9.1->MAT.4.15)	Galil (ISA.9.1)	Cita_AT_NT	115.77
+KT-104	H0216/G5457	Ancla or (ISA.9.2->MAT.4.16)	or (ISA.9.2)	Cita_AT_NT	86.37
+KT-105	H6035/G4239	Ancla anav (PSA.37.11->MAT.5.5)	anav (PSA.37.11)	Cita_AT_NT	124.25
+KT-106	H7523/G5407	Ancla ratsach (EXO.20.13->MAT.5.21)	ratsach (EXO.20.13)	Cita_AT_NT	175.44
+KT-107	H5003/G3431	Ancla naaph (EXO.20.14->MAT.5.27)	naaph (EXO.20.14)	Cita_AT_NT	160.21
+KT-108	H3748/G0647	Ancla keritut (DEU.24.1->MAT.5.31)	keritut (DEU.24.1)	Cita_AT_NT	136.38
+KT-109	H7650/G1964	Ancla shava (LEV.19.12->MAT.5.33)	shava (LEV.19.12)	Cita_AT_NT	120.84
+KT-110	H5869/G3788	Ancla ayin (EXO.21.24->MAT.5.38)	ayin (EXO.21.24)	Cita_AT_NT	122.81
+KT-111	H7453/G4139	Ancla rea (LEV.19.18->MAT.5.43)	rea (LEV.19.18)	Cita_AT_NT	96.89
+KT-112	H2483/G0769	Ancla choli (ISA.53.4->MAT.8.17)	choli (ISA.53.4)	Cita_AT_NT	119.90
+KT-113	H2617/G1656	Ancla chesed (HOS.6.6->MAT.9.13)	chesed (HOS.6.6)	Cita_AT_NT	133.04
+KT-114	H0001/G3962	Ancla av (MIC.7.6->MAT.10.35)	av (MIC.7.6)	Cita_AT_NT	120.92
+KT-115	H4397/G0032	Ancla malak (MAL.3.1->MAT.11.10)	malak (MAL.3.1)	Cita_AT_NT	118.79
+KT-116	H2617/G1656	Ancla chesed (HOS.6.6->MAT.12.7)	chesed (HOS.6.6)	Cita_AT_NT	140.94
+KT-117	H5650/G3816	Ancla eved (ISA.42.1->MAT.12.18)	eved (ISA.42.1)	Cita_AT_NT	98.52
+KT-118	H6817/G2896	Ancla tsaaq (ISA.42.2->MAT.12.19)	tsaaq (ISA.42.2)	Cita_AT_NT	133.16
+KT-119	H7070/G2563	Ancla qaneh (ISA.42.3->MAT.12.20)	qaneh (ISA.42.3)	Cita_AT_NT	129.58
+KT-120	H1471/G1484	Ancla goy (ISA.42.4->MAT.12.21)	goy (ISA.42.4)	Cita_AT_NT	110.93
+KT-121	H1709/G2785	Ancla dag (JON.1.17->MAT.12.40)	dag (JON.1.17)	Cita_AT_NT	89.37
+KT-122	H8085/G0191	Ancla shama (ISA.6.9->MAT.13.14)	shama (ISA.6.9)	Cita_AT_NT	113.12
+KT-123	H3820/G2588	Ancla lev (ISA.6.10->MAT.13.15)	lev (ISA.6.10)	Cita_AT_NT	111.64
+KT-124	H4912/G3850	Ancla mashal (PSA.78.2->MAT.13.35)	mashal (PSA.78.2)	Cita_AT_NT	139.90
+KT-125	H3513/G5091	Ancla kavad (EXO.20.12->MAT.15.4)	kavad (EXO.20.12)	Cita_AT_NT	121.86
+KT-126	H8193/G5491	Ancla saphah (ISA.29.13->MAT.15.8)	saphah (ISA.29.13)	Cita_AT_NT	130.15
+KT-127	H4687/G1778	Ancla mitsvah (ISA.29.13->MAT.15.9)	mitsvah (ISA.29.13)	Cita_AT_NT	138.50
+KT-128	H5707/G3144	Ancla ed (DEU.19.15->MAT.18.16)	ed (DEU.19.15)	Cita_AT_NT	73.03
+KT-129	H2145/G0730	Ancla zakar (GEN.1.27->MAT.19.4)	zakar (GEN.1.27)	Cita_AT_NT	118.93
+KT-130	H1320/G4561	Ancla basar (GEN.2.24->MAT.19.5)	basar (GEN.2.24)	Cita_AT_NT	137.31
+KT-131	H7523/G5407	Ancla ratsach (EXO.20.13->MAT.19.18)	ratsach (EXO.20.13)	Cita_AT_NT	177.83
+KT-132	H0157/G0025	Ancla ahav (LEV.19.18->MAT.19.19)	ahav (LEV.19.18)	Cita_AT_NT	108.23
+KT-133	H4428/G0935	Ancla melek (ZEC.9.9->MAT.21.5)	melek (ZEC.9.9)	Cita_AT_NT	106.38
+KT-134	H1288/G2127	Ancla barak (PSA.118.26->MAT.21.9)	barak (PSA.118.26)	Cita_AT_NT	116.70
+KT-135	H8605/G4335	Ancla tephillah (ISA.56.7->MAT.21.13)	tephillah (ISA.56.7)	Cita_AT_NT	155.83
+KT-136	H5768/G3516	Ancla olel (PSA.8.2->MAT.21.16)	olel (PSA.8.2)	Cita_AT_NT	94.53
+KT-137	H0068/G3037	Ancla even (PSA.118.22->MAT.21.42)	even (PSA.118.22)	Cita_AT_NT	107.59
+KT-138	H2993/G1918	Ancla yabam (DEU.25.5->MAT.22.24)	yabam (DEU.25.5)	Cita_AT_NT	108.74
+KT-139	H0430/G2316	Ancla Elohim (EXO.3.6->MAT.22.32)	Elohim (EXO.3.6)	Cita_AT_NT	139.05
+KT-140	H0157/G0025	Ancla ahav (DEU.6.5->MAT.22.37)	ahav (DEU.6.5)	Cita_AT_NT	112.67
+KT-141	H7453/G4139	Ancla rea (LEV.19.18->MAT.22.39)	rea (LEV.19.18)	Cita_AT_NT	98.26
+KT-142	H0113/G2962	Ancla adon (PSA.110.1->MAT.22.44)	adon (PSA.110.1)	Cita_AT_NT	140.94
+KT-143	H8034/G3686	Ancla shem (PSA.118.26->MAT.23.39)	shem (PSA.118.26)	Cita_AT_NT	116.20
+KT-144	H8251/G0946	Ancla shiqquts (DAN.9.27->MAT.24.15)	shiqquts (DAN.9.27)	Cita_AT_NT	127.58
+KT-145	H8121/G2246	Ancla shemesh (ISA.13.10->MAT.24.29)	shemesh (ISA.13.10)	Cita_AT_NT	125.27
+KT-146	H6050/G3507	Ancla anan (DAN.7.13->MAT.24.30)	anan (DAN.7.13)	Cita_AT_NT	86.11
+KT-147	H7462/G4166	Ancla raah (ZEC.13.7->MAT.26.31)	raah (ZEC.13.7)	Cita_AT_NT	93.46
+KT-148	H3225/G1188	Ancla yamin (PSA.110.1->MAT.26.64)	yamin (PSA.110.1)	Cita_AT_NT	103.20
+KT-149	H3701/G0694	Ancla keseph (ZEC.11.12->MAT.27.9)	keseph (ZEC.11.12)	Cita_AT_NT	120.76
+KT-150	H0899/G2440	Ancla beged (PSA.22.18->MAT.27.35)	beged (PSA.22.18)	Cita_AT_NT	131.93
+KT-151	H5337/G4506	Ancla natsal (PSA.22.8->MAT.27.43)	natsal (PSA.22.8)	Cita_AT_NT	143.71
+KT-152	H0410/G2316	Ancla El (PSA.22.1->MAT.27.46)	El (PSA.22.1)	Cita_AT_NT	76.39
+KT-153	H4397/G0032	Ancla malak (MAL.3.1->MRK.1.2)	malak (MAL.3.1)	Cita_AT_NT	105.26
+KT-154	H6963/G5456	Ancla qol (ISA.40.3->MRK.1.3)	qol (ISA.40.3)	Cita_AT_NT	106.35
+KT-155	H7200/G0991	Ancla raah (ISA.6.9->MRK.4.12)	raah (ISA.6.9)	Cita_AT_NT	101.63
+KT-156	H5971/G2992	Ancla am (ISA.29.13->MRK.7.6)	am (ISA.29.13)	Cita_AT_NT	72.28
+KT-157	H3925/G1321	Ancla lamad (ISA.29.13->MRK.7.7)	lamad (ISA.29.13)	Cita_AT_NT	115.21
+KT-158	H0001/G3962	Ancla av (EXO.20.12->MRK.7.10)	av (EXO.20.12)	Cita_AT_NT	84.11
+KT-159	H8438/G4663	Ancla tola (ISA.66.24->MRK.9.48)	tola (ISA.66.24)	Cita_AT_NT	109.96
+KT-160	H1254/G2936	Ancla bara (GEN.1.27->MRK.10.6)	bara (GEN.1.27)	Cita_AT_NT	117.54
+KT-161	H5800/G2641	Ancla azav (GEN.2.24->MRK.10.7)	azav (GEN.2.24)	Cita_AT_NT	110.90
+KT-162	H0259/G3391	Ancla echad (GEN.2.24->MRK.10.8)	echad (GEN.2.24)	Cita_AT_NT	119.17
+KT-163	H1589/G2813	Ancla ganav (EXO.20.13->MRK.10.19)	ganav (EXO.20.13)	Cita_AT_NT	142.87
+KT-164	H3467/G5614	Ancla yasha (PSA.118.25->MRK.11.9)	yasha (PSA.118.25)	Cita_AT_NT	122.20
+KT-165	H1004/G3624	Ancla bayit (ISA.56.7->MRK.11.17)	bayit (ISA.56.7)	Cita_AT_NT	105.38
+KT-166	H3988/G0593	Ancla maas (PSA.118.22->MRK.12.10)	maas (PSA.118.22)	Cita_AT_NT	117.54
+KT-167	H6381/G2298	Ancla pala (PSA.118.23->MRK.12.11)	pala (PSA.118.23)	Cita_AT_NT	122.81
+KT-168	H2233/G4690	Ancla zera (DEU.25.5->MRK.12.19)	zera (DEU.25.5)	Cita_AT_NT	91.35
+KT-169	H0085/G0011	Ancla Avraham (EXO.3.6->MRK.12.26)	Avraham (EXO.3.6)	Cita_AT_NT	137.48
+KT-170	H3068/G2962	Ancla YHWH (DEU.6.4->MRK.12.29)	YHWH (DEU.6.4)	Cita_AT_NT	126.16
+KT-171	H5315/G5590	Ancla nephesh (DEU.6.5->MRK.12.30)	nephesh (DEU.6.5)	Cita_AT_NT	142.93
+KT-172	H0157/G0025	Ancla ahav (LEV.19.18->MRK.12.31)	ahav (LEV.19.18)	Cita_AT_NT	103.70
+KT-173	H0341/G2190	Ancla oyev (PSA.110.1->MRK.12.36)	oyev (PSA.110.1)	Cita_AT_NT	146.65
+KT-174	H8074/G2050	Ancla shamem (DAN.9.27->MRK.13.14)	shamem (DAN.9.27)	Cita_AT_NT	100.50
+KT-175	H2821/G4654	Ancla chashak (ISA.13.10->MRK.13.24)	chashak (ISA.13.10)	Cita_AT_NT	134.92
+KT-176	H1369/G1411	Ancla gevurah (DAN.7.13->MRK.13.26)	gevurah (DAN.7.13)	Cita_AT_NT	131.73
+KT-177	H6629/G4263	Ancla tson (ZEC.13.7->MRK.14.27)	tson (ZEC.13.7)	Cita_AT_NT	96.35
+KT-178	H3427/G2521	Ancla yashav (PSA.110.1->MRK.14.62)	yashav (PSA.110.1)	Cita_AT_NT	120.38
+KT-179	H6586/G0459	Ancla pasha (ISA.53.12->MRK.15.28)	pasha (ISA.53.12)	Cita_AT_NT	111.84
+KT-180	H5800/G1459	Ancla azav (PSA.22.1->MRK.15.34)	azav (PSA.22.1)	Cita_AT_NT	97.86
+KT-181	H3820/G2588	Ancla lev (MAL.4.6->LUK.1.17)	lev (MAL.4.6)	Cita_AT_NT	80.23
+KT-182	H7358/G3388	Ancla rechem (EXO.13.2->LUK.2.23)	rechem (EXO.13.2)	Cita_AT_NT	127.14
+KT-183	H8449/G5167	Ancla tor (LEV.12.8->LUK.2.24)	tor (LEV.12.8)	Cita_AT_NT	83.23
+KT-184	H4546/G5147	Ancla mesillah (ISA.40.3->LUK.3.4)	mesillah (ISA.40.3)	Cita_AT_NT	150.97
+KT-185	H1516/G5327	Ancla gay (ISA.40.4->LUK.3.5)	gay (ISA.40.4)	Cita_AT_NT	100.25
+KT-186	H3444/G4992	Ancla yeshuah (ISA.40.5->LUK.3.6)	yeshuah (ISA.40.5)	Cita_AT_NT	168.34
+KT-187	H0120/G0444	Ancla adam (DEU.8.3->LUK.4.4)	adam (DEU.8.3)	Cita_AT_NT	91.85
+KT-188	H5647/G3000	Ancla avad (DEU.6.13->LUK.4.8)	avad (DEU.6.13)	Cita_AT_NT	110.39
+KT-189	H8104/G1314	Ancla shamar (PSA.91.11->LUK.4.10)	shamar (PSA.91.11)	Cita_AT_NT	144.92
+KT-190	H3709/G5495	Ancla kaph (PSA.91.12->LUK.4.11)	kaph (PSA.91.12)	Cita_AT_NT	129.83
+KT-191	H5254/G1598	Ancla nasah (DEU.6.16->LUK.4.12)	nasah (DEU.6.16)	Cita_AT_NT	133.24
+KT-192	H7307/G4151	Ancla ruach (ISA.61.1->LUK.4.18)	ruach (ISA.61.1)	Cita_AT_NT	126.01
+KT-193	H8141/G1763	Ancla shanah (ISA.61.2->LUK.4.19)	shanah (ISA.61.2)	Cita_AT_NT	146.47
+KT-194	H6440/G4383	Ancla panim (MAL.3.1->LUK.7.27)	panim (MAL.3.1)	Cita_AT_NT	132.94
+KT-195	H0995/G4920	Ancla bin (ISA.6.9->LUK.8.10)	bin (ISA.6.9)	Cita_AT_NT	89.26
+KT-196	H3581/G2479	Ancla koach (DEU.6.5->LUK.10.27)	koach (DEU.6.5)	Cita_AT_NT	114.88
+KT-197	H1288/G2127	Ancla barak (PSA.118.26->LUK.13.35)	barak (PSA.118.26)	Cita_AT_NT	122.04
+KT-198	H5003/G3431	Ancla naaph (EXO.20.12->LUK.18.20)	naaph (EXO.20.12)	Cita_AT_NT	117.10
+KT-199	H4428/G0935	Ancla melek (PSA.118.26->LUK.19.38)	melek (PSA.118.26)	Cita_AT_NT	125.25
+KT-200	H8605/G4335	Ancla tephillah (ISA.56.7->LUK.19.46)	tephillah (ISA.56.7)	Cita_AT_NT	157.88
+KT-201	H6438/G1137	Ancla pinnah (PSA.118.22->LUK.20.17)	pinnah (PSA.118.22)	Cita_AT_NT	139.99
+KT-202	H0251/G0080	Ancla ach (DEU.25.5->LUK.20.28)	ach (DEU.25.5)	Cita_AT_NT	94.50
+KT-203	H3327/G2464	Ancla Yitschaq (EXO.3.6->LUK.20.37)	Yitschaq (EXO.3.6)	Cita_AT_NT	155.23
+KT-204	H5002/G3004	Ancla neum (PSA.110.1->LUK.20.42)	neum (PSA.110.1)	Cita_AT_NT	109.72
+KT-205	H7272/G4228	Ancla regel (PSA.110.1->LUK.20.43)	regel (PSA.110.1)	Cita_AT_NT	136.27
+KT-206	H4487/G3049	Ancla manah (ISA.53.12->LUK.22.37)	manah (ISA.53.12)	Cita_AT_NT	96.04
+KT-207	H2022/G3735	Ancla har (HOS.10.8->LUK.23.30)	har (HOS.10.8)	Cita_AT_NT	96.66
+KT-208	H7307/G4151	Ancla ruach (PSA.31.5->LUK.23.46)	ruach (PSA.31.5)	Cita_AT_NT	124.06
+KT-209	H3474/G2116	Ancla yashar (ISA.40.3->JHN.1.23)	yashar (ISA.40.3)	Cita_AT_NT	136.22
+KT-210	H7068/G2205	Ancla qinah (PSA.69.9->JHN.2.17)	qinah (PSA.69.9)	Cita_AT_NT	126.22
+KT-211	H8064/G3772	Ancla shamayim (PSA.78.24->JHN.6.31)	shamayim (PSA.78.24)	Cita_AT_NT	169.31
+KT-212	H3928/G1318	Ancla limmud (ISA.54.13->JHN.6.45)	limmud (ISA.54.13)	Cita_AT_NT	138.47
+KT-213	H4325/G5204	Ancla mayim (ISA.58.11->JHN.7.38)	mayim (ISA.58.11)	Cita_AT_NT	114.38
+KT-214	H0430/G2316	Ancla elohim (PSA.82.6->JHN.10.34)	elohim (PSA.82.6)	Cita_AT_NT	147.53
+KT-215	H3478/G2474	Ancla Yisrael (PSA.118.25->JHN.12.13)	Yisrael (PSA.118.25)	Cita_AT_NT	145.71
+KT-216	H1323/G2364	Ancla bat (ZEC.9.9->JHN.12.15)	bat (ZEC.9.9)	Cita_AT_NT	95.02
+KT-217	H2220/G1023	Ancla zeroa (ISA.53.1->JHN.12.38)	zeroa (ISA.53.1)	Cita_AT_NT	124.34
+KT-218	H7495/G2390	Ancla rapha (ISA.6.10->JHN.12.40)	rapha (ISA.6.10)	Cita_AT_NT	104.02
+KT-219	H6119/G4418	Ancla aqev (PSA.41.9->JHN.13.18)	aqev (PSA.41.9)	Cita_AT_NT	100.97
+KT-220	H8130/G3404	Ancla sane (PSA.35.19->JHN.15.25)	sane (PSA.35.19)	Cita_AT_NT	109.68
+KT-221	H1486/G2819	Ancla goral (PSA.22.18->JHN.19.24)	goral (PSA.22.18)	Cita_AT_NT	159.43
+KT-222	H6106/G3747	Ancla etsem (EXO.12.46->JHN.19.36)	etsem (EXO.12.46)	Cita_AT_NT	121.86
+KT-223	H1856/G1574	Ancla daqar (ZEC.12.10->JHN.19.37)	daqar (ZEC.12.10)	Cita_AT_NT	114.29
+KT-224	H2918/G1886	Ancla tirah (PSA.69.25->ACT.1.20)	tirah (PSA.69.25)	Cita_AT_NT	125.01
+KT-225	H7307/G4151	Ancla ruach (JOL.2.28->ACT.2.17)	ruach (JOL.2.28)	Cita_AT_NT	254.74
+KT-226	H5012/G4395	Ancla nava (JOL.2.29->ACT.2.18)	nava (JOL.2.29)	Cita_AT_NT	137.47
+KT-227	H4159/G5059	Ancla mophet (JOL.2.30->ACT.2.19)	mophet (JOL.2.30)	Cita_AT_NT	142.28
+KT-228	H3117/G2250	Ancla yom (JOL.2.31->ACT.2.20)	yom (JOL.2.31)	Cita_AT_NT	115.66
+KT-229	H7121/G1941	Ancla qara (JOL.2.32->ACT.2.21)	qara (JOL.2.32)	Cita_AT_NT	107.41
+KT-230	H3225/G1188	Ancla yamin (PSA.16.8->ACT.2.25)	yamin (PSA.16.8)	Cita_AT_NT	149.35
+KT-231	H1320/G4561	Ancla basar (PSA.16.9->ACT.2.26)	basar (PSA.16.9)	Cita_AT_NT	127.24
+KT-232	H7585/G0086	Ancla sheol (PSA.16.10->ACT.2.27)	sheol (PSA.16.10)	Cita_AT_NT	131.90
+KT-233	H2416/G2222	Ancla chayyim (PSA.16.11->ACT.2.28)	chayyim (PSA.16.11)	Cita_AT_NT	146.65
+KT-234	H3427/G2521	Ancla yashav (PSA.110.1->ACT.2.34)	yashav (PSA.110.1)	Cita_AT_NT	135.18
+KT-235	H5030/G4396	Ancla navi (DEU.18.15->ACT.3.22)	navi (DEU.18.15)	Cita_AT_NT	107.78
+KT-236	H8085/G0191	Ancla shama (DEU.18.19->ACT.3.23)	shama (DEU.18.19)	Cita_AT_NT	132.05
+KT-237	H4940/G3965	Ancla mishpachah (GEN.22.18->ACT.3.25)	mishpachah (GEN.22.18)	Cita_AT_NT	177.68
+KT-238	H0068/G3037	Ancla even (PSA.118.22->ACT.4.11)	even (PSA.118.22)	Cita_AT_NT	123.07
+KT-239	H1471/G1484	Ancla goy (PSA.2.1->ACT.4.25)	goy (PSA.2.1)	Cita_AT_NT	106.79
+KT-240	H4899/G5547	Ancla mashiach (PSA.2.2->ACT.4.26)	mashiach (PSA.2.2)	Cita_AT_NT	167.71
+KT-241	H0776/G1093	Ancla erets (GEN.12.1->ACT.7.3)	erets (GEN.12.1)	Cita_AT_NT	116.78
+KT-242	H1616/G3941	Ancla ger (GEN.15.13->ACT.7.6)	ger (GEN.15.13)	Cita_AT_NT	90.23
+KT-243	H1777/G2919	Ancla din (GEN.15.14->ACT.7.7)	din (GEN.15.14)	Cita_AT_NT	98.72
+KT-244	H3290/G2384	Ancla Yaaqov (EXO.3.6->ACT.7.32)	Yaaqov (EXO.3.6)	Cita_AT_NT	136.96
+KT-245	H5275/G5266	Ancla naal (EXO.3.5->ACT.7.33)	naal (EXO.3.5)	Cita_AT_NT	128.32
+KT-246	H6965/G0450	Ancla qum (DEU.18.15->ACT.7.37)	qum (DEU.18.15)	Cita_AT_NT	96.54
+KT-247	H2077/G4968	Ancla zevach (AMO.5.25->ACT.7.42)	zevach (AMO.5.25)	Cita_AT_NT	135.48
+KT-248	H3556/G0798	Ancla kokav (AMO.5.26->ACT.7.43)	kokav (AMO.5.26)	Cita_AT_NT	121.37
+KT-249	H3678/G2362	Ancla kisse (ISA.66.1->ACT.7.49)	kisse (ISA.66.1)	Cita_AT_NT	109.75
+KT-250	H3027/G5495	Ancla yad (ISA.66.2->ACT.7.50)	yad (ISA.66.2)	Cita_AT_NT	110.68
+KT-251	H7716/G4263	Ancla seh (ISA.53.7->ACT.8.32)	seh (ISA.53.7)	Cita_AT_NT	101.49
+KT-252	H4941/G2920	Ancla mishpat (ISA.53.8->ACT.8.33)	mishpat (ISA.53.8)	Cita_AT_NT	138.76
+KT-253	H1732/G1138	Ancla David (PSA.89.20->ACT.13.22)	David (PSA.89.20)	Cita_AT_NT	114.96
+KT-254	H3205/G1080	Ancla yalad (PSA.2.7->ACT.13.33)	yalad (PSA.2.7)	Cita_AT_NT	116.70
+KT-255	H2617/G3741	Ancla chesed (ISA.55.3->ACT.13.34)	chesed (ISA.55.3)	Cita_AT_NT	126.14
+KT-256	H7845/G1312	Ancla shachat (PSA.16.10->ACT.13.35)	shachat (PSA.16.10)	Cita_AT_NT	157.63
+KT-257	H6467/G2041	Ancla poal (HAB.1.5->ACT.13.41)	poal (HAB.1.5)	Cita_AT_NT	105.32
+KT-258	H0216/G5457	Ancla or (ISA.49.6->ACT.13.47)	or (ISA.49.6)	Cita_AT_NT	84.95
+KT-259	H5521/G4633	Ancla sukkah (AMO.9.11->ACT.15.16)	sukkah (AMO.9.11)	Cita_AT_NT	125.32
+KT-260	H1875/G1567	Ancla darash (AMO.9.12->ACT.15.17)	darash (AMO.9.12)	Cita_AT_NT	168.38
+KT-261	H5387/G0758	Ancla nasi (EXO.22.28->ACT.23.5)	nasi (EXO.22.28)	Cita_AT_NT	115.77
+KT-262	H0241/G3775	Ancla ozen (ISA.6.9->ACT.28.26)	ozen (ISA.6.9)	Cita_AT_NT	107.01
+KT-263	H7725/G1994	Ancla shuv (ISA.6.10->ACT.28.27)	shuv (ISA.6.10)	Cita_AT_NT	110.94
+KT-264	H0530/G4102	Ancla emunah (HAB.2.4->ROM.1.17)	emunah (HAB.2.4)	Cita_AT_NT	130.06
+KT-265	H5006/G0987	Ancla naats (ISA.52.5->ROM.2.24)	naats (ISA.52.5)	Cita_AT_NT	110.30
+KT-266	H6663/G1344	Ancla tsadaq (PSA.51.4->ROM.3.4)	tsadaq (PSA.51.4)	Cita_AT_NT	114.25
+KT-267	H6662/G1342	Ancla tsaddiq (PSA.14.1->ROM.3.10)	tsaddiq (PSA.14.1)	Cita_AT_NT	150.55
+KT-268	H7919/G4920	Ancla sakal (PSA.14.2->ROM.3.11)	sakal (PSA.14.2)	Cita_AT_NT	126.60
+KT-269	H2896/G5544	Ancla tov (PSA.14.3->ROM.3.12)	tov (PSA.14.3)	Cita_AT_NT	102.23
+KT-270	H6913/G5028	Ancla qever (PSA.5.9->ROM.3.13)	qever (PSA.5.9)	Cita_AT_NT	120.84
+KT-271	H0423/G0685	Ancla alah (PSA.10.7->ROM.3.14)	alah (PSA.10.7)	Cita_AT_NT	123.17
+KT-272	H1818/G0129	Ancla dam (ISA.59.7->ROM.3.15)	dam (ISA.59.7)	Cita_AT_NT	109.06
+KT-273	H7965/G1515	Ancla shalom (ISA.59.8->ROM.3.17)	shalom (ISA.59.8)	Cita_AT_NT	147.90
+KT-274	H6343/G5401	Ancla pachad (PSA.36.1->ROM.3.18)	pachad (PSA.36.1)	Cita_AT_NT	147.90
+KT-275	H0539/G4100	Ancla aman (GEN.15.6->ROM.4.3)	aman (GEN.15.6)	Cita_AT_NT	127.08
+KT-276	H5375/G0863	Ancla nasa (PSA.32.1->ROM.4.7)	nasa (PSA.32.1)	Cita_AT_NT	128.39
+KT-277	H2803/G3049	Ancla chashav (PSA.32.2->ROM.4.8)	chashav (PSA.32.2)	Cita_AT_NT	158.63
+KT-278	H0001/G3962	Ancla av (GEN.17.5->ROM.4.17)	av (GEN.17.5)	Cita_AT_NT	73.66
+KT-279	H2233/G4690	Ancla zera (GEN.15.5->ROM.4.18)	zera (GEN.15.5)	Cita_AT_NT	100.64
+KT-280	H2530/G1937	Ancla chamad (EXO.20.17->ROM.7.7)	chamad (EXO.20.17)	Cita_AT_NT	109.58
+KT-281	H6629/G4263	Ancla tson (PSA.44.22->ROM.8.36)	tson (PSA.44.22)	Cita_AT_NT	124.25
+KT-282	H3327/G2464	Ancla Yitschaq (GEN.21.12->ROM.9.7)	Yitschaq (GEN.21.12)	Cita_AT_NT	150.60
+KT-283	H1121/G5207	Ancla ben (GEN.18.10->ROM.9.9)	ben (GEN.18.10)	Cita_AT_NT	89.29
+KT-284	H7227/G3187	Ancla rav (GEN.25.23->ROM.9.12)	rav (GEN.25.23)	Cita_AT_NT	99.59
+KT-285	H0157/G0025	Ancla ahav (MAL.1.2->ROM.9.13)	ahav (MAL.1.2)	Cita_AT_NT	116.38
+KT-286	H2603/G1653	Ancla chanan (EXO.33.19->ROM.9.15)	chanan (EXO.33.19)	Cita_AT_NT	123.97
+KT-287	H3581/G1411	Ancla koach (EXO.9.16->ROM.9.17)	koach (EXO.9.16)	Cita_AT_NT	115.56
+KT-288	H5971/G2992	Ancla am (HOS.2.23->ROM.9.25)	am (HOS.2.23)	Cita_AT_NT	78.79
+KT-289	H2416/G2198	Ancla chay (HOS.1.10->ROM.9.26)	chay (HOS.1.10)	Cita_AT_NT	136.19
+KT-290	H7605/G2640	Ancla shear (ISA.10.22->ROM.9.27)	shear (ISA.10.22)	Cita_AT_NT	118.93
+KT-291	H6635/G4519	Ancla tsava (ISA.1.9->ROM.9.29)	tsava (ISA.1.9)	Cita_AT_NT	149.02
+KT-292	H6697/G4073	Ancla tsur (ISA.28.16->ROM.9.33)	tsur (ISA.28.16)	Cita_AT_NT	100.33
+KT-293	H2421/G2198	Ancla chayah (LEV.18.5->ROM.10.5)	chayah (LEV.18.5)	Cita_AT_NT	134.03
+KT-294	H8064/G3772	Ancla shamayim (DEU.30.12->ROM.10.6)	shamayim (DEU.30.12)	Cita_AT_NT	149.57
+KT-295	H1697/G4487	Ancla davar (DEU.30.14->ROM.10.8)	davar (DEU.30.14)	Cita_AT_NT	122.00
+KT-296	H0954/G2617	Ancla bosh (ISA.28.16->ROM.10.11)	bosh (ISA.28.16)	Cita_AT_NT	105.00
+KT-297	H3467/G4982	Ancla yasha (JOL.2.32->ROM.10.13)	yasha (JOL.2.32)	Cita_AT_NT	120.38
+KT-298	H1319/G2097	Ancla basar (ISA.52.7->ROM.10.15)	basar (ISA.52.7)	Cita_AT_NT	100.94
+KT-299	H8052/G0189	Ancla shemuah (ISA.53.1->ROM.10.16)	shemuah (ISA.53.1)	Cita_AT_NT	156.20
+KT-300	H6957/G5353	Ancla qav (PSA.19.4->ROM.10.18)	qav (PSA.19.4)	Cita_AT_NT	90.66
+KT-301	H7065/G3863	Ancla qana (DEU.32.21->ROM.10.19)	qana (DEU.32.21)	Cita_AT_NT	94.15
+KT-302	H4672/G2147	Ancla matsa (ISA.65.1->ROM.10.20)	matsa (ISA.65.1)	Cita_AT_NT	112.64
+KT-303	H6566/G1600	Ancla paras (ISA.65.2->ROM.10.21)	paras (ISA.65.2)	Cita_AT_NT	126.22
+KT-304	H4196/G2379	Ancla mizbeach (1KI.19.10->ROM.11.3)	mizbeach (1KI.19.10)	Cita_AT_NT	138.80
+KT-305	H1168/G0896	Ancla Baal (1KI.19.18->ROM.11.4)	Baal (1KI.19.18)	Cita_AT_NT	102.14
+KT-306	H8639/G2659	Ancla tardemah (ISA.29.10->ROM.11.8)	tardemah (ISA.29.10)	Cita_AT_NT	152.99
+KT-307	H7979/G5132	Ancla shulchan (PSA.69.22->ROM.11.9)	shulchan (PSA.69.22)	Cita_AT_NT	163.50
+KT-308	H1460/G3577	Ancla gav (PSA.69.23->ROM.11.10)	gav (PSA.69.23)	Cita_AT_NT	113.42

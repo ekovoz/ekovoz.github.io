@@ -1,12 +1,14 @@
-// Ekovoz Service Worker (v8.0.0) — Zero Dependencies
+// Ekovoz Service Worker (v9.0.0, upgraded from ekovoz-v8) — Zero Dependencies
 // Network-First for HTML navigation; Native passthrough for PDFs;
 // Same-Origin 200 OK cache + Virtual 206 Partial Content slice for .eco.zst (< 445 KB, Decisión 48C)
 
-const CACHE_NAME = 'ekovoz-v8';
+const CACHE_NAME = 'ekovoz-v9';
 const PRECACHE_ASSETS = [
   '/',
   '/index.html',
+  '/i18n_ui.js',
   '/bible_reader.js',
+  '/obras_manifest.json',
   '/manifest.webmanifest',
   '/canon_lexicon.json',
   '/llms.txt',

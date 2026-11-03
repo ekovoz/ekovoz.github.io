@@ -1,0 +1,13 @@
+# Plantilla Soberana de Corrección de Campo L1-L5 (CC0-1.0)
+lang_code = "stp"
+merkle_base_sha256 = "d63b02808b69a25b42b2fd116857a5fa22169f162994c4b13d8437e72553baf9"
+audio_bytes_allowed = 0
+jpg_bytes_allowed = 0
+
+[[patches]]
+patch_id = "PATCH-STP-L1-001"
+cascade_level = "L1"
+target_ref_or_lemma = "ACT.5.8"
+old_surface = ""
+new_surface = ""
+note_pure_text = "Revisión comunitaria en texto puro (0 Bytes Audio)"
