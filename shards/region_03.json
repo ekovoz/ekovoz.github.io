@@ -1,0 +1,998 @@
+{
+  "macro_region_id": 3,
+  "region_name_es": "Europa Occidental y Mediterráneo",
+  "total_languages": 165,
+  "subclades_covered": 33,
+  "featured_languages": [
+    [
+      "aae",
+      "Arbëreshë Albanian",
+      "Arbëreshë Albanian (aae)",
+      "Calabria,Sicily"
+    ],
+    [
+      "aat",
+      "Arvanitika Albanian",
+      "Arvanitika Albanian (aat)",
+      "Attica,Boeotia"
+    ],
+    [
+      "act",
+      "Achterhoeks",
+      "Achterhoeks (act)",
+      "Gelderland,Overijssel"
+    ],
+    [
+      "aln",
+      "Gheg Albanian",
+      "Gheg Albanian (aln)",
+      "Regional_EU"
+    ],
+    [
+      "als",
+      "Tosk Albanian",
+      "Tosk Albanian (als)",
+      "Regional_EU"
+    ],
+    [
+      "ang",
+      "Old English (ca. 450-1100)",
+      "Old English (ca. 450-1100) (ang)",
+      "Regional_EU"
+    ],
+    [
+      "arg",
+      "Aragonese",
+      "Aragonese (arg)",
+      "Regional_EU"
+    ],
+    [
+      "asq",
+      "Austrian Sign Language",
+      "Austrian Sign Language (asq)",
+      "Regional_EU"
+    ],
+    [
+      "ast",
+      "Asturian",
+      "Asturian (ast)",
+      "Regional_EU"
+    ],
+    [
+      "bar",
+      "Bavarian",
+      "Bavarian (bar)",
+      "Regional_EU"
+    ],
+    [
+      "bcb",
+      "Bainouk-Samik",
+      "Bainouk-Samik (bcb)",
+      "Regional_EU"
+    ],
+    [
+      "bfi",
+      "British Sign Language",
+      "British Sign Language (bfi)",
+      "Regional_EU"
+    ],
+    [
+      "brc",
+      "Berbice Creole Dutch",
+      "Berbice Creole Dutch (brc)",
+      "Regional_EU"
+    ],
+    [
+      "bre",
+      "Breton",
+      "Breton (bre)",
+      "Regional_EU"
+    ],
+    [
+      "bsm",
+      "Busami",
+      "Busami (bsm)",
+      "Regional_EU"
+    ],
+    [
+      "cat",
+      "Catalan",
+      "Catalan (cat)",
+      "Regional_EU"
+    ],
+    [
+      "ces",
+      "Czech",
+      "Czech (ces)",
+      "Regional_EU"
+    ],
+    [
+      "cim",
+      "Cimbrian",
+      "Cimbrian (cim)",
+      "Regional_EU"
+    ],
+    [
+      "cms",
+      "Messapic",
+      "Messapic (cms)",
+      "Regional_EU"
+    ],
+    [
+      "cor",
+      "Cornish",
+      "Cornish (cor)",
+      "Regional_EU"
+    ],
+    [
+      "cos",
+      "Corsican",
+      "Corsican (cos)",
+      "Regional_EU"
+    ],
+    [
+      "cpg",
+      "Cappadocian Greek",
+      "Cappadocian Greek (cpg)",
+      "Regional_EU"
+    ],
+    [
+      "csc",
+      "Catalan Sign Language",
+      "Catalan Sign Language (csc)",
+      "Regional_EU"
+    ],
+    [
+      "cym",
+      "Welsh",
+      "Welsh (cym)",
+      "Regional_EU"
+    ],
+    [
+      "dan",
+      "Danish",
+      "Danish (dan)",
+      "Regional_EU"
+    ],
+    [
+      "deu",
+      "German",
+      "Deutsch",
+      "Bayern,NRW"
+    ],
+    [
+      "drc",
+      "Minderico",
+      "Minderico (drc)",
+      "Regional_EU"
+    ],
+    [
+      "drt",
+      "Drents",
+      "Drents (drt)",
+      "Regional_EU"
+    ],
+    [
+      "dse",
+      "Dutch Sign Language",
+      "Dutch Sign Language (dse)",
+      "Regional_EU"
+    ],
+    [
+      "dsl",
+      "Danish Sign Language",
+      "Danish Sign Language (dsl)",
+      "Regional_EU"
+    ],
+    [
+      "dum",
+      "Middle Dutch (ca. 1050-1350)",
+      "Middle Dutch (ca. 1050-1350) (dum)",
+      "Regional_EU"
+    ],
+    [
+      "dws",
+      "Dutton World Speedwords",
+      "Dutton World Speedwords (dws)",
+      "Regional_EU"
+    ],
+    [
+      "ecr",
+      "Eteocretan",
+      "Eteocretan (ecr)",
+      "Regional_EU"
+    ],
+    [
+      "ecy",
+      "Eteocypriot",
+      "Eteocypriot (ecy)",
+      "Regional_EU"
+    ],
+    [
+      "egl",
+      "Emilian",
+      "Emilian (egl)",
+      "Regional_EU"
+    ],
+    [
+      "ell",
+      "Greek",
+      "Ελληνικά",
+      "Attica,Thessaloniki"
+    ],
+    [
+      "emx",
+      "Erromintxela",
+      "Erromintxela (emx)",
+      "Regional_EU"
+    ],
+    [
+      "eus",
+      "Basque",
+      "Euskara",
+      "Euskadi,Navarra"
+    ],
+    [
+      "ext",
+      "Extremaduran",
+      "Extremaduran (ext)",
+      "Regional_EU"
+    ],
+    [
+      "fao",
+      "Faroese",
+      "Faroese (fao)",
+      "Regional_EU"
+    ],
+    [
+      "fax",
+      "Fala",
+      "Fala (fax)",
+      "Regional_EU"
+    ],
+    [
+      "fit",
+      "Tornedalen Finnish",
+      "Tornedalen Finnish (fit)",
+      "Regional_EU"
+    ],
+    [
+      "fkv",
+      "Kven Finnish",
+      "Kven Finnish (fkv)",
+      "Regional_EU"
+    ],
+    [
+      "fra",
+      "Francés",
+      "Français",
+      "Kinshasa,Katanga,Kivu"
+    ],
+    [
+      "frp",
+      "Arpitan",
+      "Arpitan (frp)",
+      "Regional_EU"
+    ],
+    [
+      "frr",
+      "Northern Frisian",
+      "Northern Frisian (frr)",
+      "Regional_EU"
+    ],
+    [
+      "frs",
+      "Eastern Frisian",
+      "Eastern Frisian (frs)",
+      "Regional_EU"
+    ],
+    [
+      "fry",
+      "Western Frisian",
+      "Western Frisian (fry)",
+      "Regional_EU"
+    ],
+    [
+      "fse",
+      "Finnish Sign Language",
+      "Finnish Sign Language (fse)",
+      "Regional_EU"
+    ],
+    [
+      "fsl",
+      "French Sign Language",
+      "French Sign Language (fsl)",
+      "Regional_EU"
+    ],
+    [
+      "fss",
+      "Finland-Swedish Sign Language",
+      "Finland-Swedish Sign Language (fss)",
+      "Regional_EU"
+    ],
+    [
+      "fur",
+      "Friulian",
+      "Friulian (fur)",
+      "Regional_EU"
+    ],
+    [
+      "gct",
+      "Colonia Tovar German",
+      "Colonia Tovar German (gct)",
+      "Regional_EU"
+    ],
+    [
+      "geh",
+      "Hutterite German",
+      "Hutterite German (geh)",
+      "Regional_EU"
+    ],
+    [
+      "gla",
+      "Scottish Gaelic",
+      "Scottish Gaelic (gla)",
+      "Regional_EU"
+    ],
+    [
+      "gle",
+      "Irish",
+      "Irish (gle)",
+      "Regional_EU"
+    ],
+    [
+      "glg",
+      "Galician",
+      "Galician (glg)",
+      "Regional_EU"
+    ],
+    [
+      "glv",
+      "Manx",
+      "Manx (glv)",
+      "Regional_EU"
+    ],
+    [
+      "gos",
+      "Gronings",
+      "Gronings (gos)",
+      "Regional_EU"
+    ],
+    [
+      "gsg",
+      "German Sign Language",
+      "German Sign Language (gsg)",
+      "Regional_EU"
+    ],
+    [
+      "gss",
+      "Greek Sign Language",
+      "Greek Sign Language (gss)",
+      "Regional_EU"
+    ],
+    [
+      "gsw",
+      "Swiss German",
+      "Swiss German (gsw)",
+      "Regional_EU"
+    ],
+    [
+      "hrv",
+      "Croatian",
+      "Croatian (hrv)",
+      "Regional_EU"
+    ],
+    [
+      "hun",
+      "Hungarian",
+      "Hungarian (hun)",
+      "Regional_EU"
+    ],
+    [
+      "icl",
+      "Icelandic Sign Language",
+      "Icelandic Sign Language (icl)",
+      "Regional_EU"
+    ],
+    [
+      "ils",
+      "International Sign",
+      "International Sign (ils)",
+      "Regional_EU"
+    ],
+    [
+      "ise",
+      "Italian Sign Language",
+      "Italian Sign Language (ise)",
+      "Regional_EU"
+    ],
+    [
+      "isg",
+      "Irish Sign Language",
+      "Irish Sign Language (isg)",
+      "Regional_EU"
+    ],
+    [
+      "isl",
+      "Icelandic",
+      "Icelandic (isl)",
+      "Regional_EU"
+    ],
+    [
+      "ita",
+      "Italiano",
+      "Italiano",
+      "Lombardia,Lazio"
+    ],
+    [
+      "itk",
+      "Judeo-Italian",
+      "Judeo-Italian (itk)",
+      "Regional_EU"
+    ],
+    [
+      "ksh",
+      "Kölsch",
+      "Kölsch (ksh)",
+      "Regional_EU"
+    ],
+    [
+      "lad",
+      "Ladino",
+      "Ladino (lad)",
+      "Regional_EU"
+    ],
+    [
+      "lld",
+      "Ladin",
+      "Ladin (lld)",
+      "Regional_EU"
+    ],
+    [
+      "lmo",
+      "Lombard",
+      "Lombard (lmo)",
+      "Regional_EU"
+    ],
+    [
+      "lsm",
+      "Saamia",
+      "Saamia (lsm)",
+      "Regional_EU"
+    ],
+    [
+      "ltz",
+      "Luxembourgish",
+      "Luxembourgish (ltz)",
+      "Regional_EU"
+    ],
+    [
+      "mdl",
+      "Maltese Sign Language",
+      "Maltese Sign Language (mdl)",
+      "Regional_EU"
+    ],
+    [
+      "mhn",
+      "Mócheno",
+      "Mócheno (mhn)",
+      "Regional_EU"
+    ],
+    [
+      "mkd",
+      "Macedonian",
+      "Macedonian (mkd)",
+      "Regional_EU"
+    ],
+    [
+      "mlt",
+      "Maltese",
+      "Maltese (mlt)",
+      "Regional_EU"
+    ],
+    [
+      "mwl",
+      "Mirandese",
+      "Mirandese (mwl)",
+      "Regional_EU"
+    ],
+    [
+      "mzg",
+      "Monastic Sign Language",
+      "Monastic Sign Language (mzg)",
+      "Regional_EU"
+    ],
+    [
+      "nap",
+      "Neapolitan",
+      "Neapolitan (nap)",
+      "Regional_EU"
+    ],
+    [
+      "nds",
+      "Low German",
+      "Low German (nds)",
+      "Regional_EU"
+    ],
+    [
+      "nld",
+      "Dutch",
+      "Dutch (nld)",
+      "Regional_EU"
+    ],
+    [
+      "nno",
+      "Norwegian Nynorsk",
+      "Norwegian Nynorsk (nno)",
+      "Regional_EU"
+    ],
+    [
+      "nob",
+      "Norwegian Bokmål",
+      "Norwegian Bokmål (nob)",
+      "Regional_EU"
+    ],
+    [
+      "nor",
+      "Norwegian",
+      "Norwegian (nor)",
+      "Regional_EU"
+    ],
+    [
+      "nrf",
+      "Jèrriais",
+      "Jèrriais (nrf)",
+      "Regional_EU"
+    ],
+    [
+      "nsl",
+      "Norwegian Sign Language",
+      "Norwegian Sign Language (nsl)",
+      "Regional_EU"
+    ],
+    [
+      "oci",
+      "Occitan (post 1500)",
+      "Occitan (post 1500) (oci)",
+      "Regional_EU"
+    ],
+    [
+      "olo",
+      "Livvi",
+      "Livvi (olo)",
+      "Regional_EU"
+    ],
+    [
+      "ovd",
+      "Elfdalian",
+      "Elfdalian (ovd)",
+      "Regional_EU"
+    ],
+    [
+      "pcd",
+      "Picard",
+      "Picard (pcd)",
+      "Regional_EU"
+    ],
+    [
+      "pdc",
+      "Pennsylvania German",
+      "Pennsylvania German (pdc)",
+      "Regional_EU"
+    ],
+    [
+      "pfl",
+      "Pfaelzisch",
+      "Pfaelzisch (pfl)",
+      "Regional_EU"
+    ],
+    [
+      "pld",
+      "Polari",
+      "Polari (pld)",
+      "Regional_EU"
+    ],
+    [
+      "psr",
+      "Portuguese Sign Language",
+      "Portuguese Sign Language (psr)",
+      "Regional_EU"
+    ],
+    [
+      "quq",
+      "Quinqui",
+      "Quinqui (quq)",
+      "Regional_EU"
+    ],
+    [
+      "rge",
+      "Romano-Greek",
+      "Romano-Greek (rge)",
+      "Regional_EU"
+    ],
+    [
+      "rgn",
+      "Romagnol",
+      "Romagnol (rgn)",
+      "Regional_EU"
+    ],
+    [
+      "rmc",
+      "Carpathian Romani",
+      "Carpathian Romani (rmc)",
+      "Regional_EU"
+    ],
+    [
+      "rmf",
+      "Kalo Finnish Romani",
+      "Kalo Finnish Romani (rmf)",
+      "Regional_EU"
+    ],
+    [
+      "rmg",
+      "Traveller Norwegian",
+      "Traveller Norwegian (rmg)",
+      "Regional_EU"
+    ],
+    [
+      "rmn",
+      "Balkan Romani",
+      "Balkan Romani (rmn)",
+      "Regional_EU"
+    ],
+    [
+      "rmo",
+      "Sinte Romani",
+      "Sinte Romani (rmo)",
+      "Regional_EU"
+    ],
+    [
+      "rmq",
+      "Caló",
+      "Caló (rmq)",
+      "Regional_EU"
+    ],
+    [
+      "rmu",
+      "Tavringer Romani",
+      "Tavringer Romani (rmu)",
+      "Regional_EU"
+    ],
+    [
+      "rmw",
+      "Welsh Romani",
+      "Welsh Romani (rmw)",
+      "Regional_EU"
+    ],
+    [
+      "rmy",
+      "Vlax Romani",
+      "Vlax Romani (rmy)",
+      "Regional_EU"
+    ],
+    [
+      "roh",
+      "Romansh",
+      "Romansh (roh)",
+      "Regional_EU"
+    ],
+    [
+      "rup",
+      "Macedo-Romanian",
+      "Macedo-Romanian (rup)",
+      "Regional_EU"
+    ],
+    [
+      "ruq",
+      "Megleno Romanian",
+      "Megleno Romanian (ruq)",
+      "Regional_EU"
+    ],
+    [
+      "scn",
+      "Sicilian",
+      "Sicilian (scn)",
+      "Regional_EU"
+    ],
+    [
+      "sco",
+      "Scots",
+      "Scots (sco)",
+      "Regional_EU"
+    ],
+    [
+      "sdc",
+      "Sassarese Sardinian",
+      "Sassarese Sardinian (sdc)",
+      "Regional_EU"
+    ],
+    [
+      "sdn",
+      "Gallurese Sardinian",
+      "Gallurese Sardinian (sdn)",
+      "Regional_EU"
+    ],
+    [
+      "sdz",
+      "Sallands",
+      "Sallands (sdz)",
+      "Regional_EU"
+    ],
+    [
+      "sfb",
+      "Langue des signes de Belgique Francophone",
+      "Langue des signes de Belgique Francophone (sfb)",
+      "Regional_EU"
+    ],
+    [
+      "sgg",
+      "Swiss-German Sign Language",
+      "Swiss-German Sign Language (sgg)",
+      "Regional_EU"
+    ],
+    [
+      "sjd",
+      "Kildin Sami",
+      "Kildin Sami (sjd)",
+      "Regional_EU"
+    ],
+    [
+      "sje",
+      "Pite Sami",
+      "Pite Sami (sje)",
+      "Regional_EU"
+    ],
+    [
+      "sjt",
+      "Ter Sami",
+      "Ter Sami (sjt)",
+      "Regional_EU"
+    ],
+    [
+      "sju",
+      "Ume Sami",
+      "Ume Sami (sju)",
+      "Regional_EU"
+    ],
+    [
+      "slf",
+      "Swiss-Italian Sign Language",
+      "Swiss-Italian Sign Language (slf)",
+      "Regional_EU"
+    ],
+    [
+      "slk",
+      "Slovak",
+      "Slovak (slk)",
+      "Regional_EU"
+    ],
+    [
+      "slv",
+      "Slovenian",
+      "Slovenian (slv)",
+      "Regional_EU"
+    ],
+    [
+      "sma",
+      "Southern Sami",
+      "Southern Sami (sma)",
+      "Regional_EU"
+    ],
+    [
+      "sme",
+      "Northern Sami",
+      "Northern Sami (sme)",
+      "Regional_EU"
+    ],
+    [
+      "smj",
+      "Lule Sami",
+      "Lule Sami (smj)",
+      "Regional_EU"
+    ],
+    [
+      "smn",
+      "Inari Sami",
+      "Inari Sami (smn)",
+      "Regional_EU"
+    ],
+    [
+      "sms",
+      "Skolt Sami",
+      "Skolt Sami (sms)",
+      "Regional_EU"
+    ],
+    [
+      "sqi",
+      "Albanian",
+      "Albanian (sqi)",
+      "Regional_EU"
+    ],
+    [
+      "sqk",
+      "Albanian Sign Language",
+      "Albanian Sign Language (sqk)",
+      "Regional_EU"
+    ],
+    [
+      "src",
+      "Logudorese Sardinian",
+      "Logudorese Sardinian (src)",
+      "Regional_EU"
+    ],
+    [
+      "srd",
+      "Sardinian",
+      "Sardinian (srd)",
+      "Regional_EU"
+    ],
+    [
+      "srn",
+      "Sranan Tongo",
+      "Sranan Tongo (srn)",
+      "Regional_EU"
+    ],
+    [
+      "sro",
+      "Campidanese Sardinian",
+      "Campidanese Sardinian (sro)",
+      "Regional_EU"
+    ],
+    [
+      "srp",
+      "Serbian",
+      "Serbian (srp)",
+      "Regional_EU"
+    ],
+    [
+      "ssp",
+      "Spanish Sign Language",
+      "Spanish Sign Language (ssp)",
+      "Regional_EU"
+    ],
+    [
+      "ssr",
+      "Swiss-French Sign Language",
+      "Swiss-French Sign Language (ssr)",
+      "Regional_EU"
+    ],
+    [
+      "sth",
+      "Shelta",
+      "Shelta (sth)",
+      "Regional_EU"
+    ],
+    [
+      "stl",
+      "Stellingwerfs",
+      "Stellingwerfs (stl)",
+      "Regional_EU"
+    ],
+    [
+      "stq",
+      "Saterfriesisch",
+      "Saterfriesisch (stq)",
+      "Regional_EU"
+    ],
+    [
+      "svm",
+      "Slavomolisano",
+      "Slavomolisano (svm)",
+      "Regional_EU"
+    ],
+    [
+      "swb",
+      "Maore Comorian",
+      "Maore Comorian (swb)",
+      "Regional_EU"
+    ],
+    [
+      "swe",
+      "Swedish",
+      "Swedish (swe)",
+      "Regional_EU"
+    ],
+    [
+      "swg",
+      "Swabian",
+      "Swabian (swg)",
+      "Regional_EU"
+    ],
+    [
+      "swl",
+      "Swedish Sign Language",
+      "Swedish Sign Language (swl)",
+      "Regional_EU"
+    ],
+    [
+      "sxu",
+      "Upper Saxon",
+      "Upper Saxon (sxu)",
+      "Regional_EU"
+    ],
+    [
+      "tsd",
+      "Tsakonian",
+      "Tsakonian (tsd)",
+      "Regional_EU"
+    ],
+    [
+      "twd",
+      "Twents",
+      "Twents (twd)",
+      "Regional_EU"
+    ],
+    [
+      "vel",
+      "Veluws",
+      "Veluws (vel)",
+      "Regional_EU"
+    ],
+    [
+      "vgt",
+      "Vlaamse Gebarentaal",
+      "Vlaamse Gebarentaal (vgt)",
+      "Regional_EU"
+    ],
+    [
+      "vls",
+      "Vlaams",
+      "Vlaams (vls)",
+      "Regional_EU"
+    ],
+    [
+      "vmf",
+      "Mainfränkisch",
+      "Mainfränkisch (vmf)",
+      "Regional_EU"
+    ],
+    [
+      "vsv",
+      "Valencian Sign Language",
+      "Valencian Sign Language (vsv)",
+      "Regional_EU"
+    ],
+    [
+      "wae",
+      "Walser",
+      "Walser (wae)",
+      "Regional_EU"
+    ],
+    [
+      "wep",
+      "Westphalien",
+      "Westphalien (wep)",
+      "Regional_EU"
+    ],
+    [
+      "wln",
+      "Walloon",
+      "Walloon (wln)",
+      "Regional_EU"
+    ],
+    [
+      "wls",
+      "Wallisian",
+      "Wallisian (wls)",
+      "Regional_EU"
+    ],
+    [
+      "yec",
+      "Yeniche",
+      "Yeniche (yec)",
+      "Regional_EU"
+    ],
+    [
+      "yej",
+      "Yevanic",
+      "Yevanic (yej)",
+      "Regional_EU"
+    ],
+    [
+      "zea",
+      "Zeeuws",
+      "Zeeuws (zea)",
+      "Regional_EU"
+    ]
+  ]
+}

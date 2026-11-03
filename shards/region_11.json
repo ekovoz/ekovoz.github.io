@@ -1,0 +1,7292 @@
+{
+  "macro_region_id": 11,
+  "region_name_es": "Sudeste Asiático Continental e Insular",
+  "total_languages": 1214,
+  "subclades_covered": 33,
+  "featured_languages": [
+    [
+      "aax",
+      "Mandobo Atas",
+      "Mandobo Atas (aax)",
+      "Sumatra,Maluku,Papua,Nusa_Tenggara"
+    ],
+    [
+      "aaz",
+      "Amarasi",
+      "Amarasi (aaz)",
+      "Sumatra,Maluku,Papua,Nusa_Tenggara"
+    ],
+    [
+      "abc",
+      "Ambala Ayta",
+      "Ambala Ayta (abc)",
+      "Luzon,Visayas,Mindanao"
+    ],
+    [
+      "abd",
+      "Manide",
+      "Manide (abd)",
+      "Luzon,Visayas,Mindanao"
+    ],
+    [
+      "abf",
+      "Abai Sungai",
+      "Abai Sungai (abf)",
+      "Sabah,Sarawak"
+    ],
+    [
+      "abl",
+      "Lampung Nyo",
+      "Lampung Nyo (abl)",
+      "Sumatra,Maluku,Papua,Nusa_Tenggara"
+    ],
+    [
+      "abp",
+      "Abellen Ayta",
+      "Abellen Ayta (abp)",
+      "Luzon,Visayas,Mindanao"
+    ],
+    [
+      "abs",
+      "Ambonese Malay",
+      "Ambonese Malay (abs)",
+      "Sumatra,Maluku,Papua,Nusa_Tenggara"
+    ],
+    [
+      "abx",
+      "Inabaknon",
+      "Inabaknon (abx)",
+      "Luzon,Visayas,Mindanao"
+    ],
+    [
+      "abz",
+      "Abui",
+      "Abui (abz)",
+      "Sumatra,Maluku,Papua,Nusa_Tenggara"
+    ],
+    [
+      "ace",
+      "Achinese",
+      "Achinese (ace)",
+      "Sumatra,Maluku,Papua,Nusa_Tenggara"
+    ],
+    [
+      "adb",
+      "Atauran",
+      "Atauran (adb)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "adn",
+      "Adang",
+      "Adang (adn)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "adr",
+      "Adonara",
+      "Adonara (adr)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "aem",
+      "Arem",
+      "Arem (aem)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "afz",
+      "Obokuitai",
+      "Obokuitai (afz)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "agf",
+      "Arguni",
+      "Arguni (agf)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "agk",
+      "Isarog Agta",
+      "Isarog Agta (agk)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "agn",
+      "Agutaynen",
+      "Agutaynen (agn)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "agt",
+      "Central Cagayan Agta",
+      "Central Cagayan Agta (agt)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "agv",
+      "Remontado Dumagat",
+      "Remontado Dumagat (agv)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "agy",
+      "Southern Alta",
+      "Southern Alta (agy)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "agz",
+      "Mt. Iriga Agta",
+      "Mt. Iriga Agta (agz)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "ahh",
+      "Aghu",
+      "Aghu (ahh)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "aib",
+      "Ainu (China)",
+      "Ainu (China) (aib)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "aip",
+      "Burumakok",
+      "Burumakok (aip)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "air",
+      "Airoran",
+      "Airoran (air)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "akb",
+      "Batak Angkola",
+      "Batak Angkola (akb)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "akc",
+      "Mpur",
+      "Mpur (akc)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "akg",
+      "Anakalangu",
+      "Anakalangu (akg)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "akl",
+      "Aklanon",
+      "Aklanon (akl)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "alj",
+      "Alangan",
+      "Alangan (alj)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "alk",
+      "Alak",
+      "Alak (alk)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "alo",
+      "Larike-Wakasihu",
+      "Larike-Wakasihu (alo)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "alp",
+      "Alune",
+      "Alune (alp)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "amk",
+      "Ambai",
+      "Ambai (amk)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "amn",
+      "Amanab",
+      "Amanab (amn)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "amq",
+      "Amahai",
+      "Amahai (amq)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "amv",
+      "Ambelau",
+      "Ambelau (amv)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "and",
+      "Ansus",
+      "Ansus (and)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "anl",
+      "Anu-Hkongso Chin",
+      "Anu-Hkongso Chin (anl)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "aol",
+      "Alor",
+      "Alor (aol)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "aos",
+      "Taikat",
+      "Taikat (aos)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "aoz",
+      "Uab Meto",
+      "Uab Meto (aoz)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "apf",
+      "Pahanan Agta",
+      "Pahanan Agta (apf)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "apg",
+      "Ampanang",
+      "Ampanang (apg)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "apx",
+      "Aputai",
+      "Aputai (apx)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "aqm",
+      "Atohwaim",
+      "Atohwaim (aqm)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "aqn",
+      "Northern Alta",
+      "Northern Alta (aqn)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "asc",
+      "Casuarina Coast Asmat",
+      "Casuarina Coast Asmat (asc)",
+      "Sepik_Highlands_Pacific"
+    ],
+    [
+      "asi",
+      "Buruwai",
+      "Buruwai (asi)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "asl",
+      "Asilulu",
+      "Asilulu (asl)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "asy",
+      "Yaosakor Asmat",
+      "Yaosakor Asmat (asy)",
+      "Sepik_Highlands_Pacific"
+    ],
+    [
+      "asz",
+      "As",
+      "As (asz)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "atd",
+      "Ata Manobo",
+      "Ata Manobo (atd)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "atk",
+      "Ati",
+      "Ati (atk)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "atl",
+      "Mt. Iraya Agta",
+      "Mt. Iraya Agta (atl)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "atm",
+      "Ata",
+      "Ata (atm)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "atp",
+      "Pudtol Atta",
+      "Pudtol Atta (atp)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "atq",
+      "Aralle-Tabulahan",
+      "Aralle-Tabulahan (atq)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "att",
+      "Pamplona Atta",
+      "Pamplona Atta (att)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "atz",
+      "Arta",
+      "Arta (atz)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "auq",
+      "Anus",
+      "Anus (auq)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "auu",
+      "Auye",
+      "Auye (auu)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "awh",
+      "Awbono",
+      "Awbono (awh)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "awr",
+      "Awera",
+      "Awera (awr)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "aws",
+      "South Awyu",
+      "South Awyu (aws)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "awu",
+      "Central Awyu",
+      "Central Awyu (awu)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "awv",
+      "Jair Awyu",
+      "Jair Awyu (awv)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "awy",
+      "Edera Awyu",
+      "Edera Awyu (awy)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "ays",
+      "Sorsogon Ayta",
+      "Sorsogon Ayta (ays)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "ayt",
+      "Magbukun Ayta",
+      "Magbukun Ayta (ayt)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "ayz",
+      "Mai Brat",
+      "Mai Brat (ayz)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "azt",
+      "Faire Atta",
+      "Faire Atta (azt)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "bac",
+      "Badui",
+      "Badui (bac)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "baj",
+      "Barakai",
+      "Barakai (baj)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "ban",
+      "Balinese",
+      "Balinese (ban)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "bay",
+      "Batuley",
+      "Batuley (bay)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "bbc",
+      "Batak Toba",
+      "Batak Toba (bbc)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "bcd",
+      "North Babar",
+      "North Babar (bcd)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "bcl",
+      "Central Bikol",
+      "Central Bikol (bcl)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "bdb",
+      "Basap",
+      "Basap (bdb)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "bdg",
+      "Bonggi",
+      "Bonggi (bdg)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "bdl",
+      "Indonesian Bajau",
+      "Indonesian Bajau (bdl)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "bdq",
+      "Bahnar",
+      "Bahnar (bdq)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "bdr",
+      "West Coast Bajau",
+      "West Coast Bajau (bdr)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "bdw",
+      "Baham",
+      "Baham (bdw)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "bdx",
+      "Budong-Budong",
+      "Budong-Budong (bdx)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "bed",
+      "Bedoanas",
+      "Bedoanas (bed)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "beg",
+      "Belait",
+      "Belait (beg)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "bei",
+      "Bekati'",
+      "Bekati' (bei)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "bep",
+      "Besoa",
+      "Besoa (bep)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "beu",
+      "Blagar",
+      "Blagar (beu)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "bew",
+      "Betawi",
+      "Betawi (bew)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "bfe",
+      "Betaf",
+      "Betaf (bfe)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "bfg",
+      "Busang Kayan",
+      "Busang Kayan (bfg)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "bfk",
+      "Ban Khor Sign Language",
+      "Ban Khor Sign Language (bfk)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "bfn",
+      "Bunak",
+      "Bunak (bfn)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "bfx",
+      "Bantayanon",
+      "Bantayanon (bfx)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "bgb",
+      "Bobongko",
+      "Bobongko (bgb)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "bgi",
+      "Giangan",
+      "Giangan (bgi)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "bgl",
+      "Bo (Laos)",
+      "Bo (Laos) (bgl)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "bgr",
+      "Bawm Chin",
+      "Bawm Chin (bgr)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "bgs",
+      "Tagabawa",
+      "Tagabawa (bgs)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "bgv",
+      "Warkay-Bipim",
+      "Warkay-Bipim (bgv)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "bgy",
+      "Benggoi",
+      "Benggoi (bgy)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "bgz",
+      "Banggai",
+      "Banggai (bgz)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "bhc",
+      "Biga",
+      "Biga (bhc)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "bhp",
+      "Bima",
+      "Bima (bhp)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "bhq",
+      "Tukang Besi South",
+      "Tukang Besi South (bhq)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "bhv",
+      "Bahau",
+      "Bahau (bhv)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "bhw",
+      "Biak",
+      "Biak (bhw)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "bhz",
+      "Bada (Indonesia)",
+      "Bada (Indonesia) (bhz)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "bik",
+      "Bikol",
+      "Bikol (bik)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "bjn",
+      "Banjar",
+      "Banjar (bjn)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "bjx",
+      "Banao Itneg",
+      "Banao Itneg (bjx)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "bkd",
+      "Binukid",
+      "Binukid (bkd)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "bkl",
+      "Berik",
+      "Berik (bkl)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "bkn",
+      "Bukitan",
+      "Bukitan (bkn)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "bkr",
+      "Bakumpai",
+      "Bakumpai (bkr)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "bks",
+      "Northern Sorsoganon",
+      "Northern Sorsoganon (bks)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "bku",
+      "Buhid",
+      "Buhid (bku)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "bkx",
+      "Baikeno",
+      "Baikeno (bkx)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "bkz",
+      "Bungku",
+      "Bungku (bkz)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "bld",
+      "Bolango",
+      "Bolango (bld)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "blf",
+      "Buol",
+      "Buol (blf)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "blg",
+      "Balau",
+      "Balau (blg)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "blj",
+      "Bolongan",
+      "Bolongan (blj)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "blk",
+      "Pa'o Karen",
+      "Pa'o Karen (blk)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "bln",
+      "Southern Catanduanes Bikol",
+      "Southern Catanduanes Bikol (bln)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "bls",
+      "Balaesang",
+      "Balaesang (bls)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "blt",
+      "Tai Dam",
+      "Tai Dam (blt)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "blw",
+      "Balangao",
+      "Balangao (blw)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "blx",
+      "Mag-Indi Ayta",
+      "Mag-Indi Ayta (blx)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "blz",
+      "Balantak",
+      "Balantak (blz)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "bna",
+      "Bonerate",
+      "Bonerate (bna)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "bnb",
+      "Bookan",
+      "Bookan (bnb)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "bnc",
+      "Bontok",
+      "Bontok (bnc)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "bne",
+      "Bintauna",
+      "Bintauna (bne)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "bnf",
+      "Masiwang",
+      "Masiwang (bnf)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "bnj",
+      "Eastern Tawbuid",
+      "Eastern Tawbuid (bnj)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "bno",
+      "Bantoanon",
+      "Bantoanon (bno)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "bnq",
+      "Bantik",
+      "Bantik (bnq)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "bnu",
+      "Bentong",
+      "Bentong (bnu)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "bnv",
+      "Bonerif",
+      "Bonerif (bnv)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "bny",
+      "Bintulu",
+      "Bintulu (bny)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "bpg",
+      "Bonggo",
+      "Bonggo (bpg)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "bpo",
+      "Anasi",
+      "Anasi (bpo)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "bpp",
+      "Kaure",
+      "Kaure (bpp)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "bpr",
+      "Koronadal Blaan",
+      "Koronadal Blaan (bpr)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "bps",
+      "Sarangani Blaan",
+      "Sarangani Blaan (bps)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "bpz",
+      "Bilba",
+      "Bilba (bpz)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "bqb",
+      "Bagusa",
+      "Bagusa (bqb)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "bqq",
+      "Biritai",
+      "Biritai (bqq)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "bqr",
+      "Burusu",
+      "Burusu (bqr)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "bqy",
+      "Bengkala Sign Language",
+      "Bengkala Sign Language (bqy)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "brb",
+      "Lave",
+      "Lave (brb)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "brp",
+      "Barapasi",
+      "Barapasi (brp)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "brs",
+      "Baras",
+      "Baras (brs)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "bru",
+      "Eastern Bru",
+      "Eastern Bru (bru)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "brv",
+      "Western Bru",
+      "Western Bru (brv)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "bsa",
+      "Abinomn",
+      "Abinomn (bsa)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "bsb",
+      "Brunei Bisaya",
+      "Brunei Bisaya (bsb)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "bsu",
+      "Bahonsuai",
+      "Bahonsuai (bsu)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "bsy",
+      "Sabah Bisaya",
+      "Sabah Bisaya (bsy)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "btd",
+      "Batak Dairi",
+      "Batak Dairi (btd)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "bth",
+      "Biatah Bidayuh",
+      "Biatah Bidayuh (bth)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "bti",
+      "Burate",
+      "Burate (bti)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "btj",
+      "Bacanese Malay",
+      "Bacanese Malay (btj)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "btm",
+      "Batak Mandailing",
+      "Batak Mandailing (btm)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "btn",
+      "Ratagnon",
+      "Ratagnon (btn)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "bto",
+      "Rinconada Bikol",
+      "Rinconada Bikol (bto)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "btq",
+      "Batek",
+      "Batek (btq)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "bts",
+      "Batak Simalungun",
+      "Batak Simalungun (bts)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "btw",
+      "Butuanon",
+      "Butuanon (btw)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "btx",
+      "Batak Karo",
+      "Batak Karo (btx)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "bty",
+      "Bobot",
+      "Bobot (bty)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "btz",
+      "Batak Alas-Kluet",
+      "Batak Alas-Kluet (btz)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "bug",
+      "Buginese",
+      "Buginese (bug)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "bup",
+      "Busoa",
+      "Busoa (bup)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "bve",
+      "Berau Malay",
+      "Berau Malay (bve)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "bvk",
+      "Bukat",
+      "Bukat (bvk)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "bvt",
+      "Bati (Indonesia)",
+      "Bati (Indonesia) (bvt)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "bvu",
+      "Bukit Malay",
+      "Bukit Malay (bvu)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "bvy",
+      "Baybayanon",
+      "Baybayanon (bvy)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "bvz",
+      "Bauzi",
+      "Bauzi (bvz)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "bwe",
+      "Bwe Karen",
+      "Bwe Karen (bwe)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "bwp",
+      "Mandobo Bawah",
+      "Mandobo Bawah (bwp)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "bxu",
+      "China Buriat",
+      "China Buriat (bxu)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "bya",
+      "Batak",
+      "Batak (bya)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "byd",
+      "Benyadu'",
+      "Benyadu' (byd)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "byl",
+      "Bayono",
+      "Bayono (byl)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "bzb",
+      "Andio",
+      "Andio (bzb)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "bzl",
+      "Boano (Sulawesi)",
+      "Boano (Sulawesi) (bzl)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "bzn",
+      "Boano (Maluku)",
+      "Boano (Maluku) (bzn)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "bzp",
+      "Kemberano",
+      "Kemberano (bzp)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "bzq",
+      "Buli (Indonesia)",
+      "Buli (Indonesia) (bzq)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "bzu",
+      "Burmeso",
+      "Burmeso (bzu)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "cbk",
+      "Chavacano",
+      "Chavacano (cbk)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "cbl",
+      "Bualkhaw Chin",
+      "Bualkhaw Chin (cbl)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "cbn",
+      "Nyahkur",
+      "Nyahkur (cbn)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "cbw",
+      "Kinabalian",
+      "Kinabalian (cbw)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "ccm",
+      "Malaccan Creole Malay",
+      "Malaccan Creole Malay (ccm)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "ceb",
+      "Cebuano",
+      "Cebuano (ceb)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "cek",
+      "Eastern Khumi Chin",
+      "Eastern Khumi Chin (cek)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "cey",
+      "Ekai Chin",
+      "Ekai Chin (cey)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "cfm",
+      "Falam Chin",
+      "Falam Chin (cfm)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "cgc",
+      "Kagayanen",
+      "Kagayanen (cgc)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "chh",
+      "Chinook",
+      "Chinook (chh)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "chn",
+      "Chinook jargon",
+      "Chinook jargon (chn)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "cia",
+      "Cia-Cia",
+      "Cia-Cia (cia)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "cih",
+      "Chinali",
+      "Chinali (cih)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "cja",
+      "Western Cham",
+      "Western Cham (cja)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "cje",
+      "Chru",
+      "Chru (cje)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "cjm",
+      "Eastern Cham",
+      "Eastern Cham (cjm)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "ckn",
+      "Kaang Chin",
+      "Kaang Chin (ckn)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "clj",
+      "Laitu Chin",
+      "Laitu Chin (clj)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "clt",
+      "Lautu Chin",
+      "Lautu Chin (clt)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "clu",
+      "Caluyanun",
+      "Caluyanun (clu)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "cma",
+      "Maa",
+      "Maa (cma)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "cml",
+      "Campalagian",
+      "Campalagian (cml)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "cmo",
+      "Central Mnong",
+      "Central Mnong (cmo)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "cmr",
+      "Mro-Khimi Chin",
+      "Mro-Khimi Chin (cmr)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "cnb",
+      "Chinbon Chin",
+      "Chinbon Chin (cnb)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "cnc",
+      "Côông",
+      "Côông (cnc)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "cnh",
+      "Hakha Chin",
+      "Hakha Chin (cnh)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "cnk",
+      "Khumi Chin",
+      "Khumi Chin (cnk)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "cno",
+      "Con",
+      "Con (cno)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "cns",
+      "Central Asmat",
+      "Central Asmat (cns)",
+      "Sepik_Highlands_Pacific"
+    ],
+    [
+      "cnw",
+      "Ngawn Chin",
+      "Ngawn Chin (cnw)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "coa",
+      "Cocos Islands Malay",
+      "Cocos Islands Malay (coa)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "cog",
+      "Chong",
+      "Chong (cog)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "cps",
+      "Capiznon",
+      "Capiznon (cps)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "crw",
+      "Chrau",
+      "Chrau (crw)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "csd",
+      "Chiangmai Sign Language",
+      "Chiangmai Sign Language (csd)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "csh",
+      "Asho Chin",
+      "Asho Chin (csh)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "csj",
+      "Songlai Chin",
+      "Songlai Chin (csj)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "csv",
+      "Sumtu Chin",
+      "Sumtu Chin (csv)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "ctd",
+      "Tedim Chin",
+      "Tedim Chin (ctd)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "cth",
+      "Thaiphum Chin",
+      "Thaiphum Chin (cth)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "cts",
+      "Northern Catanduanes Bikol",
+      "Northern Catanduanes Bikol (cts)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "cua",
+      "Cua",
+      "Cua (cua)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "cuu",
+      "Tai Ya",
+      "Tai Ya (cuu)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "cwg",
+      "Chewong",
+      "Chewong (cwg)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "cyo",
+      "Cuyonon",
+      "Cuyonon (cyo)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "czt",
+      "Zotung Chin",
+      "Zotung Chin (czt)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "dao",
+      "Daai Chin",
+      "Daai Chin (dao)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "daw",
+      "Davawenyo",
+      "Davawenyo (daw)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "daz",
+      "Dao",
+      "Dao (daz)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "dbe",
+      "Dabe",
+      "Dabe (dbe)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "dbf",
+      "Edopi",
+      "Edopi (dbf)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "dbj",
+      "Ida'an",
+      "Ida'an (dbj)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "dbn",
+      "Duriankere",
+      "Duriankere (dbn)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "ddg",
+      "Fataluku",
+      "Fataluku (ddg)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "ddw",
+      "Dawera-Daweloor",
+      "Dawera-Daweloor (ddw)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "dei",
+      "Demisa",
+      "Demisa (dei)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "dem",
+      "Dem",
+      "Dem (dem)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "dij",
+      "Dai",
+      "Dai (dij)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "diy",
+      "Diuwe",
+      "Diuwe (diy)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "djo",
+      "Jangkang",
+      "Jangkang (djo)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "dkk",
+      "Dakka",
+      "Dakka (dkk)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "dkr",
+      "Kuijau",
+      "Kuijau (dkr)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "dmg",
+      "Upper Kinabatangan",
+      "Upper Kinabatangan (dmg)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "dmr",
+      "East Damar",
+      "East Damar (dmr)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "dms",
+      "Dampelas",
+      "Dampelas (dms)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "dmu",
+      "Dubu",
+      "Dubu (dmu)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "dmv",
+      "Dumpas",
+      "Dumpas (dmv)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "dmy",
+      "Demta",
+      "Demta (dmy)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "dna",
+      "Upper Grand Valley Dani",
+      "Upper Grand Valley Dani (dna)",
+      "Sepik_Highlands_Pacific"
+    ],
+    [
+      "dni",
+      "Lower Grand Valley Dani",
+      "Lower Grand Valley Dani (dni)",
+      "Sepik_Highlands_Pacific"
+    ],
+    [
+      "dnk",
+      "Dengka",
+      "Dengka (dnk)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "dnt",
+      "Mid Grand Valley Dani",
+      "Mid Grand Valley Dani (dnt)",
+      "Sepik_Highlands_Pacific"
+    ],
+    [
+      "dnu",
+      "Danau",
+      "Danau (dnu)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "dnv",
+      "Danu",
+      "Danu (dnv)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "dnw",
+      "Western Dani",
+      "Western Dani (dnw)",
+      "Sepik_Highlands_Pacific"
+    ],
+    [
+      "dok",
+      "Dondo",
+      "Dondo (dok)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "dpp",
+      "Papar",
+      "Papar (dpp)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "drg",
+      "Rungus",
+      "Rungus (drg)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "drn",
+      "West Damar",
+      "West Damar (drn)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "dro",
+      "Daro-Matu Melanau",
+      "Daro-Matu Melanau (dro)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "dsn",
+      "Dusner",
+      "Dusner (dsn)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "dtb",
+      "Labuk-Kinabatangan Kadazan",
+      "Labuk-Kinabatangan Kadazan (dtb)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "dtp",
+      "Kadazan Dusun",
+      "Kadazan Dusun (dtp)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "dtr",
+      "Lotud",
+      "Lotud (dtr)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "due",
+      "Umiray Dumaget Agta",
+      "Umiray Dumaget Agta (due)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "dul",
+      "Alabat Island Agta",
+      "Alabat Island Agta (dul)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "dun",
+      "Dusun Deyah",
+      "Dusun Deyah (dun)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "duo",
+      "Dupaninan Agta",
+      "Dupaninan Agta (duo)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "dup",
+      "Duano",
+      "Duano (dup)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "duq",
+      "Dusun Malang",
+      "Dusun Malang (duq)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "duv",
+      "Duvle",
+      "Duvle (duv)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "duw",
+      "Dusun Witu",
+      "Dusun Witu (duw)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "duy",
+      "Dicamay Agta",
+      "Dicamay Agta (duy)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "dyg",
+      "Villa Viciosa Agta",
+      "Villa Viciosa Agta (dyg)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "eaa",
+      "Karenggapa",
+      "Karenggapa (eaa)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "ebc",
+      "Beginci",
+      "Beginci (ebc)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "ebk",
+      "Eastern Bontok",
+      "Eastern Bontok (ebk)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "eip",
+      "Eipomek",
+      "Eipomek (eip)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "ekg",
+      "Ekari",
+      "Ekari (ekg)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "eky",
+      "Eastern Kayah",
+      "Eastern Kayah (eky)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "emb",
+      "Embaloh",
+      "Embaloh (emb)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "emw",
+      "Emplawas",
+      "Emplawas (emw)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "end",
+      "Ende",
+      "Ende (end)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "eno",
+      "Enggano",
+      "Enggano (eno)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "enr",
+      "Emumu",
+      "Emumu (enr)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "ert",
+      "Eritai",
+      "Eritai (ert)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "esy",
+      "Eskayan",
+      "Eskayan (esy)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "etz",
+      "Semimi",
+      "Semimi (etz)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "fai",
+      "Faiwol",
+      "Faiwol (fai)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "fau",
+      "Fayu",
+      "Fayu (fau)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "fbl",
+      "West Albay Bikol",
+      "West Albay Bikol (fbl)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "fil",
+      "Filipino",
+      "Filipino (fil)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "flh",
+      "Foau",
+      "Foau (flh)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "frd",
+      "Fordata",
+      "Fordata (frd)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "gad",
+      "Gaddang",
+      "Gaddang (gad)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "gak",
+      "Gamkonora",
+      "Gamkonora (gak)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "gal",
+      "Galolen",
+      "Galolen (gal)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "gay",
+      "Gayo",
+      "Gayo (gay)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "gbi",
+      "Galela",
+      "Galela (gbi)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "gdg",
+      "Ga'dang",
+      "Ga'dang (gdg)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "gei",
+      "Gebe",
+      "Gebe (gei)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "ges",
+      "Geser-Gorom",
+      "Geser-Gorom (ges)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "ghk",
+      "Geko Karen",
+      "Geko Karen (ghk)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "ghs",
+      "Guhu-Samane",
+      "Guhu-Samane (ghs)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "gnq",
+      "Gana",
+      "Gana (gnq)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "gop",
+      "Yeretuar",
+      "Yeretuar (gop)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "goq",
+      "Gorap",
+      "Gorap (goq)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "gor",
+      "Gorontalo",
+      "Gorontalo (gor)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "grm",
+      "Kota Marudu Talantang",
+      "Kota Marudu Talantang (grm)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "grs",
+      "Gresi",
+      "Gresi (grs)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "gzn",
+      "Gane",
+      "Gane (gzn)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "hab",
+      "Hanoi Sign Language",
+      "Hanoi Sign Language (hab)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "had",
+      "Hatam",
+      "Hatam (had)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "haf",
+      "Haiphong Sign Language",
+      "Haiphong Sign Language (haf)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "hal",
+      "Halang",
+      "Halang (hal)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "hap",
+      "Hupla",
+      "Hupla (hap)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "hbu",
+      "Habu",
+      "Habu (hbu)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "heg",
+      "Helong",
+      "Helong (heg)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "hik",
+      "Seit-Kaitetu",
+      "Seit-Kaitetu (hik)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "hil",
+      "Hiligaynon",
+      "Hiligaynon (hil)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "hji",
+      "Haji",
+      "Haji (hji)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "hkn",
+      "Mel-Khaonh",
+      "Mel-Khaonh (hkn)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "hld",
+      "Halang Doan",
+      "Halang Doan (hld)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "hlt",
+      "Matu Chin",
+      "Matu Chin (hlt)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "hmu",
+      "Hamap",
+      "Hamap (hmu)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "hnn",
+      "Hanunoo",
+      "Hanunoo (hnn)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "hnu",
+      "Hung",
+      "Hung (hnu)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "hos",
+      "Ho Chi Minh City Sign Language",
+      "Ho Chi Minh City Sign Language (hos)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "hov",
+      "Hovongan",
+      "Hovongan (hov)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "hre",
+      "Hre",
+      "Hre (hre)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "hrk",
+      "Haruku",
+      "Haruku (hrk)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "hro",
+      "Haroi",
+      "Haroi (hro)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "htu",
+      "Hitu",
+      "Hitu (htu)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "hud",
+      "Huaulu",
+      "Huaulu (hud)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "hvn",
+      "Sabu",
+      "Sabu (hvn)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "iba",
+      "Iban",
+      "Iban (iba)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "ibg",
+      "Ibanag",
+      "Ibanag (ibg)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "ibh",
+      "Bih",
+      "Bih (ibh)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "ibl",
+      "Ibaloi",
+      "Ibaloi (ibl)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "ibu",
+      "Ibu",
+      "Ibu (ibu)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "ind",
+      "Indonesio",
+      "Bahasa Indonesia",
+      "Java,Sumatra,Kalimantan,Sulawesi,Papua"
+    ],
+    [
+      "idt",
+      "Idaté",
+      "Idaté (idt)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "ifa",
+      "Amganad Ifugao",
+      "Amganad Ifugao (ifa)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "ifb",
+      "Batad Ifugao",
+      "Batad Ifugao (ifb)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "ifk",
+      "Tuwali Ifugao",
+      "Tuwali Ifugao (ifk)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "ifu",
+      "Mayoyao Ifugao",
+      "Mayoyao Ifugao (ifu)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "ify",
+      "Keley-I Kallahan",
+      "Keley-I Kallahan (ify)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "ihb",
+      "Iha Based Pidgin",
+      "Iha Based Pidgin (ihb)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "ihp",
+      "Iha",
+      "Iha (ihp)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "ila",
+      "Ile Ape",
+      "Ile Ape (ila)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "ilk",
+      "Ilongot",
+      "Ilongot (ilk)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "ilm",
+      "Iranun (Malaysia)",
+      "Iranun (Malaysia) (ilm)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "ilo",
+      "Iloko",
+      "Iloko (ilo)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "ilp",
+      "Iranun (Philippines)",
+      "Iranun (Philippines) (ilp)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "ilu",
+      "Ili'uun",
+      "Ili'uun (ilu)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "imr",
+      "Imroing",
+      "Imroing (imr)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "inl",
+      "Indonesian Sign Language",
+      "Indonesian Sign Language (inl)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "inn",
+      "Isinai",
+      "Isinai (inn)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "int",
+      "Intha",
+      "Intha (int)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "ire",
+      "Iresim",
+      "Iresim (ire)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "irh",
+      "Irarutu",
+      "Irarutu (irh)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "irr",
+      "Ir",
+      "Ir (irr)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "irx",
+      "Kamberau",
+      "Kamberau (irx)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "iry",
+      "Iraya",
+      "Iraya (iry)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "isd",
+      "Isnag",
+      "Isnag (isd)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "ism",
+      "Masimasi",
+      "Masimasi (ism)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "itb",
+      "Binongan Itneg",
+      "Binongan Itneg (itb)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "itd",
+      "Southern Tidung",
+      "Southern Tidung (itd)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "iti",
+      "Inlaod Itneg",
+      "Inlaod Itneg (iti)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "itt",
+      "Maeng Itneg",
+      "Maeng Itneg (itt)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "itv",
+      "Itawit",
+      "Itawit (itv)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "itx",
+      "Itik",
+      "Itik (itx)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "ity",
+      "Moyadan Itneg",
+      "Moyadan Itneg (ity)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "ivb",
+      "Ibatan",
+      "Ibatan (ivb)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "ivv",
+      "Ivatan",
+      "Ivatan (ivv)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "iwk",
+      "I-Wak",
+      "I-Wak (iwk)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "iwo",
+      "Iwur",
+      "Iwur (iwo)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "jah",
+      "Jah Hut",
+      "Jah Hut (jah)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "jak",
+      "Jakun",
+      "Jakun (jak)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "jal",
+      "Yalahatan",
+      "Yalahatan (jal)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "jaq",
+      "Yaqay",
+      "Yaqay (jaq)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "jau",
+      "Yaur",
+      "Yaur (jau)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "jax",
+      "Jambi Malay",
+      "Jambi Malay (jax)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "jbj",
+      "Arandai",
+      "Arandai (jbj)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "jbr",
+      "Jofotek-Bromnya",
+      "Jofotek-Bromnya (jbr)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "jeh",
+      "Jeh",
+      "Jeh (jeh)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "jei",
+      "Yei",
+      "Yei (jei)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "jel",
+      "Yelmek",
+      "Yelmek (jel)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "jet",
+      "Manem",
+      "Manem (jet)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "jhi",
+      "Jehai",
+      "Jehai (jhi)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "jka",
+      "Kaera",
+      "Kaera (jka)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "jkm",
+      "Mobwa Karen",
+      "Mobwa Karen (jkm)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "jkp",
+      "Paku Karen",
+      "Paku Karen (jkp)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "jmd",
+      "Yamdena",
+      "Yamdena (jmd)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "jav",
+      "Javanese",
+      "Basa Jawa",
+      "Central_Java,East_Java,Yogyakarta"
+    ],
+    [
+      "jvd",
+      "Javindo",
+      "Javindo (jvd)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "kac",
+      "Kachin",
+      "Kachin (kac)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "kag",
+      "Kajaman",
+      "Kajaman (kag)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "kak",
+      "Kalanguya",
+      "Kalanguya (kak)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "kav",
+      "Katukína",
+      "Katukína (kav)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "kax",
+      "Kao",
+      "Kao (kax)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "kbi",
+      "Kaptiau",
+      "Kaptiau (kbi)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "kbv",
+      "Dera (Indonesia)",
+      "Dera (Indonesia) (kbv)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "kcd",
+      "Ngkâlmpw Kanum",
+      "Ngkâlmpw Kanum (kcd)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "kdt",
+      "Kuy",
+      "Kuy (kdt)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "kdw",
+      "Koneraw",
+      "Koneraw (kdw)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "kdy",
+      "Keder",
+      "Keder (kdy)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "kei",
+      "Kei",
+      "Kei (kei)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "kem",
+      "Kemak",
+      "Kemak (kem)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "kgb",
+      "Kawe",
+      "Kawe (kgb)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "kge",
+      "Komering",
+      "Komering (kge)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "kgi",
+      "Selangor Sign Language",
+      "Selangor Sign Language (kgi)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "kgq",
+      "Kamoro",
+      "Kamoro (kgq)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "kgr",
+      "Abun",
+      "Abun (kgr)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "kgw",
+      "Karon Dori",
+      "Karon Dori (kgw)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "kgx",
+      "Kamaru",
+      "Kamaru (kgx)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "khc",
+      "Tukang Besi North",
+      "Tukang Besi North (khc)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "khd",
+      "Bädi Kanum",
+      "Bädi Kanum (khd)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "khe",
+      "Korowai",
+      "Korowai (khe)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "khh",
+      "Kehu",
+      "Kehu (khh)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "khp",
+      "Kapori",
+      "Kapori (khp)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "kig",
+      "Kimaama",
+      "Kimaama (kig)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "kiq",
+      "Kosadle",
+      "Kosadle (kiq)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "kiy",
+      "Kirikiri",
+      "Kirikiri (kiy)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "kja",
+      "Mlap",
+      "Mlap (kja)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "kjc",
+      "Coastal Konjo",
+      "Coastal Konjo (kjc)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "kje",
+      "Kisar",
+      "Kisar (kje)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "kjg",
+      "Khmu",
+      "Khmu (kjg)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "kjk",
+      "Highland Konjo",
+      "Highland Konjo (kjk)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "kjp",
+      "Pwo Eastern Karen",
+      "Pwo Eastern Karen (kjp)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "kjr",
+      "Kurudu",
+      "Kurudu (kjr)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "kjt",
+      "Phrae Pwo Karen",
+      "Phrae Pwo Karen (kjt)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "kkb",
+      "Kwerisa",
+      "Kwerisa (kkb)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "kkg",
+      "Mabaka Valley Kalinga",
+      "Mabaka Valley Kalinga (kkg)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "kkh",
+      "Khün",
+      "Khün (kkh)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "kkl",
+      "Kosarek Yale",
+      "Kosarek Yale (kkl)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "kkv",
+      "Kangean",
+      "Kangean (kkv)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "kkx",
+      "Kohin",
+      "Kohin (kkx)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "klg",
+      "Tagakaulo",
+      "Tagakaulo (klg)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "kli",
+      "Kalumpang",
+      "Kalumpang (kli)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "kll",
+      "Kagan Kalagan",
+      "Kagan Kalagan (kll)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "klw",
+      "Tado",
+      "Tado (klw)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "kly",
+      "Kalao",
+      "Kalao (kly)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "klz",
+      "Kabola",
+      "Kabola (klz)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "khm",
+      "Khmer",
+      "ភាសាខ្មែរ",
+      "Phnom_Penh,Siem_Reap,Battambang"
+    ],
+    [
+      "kmd",
+      "Majukayang Kalinga",
+      "Majukayang Kalinga (kmd)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "kmk",
+      "Limos Kalinga",
+      "Limos Kalinga (kmk)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "kml",
+      "Tanudan Kalinga",
+      "Tanudan Kalinga (kml)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "kmt",
+      "Kemtuik",
+      "Kemtuik (kmt)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "knb",
+      "Lubuagan Kalinga",
+      "Lubuagan Kalinga (knb)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "knd",
+      "Konda",
+      "Konda (knd)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "kne",
+      "Kankanaey",
+      "Kankanaey (kne)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "knl",
+      "Keninjal",
+      "Keninjal (knl)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "knq",
+      "Kintaq",
+      "Kintaq (knq)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "kns",
+      "Kensiu",
+      "Kensiu (kns)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "knt",
+      "Panoan Katukína",
+      "Panoan Katukína (knt)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "knx",
+      "Kendayan",
+      "Kendayan (knx)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "kod",
+      "Kodi",
+      "Kodi (kod)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "kpd",
+      "Koba",
+      "Koba (kpd)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "kpi",
+      "Kofei",
+      "Kofei (kpi)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "kpm",
+      "Koho",
+      "Koho (kpm)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "kpq",
+      "Korupun-Sela",
+      "Korupun-Sela (kpq)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "kps",
+      "Tehit",
+      "Tehit (kps)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "kpu",
+      "Kafoa",
+      "Kafoa (kpu)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "kqe",
+      "Kalagan",
+      "Kalagan (kqe)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "kqr",
+      "Kimaragang",
+      "Kimaragang (kqr)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "kqt",
+      "Klias River Kadazan",
+      "Klias River Kadazan (kqt)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "kqv",
+      "Okolod",
+      "Okolod (kqv)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "krd",
+      "Kairui-Midiki",
+      "Kairui-Midiki (krd)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "krj",
+      "Kinaray-A",
+      "Kinaray-A (krj)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "krv",
+      "Kavet",
+      "Kavet (krv)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "krz",
+      "Sota Kanum",
+      "Sota Kanum (krz)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "ksc",
+      "Southern Kalinga",
+      "Southern Kalinga (ksc)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "ksw",
+      "S'gaw Karen",
+      "S'gaw Karen (ksw)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "ksx",
+      "Kedang",
+      "Kedang (ksx)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "kta",
+      "Katua",
+      "Katua (kta)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "kti",
+      "North Muyu",
+      "North Muyu (kti)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "kts",
+      "South Muyu",
+      "South Muyu (kts)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "ktt",
+      "Ketum",
+      "Ketum (ktt)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "ktv",
+      "Eastern Katu",
+      "Eastern Katu (ktv)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "kuc",
+      "Kwinsu",
+      "Kwinsu (kuc)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "kuf",
+      "Western Katu",
+      "Western Katu (kuf)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "kuk",
+      "Kepo'",
+      "Kepo' (kuk)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "kuv",
+      "Kur",
+      "Kur (kuv)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "kvb",
+      "Kubu",
+      "Kubu (kvb)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "kvd",
+      "Kui (Indonesia)",
+      "Kui (Indonesia) (kvd)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "kve",
+      "Kalabakan",
+      "Kalabakan (kve)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "kvh",
+      "Komodo",
+      "Komodo (kvh)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "kvl",
+      "Kayaw",
+      "Kayaw (kvl)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "kvo",
+      "Dobel",
+      "Dobel (kvo)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "kvp",
+      "Kompane",
+      "Kompane (kvp)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "kvq",
+      "Geba Karen",
+      "Geba Karen (kvq)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "kvr",
+      "Kerinci",
+      "Kerinci (kvr)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "kvt",
+      "Lahta Karen",
+      "Lahta Karen (kvt)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "kvv",
+      "Kola",
+      "Kola (kvv)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "kvw",
+      "Wersing",
+      "Wersing (kvw)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "kwe",
+      "Kwerba",
+      "Kwerba (kwe)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "kwh",
+      "Kowiai",
+      "Kowiai (kwh)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "kwr",
+      "Kwer",
+      "Kwer (kwr)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "kwt",
+      "Kwesten",
+      "Kwesten (kwt)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "kxd",
+      "Brunei",
+      "Brunei (kxd)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "kxf",
+      "Manumanaw Karen",
+      "Manumanaw Karen (kxf)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "kxi",
+      "Keningau Murut",
+      "Keningau Murut (kxi)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "kxk",
+      "Zayein Karen",
+      "Zayein Karen (kxk)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "kxm",
+      "Northern Khmer",
+      "Northern Khmer (kxm)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "kxn",
+      "Kanowit-Tanjong Melanau",
+      "Kanowit-Tanjong Melanau (kxn)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "kxq",
+      "Smärky Kanum",
+      "Smärky Kanum (kxq)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "kxy",
+      "Kayong",
+      "Kayong (kxy)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "kyb",
+      "Butbut Kalinga",
+      "Butbut Kalinga (kyb)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "kyd",
+      "Karey",
+      "Karey (kyd)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "kyi",
+      "Kiput",
+      "Kiput (kyi)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "kyj",
+      "Karao",
+      "Karao (kyj)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "kyk",
+      "Kamayo",
+      "Kamayo (kyk)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "kyn",
+      "Northern Binukidnon",
+      "Northern Binukidnon (kyn)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "kyo",
+      "Kelon",
+      "Kelon (kyo)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "kys",
+      "Baram Kayan",
+      "Baram Kayan (kys)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "kyt",
+      "Kayagar",
+      "Kayagar (kyt)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "kyu",
+      "Western Kayah",
+      "Western Kayah (kyu)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "kzb",
+      "Kaibobo",
+      "Kaibobo (kzb)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "kzd",
+      "Kadai",
+      "Kadai (kzd)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "kzf",
+      "Da'a Kaili",
+      "Da'a Kaili (kzf)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "kzi",
+      "Kelabit",
+      "Kelabit (kzi)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "kzl",
+      "Kayeli",
+      "Kayeli (kzl)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "kzm",
+      "Kais",
+      "Kais (kzm)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "kzp",
+      "Kaidipang",
+      "Kaidipang (kzp)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "kzs",
+      "Sugut Dusun",
+      "Sugut Dusun (kzs)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "kzu",
+      "Kayupulau",
+      "Kayupulau (kzu)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "kzv",
+      "Komyandaret",
+      "Komyandaret (kzv)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "kzz",
+      "Kalabra",
+      "Kalabra (kzz)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "laa",
+      "Southern Subanen",
+      "Southern Subanen (laa)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "lau",
+      "Laba",
+      "Laba (lau)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "law",
+      "Lauje",
+      "Lauje (law)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "lbg",
+      "Laopang",
+      "Laopang (lbg)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "lbk",
+      "Central Bontok",
+      "Central Bontok (lbk)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "lbl",
+      "Libon Bikol",
+      "Libon Bikol (lbl)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "lbn",
+      "Rmeet",
+      "Rmeet (lbn)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "lbo",
+      "Laven",
+      "Laven (lbo)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "lbw",
+      "Tolaki",
+      "Tolaki (lbw)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "lbx",
+      "Lawangan",
+      "Lawangan (lbx)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "lcc",
+      "Legenyem",
+      "Legenyem (lcc)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "lcd",
+      "Lola",
+      "Lola (lcd)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "lce",
+      "Loncong",
+      "Loncong (lce)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "lcf",
+      "Lubu",
+      "Lubu (lcf)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "lcl",
+      "Lisela",
+      "Lisela (lcl)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "lcp",
+      "Western Lawa",
+      "Western Lawa (lcp)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "lcq",
+      "Luhu",
+      "Luhu (lcq)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "lcs",
+      "Lisabata-Nuniali",
+      "Lisabata-Nuniali (lcs)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "lev",
+      "Lamma",
+      "Lamma (lev)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "lew",
+      "Ledo Kaili",
+      "Ledo Kaili (lew)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "lex",
+      "Luang",
+      "Luang (lex)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "ley",
+      "Lemolang",
+      "Lemolang (ley)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "lgh",
+      "Laghuu",
+      "Laghuu (lgh)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "lgi",
+      "Lengilu",
+      "Lengilu (lgi)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "lha",
+      "Laha (Viet Nam)",
+      "Laha (Viet Nam) (lha)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "lhh",
+      "Laha (Indonesia)",
+      "Laha (Indonesia) (lhh)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "lhn",
+      "Lahanan",
+      "Lahanan (lhn)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "lio",
+      "Liki",
+      "Liki (lio)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "liw",
+      "Col",
+      "Col (liw)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "lix",
+      "Liabuku",
+      "Liabuku (lix)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "lje",
+      "Rampi",
+      "Rampi (lje)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "lji",
+      "Laiyolo",
+      "Laiyolo (lji)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "ljl",
+      "Li'o",
+      "Li'o (ljl)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "ljp",
+      "Lampung Api",
+      "Lampung Api (ljp)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "lka",
+      "Lakalei",
+      "Lakalei (lka)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "lkj",
+      "Remun",
+      "Remun (lkj)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "llg",
+      "Lole",
+      "Lole (llg)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "llm",
+      "Lasalimu",
+      "Lasalimu (llm)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "llq",
+      "Lolak",
+      "Lolak (llq)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "lmf",
+      "South Lembata",
+      "South Lembata (lmf)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "lmj",
+      "West Lembata",
+      "West Lembata (lmj)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "lmq",
+      "Lamatuka",
+      "Lamatuka (lmq)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "lmr",
+      "Lamalera",
+      "Lamalera (lmr)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "lmy",
+      "Lamboya",
+      "Lamboya (lmy)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "lnd",
+      "Lundayeh",
+      "Lundayeh (lnd)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "lnh",
+      "Lanoh",
+      "Lanoh (lnh)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "lao",
+      "Lao",
+      "ພາສາລາວ",
+      "Vientiane,Luang_Prabang,Champasak"
+    ],
+    [
+      "loa",
+      "Loloda",
+      "Loloda (loa)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "loc",
+      "Inonhan",
+      "Inonhan (loc)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "loe",
+      "Saluan",
+      "Saluan (loe)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "low",
+      "Tampias Lobu",
+      "Tampias Lobu (low)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "lox",
+      "Loun",
+      "Loun (lox)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "lpe",
+      "Lepki",
+      "Lepki (lpe)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "lra",
+      "Rara Bakati'",
+      "Rara Bakati' (lra)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "lrn",
+      "Lorang",
+      "Lorang (lrn)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "lrt",
+      "Larantuka Malay",
+      "Larantuka Malay (lrt)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "lso",
+      "Laos Sign Language",
+      "Laos Sign Language (lso)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "lti",
+      "Leti (Indonesia)",
+      "Leti (Indonesia) (lti)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "ltu",
+      "Latu",
+      "Latu (ltu)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "lur",
+      "Laura",
+      "Laura (lur)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "lva",
+      "Maku'a",
+      "Maku'a (lva)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "lvi",
+      "Lavi",
+      "Lavi (lvi)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "lvu",
+      "Levuka",
+      "Levuka (lvu)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "lwe",
+      "Lewo Eleng",
+      "Lewo Eleng (lwe)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "lwl",
+      "Eastern Lawa",
+      "Eastern Lawa (lwl)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "lwt",
+      "Lewotobi",
+      "Lewotobi (lwt)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "mad",
+      "Madurese",
+      "Madurese (mad)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "mak",
+      "Makasar",
+      "Makasar (mak)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "max",
+      "North Moluccan Malay",
+      "North Moluccan Malay (max)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "mba",
+      "Higaonon",
+      "Higaonon (mba)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "mbb",
+      "Western Bukidnon Manobo",
+      "Western Bukidnon Manobo (mbb)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "mbd",
+      "Dibabawon Manobo",
+      "Dibabawon Manobo (mbd)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "mbf",
+      "Baba Malay",
+      "Baba Malay (mbf)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "mbi",
+      "Ilianen Manobo",
+      "Ilianen Manobo (mbi)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "mbp",
+      "Malayo",
+      "Malayo (mbp)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "mbs",
+      "Sarangani Manobo",
+      "Sarangani Manobo (mbs)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "mbt",
+      "Matigsalug Manobo",
+      "Matigsalug Manobo (mbt)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "mcm",
+      "Malaccan Creole Portuguese",
+      "Malaccan Creole Portuguese (mcm)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "mdh",
+      "Maguindanaon",
+      "Maguindanaon (mdh)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "mdr",
+      "Mandar",
+      "Mandar (mdr)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "mej",
+      "Meyah",
+      "Meyah (mej)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "mel",
+      "Central Melanau",
+      "Central Melanau (mel)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "meo",
+      "Kedah Malay",
+      "Kedah Malay (meo)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "mfa",
+      "Pattani Malay",
+      "Pattani Malay (mfa)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "mfb",
+      "Bangka",
+      "Bangka (mfb)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "mfp",
+      "Makassar Malay",
+      "Makassar Malay (mfp)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "mgf",
+      "Maklew",
+      "Maklew (mgf)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "mgk",
+      "Mawes",
+      "Mawes (mgk)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "mhe",
+      "Besisi",
+      "Besisi (mhe)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "mhp",
+      "Balinese Malay",
+      "Balinese Malay (mhp)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "mhs",
+      "Buru (Indonesia)",
+      "Buru (Indonesia) (mhs)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "mhy",
+      "Ma'anyan",
+      "Ma'anyan (mhy)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "mhz",
+      "Mor (Mor Islands)",
+      "Mor (Mor Islands) (mhz)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "min",
+      "Minangkabau",
+      "Minangkabau (min)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "mjb",
+      "Makalero",
+      "Makalero (mjb)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "mkg",
+      "Mak (China)",
+      "Mak (China) (mkg)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "mkm",
+      "Moklen",
+      "Moklen (mkm)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "mkn",
+      "Kupang Malay",
+      "Kupang Malay (mkn)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "mkx",
+      "Kinamiging Manobo",
+      "Kinamiging Manobo (mkx)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "mky",
+      "East Makian",
+      "East Makian (mky)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "mkz",
+      "Makasae",
+      "Makasae (mkz)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "mlc",
+      "Cao Lan",
+      "Cao Lan (mlc)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "mlf",
+      "Mal",
+      "Mal (mlf)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "mli",
+      "Malimpung",
+      "Malimpung (mli)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "mlz",
+      "Malaynon",
+      "Malaynon (mlz)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "mmb",
+      "Momina",
+      "Momina (mmb)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "mnb",
+      "Muna",
+      "Muna (mnb)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "mng",
+      "Eastern Mnong",
+      "Eastern Mnong (mng)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "mnn",
+      "Southern Mnong",
+      "Southern Mnong (mnn)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "mnq",
+      "Minriq",
+      "Minriq (mnq)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "mnu",
+      "Mer",
+      "Mer (mnu)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "mnw",
+      "Mon",
+      "Mon (mnw)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "mnx",
+      "Manikion",
+      "Manikion (mnx)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "mnz",
+      "Moni",
+      "Moni (mnz)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "mog",
+      "Mongondow",
+      "Mongondow (mog)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "mok",
+      "Morori",
+      "Morori (mok)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "moo",
+      "Monom",
+      "Monom (moo)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "mpd",
+      "Machinere",
+      "Machinere (mpd)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "mpy",
+      "Mapia",
+      "Mapia (mpy)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "mpz",
+      "Mpi",
+      "Mpi (mpz)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "mqa",
+      "Maba (Indonesia)",
+      "Maba (Indonesia) (mqa)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "mqc",
+      "Mangole",
+      "Mangole (mqc)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "mqf",
+      "Momuna",
+      "Momuna (mqf)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "mqg",
+      "Kota Bangun Kutai Malay",
+      "Kota Bangun Kutai Malay (mqg)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "mqk",
+      "Rajah Kabunsuwan Manobo",
+      "Rajah Kabunsuwan Manobo (mqk)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "mqn",
+      "Moronene",
+      "Moronene (mqn)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "mqo",
+      "Modole",
+      "Modole (mqo)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "mqp",
+      "Manipa",
+      "Manipa (mqp)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "mqq",
+      "Minokok",
+      "Minokok (mqq)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "mqs",
+      "West Makian",
+      "West Makian (mqs)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "mra",
+      "Mlabri",
+      "Mlabri (mra)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "mrf",
+      "Elseng",
+      "Elseng (mrf)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "mrh",
+      "Mara Chin",
+      "Mara Chin (mrh)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "mrw",
+      "Maranao",
+      "Maranao (mrw)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "mrx",
+      "Maremgi",
+      "Maremgi (mrx)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "mry",
+      "Mandaya",
+      "Mandaya (mry)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "msa",
+      "Malay (macrolanguage)",
+      "Malay (macrolanguage) (msa)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "msb",
+      "Masbatenyo",
+      "Masbatenyo (msb)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "msf",
+      "Mekwei",
+      "Mekwei (msf)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "msi",
+      "Sabah Malay",
+      "Sabah Malay (msi)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "msk",
+      "Mansaka",
+      "Mansaka (msk)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "msl",
+      "Molof",
+      "Molof (msl)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "msm",
+      "Agusan Manobo",
+      "Agusan Manobo (msm)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "mso",
+      "Mombum",
+      "Mombum (mso)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "mss",
+      "West Masela",
+      "West Masela (mss)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "mta",
+      "Cotabato Manobo",
+      "Cotabato Manobo (mta)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "mtd",
+      "Mualang",
+      "Mualang (mtd)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "mtg",
+      "Una",
+      "Una (mtg)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "mth",
+      "Munggui",
+      "Munggui (mth)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "mtj",
+      "Moskona",
+      "Moskona (mtj)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "mtq",
+      "Muong",
+      "Muong (mtq)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "mtw",
+      "Southern Binukidnon",
+      "Southern Binukidnon (mtw)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "mui",
+      "Musi",
+      "Musi (mui)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "mvp",
+      "Duri",
+      "Duri (mvp)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "mvr",
+      "Marau",
+      "Marau (mvr)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "mvs",
+      "Massep",
+      "Massep (mvs)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "mvv",
+      "Tagal Murut",
+      "Tagal Murut (mvv)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "mvw",
+      "Machinga",
+      "Machinga (mvw)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "mvx",
+      "Meoswar",
+      "Meoswar (mvx)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "mwq",
+      "Mün Chin",
+      "Mün Chin (mwq)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "mwt",
+      "Moken",
+      "Moken (mwt)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "mwv",
+      "Mentawai",
+      "Mentawai (mwv)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "mxd",
+      "Modang",
+      "Modang (mxd)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "mxn",
+      "Moi (Indonesia)",
+      "Moi (Indonesia) (mxn)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "mxr",
+      "Murik (Malaysia)",
+      "Murik (Malaysia) (mxr)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "mxz",
+      "Central Masela",
+      "Central Masela (mxz)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "mya",
+      "Burmese",
+      "မြန်မာဘာသာ",
+      "Yangon,Mandalay,Sagaing,Shan,Kachin"
+    ],
+    [
+      "myl",
+      "Moma",
+      "Moma (myl)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "mzq",
+      "Mori Atas",
+      "Mori Atas (mzq)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "mzt",
+      "Mintil",
+      "Mintil (mzt)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "naa",
+      "Namla",
+      "Namla (naa)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "nbn",
+      "Kuri",
+      "Kuri (nbn)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "nbq",
+      "Nggem",
+      "Nggem (nbq)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "ncq",
+      "Northern Katang",
+      "Northern Katang (ncq)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "ndx",
+      "Nduga",
+      "Nduga (ndx)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "nea",
+      "Eastern Ngad'a",
+      "Eastern Ngad'a (nea)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "nec",
+      "Nedebang",
+      "Nedebang (nec)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "neo",
+      "Ná-Meo",
+      "Ná-Meo (neo)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "ner",
+      "Yahadian",
+      "Yahadian (ner)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "nev",
+      "Nyaheun",
+      "Nyaheun (nev)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "nfa",
+      "Dhao",
+      "Dhao (nfa)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "ngt",
+      "Kriang",
+      "Kriang (ngt)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "nia",
+      "Nias",
+      "Nias (nia)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "nij",
+      "Ngaju",
+      "Ngaju (nij)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "nil",
+      "Nila",
+      "Nila (nil)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "nir",
+      "Nimboran",
+      "Nimboran (nir)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "njs",
+      "Nisa",
+      "Nisa (njs)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "nkj",
+      "Nakai",
+      "Nakai (nkj)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "nks",
+      "North Asmat",
+      "North Asmat (nks)",
+      "Sepik_Highlands_Pacific"
+    ],
+    [
+      "nlc",
+      "Nalca",
+      "Nalca (nlc)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "nlk",
+      "Ninia Yali",
+      "Ninia Yali (nlk)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "nni",
+      "North Nuaulu",
+      "North Nuaulu (nni)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "nod",
+      "Northern Thai",
+      "Northern Thai (nod)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "nps",
+      "Nipsan",
+      "Nipsan (nps)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "npy",
+      "Napu",
+      "Napu (npy)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "nqm",
+      "Ndom",
+      "Ndom (nqm)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "nrm",
+      "Narom",
+      "Narom (nrm)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "nsy",
+      "Nasal",
+      "Nasal (nsy)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "ntd",
+      "Northern Tidung",
+      "Northern Tidung (ntd)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "nty",
+      "Mantsi",
+      "Mantsi (nty)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "nuo",
+      "Nguôn",
+      "Nguôn (nuo)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "nxa",
+      "Nauete",
+      "Nauete (nxa)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "nxe",
+      "Nage",
+      "Nage (nxe)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "nxg",
+      "Ngad'a",
+      "Ngad'a (nxg)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "nxl",
+      "South Nuaulu",
+      "South Nuaulu (nxl)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "nxr",
+      "Ninggerum",
+      "Ninggerum (nxr)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "nxx",
+      "Nafri",
+      "Nafri (nxx)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "nyl",
+      "Nyeu",
+      "Nyeu (nyl)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "nyw",
+      "Nyaw",
+      "Nyaw (nyw)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "obk",
+      "Southern Bontok",
+      "Southern Bontok (obk)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "obo",
+      "Obo Manobo",
+      "Obo Manobo (obo)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "oia",
+      "Oirata",
+      "Oirata (oia)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "oni",
+      "Onin",
+      "Onin (oni)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "onx",
+      "Onin Based Pidgin",
+      "Onin Based Pidgin (onx)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "oog",
+      "Ong",
+      "Ong (oog)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "opk",
+      "Kopkaka",
+      "Kopkaka (opk)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "orn",
+      "Orang Kanaq",
+      "Orang Kanaq (orn)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "ors",
+      "Orang Seletar",
+      "Orang Seletar (ors)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "orz",
+      "Ormu",
+      "Ormu (orz)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "osi",
+      "Osing",
+      "Osing (osi)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "otd",
+      "Ot Danum",
+      "Ot Danum (otd)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "oyb",
+      "Oy",
+      "Oy (oyb)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "pac",
+      "Pacoh",
+      "Pacoh (pac)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "pag",
+      "Pangasinan",
+      "Pangasinan (pag)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "pam",
+      "Pampanga",
+      "Pampanga (pam)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "pas",
+      "Papasena",
+      "Papasena (pas)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "pby",
+      "Pyu (Papua New Guinea)",
+      "Pyu (Papua New Guinea) (pby)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "pcb",
+      "Pear",
+      "Pear (pcb)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "pce",
+      "Ruching Palaung",
+      "Ruching Palaung (pce)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "pck",
+      "Paite Chin",
+      "Paite Chin (pck)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "pdn",
+      "Podena",
+      "Podena (pdn)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "pdo",
+      "Padoe",
+      "Padoe (pdo)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "pdu",
+      "Kayan",
+      "Kayan (pdu)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "pea",
+      "Peranakan Indonesian",
+      "Peranakan Indonesian (pea)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "pee",
+      "Taje",
+      "Taje (pee)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "pel",
+      "Pekal",
+      "Pekal (pel)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "pey",
+      "Petjo",
+      "Petjo (pey)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "pez",
+      "Eastern Penan",
+      "Eastern Penan (pez)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "pgu",
+      "Pagu",
+      "Pagu (pgu)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "phg",
+      "Phuong",
+      "Phuong (phg)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "pho",
+      "Phunoi",
+      "Phunoi (pho)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "pht",
+      "Phu Thai",
+      "Phu Thai (pht)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "phu",
+      "Phuan",
+      "Phuan (phu)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "pkt",
+      "Maleng",
+      "Maleng (pkt)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "pku",
+      "Paku",
+      "Paku (pku)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "plc",
+      "Central Palawano",
+      "Central Palawano (plc)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "ple",
+      "Palu'e",
+      "Palu'e (ple)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "plh",
+      "Paulohi",
+      "Paulohi (plh)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "pll",
+      "Shwe Palaung",
+      "Shwe Palaung (pll)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "plv",
+      "Southwest Palawano",
+      "Southwest Palawano (plv)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "plw",
+      "Brooke's Point Palawano",
+      "Brooke's Point Palawano (plw)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "plz",
+      "Paluan",
+      "Paluan (plz)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "pmf",
+      "Pamona",
+      "Pamona (pmf)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "pmo",
+      "Pom",
+      "Pom (pmo)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "pmy",
+      "Papuan Malay",
+      "Papuan Malay (pmy)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "pna",
+      "Punan Bah-Biau",
+      "Punan Bah-Biau (pna)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "pnc",
+      "Pannei",
+      "Pannei (pnc)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "pne",
+      "Western Penan",
+      "Western Penan (pne)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "pni",
+      "Aoheng",
+      "Aoheng (pni)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "pnm",
+      "Punan Batu 1",
+      "Punan Batu 1 (pnm)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "pnp",
+      "Pancana",
+      "Pancana (pnp)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "pns",
+      "Ponosakan",
+      "Ponosakan (pns)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "pnx",
+      "Phong-Kniang",
+      "Phong-Kniang (pnx)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "ppk",
+      "Uma",
+      "Uma (ppk)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "ppm",
+      "Papuma",
+      "Papuma (ppm)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "pqm",
+      "Malecite-Passamaquoddy",
+      "Malecite-Passamaquoddy (pqm)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "prf",
+      "Paranan",
+      "Paranan (prf)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "prh",
+      "Porohanon",
+      "Porohanon (prh)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "prt",
+      "Phai",
+      "Phai (prt)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "pru",
+      "Puragi",
+      "Puragi (pru)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "psa",
+      "Asue Awyu",
+      "Asue Awyu (psa)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "pse",
+      "Central Malay",
+      "Central Malay (pse)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "psg",
+      "Penang Sign Language",
+      "Penang Sign Language (psg)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "psn",
+      "Panasuan",
+      "Panasuan (psn)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "psp",
+      "Philippine Sign Language",
+      "Philippine Sign Language (psp)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "ptn",
+      "Patani",
+      "Patani (ptn)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "ptt",
+      "Enrekang",
+      "Enrekang (ptt)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "ptu",
+      "Bambam",
+      "Bambam (ptu)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "puc",
+      "Punan Merap",
+      "Punan Merap (puc)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "pud",
+      "Punan Aput",
+      "Punan Aput (pud)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "puf",
+      "Punan Merah",
+      "Punan Merah (puf)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "puj",
+      "Punan Tubu",
+      "Punan Tubu (puj)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "puo",
+      "Puoc",
+      "Puoc (puo)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "put",
+      "Putoh",
+      "Putoh (put)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "pwm",
+      "Molbog",
+      "Molbog (pwm)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "pwo",
+      "Pwo Western Karen",
+      "Pwo Western Karen (pwo)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "pww",
+      "Pwo Northern Karen",
+      "Pwo Northern Karen (pww)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "pyy",
+      "Pyen",
+      "Pyen (pyy)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "rac",
+      "Rasawa",
+      "Rasawa (rac)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "rad",
+      "Rade",
+      "Rade (rad)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "ran",
+      "Riantana",
+      "Riantana (ran)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "raz",
+      "Rahambuu",
+      "Rahambuu (raz)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "rbb",
+      "Rumai Palaung",
+      "Rumai Palaung (rbb)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "rbk",
+      "Northern Bontok",
+      "Northern Bontok (rbk)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "rbl",
+      "Miraya Bikol",
+      "Miraya Bikol (rbl)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "reb",
+      "Rembong",
+      "Rembong (reb)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "ree",
+      "Rejang Kayan",
+      "Rejang Kayan (ree)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "rej",
+      "Rejang",
+      "Rejang (rej)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "ren",
+      "Rengao",
+      "Rengao (ren)",
+      "Sepik_Highlands_Pacific"
+    ],
+    [
+      "ret",
+      "Retta",
+      "Retta (ret)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "rgs",
+      "Southern Roglai",
+      "Southern Roglai (rgs)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "rgu",
+      "Ringgou",
+      "Ringgou (rgu)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "rir",
+      "Ribun",
+      "Ribun (rir)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "riu",
+      "Riung",
+      "Riung (riu)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "rjg",
+      "Rajong",
+      "Rajong (rjg)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "rka",
+      "Kraol",
+      "Kraol (rka)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "rmh",
+      "Murkim",
+      "Murkim (rmh)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "rmm",
+      "Roma",
+      "Roma (rmm)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "rnn",
+      "Roon",
+      "Roon (rnn)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "rob",
+      "Tae'",
+      "Tae' (rob)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "roc",
+      "Cacgia Roglai",
+      "Cacgia Roglai (roc)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "rog",
+      "Northern Roglai",
+      "Northern Roglai (rog)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "rol",
+      "Romblomanon",
+      "Romblomanon (rol)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "ror",
+      "Rongga",
+      "Rongga (ror)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "row",
+      "Dela-Oenale",
+      "Dela-Oenale (row)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "rtc",
+      "Rungtu Chin",
+      "Rungtu Chin (rtc)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "rth",
+      "Ratahan",
+      "Ratahan (rth)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "ruu",
+      "Lanas Lobu",
+      "Lanas Lobu (ruu)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "saj",
+      "Sahu",
+      "Sahu (saj)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "sao",
+      "Sause",
+      "Sause (sao)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "sas",
+      "Sasak",
+      "Sasak (sas)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "sau",
+      "Saleman",
+      "Saleman (sau)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "saw",
+      "Sawi",
+      "Sawi (saw)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "sbg",
+      "Seget",
+      "Seget (sbg)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "sbl",
+      "Botolan Sambal",
+      "Botolan Sambal (sbl)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "sbo",
+      "Sabüm",
+      "Sabüm (sbo)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "sbr",
+      "Sembakung Murut",
+      "Sembakung Murut (sbr)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "sbt",
+      "Kimki",
+      "Kimki (sbt)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "sbx",
+      "Seberuang",
+      "Seberuang (sbx)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "scb",
+      "Chut",
+      "Chut (scb)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "scg",
+      "Sanggau",
+      "Sanggau (scg)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "sci",
+      "Sri Lankan Creole Malay",
+      "Sri Lankan Creole Malay (sci)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "scq",
+      "Sa'och",
+      "Sa'och (scq)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "sct",
+      "Southern Katang",
+      "Southern Katang (sct)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "sda",
+      "Toraja-Sa'dan",
+      "Toraja-Sa'dan (sda)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "sdo",
+      "Bukar-Sadung Bidayuh",
+      "Bukar-Sadung Bidayuh (sdo)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "sdq",
+      "Semandang",
+      "Semandang (sdq)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "sdu",
+      "Sarudu",
+      "Sarudu (sdu)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "sdx",
+      "Sibu Melanau",
+      "Sibu Melanau (sdx)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "sea",
+      "Semai",
+      "Semai (sea)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "sed",
+      "Sedang",
+      "Sedang (sed)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "set",
+      "Sentani",
+      "Sentani (set)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "seu",
+      "Serui-Laut",
+      "Serui-Laut (seu)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "sez",
+      "Senthang Chin",
+      "Senthang Chin (sez)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "sfe",
+      "Eastern Subanen",
+      "Eastern Subanen (sfe)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "sgb",
+      "Mag-antsi Ayta",
+      "Mag-antsi Ayta (sgb)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "sgd",
+      "Surigaonon",
+      "Surigaonon (sgd)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "sge",
+      "Segai",
+      "Segai (sge)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "sgu",
+      "Salas",
+      "Salas (sgu)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "sib",
+      "Sebop",
+      "Sebop (sib)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "sjb",
+      "Sajau Basap",
+      "Sajau Basap (sjb)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "sjm",
+      "Mapun",
+      "Mapun (sjm)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "skb",
+      "Saek",
+      "Saek (skb)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "skh",
+      "Sikule",
+      "Sikule (skh)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "ski",
+      "Sika",
+      "Sika (ski)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "skn",
+      "Kolibugan Subanon",
+      "Kolibugan Subanon (skn)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "sko",
+      "Seko Tengah",
+      "Seko Tengah (sko)",
+      "Sepik_Highlands_Pacific"
+    ],
+    [
+      "skp",
+      "Sekapan",
+      "Sekapan (skp)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "skv",
+      "Skou",
+      "Skou (skv)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "skx",
+      "Seko Padang",
+      "Seko Padang (skx)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "skz",
+      "Sekar",
+      "Sekar (skz)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "slg",
+      "Selungai Murut",
+      "Selungai Murut (slg)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "slm",
+      "Pangutaran Sama",
+      "Pangutaran Sama (slm)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "slp",
+      "Lamaholot",
+      "Lamaholot (slp)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "sls",
+      "Singapore Sign Language",
+      "Singapore Sign Language (sls)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "slu",
+      "Selaru",
+      "Selaru (slu)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "sly",
+      "Selayar",
+      "Selayar (sly)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "slz",
+      "Ma'ya",
+      "Ma'ya (slz)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "smd",
+      "Sama",
+      "Sama (smd)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "smk",
+      "Bolinao",
+      "Bolinao (smk)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "sml",
+      "Central Sama",
+      "Central Sama (sml)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "smr",
+      "Simeulue",
+      "Simeulue (smr)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "smw",
+      "Sumbawa",
+      "Sumbawa (smw)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "snb",
+      "Sebuyau",
+      "Sebuyau (snb)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "sne",
+      "Bau Bidayuh",
+      "Bau Bidayuh (sne)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "snl",
+      "Sangil",
+      "Sangil (snl)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "snu",
+      "Senggi",
+      "Senggi (snu)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "snv",
+      "Sa'ban",
+      "Sa'ban (snv)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "soa",
+      "Thai Song",
+      "Thai Song (soa)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "sob",
+      "Sobei",
+      "Sobei (sob)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "sou",
+      "Southern Thai",
+      "Southern Thai (sou)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "sow",
+      "Sowanda",
+      "Sowanda (sow)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "spb",
+      "Sepa (Indonesia)",
+      "Sepa (Indonesia) (spb)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "spg",
+      "Sian",
+      "Sian (spg)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "spi",
+      "Saponi",
+      "Saponi (spi)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "spr",
+      "Saparua",
+      "Saparua (spr)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "spu",
+      "Sapuan",
+      "Sapuan (spu)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "sqq",
+      "Sou",
+      "Sou (sqq)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "sre",
+      "Sara",
+      "Sara (sre)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "srg",
+      "Sulod",
+      "Sulod (srg)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "srk",
+      "Serudung Murut",
+      "Serudung Murut (srk)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "srl",
+      "Isirawa",
+      "Isirawa (srl)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "srt",
+      "Sauri",
+      "Sauri (srt)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "srv",
+      "Southern Sorsoganon",
+      "Southern Sorsoganon (srv)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "srw",
+      "Serua",
+      "Serua (srw)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "ssb",
+      "Southern Sama",
+      "Southern Sama (ssb)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "sse",
+      "Balangingi",
+      "Balangingi (sse)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "ssm",
+      "Semnam",
+      "Semnam (ssm)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "ssq",
+      "So'a",
+      "So'a (ssq)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "sss",
+      "Sô",
+      "Sô (sss)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "stb",
+      "Northern Subanen",
+      "Northern Subanen (stb)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "ste",
+      "Liana-Seti",
+      "Liana-Seti (ste)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "stg",
+      "Trieng",
+      "Trieng (stg)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "sti",
+      "Bulo Stieng",
+      "Bulo Stieng (sti)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "stt",
+      "Budeh Stieng",
+      "Budeh Stieng (stt)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "suc",
+      "Western Subanon",
+      "Western Subanon (suc)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "sug",
+      "Suganga",
+      "Suganga (sug)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "sun",
+      "Sundanese",
+      "Sundanese (sun)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "sve",
+      "Serili",
+      "Serili (sve)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "swr",
+      "Saweru",
+      "Saweru (swr)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "sws",
+      "Seluwasan",
+      "Seluwasan (sws)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "swt",
+      "Sawila",
+      "Sawila (swt)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "swu",
+      "Suwawa",
+      "Suwawa (swu)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "sxm",
+      "Samre",
+      "Samre (sxm)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "sxn",
+      "Sangir",
+      "Sangir (sxn)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "sya",
+      "Siang",
+      "Siang (sya)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "syb",
+      "Central Subanen",
+      "Central Subanen (syb)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "syo",
+      "Suoy",
+      "Suoy (syo)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "syx",
+      "Samay",
+      "Samay (syx)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "sza",
+      "Semelai",
+      "Semelai (sza)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "szb",
+      "Ngalum",
+      "Ngalum (szb)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "szc",
+      "Semaq Beri",
+      "Semaq Beri (szc)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "szn",
+      "Sula",
+      "Sula (szn)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "szp",
+      "Suabo",
+      "Suabo (szp)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "szw",
+      "Sawai",
+      "Sawai (szw)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "tad",
+      "Tause",
+      "Tause (tad)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "tbk",
+      "Calamian Tagbanwa",
+      "Calamian Tagbanwa (tbk)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "tbl",
+      "Tboli",
+      "Tboli (tbl)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "tbp",
+      "Taworta",
+      "Taworta (tbp)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "tbw",
+      "Tagbanwa",
+      "Tagbanwa (tbw)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "tby",
+      "Tabaru",
+      "Tabaru (tby)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "tcm",
+      "Tanahmerah",
+      "Tanahmerah (tcm)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "tco",
+      "Taungyo",
+      "Taungyo (tco)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "tcp",
+      "Tawr Chin",
+      "Tawr Chin (tcp)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "tcq",
+      "Kaiy",
+      "Kaiy (tcq)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "tcz",
+      "Thado Chin",
+      "Thado Chin (tcz)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "tdd",
+      "Tai Nüa",
+      "Tai Nüa (tdd)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "tdf",
+      "Talieng",
+      "Talieng (tdf)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "tdi",
+      "Tomadino",
+      "Tomadino (tdi)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "tdj",
+      "Tajio",
+      "Tajio (tdj)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "tdn",
+      "Tondano",
+      "Tondano (tdn)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "tdr",
+      "Todrah",
+      "Todrah (tdr)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "tds",
+      "Doutai",
+      "Doutai (tds)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "tdt",
+      "Tetun Dili",
+      "Tetun Dili (tdt)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "tdy",
+      "Tadyawan",
+      "Tadyawan (tdy)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "tea",
+      "Temiar",
+      "Temiar (tea)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "tes",
+      "Tengger",
+      "Tengger (tes)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "tet",
+      "Tetum",
+      "Tetum (tet)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "tev",
+      "Teor",
+      "Teor (tev)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "tfo",
+      "Tefaro",
+      "Tefaro (tfo)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "tft",
+      "Ternate",
+      "Ternate (tft)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "tgb",
+      "Tobilung",
+      "Tobilung (tgb)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "tgn",
+      "Tandaganon",
+      "Tandaganon (tgn)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "tgq",
+      "Tring",
+      "Tring (tgq)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "tgr",
+      "Tareng",
+      "Tareng (tgr)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "tgt",
+      "Central Tagbanwa",
+      "Central Tagbanwa (tgt)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "tha",
+      "Thai",
+      "ภาษาไทย",
+      "Bangkok,Central,Isan,North,South"
+    ],
+    [
+      "thi",
+      "Tai Long",
+      "Tai Long (thi)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "thm",
+      "Aheu",
+      "Aheu (thm)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "tih",
+      "Timugon Murut",
+      "Timugon Murut (tih)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "tip",
+      "Trimuris",
+      "Trimuris (tip)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "tis",
+      "Masadiit Itneg",
+      "Masadiit Itneg (tis)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "tiu",
+      "Adasen",
+      "Adasen (tiu)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "tiy",
+      "Tiruray",
+      "Tiruray (tiy)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "tiz",
+      "Tai Hongjin",
+      "Tai Hongjin (tiz)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "tjg",
+      "Tunjung",
+      "Tunjung (tjg)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "tjl",
+      "Tai Laing",
+      "Tai Laing (tjl)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "tkd",
+      "Tukudede",
+      "Tukudede (tkd)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "tkx",
+      "Tangko",
+      "Tangko (tkx)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "tkz",
+      "Takua",
+      "Takua (tkz)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "tgl",
+      "Tagalog",
+      "Wikang Tagalog",
+      "Luzon,Metro_Manila"
+    ],
+    [
+      "tlb",
+      "Tobelo",
+      "Tobelo (tlb)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "tld",
+      "Talaud",
+      "Talaud (tld)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "tlg",
+      "Tofanma",
+      "Tofanma (tlg)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "tlk",
+      "Taloki",
+      "Taloki (tlk)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "tln",
+      "Talondo'",
+      "Talondo' (tln)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "tlq",
+      "Tai Loi",
+      "Tai Loi (tlq)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "tlt",
+      "Sou Nama",
+      "Sou Nama (tlt)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "tlu",
+      "Tulehu",
+      "Tulehu (tlu)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "tlv",
+      "Taliabu",
+      "Taliabu (tlv)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "tmj",
+      "Samarokena",
+      "Samarokena (tmj)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "tml",
+      "Tamnim Citak",
+      "Tamnim Citak (tml)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "tmm",
+      "Tai Thanh",
+      "Tai Thanh (tmm)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "tmn",
+      "Taman (Indonesia)",
+      "Taman (Indonesia) (tmn)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "tmo",
+      "Temoq",
+      "Temoq (tmo)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "tmu",
+      "Iau",
+      "Iau (tmu)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "tmw",
+      "Temuan",
+      "Temuan (tmw)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "tni",
+      "Tandia",
+      "Tandia (tni)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "tnm",
+      "Tabla",
+      "Tabla (tnm)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "tnt",
+      "Tontemboan",
+      "Tontemboan (tnt)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "tnu",
+      "Tay Khang",
+      "Tay Khang (tnu)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "tnw",
+      "Tonsawang",
+      "Tonsawang (tnw)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "tnz",
+      "Ten'edn",
+      "Ten'edn (tnz)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "tom",
+      "Tombulu",
+      "Tombulu (tom)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "tou",
+      "Tho",
+      "Tho (tou)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "toy",
+      "Topoiyo",
+      "Topoiyo (toy)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "tpf",
+      "Tarpia",
+      "Tarpia (tpf)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "tpg",
+      "Kula",
+      "Kula (tpg)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "tpo",
+      "Tai Pao",
+      "Tai Pao (tpo)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "tpu",
+      "Tampuan",
+      "Tampuan (tpu)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "tre",
+      "East Tarangan",
+      "East Tarangan (tre)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "trt",
+      "Tunggare",
+      "Tunggare (trt)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "trx",
+      "Tringgus-Sembaan Bidayuh",
+      "Tringgus-Sembaan Bidayuh (trx)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "tsb",
+      "Tsamai",
+      "Tsamai (tsb)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "tsg",
+      "Tausug",
+      "Tausug (tsg)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "tsl",
+      "Ts'ün-Lao",
+      "Ts'ün-Lao (tsl)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "tsq",
+      "Thai Sign Language",
+      "Thai Sign Language (tsq)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "ttg",
+      "Tutong",
+      "Tutong (ttg)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "tth",
+      "Upper Ta'oih",
+      "Upper Ta'oih (tth)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "tti",
+      "Tobati",
+      "Tobati (tti)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "ttn",
+      "Towei",
+      "Towei (ttn)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "tto",
+      "Lower Ta'oih",
+      "Lower Ta'oih (tto)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "ttp",
+      "Tombelala",
+      "Tombelala (ttp)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "tts",
+      "Northeastern Thai",
+      "Northeastern Thai (tts)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "ttw",
+      "Long Wat",
+      "Long Wat (ttw)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "tty",
+      "Sikaritai",
+      "Sikaritai (tty)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "tuj",
+      "Tugutil",
+      "Tugutil (tuj)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "tve",
+      "Te'un",
+      "Te'un (tve)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "tvm",
+      "Tela-Masbuar",
+      "Tela-Masbuar (tvm)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "tvn",
+      "Tavoyan",
+      "Tavoyan (tvn)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "tvo",
+      "Tidore",
+      "Tidore (tvo)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "tvw",
+      "Sedoa",
+      "Sedoa (tvw)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "twb",
+      "Western Tawbuid",
+      "Western Tawbuid (twb)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "twg",
+      "Tereweng",
+      "Tereweng (twg)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "twh",
+      "Tai Dón",
+      "Tai Dón (twh)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "twi",
+      "Twi",
+      "Twi (twi)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "twu",
+      "Termanu",
+      "Termanu (twu)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "twy",
+      "Tawoyan",
+      "Tawoyan (twy)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "txa",
+      "Tombonuo",
+      "Tombonuo (txa)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "txe",
+      "Totoli",
+      "Totoli (txe)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "txm",
+      "Tomini",
+      "Tomini (txm)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "txn",
+      "West Tarangan",
+      "West Tarangan (txn)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "txq",
+      "Tii",
+      "Tii (txq)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "txs",
+      "Tonsea",
+      "Tonsea (txs)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "txt",
+      "Citak",
+      "Citak (txt)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "txx",
+      "Tatana",
+      "Tatana (txx)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "tyh",
+      "O'du",
+      "O'du (tyh)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "tyj",
+      "Tai Do",
+      "Tai Do (tyj)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "tyl",
+      "Thu Lao",
+      "Thu Lao (tyl)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "tyn",
+      "Kombai",
+      "Kombai (tyn)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "tyr",
+      "Tai Daeng",
+      "Tai Daeng (tyr)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "tys",
+      "Tày Sa Pa",
+      "Tày Sa Pa (tys)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "tyt",
+      "Tày Tac",
+      "Tày Tac (tyt)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "tzn",
+      "Tugun",
+      "Tugun (tzn)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "uan",
+      "Kuan",
+      "Kuan (uan)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "ubl",
+      "Buhi'non Bikol",
+      "Buhi'non Bikol (ubl)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "udj",
+      "Ujir",
+      "Ujir (udj)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "ues",
+      "Kioko",
+      "Kioko (ues)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "ugo",
+      "Ugong",
+      "Ugong (ugo)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "uhn",
+      "Damal",
+      "Damal (uhn)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "uka",
+      "Kaburi",
+      "Kaburi (uka)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "ukk",
+      "Muak Sa-aak",
+      "Muak Sa-aak (ukk)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "ulf",
+      "Usku",
+      "Usku (ulf)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "ulm",
+      "Ulumanda'",
+      "Ulumanda' (ulm)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "ulu",
+      "Uma' Lung",
+      "Uma' Lung (ulu)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "umi",
+      "Ukit",
+      "Ukit (umi)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "ums",
+      "Pendau",
+      "Pendau (ums)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "unz",
+      "Unde Kaili",
+      "Unde Kaili (unz)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "upv",
+      "Uripiv-Wala-Rano-Atchin",
+      "Uripiv-Wala-Rano-Atchin (upv)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "urk",
+      "Urak Lawoi'",
+      "Urak Lawoi' (urk)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "urn",
+      "Uruangnirin",
+      "Uruangnirin (urn)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "ury",
+      "Orya",
+      "Orya (ury)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "vbb",
+      "Southeast Babar",
+      "Southeast Babar (vbb)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "vbk",
+      "Southwestern Bontok",
+      "Southwestern Bontok (vbk)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "vie",
+      "Vietnamese",
+      "Tiếng Việt",
+      "Hanoi,Ho_Chi_Minh,Highlands"
+    ],
+    [
+      "vkk",
+      "Kaur",
+      "Kaur (vkk)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "vko",
+      "Kodeoha",
+      "Kodeoha (vko)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "vkt",
+      "Tenggarong Kutai Malay",
+      "Tenggarong Kutai Malay (vkt)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "vme",
+      "East Masela",
+      "East Masela (vme)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "vto",
+      "Vitou",
+      "Vitou (vto)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "vwa",
+      "Awa (China)",
+      "Awa (China) (vwa)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "wad",
+      "Wandamen",
+      "Wandamen (wad)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "wah",
+      "Watubela",
+      "Watubela (wah)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "wai",
+      "Wares",
+      "Wares (wai)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "war",
+      "Waray (Philippines)",
+      "Waray (Philippines) (war)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "wbb",
+      "Wabo",
+      "Wabo (wbb)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "wbe",
+      "Waritai",
+      "Waritai (wbe)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "wbw",
+      "Woi",
+      "Woi (wbw)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "weo",
+      "Wemale",
+      "Wemale (weo)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "weu",
+      "Rawngtu Chin",
+      "Rawngtu Chin (weu)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "wew",
+      "Wejewa",
+      "Wejewa (wew)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "wfg",
+      "Yafi",
+      "Yafi (wfg)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "wgo",
+      "Waigeo",
+      "Waigeo (wgo)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "wha",
+      "Sou Upaa",
+      "Sou Upaa (wha)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "whk",
+      "Wahau Kenyah",
+      "Wahau Kenyah (whk)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "whu",
+      "Wahau Kayan",
+      "Wahau Kayan (whu)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "wkd",
+      "Wakde",
+      "Wakde (wkd)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "wlh",
+      "Welaun",
+      "Welaun (wlh)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "wli",
+      "Waioli",
+      "Waioli (wli)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "wlo",
+      "Wolio",
+      "Wolio (wlo)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "wlw",
+      "Walak",
+      "Walak (wlw)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "wmh",
+      "Waima'a",
+      "Waima'a (wmh)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "wmm",
+      "Maiwa (Indonesia)",
+      "Maiwa (Indonesia) (wmm)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "wms",
+      "Wambon",
+      "Wambon (wms)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "wng",
+      "Wanggom",
+      "Wanggom (wng)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "wnk",
+      "Wanukaka",
+      "Wanukaka (wnk)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "wno",
+      "Wano",
+      "Wano (wno)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "wod",
+      "Wolani",
+      "Wolani (wod)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "woi",
+      "Kamang",
+      "Kamang (woi)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "woo",
+      "Manombai",
+      "Manombai (woo)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "wor",
+      "Woria",
+      "Woria (wor)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "wow",
+      "Wawonii",
+      "Wawonii (wow)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "wrp",
+      "Waropen",
+      "Waropen (wrp)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "wrs",
+      "Waris",
+      "Waris (wrs)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "wru",
+      "Waru",
+      "Waru (wru)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "wrx",
+      "Wae Rana",
+      "Wae Rana (wrx)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "wsa",
+      "Warembori",
+      "Warembori (wsa)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "wtw",
+      "Wotu",
+      "Wotu (wtw)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "wul",
+      "Silimo",
+      "Silimo (wul)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "wut",
+      "Wutung",
+      "Wutung (wut)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "wuy",
+      "Wauyai",
+      "Wauyai (wuy)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "xao",
+      "Khao",
+      "Khao (xao)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "xau",
+      "Kauwera",
+      "Kauwera (xau)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "xay",
+      "Kayan Mahakam",
+      "Kayan Mahakam (xay)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "xbr",
+      "Kambera",
+      "Kambera (xbr)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "xem",
+      "Kembayan",
+      "Kembayan (xem)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "xhv",
+      "Khua",
+      "Khua (xhv)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "xkd",
+      "Mendalam Kayan",
+      "Mendalam Kayan (xkd)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "xke",
+      "Kereho",
+      "Kereho (xke)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "xkk",
+      "Kaco'",
+      "Kaco' (xkk)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "xkl",
+      "Mainstream Kenyah",
+      "Mainstream Kenyah (xkl)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "xkn",
+      "Kayan River Kayan",
+      "Kayan River Kayan (xkn)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "xko",
+      "Kiorr",
+      "Kiorr (xko)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "xkq",
+      "Koroni",
+      "Koroni (xkq)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "xks",
+      "Kumbewaha",
+      "Kumbewaha (xks)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "xkw",
+      "Kembra",
+      "Kembra (xkw)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "xky",
+      "Uma' Lasan",
+      "Uma' Lasan (xky)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "xml",
+      "Malaysian Sign Language",
+      "Malaysian Sign Language (xml)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "xmm",
+      "Manado Malay",
+      "Manado Malay (xmm)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "xmt",
+      "Matbat",
+      "Matbat (xmt)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "xmx",
+      "Maden",
+      "Maden (xmx)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "xmz",
+      "Mori Bawah",
+      "Mori Bawah (xmz)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "xnn",
+      "Northern Kankanay",
+      "Northern Kankanay (xnn)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "xod",
+      "Kokoda",
+      "Kokoda (xod)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "xsb",
+      "Sambal",
+      "Sambal (xsb)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "xse",
+      "Sempan",
+      "Sempan (xse)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "xte",
+      "Ketengban",
+      "Ketengban (xte)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "xxk",
+      "Ke'o",
+      "Ke'o (xxk)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "yac",
+      "Pass Valley Yali",
+      "Pass Valley Yali (yac)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "yet",
+      "Yetfa",
+      "Yetfa (yet)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "yin",
+      "Riang Lai",
+      "Riang Lai (yin)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "yir",
+      "North Awyu",
+      "North Awyu (yir)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "yka",
+      "Yakan",
+      "Yakan (yka)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "yki",
+      "Yoke",
+      "Yoke (yki)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "ymn",
+      "Yamna",
+      "Yamna (ymn)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "yno",
+      "Yong",
+      "Yong (yno)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "yog",
+      "Yogad",
+      "Yogad (yog)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "yon",
+      "Yongkom",
+      "Yongkom (yon)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "yoy",
+      "Yoy",
+      "Yoy (yoy)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "yrs",
+      "Yarsun",
+      "Yarsun (yrs)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "ysd",
+      "Samatao",
+      "Samatao (ysd)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "yso",
+      "Nisi (China)",
+      "Nisi (China) (yso)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "yva",
+      "Yawa",
+      "Yawa (yva)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "zbc",
+      "Central Berawan",
+      "Central Berawan (zbc)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "zbe",
+      "East Berawan",
+      "East Berawan (zbe)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "zbt",
+      "Batui",
+      "Batui (zbt)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "zbw",
+      "West Berawan",
+      "West Berawan (zbw)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "zka",
+      "Kaimbulawa",
+      "Kaimbulawa (zka)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "zkd",
+      "Kadu",
+      "Kadu (zkd)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "zkn",
+      "Kanan",
+      "Kanan (zkn)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "zlm",
+      "Malay (individual language)",
+      "Malay (individual language) (zlm)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "zmi",
+      "Negeri Sembilan Malay",
+      "Negeri Sembilan Malay (zmi)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "zrs",
+      "Mairasi",
+      "Mairasi (zrs)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "zsm",
+      "Standard Malay",
+      "Standard Malay (zsm)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "zyp",
+      "Zyphe Chin",
+      "Zyphe Chin (zyp)",
+      "Nusantara_Mekong"
+    ]
+  ]
+}

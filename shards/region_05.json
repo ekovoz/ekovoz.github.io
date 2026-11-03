@@ -1,0 +1,416 @@
+{
+  "macro_region_id": 5,
+  "region_name_es": "Anatolia, Cáucaso y Asia Central",
+  "total_languages": 68,
+  "subclades_covered": 32,
+  "featured_languages": [
+    [
+      "abh",
+      "Tajiki Arabic",
+      "Tajiki Arabic (abh)",
+      "Khatlon,Balkh"
+    ],
+    [
+      "abk",
+      "Abkhazian",
+      "Abkhazian (abk)",
+      "Abkhazia,Caucasus"
+    ],
+    [
+      "abq",
+      "Abaza",
+      "Abaza (abq)",
+      "Karachay_Cherkessia"
+    ],
+    [
+      "ady",
+      "Adyghe",
+      "Adyghe (ady)",
+      "Caucasus_Steppes"
+    ],
+    [
+      "aen",
+      "Armenian Sign Language",
+      "Armenian Sign Language (aen)",
+      "Caucasus_Steppes"
+    ],
+    [
+      "agx",
+      "Aghul",
+      "Aghul (agx)",
+      "Caucasus_Steppes"
+    ],
+    [
+      "auz",
+      "Uzbeki Arabic",
+      "Uzbeki Arabic (auz)",
+      "Caucasus_Steppes"
+    ],
+    [
+      "ava",
+      "Avaric",
+      "Avaric (ava)",
+      "Caucasus_Steppes"
+    ],
+    [
+      "axm",
+      "Middle Armenian",
+      "Middle Armenian (axm)",
+      "Caucasus_Steppes"
+    ],
+    [
+      "azb",
+      "South Azerbaijani",
+      "South Azerbaijani (azb)",
+      "Caucasus_Steppes"
+    ],
+    [
+      "aze",
+      "Azerbaijani",
+      "Azerbaijani (aze)",
+      "Caucasus_Steppes"
+    ],
+    [
+      "azj",
+      "North Azerbaijani",
+      "North Azerbaijani (azj)",
+      "Caucasus_Steppes"
+    ],
+    [
+      "bak",
+      "Bashkir",
+      "Bashkir (bak)",
+      "Caucasus_Steppes"
+    ],
+    [
+      "bbl",
+      "Bats",
+      "Bats (bbl)",
+      "Caucasus_Steppes"
+    ],
+    [
+      "bdk",
+      "Budukh",
+      "Budukh (bdk)",
+      "Caucasus_Steppes"
+    ],
+    [
+      "che",
+      "Chechen",
+      "Chechen (che)",
+      "Caucasus_Steppes"
+    ],
+    [
+      "chg",
+      "Chagatai",
+      "Chagatai (chg)",
+      "Caucasus_Steppes"
+    ],
+    [
+      "chv",
+      "Chuvash",
+      "Chuvash (chv)",
+      "Caucasus_Steppes"
+    ],
+    [
+      "crh",
+      "Crimean Tatar",
+      "Crimean Tatar (crh)",
+      "Caucasus_Steppes"
+    ],
+    [
+      "dar",
+      "Dargwa",
+      "Dargwa (dar)",
+      "Caucasus_Steppes"
+    ],
+    [
+      "ddo",
+      "Dido",
+      "Dido (ddo)",
+      "Caucasus_Steppes"
+    ],
+    [
+      "diq",
+      "Dimli (individual language)",
+      "Dimli (individual language) (diq)",
+      "Caucasus_Steppes"
+    ],
+    [
+      "dng",
+      "Dungan",
+      "Dungan (dng)",
+      "Caucasus_Steppes"
+    ],
+    [
+      "gou",
+      "Gavar",
+      "Gavar (gou)",
+      "Caucasus_Steppes"
+    ],
+    [
+      "hrt",
+      "Hértevin",
+      "Hértevin (hrt)",
+      "Caucasus_Steppes"
+    ],
+    [
+      "huz",
+      "Hunzib",
+      "Hunzib (huz)",
+      "Caucasus_Steppes"
+    ],
+    [
+      "hye",
+      "Armenian",
+      "Հայերեն",
+      "Yerevan,Shirak"
+    ],
+    [
+      "hyw",
+      "Western Armenian",
+      "Western Armenian (hyw)",
+      "Caucasus_Steppes"
+    ],
+    [
+      "inh",
+      "Ingush",
+      "Ingush (inh)",
+      "Caucasus_Steppes"
+    ],
+    [
+      "jdt",
+      "Judeo-Tat",
+      "Judeo-Tat (jdt)",
+      "Caucasus_Steppes"
+    ],
+    [
+      "jge",
+      "Judeo-Georgian",
+      "Judeo-Georgian (jge)",
+      "Caucasus_Steppes"
+    ],
+    [
+      "kat",
+      "Georgian",
+      "ქართული",
+      "Tbilisi,Kakheti"
+    ],
+    [
+      "kap",
+      "Bezhta",
+      "Bezhta (kap)",
+      "Caucasus_Steppes"
+    ],
+    [
+      "kaz",
+      "Kazakh",
+      "Kazakh (kaz)",
+      "Caucasus_Steppes"
+    ],
+    [
+      "kiu",
+      "Kirmanjki (individual language)",
+      "Kirmanjki (individual language) (kiu)",
+      "Caucasus_Steppes"
+    ],
+    [
+      "kjj",
+      "Khinalugh",
+      "Khinalugh (kjj)",
+      "Caucasus_Steppes"
+    ],
+    [
+      "krc",
+      "Karachay-Balkar",
+      "Karachay-Balkar (krc)",
+      "Caucasus_Steppes"
+    ],
+    [
+      "kry",
+      "Kryts",
+      "Kryts (kry)",
+      "Caucasus_Steppes"
+    ],
+    [
+      "kum",
+      "Kumyk",
+      "Kumyk (kum)",
+      "Caucasus_Steppes"
+    ],
+    [
+      "lbe",
+      "Lak",
+      "Lak (lbe)",
+      "Caucasus_Steppes"
+    ],
+    [
+      "lez",
+      "Lezghian",
+      "Lezghian (lez)",
+      "Caucasus_Steppes"
+    ],
+    [
+      "lzz",
+      "Laz",
+      "Laz (lzz)",
+      "Caucasus_Steppes"
+    ],
+    [
+      "myv",
+      "Erzya",
+      "Erzya (myv)",
+      "Caucasus_Steppes"
+    ],
+    [
+      "nog",
+      "Nogai",
+      "Nogai (nog)",
+      "Caucasus_Steppes"
+    ],
+    [
+      "rmi",
+      "Lomavren",
+      "Lomavren (rmi)",
+      "Caucasus_Steppes"
+    ],
+    [
+      "rut",
+      "Rutul",
+      "Rutul (rut)",
+      "Caucasus_Steppes"
+    ],
+    [
+      "sgh",
+      "Shughni",
+      "Shughni (sgh)",
+      "Caucasus_Steppes"
+    ],
+    [
+      "sty",
+      "Siberian Tatar",
+      "Siberian Tatar (sty)",
+      "Caucasus_Steppes"
+    ],
+    [
+      "sva",
+      "Svan",
+      "Svan (sva)",
+      "Caucasus_Steppes"
+    ],
+    [
+      "tab",
+      "Tabassaran",
+      "Tabassaran (tab)",
+      "Caucasus_Steppes"
+    ],
+    [
+      "tat",
+      "Tatar",
+      "Tatar (tat)",
+      "Caucasus_Steppes"
+    ],
+    [
+      "tkr",
+      "Tsakhur",
+      "Tsakhur (tkr)",
+      "Caucasus_Steppes"
+    ],
+    [
+      "tur",
+      "Turco",
+      "Türkçe",
+      "Istanbul,Anatolia"
+    ],
+    [
+      "trg",
+      "Lishán Didán",
+      "Lishán Didán (trg)",
+      "Caucasus_Steppes"
+    ],
+    [
+      "trl",
+      "Traveller Scottish",
+      "Traveller Scottish (trl)",
+      "Caucasus_Steppes"
+    ],
+    [
+      "tsm",
+      "Turkish Sign Language",
+      "Turkish Sign Language (tsm)",
+      "Caucasus_Steppes"
+    ],
+    [
+      "ttt",
+      "Muslim Tat",
+      "Muslim Tat (ttt)",
+      "Caucasus_Steppes"
+    ],
+    [
+      "tuk",
+      "Turkmen",
+      "Turkmen (tuk)",
+      "Caucasus_Steppes"
+    ],
+    [
+      "udi",
+      "Udi",
+      "Udi (udi)",
+      "Caucasus_Steppes"
+    ],
+    [
+      "uum",
+      "Urum",
+      "Urum (uum)",
+      "Caucasus_Steppes"
+    ],
+    [
+      "uzn",
+      "Northern Uzbek",
+      "Oʻzbekcha",
+      "Tashkent,Samarkand,Fergana"
+    ],
+    [
+      "uzb",
+      "Uzbek",
+      "Uzbek (uzb)",
+      "Caucasus_Steppes"
+    ],
+    [
+      "uzs",
+      "Southern Uzbek",
+      "Southern Uzbek (uzs)",
+      "Caucasus_Steppes"
+    ],
+    [
+      "wbl",
+      "Wakhi",
+      "Wakhi (wbl)",
+      "Caucasus_Steppes"
+    ],
+    [
+      "xmf",
+      "Mingrelian",
+      "Mingrelian (xmf)",
+      "Caucasus_Steppes"
+    ],
+    [
+      "yah",
+      "Yazgulyam",
+      "Yazgulyam (yah)",
+      "Caucasus_Steppes"
+    ],
+    [
+      "yai",
+      "Yagnobi",
+      "Yagnobi (yai)",
+      "Caucasus_Steppes"
+    ],
+    [
+      "zza",
+      "Zaza",
+      "Zaza (zza)",
+      "Caucasus_Steppes"
+    ]
+  ]
+}

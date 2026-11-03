@@ -1,0 +1,2450 @@
+{
+  "macro_region_id": 10,
+  "region_name_es": "Asia Oriental y Meseta Altaica",
+  "total_languages": 407,
+  "subclades_covered": 33,
+  "featured_languages": [
+    [
+      "acn",
+      "Achang",
+      "Achang (acn)",
+      "Yunnan,Kachin"
+    ],
+    [
+      "adx",
+      "Amdo Tibetan",
+      "Amdo Tibetan (adx)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "aeu",
+      "Akeu",
+      "Akeu (aeu)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "afo",
+      "Eloyi",
+      "Eloyi (afo)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "ahk",
+      "Akha",
+      "Akha (ahk)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "aih",
+      "Ai-Cham",
+      "Ai-Cham (aih)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "aij",
+      "Lishanid Noshan",
+      "Lishanid Noshan (aij)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "ain",
+      "Ainu (Japan)",
+      "Ainu (Japan) (ain)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "alt",
+      "Southern Altai",
+      "Southern Altai (alt)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "ami",
+      "Amis",
+      "Amis (ami)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "any",
+      "Anyin",
+      "Anyin (any)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "aou",
+      "A'ou",
+      "A'ou (aou)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "ape",
+      "Bukiyip",
+      "Bukiyip (ape)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "atb",
+      "Zaiwa",
+      "Zaiwa (atb)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "aub",
+      "Alugu",
+      "Alugu (aub)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "auw",
+      "Awyi",
+      "Awyi (auw)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "ayi",
+      "Leyigha",
+      "Leyigha (ayi)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "ayq",
+      "Ayi (Papua New Guinea)",
+      "Ayi (Papua New Guinea) (ayq)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "aza",
+      "Azha",
+      "Azha (aza)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "bbh",
+      "Bugan",
+      "Bugan (bbh)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "bca",
+      "Central Bai",
+      "Central Bai (bca)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "bfc",
+      "Panyi Bai",
+      "Panyi Bai (bfc)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "bfs",
+      "Southern Bai",
+      "Southern Bai (bfs)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "bgk",
+      "Bit",
+      "Bit (bgk)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "bje",
+      "Biao-Jiao Mien",
+      "Biao-Jiao Mien (bje)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "bky",
+      "Bokyi",
+      "Bokyi (bky)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "blr",
+      "Blang",
+      "Blang (blr)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "bmt",
+      "Biao Mon",
+      "Biao Mon (bmt)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "bnn",
+      "Bunun",
+      "Bunun (bnn)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "bod",
+      "Tibetan",
+      "བོད་ཡིག",
+      "Tibet_TAR,Qinghai,Sichuan,Dharamshala"
+    ],
+    [
+      "bpn",
+      "Dzao Min",
+      "Dzao Min (bpn)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "bqh",
+      "Baima",
+      "Baima (bqh)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "brd",
+      "Baraamu",
+      "Baraamu (brd)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "buh",
+      "Younuo Bunu",
+      "Younuo Bunu (buh)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "bvp",
+      "Bumang",
+      "Bumang (bvp)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "bwn",
+      "Wunai Bunu",
+      "Wunai Bunu (bwn)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "bwx",
+      "Bu-Nao Bunu",
+      "Bu-Nao Bunu (bwx)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "bxd",
+      "Pela",
+      "Pela (bxd)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "bxm",
+      "Mongolia Buriat",
+      "Mongolia Buriat (bxm)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "bxr",
+      "Russia Buriat",
+      "Russia Buriat (bxr)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "byk",
+      "Biao",
+      "Biao (byk)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "byo",
+      "Biyo",
+      "Biyo (byo)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "byq",
+      "Basay",
+      "Basay (byq)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "bzg",
+      "Babuza",
+      "Babuza (bzg)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "bzi",
+      "Bisu",
+      "Bisu (bzi)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "cda",
+      "Choni",
+      "Choni (cda)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "cdo",
+      "Min Dong Chinese",
+      "Min Dong Chinese (cdo)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "cdy",
+      "Chadong",
+      "Chadong (cdy)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "cjy",
+      "Jinyu Chinese",
+      "Jinyu Chinese (cjy)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "ckv",
+      "Kavalan",
+      "Kavalan (ckv)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "clk",
+      "Idu-Mishmi",
+      "Idu-Mishmi (clk)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "cmg",
+      "Classical Mongolian",
+      "Classical Mongolian (cmg)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "cmn",
+      "Mandarin Chinese",
+      "Mandarin Chinese (cmn)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "cng",
+      "Northern Qiang",
+      "Northern Qiang (cng)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "cnp",
+      "Northern Ping Chinese",
+      "Northern Ping Chinese (cnp)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "cnx",
+      "Middle Cornish",
+      "Middle Cornish (cnx)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "coh",
+      "Chonyi-Dzihana-Kauma",
+      "Chonyi-Dzihana-Kauma (coh)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "cov",
+      "Cao Miao",
+      "Cao Miao (cov)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "cpi",
+      "Chinese Pidgin English",
+      "Chinese Pidgin English (cpi)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "cpx",
+      "Pu-Xian Chinese",
+      "Pu-Xian Chinese (cpx)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "cqd",
+      "Chuanqiandian Cluster Miao",
+      "Chuanqiandian Cluster Miao (cqd)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "csl",
+      "Chinese Sign Language",
+      "Chinese Sign Language (csl)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "csp",
+      "Southern Ping Chinese",
+      "Southern Ping Chinese (csp)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "csy",
+      "Siyin Chin",
+      "Siyin Chin (csy)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "cuq",
+      "Cun",
+      "Cun (cuq)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "czh",
+      "Huizhou Chinese",
+      "Huizhou Chinese (czh)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "czo",
+      "Min Zhong Chinese",
+      "Min Zhong Chinese (czo)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "dax",
+      "Dayi",
+      "Dayi (dax)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "dbl",
+      "Dyirbal",
+      "Dyirbal (dbl)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "doc",
+      "Northern Dong",
+      "Northern Dong (doc)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "dre",
+      "Dolpo",
+      "Dolpo (dre)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "drl",
+      "Paakantyi",
+      "Paakantyi (drl)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "dru",
+      "Rukai",
+      "Rukai (dru)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "dta",
+      "Daur",
+      "Daur (dta)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "duu",
+      "Drung",
+      "Drung (duu)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "dyo",
+      "Jola-Fonyi",
+      "Jola-Fonyi (dyo)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "eee",
+      "E",
+      "E (eee)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "enc",
+      "En",
+      "En (enc)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "enu",
+      "Enu",
+      "Enu (enu)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "ero",
+      "Horpa",
+      "Horpa (ero)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "ers",
+      "Ersu",
+      "Ersu (ers)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "gan",
+      "Gan Chinese",
+      "Gan Chinese (gan)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "gbm",
+      "Garhwali",
+      "Garhwali (gbm)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "gbr",
+      "Gbagyi",
+      "Gbagyi (gbr)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "giq",
+      "Green Gelao",
+      "Green Gelao (giq)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "gir",
+      "Red Gelao",
+      "Red Gelao (gir)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "giu",
+      "Mulao",
+      "Mulao (giu)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "giw",
+      "White Gelao",
+      "White Gelao (giw)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "gld",
+      "Nanai",
+      "Nanai (gld)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "gmg",
+      "Magɨyi",
+      "Magɨyi (gmg)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "goz",
+      "Gozarkhani",
+      "Gozarkhani (goz)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "gqi",
+      "Guiqiong",
+      "Guiqiong (gqi)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "gqu",
+      "Qau",
+      "Qau (gqu)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "gyg",
+      "Gbayi",
+      "Gbayi (gyg)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "gyl",
+      "Gayil",
+      "Gayil (gyl)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "hak",
+      "Hakka Chinese",
+      "Hakka Chinese (hak)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "hea",
+      "Northern Qiandong Miao",
+      "Northern Qiandong Miao (hea)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "hks",
+      "Hong Kong Sign Language",
+      "Hong Kong Sign Language (hks)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "hle",
+      "Hlersu",
+      "Hlersu (hle)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "hma",
+      "Southern Mashan Hmong",
+      "Southern Mashan Hmong (hma)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "hmc",
+      "Central Huishui Hmong",
+      "Central Huishui Hmong (hmc)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "hmd",
+      "Large Flowery Miao",
+      "Large Flowery Miao (hmd)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "hme",
+      "Eastern Huishui Hmong",
+      "Eastern Huishui Hmong (hme)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "hmf",
+      "Hmong Don",
+      "Hmong Don (hmf)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "hmg",
+      "Southwestern Guiyang Hmong",
+      "Southwestern Guiyang Hmong (hmg)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "hmh",
+      "Southwestern Huishui Hmong",
+      "Southwestern Huishui Hmong (hmh)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "hmi",
+      "Northern Huishui Hmong",
+      "Northern Huishui Hmong (hmi)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "hmj",
+      "Ge",
+      "Ge (hmj)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "hml",
+      "Luopohe Hmong",
+      "Luopohe Hmong (hml)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "hmm",
+      "Central Mashan Hmong",
+      "Central Mashan Hmong (hmm)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "hmn",
+      "Hmong",
+      "Hmong (hmn)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "hmp",
+      "Northern Mashan Hmong",
+      "Northern Mashan Hmong (hmp)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "hmq",
+      "Eastern Qiandong Miao",
+      "Eastern Qiandong Miao (hmq)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "hms",
+      "Southern Qiandong Miao",
+      "Southern Qiandong Miao (hms)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "hmv",
+      "Hmong Dô",
+      "Hmong Dô (hmv)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "hmw",
+      "Western Mashan Hmong",
+      "Western Mashan Hmong (hmw)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "hmy",
+      "Southern Guiyang Hmong",
+      "Southern Guiyang Hmong (hmy)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "hmz",
+      "Hmong Shua",
+      "Hmong Shua (hmz)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "hni",
+      "Hani",
+      "Hani (hni)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "hnj",
+      "Hmong Njua",
+      "Hmong Njua (hnj)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "how",
+      "Honi",
+      "Honi (how)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "hrm",
+      "Horned Miao",
+      "Horned Miao (hrm)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "hsn",
+      "Xiang Chinese",
+      "Xiang Chinese (hsn)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "huj",
+      "Northern Guiyang Hmong",
+      "Northern Guiyang Hmong (huj)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "huo",
+      "Hu",
+      "Hu (huo)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "huq",
+      "Tsat",
+      "Tsat (huq)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "hut",
+      "Humla",
+      "Humla (hut)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "iii",
+      "Sichuan Yi",
+      "Sichuan Yi (iii)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "ili",
+      "Ili Turki",
+      "Ili Turki (ili)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "ium",
+      "Iu Mien",
+      "Iu Mien (ium)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "jpn",
+      "Japonés",
+      "日本語",
+      "Kanto,Kansai,Kyushu"
+    ],
+    [
+      "jih",
+      "sTodsde",
+      "sTodsde (jih)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "jio",
+      "Jiamao",
+      "Jiamao (jio)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "jiq",
+      "Guanyinqiao",
+      "Guanyinqiao (jiq)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "jiu",
+      "Youle Jinuo",
+      "Youle Jinuo (jiu)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "jiy",
+      "Buyuan Jinuo",
+      "Buyuan Jinuo (jiy)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "jje",
+      "Jejueo",
+      "Jejueo (jje)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "jsl",
+      "Japanese Sign Language",
+      "Japanese Sign Language (jsl)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "jya",
+      "Jiarong",
+      "Jiarong (jya)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "kaf",
+      "Katso",
+      "Katso (kaf)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "kal",
+      "Kalaallisut",
+      "Kalaallisut (kal)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "kfj",
+      "Kemiehua",
+      "Kemiehua (kfj)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "kfk",
+      "Kinnauri",
+      "Kinnauri (kfk)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "kgy",
+      "Kyerung",
+      "Kyerung (kgy)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "khb",
+      "Lü",
+      "Lü (khb)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "khf",
+      "Khuen",
+      "Khuen (khf)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "khg",
+      "Khams Tibetan",
+      "Khams Tibetan (khg)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "khk",
+      "Halh Mongolian",
+      "Halh Mongolian (khk)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "kjh",
+      "Khakas",
+      "Khakas (kjh)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "kjm",
+      "Kháng",
+      "Kháng (kjm)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "kkn",
+      "Kon Keu",
+      "Kon Keu (kkn)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "kky",
+      "Guugu Yimidhirr",
+      "Guugu Yimidhirr (kky)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "kmc",
+      "Southern Dong",
+      "Southern Dong (kmc)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "kor",
+      "Coreano",
+      "한국어",
+      "Seoul,Pyongyang,Yanbian"
+    ],
+    [
+      "kte",
+      "Nubri",
+      "Nubri (kte)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "ktp",
+      "Kaduo",
+      "Kaduo (ktp)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "kvk",
+      "Korean Sign Language",
+      "Korean Sign Language (kvk)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "kvu",
+      "Yinbaw Karen",
+      "Yinbaw Karen (kvu)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "kvy",
+      "Yintale Karen",
+      "Yintale Karen (kvy)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "kxs",
+      "Kangjia",
+      "Kangjia (kxs)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "kyp",
+      "Kang",
+      "Kang (kyp)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "kzg",
+      "Kikai",
+      "Kikai (kzg)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "laq",
+      "Qabiao",
+      "Qabiao (laq)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "lay",
+      "Lama Bai",
+      "Lama Bai (lay)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "lbc",
+      "Lakkia",
+      "Lakkia (lbc)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "lbf",
+      "Tinani",
+      "Tinani (lbf)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "lbj",
+      "Ladakhi",
+      "Ladakhi (lbj)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "lbt",
+      "Lachi",
+      "Lachi (lbt)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "ldg",
+      "Lenyima",
+      "Lenyima (ldg)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "lhi",
+      "Lahu Shi",
+      "Lahu Shi (lhi)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "lhl",
+      "Lahul Lohar",
+      "Lahul Lohar (lhl)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "lhm",
+      "Lhomi",
+      "Lhomi (lhm)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "lhu",
+      "Lahu",
+      "Lahu (lhu)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "lic",
+      "Hlai",
+      "Hlai (lic)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "lid",
+      "Nyindrou",
+      "Nyindrou (lid)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "lis",
+      "Lisu",
+      "Lisu (lis)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "ljw",
+      "Yirandali",
+      "Yirandali (ljw)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "lkc",
+      "Kucong",
+      "Kucong (lkc)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "lke",
+      "Kenyi",
+      "Kenyi (lke)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "llh",
+      "Lamu",
+      "Lamu (llh)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "lov",
+      "Lopi",
+      "Lopi (lov)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "lpo",
+      "Lipo",
+      "Lipo (lpo)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "lsi",
+      "Lashi",
+      "Lashi (lsi)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "lsn",
+      "Tibetan Sign Language",
+      "Tibetan Sign Language (lsn)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "luy",
+      "Luyia",
+      "Luyia (luy)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "lwh",
+      "White Lachi",
+      "White Lachi (lwh)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "lwm",
+      "Laomian",
+      "Laomian (lwm)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "lwu",
+      "Lawu",
+      "Lawu (lwu)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "mgt",
+      "Mongol",
+      "Mongol (mgt)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "mhu",
+      "Digaro-Mishmi",
+      "Digaro-Mishmi (mhu)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "mhx",
+      "Maru",
+      "Maru (mhx)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "mjg",
+      "Tu",
+      "Tu (mjg)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "mji",
+      "Kim Mun",
+      "Kim Mun (mji)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "mlm",
+      "Mulam",
+      "Mulam (mlm)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "mmd",
+      "Maonan",
+      "Maonan (mmd)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "mml",
+      "Man Met",
+      "Man Met (mml)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "mmr",
+      "Western Xiangxi Miao",
+      "Western Xiangxi Miao (mmr)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "mon",
+      "Mongolian",
+      "Монгол",
+      "Ulaanbaatar,Inner_Mongolia"
+    ],
+    [
+      "mnc",
+      "Manchu",
+      "Manchu (mnc)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "mnp",
+      "Min Bei Chinese",
+      "Min Bei Chinese (mnp)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "mpc",
+      "Mangarrayi",
+      "Mangarrayi (mpc)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "mqt",
+      "Mok",
+      "Mok (mqt)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "msr",
+      "Mongolian Sign Language",
+      "Mongolian Sign Language (msr)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "mtb",
+      "Anyin Morofo",
+      "Anyin Morofo (mtb)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "muk",
+      "Mugom",
+      "Mugom (muk)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "muq",
+      "Eastern Xiangxi Miao",
+      "Eastern Xiangxi Miao (muq)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "mvf",
+      "Peripheral Mongolian",
+      "Peripheral Mongolian (mvf)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "mvi",
+      "Miyako",
+      "Miyako (mvi)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "mww",
+      "Hmong Daw",
+      "Hmong Daw (mww)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "mxc",
+      "Manyika",
+      "Manyika (mxc)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "mxj",
+      "Miju-Mishmi",
+      "Miju-Mishmi (mxj)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "mzs",
+      "Macanese",
+      "Macanese (mzs)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "nan",
+      "Min Nan Chinese",
+      "Min Nan Chinese (nan)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "nfl",
+      "Ayiwo",
+      "Ayiwo (nfl)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "ngx",
+      "Nggwahyi",
+      "Nggwahyi (ngx)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "nih",
+      "Nyiha (Tanzania)",
+      "Nyiha (Tanzania) (nih)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "nja",
+      "Nzanyi",
+      "Nzanyi (nja)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "njx",
+      "Kunyi",
+      "Kunyi (njx)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "njz",
+      "Nyishi",
+      "Nyishi (njz)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "nkt",
+      "Nyika (Tanzania)",
+      "Nyika (Tanzania) (nkt)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "nkv",
+      "Nyika (Malawi and Zambia)",
+      "Nyika (Malawi and Zambia) (nkv)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "nmy",
+      "Namuyi",
+      "Namuyi (nmy)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "nos",
+      "Eastern Nisu",
+      "Eastern Nisu (nos)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "noz",
+      "Nayi",
+      "Nayi (noz)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "nru",
+      "Narua",
+      "Narua (nru)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "nsd",
+      "Southern Nisu",
+      "Southern Nisu (nsd)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "nsf",
+      "Northwestern Nisu",
+      "Northwestern Nisu (nsf)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "nsv",
+      "Southwestern Nisu",
+      "Southwestern Nisu (nsv)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "nuf",
+      "Nusu",
+      "Nusu (nuf)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "nun",
+      "Anong",
+      "Anong (nun)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "nut",
+      "Nung (Viet Nam)",
+      "Nung (Viet Nam) (nut)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "nxq",
+      "Naxi",
+      "Naxi (nxq)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "nyg",
+      "Nyindu",
+      "Nyindu (nyg)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "nyh",
+      "Nyikina",
+      "Nyikina (nyh)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "nyq",
+      "Nayini",
+      "Nayini (nyq)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "nyr",
+      "Nyiha (Malawi)",
+      "Nyiha (Malawi) (nyr)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "oaa",
+      "Orok",
+      "Orok (oaa)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "okn",
+      "Oki-No-Erabu",
+      "Oki-No-Erabu (okn)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "onb",
+      "Lingao",
+      "Lingao (onb)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "orh",
+      "Oroqen",
+      "Oroqen (orh)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "pcc",
+      "Bouyei",
+      "Bouyei (pcc)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "pdi",
+      "Pa Di",
+      "Pa Di (pdi)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "peh",
+      "Bonan",
+      "Bonan (peh)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "pha",
+      "Pa-Hng",
+      "Pa-Hng (pha)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "phh",
+      "Phukha",
+      "Phukha (phh)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "phq",
+      "Phana'",
+      "Phana' (phq)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "pib",
+      "Yine",
+      "Yine (pib)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "ply",
+      "Bolyu",
+      "Bolyu (ply)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "pmi",
+      "Northern Pumi",
+      "Northern Pumi (pmi)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "pmj",
+      "Southern Pumi",
+      "Southern Pumi (pmj)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "pnu",
+      "Jiongnai Bunu",
+      "Jiongnai Bunu (pnu)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "pny",
+      "Pinyin",
+      "Pinyin (pny)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "prk",
+      "Parauk",
+      "Parauk (prk)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "prp",
+      "Parsi",
+      "Parsi (prp)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "pwn",
+      "Paiwan",
+      "Paiwan (pwn)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "pyu",
+      "Puyuma",
+      "Puyuma (pyu)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "qvy",
+      "Queyu",
+      "Queyu (qvy)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "qxs",
+      "Southern Qiang",
+      "Southern Qiang (qxs)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "raw",
+      "Rawang",
+      "Rawang (raw)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "ril",
+      "Riang Lang",
+      "Riang Lang (ril)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "rys",
+      "Yaeyama",
+      "Yaeyama (rys)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "ryu",
+      "Central Okinawan",
+      "Central Okinawan (ryu)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "sce",
+      "Dongxiang",
+      "Dongxiang (sce)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "sfm",
+      "Small Flowery Miao",
+      "Small Flowery Miao (sfm)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "sgk",
+      "Sangkong",
+      "Sangkong (sgk)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "shn",
+      "Shan",
+      "Shan (shn)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "shx",
+      "She",
+      "She (shx)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "sjo",
+      "Xibe",
+      "Xibe (sjo)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "slr",
+      "Salar",
+      "Salar (slr)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "slt",
+      "Sila",
+      "Sila (slt)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "smh",
+      "Samei",
+      "Samei (smh)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "spp",
+      "Supyire Senoufo",
+      "Supyire Senoufo (spp)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "srh",
+      "Sarikoli",
+      "Sarikoli (srh)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "stu",
+      "Samtao",
+      "Samtao (stu)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "suv",
+      "Puroik",
+      "Puroik (suv)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "swi",
+      "Sui",
+      "Sui (swi)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "sxg",
+      "Shuhi",
+      "Shuhi (sxg)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "sxr",
+      "Saaroa",
+      "Saaroa (sxr)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "syy",
+      "Al-Sayyid Bedouin Sign Language",
+      "Al-Sayyid Bedouin Sign Language (syy)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "szy",
+      "Sakizaya",
+      "Sakizaya (szy)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "tao",
+      "Yami",
+      "Yami (tao)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "tay",
+      "Atayal",
+      "Atayal (tay)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "tct",
+      "T'en",
+      "T'en (tct)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "tji",
+      "Northern Tujia",
+      "Northern Tujia (tji)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "tjs",
+      "Southern Tujia",
+      "Southern Tujia (tjs)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "tkn",
+      "Toku-No-Shima",
+      "Toku-No-Shima (tkn)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "trv",
+      "Taroko",
+      "Taroko (trv)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "tsk",
+      "Tseku",
+      "Tseku (tsk)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "tss",
+      "Taiwan Sign Language",
+      "Taiwan Sign Language (tss)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "tsu",
+      "Tsou",
+      "Tsou (tsu)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "ttz",
+      "Tsum",
+      "Tsum (ttz)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "tyi",
+      "Teke-Tsaayi",
+      "Teke-Tsaayi (tyi)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "tyv",
+      "Tuvinian",
+      "Tuvinian (tyv)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "tyz",
+      "Tày",
+      "Tày (tyz)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "uig",
+      "Uighur",
+      "Uighur (uig)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "uiv",
+      "Iyive",
+      "Iyive (uiv)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "ung",
+      "Ngarinyin",
+      "Ngarinyin (ung)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "uuu",
+      "U",
+      "U (uuu)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "vkl",
+      "Kulisusu",
+      "Kulisusu (vkl)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "wbm",
+      "Wa",
+      "Wa (wbm)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "wny",
+      "Wanyi",
+      "Wanyi (wny)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "wuh",
+      "Wutunhua",
+      "Wutunhua (wuh)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "wuu",
+      "Wu Chinese",
+      "Wu Chinese (wuu)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "wxa",
+      "Waxianghua",
+      "Waxianghua (wxa)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "xal",
+      "Kalmyk",
+      "Kalmyk (xal)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "xdy",
+      "Malayic Dayak",
+      "Malayic Dayak (xdy)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "xnb",
+      "Kanakanabu",
+      "Kanakanabu (xnb)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "xnh",
+      "Kuanhua",
+      "Kuanhua (xnh)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "xny",
+      "Nyiyaparli",
+      "Nyiyaparli (xny)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "xsy",
+      "Saisiyat",
+      "Saisiyat (xsy)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "xug",
+      "Kunigami",
+      "Kunigami (xug)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "ybk",
+      "Bokha",
+      "Bokha (ybk)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "ych",
+      "Chesu",
+      "Chesu (ych)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "ycl",
+      "Lolopo",
+      "Lolopo (ycl)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "ycp",
+      "Chepya",
+      "Chepya (ycp)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "ydd",
+      "Eastern Yiddish",
+      "Eastern Yiddish (ydd)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "ydg",
+      "Yidgha",
+      "Yidgha (ydg)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "yee",
+      "Yimas",
+      "Yimas (yee)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "yey",
+      "Yeyi",
+      "Yeyi (yey)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "ygp",
+      "Gepo",
+      "Gepo (ygp)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "yha",
+      "Baha Buyang",
+      "Baha Buyang (yha)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "yhl",
+      "Hlepho Phowa",
+      "Hlepho Phowa (yhl)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "yia",
+      "Yinggarda",
+      "Yinggarda (yia)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "yid",
+      "Yiddish",
+      "Yiddish (yid)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "yif",
+      "Ache",
+      "Ache (yif)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "yig",
+      "Wusa Nasu",
+      "Wusa Nasu (yig)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "yih",
+      "Western Yiddish",
+      "Western Yiddish (yih)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "yii",
+      "Yidiny",
+      "Yidiny (yii)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "yij",
+      "Yindjibarndi",
+      "Yindjibarndi (yij)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "yik",
+      "Dongshanba Lalo",
+      "Dongshanba Lalo (yik)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "yip",
+      "Pholo",
+      "Pholo (yip)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "yiq",
+      "Miqie",
+      "Miqie (yiq)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "yis",
+      "Yis",
+      "Yis (yis)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "yit",
+      "Eastern Lalu",
+      "Eastern Lalu (yit)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "yiu",
+      "Awu",
+      "Awu (yiu)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "yiv",
+      "Northern Nisu",
+      "Northern Nisu (yiv)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "yix",
+      "Axi Yi",
+      "Axi Yi (yix)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "yiz",
+      "Azhe",
+      "Azhe (yiz)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "ykl",
+      "Khlula",
+      "Khlula (ykl)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "ykn",
+      "Kua-nsi",
+      "Kua-nsi (ykn)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "ykt",
+      "Kathu",
+      "Kathu (ykt)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "yku",
+      "Kuamasi",
+      "Kuamasi (yku)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "ylb",
+      "Yaleba",
+      "Yaleba (ylb)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "yll",
+      "Yil",
+      "Yil (yll)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "ylm",
+      "Limi",
+      "Limi (ylm)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "yln",
+      "Langnian Buyang",
+      "Langnian Buyang (yln)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "ylo",
+      "Naluo Yi",
+      "Naluo Yi (ylo)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "ymc",
+      "Southern Muji",
+      "Southern Muji (ymc)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "ymd",
+      "Muda",
+      "Muda (ymd)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "ymh",
+      "Mili",
+      "Mili (ymh)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "ymi",
+      "Moji",
+      "Moji (ymi)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "ymq",
+      "Qila Muji",
+      "Qila Muji (ymq)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "ymx",
+      "Northern Muji",
+      "Northern Muji (ymx)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "ymz",
+      "Muzi",
+      "Muzi (ymz)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "yna",
+      "Aluo",
+      "Aluo (yna)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "yne",
+      "Lang'e",
+      "Lang'e (yne)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "yoi",
+      "Yonaguni",
+      "Yonaguni (yoi)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "yox",
+      "Yoron",
+      "Yoron (yox)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "ypa",
+      "Phala",
+      "Phala (ypa)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "ypb",
+      "Labo Phowa",
+      "Labo Phowa (ypb)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "ypg",
+      "Phola",
+      "Phola (ypg)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "yph",
+      "Phupha",
+      "Phupha (yph)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "ypm",
+      "Phuma",
+      "Phuma (ypm)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "ypn",
+      "Ani Phowa",
+      "Ani Phowa (ypn)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "ypo",
+      "Alo Phola",
+      "Alo Phola (ypo)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "ypp",
+      "Phupa",
+      "Phupa (ypp)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "ypz",
+      "Phuza",
+      "Phuza (ypz)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "yrm",
+      "Yirrk-Mel",
+      "Yirrk-Mel (yrm)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "yrn",
+      "Yerong",
+      "Yerong (yrn)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "ysn",
+      "Sani",
+      "Sani (ysn)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "ysp",
+      "Southern Lolopo",
+      "Southern Lolopo (ysp)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "ysy",
+      "Sanie",
+      "Sanie (ysy)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "yta",
+      "Talu",
+      "Talu (yta)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "ytl",
+      "Tanglang",
+      "Tanglang (ytl)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "ytp",
+      "Thopho",
+      "Thopho (ytp)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "yue",
+      "Cantonese (Written)",
+      "粵語（香港繁體）",
+      "Guangdong,Hong_Kong,Macau"
+    ],
+    [
+      "ywg",
+      "Yinhawangka",
+      "Yinhawangka (ywg)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "ywl",
+      "Western Lalu",
+      "Western Lalu (ywl)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "ywq",
+      "Wuding-Luquan Yi",
+      "Wuding-Luquan Yi (ywq)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "ywt",
+      "Xishanba Lalo",
+      "Xishanba Lalo (ywt)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "ywu",
+      "Wumeng Nasu",
+      "Wumeng Nasu (ywu)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "yyz",
+      "Ayizi",
+      "Ayizi (yyz)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "yzg",
+      "E'ma Buyang",
+      "E'ma Buyang (yzg)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "yzk",
+      "Zokhuo",
+      "Zokhuo (yzk)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "zal",
+      "Zauzou",
+      "Zauzou (zal)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "zch",
+      "Central Hongshuihe Zhuang",
+      "Central Hongshuihe Zhuang (zch)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "zeh",
+      "Eastern Hongshuihe Zhuang",
+      "Eastern Hongshuihe Zhuang (zeh)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "zgb",
+      "Guibei Zhuang",
+      "Guibei Zhuang (zgb)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "zgm",
+      "Minz Zhuang",
+      "Minz Zhuang (zgm)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "zgn",
+      "Guibian Zhuang",
+      "Guibian Zhuang (zgn)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "zho",
+      "Chino Simplificado",
+      "简体中文",
+      "Mandarin_North,Sichuan,Yunnan"
+    ],
+    [
+      "zht",
+      "Traditional Chinese",
+      "繁體中文",
+      "Taiwan,Overseas"
+    ],
+    [
+      "zha",
+      "Zhuang",
+      "Zhuang (zha)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "zhb",
+      "Zhaba",
+      "Zhaba (zhb)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "zhd",
+      "Dai Zhuang",
+      "Dai Zhuang (zhd)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "zhn",
+      "Nong Zhuang",
+      "Nong Zhuang (zhn)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "zkr",
+      "Zakhring",
+      "Zakhring (zkr)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "zlj",
+      "Liujiang Zhuang",
+      "Liujiang Zhuang (zlj)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "zln",
+      "Lianshan Zhuang",
+      "Lianshan Zhuang (zln)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "zlq",
+      "Liuqian Zhuang",
+      "Liuqian Zhuang (zlq)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "zng",
+      "Mang",
+      "Mang (zng)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "zqe",
+      "Qiubei Zhuang",
+      "Qiubei Zhuang (zqe)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "zua",
+      "Zeem",
+      "Zeem (zua)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "zyg",
+      "Yang Zhuang",
+      "Yang Zhuang (zyg)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "zyj",
+      "Youjiang Zhuang",
+      "Youjiang Zhuang (zyj)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "zyn",
+      "Yongnan Zhuang",
+      "Yongnan Zhuang (zyn)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "zzj",
+      "Zuojiang Zhuang",
+      "Zuojiang Zhuang (zzj)",
+      "East_Asia_Plateau"
+    ]
+  ]
+}

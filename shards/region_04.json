@@ -1,0 +1,830 @@
+{
+  "macro_region_id": 4,
+  "region_name_es": "Europa Oriental y Eurasia Eslava",
+  "total_languages": 137,
+  "subclades_covered": 30,
+  "featured_languages": [
+    [
+      "akv",
+      "Akhvakh",
+      "Akhvakh (akv)",
+      "East_Europe"
+    ],
+    [
+      "ale",
+      "Aleut",
+      "Aleut (ale)",
+      "East_Europe"
+    ],
+    [
+      "alr",
+      "Alutor",
+      "Alutor (alr)",
+      "East_Europe"
+    ],
+    [
+      "ani",
+      "Andi",
+      "Andi (ani)",
+      "East_Europe"
+    ],
+    [
+      "aqc",
+      "Archi",
+      "Archi (aqc)",
+      "East_Europe"
+    ],
+    [
+      "atv",
+      "Northern Altai",
+      "Northern Altai (atv)",
+      "East_Europe"
+    ],
+    [
+      "bel",
+      "Belarusian",
+      "Belarusian (bel)",
+      "East_Europe"
+    ],
+    [
+      "bgx",
+      "Balkan Gagauz Turkish",
+      "Balkan Gagauz Turkish (bgx)",
+      "East_Europe"
+    ],
+    [
+      "bjr",
+      "Binumarien",
+      "Binumarien (bjr)",
+      "East_Europe,Siberia"
+    ],
+    [
+      "bos",
+      "Bosnian",
+      "Bosnian (bos)",
+      "East_Europe"
+    ],
+    [
+      "bph",
+      "Botlikh",
+      "Botlikh (bph)",
+      "East_Europe"
+    ],
+    [
+      "bpv",
+      "Bian Marind",
+      "Bian Marind (bpv)",
+      "East_Europe,Siberia"
+    ],
+    [
+      "bqn",
+      "Bulgarian Sign Language",
+      "Bulgarian Sign Language (bqn)",
+      "East_Europe"
+    ],
+    [
+      "bua",
+      "Buriat",
+      "Buriat (bua)",
+      "East_Europe"
+    ],
+    [
+      "bul",
+      "Bulgarian",
+      "Bulgarian (bul)",
+      "East_Europe"
+    ],
+    [
+      "chm",
+      "Mari (Russia)",
+      "Mari (Russia) (chm)",
+      "East_Europe,Siberia"
+    ],
+    [
+      "chu",
+      "Church Slavic",
+      "Church Slavic (chu)",
+      "East_Europe,Siberia"
+    ],
+    [
+      "cid",
+      "Chimariko",
+      "Chimariko (cid)",
+      "East_Europe,Siberia"
+    ],
+    [
+      "cji",
+      "Chamalal",
+      "Chamalal (cji)",
+      "East_Europe"
+    ],
+    [
+      "cjs",
+      "Shor",
+      "Shor (cjs)",
+      "East_Europe"
+    ],
+    [
+      "ckm",
+      "Chakavian",
+      "Chakavian (ckm)",
+      "East_Europe"
+    ],
+    [
+      "ckt",
+      "Chukot",
+      "Chukot (ckt)",
+      "East_Europe"
+    ],
+    [
+      "clw",
+      "Chulym",
+      "Chulym (clw)",
+      "East_Europe"
+    ],
+    [
+      "cnr",
+      "Montenegrin",
+      "Montenegrin (cnr)",
+      "East_Europe"
+    ],
+    [
+      "csb",
+      "Kashubian",
+      "Kashubian (csb)",
+      "East_Europe,Siberia"
+    ],
+    [
+      "cse",
+      "Czech Sign Language",
+      "Czech Sign Language (cse)",
+      "East_Europe"
+    ],
+    [
+      "csq",
+      "Croatia Sign Language",
+      "Croatia Sign Language (csq)",
+      "East_Europe"
+    ],
+    [
+      "cug",
+      "Chungmboko",
+      "Chungmboko (cug)",
+      "East_Europe"
+    ],
+    [
+      "czk",
+      "Knaanic",
+      "Knaanic (czk)",
+      "East_Europe"
+    ],
+    [
+      "dad",
+      "Marik",
+      "Marik (dad)",
+      "East_Europe,Siberia"
+    ],
+    [
+      "daq",
+      "Dandami Maria",
+      "Dandami Maria (daq)",
+      "East_Europe,Siberia"
+    ],
+    [
+      "dlg",
+      "Dolgan",
+      "Dolgan (dlg)",
+      "East_Europe"
+    ],
+    [
+      "dlm",
+      "Dalmatian",
+      "Dalmatian (dlm)",
+      "East_Europe"
+    ],
+    [
+      "dsb",
+      "Lower Sorbian",
+      "Lower Sorbian (dsb)",
+      "East_Europe,Siberia"
+    ],
+    [
+      "ekk",
+      "Standard Estonian",
+      "Standard Estonian (ekk)",
+      "East_Europe"
+    ],
+    [
+      "enf",
+      "Forest Enets",
+      "Forest Enets (enf)",
+      "East_Europe"
+    ],
+    [
+      "enh",
+      "Tundra Enets",
+      "Tundra Enets (enh)",
+      "East_Europe"
+    ],
+    [
+      "eso",
+      "Estonian Sign Language",
+      "Estonian Sign Language (eso)",
+      "East_Europe"
+    ],
+    [
+      "eve",
+      "Even",
+      "Even (eve)",
+      "East_Europe"
+    ],
+    [
+      "evn",
+      "Evenki",
+      "Evenki (evn)",
+      "East_Europe,Siberia"
+    ],
+    [
+      "fin",
+      "Finnish",
+      "Finnish (fin)",
+      "East_Europe"
+    ],
+    [
+      "gag",
+      "Gagauz",
+      "Gagauz (gag)",
+      "East_Europe"
+    ],
+    [
+      "gdo",
+      "Ghodoberi",
+      "Ghodoberi (gdo)",
+      "East_Europe"
+    ],
+    [
+      "gin",
+      "Hinukh",
+      "Hinukh (gin)",
+      "East_Europe"
+    ],
+    [
+      "hbs",
+      "Serbo-Croatian",
+      "Serbo-Croatian (hbs)",
+      "East_Europe"
+    ],
+    [
+      "hir",
+      "Himarimã",
+      "Himarimã (hir)",
+      "East_Europe,Siberia"
+    ],
+    [
+      "hob",
+      "Mari (Madang Province)",
+      "Mari (Madang Province) (hob)",
+      "East_Europe,Siberia"
+    ],
+    [
+      "hsb",
+      "Upper Sorbian",
+      "Upper Sorbian (hsb)",
+      "East_Europe,Siberia"
+    ],
+    [
+      "hsh",
+      "Hungarian Sign Language",
+      "Hungarian Sign Language (hsh)",
+      "East_Europe"
+    ],
+    [
+      "ist",
+      "Istriot",
+      "Istriot (ist)",
+      "East_Europe"
+    ],
+    [
+      "itl",
+      "Itelmen",
+      "Itelmen (itl)",
+      "East_Europe"
+    ],
+    [
+      "izh",
+      "Ingrian",
+      "Ingrian (izh)",
+      "East_Europe"
+    ],
+    [
+      "jct",
+      "Krymchak",
+      "Krymchak (jct)",
+      "East_Europe"
+    ],
+    [
+      "kbd",
+      "Kabardian",
+      "Kabardian (kbd)",
+      "East_Europe"
+    ],
+    [
+      "kca",
+      "Khanty",
+      "Khanty (kca)",
+      "East_Europe,Siberia"
+    ],
+    [
+      "ket",
+      "Ket",
+      "Ket (ket)",
+      "East_Europe"
+    ],
+    [
+      "khv",
+      "Khvarshi",
+      "Khvarshi (khv)",
+      "East_Europe"
+    ],
+    [
+      "kim",
+      "Karagas",
+      "Karagas (kim)",
+      "East_Europe"
+    ],
+    [
+      "koi",
+      "Komi-Permyak",
+      "Komi-Permyak (koi)",
+      "East_Europe,Siberia"
+    ],
+    [
+      "kom",
+      "Komi",
+      "Komi (kom)",
+      "East_Europe,Siberia"
+    ],
+    [
+      "kpe",
+      "Kpelle",
+      "Kpelle (kpe)",
+      "East_Europe"
+    ],
+    [
+      "kpt",
+      "Karata",
+      "Karata (kpt)",
+      "East_Europe"
+    ],
+    [
+      "kpv",
+      "Komi-Zyrian",
+      "Komi-Zyrian (kpv)",
+      "East_Europe,Siberia"
+    ],
+    [
+      "kpy",
+      "Koryak",
+      "Koryak (kpy)",
+      "East_Europe,Siberia"
+    ],
+    [
+      "krl",
+      "Karelian",
+      "Karelian (krl)",
+      "East_Europe,Siberia"
+    ],
+    [
+      "krt",
+      "Tumari Kanuri",
+      "Tumari Kanuri (krt)",
+      "East_Europe,Siberia"
+    ],
+    [
+      "kva",
+      "Bagvalal",
+      "Bagvalal (kva)",
+      "East_Europe"
+    ],
+    [
+      "lav",
+      "Latvian",
+      "Latvian (lav)",
+      "East_Europe"
+    ],
+    [
+      "lit",
+      "Lithuanian",
+      "Lithuanian (lit)",
+      "East_Europe"
+    ],
+    [
+      "liv",
+      "Liv",
+      "Liv (liv)",
+      "East_Europe"
+    ],
+    [
+      "lls",
+      "Lithuanian Sign Language",
+      "Lithuanian Sign Language (lls)",
+      "East_Europe"
+    ],
+    [
+      "lsl",
+      "Latvian Sign Language",
+      "Latvian Sign Language (lsl)",
+      "East_Europe"
+    ],
+    [
+      "ltg",
+      "Latgalian",
+      "Latgalian (ltg)",
+      "East_Europe"
+    ],
+    [
+      "lud",
+      "Ludian",
+      "Ludian (lud)",
+      "East_Europe"
+    ],
+    [
+      "lvs",
+      "Standard Latvian",
+      "Standard Latvian (lvs)",
+      "East_Europe"
+    ],
+    [
+      "mbw",
+      "Maring",
+      "Maring (mbw)",
+      "East_Europe,Siberia"
+    ],
+    [
+      "mbx",
+      "Mari (East Sepik Province)",
+      "Mari (East Sepik Province) (mbx)",
+      "East_Europe,Siberia"
+    ],
+    [
+      "mdf",
+      "Moksha",
+      "Moksha (mdf)",
+      "East_Europe"
+    ],
+    [
+      "mds",
+      "Maria (Papua New Guinea)",
+      "Maria (Papua New Guinea) (mds)",
+      "East_Europe,Siberia"
+    ],
+    [
+      "mhr",
+      "Eastern Mari",
+      "Eastern Mari (mhr)",
+      "East_Europe,Siberia"
+    ],
+    [
+      "mns",
+      "Mansi",
+      "Mansi (mns)",
+      "East_Europe,Siberia"
+    ],
+    [
+      "mqi",
+      "Mariri",
+      "Mariri (mqi)",
+      "East_Europe,Siberia"
+    ],
+    [
+      "mrb",
+      "Marino",
+      "Marino (mrb)",
+      "East_Europe,Siberia"
+    ],
+    [
+      "mrc",
+      "Maricopa",
+      "Maricopa (mrc)",
+      "East_Europe,Siberia"
+    ],
+    [
+      "mrj",
+      "Western Mari",
+      "Western Mari (mrj)",
+      "East_Europe,Siberia"
+    ],
+    [
+      "mrr",
+      "Maria (India)",
+      "Maria (India) (mrr)",
+      "East_Europe,Siberia"
+    ],
+    [
+      "mrz",
+      "Marind",
+      "Marind (mrz)",
+      "East_Europe,Siberia"
+    ],
+    [
+      "mud",
+      "Mednyj Aleut",
+      "Mednyj Aleut (mud)",
+      "East_Europe"
+    ],
+    [
+      "neg",
+      "Negidal",
+      "Negidal (neg)",
+      "East_Europe"
+    ],
+    [
+      "nio",
+      "Nganasan",
+      "Nganasan (nio)",
+      "East_Europe"
+    ],
+    [
+      "niv",
+      "Gilyak",
+      "Gilyak (niv)",
+      "East_Europe"
+    ],
+    [
+      "nng",
+      "Maring Naga",
+      "Maring Naga (nng)",
+      "East_Europe,Siberia"
+    ],
+    [
+      "nsr",
+      "Maritime Sign Language",
+      "Maritime Sign Language (nsr)",
+      "East_Europe,Siberia"
+    ],
+    [
+      "oac",
+      "Oroch",
+      "Oroch (oac)",
+      "East_Europe"
+    ],
+    [
+      "oss",
+      "Ossetian",
+      "Ossetian (oss)",
+      "East_Europe"
+    ],
+    [
+      "pnt",
+      "Pontic",
+      "Pontic (pnt)",
+      "East_Europe"
+    ],
+    [
+      "pol",
+      "Polish",
+      "Polish (pol)",
+      "East_Europe"
+    ],
+    [
+      "prg",
+      "Prussian",
+      "Prussian (prg)",
+      "East_Europe"
+    ],
+    [
+      "pso",
+      "Polish Sign Language",
+      "Polish Sign Language (pso)",
+      "East_Europe"
+    ],
+    [
+      "rml",
+      "Baltic Romani",
+      "Baltic Romani (rml)",
+      "East_Europe"
+    ],
+    [
+      "rms",
+      "Romanian Sign Language",
+      "Romanian Sign Language (rms)",
+      "East_Europe"
+    ],
+    [
+      "rmt",
+      "Domari",
+      "Domari (rmt)",
+      "East_Europe,Siberia"
+    ],
+    [
+      "rom",
+      "Romany",
+      "Romany (rom)",
+      "East_Europe"
+    ],
+    [
+      "ron",
+      "Romanian",
+      "Romanian (ron)",
+      "East_Europe"
+    ],
+    [
+      "rsb",
+      "Romano-Serbian",
+      "Romano-Serbian (rsb)",
+      "East_Europe"
+    ],
+    [
+      "rsl",
+      "Russian Sign Language",
+      "Russian Sign Language (rsl)",
+      "East_Europe"
+    ],
+    [
+      "rus",
+      "Ruso",
+      "Русский",
+      "Moscow,Siberia,Caucasus"
+    ],
+    [
+      "rue",
+      "Rusyn",
+      "Rusyn (rue)",
+      "East_Europe,Siberia"
+    ],
+    [
+      "ruo",
+      "Istro Romanian",
+      "Istro Romanian (ruo)",
+      "East_Europe"
+    ],
+    [
+      "sah",
+      "Yakut",
+      "Yakut (sah)",
+      "East_Europe"
+    ],
+    [
+      "sel",
+      "Selkup",
+      "Selkup (sel)",
+      "East_Europe"
+    ],
+    [
+      "sgs",
+      "Samogitian",
+      "Samogitian (sgs)",
+      "East_Europe"
+    ],
+    [
+      "siv",
+      "Sumariup",
+      "Sumariup (siv)",
+      "East_Europe,Siberia"
+    ],
+    [
+      "sli",
+      "Lower Silesian",
+      "Lower Silesian (sli)",
+      "East_Europe"
+    ],
+    [
+      "svk",
+      "Slovakian Sign Language",
+      "Slovakian Sign Language (svk)",
+      "East_Europe"
+    ],
+    [
+      "szl",
+      "Silesian",
+      "Silesian (szl)",
+      "East_Europe"
+    ],
+    [
+      "tbz",
+      "Ditammari",
+      "Ditammari (tbz)",
+      "East_Europe,Siberia"
+    ],
+    [
+      "tin",
+      "Tindi",
+      "Tindi (tin)",
+      "East_Europe"
+    ],
+    [
+      "ude",
+      "Udihe",
+      "Udihe (ude)",
+      "East_Europe"
+    ],
+    [
+      "udm",
+      "Udmurt",
+      "Udmurt (udm)",
+      "East_Europe,Siberia"
+    ],
+    [
+      "ukr",
+      "Ukrainian",
+      "Українська",
+      "Kyiv,Lviv"
+    ],
+    [
+      "ulc",
+      "Ulch",
+      "Ulch (ulc)",
+      "East_Europe"
+    ],
+    [
+      "vep",
+      "Veps",
+      "Veps (vep)",
+      "East_Europe"
+    ],
+    [
+      "vot",
+      "Votic",
+      "Votic (vot)",
+      "East_Europe"
+    ],
+    [
+      "vro",
+      "Võro",
+      "Võro (vro)",
+      "East_Europe"
+    ],
+    [
+      "vsi",
+      "Moldova Sign Language",
+      "Moldova Sign Language (vsi)",
+      "East_Europe"
+    ],
+    [
+      "wym",
+      "Wymysorys",
+      "Wymysorys (wym)",
+      "East_Europe"
+    ],
+    [
+      "xoi",
+      "Kominimung",
+      "Kominimung (xoi)",
+      "East_Europe,Siberia"
+    ],
+    [
+      "ykg",
+      "Northern Yukaghir",
+      "Northern Yukaghir (ykg)",
+      "East_Europe"
+    ],
+    [
+      "yrk",
+      "Nenets",
+      "Nenets (yrk)",
+      "East_Europe,Siberia"
+    ],
+    [
+      "ysl",
+      "Yugoslavian Sign Language",
+      "Yugoslavian Sign Language (ysl)",
+      "East_Europe"
+    ],
+    [
+      "yux",
+      "Southern Yukaghir",
+      "Southern Yukaghir (yux)",
+      "East_Europe"
+    ],
+    [
+      "zmd",
+      "Maridan",
+      "Maridan (zmd)",
+      "East_Europe,Siberia"
+    ],
+    [
+      "zmj",
+      "Maridjabin",
+      "Maridjabin (zmj)",
+      "East_Europe,Siberia"
+    ],
+    [
+      "zmm",
+      "Marimanindji",
+      "Marimanindji (zmm)",
+      "East_Europe,Siberia"
+    ],
+    [
+      "zmt",
+      "Maringarr",
+      "Maringarr (zmt)",
+      "East_Europe,Siberia"
+    ],
+    [
+      "zmy",
+      "Mariyedi",
+      "Mariyedi (zmy)",
+      "East_Europe,Siberia"
+    ]
+  ]
+}

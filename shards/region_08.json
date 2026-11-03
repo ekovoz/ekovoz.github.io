@@ -1,0 +1,10790 @@
+{
+  "macro_region_id": 8,
+  "region_name_es": "África Subsahariana, Cuenca del Congo y Golfo de Guinea",
+  "total_languages": 1797,
+  "subclades_covered": 31,
+  "featured_languages": [
+    [
+      "aaa",
+      "Ghotuo",
+      "Ghotuo (aaa)",
+      "Edo,Plateau,Cross_River"
+    ],
+    [
+      "aab",
+      "Alumu-Tesu",
+      "Alumu-Tesu (aab)",
+      "Edo,Plateau,Cross_River"
+    ],
+    [
+      "aal",
+      "Afade",
+      "Afade (aal)",
+      "Borno,Extreme_Nord"
+    ],
+    [
+      "aas",
+      "Aasáx",
+      "Aasáx (aas)",
+      "Manyara,Arusha"
+    ],
+    [
+      "aba",
+      "Abé",
+      "Abé (aba)",
+      "Lagunes,Abidjan"
+    ],
+    [
+      "abb",
+      "Bankon",
+      "Bankon (abb)",
+      "Littoral,Douala"
+    ],
+    [
+      "abi",
+      "Abidji",
+      "Abidji (abi)",
+      "Lagunes,Abidjan"
+    ],
+    [
+      "abm",
+      "Abanyom",
+      "Abanyom (abm)",
+      "Edo,Plateau,Cross_River"
+    ],
+    [
+      "abn",
+      "Abua",
+      "Abua (abn)",
+      "Edo,Plateau,Cross_River"
+    ],
+    [
+      "abo",
+      "Abon",
+      "Abon (abo)",
+      "Edo,Plateau,Cross_River"
+    ],
+    [
+      "abr",
+      "Abron",
+      "Abron (abr)",
+      "Bono,Volta"
+    ],
+    [
+      "abu",
+      "Abure",
+      "Abure (abu)",
+      "Lagunes,Abidjan"
+    ],
+    [
+      "acb",
+      "Áncá",
+      "Áncá (acb)",
+      "Edo,Plateau,Cross_River"
+    ],
+    [
+      "acd",
+      "Gikyode",
+      "Gikyode (acd)",
+      "Bono,Volta"
+    ],
+    [
+      "ach",
+      "Acoli",
+      "Acoli (ach)",
+      "Acholi,Equatoria"
+    ],
+    [
+      "acp",
+      "Eastern Acipa",
+      "Eastern Acipa (acp)",
+      "Edo,Plateau,Cross_River"
+    ],
+    [
+      "ada",
+      "Adangme",
+      "Adangme (ada)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "add",
+      "Lidzonka",
+      "Lidzonka (add)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ade",
+      "Adele",
+      "Adele (ade)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "adh",
+      "Adhola",
+      "Adhola (adh)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "adj",
+      "Adioukrou",
+      "Adioukrou (adj)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "adq",
+      "Adangbe",
+      "Adangbe (adq)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ads",
+      "Adamorobe Sign Language",
+      "Adamorobe Sign Language (ads)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "adu",
+      "Aduge",
+      "Aduge (adu)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ael",
+      "Ambele",
+      "Ambele (ael)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "afe",
+      "Putukwam",
+      "Putukwam (afe)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "afh",
+      "Afrihili",
+      "Afrihili (afh)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "afi",
+      "Akrukay",
+      "Akrukay (afi)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "afn",
+      "Defaka",
+      "Defaka (afn)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "afr",
+      "Afrikaans",
+      "Afrikaans (afr)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "afu",
+      "Awutu",
+      "Awutu (afu)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "agb",
+      "Legbo",
+      "Legbo (agb)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "agc",
+      "Agatu",
+      "Agatu (agc)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "agh",
+      "Ngelima",
+      "Ngelima (agh)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "agq",
+      "Aghem",
+      "Aghem (agq)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ags",
+      "Esimbi",
+      "Esimbi (ags)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "aha",
+      "Ahanta",
+      "Ahanta (aha)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ahi",
+      "Tiagbamrin Aizi",
+      "Tiagbamrin Aizi (ahi)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ahl",
+      "Igo",
+      "Igo (ahl)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ahm",
+      "Mobumrin Aizi",
+      "Mobumrin Aizi (ahm)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ahn",
+      "Àhàn",
+      "Àhàn (ahn)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ahp",
+      "Aproumu Aizi",
+      "Aproumu Aizi (ahp)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ahs",
+      "Ashe",
+      "Ashe (ahs)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "aik",
+      "Ake",
+      "Ake (aik)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "aiy",
+      "Ali",
+      "Ali (aiy)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ajg",
+      "Aja (Benin)",
+      "Aja (Benin) (ajg)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ajw",
+      "Ajawa",
+      "Ajawa (ajw)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "aka",
+      "Akan",
+      "Akan (aka)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "akd",
+      "Ukpet-Ehom",
+      "Ukpet-Ehom (akd)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "akf",
+      "Akpa",
+      "Akpa (akf)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "akp",
+      "Siwu",
+      "Siwu (akp)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "aks",
+      "Akaselem",
+      "Akaselem (aks)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "aku",
+      "Akum",
+      "Akum (aku)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "akw",
+      "Akwa",
+      "Akwa (akw)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ala",
+      "Alago",
+      "Alago (ala)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ald",
+      "Alladian",
+      "Alladian (ald)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "alf",
+      "Alege",
+      "Alege (alf)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "alz",
+      "Alur",
+      "Alur (alz)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "amb",
+      "Ambo",
+      "Ambo (amb)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "amo",
+      "Amo",
+      "Amo (amo)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "anc",
+      "Ngas",
+      "Ngas (anc)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "anf",
+      "Animere",
+      "Animere (anf)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ank",
+      "Goemai",
+      "Goemai (ank)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ann",
+      "Obolo",
+      "Obolo (ann)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "anv",
+      "Denya",
+      "Denya (anv)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "anw",
+      "Anaang",
+      "Anaang (anw)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "aoa",
+      "Angolar",
+      "Angolar (aoa)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "aoi",
+      "Anindilyakwa",
+      "Anindilyakwa (aoi)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "apq",
+      "A-Pucikwar",
+      "A-Pucikwar (apq)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "aqd",
+      "Ampari Dogon",
+      "Ampari Dogon (aqd)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "aqg",
+      "Arigidi",
+      "Arigidi (aqg)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "asa",
+      "Asu (Tanzania)",
+      "Asu (Tanzania) (asa)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "asg",
+      "Cishingini",
+      "Cishingini (asg)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "asj",
+      "Sari",
+      "Sari (asj)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ass",
+      "Ipulo",
+      "Ipulo (ass)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "asv",
+      "Asoa",
+      "Asoa (asv)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "atg",
+      "Ivbie North-Okpela-Arhe",
+      "Ivbie North-Okpela-Arhe (atg)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ati",
+      "Attié",
+      "Attié (ati)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ato",
+      "Atong (Cameroon)",
+      "Atong (Cameroon) (ato)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "aug",
+      "Aguna",
+      "Aguna (aug)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "auh",
+      "Aushi",
+      "Aushi (auh)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "aum",
+      "Asu (Nigeria)",
+      "Asu (Nigeria) (aum)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "auo",
+      "Auyokawa",
+      "Auyokawa (auo)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "avi",
+      "Avikam",
+      "Avikam (avi)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "avn",
+      "Avatime",
+      "Avatime (avn)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "avu",
+      "Avokaya",
+      "Avokaya (avu)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "awc",
+      "Cicipu",
+      "Cicipu (awc)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "awo",
+      "Awak",
+      "Awak (awo)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "axk",
+      "Yaka (Central African Republic)",
+      "Yaka (Central African Republic) (axk)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "axx",
+      "Xârâgurè",
+      "Xârâgurè (axx)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ayb",
+      "Ayizo Gbe",
+      "Ayizo Gbe (ayb)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "aye",
+      "Ayere",
+      "Ayere (aye)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ayg",
+      "Ginyanga",
+      "Ginyanga (ayg)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ayk",
+      "Akuku",
+      "Akuku (ayk)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ayu",
+      "Ayu",
+      "Ayu (ayu)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "azo",
+      "Awing",
+      "Awing (azo)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bab",
+      "Bainouk-Gunyuño",
+      "Bainouk-Gunyuño (bab)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "baf",
+      "Nubaca",
+      "Nubaca (baf)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bag",
+      "Tuki",
+      "Tuki (bag)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bal",
+      "Baluchi",
+      "Baluchi (bal)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bam",
+      "Bambara",
+      "Bambara (bam)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bas",
+      "Basa (Cameroon)",
+      "Basa (Cameroon) (bas)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bau",
+      "Bada (Nigeria)",
+      "Bada (Nigeria) (bau)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bav",
+      "Vengo",
+      "Vengo (bav)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "baw",
+      "Bambili-Bambui",
+      "Bambili-Bambui (baw)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bax",
+      "Bamun",
+      "Bamun (bax)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bba",
+      "Baatonum",
+      "Baatonum (bba)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bbe",
+      "Bangba",
+      "Bangba (bbe)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bbg",
+      "Barama",
+      "Barama (bbg)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bbi",
+      "Barombi",
+      "Barombi (bbi)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bbj",
+      "Ghomálá'",
+      "Ghomálá' (bbj)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bbk",
+      "Babanki",
+      "Babanki (bbk)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bbm",
+      "Babango",
+      "Babango (bbm)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bbo",
+      "Northern Bobo Madaré",
+      "Northern Bobo Madaré (bbo)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bbp",
+      "West Central Banda",
+      "West Central Banda (bbp)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bbq",
+      "Bamali",
+      "Bamali (bbq)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bbs",
+      "Bakpinka",
+      "Bakpinka (bbs)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bbt",
+      "Mburku",
+      "Mburku (bbt)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bbu",
+      "Kulung (Nigeria)",
+      "Kulung (Nigeria) (bbu)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bbw",
+      "Baba",
+      "Baba (bbw)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bbx",
+      "Bubia",
+      "Bubia (bbx)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bby",
+      "Befang",
+      "Befang (bby)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bce",
+      "Bamenyam",
+      "Bamenyam (bce)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bcg",
+      "Baga Pokur",
+      "Baga Pokur (bcg)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bci",
+      "Baoulé",
+      "Baoulé (bci)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bcn",
+      "Bali (Nigeria)",
+      "Bali (Nigeria) (bcn)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bcp",
+      "Bali (Democratic Republic of Congo)",
+      "Bali (Democratic Republic of Congo) (bcp)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bcs",
+      "Kohumono",
+      "Kohumono (bcs)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bct",
+      "Bendi",
+      "Bendi (bct)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bcv",
+      "Shoo-Minda-Nye",
+      "Shoo-Minda-Nye (bcv)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bcw",
+      "Bana",
+      "Bana (bcw)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bcy",
+      "Bacama",
+      "Bacama (bcy)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bcz",
+      "Bainouk-Gunyaamolo",
+      "Bainouk-Gunyaamolo (bcz)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bda",
+      "Bayot",
+      "Bayot (bda)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bde",
+      "Bade",
+      "Bade (bde)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bdh",
+      "Baka (South Sudan)",
+      "Baka (South Sudan) (bdh)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bdm",
+      "Buduma",
+      "Buduma (bdm)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bdn",
+      "Baldemu",
+      "Baldemu (bdn)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bdp",
+      "Bende",
+      "Bende (bdp)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bds",
+      "Burunge",
+      "Burunge (bds)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bdt",
+      "Bokoto",
+      "Bokoto (bdt)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bdu",
+      "Oroko",
+      "Oroko (bdu)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "beb",
+      "Bebele",
+      "Bebele (beb)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bec",
+      "Iceve-Maci",
+      "Iceve-Maci (bec)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "beh",
+      "Biali",
+      "Biali (beh)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bem",
+      "Bemba (Zambia)",
+      "Bemba (Zambia) (bem)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "beq",
+      "Beembe",
+      "Beembe (beq)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bet",
+      "Guiberoua Béte",
+      "Guiberoua Béte (bet)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bev",
+      "Daloa Bété",
+      "Daloa Bété (bev)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bez",
+      "Bena (Tanzania)",
+      "Bena (Tanzania) (bez)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bfd",
+      "Bafut",
+      "Bafut (bfd)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bff",
+      "Bofi",
+      "Bofi (bff)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bfj",
+      "Bafanji",
+      "Bafanji (bfj)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bfl",
+      "Banda-Ndélé",
+      "Banda-Ndélé (bfl)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bfm",
+      "Mmen",
+      "Mmen (bfm)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bfo",
+      "Malba Birifor",
+      "Malba Birifor (bfo)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bfp",
+      "Beba",
+      "Beba (bfp)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bga",
+      "Gwamhi-Wuri",
+      "Gwamhi-Wuri (bga)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bgf",
+      "Bangandu",
+      "Bangandu (bgf)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bgj",
+      "Bangolan",
+      "Bangolan (bgj)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bgo",
+      "Baga Koga",
+      "Baga Koga (bgo)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bgu",
+      "Mbongno",
+      "Mbongno (bgu)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bhr",
+      "Bara Malagasy",
+      "Bara Malagasy (bhr)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bhs",
+      "Buwal",
+      "Buwal (bhs)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bhy",
+      "Bhele",
+      "Bhele (bhy)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bib",
+      "Bissa",
+      "Bissa (bib)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bif",
+      "Biafada",
+      "Biafada (bif)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bij",
+      "Vaghat-Ya-Bijim-Legeri",
+      "Vaghat-Ya-Bijim-Legeri (bij)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bil",
+      "Bile",
+      "Bile (bil)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bim",
+      "Bimoba",
+      "Bimoba (bim)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bin",
+      "Bini",
+      "Bini (bin)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bip",
+      "Bila",
+      "Bila (bip)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "biv",
+      "Southern Birifor",
+      "Southern Birifor (biv)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "biw",
+      "Kol (Cameroon)",
+      "Kol (Cameroon) (biw)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bix",
+      "Bijori",
+      "Bijori (bix)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "biz",
+      "Baloi",
+      "Baloi (biz)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bja",
+      "Budza",
+      "Budza (bja)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bjg",
+      "Bidyogo",
+      "Bidyogo (bjg)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bjo",
+      "Mid-Southern Banda",
+      "Mid-Southern Banda (bjo)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bjt",
+      "Balanta-Ganja",
+      "Balanta-Ganja (bjt)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bju",
+      "Busuu",
+      "Busuu (bju)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bjw",
+      "Bakwé",
+      "Bakwé (bjw)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bka",
+      "Kyak",
+      "Kyak (bka)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bkc",
+      "Baka (Cameroon)",
+      "Baka (Cameroon) (bkc)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bkf",
+      "Beeke",
+      "Beeke (bkf)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bkg",
+      "Buraka",
+      "Buraka (bkg)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bkh",
+      "Bakoko",
+      "Bakoko (bkh)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bkj",
+      "Pande",
+      "Pande (bkj)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bkm",
+      "Kom (Cameroon)",
+      "Kom (Cameroon) (bkm)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bko",
+      "Kwa'",
+      "Kwa' (bko)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bkp",
+      "Boko (Democratic Republic of Congo)",
+      "Boko (Democratic Republic of Congo) (bkp)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bkt",
+      "Boloki",
+      "Boloki (bkt)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bkv",
+      "Bekwarra",
+      "Bekwarra (bkv)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bkw",
+      "Bekwel",
+      "Bekwel (bkw)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ble",
+      "Balanta-Kentohe",
+      "Balanta-Kentohe (ble)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "blh",
+      "Kuwaa",
+      "Kuwaa (blh)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bli",
+      "Bolia",
+      "Bolia (bli)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "blo",
+      "Anii",
+      "Anii (blo)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "blv",
+      "Kibala",
+      "Kibala (blv)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bly",
+      "Notre",
+      "Notre (bly)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bma",
+      "Lame",
+      "Lame (bma)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bmb",
+      "Bembe",
+      "Bembe (bmb)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bmd",
+      "Baga Manduri",
+      "Baga Manduri (bmd)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bme",
+      "Limassa",
+      "Limassa (bme)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bmf",
+      "Bom-Kim",
+      "Bom-Kim (bmf)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bmg",
+      "Bamwe",
+      "Bamwe (bmg)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bmi",
+      "Bagirmi",
+      "Bagirmi (bmi)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bml",
+      "Bomboli",
+      "Bomboli (bml)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bmm",
+      "Northern Betsimisaraka Malagasy",
+      "Northern Betsimisaraka Malagasy (bmm)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bmo",
+      "Bambalang",
+      "Bambalang (bmo)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bmq",
+      "Bomu",
+      "Bomu (bmq)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bmv",
+      "Bum",
+      "Bum (bmv)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bmw",
+      "Bomwali",
+      "Bomwali (bmw)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bnd",
+      "Banda (Indonesia)",
+      "Banda (Indonesia) (bnd)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bng",
+      "Benga",
+      "Benga (bng)",
+      "Sepik_Highlands_Pacific"
+    ],
+    [
+      "bni",
+      "Bangi",
+      "Bangi (bni)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bnm",
+      "Batanga",
+      "Batanga (bnm)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bnx",
+      "Bangubangu",
+      "Bangubangu (bnx)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bnz",
+      "Beezen",
+      "Beezen (bnz)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bob",
+      "Aweer",
+      "Aweer (bob)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bof",
+      "Bolon",
+      "Bolon (bof)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "boh",
+      "Boma",
+      "Boma (boh)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bok",
+      "Bonjo",
+      "Bonjo (bok)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bol",
+      "Bole",
+      "Bole (bol)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bom",
+      "Berom",
+      "Berom (bom)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bou",
+      "Bondei",
+      "Bondei (bou)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bov",
+      "Tuwuli",
+      "Tuwuli (bov)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "box",
+      "Buamu",
+      "Buamu (box)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "boy",
+      "Bodo (Central African Republic)",
+      "Bodo (Central African Republic) (boy)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bpd",
+      "Banda-Banda",
+      "Banda-Banda (bpd)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bpj",
+      "Binji",
+      "Binji (bpj)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bpq",
+      "Banda Malay",
+      "Banda Malay (bpq)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bqa",
+      "Tchumbuli",
+      "Tchumbuli (bqa)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bqc",
+      "Boko (Benin)",
+      "Boko (Benin) (bqc)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bqd",
+      "Bung",
+      "Bung (bqd)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bqf",
+      "Baga Kaloum",
+      "Baga Kaloum (bqf)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bqg",
+      "Bago-Kusuntu",
+      "Bago-Kusuntu (bqg)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bqj",
+      "Bandial",
+      "Bandial (bqj)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bqk",
+      "Banda-Mbrès",
+      "Banda-Mbrès (bqk)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bqm",
+      "Wumboko",
+      "Wumboko (bqm)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bqo",
+      "Balo",
+      "Balo (bqo)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bqp",
+      "Busa",
+      "Busa (bqp)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bqt",
+      "Bamukumbit",
+      "Bamukumbit (bqt)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bqu",
+      "Boguru",
+      "Boguru (bqu)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bqv",
+      "Koro Wachi",
+      "Koro Wachi (bqv)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bqw",
+      "Buru (Nigeria)",
+      "Buru (Nigeria) (bqw)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bqx",
+      "Baangi",
+      "Baangi (bqx)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bqz",
+      "Bakaka",
+      "Bakaka (bqz)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "brf",
+      "Bira",
+      "Bira (brf)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bri",
+      "Mokpwe",
+      "Mokpwe (bri)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "brl",
+      "Birwa",
+      "Birwa (brl)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "brm",
+      "Barambu",
+      "Barambu (brm)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "brt",
+      "Bitare",
+      "Bitare (brt)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bsc",
+      "Bassari",
+      "Bassari (bsc)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bse",
+      "Wushi",
+      "Wushi (bse)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bsf",
+      "Bauchi",
+      "Bauchi (bsf)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bsi",
+      "Bassossi",
+      "Bassossi (bsi)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bsj",
+      "Bangwinji",
+      "Bangwinji (bsj)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bsl",
+      "Basa-Gumna",
+      "Basa-Gumna (bsl)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bsp",
+      "Baga Sitemu",
+      "Baga Sitemu (bsp)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bsq",
+      "Bassa",
+      "Bassa (bsq)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bsr",
+      "Bassa-Kontagora",
+      "Bassa-Kontagora (bsr)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bss",
+      "Akoose",
+      "Akoose (bss)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bsv",
+      "Baga Sobané",
+      "Baga Sobané (bsv)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bsx",
+      "Yangkam",
+      "Yangkam (bsx)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bta",
+      "Bata",
+      "Bata (bta)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "btc",
+      "Bati (Cameroon)",
+      "Bati (Cameroon) (btc)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bte",
+      "Gamo-Ningi",
+      "Gamo-Ningi (bte)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "btg",
+      "Gagnoa Bété",
+      "Gagnoa Bété (btg)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "btt",
+      "Bete-Bendi",
+      "Bete-Bendi (btt)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "btu",
+      "Batu",
+      "Batu (btu)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "buc",
+      "Bushi",
+      "Bushi (buc)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bud",
+      "Ntcham",
+      "Ntcham (bud)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "buf",
+      "Bushoong",
+      "Bushoong (buf)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bui",
+      "Bongili",
+      "Bongili (bui)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "buj",
+      "Basa-Gurmana",
+      "Basa-Gurmana (buj)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bum",
+      "Bulu (Cameroon)",
+      "Bulu (Cameroon) (bum)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bun",
+      "Sherbro",
+      "Sherbro (bun)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bus",
+      "Bokobaru",
+      "Bokobaru (bus)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "buu",
+      "Budu",
+      "Budu (buu)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "buw",
+      "Bubi",
+      "Bubi (buw)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bux",
+      "Boghom",
+      "Boghom (bux)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "buy",
+      "Bullom So",
+      "Bullom So (buy)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "buz",
+      "Bukwen",
+      "Bukwen (buz)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bvb",
+      "Bube",
+      "Bube (bvb)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bvg",
+      "Bonkeng",
+      "Bonkeng (bvg)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bvh",
+      "Bure",
+      "Bure (bvh)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bvj",
+      "Baan",
+      "Baan (bvj)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bvm",
+      "Bamunka",
+      "Bamunka (bvm)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bvq",
+      "Birri",
+      "Birri (bvq)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bvw",
+      "Boga",
+      "Boga (bvw)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bvx",
+      "Dibole",
+      "Dibole (bvx)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bwc",
+      "Bwile",
+      "Bwile (bwc)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bwg",
+      "Barwe",
+      "Barwe (bwg)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bwh",
+      "Bishuo",
+      "Bishuo (bwh)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bwj",
+      "Láá Láá Bwamu",
+      "Láá Láá Bwamu (bwj)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bwl",
+      "Bwela",
+      "Bwela (bwl)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bwq",
+      "Southern Bobo Madaré",
+      "Southern Bobo Madaré (bwq)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bwr",
+      "Bura-Pabir",
+      "Bura-Pabir (bwr)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bws",
+      "Bomboma",
+      "Bomboma (bws)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bwt",
+      "Bafaw-Balong",
+      "Bafaw-Balong (bwt)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bwu",
+      "Buli (Ghana)",
+      "Buli (Ghana) (bwu)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bww",
+      "Bwa",
+      "Bwa (bww)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bwy",
+      "Cwi Bwamu",
+      "Cwi Bwamu (bwy)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bwz",
+      "Bwisi",
+      "Bwisi (bwz)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bxc",
+      "Molengue",
+      "Molengue (bxc)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bxg",
+      "Bangala",
+      "Bangala (bxg)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bxk",
+      "Bukusu",
+      "Bukusu (bxk)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bxl",
+      "Jalkunan",
+      "Jalkunan (bxl)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bxo",
+      "Barikanchi",
+      "Barikanchi (bxo)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bxp",
+      "Bebil",
+      "Bebil (bxp)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bxq",
+      "Beele",
+      "Beele (bxq)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bxs",
+      "Busam",
+      "Busam (bxs)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "byb",
+      "Bikya",
+      "Bikya (byb)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "byc",
+      "Ubaghara",
+      "Ubaghara (byc)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "byf",
+      "Bete",
+      "Bete (byf)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "byi",
+      "Buyu",
+      "Buyu (byi)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "byj",
+      "Bina (Nigeria)",
+      "Bina (Nigeria) (byj)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "byp",
+      "Bumaji",
+      "Bumaji (byp)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bys",
+      "Burak",
+      "Burak (bys)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "byv",
+      "Medumba",
+      "Medumba (byv)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bza",
+      "Bandi",
+      "Bandi (bza)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bzc",
+      "Southern Betsimisaraka Malagasy",
+      "Southern Betsimisaraka Malagasy (bzc)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bzm",
+      "Bolondo",
+      "Bolondo (bzm)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bzo",
+      "Bozaba",
+      "Bozaba (bzo)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bzv",
+      "Naami",
+      "Naami (bzv)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bzw",
+      "Basa (Nigeria)",
+      "Basa (Nigeria) (bzw)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bzy",
+      "Obanliku",
+      "Obanliku (bzy)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bzz",
+      "Evant",
+      "Evant (bzz)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "cae",
+      "Lehar",
+      "Lehar (cae)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "cbd",
+      "Carijona",
+      "Carijona (cbd)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "cbj",
+      "Ede Cabe",
+      "Ede Cabe (cbj)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "cbo",
+      "Izora",
+      "Izora (cbo)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "cbq",
+      "Tsucuba",
+      "Tsucuba (cbq)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "cce",
+      "Chopi",
+      "Chopi (cce)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ccg",
+      "Samba Daka",
+      "Samba Daka (ccg)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "cch",
+      "Atsam",
+      "Atsam (cch)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ccj",
+      "Kasanga",
+      "Kasanga (ccj)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ccl",
+      "Cutchi-Swahili",
+      "Cutchi-Swahili (ccl)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "cdr",
+      "Cinda-Regi-Tiyal",
+      "Cinda-Regi-Tiyal (cdr)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "cen",
+      "Cen",
+      "Cen (cen)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "cet",
+      "Centúúm",
+      "Centúúm (cet)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "cfa",
+      "Dijim-Bwilim",
+      "Dijim-Bwilim (cfa)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "cfd",
+      "Cara",
+      "Cara (cfd)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "cfg",
+      "Como Karim",
+      "Como Karim (cfg)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "cgg",
+      "Chiga",
+      "Chiga (cgg)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "chw",
+      "Chuwabu",
+      "Chuwabu (chw)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "cib",
+      "Ci Gbe",
+      "Ci Gbe (cib)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "cie",
+      "Cineni",
+      "Cineni (cie)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "cjk",
+      "Chokwe",
+      "Chokwe (cjk)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ckl",
+      "Cibak",
+      "Cibak (ckl)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "cko",
+      "Anufo",
+      "Anufo (cko)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ckx",
+      "Caka",
+      "Caka (ckx)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "cky",
+      "Cakfem-Mushere",
+      "Cakfem-Mushere (cky)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "cla",
+      "Ron",
+      "Ron (cla)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "cli",
+      "Chakali",
+      "Chakali (cli)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "cll",
+      "Chala",
+      "Chala (cll)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "cme",
+      "Cerma",
+      "Cerma (cme)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "cmt",
+      "Camtho",
+      "Camtho (cmt)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "cou",
+      "Wamey",
+      "Wamey (cou)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "cpn",
+      "Cherepon",
+      "Cherepon (cpn)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "cpo",
+      "Kpeego",
+      "Kpeego (cpo)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "cri",
+      "Sãotomense",
+      "Sãotomense (cri)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "crs",
+      "Seselwa Creole French",
+      "Seselwa Creole French (crs)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "cry",
+      "Cori",
+      "Cori (cry)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "csk",
+      "Jola-Kasa",
+      "Jola-Kasa (csk)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "cuh",
+      "Chuka",
+      "Chuka (cuh)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "cuv",
+      "Cuvok",
+      "Cuvok (cuv)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "cuw",
+      "Chukwa",
+      "Chukwa (cuw)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "cwa",
+      "Kabwa",
+      "Kabwa (cwa)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "cwb",
+      "Maindo",
+      "Maindo (cwb)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "cwe",
+      "Kwere",
+      "Kwere (cwe)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "cwt",
+      "Kuwaataay",
+      "Kuwaataay (cwt)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "dae",
+      "Duupa",
+      "Duupa (dae)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "dag",
+      "Dagbani",
+      "Dagbani (dag)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "dal",
+      "Dahalo",
+      "Dahalo (dal)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "dam",
+      "Damakawa",
+      "Damakawa (dam)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "das",
+      "Daho-Doo",
+      "Daho-Doo (das)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "dav",
+      "Taita",
+      "Taita (dav)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "dbb",
+      "Deno",
+      "Deno (dbb)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "dbd",
+      "Dadiya",
+      "Dadiya (dbd)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "dbg",
+      "Dogul Dom Dogon",
+      "Dogul Dom Dogon (dbg)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "dbi",
+      "Doka",
+      "Doka (dbi)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "dbm",
+      "Duguri",
+      "Duguri (dbm)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "dbo",
+      "Dulbu",
+      "Dulbu (dbo)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "dbp",
+      "Duwai",
+      "Duwai (dbp)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "dbq",
+      "Daba",
+      "Daba (dbq)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "dbt",
+      "Ben Tey Dogon",
+      "Ben Tey Dogon (dbt)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "dbu",
+      "Bondum Dom Dogon",
+      "Bondum Dom Dogon (dbu)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "dbv",
+      "Dungu",
+      "Dungu (dbv)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "dbw",
+      "Bankan Tey Dogon",
+      "Bankan Tey Dogon (dbw)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "dde",
+      "Doondo",
+      "Doondo (dde)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ddn",
+      "Dendi (Benin)",
+      "Dendi (Benin) (ddn)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "dds",
+      "Donno So Dogon",
+      "Donno So Dogon (dds)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "dee",
+      "Dewoin",
+      "Dewoin (dee)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "deg",
+      "Degema",
+      "Degema (deg)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "dek",
+      "Dek",
+      "Dek (dek)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "deq",
+      "Dendi (Central African Republic)",
+      "Dendi (Central African Republic) (deq)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "dez",
+      "Dengese",
+      "Dengese (dez)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "dga",
+      "Southern Dagaare",
+      "Southern Dagaare (dga)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "dgb",
+      "Bunoge Dogon",
+      "Bunoge Dogon (dgb)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "dgc",
+      "Casiguran Dumagat Agta",
+      "Casiguran Dumagat Agta (dgc)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "dgd",
+      "Dagaari Dioula",
+      "Dagaari Dioula (dgd)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "dgh",
+      "Dghwede",
+      "Dghwede (dgh)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "dgi",
+      "Northern Dagara",
+      "Northern Dagara (dgi)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "dgk",
+      "Dagba",
+      "Dagba (dgk)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "dgs",
+      "Dogoso",
+      "Dogoso (dgs)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "dhm",
+      "Zemba",
+      "Zemba (dhm)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "dhs",
+      "Dhaiso",
+      "Dhaiso (dhs)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "dig",
+      "Digo",
+      "Digo (dig)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "dii",
+      "Dimbong",
+      "Dimbong (dii)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "dio",
+      "Dibo",
+      "Dibo (dio)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "dir",
+      "Dirim",
+      "Dirim (dir)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "diu",
+      "Diriku",
+      "Diriku (diu)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "diz",
+      "Ding",
+      "Ding (diz)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "dje",
+      "Zarma",
+      "Zarma (dje)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "djm",
+      "Jamsay Dogon",
+      "Jamsay Dogon (djm)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "dkx",
+      "Mazagway",
+      "Mazagway (dkx)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "dma",
+      "Duma",
+      "Duma (dma)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "dmb",
+      "Mombo Dogon",
+      "Mombo Dogon (dmb)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "dme",
+      "Dugwor",
+      "Dugwor (dme)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "dmf",
+      "Medefaidrin",
+      "Medefaidrin (dmf)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "dmm",
+      "Dama",
+      "Dama (dmm)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "dmo",
+      "Kemedzung",
+      "Kemedzung (dmo)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "dmx",
+      "Dema",
+      "Dema (dmx)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "dne",
+      "Ndendeule",
+      "Ndendeule (dne)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "dnj",
+      "Dan",
+      "Dan (dnj)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "dnn",
+      "Dzùùngoo",
+      "Dzùùngoo (dnn)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "dno",
+      "Ndrulo",
+      "Ndrulo (dno)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "doe",
+      "Doe",
+      "Doe (doe)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "doh",
+      "Dong",
+      "Dong (doh)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "doo",
+      "Dongo",
+      "Dongo (doo)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "dop",
+      "Lukpa",
+      "Lukpa (dop)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "dos",
+      "Dogosé",
+      "Dogosé (dos)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "dot",
+      "Dass",
+      "Dass (dot)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "dov",
+      "Dombe",
+      "Dombe (dov)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "dow",
+      "Doyayo",
+      "Doyayo (dow)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "doy",
+      "Dompo",
+      "Dompo (doy)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "dri",
+      "C'Lela",
+      "C'Lela (dri)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "dti",
+      "Ana Tinga Dogon",
+      "Ana Tinga Dogon (dti)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "dtk",
+      "Tene Kan Dogon",
+      "Tene Kan Dogon (dtk)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "dtm",
+      "Tomo Kan Dogon",
+      "Tomo Kan Dogon (dtm)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "dto",
+      "Tommo So Dogon",
+      "Tommo So Dogon (dto)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "dts",
+      "Toro So Dogon",
+      "Toro So Dogon (dts)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "dtt",
+      "Toro Tegu Dogon",
+      "Toro Tegu Dogon (dtt)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "dtu",
+      "Tebul Ure Dogon",
+      "Tebul Ure Dogon (dtu)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "dua",
+      "Duala",
+      "Duala (dua)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "dug",
+      "Duruma",
+      "Duruma (dug)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "dur",
+      "Dii",
+      "Dii (dur)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "duz",
+      "Duli-Gey",
+      "Duli-Gey (duz)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "dwa",
+      "Diri",
+      "Diri (dwa)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "dya",
+      "Dyan",
+      "Dyan (dya)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "dyi",
+      "Djimini Senoufo",
+      "Djimini Senoufo (dyi)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "dym",
+      "Yanda Dom Dogon",
+      "Yanda Dom Dogon (dym)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "dyu",
+      "Dyula",
+      "Dyula (dyu)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "dza",
+      "Tunzu",
+      "Tunzu (dza)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "dzn",
+      "Dzando",
+      "Dzando (dzn)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ebg",
+      "Ebughu",
+      "Ebughu (ebg)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ebo",
+      "Teke-Ebo",
+      "Teke-Ebo (ebo)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ebr",
+      "Ebrié",
+      "Ebrié (ebr)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ebu",
+      "Embu",
+      "Embu (ebu)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "efa",
+      "Efai",
+      "Efai (efa)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "efe",
+      "Efe",
+      "Efe (efe)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "efi",
+      "Efik",
+      "Efik (efi)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ega",
+      "Ega",
+      "Ega (ega)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ego",
+      "Eggon",
+      "Eggon (ego)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ehu",
+      "Ehueun",
+      "Ehueun (ehu)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "eja",
+      "Ejamat",
+      "Ejamat (eja)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "eka",
+      "Ekajuk",
+      "Ekajuk (eka)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "eke",
+      "Ekit",
+      "Ekit (eke)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "eki",
+      "Eki",
+      "Eki (eki)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ekm",
+      "Elip",
+      "Elip (ekm)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "eko",
+      "Koti",
+      "Koti (eko)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ekp",
+      "Ekpeye",
+      "Ekpeye (ekp)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ekr",
+      "Yace",
+      "Yace (ekr)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "elm",
+      "Eleme",
+      "Eleme (elm)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "elo",
+      "El Molo",
+      "El Molo (elo)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ema",
+      "Emai-Iuleha-Ora",
+      "Emai-Iuleha-Ora (ema)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "emk",
+      "Eastern Maninkakan",
+      "Eastern Maninkakan (emk)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "emn",
+      "Eman",
+      "Eman (emn)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "enb",
+      "Markweeta",
+      "Markweeta (enb)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "enn",
+      "Engenni",
+      "Engenni (enn)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "env",
+      "Enwan (Edu State)",
+      "Enwan (Edu State) (env)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "enw",
+      "Enwan (Akwa Ibom State)",
+      "Enwan (Akwa Ibom State) (enw)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "eot",
+      "Beti (Côte d'Ivoire)",
+      "Beti (Côte d'Ivoire) (eot)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "epi",
+      "Epie",
+      "Epie (epi)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "erh",
+      "Eruwa",
+      "Eruwa (erh)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "erw",
+      "Erokwanas",
+      "Erokwanas (erw)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "est",
+      "Estonian",
+      "Estonian (est)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "etb",
+      "Etebi",
+      "Etebi (etb)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "eto",
+      "Eton (Cameroon)",
+      "Eton (Cameroon) (eto)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ets",
+      "Yekhee",
+      "Yekhee (ets)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "etu",
+      "Ejagham",
+      "Ejagham (etu)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "etx",
+      "Eten",
+      "Eten (etx)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "evh",
+      "Uvbie",
+      "Uvbie (evh)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ewe",
+      "Ewe",
+      "Ewe (ewe)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ewo",
+      "Ewondo",
+      "Ewondo (ewo)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "eyo",
+      "Keiyo",
+      "Keiyo (eyo)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "eza",
+      "Ezaa",
+      "Ezaa (eza)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "eze",
+      "Uzekwe",
+      "Uzekwe (eze)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "fab",
+      "Fa d'Ambu",
+      "Fa d'Ambu (fab)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "fah",
+      "Baissa Fali",
+      "Baissa Fali (fah)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "fak",
+      "Fang (Cameroon)",
+      "Fang (Cameroon) (fak)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "fal",
+      "South Fali",
+      "South Fali (fal)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "fam",
+      "Fam",
+      "Fam (fam)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "fan",
+      "Fang (Equatorial Guinea)",
+      "Fang (Equatorial Guinea) (fan)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "fap",
+      "Paloor",
+      "Paloor (fap)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "fat",
+      "Fanti",
+      "Fanti (fat)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ffm",
+      "Maasina Fulfulde",
+      "Maasina Fulfulde (ffm)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "fgr",
+      "Fongoro",
+      "Fongoro (fgr)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "fie",
+      "Fyer",
+      "Fyer (fie)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "fip",
+      "Fipa",
+      "Fipa (fip)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "fir",
+      "Firan",
+      "Firan (fir)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "fkk",
+      "Kirya-Konzəl",
+      "Kirya-Konzəl (fkk)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "fli",
+      "Fali",
+      "Fali (fli)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "fll",
+      "North Fali",
+      "North Fali (fll)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "flr",
+      "Fuliiru",
+      "Fuliiru (flr)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "fly",
+      "Flaaitaal",
+      "Flaaitaal (fly)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "fmp",
+      "Fe'fe'",
+      "Fe'fe' (fmp)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "fod",
+      "Foodo",
+      "Foodo (fod)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "fom",
+      "Foma",
+      "Foma (fom)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "fon",
+      "Fon",
+      "Fon (fon)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "fpe",
+      "Fernando Po Creole English",
+      "Fernando Po Creole English (fpe)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "fub",
+      "Adamawa Fulfulde",
+      "Adamawa Fulfulde (fub)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "fuc",
+      "Pulaar",
+      "Pulaar (fuc)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "fue",
+      "Borgu Fulfulde",
+      "Borgu Fulfulde (fue)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "fuf",
+      "Pular",
+      "Pular (fuf)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "fuh",
+      "Western Niger Fulfulde",
+      "Western Niger Fulfulde (fuh)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "fui",
+      "Bagirmi Fulfulde",
+      "Bagirmi Fulfulde (fui)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ful",
+      "Fulah",
+      "Fulah (ful)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "fum",
+      "Fum",
+      "Fum (fum)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "fuu",
+      "Furu",
+      "Furu (fuu)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "fvr",
+      "Fur",
+      "Fur (fvr)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "fwe",
+      "Fwe",
+      "Fwe (fwe)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "gaa",
+      "Ga",
+      "Ga (gaa)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "gba",
+      "Gbaya (Central African Republic)",
+      "Gbaya (Central African Republic) (gba)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "gbg",
+      "Gbanziri",
+      "Gbanziri (gbg)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "gbh",
+      "Defi Gbe",
+      "Defi Gbe (gbh)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "gbo",
+      "Northern Grebo",
+      "Northern Grebo (gbo)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "gbp",
+      "Gbaya-Bossangoa",
+      "Gbaya-Bossangoa (gbp)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "gbq",
+      "Gbaya-Bozoum",
+      "Gbaya-Bozoum (gbq)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "gbs",
+      "Gbesi Gbe",
+      "Gbesi Gbe (gbs)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "gbv",
+      "Gbanu",
+      "Gbanu (gbv)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "gbx",
+      "Eastern Xwla Gbe",
+      "Eastern Xwla Gbe (gbx)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "gby",
+      "Gbari",
+      "Gbari (gby)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "gde",
+      "Gude",
+      "Gude (gde)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "gdf",
+      "Guduf-Gava",
+      "Guduf-Gava (gdf)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "gdi",
+      "Gundi",
+      "Gundi (gdi)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "gdj",
+      "Gurdjar",
+      "Gurdjar (gdj)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "gdu",
+      "Gudu",
+      "Gudu (gdu)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "gea",
+      "Geruma",
+      "Geruma (gea)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "gec",
+      "Gboloo Grebo",
+      "Gboloo Grebo (gec)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ged",
+      "Gade",
+      "Gade (ged)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "geg",
+      "Gengle",
+      "Gengle (geg)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "gej",
+      "Gen",
+      "Gen (gej)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "gek",
+      "Ywom",
+      "Ywom (gek)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "gel",
+      "ut-Ma'in",
+      "ut-Ma'in (gel)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "geq",
+      "Geme",
+      "Geme (geq)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "gev",
+      "Eviya",
+      "Eviya (gev)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "gew",
+      "Gera",
+      "Gera (gew)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "gey",
+      "Enya",
+      "Enya (gey)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ggb",
+      "Gbii",
+      "Gbii (ggb)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "gge",
+      "Gurr-goni",
+      "Gurr-goni (gge)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ggg",
+      "Gurgula",
+      "Gurgula (ggg)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ggu",
+      "Gagu",
+      "Gagu (ggu)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "gib",
+      "Gibanawa",
+      "Gibanawa (gib)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "gic",
+      "Gail",
+      "Gail (gic)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "gid",
+      "Gidar",
+      "Gidar (gid)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "gie",
+      "Gaɓogbo",
+      "Gaɓogbo (gie)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "gis",
+      "North Giziga",
+      "North Giziga (gis)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "gix",
+      "Gilima",
+      "Gilima (gix)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "giz",
+      "South Giziga",
+      "South Giziga (giz)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "gji",
+      "Geji",
+      "Geji (gji)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "gjn",
+      "Gonja",
+      "Gonja (gjn)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "gjr",
+      "Gurindji Kriol",
+      "Gurindji Kriol (gjr)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "gke",
+      "Ndai",
+      "Ndai (gke)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "gkn",
+      "Gokana",
+      "Gokana (gkn)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "gkp",
+      "Guinea Kpelle",
+      "Guinea Kpelle (gkp)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "glo",
+      "Galambu",
+      "Galambu (glo)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "glr",
+      "Glaro-Twabo",
+      "Glaro-Twabo (glr)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "glw",
+      "Glavda",
+      "Glavda (glw)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "gmd",
+      "Mághdì",
+      "Mághdì (gmd)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "gmm",
+      "Gbaya-Mbodomo",
+      "Gbaya-Mbodomo (gmm)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "gmn",
+      "Gimnime",
+      "Gimnime (gmn)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "gmx",
+      "Magoma",
+      "Magoma (gmx)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "gmz",
+      "Mgbolizhia",
+      "Mgbolizhia (gmz)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "gna",
+      "Kaansa",
+      "Kaansa (gna)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "gnd",
+      "Zulgo-Gemzek",
+      "Zulgo-Gemzek (gnd)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "gne",
+      "Ganang",
+      "Ganang (gne)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "gng",
+      "Ngangam",
+      "Ngangam (gng)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "gnh",
+      "Lere",
+      "Lere (gnh)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "gnj",
+      "Ngen",
+      "Ngen (gnj)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "gnk",
+      "ǁGana",
+      "ǁGana (gnk)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "gnz",
+      "Ganzi",
+      "Ganzi (gnz)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "goa",
+      "Guro",
+      "Guro (goa)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "god",
+      "Godié",
+      "Godié (god)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "gog",
+      "Gogo",
+      "Gogo (gog)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "gol",
+      "Gola",
+      "Gola (gol)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "gow",
+      "Gorowa",
+      "Gorowa (gow)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "gox",
+      "Gobu",
+      "Gobu (gox)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "gpa",
+      "Gupa-Abawa",
+      "Gupa-Abawa (gpa)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "gpe",
+      "Ghanaian Pidgin English",
+      "Ghanaian Pidgin English (gpe)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "gqa",
+      "Ga'anda",
+      "Ga'anda (gqa)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "gqr",
+      "Gor",
+      "Gor (gqr)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "grb",
+      "Grebo",
+      "Grebo (grb)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "grd",
+      "Guruntum-Mbaaru",
+      "Guruntum-Mbaaru (grd)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "grh",
+      "Gbiri-Niragu",
+      "Gbiri-Niragu (grh)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "grj",
+      "Southern Grebo",
+      "Southern Grebo (grj)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "grv",
+      "Central Grebo",
+      "Central Grebo (grv)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "grx",
+      "Guriaso",
+      "Guriaso (grx)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "gry",
+      "Barclayville Grebo",
+      "Barclayville Grebo (gry)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "grz",
+      "Guramalum",
+      "Guramalum (grz)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "gse",
+      "Ghanaian Sign Language",
+      "Ghanaian Sign Language (gse)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "gsl",
+      "Gusilay",
+      "Gusilay (gsl)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "gso",
+      "Southwest Gbaya",
+      "Southwest Gbaya (gso)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "gua",
+      "Shiki",
+      "Shiki (gua)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "gud",
+      "Yocoboué Dida",
+      "Yocoboué Dida (gud)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "gue",
+      "Gurindji",
+      "Gurindji (gue)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "gur",
+      "Farefare",
+      "Farefare (gur)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "gus",
+      "Guinean Sign Language",
+      "Guinean Sign Language (gus)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "guw",
+      "Gun",
+      "Gun (guw)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "gux",
+      "Gourmanchéma",
+      "Gourmanchéma (gux)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "guz",
+      "Gusii",
+      "Gusii (guz)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "gvm",
+      "Gurmana",
+      "Gurmana (gvm)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "gvr",
+      "Gurung",
+      "Gurung (gvr)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "gwa",
+      "Mbato",
+      "Mbato (gwa)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "gwb",
+      "Gwa",
+      "Gwa (gwb)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "gwe",
+      "Gweno",
+      "Gweno (gwe)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "gwg",
+      "Moo",
+      "Moo (gwg)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "gwj",
+      "ǀGwi",
+      "ǀGwi (gwj)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "gwn",
+      "Gwandara",
+      "Gwandara (gwn)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "gwr",
+      "Gwere",
+      "Gwere (gwr)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "gwx",
+      "Gua",
+      "Gua (gwx)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "gxx",
+      "Wè Southern",
+      "Wè Southern (gxx)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "gya",
+      "Northwest Gbaya",
+      "Northwest Gbaya (gya)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "gye",
+      "Gyem",
+      "Gyem (gye)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "gyi",
+      "Gyele",
+      "Gyele (gyi)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "hau",
+      "Hausa",
+      "Harshen Hausa",
+      "Kano,Kaduna,Sokoto,Maradi,Zinder"
+    ],
+    [
+      "hac",
+      "Gurani",
+      "Gurani (hac)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "hag",
+      "Hanga",
+      "Hanga (hag)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "han",
+      "Hangaza",
+      "Hangaza (han)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "haq",
+      "Ha",
+      "Ha (haq)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "hav",
+      "Havu",
+      "Havu (hav)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "hay",
+      "Haya",
+      "Haya (hay)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "hba",
+      "Hamba",
+      "Hamba (hba)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "hbb",
+      "Huba",
+      "Huba (hbb)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "hed",
+      "Herdé",
+      "Herdé (hed)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "heh",
+      "Hehe",
+      "Hehe (heh)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "hem",
+      "Hemba",
+      "Hemba (hem)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "her",
+      "Herero",
+      "Herero (her)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "hgm",
+      "Haiǁom",
+      "Haiǁom (hgm)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "hhr",
+      "Kerak",
+      "Kerak (hhr)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "hia",
+      "Lamang",
+      "Lamang (hia)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "hig",
+      "Kamwe",
+      "Kamwe (hig)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "hij",
+      "Hijuk",
+      "Hijuk (hij)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "hio",
+      "Tsoa",
+      "Tsoa (hio)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "hka",
+      "Kahe",
+      "Kahe (hka)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "hke",
+      "Hunde",
+      "Hunde (hke)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "hna",
+      "Mina (Cameroon)",
+      "Mina (Cameroon) (hna)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "hng",
+      "Hungu",
+      "Hungu (hng)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "hnh",
+      "ǁAni",
+      "ǁAni (hnh)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "hoe",
+      "Horom",
+      "Horom (hoe)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "hol",
+      "Holu",
+      "Holu (hol)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "hoo",
+      "Holoholo",
+      "Holoholo (hoo)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "hsl",
+      "Hausa Sign Language",
+      "Hausa Sign Language (hsl)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "hts",
+      "Hadza",
+      "Hadza (hts)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "huc",
+      "ǂHua",
+      "ǂHua (huc)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "hum",
+      "Hungana",
+      "Hungana (hum)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "hwa",
+      "Wané",
+      "Wané (hwa)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "hwo",
+      "Hwana",
+      "Hwana (hwo)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "hya",
+      "Hya",
+      "Hya (hya)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ibb",
+      "Ibibio",
+      "Ibibio (ibb)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ibe",
+      "Akpes",
+      "Akpes (ibe)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ibm",
+      "Agoi",
+      "Agoi (ibm)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ibn",
+      "Ibino",
+      "Ibino (ibn)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ibo",
+      "Igbo",
+      "Igbo (ibo)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ibr",
+      "Ibuoro",
+      "Ibuoro (ibr)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "iby",
+      "Ibani",
+      "Ibani (iby)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ica",
+      "Ede Ica",
+      "Ede Ica (ica)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ich",
+      "Etkywan",
+      "Etkywan (ich)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ida",
+      "Idakho-Isukha-Tiriki",
+      "Idakho-Isukha-Tiriki (ida)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "idc",
+      "Idon",
+      "Idon (idc)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "idd",
+      "Ede Idaca",
+      "Ede Idaca (idd)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ide",
+      "Idere",
+      "Idere (ide)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ids",
+      "Idesa",
+      "Idesa (ids)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "idu",
+      "Idoma",
+      "Idoma (idu)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ife",
+      "Ifè",
+      "Ifè (ife)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ifm",
+      "Teke-Fuumu",
+      "Teke-Fuumu (ifm)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "igb",
+      "Ebira",
+      "Ebira (igb)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ige",
+      "Igede",
+      "Igede (ige)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "igl",
+      "Igala",
+      "Igala (igl)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "igw",
+      "Igwe",
+      "Igwe (igw)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ihi",
+      "Ihievbe",
+      "Ihievbe (ihi)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ijc",
+      "Izon",
+      "Izon (ijc)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ije",
+      "Biseni",
+      "Biseni (ije)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ijj",
+      "Ede Ije",
+      "Ede Ije (ijj)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ijn",
+      "Kalabari",
+      "Kalabari (ijn)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ijs",
+      "Southeast Ijo",
+      "Southeast Ijo (ijs)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "iki",
+      "Iko",
+      "Iko (iki)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ikk",
+      "Ika",
+      "Ika (ikk)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ikl",
+      "Ikulu",
+      "Ikulu (ikl)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "iko",
+      "Olulumo-Ikom",
+      "Olulumo-Ikom (iko)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ikp",
+      "Ikpeshi",
+      "Ikpeshi (ikp)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ikv",
+      "Iku-Gora-Ankwa",
+      "Iku-Gora-Ankwa (ikv)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ikw",
+      "Ikwere",
+      "Ikwere (ikw)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ikx",
+      "Ik",
+      "Ik (ikx)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ikz",
+      "Ikizu",
+      "Ikizu (ikz)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ilb",
+      "Ila",
+      "Ila (ilb)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ilv",
+      "Ilue",
+      "Ilue (ilv)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "imi",
+      "Anamgura",
+      "Anamgura (imi)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "iqw",
+      "Ikwo",
+      "Ikwo (iqw)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "iri",
+      "Rigwe",
+      "Rigwe (iri)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "irk",
+      "Iraqw",
+      "Iraqw (irk)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ish",
+      "Esan",
+      "Esan (ish)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "isi",
+      "Nkem-Nkum",
+      "Nkem-Nkum (isi)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "isn",
+      "Isanzu",
+      "Isanzu (isn)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "iso",
+      "Isoko",
+      "Isoko (iso)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "isu",
+      "Isu (Menchum Division)",
+      "Isu (Menchum Division) (isu)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "itm",
+      "Itu Mbon Uzo",
+      "Itu Mbon Uzo (itm)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "its",
+      "Isekiri",
+      "Isekiri (its)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "itw",
+      "Ito",
+      "Ito (itw)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "iya",
+      "Iyayu",
+      "Iyayu (iya)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "iyo",
+      "Mesaka",
+      "Mesaka (iyo)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "iyx",
+      "Yaka (Congo)",
+      "Yaka (Congo) (iyx)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "izr",
+      "Izere",
+      "Izere (izr)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "izz",
+      "Izii",
+      "Izii (izz)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "jab",
+      "Hyam",
+      "Hyam (jab)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "jad",
+      "Jahanka",
+      "Jahanka (jad)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "jaf",
+      "Jara",
+      "Jara (jaf)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "jbu",
+      "Jukun Takum",
+      "Jukun Takum (jbu)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "jek",
+      "Jeri Kuo",
+      "Jeri Kuo (jek)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "jen",
+      "Dza",
+      "Dza (jen)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "jer",
+      "Jere",
+      "Jere (jer)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "jgk",
+      "Gwak",
+      "Gwak (jgk)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "jgo",
+      "Ngomba",
+      "Ngomba (jgo)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "jia",
+      "Jina",
+      "Jina (jia)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "jib",
+      "Jibu",
+      "Jibu (jib)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "jid",
+      "Bu",
+      "Bu (jid)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "jie",
+      "Jilbe",
+      "Jilbe (jie)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "jim",
+      "Jimi (Cameroon)",
+      "Jimi (Cameroon) (jim)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "jit",
+      "Jita",
+      "Jita (jit)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "jjr",
+      "Bankal",
+      "Bankal (jjr)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "jku",
+      "Labir",
+      "Labir (jku)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "jmb",
+      "Zumbun",
+      "Zumbun (jmb)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "jmc",
+      "Machame",
+      "Machame (jmc)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "jmi",
+      "Jimi (Nigeria)",
+      "Jimi (Nigeria) (jmi)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "jmr",
+      "Kamara",
+      "Kamara (jmr)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "jms",
+      "Mashi (Nigeria)",
+      "Mashi (Nigeria) (jms)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "jni",
+      "Janji",
+      "Janji (jni)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "job",
+      "Joba",
+      "Joba (job)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "jod",
+      "Wojenaka",
+      "Wojenaka (jod)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "jow",
+      "Jowulu",
+      "Jowulu (jow)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "jrr",
+      "Jiru",
+      "Jiru (jrr)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "jrt",
+      "Jorto",
+      "Jorto (jrt)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "jub",
+      "Wannu",
+      "Wannu (jub)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "jud",
+      "Worodougou",
+      "Worodougou (jud)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "juh",
+      "Hõne",
+      "Hõne (juh)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "juk",
+      "Wapan",
+      "Wapan (juk)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "juo",
+      "Jiba",
+      "Jiba (juo)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "juu",
+      "Ju",
+      "Ju (juu)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "juw",
+      "Wãpha",
+      "Wãpha (juw)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "jwi",
+      "Jwira-Pepesa",
+      "Jwira-Pepesa (jwi)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kad",
+      "Adara",
+      "Adara (kad)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kah",
+      "Kara (Central African Republic)",
+      "Kara (Central African Republic) (kah)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kai",
+      "Karekare",
+      "Karekare (kai)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kaj",
+      "Jju",
+      "Jju (kaj)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kam",
+      "Kamba (Kenya)",
+      "Kamba (Kenya) (kam)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kao",
+      "Xaasongaxango",
+      "Xaasongaxango (kao)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kbj",
+      "Kari",
+      "Kari (kbj)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kbn",
+      "Kare (Central African Republic)",
+      "Kare (Central African Republic) (kbn)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kbo",
+      "Keliko",
+      "Keliko (kbo)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kbp",
+      "Kabiyè",
+      "Kabiyè (kbp)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kbs",
+      "Kande",
+      "Kande (kbs)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kbz",
+      "Duhwa",
+      "Duhwa (kbz)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kcc",
+      "Lubila",
+      "Lubila (kcc)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kce",
+      "Kaivi",
+      "Kaivi (kce)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kcf",
+      "Ukaan",
+      "Ukaan (kcf)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kcg",
+      "Tyap",
+      "Tyap (kcg)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kch",
+      "Vono",
+      "Vono (kch)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kci",
+      "Kamantan",
+      "Kamantan (kci)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kcj",
+      "Kobiana",
+      "Kobiana (kcj)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kck",
+      "Kalanga",
+      "Kalanga (kck)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kcm",
+      "Gula (Central African Republic)",
+      "Gula (Central African Republic) (kcm)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kcn",
+      "Nubi",
+      "Nubi (kcn)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kcq",
+      "Kamo",
+      "Kamo (kcq)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kcs",
+      "Koenoem",
+      "Koenoem (kcs)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kcu",
+      "Kami (Tanzania)",
+      "Kami (Tanzania) (kcu)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kcv",
+      "Kete",
+      "Kete (kcv)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kcw",
+      "Kabwari",
+      "Kabwari (kcw)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kcz",
+      "Konongo",
+      "Konongo (kcz)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kdc",
+      "Kutu",
+      "Kutu (kdc)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kde",
+      "Makonde",
+      "Makonde (kde)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kdg",
+      "Seba",
+      "Seba (kdg)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kdh",
+      "Tem",
+      "Tem (kdh)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kdj",
+      "Karamojong",
+      "Karamojong (kdj)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kdl",
+      "Tsikimba",
+      "Tsikimba (kdl)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kdm",
+      "Kagoma",
+      "Kagoma (kdm)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kdn",
+      "Kunda",
+      "Kunda (kdn)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kdp",
+      "Kaningdon-Nindem",
+      "Kaningdon-Nindem (kdp)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kdx",
+      "Kam",
+      "Kam (kdx)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kdz",
+      "Kwaja",
+      "Kwaja (kdz)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kea",
+      "Kabuverdianu",
+      "Kabuverdianu (kea)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "keb",
+      "Kélé",
+      "Kélé (keb)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ked",
+      "Kerewe",
+      "Kerewe (ked)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kef",
+      "Kpessi",
+      "Kpessi (kef)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kel",
+      "Kela (Democratic Republic of Congo)",
+      "Kela (Democratic Republic of Congo) (kel)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ken",
+      "Kenyang",
+      "Kenyang (ken)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "keo",
+      "Kakwa",
+      "Kakwa (keo)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ker",
+      "Kera",
+      "Kera (ker)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kes",
+      "Kugbo",
+      "Kugbo (kes)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "keu",
+      "Akebu",
+      "Akebu (keu)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kez",
+      "Kukele",
+      "Kukele (kez)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kfl",
+      "Kung",
+      "Kung (kfl)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kfn",
+      "Kuk",
+      "Kuk (kfn)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kfo",
+      "Koro (Côte d'Ivoire)",
+      "Koro (Côte d'Ivoire) (kfo)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kfz",
+      "Koromfé",
+      "Koromfé (kfz)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kga",
+      "Koyaga",
+      "Koyaga (kga)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kgt",
+      "Somyev",
+      "Somyev (kgt)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "khj",
+      "Kuturmi",
+      "Kuturmi (khj)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "khu",
+      "Nkhumbi",
+      "Nkhumbi (khu)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "khx",
+      "Kanu",
+      "Kanu (khx)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "khy",
+      "Kele (Democratic Republic of Congo)",
+      "Kele (Democratic Republic of Congo) (khy)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kid",
+      "Koshin",
+      "Koshin (kid)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kik",
+      "Kikuyu",
+      "Kikuyu (kik)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kil",
+      "Kariya",
+      "Kariya (kil)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kin",
+      "Kinyarwanda",
+      "Kinyarwanda (kin)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kiv",
+      "Kimbu",
+      "Kimbu (kiv)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kiz",
+      "Kisi",
+      "Kisi (kiz)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kka",
+      "Kakanda",
+      "Kakanda (kka)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kkd",
+      "Kinuku",
+      "Kinuku (kkd)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kke",
+      "Kakabe",
+      "Kakabe (kke)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kki",
+      "Kagulu",
+      "Kagulu (kki)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kkj",
+      "Kako",
+      "Kako (kkj)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kkm",
+      "Kiong",
+      "Kiong (kkm)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kkq",
+      "Kaeku",
+      "Kaeku (kkq)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kkr",
+      "Kir-Balar",
+      "Kir-Balar (kkr)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kks",
+      "Giiwo",
+      "Giiwo (kks)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kku",
+      "Tumi",
+      "Tumi (kku)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kkw",
+      "Teke-Kukuya",
+      "Teke-Kukuya (kkw)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "klc",
+      "Kolbila",
+      "Kolbila (klc)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "klk",
+      "Kono (Nigeria)",
+      "Kono (Nigeria) (klk)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kln",
+      "Kalenjin",
+      "Kalenjin (kln)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "klo",
+      "Kapya",
+      "Kapya (klo)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "klu",
+      "Klao",
+      "Klao (klu)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kma",
+      "Konni",
+      "Konni (kma)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kmb",
+      "Kimbundu",
+      "Kimbundu (kmb)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kme",
+      "Bakole",
+      "Bakole (kme)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kmi",
+      "Kami (Nigeria)",
+      "Kami (Nigeria) (kmi)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kmp",
+      "Gimme",
+      "Gimme (kmp)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kmq",
+      "Kwama",
+      "Kwama (kmq)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kmw",
+      "Komo (Democratic Republic of Congo)",
+      "Komo (Democratic Republic of Congo) (kmw)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kmy",
+      "Koma",
+      "Koma (kmy)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kna",
+      "Dera (Nigeria)",
+      "Dera (Nigeria) (kna)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "knf",
+      "Mankanya",
+      "Mankanya (knf)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kng",
+      "Koongo",
+      "Koongo (kng)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kni",
+      "Kanufi",
+      "Kanufi (kni)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "knk",
+      "Kuranko",
+      "Kuranko (knk)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kno",
+      "Kono (Sierra Leone)",
+      "Kono (Sierra Leone) (kno)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "knp",
+      "Kwanja",
+      "Kwanja (knp)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "knu",
+      "Kono (Guinea)",
+      "Kono (Guinea) (knu)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "knw",
+      "Kung-Ekoka",
+      "Kung-Ekoka (knw)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kny",
+      "Kanyok",
+      "Kanyok (kny)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "knz",
+      "Kalamsé",
+      "Kalamsé (knz)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "koh",
+      "Koyo",
+      "Koyo (koh)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kok",
+      "Konkani (macrolanguage)",
+      "Konkani (macrolanguage) (kok)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kon",
+      "Kongo",
+      "Kongo (kon)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "koo",
+      "Konzo",
+      "Konzo (koo)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "koq",
+      "Kota (Gabon)",
+      "Kota (Gabon) (koq)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kot",
+      "Lagwan",
+      "Lagwan (kot)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kov",
+      "Kudu-Camo",
+      "Kudu-Camo (kov)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kow",
+      "Kugama",
+      "Kugama (kow)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kpa",
+      "Kutto",
+      "Kutto (kpa)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kph",
+      "Kplang",
+      "Kplang (kph)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kpk",
+      "Kpan",
+      "Kpan (kpk)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kpl",
+      "Kpala",
+      "Kpala (kpl)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kpo",
+      "Ikposo",
+      "Ikposo (kpo)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kpz",
+      "Kupsabiny",
+      "Kupsabiny (kpz)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kqg",
+      "Khe",
+      "Khe (kqg)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kqh",
+      "Kisankasa",
+      "Kisankasa (kqh)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kqk",
+      "Kotafon Gbe",
+      "Kotafon Gbe (kqk)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kqm",
+      "Khisa",
+      "Khisa (kqm)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kqn",
+      "Kaonde",
+      "Kaonde (kqn)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kqo",
+      "Eastern Krahn",
+      "Eastern Krahn (kqo)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kqs",
+      "Northern Kissi",
+      "Northern Kissi (kqs)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kqx",
+      "Mser",
+      "Mser (kqx)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "krh",
+      "Kurama",
+      "Kurama (krh)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kri",
+      "Krio",
+      "Krio (kri)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "krn",
+      "Sapo",
+      "Sapo (krn)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "krp",
+      "Korop",
+      "Korop (krp)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "krr",
+      "Krung",
+      "Krung (krr)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "krs",
+      "Gbaya (Sudan)",
+      "Gbaya (Sudan) (krs)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "krw",
+      "Western Krahn",
+      "Western Krahn (krw)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "krx",
+      "Karon",
+      "Karon (krx)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ksa",
+      "Shuwa-Zamani",
+      "Shuwa-Zamani (ksa)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ksb",
+      "Shambala",
+      "Shambala (ksb)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ksf",
+      "Bafia",
+      "Bafia (ksf)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ksm",
+      "Kumba",
+      "Kumba (ksm)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ksn",
+      "Kasiguranin",
+      "Kasiguranin (ksn)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kso",
+      "Kofa",
+      "Kofa (kso)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ksp",
+      "Kaba",
+      "Kaba (ksp)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ksq",
+      "Kwaami",
+      "Kwaami (ksq)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kss",
+      "Southern Kisi",
+      "Southern Kisi (kss)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kst",
+      "Winyé",
+      "Winyé (kst)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ksv",
+      "Kusu",
+      "Kusu (ksv)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ktc",
+      "Kholok",
+      "Kholok (ktc)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ktf",
+      "Kwami",
+      "Kwami (ktf)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ktj",
+      "Plapo Krumen",
+      "Plapo Krumen (ktj)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ktu",
+      "Kituba",
+      "Kikongo ya leta",
+      "Kongo_Central,Kwilu,Kwango,Pointe_Noire"
+    ],
+    [
+      "kty",
+      "Kango (Bas-Uélé District)",
+      "Kango (Bas-Uélé District) (kty)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ktz",
+      "Juǀʼhoan",
+      "Juǀʼhoan (ktz)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kua",
+      "Kuanyama",
+      "Kuanyama (kua)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kub",
+      "Kutep",
+      "Kutep (kub)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kug",
+      "Kupa",
+      "Kupa (kug)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kuh",
+      "Kushi",
+      "Kushi (kuh)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kuj",
+      "Kuria",
+      "Kuria (kuj)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kul",
+      "Kulere",
+      "Kulere (kul)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kus",
+      "Kusaal",
+      "Kusaal (kus)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kuw",
+      "Kpagua",
+      "Kpagua (kuw)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kvi",
+      "Kwang",
+      "Kwang (kvi)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kvj",
+      "Psikye",
+      "Psikye (kvj)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kvm",
+      "Kendem",
+      "Kendem (kvm)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kvz",
+      "Tsakwambo",
+      "Tsakwambo (kvz)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kwb",
+      "Kwa",
+      "Kwa (kwb)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kwc",
+      "Likwala",
+      "Likwala (kwc)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kwd",
+      "Kwaio",
+      "Kwaio (kwd)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kwf",
+      "Kwara'ae",
+      "Kwara'ae (kwf)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kwg",
+      "Sara Kaba Deme",
+      "Sara Kaba Deme (kwg)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kwj",
+      "Kwanga",
+      "Kwanga (kwj)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kwk",
+      "Kwakiutl",
+      "Kwakiutl (kwk)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kwl",
+      "Kofyar",
+      "Kofyar (kwl)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kwm",
+      "Kwambi",
+      "Kwambi (kwm)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kwn",
+      "Kwangali",
+      "Kwangali (kwn)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kwp",
+      "Kodia",
+      "Kodia (kwp)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kws",
+      "Kwese",
+      "Kwese (kws)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kwu",
+      "Kwakum",
+      "Kwakum (kwu)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kwv",
+      "Sara Kaba Náà",
+      "Sara Kaba Náà (kwv)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kwy",
+      "San Salvador Kongo",
+      "San Salvador Kongo (kwy)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kxb",
+      "Krobu",
+      "Krobu (kxb)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kxx",
+      "Likuba",
+      "Likuba (kxx)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kya",
+      "Kwaya",
+      "Kwaya (kya)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kye",
+      "Krache",
+      "Krache (kye)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kyf",
+      "Kouya",
+      "Kouya (kyf)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kym",
+      "Kpatili",
+      "Kpatili (kym)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kza",
+      "Western Karaboro",
+      "Western Karaboro (kza)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kzc",
+      "Bondoukou Kulango",
+      "Bondoukou Kulango (kzc)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kzn",
+      "Kokola",
+      "Kokola (kzn)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kzo",
+      "Kaningi",
+      "Kaningi (kzo)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kzr",
+      "Karang",
+      "Karang (kzr)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "kzy",
+      "Kango (Tshopo District)",
+      "Kango (Tshopo District) (kzy)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "lag",
+      "Langi",
+      "Langi (lag)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "lah",
+      "Lahnda",
+      "Lahnda (lah)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "lai",
+      "Lambya",
+      "Lambya (lai)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "laj",
+      "Lango (Uganda)",
+      "Lango (Uganda) (laj)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "lak",
+      "Laka (Nigeria)",
+      "Laka (Nigeria) (lak)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "lal",
+      "Lalia",
+      "Lalia (lal)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "lam",
+      "Lamba",
+      "Lamba (lam)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "lan",
+      "Laru",
+      "Laru (lan)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "lap",
+      "Laka (Chad)",
+      "Laka (Chad) (lap)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "lar",
+      "Larteh",
+      "Larteh (lar)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "las",
+      "Lama (Togo)",
+      "Lama (Togo) (las)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "lbi",
+      "La'bi",
+      "La'bi (lbi)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "lch",
+      "Luchazi",
+      "Luchazi (lch)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "lda",
+      "Kla-Dan",
+      "Kla-Dan (lda)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ldb",
+      "Dũya",
+      "Dũya (ldb)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ldh",
+      "Lamja-Dengsa-Tola",
+      "Lamja-Dengsa-Tola (ldh)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ldi",
+      "Laari",
+      "Laari (ldi)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ldj",
+      "Lemoro",
+      "Lemoro (ldj)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ldk",
+      "Leelau",
+      "Leelau (ldk)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ldl",
+      "Kaan",
+      "Kaan (ldl)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ldm",
+      "Landoma",
+      "Landoma (ldm)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ldo",
+      "Loo",
+      "Loo (ldo)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ldp",
+      "Tso",
+      "Tso (ldp)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ldq",
+      "Lufu",
+      "Lufu (ldq)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "lea",
+      "Lega-Shabunda",
+      "Lega-Shabunda (lea)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "leb",
+      "Lala-Bisa",
+      "Lala-Bisa (leb)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "led",
+      "Lendu",
+      "Lendu (led)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "lee",
+      "Lyélé",
+      "Lyélé (lee)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "lef",
+      "Lelemi",
+      "Lelemi (lef)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "leh",
+      "Lenje",
+      "Lenje (leh)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "lej",
+      "Lengola",
+      "Lengola (lej)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "lel",
+      "Lele (Democratic Republic of Congo)",
+      "Lele (Democratic Republic of Congo) (lel)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "lem",
+      "Nomaande",
+      "Nomaande (lem)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "leo",
+      "Leti (Cameroon)",
+      "Leti (Cameroon) (leo)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "les",
+      "Lese",
+      "Lese (les)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "lfa",
+      "Lefa",
+      "Lefa (lfa)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "lgg",
+      "Lugbara",
+      "Lugbara (lgg)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "lgm",
+      "Lega-Mwenga",
+      "Lega-Mwenga (lgm)",
+      "Sepik_Highlands_Pacific"
+    ],
+    [
+      "lgq",
+      "Logba",
+      "Logba (lgq)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "lgz",
+      "Ligenza",
+      "Ligenza (lgz)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "lia",
+      "West-Central Limba",
+      "West-Central Limba (lia)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "lie",
+      "Likila",
+      "Likila (lie)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "lig",
+      "Ligbi",
+      "Ligbi (lig)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "lij",
+      "Ligurian",
+      "Ligurian (lij)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "lik",
+      "Lika",
+      "Lika (lik)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "lip",
+      "Sekpele",
+      "Sekpele (lip)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "lir",
+      "Liberian English",
+      "Liberian English (lir)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "liy",
+      "Banda-Bambari",
+      "Banda-Bambari (liy)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "liz",
+      "Libinza",
+      "Libinza (liz)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "lkb",
+      "Kabras",
+      "Kabras (lkb)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "lko",
+      "Khayo",
+      "Khayo (lko)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "lks",
+      "Kisa",
+      "Kisa (lks)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "lla",
+      "Lala-Roba",
+      "Lala-Roba (lla)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "llb",
+      "Lolo",
+      "Lolo (llb)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "llc",
+      "Lele (Guinea)",
+      "Lele (Guinea) (llc)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "lli",
+      "Teke-Laali",
+      "Teke-Laali (lli)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "lma",
+      "East Limba",
+      "East Limba (lma)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "lme",
+      "Pévé",
+      "Pévé (lme)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "lmi",
+      "Lombi",
+      "Lombi (lmi)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "lmx",
+      "Laimbue",
+      "Laimbue (lmx)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "lin",
+      "Lingala",
+      "Lingála",
+      "Kinshasa,Equateur,Brazzaville"
+    ],
+    [
+      "lna",
+      "Langbashe",
+      "Langbashe (lna)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "lnb",
+      "Mbalanhu",
+      "Mbalanhu (lnb)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "lnl",
+      "South Central Banda",
+      "South Central Banda (lnl)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "lns",
+      "Lamnso'",
+      "Lamnso' (lns)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "lnu",
+      "Longuda",
+      "Longuda (lnu)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "lnz",
+      "Lonzo",
+      "Lonzo (lnz)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "lob",
+      "Lobi",
+      "Lobi (lob)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "log",
+      "Logo",
+      "Logo (log)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "loi",
+      "Loma (Côte d'Ivoire)",
+      "Loma (Côte d'Ivoire) (loi)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "lok",
+      "Loko",
+      "Loko (lok)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "lol",
+      "Mongo",
+      "Mongo (lol)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "lom",
+      "Loma (Liberia)",
+      "Loma (Liberia) (lom)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "lon",
+      "Malawi Lomwe",
+      "Malawi Lomwe (lon)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "loo",
+      "Lombo",
+      "Lombo (loo)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "lop",
+      "Lopa",
+      "Lopa (lop)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "loq",
+      "Lobala",
+      "Lobala (loq)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "lor",
+      "Téén",
+      "Téén (lor)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "loz",
+      "Lozi",
+      "Lozi (loz)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "lri",
+      "Marachi",
+      "Marachi (lri)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "lrm",
+      "Marama",
+      "Marama (lrm)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "lse",
+      "Lusengo",
+      "Lusengo (lse)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "lsy",
+      "Mauritian Sign Language",
+      "Mauritian Sign Language (lsy)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "lth",
+      "Thur",
+      "Thur (lth)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "lto",
+      "Tsotso",
+      "Tsotso (lto)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "lts",
+      "Tachoni",
+      "Tachoni (lts)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "lua",
+      "Luba-Kasai",
+      "Tshiluba",
+      "Kasai,Kananga,Mbuji_Mayi"
+    ],
+    [
+      "lub",
+      "Luba-Katanga",
+      "Luba-Katanga (lub)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "lue",
+      "Luvale",
+      "Luvale (lue)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "lug",
+      "Ganda",
+      "Ganda (lug)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "luj",
+      "Luna",
+      "Luna (luj)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "lum",
+      "Luimbi",
+      "Luimbi (lum)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "lun",
+      "Lunda",
+      "Lunda (lun)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "luo",
+      "Luo (Kenya and Tanzania)",
+      "Luo (Kenya and Tanzania) (luo)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "lup",
+      "Lumbu",
+      "Lumbu (lup)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "luw",
+      "Luo (Cameroon)",
+      "Luo (Cameroon) (luw)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "lwa",
+      "Lwalu",
+      "Lwalu (lwa)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "lwg",
+      "Wanga",
+      "Wanga (lwg)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "lws",
+      "Malawian Sign Language",
+      "Malawian Sign Language (lws)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "lyn",
+      "Luyana",
+      "Luyana (lyn)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mae",
+      "Bo-Rukul",
+      "Bo-Rukul (mae)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "maf",
+      "Mafa",
+      "Mafa (maf)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mas",
+      "Masai",
+      "Masai (mas)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mbm",
+      "Ombamba",
+      "Ombamba (mbm)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mbo",
+      "Mbo (Cameroon)",
+      "Mbo (Cameroon) (mbo)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mbu",
+      "Mbula-Bwazza",
+      "Mbula-Bwazza (mbu)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mbv",
+      "Mbulungish",
+      "Mbulungish (mbv)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mcj",
+      "Mvanip",
+      "Mvanip (mcj)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mck",
+      "Mbunda",
+      "Mbunda (mck)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mcn",
+      "Masana",
+      "Masana (mcn)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mcp",
+      "Makaa",
+      "Makaa (mcp)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mct",
+      "Mengisa",
+      "Mengisa (mct)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mcx",
+      "Mpiemo",
+      "Mpiemo (mcx)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mda",
+      "Mada (Nigeria)",
+      "Mada (Nigeria) (mda)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mdd",
+      "Mbum",
+      "Mbum (mdd)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mdj",
+      "Mangbetu",
+      "Mangbetu (mdj)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mdk",
+      "Mangbutu",
+      "Mangbutu (mdk)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mdm",
+      "Mayogo",
+      "Mayogo (mdm)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mdn",
+      "Mbati",
+      "Mbati (mdn)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mdp",
+      "Mbala",
+      "Mbala (mdp)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mdq",
+      "Mbole",
+      "Mbole (mdq)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mdt",
+      "Mbere",
+      "Mbere (mdt)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mdu",
+      "Mboko",
+      "Mboko (mdu)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mdw",
+      "Mbosi",
+      "Mbosi (mdw)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mea",
+      "Menka",
+      "Menka (mea)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "men",
+      "Mende (Sierra Leone)",
+      "Mende (Sierra Leone) (men)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "meq",
+      "Merey",
+      "Merey (meq)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mer",
+      "Meru",
+      "Meru (mer)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mev",
+      "Mano",
+      "Mano (mev)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mew",
+      "Maaka",
+      "Maaka (mew)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mfc",
+      "Mba",
+      "Mba (mfc)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mfd",
+      "Mendankwe-Nkwen",
+      "Mendankwe-Nkwen (mfd)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mfe",
+      "Morisyen",
+      "Morisyen (mfe)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mff",
+      "Naki",
+      "Naki (mff)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mfg",
+      "Mogofin",
+      "Mogofin (mfg)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mfh",
+      "Matal",
+      "Matal (mfh)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mfi",
+      "Wandala",
+      "Wandala (mfi)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mfj",
+      "Mefele",
+      "Mefele (mfj)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mfk",
+      "North Mofu",
+      "North Mofu (mfk)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mfl",
+      "Putai",
+      "Putai (mfl)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mfm",
+      "Marghi South",
+      "Marghi South (mfm)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mfn",
+      "Cross River Mbembe",
+      "Cross River Mbembe (mfn)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mfo",
+      "Mbe",
+      "Mbe (mfo)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mfq",
+      "Moba",
+      "Moba (mfq)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mfu",
+      "Mbwela",
+      "Mbwela (mfu)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mfv",
+      "Mandjak",
+      "Mandjak (mfv)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mgg",
+      "Mpumpong",
+      "Mpumpong (mgg)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mgh",
+      "Makhuwa-Meetto",
+      "Makhuwa-Meetto (mgh)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mgi",
+      "Lijili",
+      "Lijili (mgi)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mgj",
+      "Abureni",
+      "Abureni (mgj)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mgn",
+      "Mbangi",
+      "Mbangi (mgn)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mgo",
+      "Meta'",
+      "Meta' (mgo)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mgq",
+      "Malila",
+      "Malila (mgq)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mgs",
+      "Manda (Tanzania)",
+      "Manda (Tanzania) (mgs)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mgv",
+      "Matengo",
+      "Matengo (mgv)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mgw",
+      "Matumbi",
+      "Matumbi (mgw)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mgy",
+      "Mbunga",
+      "Mbunga (mgy)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mgz",
+      "Mbugwe",
+      "Mbugwe (mgz)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mhb",
+      "Mahongwe",
+      "Mahongwe (mhb)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mhd",
+      "Mbugu",
+      "Mbugu (mhd)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mhk",
+      "Mungaka",
+      "Mungaka (mhk)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mhm",
+      "Makhuwa-Moniga",
+      "Makhuwa-Moniga (mhm)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mho",
+      "Mashi (Zambia)",
+      "Mashi (Zambia) (mho)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mhw",
+      "Mbukushu",
+      "Mbukushu (mhw)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mif",
+      "Mofu-Gudur",
+      "Mofu-Gudur (mif)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mij",
+      "Abar",
+      "Abar (mij)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mjh",
+      "Mwera (Nyasa)",
+      "Mwera (Nyasa) (mjh)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mjl",
+      "Mandeali",
+      "Mandeali (mjl)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mjs",
+      "Miship",
+      "Miship (mjs)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mka",
+      "Mbre",
+      "Mbre (mka)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mkf",
+      "Miya",
+      "Miya (mkf)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mkk",
+      "Byep",
+      "Byep (mkk)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mkl",
+      "Mokole",
+      "Mokole (mkl)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mko",
+      "Mingang Doso",
+      "Mingang Doso (mko)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mku",
+      "Konyanka Maninka",
+      "Konyanka Maninka (mku)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mkw",
+      "Kituba (Congo)",
+      "Kituba (Congo) (mkw)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mlb",
+      "Mbule",
+      "Mbule (mlb)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mlk",
+      "Ilwana",
+      "Ilwana (mlk)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mlo",
+      "Mlomp",
+      "Mlomp (mlo)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mlq",
+      "Western Maninkakan",
+      "Western Maninkakan (mlq)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mlr",
+      "Vame",
+      "Vame (mlr)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mlw",
+      "Moloko",
+      "Moloko (mlw)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mmu",
+      "Mmaala",
+      "Mmaala (mmu)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mmz",
+      "Mabaale",
+      "Mabaale (mmz)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mnh",
+      "Mono (Democratic Republic of Congo)",
+      "Mono (Democratic Republic of Congo) (mnh)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mny",
+      "Manyawa",
+      "Manyawa (mny)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "moa",
+      "Mwan",
+      "Mwan (moa)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "moi",
+      "Mboi",
+      "Mboi (moi)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "moj",
+      "Monzombo",
+      "Monzombo (moj)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mos",
+      "Mossi",
+      "Mossi (mos)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mow",
+      "Moi (Congo)",
+      "Moi (Congo) (mow)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mpa",
+      "Mpoto",
+      "Mpoto (mpa)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mpi",
+      "Mpade",
+      "Mpade (mpi)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mqb",
+      "Mbuko",
+      "Mbuko (mqb)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mql",
+      "Mbelime",
+      "Mbelime (mql)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mqr",
+      "Mander",
+      "Mander (mqr)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mrt",
+      "Marghi Central",
+      "Marghi Central (mrt)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mru",
+      "Mono (Cameroon)",
+      "Mono (Cameroon) (mru)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "msc",
+      "Sankaran Maninka",
+      "Sankaran Maninka (msc)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mse",
+      "Musey",
+      "Musey (mse)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "msh",
+      "Masikoro Malagasy",
+      "Masikoro Malagasy (msh)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "msj",
+      "Ma (Democratic Republic of Congo)",
+      "Ma (Democratic Republic of Congo) (msj)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "msv",
+      "Maslam",
+      "Maslam (msv)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "msw",
+      "Mansoanka",
+      "Mansoanka (msw)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mtk",
+      "Mbe'",
+      "Mbe' (mtk)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mtl",
+      "Montol",
+      "Montol (mtl)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "muc",
+      "Ajumbu",
+      "Ajumbu (muc)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mug",
+      "Musgu",
+      "Musgu (mug)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "muh",
+      "Mündü",
+      "Mündü (muh)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "muo",
+      "Nyong",
+      "Nyong (muo)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "muu",
+      "Yaaku",
+      "Yaaku (muu)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "muy",
+      "Muyang",
+      "Muyang (muy)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mwe",
+      "Mwera (Chimwera)",
+      "Mwera (Chimwera) (mwe)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mwk",
+      "Kita Maninkakan",
+      "Kita Maninkakan (mwk)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mwn",
+      "Nyamwanga",
+      "Nyamwanga (mwn)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mws",
+      "Mwimbi-Muthambi",
+      "Mwimbi-Muthambi (mws)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mwz",
+      "Moingi",
+      "Moingi (mwz)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mxf",
+      "Malgbe",
+      "Malgbe (mxf)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mxg",
+      "Mbangala",
+      "Mbangala (mxg)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mxh",
+      "Mvuba",
+      "Mvuba (mxh)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mxl",
+      "Maxi Gbe",
+      "Maxi Gbe (mxl)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mxo",
+      "Mbowe",
+      "Mbowe (mxo)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mxu",
+      "Mada (Cameroon)",
+      "Mada (Cameroon) (mxu)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mxx",
+      "Mahou",
+      "Mahou (mxx)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "myb",
+      "Mbay",
+      "Mbay (myb)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "myc",
+      "Mayeka",
+      "Mayeka (myc)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mye",
+      "Myene",
+      "Myene (mye)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "myg",
+      "Manta",
+      "Manta (myg)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "myx",
+      "Masaaba",
+      "Masaaba (myx)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mzc",
+      "Madagascar Sign Language",
+      "Madagascar Sign Language (mzc)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mzd",
+      "Malimba",
+      "Malimba (mzd)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mzj",
+      "Manya",
+      "Manya (mzj)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mzm",
+      "Mumuye",
+      "Mumuye (mzm)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mzv",
+      "Manza",
+      "Manza (mzv)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mzw",
+      "Deg",
+      "Deg (mzw)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mzy",
+      "Mozambican Sign Language",
+      "Mozambican Sign Language (mzy)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "naj",
+      "Nalu",
+      "Nalu (naj)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "naq",
+      "Khoekhoe",
+      "Khoekhoe (naq)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "nar",
+      "Iguta",
+      "Iguta (nar)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "nat",
+      "Ca̱hungwa̱rya̱",
+      "Ca̱hungwa̱rya̱ (nat)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "naw",
+      "Nawuri",
+      "Nawuri (naw)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "nba",
+      "Nyemba",
+      "Nyemba (nba)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "nbb",
+      "Ndoe",
+      "Ndoe (nbb)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "nbd",
+      "Ngbinda",
+      "Ngbinda (nbd)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "nbh",
+      "Ngamo",
+      "Ngamo (nbh)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "nbl",
+      "South Ndebele",
+      "South Ndebele (nbl)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "nbm",
+      "Ngbaka Ma'bo",
+      "Ngbaka Ma'bo (nbm)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "nbo",
+      "Nkukoli",
+      "Nkukoli (nbo)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "nbp",
+      "Nnam",
+      "Nnam (nbp)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "nbr",
+      "Numana",
+      "Numana (nbr)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "nbs",
+      "Namibian Sign Language",
+      "Namibian Sign Language (nbs)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "nbw",
+      "Southern Ngbandi",
+      "Southern Ngbandi (nbw)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ncr",
+      "Ncane",
+      "Ncane (ncr)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ncu",
+      "Chumburung",
+      "Chumburung (ncu)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "nda",
+      "Ndasa",
+      "Ndasa (nda)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ndb",
+      "Kenswei Nsei",
+      "Kenswei Nsei (ndb)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ndc",
+      "Ndau",
+      "Ndau (ndc)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ndd",
+      "Nde-Nsele-Nta",
+      "Nde-Nsele-Nta (ndd)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "nde",
+      "North Ndebele",
+      "North Ndebele (nde)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ndg",
+      "Ndengereko",
+      "Ndengereko (ndg)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ndh",
+      "Ndali",
+      "Ndali (ndh)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ndi",
+      "Samba Leko",
+      "Samba Leko (ndi)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ndj",
+      "Ndamba",
+      "Ndamba (ndj)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ndk",
+      "Ndaka",
+      "Ndaka (ndk)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ndl",
+      "Ndolo",
+      "Ndolo (ndl)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ndn",
+      "Ngundi",
+      "Ngundi (ndn)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ndo",
+      "Ndonga",
+      "Ndonga (ndo)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ndp",
+      "Ndo",
+      "Ndo (ndp)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ndq",
+      "Ndombe",
+      "Ndombe (ndq)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ndr",
+      "Ndoola",
+      "Ndoola (ndr)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ndt",
+      "Ndunga",
+      "Ndunga (ndt)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ndu",
+      "Dugun",
+      "Dugun (ndu)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ndv",
+      "Ndut",
+      "Ndut (ndv)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ndw",
+      "Ndobo",
+      "Ndobo (ndw)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ndy",
+      "Lutos",
+      "Lutos (ndy)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "neb",
+      "Toura (Côte d'Ivoire)",
+      "Toura (Côte d'Ivoire) (neb)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ned",
+      "Nde-Gbite",
+      "Nde-Gbite (ned)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ney",
+      "Neyo",
+      "Neyo (ney)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "nfd",
+      "Ahwai",
+      "Ahwai (nfd)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "nfr",
+      "Nafaanra",
+      "Nafaanra (nfr)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "nfu",
+      "Mfumte",
+      "Mfumte (nfu)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "nga",
+      "Ngbaka",
+      "Ngbaka (nga)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ngb",
+      "Northern Ngbandi",
+      "Northern Ngbandi (ngb)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ngc",
+      "Ngombe (Democratic Republic of Congo)",
+      "Ngombe (Democratic Republic of Congo) (ngc)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ngd",
+      "Ngando (Central African Republic)",
+      "Ngando (Central African Republic) (ngd)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "nge",
+      "Ngemba",
+      "Ngemba (nge)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ngg",
+      "Ngbaka Manza",
+      "Ngbaka Manza (ngg)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ngh",
+      "Nǁng",
+      "Nǁng (ngh)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ngi",
+      "Ngizim",
+      "Ngizim (ngi)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ngj",
+      "Ngie",
+      "Ngie (ngj)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ngl",
+      "Lomwe",
+      "Lomwe (ngl)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ngn",
+      "Ngwo",
+      "Ngwo (ngn)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ngo",
+      "Ngoni",
+      "Ngoni (ngo)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ngp",
+      "Ngulu",
+      "Ngulu (ngp)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ngq",
+      "Ngurimi",
+      "Ngurimi (ngq)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ngs",
+      "Gvoko",
+      "Gvoko (ngs)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ngw",
+      "Ngwaba",
+      "Ngwaba (ngw)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ngy",
+      "Tibea",
+      "Tibea (ngy)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ngz",
+      "Ngungwel",
+      "Ngungwel (ngz)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "nhb",
+      "Beng",
+      "Beng (nhb)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "nhr",
+      "Naro",
+      "Naro (nhr)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "nhu",
+      "Noone",
+      "Noone (nhu)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "nim",
+      "Nilamba",
+      "Nilamba (nim)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "nin",
+      "Ninzo",
+      "Ninzo (nin)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "niq",
+      "Nandi",
+      "Nandi (niq)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "nix",
+      "Hema",
+      "Hema (nix)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "niy",
+      "Ngiti",
+      "Ngiti (niy)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "njd",
+      "Ndonde Hamba",
+      "Ndonde Hamba (njd)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "njj",
+      "Njen",
+      "Njen (njj)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "njr",
+      "Njerep",
+      "Njerep (njr)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "njy",
+      "Njyem",
+      "Njyem (njy)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "nka",
+      "Nkoya",
+      "Nkoya (nka)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "nkc",
+      "Nkongho",
+      "Nkongho (nkc)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "nkn",
+      "Nkangala",
+      "Nkangala (nkn)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "nko",
+      "Nkonya",
+      "Nkonya (nko)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "nkq",
+      "Nkami",
+      "Nkami (nkq)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "nku",
+      "Bouna Kulango",
+      "Bouna Kulango (nku)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "nkw",
+      "Nkutu",
+      "Nkutu (nkw)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "nkx",
+      "Nkoroo",
+      "Nkoroo (nkx)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "nkz",
+      "Nkari",
+      "Nkari (nkz)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "nla",
+      "Ngombale",
+      "Ngombale (nla)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "nle",
+      "East Nyala",
+      "East Nyala (nle)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "nlj",
+      "Nyali",
+      "Nyali (nlj)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "nlo",
+      "Ngul",
+      "Ngul (nlo)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "nlu",
+      "Nchumbulu",
+      "Nchumbulu (nlu)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "nmc",
+      "Ngam",
+      "Ngam (nmc)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "nmd",
+      "Ndumu",
+      "Ndumu (nmd)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "nmg",
+      "Kwasio",
+      "Kwasio (nmg)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "nmi",
+      "Nyam",
+      "Nyam (nmi)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "nmj",
+      "Ngombe (Central African Republic)",
+      "Ngombe (Central African Republic) (nmj)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "nml",
+      "Ndemli",
+      "Ndemli (nml)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "nmn",
+      "ǃXóõ",
+      "ǃXóõ (nmn)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "nmq",
+      "Nambya",
+      "Nambya (nmq)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "nmz",
+      "Nawdm",
+      "Nawdm (nmz)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "nnb",
+      "Nande",
+      "Nande (nnb)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "nne",
+      "Ngandyera",
+      "Ngandyera (nne)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "nnh",
+      "Ngiemboon",
+      "Ngiemboon (nnh)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "nnq",
+      "Ngindo",
+      "Ngindo (nnq)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "nnu",
+      "Dwang",
+      "Dwang (nnu)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "nnw",
+      "Southern Nuni",
+      "Southern Nuni (nnw)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "nnz",
+      "Nda'nda'",
+      "Nda'nda' (nnz)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "noq",
+      "Ngongo",
+      "Ngongo (noq)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "now",
+      "Nyambo",
+      "Nyambo (now)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "nqg",
+      "Southern Nago",
+      "Southern Nago (nqg)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "nqk",
+      "Kura Ede Nago",
+      "Kura Ede Nago (nqk)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "nql",
+      "Ngendelengo",
+      "Ngendelengo (nql)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "nqo",
+      "N'Ko",
+      "N'Ko (nqo)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "nra",
+      "Ngom",
+      "Ngom (nra)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "nsc",
+      "Nshi",
+      "Nshi (nsc)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "nse",
+      "Nsenga",
+      "Nsenga (nse)",
+      "Sepik_Highlands_Pacific"
+    ],
+    [
+      "nsg",
+      "Ngasa",
+      "Ngasa (nsg)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "nsh",
+      "Ngoshie",
+      "Ngoshie (nsh)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "nsi",
+      "Nigerian Sign Language",
+      "Nigerian Sign Language (nsi)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "nso",
+      "Pedi",
+      "Pedi (nso)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "nsx",
+      "Nsongo",
+      "Nsongo (nsx)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "nte",
+      "Nathembo",
+      "Nathembo (nte)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "nti",
+      "Natioro",
+      "Natioro (nti)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ntk",
+      "Ikoma-Nata-Isenye",
+      "Ikoma-Nata-Isenye (ntk)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ntm",
+      "Nateni",
+      "Nateni (ntm)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "nto",
+      "Ntomba",
+      "Ntomba (nto)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ntr",
+      "Delo",
+      "Delo (ntr)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "nue",
+      "Ngundu",
+      "Ngundu (nue)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "nuh",
+      "Ndunda",
+      "Ndunda (nuh)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "nui",
+      "Ngumbi",
+      "Ngumbi (nui)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "nuj",
+      "Nyole",
+      "Nyole (nuj)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "nup",
+      "Nupe-Nupe-Tako",
+      "Nupe-Nupe-Tako (nup)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "nuu",
+      "Ngbundu",
+      "Ngbundu (nuu)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "nuv",
+      "Northern Nuni",
+      "Northern Nuni (nuv)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "nvo",
+      "Nyokon",
+      "Nyokon (nvo)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "nwb",
+      "Nyabwa",
+      "Nyabwa (nwb)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "nwe",
+      "Ngwe",
+      "Ngwe (nwe)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "nxd",
+      "Ngando (Democratic Republic of Congo)",
+      "Ngando (Democratic Republic of Congo) (nxd)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "nxi",
+      "Nindi",
+      "Nindi (nxi)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "nxo",
+      "Ndambomo",
+      "Ndambomo (nxo)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "nya",
+      "Nyanja",
+      "Nyanja (nya)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "nyb",
+      "Nyangbo",
+      "Nyangbo (nyb)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "nyc",
+      "Nyanga-li",
+      "Nyanga-li (nyc)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "nyd",
+      "Nyore",
+      "Nyore (nyd)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "nye",
+      "Nyengo",
+      "Nyengo (nye)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "nyf",
+      "Giryama",
+      "Giryama (nyf)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "nyj",
+      "Nyanga",
+      "Nyanga (nyj)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "nyk",
+      "Nyaneka",
+      "Nyaneka (nyk)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "nym",
+      "Nyamwezi",
+      "Nyamwezi (nym)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "nyn",
+      "Nyankole",
+      "Nyankole (nyn)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "nyo",
+      "Nyoro",
+      "Nyoro (nyo)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "nyu",
+      "Nyungwe",
+      "Nyungwe (nyu)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "nyy",
+      "Nyakyusa-Ngonde",
+      "Nyakyusa-Ngonde (nyy)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "nza",
+      "Tigon Mbembe",
+      "Tigon Mbembe (nza)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "nzb",
+      "Njebi",
+      "Njebi (nzb)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "nzd",
+      "Nzadi",
+      "Nzadi (nzd)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "nzi",
+      "Nzima",
+      "Nzima (nzi)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "nzk",
+      "Nzakara",
+      "Nzakara (nzk)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "nzu",
+      "Teke-Nzikou",
+      "Teke-Nzikou (nzu)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "nzy",
+      "Nzakambay",
+      "Nzakambay (nzy)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "nzz",
+      "Nanga Dama Dogon",
+      "Nanga Dama Dogon (nzz)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "obl",
+      "Oblo",
+      "Oblo (obl)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "obu",
+      "Obulom",
+      "Obulom (obu)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "oda",
+      "Odut",
+      "Odut (oda)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "odu",
+      "Odual",
+      "Odual (odu)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ofu",
+      "Efutop",
+      "Efutop (ofu)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ogb",
+      "Ogbia",
+      "Ogbia (ogb)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ogc",
+      "Ogbah",
+      "Ogbah (ogc)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ogg",
+      "Ogbogolo",
+      "Ogbogolo (ogg)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ogo",
+      "Khana",
+      "Khana (ogo)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ogu",
+      "Ogbronuagum",
+      "Ogbronuagum (ogu)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "okb",
+      "Okobo",
+      "Okobo (okb)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "okd",
+      "Okodia",
+      "Okodia (okd)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "oke",
+      "Okpe (Southwestern Edo)",
+      "Okpe (Southwestern Edo) (oke)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "oki",
+      "Okiek",
+      "Okiek (oki)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "okk",
+      "Kwamtim One",
+      "Kwamtim One (okk)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "okr",
+      "Kirike",
+      "Kirike (okr)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "oks",
+      "Oko-Eni-Osayen",
+      "Oko-Eni-Osayen (oks)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "oku",
+      "Oku",
+      "Oku (oku)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "okx",
+      "Okpe (Northwestern Edo)",
+      "Okpe (Northwestern Edo) (okx)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "old",
+      "Mochi",
+      "Mochi (old)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "olm",
+      "Oloma",
+      "Oloma (olm)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "olu",
+      "Kuvale",
+      "Kuvale (olu)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "omi",
+      "Omi",
+      "Omi (omi)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "oml",
+      "Ombo",
+      "Ombo (oml)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "omt",
+      "Omotik",
+      "Omotik (omt)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "oor",
+      "Oorlams",
+      "Oorlams (oor)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "opa",
+      "Okpamheri",
+      "Okpamheri (opa)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "orc",
+      "Orma",
+      "Orma (orc)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "org",
+      "Oring",
+      "Oring (org)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "orr",
+      "Oruma",
+      "Oruma (orr)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "orx",
+      "Oro",
+      "Oro (orx)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "oso",
+      "Ososo",
+      "Ososo (oso)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ost",
+      "Osatu",
+      "Osatu (ost)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "oub",
+      "Glio-Oubi",
+      "Glio-Oubi (oub)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ozm",
+      "Koonzime",
+      "Koonzime (ozm)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "pae",
+      "Pagibete",
+      "Pagibete (pae)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "pai",
+      "Pe",
+      "Pe (pai)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "pbi",
+      "Parkwa",
+      "Parkwa (pbi)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "pbl",
+      "Mak (Nigeria)",
+      "Mak (Nigeria) (pbl)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "pbn",
+      "Kpasam",
+      "Kpasam (pbn)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "pbo",
+      "Papel",
+      "Papel (pbo)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "pbp",
+      "Badyara",
+      "Badyara (pbp)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "pbr",
+      "Pangwa",
+      "Pangwa (pbr)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "pcm",
+      "Nigerian Pidgin",
+      "Nigerian Pidgin (pcm)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "pcn",
+      "Piti",
+      "Piti (pcn)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "pcw",
+      "Pyapun",
+      "Pyapun (pcw)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "pem",
+      "Phende",
+      "Phende (pem)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "pfe",
+      "Pere",
+      "Pere (pfe)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "pgs",
+      "Pangseng",
+      "Pangseng (pgs)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "phm",
+      "Phimbi",
+      "Phimbi (phm)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "pic",
+      "Pinji",
+      "Pinji (pic)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "pil",
+      "Yom",
+      "Yom (pil)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "pip",
+      "Pero",
+      "Pero (pip)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "piw",
+      "Pimbwe",
+      "Pimbwe (piw)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "piy",
+      "Piya-Kwonci",
+      "Piya-Kwonci (piy)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "pkb",
+      "Pokomo",
+      "Pokomo (pkb)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "pko",
+      "Pökoot",
+      "Pökoot (pko)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "plr",
+      "Palaka Senoufo",
+      "Palaka Senoufo (plr)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "plt",
+      "Plateau Malagasy",
+      "Plateau Malagasy (plt)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "pmb",
+      "Pambia",
+      "Pambia (pmb)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "pmn",
+      "Pam",
+      "Pam (pmn)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "pnd",
+      "Mpinda",
+      "Mpinda (pnd)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "png",
+      "Pongu",
+      "Pongu (png)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "pnl",
+      "Paleni",
+      "Paleni (pnl)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "pnq",
+      "Pana (Burkina Faso)",
+      "Pana (Burkina Faso) (pnq)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "pnv",
+      "Pinigura",
+      "Pinigura (pnv)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "pnz",
+      "Pana (Central African Republic)",
+      "Pana (Central African Republic) (pnz)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "pof",
+      "Poke",
+      "Poke (pof)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "pov",
+      "Upper Guinea Crioulo",
+      "Upper Guinea Crioulo (pov)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "poy",
+      "Pogolo",
+      "Pogolo (poy)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ppp",
+      "Pelende",
+      "Pelende (ppp)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "pqa",
+      "Pa'a",
+      "Pa'a (pqa)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "pre",
+      "Principense",
+      "Principense (pre)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "pug",
+      "Phuie",
+      "Phuie (pug)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "puu",
+      "Punu",
+      "Punu (puu)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "pwb",
+      "Panawa",
+      "Panawa (pwb)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "pye",
+      "Pye Krumen",
+      "Pye Krumen (pye)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "pym",
+      "Fyam",
+      "Fyam (pym)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "rag",
+      "Logooli",
+      "Logooli (rag)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "rax",
+      "Rang",
+      "Rang (rax)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "rcf",
+      "Réunion Creole French",
+      "Réunion Creole French (rcf)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "reg",
+      "Kara (Tanzania)",
+      "Kara (Tanzania) (reg)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "rel",
+      "Rendille",
+      "Rendille (rel)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "res",
+      "Reshe",
+      "Reshe (res)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "rim",
+      "Nyaturu",
+      "Nyaturu (rim)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "rin",
+      "Nungu",
+      "Nungu (rin)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "rkm",
+      "Marka",
+      "Marka (rkm)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "rnd",
+      "Ruund",
+      "Ruund (rnd)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "rng",
+      "Ronga",
+      "Ronga (rng)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "rnw",
+      "Rungwa",
+      "Rungwa (rnw)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "rod",
+      "Rogo",
+      "Rogo (rod)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "rof",
+      "Rombo",
+      "Rombo (rof)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "rou",
+      "Runga",
+      "Runga (rou)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "rub",
+      "Gungu",
+      "Gungu (rub)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ruc",
+      "Ruuli",
+      "Ruuli (ruc)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ruf",
+      "Luguru",
+      "Luguru (ruf)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "rui",
+      "Rufiji",
+      "Rufiji (rui)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ruk",
+      "Che",
+      "Che (ruk)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "run",
+      "Rundi",
+      "Rundi (run)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ruy",
+      "Mala (Nigeria)",
+      "Mala (Nigeria) (ruy)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ruz",
+      "Ruma",
+      "Ruma (ruz)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "rwk",
+      "Rwa",
+      "Rwa (rwk)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "rwm",
+      "Amba (Uganda)",
+      "Amba (Uganda) (rwm)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "sac",
+      "Meskwaki",
+      "Meskwaki (sac)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "sad",
+      "Sandawe",
+      "Sandawe (sad)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "saf",
+      "Safaliba",
+      "Safaliba (saf)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "sag",
+      "Sango",
+      "Sango (sag)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "sak",
+      "Sake",
+      "Sake (sak)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "saq",
+      "Samburu",
+      "Samburu (saq)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "sav",
+      "Saafi-Saafi",
+      "Saafi-Saafi (sav)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "say",
+      "Saya",
+      "Saya (say)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "sba",
+      "Ngambay",
+      "Ngambay (sba)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "sbd",
+      "Southern Samo",
+      "Southern Samo (sbd)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "sbk",
+      "Safwa",
+      "Safwa (sbk)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "sbm",
+      "Sagala",
+      "Sagala (sbm)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "sbp",
+      "Sangu (Tanzania)",
+      "Sangu (Tanzania) (sbp)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "sbs",
+      "Subiya",
+      "Subiya (sbs)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "sbw",
+      "Simba",
+      "Simba (sbw)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "sby",
+      "Soli",
+      "Soli (sby)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "sbz",
+      "Sara Kaba",
+      "Sara Kaba (sbz)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "scv",
+      "Sheni",
+      "Sheni (scv)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "scw",
+      "Sha",
+      "Sha (scw)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "sde",
+      "Surubu",
+      "Surubu (sde)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "sdj",
+      "Suundi",
+      "Suundi (sdj)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "seb",
+      "Shempire Senoufo",
+      "Shempire Senoufo (seb)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "sef",
+      "Cebaara Senoufo",
+      "Cebaara Senoufo (sef)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "seg",
+      "Segeju",
+      "Segeju (seg)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "seh",
+      "Sena",
+      "Sena (seh)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "sen",
+      "Nanerigé Sénoufo",
+      "Nanerigé Sénoufo (sen)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "sep",
+      "Sìcìté Sénoufo",
+      "Sìcìté Sénoufo (sep)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "seq",
+      "Senara Sénoufo",
+      "Senara Sénoufo (seq)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "sev",
+      "Nyarafolo Senoufo",
+      "Nyarafolo Senoufo (sev)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "sfs",
+      "South African Sign Language",
+      "South African Sign Language (sfs)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "sfw",
+      "Sehwi",
+      "Sehwi (sfw)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "sgc",
+      "Kipsigis",
+      "Kipsigis (sgc)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "sgi",
+      "Suga",
+      "Suga (sgi)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "sgx",
+      "Sierra Leone Sign Language",
+      "Sierra Leone Sign Language (sgx)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "sha",
+      "Shall-Zwall",
+      "Shall-Zwall (sha)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "shc",
+      "Sonde",
+      "Sonde (shc)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "shg",
+      "Shua",
+      "Shua (shg)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "sho",
+      "Shanga",
+      "Shanga (sho)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "shq",
+      "Sala",
+      "Sala (shq)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "shr",
+      "Shi",
+      "Shi (shr)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "shz",
+      "Syenara Senoufo",
+      "Syenara Senoufo (shz)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "sie",
+      "Simaa",
+      "Simaa (sie)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "sif",
+      "Siamou",
+      "Siamou (sif)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "sig",
+      "Paasaal",
+      "Paasaal (sig)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "sil",
+      "Tumulung Sisaala",
+      "Tumulung Sisaala (sil)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "sir",
+      "Siri",
+      "Siri (sir)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "skg",
+      "Sakalava Malagasy",
+      "Sakalava Malagasy (skg)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "skq",
+      "Sininkere",
+      "Sininkere (skq)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "skt",
+      "Sakata",
+      "Sakata (skt)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "sld",
+      "Sissala",
+      "Sissala (sld)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "slx",
+      "Salampasu",
+      "Salampasu (slx)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "smx",
+      "Samba",
+      "Samba (smx)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "sna",
+      "Shona",
+      "Shona (sna)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "snf",
+      "Noon",
+      "Noon (snf)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "sng",
+      "Sanga (Democratic Republic of Congo)",
+      "Sanga (Democratic Republic of Congo) (sng)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "snk",
+      "Soninke",
+      "Soninke (snk)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "snm",
+      "Southern Ma'di",
+      "Southern Ma'di (snm)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "snq",
+      "Sangu (Gabon)",
+      "Sangu (Gabon) (snq)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "snw",
+      "Selee",
+      "Selee (snw)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "soc",
+      "So (Democratic Republic of Congo)",
+      "So (Democratic Republic of Congo) (soc)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "sod",
+      "Songoora",
+      "Songoora (sod)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "soe",
+      "Songomeno",
+      "Songomeno (soe)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "soo",
+      "Songo",
+      "Songo (soo)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "sop",
+      "Songe",
+      "Songe (sop)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "sos",
+      "Seeku",
+      "Seeku (sos)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "sot",
+      "Southern Sotho",
+      "Southern Sotho (sot)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "sox",
+      "Swo",
+      "Swo (sox)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "soy",
+      "Miyobe",
+      "Miyobe (soy)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "soz",
+      "Temi",
+      "Temi (soz)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "spy",
+      "Sabaot",
+      "Sabaot (spy)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "sqa",
+      "Shama-Sambuga",
+      "Shama-Sambuga (sqa)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "sqh",
+      "Shau",
+      "Shau (sqh)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "sqm",
+      "Suma",
+      "Suma (sqm)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "srr",
+      "Serer",
+      "Serer (srr)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ssc",
+      "Suba-Simbiti",
+      "Suba-Simbiti (ssc)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ssl",
+      "Western Sisaala",
+      "Western Sisaala (ssl)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ssn",
+      "Waata",
+      "Waata (ssn)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ssw",
+      "Swati",
+      "Swati (ssw)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "sta",
+      "Settla",
+      "Settla (sta)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "stj",
+      "Matya Samo",
+      "Matya Samo (stj)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "sub",
+      "Suku",
+      "Suku (sub)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "suj",
+      "Shubi",
+      "Shubi (suj)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "suk",
+      "Sukuma",
+      "Sukuma (suk)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "sur",
+      "Mwaghavul",
+      "Mwaghavul (sur)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "sus",
+      "Susu",
+      "Susu (sus)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "suw",
+      "Sumbwa",
+      "Sumbwa (suw)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "swa",
+      "Swahili",
+      "Kiswahili",
+      "Dar_es_Salaam,Nairobi,Goma,Lubumbashi"
+    ],
+    [
+      "swc",
+      "Congo Swahili",
+      "Congo Swahili (swc)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "swf",
+      "Sere",
+      "Sere (swf)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "swh",
+      "Swahili (individual language)",
+      "Swahili (individual language) (swh)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "swj",
+      "Sira",
+      "Sira (swj)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "swk",
+      "Malawi Sena",
+      "Malawi Sena (swk)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "swq",
+      "Sharwa",
+      "Sharwa (swq)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "sxb",
+      "Suba",
+      "Suba (sxb)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "sxe",
+      "Sighu",
+      "Sighu (sxe)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "sxs",
+      "Sasaru",
+      "Sasaru (sxs)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "sxw",
+      "Saxwe Gbe",
+      "Saxwe Gbe (sxw)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "syi",
+      "Seki",
+      "Seki (syi)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "syk",
+      "Sukur",
+      "Sukur (syk)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "szg",
+      "Sengele",
+      "Sengele (szg)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "szv",
+      "Isu (Fako Division)",
+      "Isu (Fako Division) (szv)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "tak",
+      "Tala",
+      "Tala (tak)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "tal",
+      "Tal",
+      "Tal (tal)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "tan",
+      "Tangale",
+      "Tangale (tan)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "tap",
+      "Taabwa",
+      "Taabwa (tap)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "tbt",
+      "Tembo (Kitembo)",
+      "Tembo (Kitembo) (tbt)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "tcc",
+      "Datooga",
+      "Datooga (tcc)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "tcd",
+      "Tafi",
+      "Tafi (tcd)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "tck",
+      "Tchitchege",
+      "Tchitchege (tck)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "tde",
+      "Tiranige Diga Dogon",
+      "Tiranige Diga Dogon (tde)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "tdk",
+      "Tambas",
+      "Tambas (tdk)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "tdl",
+      "Sur",
+      "Sur (tdl)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "tdo",
+      "Teme",
+      "Teme (tdo)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "tdq",
+      "Tita",
+      "Tita (tdq)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "tdv",
+      "Toro",
+      "Toro (tdv)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "tdx",
+      "Tandroy-Mahafaly Malagasy",
+      "Tandroy-Mahafaly Malagasy (tdx)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "tec",
+      "Terik",
+      "Terik (tec)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ted",
+      "Tepo Krumen",
+      "Tepo Krumen (ted)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "teg",
+      "Teke-Tege",
+      "Teke-Tege (teg)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "tek",
+      "Ibali Teke",
+      "Ibali Teke (tek)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "tem",
+      "Timne",
+      "Timne (tem)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "teo",
+      "Teso",
+      "Teso (teo)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "teu",
+      "Soo",
+      "Soo (teu)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "tfi",
+      "Tofin Gbe",
+      "Tofin Gbe (tfi)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "tga",
+      "Sagalla",
+      "Sagalla (tga)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "tgd",
+      "Ciwogai",
+      "Ciwogai (tgd)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "tgw",
+      "Tagwana Senoufo",
+      "Tagwana Senoufo (tgw)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "thk",
+      "Tharaka",
+      "Tharaka (thk)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "thy",
+      "Tha",
+      "Tha (thy)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "tii",
+      "Tiene",
+      "Tiene (tii)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "tik",
+      "Tikar",
+      "Tikar (tik)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "tiq",
+      "Tiéfo",
+      "Tiéfo (tiq)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "tiv",
+      "Tiv",
+      "Tiv (tiv)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "tja",
+      "Tajuasohn",
+      "Tajuasohn (tja)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "tke",
+      "Takwane",
+      "Takwane (tke)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "tkg",
+      "Tesaka Malagasy",
+      "Tesaka Malagasy (tkg)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "tkq",
+      "Tee",
+      "Tee (tkq)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "tlj",
+      "Talinga-Bwisi",
+      "Talinga-Bwisi (tlj)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "tll",
+      "Tetela",
+      "Tetela (tll)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "tmv",
+      "Tembo (Motembo)",
+      "Tembo (Motembo) (tmv)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "tnk",
+      "Kwamera",
+      "Kwamera (tnk)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "tnr",
+      "Ménik",
+      "Ménik (tnr)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "tny",
+      "Tongwe",
+      "Tongwe (tny)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "tod",
+      "Toma",
+      "Toma (tod)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "tog",
+      "Tonga (Nyasa)",
+      "Tonga (Nyasa) (tog)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "toh",
+      "Gitonga",
+      "Gitonga (toh)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "toi",
+      "Tonga (Zambia)",
+      "Tonga (Zambia) (toi)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "toq",
+      "Toposa",
+      "Toposa (toq)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "tor",
+      "Togbo-Vara Banda",
+      "Togbo-Vara Banda (tor)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "toz",
+      "To",
+      "To (toz)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "tpm",
+      "Tampulma",
+      "Tampulma (tpm)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "tsa",
+      "Tsaangi",
+      "Tsaangi (tsa)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "tsc",
+      "Tswa",
+      "Tswa (tsc)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "tsh",
+      "Tsuvan",
+      "Tsuvan (tsh)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "tsn",
+      "Tswana",
+      "Tswana (tsn)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "tso",
+      "Tsonga",
+      "Tsonga (tso)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "tsp",
+      "Northern Toussian",
+      "Northern Toussian (tsp)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "tsv",
+      "Tsogo",
+      "Tsogo (tsv)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "tsw",
+      "Tsishingini",
+      "Tsishingini (tsw)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ttb",
+      "Gaa",
+      "Gaa (ttb)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ttf",
+      "Tuotomb",
+      "Tuotomb (ttf)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ttj",
+      "Tooro",
+      "Tooro (ttj)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ttl",
+      "Totela",
+      "Totela (ttl)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ttq",
+      "Tawallammat Tamajaq",
+      "Tawallammat Tamajaq (ttq)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ttr",
+      "Tera",
+      "Tera (ttr)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "tui",
+      "Tupuri",
+      "Tupuri (tui)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "tul",
+      "Tula",
+      "Tula (tul)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "tum",
+      "Tumbuka",
+      "Tumbuka (tum)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "tuy",
+      "Tugen",
+      "Tugen (tuy)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "tuz",
+      "Turka",
+      "Turka (tuz)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "tvd",
+      "Tsuvadi",
+      "Tsuvadi (tvd)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "tvs",
+      "Taveta",
+      "Taveta (tvs)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "tvu",
+      "Tunen",
+      "Tunen (tvu)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "twl",
+      "Tawara",
+      "Tawara (twl)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "twn",
+      "Twendi",
+      "Twendi (twn)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "two",
+      "Tswapong",
+      "Tswapong (two)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "twx",
+      "Tewe",
+      "Tewe (twx)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "txj",
+      "Tarjumo",
+      "Tarjumo (txj)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "txy",
+      "Tanosy Malagasy",
+      "Tanosy Malagasy (txy)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "tye",
+      "Kyanga",
+      "Kyanga (tye)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "tyu",
+      "Kua",
+      "Kua (tyu)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "tyx",
+      "Teke-Tyee",
+      "Teke-Tyee (tyx)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "tza",
+      "Tanzanian Sign Language",
+      "Tanzanian Sign Language (tza)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "uba",
+      "Ubang",
+      "Ubang (uba)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "uda",
+      "Uda",
+      "Uda (uda)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "udl",
+      "Wuzlam",
+      "Wuzlam (udl)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ugn",
+      "Ugandan Sign Language",
+      "Ugandan Sign Language (ugn)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "uha",
+      "Uhami",
+      "Uhami (uha)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "uji",
+      "Tanjijili",
+      "Tanjijili (uji)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ukh",
+      "Ukhwejo",
+      "Ukhwejo (ukh)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ukp",
+      "Ukpe-Bayobiri",
+      "Ukpe-Bayobiri (ukp)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ukq",
+      "Ukwa",
+      "Ukwa (ukq)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "uku",
+      "Ukue",
+      "Ukue (uku)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ukw",
+      "Ukwuani-Aboh-Ndoni",
+      "Ukwuani-Aboh-Ndoni (ukw)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ula",
+      "Fungwa",
+      "Fungwa (ula)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ulb",
+      "Ulukwumi",
+      "Ulukwumi (ulb)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "umb",
+      "Umbundu",
+      "Umbundu (umb)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "umm",
+      "Umon",
+      "Umon (umm)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "une",
+      "Uneme",
+      "Uneme (une)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "urh",
+      "Urhobo",
+      "Urhobo (urh)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "usk",
+      "Usaghade",
+      "Usaghade (usk)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "uss",
+      "us-Saare",
+      "us-Saare (uss)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "uta",
+      "Otank",
+      "Otank (uta)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "uth",
+      "ut-Hun",
+      "ut-Hun (uth)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "utr",
+      "Etulo",
+      "Etulo (utr)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "uya",
+      "Doko-Uyanga",
+      "Doko-Uyanga (uya)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "vae",
+      "Vale",
+      "Vale (vae)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "vag",
+      "Vagla",
+      "Vagla (vag)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "vai",
+      "Vai",
+      "Vai (vai)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "vaj",
+      "Sekele",
+      "Sekele (vaj)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "vau",
+      "Vanuma",
+      "Vanuma (vau)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "vem",
+      "Vemgo-Mabas",
+      "Vemgo-Mabas (vem)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ven",
+      "Venda",
+      "Venda (ven)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ver",
+      "Mom Jango",
+      "Mom Jango (ver)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "vid",
+      "Vidunda",
+      "Vidunda (vid)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "vif",
+      "Vili",
+      "Vili (vif)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "vig",
+      "Viemo",
+      "Viemo (vig)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "vin",
+      "Vinza",
+      "Vinza (vin)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "vit",
+      "Viti",
+      "Viti (vit)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "vki",
+      "Ija-Zuba",
+      "Ija-Zuba (vki)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "vmk",
+      "Makhuwa-Shirima",
+      "Makhuwa-Shirima (vmk)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "vmr",
+      "Marenje",
+      "Marenje (vmr)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "vmw",
+      "Makhuwa",
+      "Makhuwa (vmw)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "vor",
+      "Voro",
+      "Voro (vor)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "vum",
+      "Vumbu",
+      "Vumbu (vum)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "vun",
+      "Vunjo",
+      "Vunjo (vun)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "vut",
+      "Vute",
+      "Vute (vut)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "wan",
+      "Wan",
+      "Wan (wan)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "wav",
+      "Waka",
+      "Waka (wav)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "wbf",
+      "Wara",
+      "Wara (wbf)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "wbh",
+      "Wanda",
+      "Wanda (wbh)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "wbi",
+      "Vwanji",
+      "Vwanji (wbi)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "wbj",
+      "Alagwa",
+      "Alagwa (wbj)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "wci",
+      "Waci Gbe",
+      "Waci Gbe (wci)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "wdd",
+      "Wandji",
+      "Wandji (wdd)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "wec",
+      "Wè Western",
+      "Wè Western (wec)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "weh",
+      "Weh",
+      "Weh (weh)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "wem",
+      "Weme Gbe",
+      "Weme Gbe (wem)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "wes",
+      "Cameroon Pidgin",
+      "Cameroon Pidgin (wes)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "wib",
+      "Southern Toussian",
+      "Southern Toussian (wib)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "wja",
+      "Waja",
+      "Waja (wja)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "wji",
+      "Warji",
+      "Warji (wji)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "wlc",
+      "Mwali Comorian",
+      "Mwali Comorian (wlc)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "wlx",
+      "Wali (Ghana)",
+      "Wali (Ghana) (wlx)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "wmw",
+      "Mwani",
+      "Mwani (wmw)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "wni",
+      "Ndzwani Comorian",
+      "Ndzwani Comorian (wni)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "wob",
+      "Wè Northern",
+      "Wè Northern (wob)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "wof",
+      "Gambian Wolof",
+      "Gambian Wolof (wof)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "wok",
+      "Longto",
+      "Longto (wok)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "wol",
+      "Wolof",
+      "Wolof (wol)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "wom",
+      "Wom (Nigeria)",
+      "Wom (Nigeria) (wom)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "won",
+      "Wongo",
+      "Wongo (won)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "wss",
+      "Wasa",
+      "Wasa (wss)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "wud",
+      "Wudu",
+      "Wudu (wud)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "wum",
+      "Wumbvu",
+      "Wumbvu (wum)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "wun",
+      "Bungu",
+      "Bungu (wun)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "wwa",
+      "Waama",
+      "Waama (wwa)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "www",
+      "Wawa",
+      "Wawa (www)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "xab",
+      "Sambe",
+      "Sambe (xab)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "xdo",
+      "Kwandu",
+      "Kwandu (xdo)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "xed",
+      "Hdi",
+      "Hdi (xed)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "xho",
+      "Xhosa",
+      "Xhosa (xho)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "xii",
+      "Xiri",
+      "Xiri (xii)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "xkb",
+      "Northern Nago",
+      "Northern Nago (xkb)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "xki",
+      "Kenyan Sign Language",
+      "Kenyan Sign Language (xki)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "xkt",
+      "Kantosi",
+      "Kantosi (xkt)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "xku",
+      "Kaamba",
+      "Kaamba (xku)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "xkv",
+      "Kgalagadi",
+      "Kgalagadi (xkv)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "xmb",
+      "Mbonga",
+      "Mbonga (xmb)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "xmc",
+      "Makhuwa-Marrevone",
+      "Makhuwa-Marrevone (xmc)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "xmd",
+      "Mbudum",
+      "Mbudum (xmd)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "xmg",
+      "Mengaka",
+      "Mengaka (xmg)",
+      "Sepik_Highlands_Pacific"
+    ],
+    [
+      "xmj",
+      "Majera",
+      "Majera (xmj)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "xmv",
+      "Antankarana Malagasy",
+      "Antankarana Malagasy (xmv)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "xmw",
+      "Tsimihety Malagasy",
+      "Tsimihety Malagasy (xmw)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "xog",
+      "Soga",
+      "Soga (xog)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "xon",
+      "Konkomba",
+      "Konkomba (xon)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "xpe",
+      "Liberia Kpelle",
+      "Liberia Kpelle (xpe)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "xrb",
+      "Eastern Karaboro",
+      "Eastern Karaboro (xrb)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "xsh",
+      "Shamang",
+      "Shamang (xsh)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "xsj",
+      "Subi",
+      "Subi (xsj)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "xsm",
+      "Kasem",
+      "Kasem (xsm)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "xsn",
+      "Sanga (Nigeria)",
+      "Sanga (Nigeria) (xsn)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "xsq",
+      "Makhuwa-Saka",
+      "Makhuwa-Saka (xsq)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "xuo",
+      "Kuo",
+      "Kuo (xuo)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "xuu",
+      "Kxoe",
+      "Kxoe (xuu)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "xwa",
+      "Kwaza",
+      "Kwaza (xwa)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "xwe",
+      "Xwela Gbe",
+      "Xwela Gbe (xwe)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "xwl",
+      "Western Xwla Gbe",
+      "Western Xwla Gbe (xwl)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "yaf",
+      "Yaka (Democratic Republic of Congo)",
+      "Yaka (Democratic Republic of Congo) (yaf)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "yaj",
+      "Banda-Yangere",
+      "Banda-Yangere (yaj)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "yal",
+      "Yalunka",
+      "Yalunka (yal)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "yam",
+      "Yamba",
+      "Yamba (yam)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "yao",
+      "Yao",
+      "Yao (yao)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "yas",
+      "Nugunu (Cameroon)",
+      "Nugunu (Cameroon) (yas)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "yat",
+      "Yambeta",
+      "Yambeta (yat)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "yav",
+      "Yangben",
+      "Yangben (yav)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "yax",
+      "Yauma",
+      "Yauma (yax)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "yay",
+      "Agwagwune",
+      "Agwagwune (yay)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "yaz",
+      "Lokaa",
+      "Lokaa (yaz)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "yba",
+      "Yala",
+      "Yala (yba)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ybb",
+      "Yemba",
+      "Yemba (ybb)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ybe",
+      "West Yugur",
+      "West Yugur (ybe)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ybj",
+      "Hasha",
+      "Hasha (ybj)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ybl",
+      "Yukuben",
+      "Yukuben (ybl)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "yel",
+      "Yela",
+      "Yela (yel)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "yer",
+      "Tarok",
+      "Tarok (yer)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "yes",
+      "Nyankpa",
+      "Nyankpa (yes)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "yko",
+      "Yasa",
+      "Yasa (yko)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "yky",
+      "Yakoma",
+      "Yakoma (yky)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "yli",
+      "Angguruk Yali",
+      "Angguruk Yali (yli)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ymg",
+      "Yamongeri",
+      "Yamongeri (ymg)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ymk",
+      "Makwe",
+      "Makwe (ymk)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "yng",
+      "Yango",
+      "Yango (yng)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ynq",
+      "Yendang",
+      "Yendang (ynq)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "yns",
+      "Yansi",
+      "Yansi (yns)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "yor",
+      "Yoruba",
+      "Èdè Yorùbá",
+      "Lagos,Oyo,Osun,Ogun"
+    ],
+    [
+      "yom",
+      "Yombe",
+      "Yombe (yom)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "yot",
+      "Yotti",
+      "Yotti (yot)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "yre",
+      "Yaouré",
+      "Yaouré (yre)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "yul",
+      "Yulu",
+      "Yulu (yul)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "yun",
+      "Bena (Nigeria)",
+      "Bena (Nigeria) (yun)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "yuy",
+      "East Yugur",
+      "East Yugur (yuy)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "zah",
+      "Zangwal",
+      "Zangwal (zah)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "zaj",
+      "Zaramo",
+      "Zaramo (zaj)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "zak",
+      "Zanaki",
+      "Zanaki (zak)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "zaz",
+      "Zari",
+      "Zari (zaz)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "zdj",
+      "Ngazidja Comorian",
+      "Ngazidja Comorian (zdj)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "zga",
+      "Kinga",
+      "Kinga (zga)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "zhi",
+      "Zhire",
+      "Zhire (zhi)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "zhw",
+      "Zhoa",
+      "Zhoa (zhw)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "zib",
+      "Zimbabwe Sign Language",
+      "Zimbabwe Sign Language (zib)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "zil",
+      "Zialo",
+      "Zialo (zil)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "zin",
+      "Zinza",
+      "Zinza (zin)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ziw",
+      "Zigula",
+      "Zigula (ziw)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ziz",
+      "Zizilivakan",
+      "Zizilivakan (ziz)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "zmb",
+      "Zimba",
+      "Zimba (zmb)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "zmf",
+      "Mfinu",
+      "Mfinu (zmf)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "zmn",
+      "Mbangwe",
+      "Mbangwe (zmn)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "zmp",
+      "Mpuono",
+      "Mpuono (zmp)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "zmq",
+      "Mituku",
+      "Mituku (zmq)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "zms",
+      "Mbesa",
+      "Mbesa (zms)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "zmw",
+      "Mbo (Democratic Republic of Congo)",
+      "Mbo (Democratic Republic of Congo) (zmw)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "zmx",
+      "Bomitaba",
+      "Bomitaba (zmx)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "zmz",
+      "Mbandja",
+      "Mbandja (zmz)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "zne",
+      "Zande (individual language)",
+      "Zande (individual language) (zne)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "zns",
+      "Mangas",
+      "Mangas (zns)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "zsl",
+      "Zambian Sign Language",
+      "Zambian Sign Language (zsl)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "zul",
+      "Zulu",
+      "Zulu (zul)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "zyb",
+      "Yongbei Zhuang",
+      "Yongbei Zhuang (zyb)",
+      "Congo_Niger_Basin"
+    ]
+  ]
+}

@@ -1,0 +1,734 @@
+{
+  "macro_region_id": 6,
+  "region_name_es": "Medio Oriente y Creciente Fértil",
+  "total_languages": 121,
+  "subclades_covered": 31,
+  "featured_languages": [
+    [
+      "abv",
+      "Baharna Arabic",
+      "Baharna Arabic (abv)",
+      "Mesopotamia,Arabia"
+    ],
+    [
+      "acm",
+      "Mesopotamian Arabic",
+      "Mesopotamian Arabic (acm)",
+      "Mesopotamia,Arabia"
+    ],
+    [
+      "acq",
+      "Ta'izzi-Adeni Arabic",
+      "Ta'izzi-Adeni Arabic (acq)",
+      "Mesopotamia,Arabia"
+    ],
+    [
+      "acw",
+      "Hijazi Arabic",
+      "Hijazi Arabic (acw)",
+      "Levant_Zagros"
+    ],
+    [
+      "acx",
+      "Omani Arabic",
+      "Omani Arabic (acx)",
+      "Levant_Zagros"
+    ],
+    [
+      "acy",
+      "Cypriot Arabic",
+      "Cypriot Arabic (acy)",
+      "Levant_Zagros"
+    ],
+    [
+      "adf",
+      "Dhofari Arabic",
+      "Dhofari Arabic (adf)",
+      "Levant_Zagros"
+    ],
+    [
+      "aeb",
+      "Tunisian Arabic",
+      "Tunisian Arabic (aeb)",
+      "Levant_Zagros"
+    ],
+    [
+      "aec",
+      "Saidi Arabic",
+      "Saidi Arabic (aec)",
+      "Levant_Zagros"
+    ],
+    [
+      "afb",
+      "Gulf Arabic",
+      "Gulf Arabic (afb)",
+      "Levant_Zagros"
+    ],
+    [
+      "aii",
+      "Assyrian Neo-Aramaic",
+      "Assyrian Neo-Aramaic (aii)",
+      "Levant_Zagros"
+    ],
+    [
+      "ajp",
+      "South Levantine Arabic",
+      "South Levantine Arabic (ajp)",
+      "Levant_Zagros"
+    ],
+    [
+      "ajt",
+      "Judeo-Tunisian Arabic",
+      "Judeo-Tunisian Arabic (ajt)",
+      "Levant_Zagros"
+    ],
+    [
+      "aju",
+      "Judeo-Moroccan Arabic",
+      "Judeo-Moroccan Arabic (aju)",
+      "Levant_Zagros"
+    ],
+    [
+      "akk",
+      "Akkadian",
+      "Akkadian (akk)",
+      "Levant_Zagros"
+    ],
+    [
+      "amw",
+      "Western Neo-Aramaic",
+      "Western Neo-Aramaic (amw)",
+      "Levant_Zagros"
+    ],
+    [
+      "apc",
+      "North Levantine Arabic",
+      "North Levantine Arabic (apc)",
+      "Levant_Zagros"
+    ],
+    [
+      "apd",
+      "Sudanese Arabic",
+      "Sudanese Arabic (apd)",
+      "Levant_Zagros"
+    ],
+    [
+      "arb",
+      "Árabe",
+      "العربية",
+      "Levant,Gulf,Maghreb,Nile"
+    ],
+    [
+      "ara",
+      "Arabic",
+      "Arabic (ara)",
+      "Levant_Zagros"
+    ],
+    [
+      "arc",
+      "Official Aramaic (700-300 BCE)",
+      "Official Aramaic (700-300 BCE) (arc)",
+      "Levant_Zagros"
+    ],
+    [
+      "arq",
+      "Algerian Arabic",
+      "Algerian Arabic (arq)",
+      "Levant_Zagros"
+    ],
+    [
+      "ars",
+      "Najdi Arabic",
+      "Najdi Arabic (ars)",
+      "Levant_Zagros"
+    ],
+    [
+      "ary",
+      "Moroccan Arabic",
+      "Moroccan Arabic (ary)",
+      "Levant_Zagros"
+    ],
+    [
+      "arz",
+      "Egyptian Arabic",
+      "Egyptian Arabic (arz)",
+      "Levant_Zagros"
+    ],
+    [
+      "atn",
+      "Ashtiani",
+      "Ashtiani (atn)",
+      "Levant_Zagros"
+    ],
+    [
+      "avd",
+      "Alviri-Vidari",
+      "Alviri-Vidari (avd)",
+      "Levant_Zagros"
+    ],
+    [
+      "ave",
+      "Avestan",
+      "Avestan (ave)",
+      "Levant_Zagros"
+    ],
+    [
+      "avl",
+      "Eastern Egyptian Bedawi Arabic",
+      "Eastern Egyptian Bedawi Arabic (avl)",
+      "Levant_Zagros"
+    ],
+    [
+      "ayh",
+      "Hadrami Arabic",
+      "Hadrami Arabic (ayh)",
+      "Levant_Zagros"
+    ],
+    [
+      "ayl",
+      "Libyan Arabic",
+      "Libyan Arabic (ayl)",
+      "Levant_Zagros"
+    ],
+    [
+      "ayn",
+      "Sanaani Arabic",
+      "Sanaani Arabic (ayn)",
+      "Levant_Zagros"
+    ],
+    [
+      "ayp",
+      "North Mesopotamian Arabic",
+      "North Mesopotamian Arabic (ayp)",
+      "Levant_Zagros"
+    ],
+    [
+      "bhh",
+      "Bukharic",
+      "Bukharic (bhh)",
+      "Levant_Zagros"
+    ],
+    [
+      "bhm",
+      "Bathari",
+      "Bathari (bhm)",
+      "Levant_Zagros"
+    ],
+    [
+      "bhn",
+      "Bohtan Neo-Aramaic",
+      "Bohtan Neo-Aramaic (bhn)",
+      "Levant_Zagros"
+    ],
+    [
+      "bjf",
+      "Barzani Jewish Neo-Aramaic",
+      "Barzani Jewish Neo-Aramaic (bjf)",
+      "Levant_Zagros"
+    ],
+    [
+      "bjm",
+      "Bajelani",
+      "Bajelani (bjm)",
+      "Levant_Zagros"
+    ],
+    [
+      "bqi",
+      "Bakhtiari",
+      "Bakhtiari (bqi)",
+      "Levant_Zagros"
+    ],
+    [
+      "bsg",
+      "Bashkardi",
+      "Bashkardi (bsg)",
+      "Levant_Zagros"
+    ],
+    [
+      "ckb",
+      "Central Kurdish",
+      "Central Kurdish (ckb)",
+      "Levant_Zagros"
+    ],
+    [
+      "cld",
+      "Chaldean Neo-Aramaic",
+      "Chaldean Neo-Aramaic (cld)",
+      "Levant_Zagros"
+    ],
+    [
+      "def",
+      "Dezfuli",
+      "Dezfuli (def)",
+      "Levant_Zagros"
+    ],
+    [
+      "esh",
+      "Eshtehardi",
+      "Eshtehardi (esh)",
+      "Levant_Zagros"
+    ],
+    [
+      "pes",
+      "Persa",
+      "فارسی",
+      "Tehran,Isfahan,Fars"
+    ],
+    [
+      "fas",
+      "Persian",
+      "Persian (fas)",
+      "Levant_Zagros"
+    ],
+    [
+      "fay",
+      "Southwestern Fars",
+      "Southwestern Fars (fay)",
+      "Levant_Zagros"
+    ],
+    [
+      "faz",
+      "Northwestern Fars",
+      "Northwestern Fars (faz)",
+      "Levant_Zagros"
+    ],
+    [
+      "fif",
+      "Faifi",
+      "Faifi (fif)",
+      "Levant_Zagros"
+    ],
+    [
+      "gbz",
+      "Zoroastrian Dari",
+      "Zoroastrian Dari (gbz)",
+      "Levant_Zagros"
+    ],
+    [
+      "gdq",
+      "Mehri",
+      "Mehri (gdq)",
+      "Levant_Zagros"
+    ],
+    [
+      "glk",
+      "Gilaki",
+      "Gilaki (glk)",
+      "Levant_Zagros"
+    ],
+    [
+      "gzi",
+      "Gazi",
+      "Gazi (gzi)",
+      "Levant_Zagros"
+    ],
+    [
+      "heb",
+      "Hebrew",
+      "עברית",
+      "Jerusalem,Tel_Aviv"
+    ],
+    [
+      "hoh",
+      "Hobyót",
+      "Hobyót (hoh)",
+      "Levant_Zagros"
+    ],
+    [
+      "hrz",
+      "Harzani",
+      "Harzani (hrz)",
+      "Levant_Zagros"
+    ],
+    [
+      "hss",
+      "Harsusi",
+      "Harsusi (hss)",
+      "Levant_Zagros"
+    ],
+    [
+      "huy",
+      "Hulaulá",
+      "Hulaulá (huy)",
+      "Levant_Zagros"
+    ],
+    [
+      "isr",
+      "Israeli Sign Language",
+      "Israeli Sign Language (isr)",
+      "Levant_Zagros"
+    ],
+    [
+      "jdg",
+      "Jadgali",
+      "Jadgali (jdg)",
+      "Levant_Zagros"
+    ],
+    [
+      "jos",
+      "Jordanian Sign Language",
+      "Jordanian Sign Language (jos)",
+      "Sepik_Highlands_Pacific"
+    ],
+    [
+      "jpr",
+      "Judeo-Persian",
+      "Judeo-Persian (jpr)",
+      "Levant_Zagros"
+    ],
+    [
+      "jrb",
+      "Judeo-Arabic",
+      "Judeo-Arabic (jrb)",
+      "Levant_Zagros"
+    ],
+    [
+      "jye",
+      "Judeo-Yemeni Arabic",
+      "Judeo-Yemeni Arabic (jye)",
+      "Levant_Zagros"
+    ],
+    [
+      "kfm",
+      "Khunsari",
+      "Khunsari (kfm)",
+      "Levant_Zagros"
+    ],
+    [
+      "kgn",
+      "Karingani",
+      "Karingani (kgn)",
+      "Levant_Zagros"
+    ],
+    [
+      "klj",
+      "Khalaj",
+      "Khalaj (klj)",
+      "Levant_Zagros"
+    ],
+    [
+      "kmr",
+      "Northern Kurdish",
+      "Northern Kurdish (kmr)",
+      "Levant_Zagros"
+    ],
+    [
+      "kmz",
+      "Khorasani Turkish",
+      "Khorasani Turkish (kmz)",
+      "Levant_Zagros"
+    ],
+    [
+      "kqd",
+      "Koy Sanjaq Surat",
+      "Koy Sanjaq Surat (kqd)",
+      "Levant_Zagros"
+    ],
+    [
+      "ktl",
+      "Koroshi",
+      "Koroshi (ktl)",
+      "Levant_Zagros"
+    ],
+    [
+      "kur",
+      "Kurdish",
+      "Kurdish (kur)",
+      "Levant_Zagros"
+    ],
+    [
+      "ldd",
+      "Luri",
+      "Luri (ldd)",
+      "Levant_Zagros"
+    ],
+    [
+      "lki",
+      "Laki",
+      "Laki (lki)",
+      "Levant_Zagros"
+    ],
+    [
+      "lrc",
+      "Northern Luri",
+      "Northern Luri (lrc)",
+      "Levant_Zagros"
+    ],
+    [
+      "lrl",
+      "Lari",
+      "Lari (lrl)",
+      "Levant_Zagros"
+    ],
+    [
+      "lsa",
+      "Lasgerdi",
+      "Lasgerdi (lsa)",
+      "Levant_Zagros"
+    ],
+    [
+      "lsd",
+      "Lishana Deni",
+      "Lishana Deni (lsd)",
+      "Levant_Zagros"
+    ],
+    [
+      "luv",
+      "Luwati",
+      "Luwati (luv)",
+      "Levant_Zagros"
+    ],
+    [
+      "luz",
+      "Southern Luri",
+      "Southern Luri (luz)",
+      "Levant_Zagros"
+    ],
+    [
+      "mid",
+      "Mandaic",
+      "Mandaic (mid)",
+      "Levant_Zagros"
+    ],
+    [
+      "mzn",
+      "Mazanderani",
+      "Mazanderani (mzn)",
+      "Levant_Zagros"
+    ],
+    [
+      "ntz",
+      "Natanzi",
+      "Natanzi (ntz)",
+      "Levant_Zagros"
+    ],
+    [
+      "okh",
+      "Koresh-e Rostam",
+      "Koresh-e Rostam (okh)",
+      "Levant_Zagros"
+    ],
+    [
+      "pga",
+      "Sudanese Creole Arabic",
+      "Sudanese Creole Arabic (pga)",
+      "Levant_Zagros"
+    ],
+    [
+      "piu",
+      "Pintupi-Luritja",
+      "Pintupi-Luritja (piu)",
+      "Levant_Zagros"
+    ],
+    [
+      "prd",
+      "Parsi-Dari",
+      "Parsi-Dari (prd)",
+      "Levant_Zagros"
+    ],
+    [
+      "psc",
+      "Persian Sign Language",
+      "Persian Sign Language (psc)",
+      "Levant_Zagros"
+    ],
+    [
+      "qxq",
+      "Qashqa'i",
+      "Qashqa'i (qxq)",
+      "Levant_Zagros"
+    ],
+    [
+      "rat",
+      "Razajerdi",
+      "Razajerdi (rat)",
+      "Levant_Zagros"
+    ],
+    [
+      "rdb",
+      "Rudbari",
+      "Rudbari (rdb)",
+      "Levant_Zagros"
+    ],
+    [
+      "rzh",
+      "Rāziḥī",
+      "Rāziḥī (rzh)",
+      "Levant_Zagros"
+    ],
+    [
+      "sdb",
+      "Shabak",
+      "Shabak (sdb)",
+      "Levant_Zagros"
+    ],
+    [
+      "sdf",
+      "Sarli",
+      "Sarli (sdf)",
+      "Levant_Zagros"
+    ],
+    [
+      "sdh",
+      "Southern Kurdish",
+      "Southern Kurdish (sdh)",
+      "Levant_Zagros"
+    ],
+    [
+      "sdl",
+      "Saudi Arabian Sign Language",
+      "Saudi Arabian Sign Language (sdl)",
+      "Levant_Zagros"
+    ],
+    [
+      "sgr",
+      "Sangisari",
+      "Sangisari (sgr)",
+      "Levant_Zagros"
+    ],
+    [
+      "shm",
+      "Shahrudi",
+      "Shahrudi (shm)",
+      "Levant_Zagros"
+    ],
+    [
+      "shu",
+      "Chadian Arabic",
+      "Chadian Arabic (shu)",
+      "Levant_Zagros"
+    ],
+    [
+      "shv",
+      "Shehri",
+      "Shehri (shv)",
+      "Levant_Zagros"
+    ],
+    [
+      "siy",
+      "Sivandi",
+      "Sivandi (siy)",
+      "Levant_Zagros"
+    ],
+    [
+      "smy",
+      "Semnani",
+      "Semnani (smy)",
+      "Levant_Zagros"
+    ],
+    [
+      "soj",
+      "Soi",
+      "Soi (soj)",
+      "Levant_Zagros"
+    ],
+    [
+      "sqo",
+      "Sorkhei",
+      "Sorkhei (sqo)",
+      "Levant_Zagros"
+    ],
+    [
+      "sqt",
+      "Soqotri",
+      "Soqotri (sqt)",
+      "Levant_Zagros"
+    ],
+    [
+      "srz",
+      "Shahmirzadi",
+      "Shahmirzadi (srz)",
+      "Levant_Zagros"
+    ],
+    [
+      "ssh",
+      "Shihhi Arabic",
+      "Shihhi Arabic (ssh)",
+      "Levant_Zagros"
+    ],
+    [
+      "syn",
+      "Senaya",
+      "Senaya (syn)",
+      "Levant_Zagros"
+    ],
+    [
+      "syr",
+      "Syriac",
+      "ܣܘܪܝܝܐ",
+      "Nineveh,Tur_Abdin"
+    ],
+    [
+      "tks",
+      "Takestani",
+      "Takestani (tks)",
+      "Levant_Zagros"
+    ],
+    [
+      "tly",
+      "Talysh",
+      "Talysh (tly)",
+      "Levant_Zagros"
+    ],
+    [
+      "tov",
+      "Upper Taromi",
+      "Upper Taromi (tov)",
+      "Levant_Zagros"
+    ],
+    [
+      "tru",
+      "Turoyo",
+      "Turoyo (tru)",
+      "Levant_Zagros"
+    ],
+    [
+      "vaf",
+      "Vafsi",
+      "Vafsi (vaf)",
+      "Levant_Zagros"
+    ],
+    [
+      "vmh",
+      "Maraghei",
+      "Maraghei (vmh)",
+      "Levant_Zagros"
+    ],
+    [
+      "xkc",
+      "Kho'ini",
+      "Kho'ini (xkc)",
+      "Levant_Zagros"
+    ],
+    [
+      "xkj",
+      "Kajali",
+      "Kajali (xkj)",
+      "Levant_Zagros"
+    ],
+    [
+      "xkp",
+      "Kabatei",
+      "Kabatei (xkp)",
+      "Levant_Zagros"
+    ],
+    [
+      "yhd",
+      "Judeo-Iraqi Arabic",
+      "Judeo-Iraqi Arabic (yhd)",
+      "Levant_Zagros"
+    ],
+    [
+      "yud",
+      "Judeo-Tripolitanian Arabic",
+      "Judeo-Tripolitanian Arabic (yud)",
+      "Levant_Zagros"
+    ],
+    [
+      "zum",
+      "Kumzari",
+      "Kumzari (zum)",
+      "Levant_Zagros"
+    ]
+  ]
+}

@@ -1,0 +1,2030 @@
+{
+  "macro_region_id": 7,
+  "region_name_es": "África del Norte, Sahel y Cuerno de África",
+  "total_languages": 337,
+  "subclades_covered": 32,
+  "featured_languages": [
+    [
+      "aao",
+      "Algerian Saharan Arabic",
+      "Algerian Saharan Arabic (aao)",
+      "Sahara,Atlas"
+    ],
+    [
+      "aar",
+      "Afar",
+      "Afar (aar)",
+      "Afar,Danakil"
+    ],
+    [
+      "acz",
+      "Acheron",
+      "Acheron (acz)",
+      "Sahel_Horn"
+    ],
+    [
+      "aft",
+      "Afitti",
+      "Afitti (aft)",
+      "Sahel_Horn"
+    ],
+    [
+      "agj",
+      "Argobba",
+      "Argobba (agj)",
+      "Sahel_Horn"
+    ],
+    [
+      "ahg",
+      "Qimant",
+      "Qimant (ahg)",
+      "Sahel_Horn"
+    ],
+    [
+      "aiw",
+      "Aari",
+      "Aari (aiw)",
+      "Sahel_Horn"
+    ],
+    [
+      "aja",
+      "Aja (South Sudan)",
+      "Aja (South Sudan) (aja)",
+      "Sahel_Horn"
+    ],
+    [
+      "alw",
+      "Alaba-K’abeena",
+      "Alaba-K’abeena (alw)",
+      "Sahel_Horn"
+    ],
+    [
+      "amh",
+      "Amharic",
+      "አማርኛ",
+      "Addis_Ababa,Amhara"
+    ],
+    [
+      "amf",
+      "Hamer-Banna",
+      "Hamer-Banna (amf)",
+      "Sahel_Horn"
+    ],
+    [
+      "amj",
+      "Amdang",
+      "Amdang (amj)",
+      "Sahel_Horn"
+    ],
+    [
+      "anu",
+      "Anuak",
+      "Anuak (anu)",
+      "Sahel_Horn"
+    ],
+    [
+      "arv",
+      "Arbore",
+      "Arbore (arv)",
+      "Sahel_Horn"
+    ],
+    [
+      "asp",
+      "Algerian Sign Language",
+      "Algerian Sign Language (asp)",
+      "Sahel_Horn"
+    ],
+    [
+      "atu",
+      "Reel",
+      "Reel (atu)",
+      "Sahel_Horn"
+    ],
+    [
+      "auj",
+      "Awjilah",
+      "Awjilah (auj)",
+      "Sahel_Horn"
+    ],
+    [
+      "awn",
+      "Awngi",
+      "Awngi (awn)",
+      "Sahel_Horn"
+    ],
+    [
+      "bcq",
+      "Bench",
+      "Bench (bcq)",
+      "Sahel_Horn"
+    ],
+    [
+      "bdi",
+      "Burun",
+      "Burun (bdi)",
+      "Sahel_Horn"
+    ],
+    [
+      "bdj",
+      "Bai (South Sudan)",
+      "Bai (South Sudan) (bdj)",
+      "Sahel_Horn"
+    ],
+    [
+      "bdo",
+      "Morom",
+      "Morom (bdo)",
+      "Sahel_Horn"
+    ],
+    [
+      "bej",
+      "Beja",
+      "Beja (bej)",
+      "Sahel_Horn"
+    ],
+    [
+      "bes",
+      "Besme",
+      "Besme (bes)",
+      "Sahel_Horn"
+    ],
+    [
+      "bex",
+      "Jur Modo",
+      "Jur Modo (bex)",
+      "Sahel_Horn"
+    ],
+    [
+      "bfa",
+      "Bari",
+      "Bari (bfa)",
+      "Sahel_Horn"
+    ],
+    [
+      "bid",
+      "Bidiyo",
+      "Bidiyo (bid)",
+      "Sahel_Horn"
+    ],
+    [
+      "bji",
+      "Burji",
+      "Burji (bji)",
+      "Sahel_Horn"
+    ],
+    [
+      "bjv",
+      "Bedjond",
+      "Bedjond (bjv)",
+      "Sahel_Horn"
+    ],
+    [
+      "blm",
+      "Beli (South Sudan)",
+      "Beli (South Sudan) (blm)",
+      "Sahel_Horn"
+    ],
+    [
+      "bms",
+      "Bilma Kanuri",
+      "Bilma Kanuri (bms)",
+      "Sahel_Horn"
+    ],
+    [
+      "bnl",
+      "Boon",
+      "Boon (bnl)",
+      "Sahel_Horn"
+    ],
+    [
+      "bog",
+      "Bamako Sign Language",
+      "Bamako Sign Language (bog)",
+      "Sahel_Horn"
+    ],
+    [
+      "boo",
+      "Tiemacèwè Bozo",
+      "Tiemacèwè Bozo (boo)",
+      "Sahel_Horn"
+    ],
+    [
+      "bot",
+      "Bongo",
+      "Bongo (bot)",
+      "Sahel_Horn"
+    ],
+    [
+      "boz",
+      "Tiéyaxo Bozo",
+      "Tiéyaxo Bozo (boz)",
+      "Sahel_Horn"
+    ],
+    [
+      "brk",
+      "Birked",
+      "Birked (brk)",
+      "Sahel_Horn"
+    ],
+    [
+      "bso",
+      "Buso",
+      "Buso (bso)",
+      "Sahel_Horn"
+    ],
+    [
+      "bst",
+      "Basketo",
+      "Basketo (bst)",
+      "Sahel_Horn"
+    ],
+    [
+      "bsw",
+      "Baiso",
+      "Baiso (bsw)",
+      "Sahel_Horn"
+    ],
+    [
+      "btf",
+      "Birgit",
+      "Birgit (btf)",
+      "Sahel_Horn"
+    ],
+    [
+      "bub",
+      "Bua",
+      "Bua (bub)",
+      "Sahel_Horn"
+    ],
+    [
+      "bva",
+      "Barein",
+      "Barein (bva)",
+      "Sahel_Horn"
+    ],
+    [
+      "bvf",
+      "Boor",
+      "Boor (bvf)",
+      "Sahel_Horn"
+    ],
+    [
+      "bvi",
+      "Belanda Viri",
+      "Belanda Viri (bvi)",
+      "Sahel_Horn"
+    ],
+    [
+      "bvo",
+      "Bolgo",
+      "Bolgo (bvo)",
+      "Sahel_Horn"
+    ],
+    [
+      "bwo",
+      "Boro (Ethiopia)",
+      "Boro (Ethiopia) (bwo)",
+      "Sahel_Horn"
+    ],
+    [
+      "bxb",
+      "Belanda Bor",
+      "Belanda Bor (bxb)",
+      "Sahel_Horn"
+    ],
+    [
+      "bxe",
+      "Birale",
+      "Birale (bxe)",
+      "Sahel_Horn"
+    ],
+    [
+      "bxv",
+      "Berakou",
+      "Berakou (bxv)",
+      "Sahel_Horn"
+    ],
+    [
+      "bxw",
+      "Bankagooma",
+      "Bankagooma (bxw)",
+      "Sahel_Horn"
+    ],
+    [
+      "byg",
+      "Baygo",
+      "Baygo (byg)",
+      "Sahel_Horn"
+    ],
+    [
+      "byn",
+      "Bilin",
+      "Bilin (byn)",
+      "Sahel_Horn"
+    ],
+    [
+      "byt",
+      "Berti",
+      "Berti (byt)",
+      "Sahel_Horn"
+    ],
+    [
+      "bze",
+      "Jenaama Bozo",
+      "Jenaama Bozo (bze)",
+      "Sahel_Horn"
+    ],
+    [
+      "bzx",
+      "Kɛlɛngaxo Bozo",
+      "Kɛlɛngaxo Bozo (bzx)",
+      "Sahel_Horn"
+    ],
+    [
+      "cds",
+      "Chadian Sign Language",
+      "Chadian Sign Language (cds)",
+      "Sahel_Horn"
+    ],
+    [
+      "ckq",
+      "Kajakse",
+      "Kajakse (ckq)",
+      "Sahel_Horn"
+    ],
+    [
+      "cnu",
+      "Chenoua",
+      "Chenoua (cnu)",
+      "Sahel_Horn"
+    ],
+    [
+      "cop",
+      "Coptic",
+      "Coptic (cop)",
+      "Sahel_Horn"
+    ],
+    [
+      "cra",
+      "Chara",
+      "Chara (cra)",
+      "Sahel_Horn"
+    ],
+    [
+      "daa",
+      "Dangaléat",
+      "Dangaléat (daa)",
+      "Sahel_Horn"
+    ],
+    [
+      "dai",
+      "Day",
+      "Day (dai)",
+      "Sahel_Horn"
+    ],
+    [
+      "daj",
+      "Dar Fur Daju",
+      "Dar Fur Daju (daj)",
+      "Sahel_Horn"
+    ],
+    [
+      "dau",
+      "Dar Sila Daju",
+      "Dar Sila Daju (dau)",
+      "Sahel_Horn"
+    ],
+    [
+      "dba",
+      "Bangime",
+      "Bangime (dba)",
+      "Sahel_Horn"
+    ],
+    [
+      "dbr",
+      "Dabarre",
+      "Dabarre (dbr)",
+      "Sahel_Horn"
+    ],
+    [
+      "ddd",
+      "Dongotono",
+      "Dongotono (ddd)",
+      "Sahel_Horn"
+    ],
+    [
+      "dec",
+      "Dagik",
+      "Dagik (dec)",
+      "Sahel_Horn"
+    ],
+    [
+      "dgl",
+      "Andaandi",
+      "Andaandi (dgl)",
+      "Sahel_Horn"
+    ],
+    [
+      "dib",
+      "South Central Dinka",
+      "South Central Dinka (dib)",
+      "Sahel_Horn"
+    ],
+    [
+      "did",
+      "Didinga",
+      "Didinga (did)",
+      "Sahel_Horn"
+    ],
+    [
+      "dik",
+      "Southwestern Dinka",
+      "Southwestern Dinka (dik)",
+      "Sahel_Horn"
+    ],
+    [
+      "dil",
+      "Dilling",
+      "Dilling (dil)",
+      "Sahel_Horn"
+    ],
+    [
+      "dim",
+      "Dime",
+      "Dime (dim)",
+      "Sahel_Horn"
+    ],
+    [
+      "din",
+      "Dinka",
+      "Dinka (din)",
+      "Sahel_Horn"
+    ],
+    [
+      "dip",
+      "Northeastern Dinka",
+      "Northeastern Dinka (dip)",
+      "Sahel_Horn"
+    ],
+    [
+      "diw",
+      "Northwestern Dinka",
+      "Northwestern Dinka (diw)",
+      "Sahel_Horn"
+    ],
+    [
+      "djc",
+      "Dar Daju Daju",
+      "Dar Daju Daju (djc)",
+      "Sahel_Horn"
+    ],
+    [
+      "dks",
+      "Southeastern Dinka",
+      "Southeastern Dinka (dks)",
+      "Sahel_Horn"
+    ],
+    [
+      "dlk",
+      "Dahalik",
+      "Dahalik (dlk)",
+      "Sahel_Horn"
+    ],
+    [
+      "dox",
+      "Bussa",
+      "Bussa (dox)",
+      "Sahel_Horn"
+    ],
+    [
+      "doz",
+      "Dorze",
+      "Dorze (doz)",
+      "Sahel_Horn"
+    ],
+    [
+      "drb",
+      "Dair",
+      "Dair (drb)",
+      "Sahel_Horn"
+    ],
+    [
+      "drs",
+      "Gedeo",
+      "Gedeo (drs)",
+      "Sahel_Horn"
+    ],
+    [
+      "dsh",
+      "Daasanach",
+      "Daasanach (dsh)",
+      "Sahel_Horn"
+    ],
+    [
+      "dsi",
+      "Disa",
+      "Disa (dsi)",
+      "Sahel_Horn"
+    ],
+    [
+      "dsq",
+      "Tadaksahak",
+      "Tadaksahak (dsq)",
+      "Sahel_Horn"
+    ],
+    [
+      "dtn",
+      "Daatsʼíin",
+      "Daatsʼíin (dtn)",
+      "Sahel_Horn"
+    ],
+    [
+      "dux",
+      "Duungooma",
+      "Duungooma (dux)",
+      "Sahel_Horn"
+    ],
+    [
+      "dwr",
+      "Dawro",
+      "Dawro (dwr)",
+      "Sahel_Horn"
+    ],
+    [
+      "dzg",
+      "Dazaga",
+      "Dazaga (dzg)",
+      "Sahel_Horn"
+    ],
+    [
+      "egy",
+      "Egyptian (Ancient)",
+      "Egyptian (Ancient) (egy)",
+      "Sahel_Horn"
+    ],
+    [
+      "elh",
+      "El Hugeirat",
+      "El Hugeirat (elh)",
+      "Sahel_Horn"
+    ],
+    [
+      "esl",
+      "Egypt Sign Language",
+      "Egypt Sign Language (esl)",
+      "Sahel_Horn"
+    ],
+    [
+      "eth",
+      "Ethiopian Sign Language",
+      "Ethiopian Sign Language (eth)",
+      "Sahel_Horn"
+    ],
+    [
+      "fer",
+      "Feroge",
+      "Feroge (fer)",
+      "Sahel_Horn"
+    ],
+    [
+      "fuv",
+      "Fulfulde / Fulani",
+      "Fulfulde",
+      "Sahel,Adamawa,Futa_Toro"
+    ],
+    [
+      "fia",
+      "Nobiin",
+      "Nobiin (fia)",
+      "Sahel_Horn"
+    ],
+    [
+      "fni",
+      "Fania",
+      "Fania (fni)",
+      "Sahel_Horn"
+    ],
+    [
+      "fuj",
+      "Ko",
+      "Ko (fuj)",
+      "Sahel_Horn"
+    ],
+    [
+      "fuq",
+      "Central-Eastern Niger Fulfulde",
+      "Central-Eastern Niger Fulfulde (fuq)",
+      "Sahel_Horn"
+    ],
+    [
+      "gab",
+      "Gabri",
+      "Gabri (gab)",
+      "Sahel_Horn"
+    ],
+    [
+      "gax",
+      "Borana-Arsi-Guji Oromo",
+      "Borana-Arsi-Guji Oromo (gax)",
+      "Sahel_Horn"
+    ],
+    [
+      "gaz",
+      "West Central Oromo",
+      "West Central Oromo (gaz)",
+      "Sahel_Horn"
+    ],
+    [
+      "gbn",
+      "Mo'da",
+      "Mo'da (gbn)",
+      "Sahel_Horn"
+    ],
+    [
+      "gdk",
+      "Gadang",
+      "Gadang (gdk)",
+      "Sahel_Horn"
+    ],
+    [
+      "gdl",
+      "Dirasha",
+      "Dirasha (gdl)",
+      "Sahel_Horn"
+    ],
+    [
+      "gdm",
+      "Laal",
+      "Laal (gdm)",
+      "Sahel_Horn"
+    ],
+    [
+      "gex",
+      "Garre",
+      "Garre (gex)",
+      "Sahel_Horn"
+    ],
+    [
+      "gha",
+      "Ghadamès",
+      "Ghadamès (gha)",
+      "Sahel_Horn"
+    ],
+    [
+      "ghl",
+      "Ghulfan",
+      "Ghulfan (ghl)",
+      "Sahel_Horn"
+    ],
+    [
+      "glc",
+      "Bon Gula",
+      "Bon Gula (glc)",
+      "Sahel_Horn"
+    ],
+    [
+      "glj",
+      "Gula Iro",
+      "Gula Iro (glj)",
+      "Sahel_Horn"
+    ],
+    [
+      "glu",
+      "Gula (Chad)",
+      "Gula (Chad) (glu)",
+      "Sahel_Horn"
+    ],
+    [
+      "gmv",
+      "Gamo",
+      "Gamo (gmv)",
+      "Sahel_Horn"
+    ],
+    [
+      "gof",
+      "Gofa",
+      "Gofa (gof)",
+      "Sahel_Horn"
+    ],
+    [
+      "goy",
+      "Goundo",
+      "Goundo (goy)",
+      "Sahel_Horn"
+    ],
+    [
+      "grr",
+      "Taznatit",
+      "Taznatit (grr)",
+      "Sahel_Horn"
+    ],
+    [
+      "gru",
+      "Kistane",
+      "Kistane (gru)",
+      "Sahel_Horn"
+    ],
+    [
+      "guk",
+      "Gumuz",
+      "Gumuz (guk)",
+      "Sahel_Horn"
+    ],
+    [
+      "gvl",
+      "Gulay",
+      "Gulay (gvl)",
+      "Sahel_Horn"
+    ],
+    [
+      "gwd",
+      "Gawwada",
+      "Gawwada (gwd)",
+      "Sahel_Horn"
+    ],
+    [
+      "gza",
+      "Ganza",
+      "Ganza (gza)",
+      "Sahel_Horn"
+    ],
+    [
+      "hae",
+      "Eastern Oromo",
+      "Eastern Oromo (hae)",
+      "Sahel_Horn"
+    ],
+    [
+      "har",
+      "Harari",
+      "Harari (har)",
+      "Sahel_Horn"
+    ],
+    [
+      "hbn",
+      "Heiban",
+      "Heiban (hbn)",
+      "Sahel_Horn"
+    ],
+    [
+      "hdy",
+      "Hadiyya",
+      "Hadiyya (hdy)",
+      "Sahel_Horn"
+    ],
+    [
+      "hmb",
+      "Humburi Senni Songhay",
+      "Humburi Senni Songhay (hmb)",
+      "Sahel_Horn"
+    ],
+    [
+      "hoz",
+      "Hozo",
+      "Hozo (hoz)",
+      "Sahel_Horn"
+    ],
+    [
+      "idr",
+      "Indri",
+      "Indri (idr)",
+      "Sahel_Horn"
+    ],
+    [
+      "ior",
+      "Inor",
+      "Inor (ior)",
+      "Sahel_Horn"
+    ],
+    [
+      "jbe",
+      "Judeo-Berber",
+      "Judeo-Berber (jbe)",
+      "Sahel_Horn"
+    ],
+    [
+      "jbn",
+      "Nafusi",
+      "Nafusi (jbn)",
+      "Sahel_Horn"
+    ],
+    [
+      "jeu",
+      "Jonkor Bourmataguil",
+      "Jonkor Bourmataguil (jeu)",
+      "Sahel_Horn"
+    ],
+    [
+      "jii",
+      "Jiiddu",
+      "Jiiddu (jii)",
+      "Sahel_Horn"
+    ],
+    [
+      "jle",
+      "Ngile",
+      "Ngile (jle)",
+      "Sahel_Horn"
+    ],
+    [
+      "jnj",
+      "Yemsa",
+      "Yemsa (jnj)",
+      "Sahel_Horn"
+    ],
+    [
+      "jum",
+      "Jumjum",
+      "Jumjum (jum)",
+      "Sahel_Horn"
+    ],
+    [
+      "jyy",
+      "Jaya",
+      "Jaya (jyy)",
+      "Sahel_Horn"
+    ],
+    [
+      "kab",
+      "Kabyle",
+      "Kabyle (kab)",
+      "Sahel_Horn"
+    ],
+    [
+      "kau",
+      "Kanuri",
+      "Kanuri (kau)",
+      "Sahel_Horn"
+    ],
+    [
+      "kbl",
+      "Kanembu",
+      "Kanembu (kbl)",
+      "Sahel_Horn"
+    ],
+    [
+      "kbr",
+      "Kafa",
+      "Kafa (kbr)",
+      "Sahel_Horn"
+    ],
+    [
+      "kby",
+      "Manga Kanuri",
+      "Manga Kanuri (kby)",
+      "Sahel_Horn"
+    ],
+    [
+      "kcp",
+      "Kanga",
+      "Kanga (kcp)",
+      "Sahel_Horn"
+    ],
+    [
+      "kcr",
+      "Katla",
+      "Katla (kcr)",
+      "Sahel_Horn"
+    ],
+    [
+      "kcx",
+      "Kachama-Ganjule",
+      "Kachama-Ganjule (kcx)",
+      "Sahel_Horn"
+    ],
+    [
+      "kcy",
+      "Korandje",
+      "Korandje (kcy)",
+      "Sahel_Horn"
+    ],
+    [
+      "kdu",
+      "Kadaru",
+      "Kadaru (kdu)",
+      "Sahel_Horn"
+    ],
+    [
+      "kec",
+      "Keiga",
+      "Keiga (kec)",
+      "Sahel_Horn"
+    ],
+    [
+      "keg",
+      "Tese",
+      "Tese (keg)",
+      "Sahel_Horn"
+    ],
+    [
+      "kgo",
+      "Krongo",
+      "Krongo (kgo)",
+      "Sahel_Horn"
+    ],
+    [
+      "khq",
+      "Koyra Chiini Songhay",
+      "Koyra Chiini Songhay (khq)",
+      "Sahel_Horn"
+    ],
+    [
+      "kia",
+      "Kim",
+      "Kim (kia)",
+      "Sahel_Horn"
+    ],
+    [
+      "kib",
+      "Koalib",
+      "Koalib (kib)",
+      "Sahel_Horn"
+    ],
+    [
+      "kie",
+      "Kibet",
+      "Kibet (kie)",
+      "Sahel_Horn"
+    ],
+    [
+      "kko",
+      "Karko",
+      "Karko (kko)",
+      "Sahel_Horn"
+    ],
+    [
+      "klf",
+      "Kendeje",
+      "Kendeje (klf)",
+      "Sahel_Horn"
+    ],
+    [
+      "knc",
+      "Central Kanuri",
+      "Central Kanuri (knc)",
+      "Sahel_Horn"
+    ],
+    [
+      "koe",
+      "Kacipo-Balesi",
+      "Kacipo-Balesi (koe)",
+      "Sahel_Horn"
+    ],
+    [
+      "kou",
+      "Koke",
+      "Koke (kou)",
+      "Sahel_Horn"
+    ],
+    [
+      "kqp",
+      "Kimré",
+      "Kimré (kqp)",
+      "Sahel_Horn"
+    ],
+    [
+      "kqy",
+      "Koorete",
+      "Koorete (kqy)",
+      "Sahel_Horn"
+    ],
+    [
+      "ktb",
+      "Kambaata",
+      "Kambaata (ktb)",
+      "Sahel_Horn"
+    ],
+    [
+      "kth",
+      "Karanga",
+      "Karanga (kth)",
+      "Sahel_Horn"
+    ],
+    [
+      "kun",
+      "Kunama",
+      "Kunama (kun)",
+      "Sahel_Horn"
+    ],
+    [
+      "kvf",
+      "Kabalai",
+      "Kabalai (kvf)",
+      "Sahel_Horn"
+    ],
+    [
+      "kxc",
+      "Konso",
+      "Konso (kxc)",
+      "Sahel_Horn"
+    ],
+    [
+      "kxh",
+      "Karo (Ethiopia)",
+      "Karo (Ethiopia) (kxh)",
+      "Sahel_Horn"
+    ],
+    [
+      "kxj",
+      "Kulfa",
+      "Kulfa (kxj)",
+      "Sahel_Horn"
+    ],
+    [
+      "kyq",
+      "Kenga",
+      "Kenga (kyq)",
+      "Sepik_Highlands_Pacific"
+    ],
+    [
+      "laf",
+      "Lafofa",
+      "Lafofa (laf)",
+      "Sahel_Horn"
+    ],
+    [
+      "lbs",
+      "Libyan Sign Language",
+      "Libyan Sign Language (lbs)",
+      "Sahel_Horn"
+    ],
+    [
+      "lgn",
+      "T'apo",
+      "T'apo (lgn)",
+      "Sahel_Horn"
+    ],
+    [
+      "liq",
+      "Libido",
+      "Libido (liq)",
+      "Sahel_Horn"
+    ],
+    [
+      "liu",
+      "Logorik",
+      "Logorik (liu)",
+      "Sahel_Horn"
+    ],
+    [
+      "lkr",
+      "Päri",
+      "Päri (lkr)",
+      "Sahel_Horn"
+    ],
+    [
+      "lky",
+      "Lokoya",
+      "Lokoya (lky)",
+      "Sahel_Horn"
+    ],
+    [
+      "lln",
+      "Lele (Chad)",
+      "Lele (Chad) (lln)",
+      "Sahel_Horn"
+    ],
+    [
+      "lmd",
+      "Lumun",
+      "Lumun (lmd)",
+      "Sahel_Horn"
+    ],
+    [
+      "lno",
+      "Lango (South Sudan)",
+      "Lango (South Sudan) (lno)",
+      "Sahel_Horn"
+    ],
+    [
+      "lof",
+      "Logol",
+      "Logol (lof)",
+      "Sahel_Horn"
+    ],
+    [
+      "loh",
+      "Narim",
+      "Narim (loh)",
+      "Sahel_Horn"
+    ],
+    [
+      "lot",
+      "Otuho",
+      "Otuho (lot)",
+      "Sahel_Horn"
+    ],
+    [
+      "lpx",
+      "Lopit",
+      "Lopit (lpx)",
+      "Sahel_Horn"
+    ],
+    [
+      "lro",
+      "Laro",
+      "Laro (lro)",
+      "Sahel_Horn"
+    ],
+    [
+      "luc",
+      "Aringa",
+      "Aringa (luc)",
+      "Sahel_Horn"
+    ],
+    [
+      "lul",
+      "Olu'bo",
+      "Olu'bo (lul)",
+      "Sahel_Horn"
+    ],
+    [
+      "lwo",
+      "Luwo",
+      "Luwo (lwo)",
+      "Sahel_Horn"
+    ],
+    [
+      "mcw",
+      "Mawa (Chad)",
+      "Mawa (Chad) (mcw)",
+      "Sahel_Horn"
+    ],
+    [
+      "mde",
+      "Maba (Chad)",
+      "Maba (Chad) (mde)",
+      "Sahel_Horn"
+    ],
+    [
+      "mdg",
+      "Massalat",
+      "Massalat (mdg)",
+      "Sahel_Horn"
+    ],
+    [
+      "mdx",
+      "Dizin",
+      "Dizin (mdx)",
+      "Sahel_Horn"
+    ],
+    [
+      "mdy",
+      "Male (Ethiopia)",
+      "Male (Ethiopia) (mdy)",
+      "Sahel_Horn"
+    ],
+    [
+      "mei",
+      "Midob",
+      "Midob (mei)",
+      "Sahel_Horn"
+    ],
+    [
+      "mes",
+      "Masmaje",
+      "Masmaje (mes)",
+      "Sahel_Horn"
+    ],
+    [
+      "mey",
+      "Hassaniyya",
+      "Hassaniyya (mey)",
+      "Sahel_Horn"
+    ],
+    [
+      "mfx",
+      "Melo",
+      "Melo (mfx)",
+      "Sahel_Horn"
+    ],
+    [
+      "mfz",
+      "Mabaan",
+      "Mabaan (mfz)",
+      "Sahel_Horn"
+    ],
+    [
+      "mgb",
+      "Mararit",
+      "Mararit (mgb)",
+      "Sahel_Horn"
+    ],
+    [
+      "mgc",
+      "Morokodo",
+      "Morokodo (mgc)",
+      "Sahel_Horn"
+    ],
+    [
+      "mgd",
+      "Moru",
+      "Moru (mgd)",
+      "Sahel_Horn"
+    ],
+    [
+      "mge",
+      "Mango",
+      "Mango (mge)",
+      "Sahel_Horn"
+    ],
+    [
+      "mhi",
+      "Ma'di",
+      "Ma'di (mhi)",
+      "Sahel_Horn"
+    ],
+    [
+      "mlj",
+      "Miltu",
+      "Miltu (mlj)",
+      "Sahel_Horn"
+    ],
+    [
+      "mls",
+      "Masalit",
+      "Masalit (mls)",
+      "Sahel_Horn"
+    ],
+    [
+      "mmy",
+      "Migaama",
+      "Migaama (mmy)",
+      "Sahel_Horn"
+    ],
+    [
+      "mne",
+      "Naba",
+      "Naba (mne)",
+      "Sahel_Horn"
+    ],
+    [
+      "mnk",
+      "Mandinka",
+      "Mandinka (mnk)",
+      "Sahel_Horn"
+    ],
+    [
+      "mor",
+      "Moro",
+      "Moro (mor)",
+      "Sahel_Horn"
+    ],
+    [
+      "mou",
+      "Mogum",
+      "Mogum (mou)",
+      "Sahel_Horn"
+    ],
+    [
+      "moy",
+      "Shekkacho",
+      "Shekkacho (moy)",
+      "Sahel_Horn"
+    ],
+    [
+      "moz",
+      "Mukulu",
+      "Mukulu (moz)",
+      "Sahel_Horn"
+    ],
+    [
+      "mpe",
+      "Majang",
+      "Majang (mpe)",
+      "Sahel_Horn"
+    ],
+    [
+      "mpg",
+      "Marba",
+      "Marba (mpg)",
+      "Sahel_Horn"
+    ],
+    [
+      "mpk",
+      "Mbara (Chad)",
+      "Mbara (Chad) (mpk)",
+      "Sahel_Horn"
+    ],
+    [
+      "mqu",
+      "Mandari",
+      "Mandari (mqu)",
+      "Sahel_Horn"
+    ],
+    [
+      "mub",
+      "Mubi",
+      "Mubi (mub)",
+      "Sahel_Horn"
+    ],
+    [
+      "muj",
+      "Mabire",
+      "Mabire (muj)",
+      "Sahel_Horn"
+    ],
+    [
+      "mur",
+      "Murle",
+      "Murle (mur)",
+      "Sahel_Horn"
+    ],
+    [
+      "muz",
+      "Mursi",
+      "Mursi (muz)",
+      "Sahel_Horn"
+    ],
+    [
+      "mvh",
+      "Mulgi",
+      "Mulgi (mvh)",
+      "Sahel_Horn"
+    ],
+    [
+      "mvu",
+      "Marfa",
+      "Marfa (mvu)",
+      "Sahel_Horn"
+    ],
+    [
+      "mvz",
+      "Mesqan",
+      "Mesqan (mvz)",
+      "Sahel_Horn"
+    ],
+    [
+      "mwm",
+      "Sar",
+      "Sar (mwm)",
+      "Sahel_Horn"
+    ],
+    [
+      "myf",
+      "Bambassi",
+      "Bambassi (myf)",
+      "Sahel_Horn"
+    ],
+    [
+      "myj",
+      "Mangayat",
+      "Mangayat (myj)",
+      "Sahel_Horn"
+    ],
+    [
+      "mym",
+      "Me'en",
+      "Me'en (mym)",
+      "Sahel_Horn"
+    ],
+    [
+      "myo",
+      "Anfillo",
+      "Anfillo (myo)",
+      "Sahel_Horn"
+    ],
+    [
+      "mzb",
+      "Tumzabt",
+      "Tumzabt (mzb)",
+      "Sahel_Horn"
+    ],
+    [
+      "ndm",
+      "Ndam",
+      "Ndam (ndm)",
+      "Sahel_Horn"
+    ],
+    [
+      "ndz",
+      "Ndogo",
+      "Ndogo (ndz)",
+      "Sahel_Horn"
+    ],
+    [
+      "nie",
+      "Niellim",
+      "Niellim (nie)",
+      "Sahel_Horn"
+    ],
+    [
+      "njl",
+      "Njalgulgule",
+      "Njalgulgule (njl)",
+      "Sahel_Horn"
+    ],
+    [
+      "nnc",
+      "Nancere",
+      "Nancere (nnc)",
+      "Sahel_Horn"
+    ],
+    [
+      "nnj",
+      "Nyangatom",
+      "Nyangatom (nnj)",
+      "Sahel_Horn"
+    ],
+    [
+      "nnn",
+      "Ngete",
+      "Ngete (nnn)",
+      "Sahel_Horn"
+    ],
+    [
+      "noy",
+      "Noy",
+      "Noy (noy)",
+      "Sahel_Horn"
+    ],
+    [
+      "nrb",
+      "Nara",
+      "Nara (nrb)",
+      "Sahel_Horn"
+    ],
+    [
+      "nus",
+      "Nuer",
+      "Nuer (nus)",
+      "Sahel_Horn"
+    ],
+    [
+      "nwm",
+      "Nyamusa-Molo",
+      "Nyamusa-Molo (nwm)",
+      "Sahel_Horn"
+    ],
+    [
+      "nyi",
+      "Ama (Sudan)",
+      "Ama (Sudan) (nyi)",
+      "Sahel_Horn"
+    ],
+    [
+      "orm",
+      "Oromo",
+      "Oromo (orm)",
+      "Sahel_Horn"
+    ],
+    [
+      "otr",
+      "Otoro",
+      "Otoro (otr)",
+      "Sahel_Horn"
+    ],
+    [
+      "oua",
+      "Tagargrent",
+      "Tagargrent (oua)",
+      "Sahel_Horn"
+    ],
+    [
+      "oyd",
+      "Oyda",
+      "Oyda (oyd)",
+      "Sahel_Horn"
+    ],
+    [
+      "ras",
+      "Tegali",
+      "Tegali (ras)",
+      "Sahel_Horn"
+    ],
+    [
+      "rif",
+      "Tarifit",
+      "Tarifit (rif)",
+      "Sahel_Horn"
+    ],
+    [
+      "saa",
+      "Saba",
+      "Saba (saa)",
+      "Sahel_Horn"
+    ],
+    [
+      "sbf",
+      "Chabu",
+      "Chabu (sbf)",
+      "Sahel_Horn"
+    ],
+    [
+      "sbj",
+      "Surbakhal",
+      "Surbakhal (sbj)",
+      "Sahel_Horn"
+    ],
+    [
+      "ses",
+      "Koyraboro Senni Songhai",
+      "Koyraboro Senni Songhai (ses)",
+      "Sahel_Horn"
+    ],
+    [
+      "sgw",
+      "Sebat Bet Gurage",
+      "Sebat Bet Gurage (sgw)",
+      "Sahel_Horn"
+    ],
+    [
+      "she",
+      "Sheko",
+      "Sheko (she)",
+      "Sahel_Horn"
+    ],
+    [
+      "shi",
+      "Tachelhit",
+      "Tachelhit (shi)",
+      "Sahel_Horn"
+    ],
+    [
+      "shj",
+      "Shatt",
+      "Shatt (shj)",
+      "Sahel_Horn"
+    ],
+    [
+      "shk",
+      "Shilluk",
+      "Shilluk (shk)",
+      "Sahel_Horn"
+    ],
+    [
+      "shw",
+      "Shwai",
+      "Shwai (shw)",
+      "Sahel_Horn"
+    ],
+    [
+      "shy",
+      "Tachawit",
+      "Tachawit (shy)",
+      "Sahel_Horn"
+    ],
+    [
+      "sid",
+      "Sidamo",
+      "Sidamo (sid)",
+      "Sahel_Horn"
+    ],
+    [
+      "siz",
+      "Siwi",
+      "Siwi (siz)",
+      "Sahel_Horn"
+    ],
+    [
+      "sjg",
+      "Assangori",
+      "Assangori (sjg)",
+      "Sahel_Horn"
+    ],
+    [
+      "som",
+      "Somali",
+      "Soomaali",
+      "Banaadir,Somaliland,Ogaden"
+    ],
+    [
+      "soh",
+      "Aka",
+      "Aka (soh)",
+      "Sahel_Horn"
+    ],
+    [
+      "sok",
+      "Sokoro",
+      "Sokoro (sok)",
+      "Sahel_Horn"
+    ],
+    [
+      "ssy",
+      "Saho",
+      "Saho (ssy)",
+      "Sahel_Horn"
+    ],
+    [
+      "stv",
+      "Silt'e",
+      "Silt'e (stv)",
+      "Sahel_Horn"
+    ],
+    [
+      "suq",
+      "Suri",
+      "Suri (suq)",
+      "Sahel_Horn"
+    ],
+    [
+      "swn",
+      "Sawknah",
+      "Sawknah (swn)",
+      "Sahel_Horn"
+    ],
+    [
+      "swy",
+      "Sarua",
+      "Sarua (swy)",
+      "Sahel_Horn"
+    ],
+    [
+      "sys",
+      "Sinyar",
+      "Sinyar (sys)",
+      "Sahel_Horn"
+    ],
+    [
+      "sze",
+      "Seze",
+      "Seze (sze)",
+      "Sahel_Horn"
+    ],
+    [
+      "tag",
+      "Tagoi",
+      "Tagoi (tag)",
+      "Sahel_Horn"
+    ],
+    [
+      "taq",
+      "Tamasheq",
+      "Tamasheq (taq)",
+      "Sahel_Horn"
+    ],
+    [
+      "tax",
+      "Tamki",
+      "Tamki (tax)",
+      "Sahel_Horn"
+    ],
+    [
+      "taz",
+      "Tocho",
+      "Tocho (taz)",
+      "Sahel_Horn"
+    ],
+    [
+      "tbi",
+      "Gaam",
+      "Gaam (tbi)",
+      "Sahel_Horn"
+    ],
+    [
+      "tbm",
+      "Tagbu",
+      "Tagbu (tbm)",
+      "Sahel_Horn"
+    ],
+    [
+      "tbr",
+      "Tumtum",
+      "Tumtum (tbr)",
+      "Sahel_Horn"
+    ],
+    [
+      "tda",
+      "Tagdal",
+      "Tagdal (tda)",
+      "Sahel_Horn"
+    ],
+    [
+      "teq",
+      "Temein",
+      "Temein (teq)",
+      "Sahel_Horn"
+    ],
+    [
+      "tex",
+      "Tennet",
+      "Tennet (tex)",
+      "Sahel_Horn"
+    ],
+    [
+      "tey",
+      "Tulishi",
+      "Tulishi (tey)",
+      "Sahel_Horn"
+    ],
+    [
+      "tez",
+      "Tetserret",
+      "Tetserret (tez)",
+      "Sahel_Horn"
+    ],
+    [
+      "thu",
+      "Thuri",
+      "Thuri (thu)",
+      "Sahel_Horn"
+    ],
+    [
+      "thv",
+      "Tahaggart Tamahaq",
+      "Tahaggart Tamahaq (thv)",
+      "Sahel_Horn"
+    ],
+    [
+      "thz",
+      "Tayart Tamajeq",
+      "Tayart Tamajeq (thz)",
+      "Sahel_Horn"
+    ],
+    [
+      "tir",
+      "Tigrinya",
+      "ትግርኛ",
+      "Asmara,Tigray"
+    ],
+    [
+      "tia",
+      "Tidikelt Tamazight",
+      "Tidikelt Tamazight (tia)",
+      "Sahel_Horn"
+    ],
+    [
+      "tic",
+      "Tira",
+      "Tira (tic)",
+      "Sahel_Horn"
+    ],
+    [
+      "tig",
+      "Tigre",
+      "Tigre (tig)",
+      "Sahel_Horn"
+    ],
+    [
+      "tjo",
+      "Temacine Tamazight",
+      "Temacine Tamazight (tjo)",
+      "Sahel_Horn"
+    ],
+    [
+      "tlo",
+      "Talodi",
+      "Talodi (tlo)",
+      "Sahel_Horn"
+    ],
+    [
+      "tma",
+      "Tama (Chad)",
+      "Tama (Chad) (tma)",
+      "Sahel_Horn"
+    ],
+    [
+      "tmc",
+      "Tumak",
+      "Tumak (tmc)",
+      "Sahel_Horn"
+    ],
+    [
+      "tmh",
+      "Tamashek",
+      "Tamashek (tmh)",
+      "Sahel_Horn"
+    ],
+    [
+      "tms",
+      "Tima",
+      "Tima (tms)",
+      "Sahel_Horn"
+    ],
+    [
+      "tng",
+      "Tobanga",
+      "Tobanga (tng)",
+      "Sahel_Horn"
+    ],
+    [
+      "tno",
+      "Toromono",
+      "Toromono (tno)",
+      "Sahel_Horn"
+    ],
+    [
+      "tqq",
+      "Tunni",
+      "Tunni (tqq)",
+      "Sahel_Horn"
+    ],
+    [
+      "trj",
+      "Toram",
+      "Toram (trj)",
+      "Sahel_Horn"
+    ],
+    [
+      "tse",
+      "Tunisian Sign Language",
+      "Tunisian Sign Language (tse)",
+      "Sahel_Horn"
+    ],
+    [
+      "tst",
+      "Tondi Songway Kiini",
+      "Tondi Songway Kiini (tst)",
+      "Sahel_Horn"
+    ],
+    [
+      "tsy",
+      "Tebul Sign Language",
+      "Tebul Sign Language (tsy)",
+      "Sahel_Horn"
+    ],
+    [
+      "tug",
+      "Tunia",
+      "Tunia (tug)",
+      "Sahel_Horn"
+    ],
+    [
+      "tuq",
+      "Tedaga",
+      "Tedaga (tuq)",
+      "Sahel_Horn"
+    ],
+    [
+      "tuv",
+      "Turkana",
+      "Turkana (tuv)",
+      "Sahel_Horn"
+    ],
+    [
+      "twq",
+      "Tasawaq",
+      "Tasawaq (twq)",
+      "Sahel_Horn"
+    ],
+    [
+      "tzm",
+      "Central Atlas Tamazight",
+      "ⵜⴰⵎⴰⵣⵉⵖⵜ",
+      "Atlas,Souss,Rif"
+    ],
+    [
+      "ubi",
+      "Ubi",
+      "Ubi (ubi)",
+      "Sahel_Horn"
+    ],
+    [
+      "udu",
+      "Uduk",
+      "Uduk (udu)",
+      "Sahel_Horn"
+    ],
+    [
+      "ukv",
+      "Kuku",
+      "Kuku (ukv)",
+      "Sahel_Horn"
+    ],
+    [
+      "vkj",
+      "Kujarge",
+      "Kujarge (vkj)",
+      "Sahel_Horn"
+    ],
+    [
+      "wal",
+      "Wolaytta",
+      "Wolaytta (wal)",
+      "Sahel_Horn"
+    ],
+    [
+      "wle",
+      "Wolane",
+      "Wolane (wle)",
+      "Sahel_Horn"
+    ],
+    [
+      "wll",
+      "Wali (Sudan)",
+      "Wali (Sudan) (wll)",
+      "Sahel_Horn"
+    ],
+    [
+      "wrn",
+      "Warnang",
+      "Warnang (wrn)",
+      "Sahel_Horn"
+    ],
+    [
+      "wti",
+      "Berta",
+      "Berta (wti)",
+      "Sahel_Horn"
+    ],
+    [
+      "xan",
+      "Xamtanga",
+      "Xamtanga (xan)",
+      "Sahel_Horn"
+    ],
+    [
+      "xel",
+      "Kelo",
+      "Kelo (xel)",
+      "Sahel_Horn"
+    ],
+    [
+      "xkg",
+      "Kagoro",
+      "Kagoro (xkg)",
+      "Sahel_Horn"
+    ],
+    [
+      "xma",
+      "Mushungulu",
+      "Mushungulu (xma)",
+      "Sahel_Horn"
+    ],
+    [
+      "xms",
+      "Moroccan Sign Language",
+      "Moroccan Sign Language (xms)",
+      "Sahel_Horn"
+    ],
+    [
+      "xnz",
+      "Kenzi",
+      "Kenzi (xnz)",
+      "Sahel_Horn"
+    ],
+    [
+      "xom",
+      "Komo (Sudan)",
+      "Komo (Sudan) (xom)",
+      "Sahel_Horn"
+    ],
+    [
+      "xtc",
+      "Katcha-Kadugli-Miri",
+      "Katcha-Kadugli-Miri (xtc)",
+      "Sahel_Horn"
+    ],
+    [
+      "xwg",
+      "Kwegu",
+      "Kwegu (xwg)",
+      "Sahel_Horn"
+    ],
+    [
+      "ymm",
+      "Maay",
+      "Maay (ymm)",
+      "Sahel_Horn"
+    ],
+    [
+      "zag",
+      "Zaghawa",
+      "Zaghawa (zag)",
+      "Sahel_Horn"
+    ],
+    [
+      "zay",
+      "Zayse-Zergulla",
+      "Zayse-Zergulla (zay)",
+      "Sahel_Horn"
+    ],
+    [
+      "zgh",
+      "Standard Moroccan Tamazight",
+      "Standard Moroccan Tamazight (zgh)",
+      "Sahel_Horn"
+    ],
+    [
+      "zim",
+      "Mesme",
+      "Mesme (zim)",
+      "Sahel_Horn"
+    ],
+    [
+      "zmo",
+      "Molo",
+      "Molo (zmo)",
+      "Sahel_Horn"
+    ],
+    [
+      "zna",
+      "Zan Gula",
+      "Zan Gula (zna)",
+      "Sahel_Horn"
+    ],
+    [
+      "zrn",
+      "Zerenkel",
+      "Zerenkel (zrn)",
+      "Sahel_Horn"
+    ],
+    [
+      "zwa",
+      "Zay",
+      "Zay (zwa)",
+      "Sahel_Horn"
+    ]
+  ]
+}

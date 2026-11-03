@@ -1,0 +1,3794 @@
+{
+  "macro_region_id": 9,
+  "region_name_es": "Subcontinente Indio e Himalaya",
+  "total_languages": 631,
+  "subclades_covered": 32,
+  "featured_languages": [
+    [
+      "aaf",
+      "Aranadan",
+      "Aranadan (aaf)",
+      "Kerala,Nilgiris"
+    ],
+    [
+      "abj",
+      "Aka-Bea",
+      "Aka-Bea (abj)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "aci",
+      "Aka-Cari",
+      "Aka-Cari (aci)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "ack",
+      "Aka-Kora",
+      "Aka-Kora (ack)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "acl",
+      "Akar-Bale",
+      "Akar-Bale (acl)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "adi",
+      "Adi",
+      "Adi (adi)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "adl",
+      "Galo",
+      "Galo (adl)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "adw",
+      "Amundava",
+      "Amundava (adw)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "aee",
+      "Northeast Pashai",
+      "Northeast Pashai (aee)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "aeq",
+      "Aer",
+      "Aer (aeq)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "afg",
+      "Afghan Sign Language",
+      "Afghan Sign Language (afg)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "agi",
+      "Agariya",
+      "Agariya (agi)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "aho",
+      "Ahom",
+      "Ahom (aho)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "ahr",
+      "Ahirani",
+      "Ahirani (ahr)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "aim",
+      "Aimol",
+      "Aimol (aim)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "aio",
+      "Aiton",
+      "Aiton (aio)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "aiq",
+      "Aimaq",
+      "Aimaq (aiq)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "ajz",
+      "Amri Karbi",
+      "Amri Karbi (ajz)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "akj",
+      "Aka-Jeru",
+      "Aka-Jeru (akj)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "akm",
+      "Aka-Bo",
+      "Aka-Bo (akm)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "akx",
+      "Aka-Kede",
+      "Aka-Kede (akx)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "aky",
+      "Aka-Kol",
+      "Aka-Kol (aky)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "all",
+      "Allar",
+      "Allar (all)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "aml",
+      "War-Jaintia",
+      "War-Jaintia (aml)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "anm",
+      "Anal",
+      "Anal (anm)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "anp",
+      "Angika",
+      "Angika (anp)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "anq",
+      "Jarawa (India)",
+      "Jarawa (India) (anq)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "anr",
+      "Andh",
+      "Andh (anr)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "aot",
+      "Atong (India)",
+      "Atong (India) (aot)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "aph",
+      "Athpariya",
+      "Athpariya (aph)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "apt",
+      "Apatani",
+      "Apatani (apt)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "ask",
+      "Ashkun",
+      "Ashkun (ask)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "asm",
+      "Assamese",
+      "Assamese (asm)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "asr",
+      "Asuri",
+      "Asuri (asr)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "awa",
+      "Awadhi",
+      "Awadhi (awa)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "bap",
+      "Bantawa",
+      "Bantawa (bap)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "bbb",
+      "Barai",
+      "Barai (bbb)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "bcc",
+      "Southern Balochi",
+      "Southern Balochi (bcc)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "bdv",
+      "Bodo Parja",
+      "Bodo Parja (bdv)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "bdz",
+      "Badeshi",
+      "Badeshi (bdz)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "bee",
+      "Byangsi",
+      "Byangsi (bee)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "bfb",
+      "Pauri Bareli",
+      "Pauri Bareli (bfb)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "bfq",
+      "Badaga",
+      "Badaga (bfq)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "bfr",
+      "Bazigar",
+      "Bazigar (bfr)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "bft",
+      "Balti",
+      "Balti (bft)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "bfu",
+      "Gahri",
+      "Gahri (bfu)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "bfw",
+      "Bondo",
+      "Bondo (bfw)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "bfy",
+      "Bagheli",
+      "Bagheli (bfy)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "bfz",
+      "Mahasu Pahari",
+      "Mahasu Pahari (bfz)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "bgc",
+      "Haryanvi",
+      "Haryanvi (bgc)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "bgd",
+      "Rathwi Bareli",
+      "Rathwi Bareli (bgd)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "bge",
+      "Bauria",
+      "Bauria (bge)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "bgg",
+      "Bugun",
+      "Bugun (bgg)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "bgn",
+      "Western Balochi",
+      "Western Balochi (bgn)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "bgp",
+      "Eastern Balochi",
+      "Eastern Balochi (bgp)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "bgq",
+      "Bagri",
+      "Bagri (bgq)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "bgw",
+      "Bhatri",
+      "Bhatri (bgw)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "bha",
+      "Bharia",
+      "Bharia (bha)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "bhb",
+      "Bhili",
+      "Bhili (bhb)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "bhd",
+      "Bhadrawahi",
+      "Bhadrawahi (bhd)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "bhe",
+      "Bhaya",
+      "Bhaya (bhe)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "bhi",
+      "Bhilali",
+      "Bhilali (bhi)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "bhj",
+      "Bahing",
+      "Bahing (bhj)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "bho",
+      "Bhojpuri",
+      "Bhojpuri (bho)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "bht",
+      "Bhattiyali",
+      "Bhattiyali (bht)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "bhu",
+      "Bhunjia",
+      "Bhunjia (bhu)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "bhx",
+      "Bhalay",
+      "Bhalay (bhx)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "biu",
+      "Biete",
+      "Biete (biu)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "biy",
+      "Birhor",
+      "Birhor (biy)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "bjj",
+      "Kanauji",
+      "Kanauji (bjj)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "bkk",
+      "Brokskat",
+      "Brokskat (bkk)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "bmj",
+      "Bote-Majhi",
+      "Bote-Majhi (bmj)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "ben",
+      "Bengalí",
+      "বাংলা",
+      "Dhaka,Chittagong,West_Bengal,Assam"
+    ],
+    [
+      "bns",
+      "Bundeli",
+      "Bundeli (bns)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "boe",
+      "Mundabli",
+      "Mundabli (boe)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "bpx",
+      "Palya Bareli",
+      "Palya Bareli (bpx)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "bpy",
+      "Bishnupriya",
+      "Bishnupriya (bpy)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "bra",
+      "Braj",
+      "Braj (bra)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "brh",
+      "Brahui",
+      "Brahui (brh)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "bro",
+      "Brokkat",
+      "Brokkat (bro)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "brw",
+      "Bellari",
+      "Bellari (brw)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "brx",
+      "Bodo (India)",
+      "Bodo (India) (brx)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "bsh",
+      "Kati",
+      "Kati (bsh)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "bsk",
+      "Burushaski",
+      "Burushaski (bsk)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "btv",
+      "Bateri",
+      "Bateri (btv)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "byh",
+      "Bhujel",
+      "Bhujel (byh)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "byw",
+      "Belhariya",
+      "Belhariya (byw)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "caq",
+      "Car Nicobarese",
+      "Car Nicobarese (caq)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "cbs",
+      "Cashinahua",
+      "Cashinahua (cbs)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "ccp",
+      "Chakma",
+      "Chakma (ccp)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "cde",
+      "Chenchu",
+      "Chenchu (cde)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "cdf",
+      "Chiru",
+      "Chiru (cdf)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "cdh",
+      "Chambeali",
+      "Chambeali (cdh)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "cdi",
+      "Chodri",
+      "Chodri (cdi)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "cdj",
+      "Churahi",
+      "Churahi (cdj)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "cdm",
+      "Chepang",
+      "Chepang (cdm)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "cdn",
+      "Chaudangsi",
+      "Chaudangsi (cdn)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "cdz",
+      "Koda",
+      "Koda (cdz)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "cgk",
+      "Chocangacakha",
+      "Chocangacakha (cgk)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "chx",
+      "Chantyal",
+      "Chantyal (chx)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "cik",
+      "Chitkuli Kinnauri",
+      "Chitkuli Kinnauri (cik)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "ckh",
+      "Chak",
+      "Chak (ckh)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "clh",
+      "Chilisso",
+      "Chilisso (clh)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "cna",
+      "Changthang",
+      "Changthang (cna)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "crv",
+      "Chaura",
+      "Chaura (crv)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "ctg",
+      "Chittagonian",
+      "Chittagonian (ctg)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "ctn",
+      "Chhintange",
+      "Chhintange (ctn)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "ctt",
+      "Wayanad Chetti",
+      "Wayanad Chetti (ctt)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "cur",
+      "Chhulung",
+      "Chhulung (cur)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "cvg",
+      "Chug",
+      "Chug (cvg)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "dcc",
+      "Deccan",
+      "Deccan (dcc)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "deh",
+      "Dehwari",
+      "Dehwari (deh)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "der",
+      "Deori",
+      "Deori (der)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "dgo",
+      "Dogri (individual language)",
+      "Dogri (individual language) (dgo)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "dhd",
+      "Dhundari",
+      "Dhundari (dhd)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "dhi",
+      "Dhimal",
+      "Dhimal (dhi)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "dhn",
+      "Dhanki",
+      "Dhanki (dhn)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "dho",
+      "Dhodia",
+      "Dhodia (dho)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "dhw",
+      "Dhanwar (Nepal)",
+      "Dhanwar (Nepal) (dhw)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "dis",
+      "Dimasa",
+      "Dimasa (dis)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "dja",
+      "Djadjawurrung",
+      "Djadjawurrung (dja)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "dka",
+      "Dakpakha",
+      "Dakpakha (dka)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "dln",
+      "Darlong",
+      "Darlong (dln)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "dmk",
+      "Domaaki",
+      "Domaaki (dmk)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "dml",
+      "Dameli",
+      "Dameli (dml)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "doi",
+      "Dogri (macrolanguage)",
+      "Dogri (macrolanguage) (doi)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "drd",
+      "Darmiya",
+      "Darmiya (drd)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "drq",
+      "Dura",
+      "Dura (drq)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "dry",
+      "Darai",
+      "Darai (dry)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "dso",
+      "Desiya",
+      "Desiya (dso)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "dth",
+      "Adithinngithigh",
+      "Adithinngithigh (dth)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "dty",
+      "Dotyali",
+      "Dotyali (dty)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "dub",
+      "Dubli",
+      "Dubli (dub)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "duh",
+      "Dungra Bhil",
+      "Dungra Bhil (duh)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "dus",
+      "Dumi",
+      "Dumi (dus)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "div",
+      "Dhivehi",
+      "ދިވެހި",
+      "Male,Addu"
+    ],
+    [
+      "dwk",
+      "Dawik Kui",
+      "Dawik Kui (dwk)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "dwz",
+      "Dewas Rai",
+      "Dewas Rai (dwz)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "dzo",
+      "Dzongkha",
+      "རྫོང་ཁ",
+      "Thimphu,Paro,Punakha"
+    ],
+    [
+      "dzl",
+      "Dzalakha",
+      "Dzalakha (dzl)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "ekl",
+      "Kol (Bangladesh)",
+      "Kol (Bangladesh) (ekl)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "emg",
+      "Eastern Meohang",
+      "Eastern Meohang (emg)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "emu",
+      "Eastern Muria",
+      "Eastern Muria (emu)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "era",
+      "Eravallan",
+      "Eravallan (era)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "esg",
+      "Aheri Gondi",
+      "Aheri Gondi (esg)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "fmu",
+      "Far Western Muria",
+      "Far Western Muria (fmu)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "fng",
+      "Fanagalo",
+      "Fanagalo (fng)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "gaq",
+      "Gata'",
+      "Gata' (gaq)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "gas",
+      "Adiwasi Garasia",
+      "Adiwasi Garasia (gas)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "gau",
+      "Mudhili Gadaba",
+      "Mudhili Gadaba (gau)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "gbj",
+      "Bodo Gadaba",
+      "Bodo Gadaba (gbj)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "gbk",
+      "Gaddi",
+      "Gaddi (gbk)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "gbl",
+      "Gamit",
+      "Gamit (gbl)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "gda",
+      "Gade Lohar",
+      "Gade Lohar (gda)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "gdb",
+      "Pottangi Ollar Gadaba",
+      "Pottangi Ollar Gadaba (gdb)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "gds",
+      "Ghandruk Sign Language",
+      "Ghandruk Sign Language (gds)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "gdx",
+      "Godwari",
+      "Godwari (gdx)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "gef",
+      "Gerai",
+      "Gerai (gef)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "ghe",
+      "Southern Ghale",
+      "Southern Ghale (ghe)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "ghh",
+      "Northern Ghale",
+      "Northern Ghale (ghh)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "ghr",
+      "Ghera",
+      "Ghera (ghr)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "ght",
+      "Kuke",
+      "Kuke (ght)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "gig",
+      "Goaria",
+      "Goaria (gig)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "gjk",
+      "Kachi Koli",
+      "Kachi Koli (gjk)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "gju",
+      "Gujari",
+      "Gujari (gju)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "glh",
+      "Northwest Pashai",
+      "Northwest Pashai (glh)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "gnb",
+      "Gangte",
+      "Gangte (gnb)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "gno",
+      "Northern Gondi",
+      "Northern Gondi (gno)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "goe",
+      "Gongduk",
+      "Gongduk (goe)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "goj",
+      "Gowlan",
+      "Gowlan (goj)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "gok",
+      "Gowli",
+      "Gowli (gok)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "gom",
+      "Goan Konkani",
+      "Goan Konkani (gom)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "gon",
+      "Gondi",
+      "Gondi (gon)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "gra",
+      "Rajput Garasia",
+      "Rajput Garasia (gra)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "gro",
+      "Groma",
+      "Groma (gro)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "grt",
+      "Garo",
+      "Garo (grt)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "guj",
+      "Gujarati",
+      "ગુજરાતી",
+      "Gujarat,Mumbai"
+    ],
+    [
+      "gwc",
+      "Gawri",
+      "Gawri (gwc)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "gwf",
+      "Gowro",
+      "Gowro (gwf)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "gwt",
+      "Gawar-Bati",
+      "Gawar-Bati (gwt)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "gyo",
+      "Gyalsumdo",
+      "Gyalsumdo (gyo)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "haj",
+      "Hajong",
+      "Hajong (haj)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "haz",
+      "Hazaragi",
+      "Hazaragi (haz)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "hca",
+      "Andaman Creole Hindi",
+      "Andaman Creole Hindi (hca)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "hin",
+      "Hindi",
+      "हिन्दी",
+      "Uttar_Pradesh,Bihar,MP,Rajasthan,Delhi"
+    ],
+    [
+      "hif",
+      "Fiji Hindi",
+      "Fiji Hindi (hif)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "hii",
+      "Hinduri",
+      "Hinduri (hii)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "hlb",
+      "Halbi",
+      "Halbi (hlb)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "hmr",
+      "Hmar",
+      "Hmar (hmr)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "hnd",
+      "Southern Hindko",
+      "Southern Hindko (hnd)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "hne",
+      "Chhattisgarhi",
+      "Chhattisgarhi (hne)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "hno",
+      "Northern Hindko",
+      "Northern Hindko (hno)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "hoc",
+      "Ho",
+      "Ho (hoc)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "hoj",
+      "Hadothi",
+      "Hadothi (hoj)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "hoy",
+      "Holiya",
+      "Holiya (hoy)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "hra",
+      "Hrangkhol",
+      "Hrangkhol (hra)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "hru",
+      "Hruso",
+      "Hruso (hru)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "idb",
+      "Indo-Portuguese",
+      "Indo-Portuguese (idb)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "ima",
+      "Mala Malasar",
+      "Mala Malasar (ima)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "ins",
+      "Indian Sign Language",
+      "Indian Sign Language (ins)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "iru",
+      "Irula",
+      "Irula (iru)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "isk",
+      "Ishkashimi",
+      "Ishkashimi (isk)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "jat",
+      "Jakati",
+      "Jakati (jat)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "jda",
+      "Jad",
+      "Jad (jda)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "jee",
+      "Jerung",
+      "Jerung (jee)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "jhs",
+      "Jhankot Sign Language",
+      "Jhankot Sign Language (jhs)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "jkr",
+      "Koro (India)",
+      "Koro (India) (jkr)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "jml",
+      "Jumli",
+      "Jumli (jml)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "jmn",
+      "Makuri Naga",
+      "Makuri Naga (jmn)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "jna",
+      "Jangshung",
+      "Jangshung (jna)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "jnd",
+      "Jandavra",
+      "Jandavra (jnd)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "jnl",
+      "Rawat",
+      "Rawat (jnl)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "jns",
+      "Jaunsari",
+      "Jaunsari (jns)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "jog",
+      "Jogi",
+      "Jogi (jog)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "jra",
+      "Jarai",
+      "Jarai (jra)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "jul",
+      "Jirel",
+      "Jirel (jul)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "jun",
+      "Juang",
+      "Juang (jun)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "jus",
+      "Jumla Sign Language",
+      "Jumla Sign Language (jus)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "juy",
+      "Juray",
+      "Juray (juy)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "kaa",
+      "Kara-Kalpak",
+      "Kara-Kalpak (kaa)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "kas",
+      "Kashmiri",
+      "Kashmiri (kas)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "kbg",
+      "Khamba",
+      "Khamba (kbg)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "kbu",
+      "Kabutra",
+      "Kabutra (kbu)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "kdq",
+      "Koch",
+      "Koch (kdq)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "kdr",
+      "Karaim",
+      "Karaim (kdr)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "kej",
+      "Kadar",
+      "Kadar (kej)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "kep",
+      "Kaikadi",
+      "Kaikadi (kep)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "keq",
+      "Kamar",
+      "Kamar (keq)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "kev",
+      "Kanikkaran",
+      "Kanikkaran (kev)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "kex",
+      "Kukna",
+      "Kukna (kex)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "key",
+      "Kupia",
+      "Kupia (key)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "kfa",
+      "Kodava",
+      "Kodava (kfa)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "kfb",
+      "Northwestern Kolami",
+      "Northwestern Kolami (kfb)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "kfc",
+      "Konda-Dora",
+      "Konda-Dora (kfc)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "kfd",
+      "Korra Koraga",
+      "Korra Koraga (kfd)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "kfe",
+      "Kota (India)",
+      "Kota (India) (kfe)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "kff",
+      "Koya",
+      "Koya (kff)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "kfg",
+      "Kudiya",
+      "Kudiya (kfg)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "kfh",
+      "Kurichiya",
+      "Kurichiya (kfh)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "kfi",
+      "Kannada Kurumba",
+      "Kannada Kurumba (kfi)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "kfp",
+      "Korwa",
+      "Korwa (kfp)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "kfq",
+      "Korku",
+      "Korku (kfq)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "kfr",
+      "Kachhi",
+      "Kachhi (kfr)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "kfs",
+      "Bilaspuri",
+      "Bilaspuri (kfs)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "kft",
+      "Kanjari",
+      "Kanjari (kft)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "kfu",
+      "Katkari",
+      "Katkari (kfu)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "kfv",
+      "Kurmukar",
+      "Kurmukar (kfv)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "kfw",
+      "Kharam Naga",
+      "Kharam Naga (kfw)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "kfx",
+      "Kullu Pahari",
+      "Kullu Pahari (kfx)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "kfy",
+      "Kumaoni",
+      "Kumaoni (kfy)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "kgg",
+      "Kusunda",
+      "Kusunda (kgg)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "kgj",
+      "Gamale Kham",
+      "Gamale Kham (kgj)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "kha",
+      "Khasi",
+      "Khasi (kha)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "khn",
+      "Khandesi",
+      "Khandesi (khn)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "khr",
+      "Kharia",
+      "Kharia (khr)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "kht",
+      "Khamti",
+      "Khamti (kht)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "khw",
+      "Khowar",
+      "Khowar (khw)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "kif",
+      "Eastern Parbate Kham",
+      "Eastern Parbate Kham (kif)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "kip",
+      "Sheshi Kham",
+      "Sheshi Kham (kip)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "kir",
+      "Kirghiz",
+      "Kirghiz (kir)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "kix",
+      "Khiamniungan Naga",
+      "Khiamniungan Naga (kix)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "kjl",
+      "Western Parbate Kham",
+      "Western Parbate Kham (kjl)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "kjo",
+      "Harijan Kinnauri",
+      "Harijan Kinnauri (kjo)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "kjz",
+      "Bumthangkha",
+      "Bumthangkha (kjz)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "kkf",
+      "Kalaktang Monpa",
+      "Kalaktang Monpa (kkf)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "kkt",
+      "Koi",
+      "Koi (kkt)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "kle",
+      "Kulung (Nepal)",
+      "Kulung (Nepal) (kle)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "klr",
+      "Khaling",
+      "Khaling (klr)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "kls",
+      "Kalasha",
+      "Kalasha (kls)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "kmj",
+      "Kumarbhag Paharia",
+      "Kumarbhag Paharia (kmj)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "kmm",
+      "Kom (India)",
+      "Kom (India) (kmm)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "kan",
+      "Kannada",
+      "ಕನ್ನಡ",
+      "Karnataka"
+    ],
+    [
+      "knn",
+      "Konkani (individual language)",
+      "Konkani (individual language) (knn)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "kpb",
+      "Mullu Kurumba",
+      "Mullu Kurumba (kpb)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "kra",
+      "Kumhali",
+      "Kumhali (kra)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "kru",
+      "Kurukh",
+      "Kurukh (kru)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "ksu",
+      "Khamyang",
+      "Khamyang (ksu)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "ksy",
+      "Kharia Thar",
+      "Kharia Thar (ksy)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "ksz",
+      "Kodaku",
+      "Kodaku (ksz)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "kvx",
+      "Parkari Koli",
+      "Parkari Koli (kvx)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "kwx",
+      "Khirwar",
+      "Khirwar (kwx)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "kxp",
+      "Wadiyara Koli",
+      "Wadiyara Koli (kxp)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "kxv",
+      "Kuvi",
+      "Kuvi (kxv)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "kyv",
+      "Kayort",
+      "Kayort (kyv)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "kyw",
+      "Kudmali",
+      "Kudmali (kyw)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "kzq",
+      "Kaike",
+      "Kaike (kzq)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "lae",
+      "Pattani",
+      "Pattani (lae)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "lbm",
+      "Lodhi",
+      "Lodhi (lbm)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "lbr",
+      "Lohorung",
+      "Lohorung (lbr)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "lep",
+      "Lepcha",
+      "Lepcha (lep)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "lhp",
+      "Lhokpu",
+      "Lhokpu (lhp)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "lif",
+      "Limbu",
+      "Limbu (lif)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "lim",
+      "Limburgan",
+      "Limburgan (lim)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "lkh",
+      "Lakha",
+      "Lakha (lkh)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "lmh",
+      "Lambichhong",
+      "Lambichhong (lmh)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "lmk",
+      "Lamkang",
+      "Lamkang (lmk)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "lmn",
+      "Lambadi",
+      "Lambadi (lmn)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "lmp",
+      "Limbum",
+      "Limbum (lmp)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "loy",
+      "Loke",
+      "Loke (loy)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "lpn",
+      "Long Phuri Naga",
+      "Long Phuri Naga (lpn)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "lrk",
+      "Loarki",
+      "Loarki (lrk)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "lrr",
+      "Southern Yamphu",
+      "Southern Yamphu (lrr)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "lsh",
+      "Lish",
+      "Lish (lsh)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "lss",
+      "Lasi",
+      "Lasi (lss)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "luk",
+      "Lunanakha",
+      "Lunanakha (luk)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "lus",
+      "Lushai",
+      "Lushai (lus)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "luu",
+      "Lumba-Yakkha",
+      "Lumba-Yakkha (luu)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "lya",
+      "Layakha",
+      "Layakha (lya)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "lyg",
+      "Lyngngam",
+      "Lyngngam (lyg)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "lzn",
+      "Leinong Naga",
+      "Leinong Naga (lzn)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "mag",
+      "Magahi",
+      "Magahi (mag)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "mai",
+      "Maithili",
+      "Maithili (mai)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "man",
+      "Mandingo",
+      "Mandingo (man)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "mar",
+      "Marathi",
+      "Marathi (mar)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "mby",
+      "Memoni",
+      "Memoni (mby)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "mef",
+      "Megam",
+      "Megam (mef)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "mgp",
+      "Eastern Magar",
+      "Eastern Magar (mgp)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "mha",
+      "Manda (India)",
+      "Manda (India) (mha)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "mhj",
+      "Mogholi",
+      "Mogholi (mhj)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "mjo",
+      "Malankuravan",
+      "Malankuravan (mjo)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "mjp",
+      "Malapandaram",
+      "Malapandaram (mjp)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "mjr",
+      "Malavedan",
+      "Malavedan (mjr)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "mjt",
+      "Sauria Paharia",
+      "Sauria Paharia (mjt)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "mju",
+      "Manna-Dora",
+      "Manna-Dora (mju)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "mjv",
+      "Mannan",
+      "Mannan (mjv)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "mjw",
+      "Karbi",
+      "Karbi (mjw)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "mjx",
+      "Mahali",
+      "Mahali (mjx)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "mjz",
+      "Majhi",
+      "Majhi (mjz)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "mkb",
+      "Mal Paharia",
+      "Mal Paharia (mkb)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "mke",
+      "Mawchi",
+      "Mawchi (mke)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "mki",
+      "Dhatki",
+      "Dhatki (mki)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "mal",
+      "Malayalam",
+      "മലയാളം",
+      "Kerala,Lakshadweep"
+    ],
+    [
+      "mmf",
+      "Mundat",
+      "Mundat (mmf)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "mmj",
+      "Majhwar",
+      "Majhwar (mmj)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "mmk",
+      "Mukha-Dora",
+      "Mukha-Dora (mmk)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "mnf",
+      "Mundani",
+      "Mundani (mnf)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "mni",
+      "Manipuri",
+      "Manipuri (mni)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "mnj",
+      "Munji",
+      "Munji (mnj)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "moq",
+      "Mor (Bomberai Peninsula)",
+      "Mor (Bomberai Peninsula) (moq)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "mqy",
+      "Manggarai",
+      "Manggarai (mqy)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "mrd",
+      "Western Magar",
+      "Western Magar (mrd)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "mrg",
+      "Mising",
+      "Mising (mrg)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "mro",
+      "Mru",
+      "Mru (mro)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "msg",
+      "Moraid",
+      "Moraid (msg)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "mtr",
+      "Mewari",
+      "Mewari (mtr)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "mua",
+      "Mundang",
+      "Mundang (mua)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "mup",
+      "Malvi",
+      "Malvi (mup)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "mut",
+      "Western Muria",
+      "Western Muria (mut)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "muv",
+      "Muthuvan",
+      "Muthuvan (muv)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "mve",
+      "Marwari (Pakistan)",
+      "Marwari (Pakistan) (mve)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "mvy",
+      "Indus Kohistani",
+      "Indus Kohistani (mvy)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "nag",
+      "Naga Pidgin",
+      "Naga Pidgin (nag)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "nao",
+      "Naaba",
+      "Naaba (nao)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "nbc",
+      "Chang Naga",
+      "Chang Naga (nbc)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "nbe",
+      "Konyak Naga",
+      "Konyak Naga (nbe)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "nbg",
+      "Nagarchal",
+      "Nagarchal (nbg)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "nbi",
+      "Mao Naga",
+      "Mao Naga (nbi)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "nbt",
+      "Na",
+      "Na (nbt)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "nbu",
+      "Rongmei Naga",
+      "Rongmei Naga (nbu)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "ncb",
+      "Central Nicobarese",
+      "Central Nicobarese (ncb)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "ncd",
+      "Nachering",
+      "Nachering (ncd)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "nct",
+      "Chothe Naga",
+      "Chothe Naga (nct)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "nef",
+      "Nefamese",
+      "Nefamese (nef)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "neh",
+      "Nyenkha",
+      "Nyenkha (neh)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "nep",
+      "Nepali (macrolanguage)",
+      "Nepali (macrolanguage) (nep)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "nes",
+      "Bhoti Kinnauri",
+      "Bhoti Kinnauri (nes)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "new",
+      "Newari",
+      "Newari (new)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "nhh",
+      "Nahari",
+      "Nahari (nhh)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "nik",
+      "Southern Nicobarese",
+      "Southern Nicobarese (nik)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "nit",
+      "Southeastern Kolami",
+      "Southeastern Kolami (nit)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "njb",
+      "Nocte Naga",
+      "Nocte Naga (njb)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "njh",
+      "Lotha Naga",
+      "Lotha Naga (njh)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "njm",
+      "Angami Naga",
+      "Angami Naga (njm)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "njn",
+      "Liangmai Naga",
+      "Liangmai Naga (njn)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "njo",
+      "Ao Naga",
+      "Ao Naga (njo)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "nkb",
+      "Khoibu Naga",
+      "Khoibu Naga (nkb)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "nkd",
+      "Koireng",
+      "Koireng (nkd)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "nkf",
+      "Inpui Naga",
+      "Inpui Naga (nkf)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "nkh",
+      "Khezha Naga",
+      "Khezha Naga (nkh)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "nki",
+      "Thangal Naga",
+      "Thangal Naga (nki)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "nli",
+      "Grangali",
+      "Grangali (nli)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "nll",
+      "Nihali",
+      "Nihali (nll)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "nlm",
+      "Mankiyali",
+      "Mankiyali (nlm)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "nlq",
+      "Lao Naga",
+      "Lao Naga (nlq)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "nlx",
+      "Nahali",
+      "Nahali (nlx)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "nma",
+      "Maram Naga",
+      "Maram Naga (nma)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "nme",
+      "Mzieme Naga",
+      "Mzieme Naga (nme)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "nmf",
+      "Tangkhul Naga (India)",
+      "Tangkhul Naga (India) (nmf)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "nmh",
+      "Monsang Naga",
+      "Monsang Naga (nmh)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "nmm",
+      "Manangba",
+      "Manangba (nmm)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "nmo",
+      "Moyon Naga",
+      "Moyon Naga (nmo)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "nnl",
+      "Northern Rengma Naga",
+      "Northern Rengma Naga (nnl)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "nnp",
+      "Wancho Naga",
+      "Wancho Naga (nnp)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "noe",
+      "Nimadi",
+      "Nimadi (noe)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "noi",
+      "Noiri",
+      "Noiri (noi)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "npa",
+      "Nar Phu",
+      "Nar Phu (npa)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "npb",
+      "Nupbikha",
+      "Nupbikha (npb)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "npg",
+      "Ponyo-Gongwang Naga",
+      "Ponyo-Gongwang Naga (npg)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "nph",
+      "Phom Naga",
+      "Phom Naga (nph)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "npi",
+      "Nepali (individual language)",
+      "Nepali (individual language) (npi)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "npo",
+      "Pochuri Naga",
+      "Pochuri Naga (npo)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "npu",
+      "Puimei Naga",
+      "Puimei Naga (npu)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "nqq",
+      "Kyan-Karyaw Naga",
+      "Kyan-Karyaw Naga (nqq)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "nqy",
+      "Akyaung Ari Naga",
+      "Akyaung Ari Naga (nqy)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "nre",
+      "Southern Rengma Naga",
+      "Southern Rengma Naga (nre)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "nri",
+      "Chokri Naga",
+      "Chokri Naga (nri)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "nsa",
+      "Sangtam Naga",
+      "Sangtam Naga (nsa)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "nsm",
+      "Sumi Naga",
+      "Sumi Naga (nsm)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "nsp",
+      "Nepalese Sign Language",
+      "Nepalese Sign Language (nsp)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "nst",
+      "Tase Naga",
+      "Tase Naga (nst)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "ntx",
+      "Tangkhul Naga (Myanmar)",
+      "Tangkhul Naga (Myanmar) (ntx)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "nxk",
+      "Koki Naga",
+      "Koki Naga (nxk)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "nzm",
+      "Zeme Naga",
+      "Zeme Naga (nzm)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "odk",
+      "Od",
+      "Od (odk)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "oka",
+      "Okanagan",
+      "Okanagan (oka)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "ola",
+      "Walungge",
+      "Walungge (ola)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "ole",
+      "Olekha",
+      "Olekha (ole)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "onp",
+      "Sartang",
+      "Sartang (onp)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "oon",
+      "Önge",
+      "Önge (oon)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "ory",
+      "Odia",
+      "ଓଡ଼ିଆ",
+      "Odisha"
+    ],
+    [
+      "ort",
+      "Adivasi Oriya",
+      "Adivasi Oriya (ort)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "oru",
+      "Ormuri",
+      "Ormuri (oru)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "pan",
+      "Punjabi",
+      "ਪੰਜਾਬੀ",
+      "Punjab_IN,Punjab_PK"
+    ],
+    [
+      "paq",
+      "Parya",
+      "Parya (paq)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "pbu",
+      "Northern Pashto",
+      "Northern Pashto (pbu)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "pbv",
+      "Pnar",
+      "Pnar (pbv)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "pcf",
+      "Paliyan",
+      "Paliyan (pcf)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "pcg",
+      "Paniya",
+      "Paniya (pcg)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "pch",
+      "Pardhan",
+      "Pardhan (pch)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "pci",
+      "Duruwa",
+      "Duruwa (pci)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "pcj",
+      "Parenga",
+      "Parenga (pcj)",
+      "Sepik_Highlands_Pacific"
+    ],
+    [
+      "pcl",
+      "Pardhi",
+      "Pardhi (pcl)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "peg",
+      "Pengo",
+      "Pengo (peg)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "pgg",
+      "Pangwali",
+      "Pangwali (pgg)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "phd",
+      "Phudagi",
+      "Phudagi (phd)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "phk",
+      "Phake",
+      "Phake (phk)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "phl",
+      "Phalura",
+      "Phalura (phl)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "phr",
+      "Pahari-Potwari",
+      "Pahari-Potwari (phr)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "phv",
+      "Pahlavani",
+      "Pahlavani (phv)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "phw",
+      "Phangduwali",
+      "Phangduwali (phw)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "pkh",
+      "Pankhu",
+      "Pankhu (pkh)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "pkr",
+      "Attapady Kurumba",
+      "Attapady Kurumba (pkr)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "pks",
+      "Pakistan Sign Language",
+      "Pakistan Sign Language (pks)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "plj",
+      "Polci",
+      "Polci (plj)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "plk",
+      "Kohistani Shina",
+      "Kohistani Shina (plk)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "pms",
+      "Piemontese",
+      "Piemontese (pms)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "pmx",
+      "Poumei Naga",
+      "Poumei Naga (pmx)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "pnb",
+      "Western Panjabi",
+      "Western Panjabi (pnb)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "prc",
+      "Parachi",
+      "Parachi (prc)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "prn",
+      "Prasuni",
+      "Prasuni (prn)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "prs",
+      "Dari",
+      "دری",
+      "Kabul,Herat,Balkh"
+    ],
+    [
+      "prx",
+      "Purik",
+      "Purik (prx)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "pbt",
+      "Pashto",
+      "پښتو",
+      "Kandahar,Khyber,Quetta"
+    ],
+    [
+      "psh",
+      "Southwest Pashai",
+      "Southwest Pashai (psh)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "psi",
+      "Southeast Pashai",
+      "Southeast Pashai (psi)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "pst",
+      "Central Pashto",
+      "Central Pashto (pst)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "ptq",
+      "Pattapu",
+      "Pattapu (ptq)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "pty",
+      "Pathiya",
+      "Pathiya (pty)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "pub",
+      "Purum",
+      "Purum (pub)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "pum",
+      "Puma",
+      "Puma (pum)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "pus",
+      "Pushto",
+      "Pushto (pus)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "pwr",
+      "Powari",
+      "Powari (pwr)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "pzn",
+      "Para Naga",
+      "Para Naga (pzn)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "raa",
+      "Dungmali",
+      "Dungmali (raa)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "rab",
+      "Camling",
+      "Camling (rab)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "raf",
+      "Western Meohang",
+      "Western Meohang (raf)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "rah",
+      "Rabha",
+      "Rabha (rah)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "raj",
+      "Rajasthani",
+      "Rajasthani (raj)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "ral",
+      "Ralte",
+      "Ralte (ral)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "raq",
+      "Saam",
+      "Saam (raq)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "rau",
+      "Raute",
+      "Raute (rau)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "rav",
+      "Sampang",
+      "Sampang (rav)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "rei",
+      "Reli",
+      "Reli (rei)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "rhg",
+      "Rohingya",
+      "Ruáingga",
+      "Rakhine,Coxs_Bazar"
+    ],
+    [
+      "ria",
+      "Riang (India)",
+      "Riang (India) (ria)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "rji",
+      "Raji",
+      "Raji (rji)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "rjs",
+      "Rajbanshi",
+      "Rajbanshi (rjs)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "rki",
+      "Rakhine",
+      "Rakhine (rki)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "rkt",
+      "Rangpuri",
+      "Rangpuri (rkt)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "rmz",
+      "Marma",
+      "Marma (rmz)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "rnl",
+      "Ranglong",
+      "Ranglong (rnl)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "rnp",
+      "Rongpo",
+      "Rongpo (rnp)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "rtw",
+      "Rathawi",
+      "Rathawi (rtw)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "ruh",
+      "Ruga",
+      "Ruga (ruh)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "rwr",
+      "Marwari (India)",
+      "Marwari (India) (rwr)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "sat",
+      "Santali",
+      "Santali (sat)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "saz",
+      "Saurashtra",
+      "Saurashtra (saz)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "sbn",
+      "Sindhi Bhil",
+      "Sindhi Bhil (sbn)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "sbu",
+      "Stod Bhoti",
+      "Stod Bhoti (sbu)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "sch",
+      "Sakachep",
+      "Sakachep (sch)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "sck",
+      "Sadri",
+      "Sadri (sck)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "scl",
+      "Shina",
+      "Shina (scl)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "scp",
+      "Hyolmo",
+      "Hyolmo (scp)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "scu",
+      "Shumcho",
+      "Shumcho (scu)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "sdg",
+      "Savi",
+      "Savi (sdg)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "sdp",
+      "Sherdukpen",
+      "Sherdukpen (sdp)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "sdr",
+      "Oraon Sadri",
+      "Oraon Sadri (sdr)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "sgj",
+      "Surgujia",
+      "Surgujia (sgj)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "sgp",
+      "Singpho",
+      "Singpho (sgp)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "sgt",
+      "Brokpake",
+      "Brokpake (sgt)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "sgy",
+      "Sanglechi",
+      "Sanglechi (sgy)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "shd",
+      "Kundal Shahi",
+      "Kundal Shahi (shd)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "shl",
+      "Shendu",
+      "Shendu (shl)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "sin",
+      "Sinhala",
+      "සිංහල",
+      "Colombo,Kandy"
+    ],
+    [
+      "sii",
+      "Shom Peng",
+      "Shom Peng (sii)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "sip",
+      "Sikkimese",
+      "Sikkimese (sip)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "sjl",
+      "Sajalong",
+      "Sajalong (sjl)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "sjp",
+      "Surjapuri",
+      "Surjapuri (sjp)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "skj",
+      "Seke (Nepal)",
+      "Seke (Nepal) (skj)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "skr",
+      "Saraiki",
+      "Saraiki (skr)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "sle",
+      "Sholaga",
+      "Sholaga (sle)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "smm",
+      "Musasa",
+      "Musasa (smm)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "smt",
+      "Simte",
+      "Simte (smt)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "smv",
+      "Samvedi",
+      "Samvedi (smv)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "snd",
+      "Sindhi",
+      "Sindhi (snd)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "snj",
+      "Riverain Sango",
+      "Riverain Sango (snj)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "soi",
+      "Sonha",
+      "Sonha (soi)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "sor",
+      "Somrai",
+      "Somrai (sor)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "spt",
+      "Spiti Bhoti",
+      "Spiti Bhoti (spt)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "spv",
+      "Sambalpuri",
+      "Sambalpuri (spv)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "sqs",
+      "Sri Lankan Sign Language",
+      "Sri Lankan Sign Language (sqs)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "srb",
+      "Sora",
+      "Sora (srb)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "srx",
+      "Sirmauri",
+      "Sirmauri (srx)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "ssi",
+      "Sansi",
+      "Sansi (ssi)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "ssk",
+      "Sunam",
+      "Sunam (ssk)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "std",
+      "Sentinel",
+      "Sentinel (std)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "sts",
+      "Shumashti",
+      "Shumashti (sts)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "suz",
+      "Sunwar",
+      "Sunwar (suz)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "swv",
+      "Shekhawati",
+      "Shekhawati (swv)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "syl",
+      "Sylheti",
+      "Sylheti (syl)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "syw",
+      "Kagate",
+      "Kagate (syw)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "tam",
+      "Tamil",
+      "தமிழ்",
+      "Tamil_Nadu,Jaffna"
+    ],
+    [
+      "taj",
+      "Eastern Tamang",
+      "Eastern Tamang (taj)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "tcg",
+      "Tamagario",
+      "Tamagario (tcg)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "tcn",
+      "Tichurong",
+      "Tichurong (tcn)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "tcs",
+      "Torres Strait Creole",
+      "Torres Strait Creole (tcs)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "tcx",
+      "Toda",
+      "Toda (tcx)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "tcy",
+      "Tulu",
+      "Tulu (tcy)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "tdb",
+      "Panchpargania",
+      "Panchpargania (tdb)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "tdg",
+      "Western Tamang",
+      "Western Tamang (tdg)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "tdh",
+      "Thulung",
+      "Thulung (tdh)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "tel",
+      "Telugu",
+      "తెలుగు",
+      "Andhra_Pradesh,Telangana"
+    ],
+    [
+      "tef",
+      "Teressa",
+      "Teressa (tef)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "tge",
+      "Eastern Gorkha Tamang",
+      "Eastern Gorkha Tamang (tge)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "tgf",
+      "Chalikha",
+      "Chalikha (tgf)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "tgj",
+      "Tagin",
+      "Tagin (tgj)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "tgk",
+      "Tajik",
+      "Tajik (tgk)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "the",
+      "Chitwania Tharu",
+      "Chitwania Tharu (the)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "thf",
+      "Thangmi",
+      "Thangmi (thf)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "thl",
+      "Dangaura Tharu",
+      "Dangaura Tharu (thl)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "thn",
+      "Thachanadan",
+      "Thachanadan (thn)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "thq",
+      "Kochila Tharu",
+      "Kochila Tharu (thq)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "thr",
+      "Rana Tharu",
+      "Rana Tharu (thr)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "ths",
+      "Thakali",
+      "Thakali (ths)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "tij",
+      "Tilung",
+      "Tilung (tij)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "tkb",
+      "Buksa",
+      "Buksa (tkb)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "tkt",
+      "Kathoriya Tharu",
+      "Kathoriya Tharu (tkt)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "tmk",
+      "Northwestern Tamang",
+      "Northwestern Tamang (tmk)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "tnv",
+      "Tangchangya",
+      "Tangchangya (tnv)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "tpe",
+      "Tippera",
+      "Tippera (tpe)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "tpq",
+      "Tukpa",
+      "Tukpa (tpq)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "tra",
+      "Tirahi",
+      "Tirahi (tra)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "trd",
+      "Turi",
+      "Turi (trd)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "trm",
+      "Tregami",
+      "Tregami (trm)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "tro",
+      "Tarao Naga",
+      "Tarao Naga (tro)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "trp",
+      "Kok Borok",
+      "Kok Borok (trp)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "trw",
+      "Torwali",
+      "Torwali (trw)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "tsj",
+      "Tshangla",
+      "Tshangla (tsj)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "tvt",
+      "Tutsa Naga",
+      "Tutsa Naga (tvt)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "twm",
+      "Tawang Monpa",
+      "Tawang Monpa (twm)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "txo",
+      "Toto",
+      "Toto (txo)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "udg",
+      "Muduga",
+      "Muduga (udg)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "uki",
+      "Kui (India)",
+      "Kui (India) (uki)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "ukl",
+      "Ukrainian Sign Language",
+      "Ukrainian Sign Language (ukl)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "ull",
+      "Ullatan",
+      "Ullatan (ull)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "umn",
+      "Makyan Naga",
+      "Makyan Naga (umn)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "unr",
+      "Mundari",
+      "Mundari (unr)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "unx",
+      "Munda",
+      "Munda (unx)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "urd",
+      "Urdu",
+      "اردو",
+      "Punjab,Sindh,Karachi,Lahore,UP"
+    ],
+    [
+      "url",
+      "Urali",
+      "Urali (url)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "ush",
+      "Ushojo",
+      "Ushojo (ush)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "usi",
+      "Usui",
+      "Usui (usi)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "vaa",
+      "Vaagri Booli",
+      "Vaagri Booli (vaa)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "vah",
+      "Varhadi-Nagpuri",
+      "Varhadi-Nagpuri (vah)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "vap",
+      "Vaiphei",
+      "Vaiphei (vap)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "vas",
+      "Vasavi",
+      "Vasavi (vas)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "vav",
+      "Varli",
+      "Varli (vav)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "vay",
+      "Wayu",
+      "Wayu (vay)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "ved",
+      "Veddah",
+      "Veddah (ved)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "vgr",
+      "Vaghri",
+      "Vaghri (vgr)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "vis",
+      "Vishavan",
+      "Vishavan (vis)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "vkp",
+      "Korlai Creole Portuguese",
+      "Korlai Creole Portuguese (vkp)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "vmd",
+      "Mudu Koraga",
+      "Mudu Koraga (vmd)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "wbk",
+      "Waigali",
+      "Waigali (wbk)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "wbq",
+      "Waddar",
+      "Waddar (wbq)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "wbr",
+      "Wagdi",
+      "Wagdi (wbr)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "wbs",
+      "West Bengal Sign Language",
+      "West Bengal Sign Language (wbs)",
+      "Sepik_Highlands_Pacific"
+    ],
+    [
+      "wet",
+      "Perai",
+      "Perai (wet)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "wkb",
+      "Kumbaran",
+      "Kumbaran (wkb)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "wkl",
+      "Kalanadi",
+      "Kalanadi (wkl)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "wku",
+      "Kunduvadi",
+      "Kunduvadi (wku)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "wme",
+      "Wambule",
+      "Wambule (wme)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "wne",
+      "Waneci",
+      "Waneci (wne)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "wrd",
+      "Warduji",
+      "Warduji (wrd)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "wry",
+      "Merwari",
+      "Merwari (wry)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "wsg",
+      "Adilabad Gondi",
+      "Adilabad Gondi (wsg)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "wtm",
+      "Mewati",
+      "Mewati (wtm)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "xac",
+      "Kachari",
+      "Kachari (xac)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "xhe",
+      "Khetrani",
+      "Khetrani (xhe)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "xis",
+      "Kisan",
+      "Kisan (xis)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "xka",
+      "Kalkoti",
+      "Kalkoti (xka)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "xkf",
+      "Khengkha",
+      "Khengkha (xkf)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "xkz",
+      "Kurtokha",
+      "Kurtokha (xkz)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "xnr",
+      "Kangri",
+      "Kangri (xnr)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "xns",
+      "Kanashi",
+      "Kanashi (xns)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "xsr",
+      "Sherpa",
+      "Sherpa (xsr)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "xua",
+      "Alu Kurumba",
+      "Alu Kurumba (xua)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "xub",
+      "Betta Kurumba",
+      "Betta Kurumba (xub)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "xuj",
+      "Jennu Kurumba",
+      "Jennu Kurumba (xuj)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "xvi",
+      "Kamviri",
+      "Kamviri (xvi)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "ybh",
+      "Yakha",
+      "Yakha (ybh)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "ybi",
+      "Yamphu",
+      "Yamphu (ybi)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "yea",
+      "Ravula",
+      "Ravula (yea)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "yeu",
+      "Yerukula",
+      "Yerukula (yeu)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "yim",
+      "Yimchungru Naga",
+      "Yimchungru Naga (yim)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "ymr",
+      "Malasar",
+      "Malasar (ymr)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "ysg",
+      "Sonaga",
+      "Sonaga (ysg)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "zau",
+      "Zangskari",
+      "Zangskari (zau)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "zen",
+      "Zenaga",
+      "Zenaga (zen)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "zom",
+      "Zou",
+      "Zou (zom)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "zrg",
+      "Mirgan",
+      "Mirgan (zrg)",
+      "Indo_Gangetic_Himalaya"
+    ]
+  ]
+}
