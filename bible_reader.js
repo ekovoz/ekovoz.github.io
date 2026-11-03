@@ -3029,6 +3029,8 @@ export function initInteractiveBibleReader(doc = typeof document !== "undefined"
   const copyShareBtn = doc.getElementById("btnCopyDirectShareLink");
   if (copyShareBtn) {
     copyShareBtn.addEventListener("click", () => {
+      const bitfield = encodeGridStateBitfield12Bytes(state);
+      decodeGridStateBitfield12Bytes(bitfield);
       const shareUrl = `?obra=${state.activeWork}&lang=${encodeURIComponent(state.langCode)}&book=${state.bookCode}&ch=${state.chapterNum}&paper=${state.paperFormat}&cols=${state.columns}`;
       copyShareBtn.setAttribute("data-last-share-url", shareUrl);
     });
