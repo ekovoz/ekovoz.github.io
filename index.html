@@ -168,25 +168,29 @@ dialog::backdrop{background:rgba(0,0,0,0.65);backdrop-filter:blur(4px);}
 .toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
 .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;}
 .apple-sheet{margin-top:0.75rem;padding:1rem;border-radius:14px;border:1px solid var(--card-border);background:var(--accent-secondary-bg);}
-button,select,.uls-chip,.uls-trigger-btn{min-height:44px;min-width:44px;}
+.mostrador-dose-grid{display:grid;grid-template-columns:1fr;gap:0.65rem;margin:0.75rem 0;}
+@media (min-width: 560px){.mostrador-dose-grid{grid-template-columns:repeat(3,1fr);}}
+.dose-card{display:flex;flex-direction:column;justify-content:space-between;gap:0.4rem;padding:0.85rem;border-radius:12px;border:1px solid var(--card-border);background:var(--accent-secondary-bg);text-align:left;}
+.dose-card-cta{min-height:48px;width:100%;justify-content:center;text-align:center;}
+button,select,.uls-chip,.uls-trigger-btn{min-height:48px;min-width:48px;}
 @media print{body{background:#ffffff !important;color:#000000 !important;padding:0 !important;margin:0 !important;}.container{box-shadow:none !important;border:none !important;padding:0 !important;max-width:100% !important;background:#ffffff !important;}header,nav,.category-badge,h1,.subtitle,.paper-toggle-wrapper,.language-wrapper,.actions-group,.optical-trigger,.offline-badge,.footer-note,footer,dialog,.focal-controls,.focal-quick-actions,.focal-plate-overlay,.toast,.fold-guide-trigger{display:none !important;}.focal-viewer{margin:0 !important;max-width:100% !important;}.focal-plate-frame{border:none !important;box-shadow:none !important;max-height:none !important;height:98vh !important;display:flex !important;align-items:center !important;justify-content:center !important;}.focal-plate-frame img{max-width:100% !important;max-height:98vh !important;width:auto !important;height:auto !important;object-fit:contain !important;}}
     </style>
 </head>
 <body>
     <header id="sovereignTopBar" style="max-width: 760px; margin: 0 auto 1rem auto; padding: 0.75rem 1rem; border: 1px solid var(--card-border); border-radius: 14px; background: var(--card-bg); display: flex; flex-direction: column; gap: 0.6rem;">
         <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.5rem;">
-            <nav id="sovereignWorkTabs" role="tablist" aria-label="Obras Soberanas" style="display: flex; flex-wrap: wrap; gap: 0.45rem;">
-                <button type="button" id="tabWorkBiblia" class="uls-chip" role="tab" aria-selected="true" aria-controls="bibleSovereignSection" data-work-tab="biblia" onclick="switchSovereignWork('biblia')" style="font-weight: 700; border-width: 2px;">📖 La Biblia (66 Libros · Principal)</button>
-                <button type="button" id="tabWorkFelices" class="uls-chip" role="tab" aria-selected="false" aria-controls="felicesSovereignSection" data-work-tab="felices" onclick="switchSovereignWork('felices')">🎨 Los Felices (Mateo 5 · Colorear)</button>
+            <nav id="sovereignWorkTabs" role="tablist" aria-label="Sovereign Works" style="display: flex; flex-wrap: wrap; gap: 0.45rem;">
+                <button type="button" id="tabWorkBiblia" class="uls-chip" role="tab" aria-selected="true" aria-controls="bibleSovereignSection" data-work-tab="biblia" data-i18n="mostrador.tab.bible" onclick="switchSovereignWork('biblia')" style="font-weight: 700; border-width: 2px;">📖 The Bible (66 Books · Main)</button>
+                <button type="button" id="tabWorkFelices" class="uls-chip" role="tab" aria-selected="false" aria-controls="felicesSovereignSection" data-work-tab="felices" data-i18n="mostrador.tab.felices" onclick="switchSovereignWork('felices')">🎨 The Beatitudes (Matthew 5 · Coloring)</button>
             </nav>
             <div class="language-wrapper" style="margin: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem;">
-                <label for="langSelect" id="langLabel" style="font-size: 0.82rem; font-weight: 600; color: var(--text-secondary);">🌐 Idioma / Language:</label>
+                <label for="langSelect" id="langLabel" data-i18n="mostrador.ui_language.label" style="font-size: 0.82rem; font-weight: 600; color: var(--text-secondary);">🌐 Interface language:</label>
                 <button type="button" class="uls-trigger-btn" id="ulsTriggerBtn" onclick="openLangModal()" aria-haspopup="dialog" aria-expanded="false">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
                     <span id="ulsCurrentLang">English</span>
                     <span class="uls-badge">7,164</span>
                 </button>
-                <select id="langSelect" aria-label="Language / Idioma" onchange="updateUI()" hidden>
+                <select id="langSelect" aria-label="Language / Idioma" onchange="selectLanguage(this.value)" hidden>
                     <option value="en" selected>English</option>
                     <option value="es">Español</option>
                     <option value="bn-BD">বাংলা — বাংলাদেশ (Bangladesh · ঈসা মসীহ)</option>
@@ -209,63 +213,94 @@ button,select,.uls-chip,.uls-trigger-btn{min-height:44px;min-width:44px;}
             </div>
         </div>
         <details class="advanced-editorial-drawer">
-            <summary style="cursor: pointer; font-size: 0.82rem; color: var(--text-secondary);">⚡ Acceso Rápido a Lenguas Destacadas y Variantes de Escritura</summary>
+            <summary data-i18n="mostrador.quick_langs.summary" style="cursor: pointer; font-size: 0.82rem; color: var(--text-secondary);">⚡ Featured Languages &amp; Script Variants</summary>
             <div id="topQuickLangBar" role="group" aria-label="Quick Language Switcher" style="display: flex; flex-wrap: wrap; align-items: center; gap: 0.35rem; margin-top: 0.45rem;">
                 <button type="button" id="quickLangEn" class="uls-chip" onclick="selectLanguage('en')">🇺🇸 English</button>
                 <button type="button" id="quickLangEs" class="uls-chip" onclick="selectLanguage('es')">🇲🇽 Español</button>
                 <button type="button" id="quickLangBnBd" class="uls-chip" onclick="selectLanguage('bn-BD')">🇧🇩 বাংলা (Bangladesh · ঈসা মসীহ)</button>
                 <button type="button" id="quickLangBnIn" class="uls-chip" onclick="selectLanguage('bn-IN')">🇮🇳 বাংলা (India/Traditional · প্রভু যীশু)</button>
-                <button type="button" id="quickLangStp" class="uls-chip" onclick="selectSovereignBibleLang('stp')">🏔️ O'dam (Tepehuano · 66 Libros)</button>
+                <button type="button" id="quickLangStp" class="uls-chip" onclick="selectSovereignBibleLang('stp')">🏔️ O'dam (Tepehuano · 66 Books)</button>
             </div>
         </details>
     </header>
 
     <section id="bibleSovereignSection" data-active-work="true" data-roll-mode="chapter" data-cowan-focal-groups="4" data-audio-bytes="0" data-jpg-bytes="0" style="max-width: 760px; margin: 0 auto 1.5rem auto; padding: 1.25rem; border: 1px solid var(--card-border); border-radius: 16px; background: var(--card-bg);">
-        <h2 id="bibleMainHeading" style="font-size: 1.25rem; margin-bottom: 0.65rem;">La Biblia Políglota (66 Libros · 1,189 Capítulos · 31,102 Versículos)</h2>
-
-        <!-- Grupo Focal 1: Navegador Espacial de Coordenadas (2 Toques) y Guía de Lectura en Voz Alta -->
-        <div id="bibleSpatialNav" aria-label="Navegador de Libro y Capítulo" style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.5rem; margin-bottom: 0.65rem;">
-            <div style="display: flex; align-items: center; gap: 0.45rem;">
-                <button type="button" id="btnPrevChapter" aria-label="Capítulo Anterior" style="min-width: 48px; min-height: 48px; border-radius: 10px;">◀</button>
-                <button type="button" id="btnOpenCompass" aria-label="Elegir Libro y Capítulo en 2 Toques" style="min-height: 48px; padding: 0.5rem 0.9rem; font-weight: 700; border-radius: 10px;">🧭 01 · Na pai' dhuuk (Génesis) [Gén] · Cap. 1</button>
-                <button type="button" id="btnNextChapter" aria-label="Capítulo Siguiente" style="min-width: 48px; min-height: 48px; border-radius: 10px;">▶</button>
-            </div>
-            <button type="button" id="btnToggleAudioNarakeet" class="uls-chip" data-audio-bytes="0" aria-expanded="false">🗣️ Guía de Lectura en Voz Alta (Pórtico Oral)</button>
+        <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.5rem; margin-bottom: 0.65rem;">
+            <h2 id="bibleMainHeading" data-i18n="mostrador.heading" style="font-size: 1.25rem;">Polyglot Bible Dispenser (66 Books · Printable &amp; Shareable PDFs)</h2>
+            <span id="epistemicStatusSeal" class="uls-badge" data-seal="seal.unavailable" data-i18n="seal.unavailable">Translation not yet available</span>
         </div>
 
-        <!-- Pórtico Oral de 3 Líneas (0 Bytes Audio, D5 / DEB-R13-04) -->
+        <!-- Step 1 & Step 2: Language & Passage Navigation -->
+        <div id="bibleSpatialNav" aria-label="Book and Chapter Navigator" style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.5rem; margin-bottom: 0.65rem;">
+            <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 0.45rem;">
+                <button type="button" id="btnPrevChapter" aria-label="Previous chapter" data-i18n-attr="aria-label:mostrador.nav.prev" style="min-width: 48px; min-height: 48px; border-radius: 10px;">◀</button>
+                <button type="button" id="btnOpenCompass" aria-label="Choose Book and Chapter in 2 Taps" style="min-height: 48px; padding: 0.5rem 0.9rem; font-weight: 700; border-radius: 10px;">🧭 43 · John [JHN] · 1:1</button>
+                <button type="button" id="btnNextChapter" aria-label="Next chapter" data-i18n-attr="aria-label:mostrador.nav.next" style="min-width: 48px; min-height: 48px; border-radius: 10px;">▶</button>
+            </div>
+            <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem;">
+                <input type="text" id="mostradorRefInput" data-i18n-attr="placeholder:mostrador.step2.placeholder" placeholder="Passage (e.g. Rom 1:16, Jn 3:16, Sal 23)" style="min-height: 48px; padding: 0.45rem 0.75rem; border-radius: 10px; border: 1px solid var(--select-border); background: var(--select-bg); color: var(--text-primary);">
+                <button type="button" id="btnGoReference" class="uls-chip" data-i18n="mostrador.step2.open_compass">Go</button>
+                <button type="button" id="btnToggleAudioNarakeet" class="uls-chip" data-audio-bytes="0" aria-expanded="false" data-i18n="mostrador.oral_portico.toggle">🗣️ Aloud Reading Guide (Oral Portico)</button>
+            </div>
+        </div>
+
         <div id="bibleOralPorticoBanner" data-audio-bytes="0" hidden style="margin-bottom: 0.75rem; padding: 0.75rem 1rem; border-radius: 12px; border: 1px solid var(--badge-border); background: var(--badge-bg); font-size: 0.9rem; line-height: 1.45;"></div>
 
-        <!-- Selectores de Región, Idioma, Registro y Senderos en Revelación Progresiva (Cowan <= 3.50) -->
+        <!-- Step 3: Dosed Printable & Shareable Dispenser (Dose 1, Dose 2, Dose 3) -->
+        <div id="mostradorDoseCards" class="mostrador-dose-grid" aria-label="3. Choose printable dose">
+            <div class="dose-card" data-dose="1">
+                <div>
+                    <strong data-i18n="dose.1.title">Dose 1 · Sheets around this verse</strong>
+                    <p style="font-size: 0.78rem; color: var(--text-secondary);" data-i18n="dose.1.subtitle">1–3 printable sheets with the exact Typst pages (~35 KB)</p>
+                </div>
+                <button type="button" id="btnDose1Sheets" class="btn-modal-action dose-card-cta" data-i18n="dose.1.cta">🖨️ Download sheets around verse (PDF)</button>
+            </div>
+            <div class="dose-card" data-dose="2">
+                <div>
+                    <strong data-i18n="dose.2.title">Dose 2 · Study Booklet (Block)</strong>
+                    <p style="font-size: 0.78rem; color: var(--text-secondary);" data-i18n="dose.2.subtitle">Canonical block booklet ready to fold &amp; staple (~120 KB)</p>
+                </div>
+                <a id="linkDose2BlockPdf" href="/data/blocks/es/02_2col_pastoral/B65.pdf" download="ekovoz-es-B65.pdf" class="btn-modal-secondary dose-card-cta" style="text-decoration: none; display: inline-flex; align-items: center;" data-i18n="dose.2.cta">📘 Download study booklet (PDF)</a>
+            </div>
+            <div class="dose-card" data-dose="3">
+                <div>
+                    <strong data-i18n="dose.3.title">Dose 3 · Complete Bible (66 Books)</strong>
+                    <p style="font-size: 0.78rem; color: var(--text-secondary);" data-i18n="dose.3.subtitle">Full 66-book PDF with hierarchical bookmarks (/Outlines)</p>
+                </div>
+                <a id="linkDose3FullBiblePdf" href="/obras/biblia/ediciones/es/es-02_2col_pastoral.pdf" download="ekovoz-biblia-es.pdf" class="btn-modal-secondary dose-card-cta" style="text-decoration: none; display: inline-flex; align-items: center;" data-i18n="dose.3.cta">📚 Download full Bible (PDF)</a>
+            </div>
+        </div>
+
+        <!-- Region, Reading Language (all 14 synthesized + 7,164 funnel), Register & Trails -->
         <details class="advanced-editorial-drawer" id="bibleLanguageAndRegisterDrawer" style="margin-bottom: 0.65rem;">
-            <summary style="cursor: pointer; font-size: 0.85rem; font-weight: 600; color: var(--text-secondary);">🌍 Cambiar Idioma por Región (7,164 Lenguas), Modo de Lectura o Sendero de Vida</summary>
+            <summary data-i18n="mostrador.step1.title" style="cursor: pointer; font-size: 0.85rem; font-weight: 600; color: var(--text-secondary);">1. Choose Bible language (7,164 languages), reading mode or life trail</summary>
             <div style="margin-top: 0.65rem; display: flex; flex-direction: column; gap: 0.65rem;">
-                <div id="bibleGeoFunnel" aria-label="Buscador Geográfico en 3 Toques" style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
-                    <select id="bibleSelectRegion" aria-label="Región del Mundo">
-                        <option value="americas-mesoamerica">Mesoamérica y Norteamérica</option>
-                        <option value="americas-north">Norteamérica Indígena y Ártico</option>
-                        <option value="europe-west">Europa Occidental y Mediterráneo</option>
-                        <option value="europe-east">Europa Oriental y Eurasia Norte</option>
-                        <option value="anatolia-central-asia">Anatolia, Cáucaso y Asia Central</option>
-                        <option value="mena-caucasus">Medio Oriente y Norte de África</option>
-                        <option value="africa-sahel-horn">Cuerno de África y Sahel</option>
-                        <option value="africa-sub-saharan">África Subsahariana (Nigeria, RDC y Grandes Lagos)</option>
-                        <option value="south-asia">Asia del Sur (India, Pakistán y Bangladés)</option>
-                        <option value="east-asia">Asia Oriental</option>
-                        <option value="southeast-asia">Sudeste Asiático Continental e Insular</option>
-                        <option value="oceania-pacific">Oceanía, Papúa Nueva Guinea y Pacífico</option>
+                <div id="bibleGeoFunnel" aria-label="Geographic 3-Tap Funnel" style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+                    <select id="bibleSelectRegion" aria-label="World Region">
+                        <option value="americas-mesoamerica" data-i18n="region.americas-mesoamerica">Mesoamerica &amp; North America</option>
+                        <option value="americas-north" data-i18n="region.americas-north">Indigenous North America &amp; Arctic</option>
+                        <option value="europe-west" data-i18n="region.europe-west">Western Europe &amp; Mediterranean</option>
+                        <option value="europe-east" data-i18n="region.europe-east">Eastern Europe &amp; Northern Eurasia</option>
+                        <option value="anatolia-central-asia" data-i18n="region.anatolia-central-asia">Anatolia, Caucasus &amp; Central Asia</option>
+                        <option value="mena-caucasus" data-i18n="region.mena-caucasus">Middle East &amp; North Africa</option>
+                        <option value="africa-sahel-horn" data-i18n="region.africa-sahel-horn">Horn of Africa &amp; Sahel</option>
+                        <option value="africa-sub-saharan" data-i18n="region.africa-sub-saharan">Sub-Saharan Africa</option>
+                        <option value="south-asia" data-i18n="region.south-asia">South Asia</option>
+                        <option value="east-asia" data-i18n="region.east-asia">East Asia</option>
+                        <option value="southeast-asia" data-i18n="region.southeast-asia">Mainland &amp; Insular Southeast Asia</option>
+                        <option value="oceania-pacific" data-i18n="region.oceania-pacific">Oceania, Papua New Guinea &amp; Pacific</option>
                     </select>
-                    <select id="bibleSelectCountry" aria-label="Estado o País">
-                        <option value="MX-DUR">Durango y Sierra Madre Occidental</option>
-                        <option value="MX-OAX">Oaxaca y Sur</option>
-                        <option value="MX-GEN">Español e Inglés (Lenguas Puente)</option>
-                        <option value="EG-LEV">Levante y Valle del Nilo</option>
-                        <option value="CN-JP-KR">Sinósfera y Archipiélagos</option>
+                    <select id="bibleSelectCountry" aria-label="Country or Subregion">
+                        <option value="MX-DUR">Durango &amp; Sierra Madre Occidental</option>
+                        <option value="MX-OAX">Oaxaca &amp; South</option>
+                        <option value="MX-GEN">Spanish &amp; English (Bridge Languages)</option>
+                        <option value="EG-LEV">Levant &amp; Nile Valley</option>
+                        <option value="CN-JP-KR">Sinosphere &amp; Archipelagos</option>
                     </select>
-                    <select id="bibleSelectLang" aria-label="Idioma de Lectura">
-                        <option value="stp">O'dam · Tepehuano del Sur (stp)</option>
+                    <select id="bibleSelectLang" aria-label="Reading Language">
+                        <option value="es" selected>Español (es)</option>
                         <option value="en">English (en)</option>
-                        <option value="es">Español (es)</option>
+                        <option value="stp">O'dam · Tepehuano del Sur (stp · Draft)</option>
                         <option value="bn-BD">বাংলা — বাংলাদেশ (bn-BD · ঈসা মসীহ)</option>
                         <option value="bn-IN">বাংলা — ভারত/প্রচলিত (bn-IN · প্রভু যীশু)</option>
                         <option value="ar">العربية (ar)</option>
@@ -273,208 +308,198 @@ button,select,.uls-chip,.uls-trigger-btn{min-height:44px;min-width:44px;}
                         <option value="ja">日本語 (ja)</option>
                         <option value="hi">हिन्दी (hi)</option>
                         <option value="zh-Hans">简体中文 (zh-Hans)</option>
+                        <option value="pt">Português (pt)</option>
+                        <option value="fr">Français (fr)</option>
+                        <option value="quc">K'iche' (quc)</option>
+                        <option value="aud">Au'dam (aud · Draft)</option>
+                        <option value="kgv">Kalamang (kgv · Draft)</option>
                     </select>
-                    <select id="bibleSelectBook" aria-label="Libro Bíblico (66 Libros)">
-                        <option value="GEN">01. Génesis (GEN)</option>
-                        <option value="EXO">02. Éxodo (EXO)</option>
-                        <option value="PSA">19. Salmos (PSA)</option>
-                        <option value="ISA">23. Isaías (ISA)</option>
-                        <option value="MAT">40. Mateo (MAT)</option>
-                        <option value="LUK">42. Lucas (LUK)</option>
-                        <option value="JHN">43. Juan (JHN)</option>
-                        <option value="ROM">45. Romanos (ROM)</option>
-                        <option value="REV">66. Apocalipsis (REV)</option>
+                    <select id="bibleSelectBook" aria-label="Bible Book (66 Books)">
+                        <option value="GEN">01. Genesis (GEN)</option>
+                        <option value="EXO">02. Exodus (EXO)</option>
+                        <option value="PSA">19. Psalms (PSA)</option>
+                        <option value="ISA">23. Isaiah (ISA)</option>
+                        <option value="MAT">40. Matthew (MAT)</option>
+                        <option value="LUK">42. Luke (LUK)</option>
+                        <option value="JHN" selected>43. John (JHN)</option>
+                        <option value="ROM">45. Romans (ROM)</option>
+                        <option value="REV">66. Revelation (REV)</option>
                     </select>
-                    <select id="bibleSelectChapter" aria-label="Capítulo">
-                        <option value="1">Cap. 1</option>
-                        <option value="14">Cap. 14</option>
-                        <option value="23">Cap. 23</option>
+                    <select id="bibleSelectChapter" aria-label="Chapter">
+                        <option value="1" selected>1</option>
+                        <option value="14">14</option>
+                        <option value="23">23</option>
                     </select>
                 </div>
-                <div id="bibleRegisterSelector" role="group" aria-label="Modo de Lectura" style="display: flex; flex-wrap: wrap; gap: 0.4rem;">
-                    <button type="button" id="btnRegIntergeneracional" class="uls-chip" data-register="intergeneracional">🕊️ Lectura clara de hoy</button>
-                    <button type="button" id="btnRegClasica" class="uls-chip" data-register="clasica">📜 Tradición clásica</button>
-                    <button type="button" id="btnRegBilingue" class="uls-chip" data-register="bilingue">👥 Bilingüe lado a lado (Abuelo y Joven)</button>
-                    <button type="button" id="btnRegEstudio" class="uls-chip" data-register="estudio">🔬 Estudio palabra por palabra (14 Columnas)</button>
-                    <button type="button" id="toggleRollMode" class="uls-chip">📄 Vista de página completa ↔ Rollo continuo</button>
+                <div id="bibleRegisterSelector" role="group" aria-label="Reading Mode" style="display: flex; flex-wrap: wrap; gap: 0.4rem;">
+                    <button type="button" id="btnRegIntergeneracional" class="uls-chip" data-register="intergeneracional" data-i18n="mostrador.register.intergenerational">🕊️ Clear contemporary reading</button>
+                    <button type="button" id="btnRegClasica" class="uls-chip" data-register="clasica" data-i18n="mostrador.register.classic">📜 Classic tradition</button>
+                    <button type="button" id="btnRegBilingue" class="uls-chip" data-register="bilingue" data-i18n="mostrador.register.bilingual">👥 Side-by-side bilingual</button>
+                    <button type="button" id="btnRegEstudio" class="uls-chip" data-register="estudio" data-i18n="mostrador.register.study">🔬 Word-by-word study (14 Columns)</button>
+                    <button type="button" id="toggleRollMode" class="uls-chip" data-i18n="mostrador.register.roll_toggle">📄 Page view ↔ Continuous scroll</button>
                 </div>
-                <div id="bibleOrthographyPills" aria-label="Variantes de Escritura del Idioma Activo" style="display: flex; flex-wrap: wrap; gap: 0.35rem;">
-                    <button type="button" id="btnOrthoInali" class="uls-chip" data-ortho="INALI">Escritura escolar (INALI)</button>
-                    <button type="button" id="btnOrthoTradicional" class="uls-chip" data-ortho="Tradicional">Escritura tradicional</button>
-                    <button type="button" id="btnOrthoFonetica" class="uls-chip" data-ortho="Fonética">Escritura cotidiana (WhatsApp)</button>
+                <div id="bibleOrthographyPills" aria-label="Script Variants" style="display: flex; flex-wrap: wrap; gap: 0.35rem;">
+                    <button type="button" id="btnOrthoInali" class="uls-chip" data-ortho="INALI">School orthography (INALI)</button>
+                    <button type="button" id="btnOrthoTradicional" class="uls-chip" data-ortho="Tradicional">Traditional orthography</button>
+                    <button type="button" id="btnOrthoFonetica" class="uls-chip" data-ortho="Fonética">Everyday orthography (WhatsApp)</button>
                     <button type="button" id="btnOrthoBnBd" class="uls-chip" data-ortho="bn-BD" hidden>🇧🇩 বাংলা বাংলাদেশ (bn-BD · ঈসা মসীহ)</button>
                     <button type="button" id="btnOrthoBnIn" class="uls-chip" data-ortho="bn-IN" hidden>🇮🇳 বাংলা ভারত/প্রচলিত (bn-IN · প্রভু যীশু)</button>
                 </div>
-                <div id="bibleLifeTrails" aria-label="8 Senderos de Vida" style="display: flex; flex-wrap: wrap; gap: 0.35rem;">
-                    <button type="button" id="btnTrailConsuelo" class="uls-chip" data-trail-id="consuelo">Consuelo (Sal 23)</button>
-                    <button type="button" id="btnTrailPaz" class="uls-chip" data-trail-id="paz">Paz (Jn 14)</button>
-                    <button type="button" id="btnTrailPerdon" class="uls-chip" data-trail-id="perdon">Perdón (Lc 15)</button>
-                    <button type="button" id="btnTrailSabiduria" class="uls-chip" data-trail-id="sabiduria">Sabiduría (Stg 1)</button>
-                    <button type="button" id="btnTrailFamilia" class="uls-chip" data-trail-id="familia">Familia (1 Co 13)</button>
-                    <button type="button" id="btnTrailEsperanza" class="uls-chip" data-trail-id="esperanza">Esperanza (Ro 8)</button>
-                    <button type="button" id="btnTrailOracion" class="uls-chip" data-trail-id="oracion">Oración (Mt 6)</button>
-                    <button type="button" id="btnTrailCreacion" class="uls-chip" data-trail-id="creacion">Creación (Gn 1)</button>
+                <div id="bibleLifeTrails" aria-label="8 Life Trails" style="display: flex; flex-wrap: wrap; gap: 0.35rem;">
+                    <button type="button" id="btnTrailConsuelo" class="uls-chip" data-trail-id="consuelo">Comfort (Ps 23)</button>
+                    <button type="button" id="btnTrailPaz" class="uls-chip" data-trail-id="paz">Peace (Jn 14)</button>
+                    <button type="button" id="btnTrailPerdon" class="uls-chip" data-trail-id="perdon">Forgiveness (Lk 15)</button>
+                    <button type="button" id="btnTrailSabiduria" class="uls-chip" data-trail-id="sabiduria">Wisdom (Jas 1)</button>
+                    <button type="button" id="btnTrailFamilia" class="uls-chip" data-trail-id="familia">Family (1 Cor 13)</button>
+                    <button type="button" id="btnTrailEsperanza" class="uls-chip" data-trail-id="esperanza">Hope (Rom 8)</button>
+                    <button type="button" id="btnTrailOracion" class="uls-chip" data-trail-id="oracion">Prayer (Mt 6)</button>
+                    <button type="button" id="btnTrailCreacion" class="uls-chip" data-trail-id="creacion">Creation (Gen 1)</button>
                 </div>
             </div>
         </details>
 
-        <dialog id="bibleCoordinateCompassModal" aria-label="Brújula Táctil de 66 Libros y Capítulos">
+        <dialog id="bibleCoordinateCompassModal" aria-label="Tactile 66-Book Compass">
             <div class="modal-header">
-                <h3 class="modal-title">Elegir Libro y Capítulo (2 Toques · 66 Libros)</h3>
-                <button type="button" class="modal-close" onclick="document.getElementById('bibleCoordinateCompassModal').close()" aria-label="Cerrar">✕</button>
+                <h3 class="modal-title" data-i18n="mostrador.step2.title">2. Choose passage (66 Books)</h3>
+                <button type="button" class="modal-close" onclick="document.getElementById('bibleCoordinateCompassModal').close()" aria-label="Close">✕</button>
             </div>
             <div id="bibleCoordinateCompassGrid"></div>
         </dialog>
 
-        <!-- Grupo Focal 2: Lienzo Principal de Lectura a Página Completa (Sin jaula de scroll de 520px, D10) -->
-        <div id="bibleVerseViewport" data-current-ref="GEN.1" data-lang="stp" data-register="intergeneracional" data-ortho="INALI" style="margin-top: 0.5rem; padding: 1rem; border-radius: 12px; border: 1px solid var(--card-border); line-height: 1.65;">
-            <p class="bible-verse-line"><strong>[GEN.1 · stp · INALI]</strong> 1. Tu'xich jumai jixdha' Jawatan Dios gu mɨk gio gu oidha'. <button type="button" id="btnNsmTermChipInit" class="nsm-term-chip" data-strong-id="H0430">H0430</button></p>
+        <!-- Chapter Preview Viewport (Hydrated asynchronously from web/data/text/<lang>/<BOOK>.json) -->
+        <div id="bibleVerseViewport" data-current-ref="JHN.1" data-lang="es" data-register="intergeneracional" data-status="idle" style="margin-top: 0.5rem; padding: 1rem; border-radius: 12px; border: 1px solid var(--card-border); line-height: 1.65;">
+            <p class="bible-verse-line" data-i18n="mostrador.status.loading">Loading passage…</p>
         </div>
 
-        <!-- Grupo Focal 3: Las 4 Puertas Progresivas del Flujo del Usuario (Harel XOR Statechart, D1 / Cowan <= 3.50) -->
-        <nav id="bibleProgressiveSheetDoors" aria-label="Herramientas del Lector Bíblico" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(165px, 1fr)); gap: 0.5rem; margin-top: 0.85rem;">
-            <button type="button" id="bibleEasyDrawer" class="uls-chip" data-open="false" aria-expanded="false" aria-controls="bibleEasyDrawerPanel">💡 1. Explicar palabras y raíces</button>
-            <button type="button" id="btnOpenPrintEditionsSheet" class="uls-chip" data-open="false" aria-expanded="false" aria-controls="biblePrintEditionsSheet">🖨️ 2. Imprimir y 9 Ediciones PDF</button>
-            <button type="button" id="btnOpenFieldWorkshopSheet" class="uls-chip" data-open="false" aria-expanded="false" aria-controls="bibleFieldWorkshopSheet">🌱 3. Taller de Revisión Comunitaria</button>
-            <button type="button" id="btnOpenShareAndAuditSheet" class="uls-chip" data-open="false" aria-expanded="false" aria-controls="bibleShareAndAuditSheet">📲 4. Compartir sin Red y Verificar</button>
+        <!-- 4 Progressive Harel XOR Doors (<= 1 sheet open at any time) -->
+        <nav id="bibleProgressiveSheetDoors" aria-label="Bible Dispenser Drawers" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(165px, 1fr)); gap: 0.5rem; margin-top: 0.85rem;">
+            <button type="button" id="bibleEasyDrawer" class="uls-chip" data-open="false" aria-expanded="false" aria-controls="bibleEasyDrawerPanel" data-i18n="mostrador.door.study">💡 1. Word-by-Word Study (14 Columns)</button>
+            <button type="button" id="btnOpenPrintEditionsSheet" class="uls-chip" data-open="false" aria-expanded="false" aria-controls="biblePrintEditionsSheet" data-i18n="mostrador.door.print">🖨️ 2. Print &amp; 9 PDF Editions</button>
+            <button type="button" id="btnOpenFieldWorkshopSheet" class="uls-chip" data-open="false" aria-expanded="false" aria-controls="bibleFieldWorkshopSheet" data-i18n="mostrador.door.improve">🌱 3. Suggest Improvement</button>
+            <button type="button" id="btnOpenShareAndAuditSheet" class="uls-chip" data-open="false" aria-expanded="false" aria-controls="bibleShareAndAuditSheet" data-i18n="mostrador.door.share">📲 4. Share Offline (QR / Quine)</button>
         </nav>
 
-        <!-- GAVETA PROGRESIVA 1: Estudio y Comprensión en 4 Estratos (D7 / MS-R13-05) -->
-        <section id="bibleEasyDrawerPanel" class="apple-sheet" data-sheet="study" data-strong-id="H0430" hidden>
-            <h3 style="font-size: 1rem; margin-bottom: 0.5rem;">💡 Explicación Clara, Mundo Bíblico, Pesos y Medidas y Raíz Original</h3>
-            <div id="nsm65StratumCard" style="margin-bottom: 0.5rem;">אֱלֹהִים (Elohim) — Dios Creador Eterno: ALGUIEN SOBRE TODOS + ANTES DE TODO + HIZO TODO + BUENO | CLICS3:DEITY~CREATOR</div>
+        <!-- Drawer 1: 14-Column Word-by-Word Study (Lazy-loaded via estudio.js) -->
+        <section id="bibleEasyDrawerPanel" class="apple-sheet" data-sheet="study" data-strong-id="G3056" hidden>
+            <h3 style="font-size: 1rem; margin-bottom: 0.5rem;" data-i18n="study.title">14-Column Word-by-Word Study &amp; Biblical World</h3>
+            <div id="nsm65StratumCard" style="margin-bottom: 0.5rem;"></div>
             <div id="realiaMetrologyStratumCard" style="margin-bottom: 0.5rem; font-size: 0.88rem;"></div>
             <div id="tskCrossRefsStratumCard" style="margin-bottom: 0.5rem; display: flex; flex-wrap: wrap; gap: 0.35rem;"></div>
             <div id="leipzig14ColStratumAction"></div>
         </section>
 
-        <!-- GAVETA PROGRESIVA 2: Impresión y Catálogo de las 9 Ediciones PDF (D3, D4 / MS-R13-04) -->
+        <!-- Drawer 2: Print Settings & 9 Canonical PDF Editions -->
         <section id="biblePrintEditionsSheet" class="apple-sheet" data-sheet="print" hidden>
-            <h3 style="font-size: 1rem; margin-bottom: 0.5rem;">🖨️ Catálogo de 9 Ediciones Tipográficas listas para Imprimir y Cuadernillo al Instante</h3>
-            <div id="bibleKindleConfigurator" aria-label="Ajustes de Impresión en Papel A4 o Carta" style="display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem; font-size: 0.85rem;">
-                <label>Tamaño de letra (pt): <input type="range" id="kindleFontSizeSlider" min="7.2" max="16" step="0.3" value="9.5"></label>
-                <select id="kindleColumnSelector" aria-label="Columnas de Impresión">
-                    <option value="1">1 Columna (Vertical / Púlpito)</option>
-                    <option value="2" selected>2 Columnas (Horizontal / Cuadernillo abierto 180°)</option>
-                    <option value="3">3 Columnas (Compacta)</option>
+            <h3 style="font-size: 1rem; margin-bottom: 0.5rem;" data-i18n="mostrador.door.print">🖨️ 2. Print &amp; 9 PDF Editions</h3>
+            <div id="bibleKindleConfigurator" aria-label="Paper and Sheet Count Settings" style="display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem; font-size: 0.85rem;">
+                <label>Font size (pt): <input type="range" id="kindleFontSizeSlider" min="7.2" max="16" step="0.3" value="9.5"></label>
+                <select id="kindleColumnSelector" aria-label="Print Columns">
+                    <option value="1">1 Column (Portrait / Pulpit)</option>
+                    <option value="2" selected>2 Columns (Landscape / Open Booklet 180°)</option>
+                    <option value="3">3 Columns (Compact)</option>
                 </select>
-                <select id="kindlePaperFormatSelector" aria-label="Tamaño de Hoja (A4 o Carta)">
-                    <option value="a4" selected>📄 Hoja A4 (210×297 mm · Estándar Internacional)</option>
-                    <option value="letter">📄 Hoja Carta / Letter (216×279 mm · México / América)</option>
+                <select id="kindlePaperFormatSelector" aria-label="Paper Size (A4 or Letter)">
+                    <option value="a4" selected data-i18n="dose.paper.a4">A4 (210×297 mm · World 94%)</option>
+                    <option value="letter" data-i18n="dose.paper.letter">Letter / Carta (216×279 mm · Americas)</option>
                 </select>
-                <select id="kindleOrientationSelector" aria-label="Orientación de Hoja">
-                    <option value="landscape" selected>↔️ Horizontal (Pliegue al centro)</option>
-                    <option value="portrait">↕️ Vertical</option>
+                <select id="kindleOrientationSelector" aria-label="Page Orientation">
+                    <option value="landscape" selected>↔️ Landscape (Center Fold)</option>
+                    <option value="portrait">↕️ Portrait</option>
                 </select>
-                <label><input type="checkbox" id="kindleDuplexToggle" checked> Impresión por ambos lados</label>
-                <output id="kindleBudgetOutput" style="font-weight: 600;">9.5pt · 2 col · Horizontal (Landscape) · A4 (58 cpl) · 6 hojas Bond (2 cuadernillos M8)</output>
+                <label><input type="checkbox" id="kindleDuplexToggle" checked> <span data-i18n="dose.1.duplex_label">Double-sided printing (duplex)</span></label>
+                <output id="kindleBudgetOutput" style="font-weight: 600;">9.5pt · 2 col · Landscape · A4 (58 cpl)</output>
             </div>
             <div style="margin-bottom: 0.85rem;">
-                <button type="button" id="btnPrintAroundVerse" class="btn-modal-action">🖨️ Imprimir este capítulo ahora (Cuadernillo PDF autónomo)</button>
+                <button type="button" id="btnPrintAroundVerse" class="btn-modal-action" data-i18n="dose.1.cta">🖨️ Download sheets around verse (PDF)</button>
             </div>
             <div id="duplexAssistantPanel" style="margin-bottom: 0.75rem; font-size: 0.85rem;"></div>
             <div id="stationeryCardPanel" style="margin-bottom: 0.75rem; font-size: 0.85rem;"></div>
             <div id="bibleEditionsCatalogGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 0.65rem;"></div>
         </section>
 
-        <!-- GAVETA PROGRESIVA 3: Taller de Revisión Comunitaria y 15 Escenas Socráticas (D6 / MS-R13-06) -->
+        <!-- Drawer 3: Community Review & Patch Workshop (Lazy-loaded via mejorar.js) -->
         <section id="bibleFieldWorkshopSheet" class="apple-sheet" data-sheet="field" hidden>
-            <h3 style="font-size: 1rem; margin-bottom: 0.5rem;">🌱 Taller de Revisión Comunitaria, 15 Escenas Diagnósticas y Auditor de 8 Candados</h3>
+            <h3 style="font-size: 1rem; margin-bottom: 0.5rem;" data-i18n="improve.title">Suggest a Translation or Interface Improvement</h3>
             <div id="socraticElicitorContainer" style="margin-bottom: 0.75rem;"></div>
             <div id="cascadeImpactPreviewList" style="margin-bottom: 0.75rem;"></div>
             <div id="tallerArtifactsCatalog" style="margin-bottom: 0.75rem; display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 0.5rem;"></div>
-            <div style="padding: 0.75rem; border-radius: 10px; border: 1px solid var(--card-border); background: var(--card-bg);">
-                <label for="externalTextAuditInput" style="font-size: 0.85rem; font-weight: 600; display: block; margin-bottom: 0.35rem;">🔍 Auditar borrador externo contra los 8 Candados (Cero Truncamiento, Comillas y Claridad):</label>
-                <textarea id="externalTextAuditInput" rows="2" placeholder="Pega aquí un versículo o borrador USFM para verificar sus 8 candados..." style="width: 100%; padding: 0.5rem; border-radius: 8px; border: 1px solid var(--select-border); font-family: inherit; margin-bottom: 0.45rem;">En el principio creó Dios los cielos y la tierra.</textarea>
-                <button type="button" id="btnRunEightLocksAudit" class="uls-chip">🛡️ Ejecutar Auditoría de 8 Candados</button>
-                <div id="eightLocksAuditPanel" style="margin-top: 0.5rem; font-size: 0.85rem;"></div>
-            </div>
         </section>
 
-        <!-- GAVETA PROGRESIVA 4: Compartir sin Internet, Quines, QR Óptico y Verificación Editorial (D9 / MS-R13-07) -->
+        <!-- Drawer 4: Offline Sharing, Optical LT Fountain & Save for Offline Use -->
         <section id="bibleShareAndAuditSheet" class="apple-sheet" data-sheet="share" hidden>
-            <h3 style="font-size: 1rem; margin-bottom: 0.5rem;">📲 Compartir Lector Offline sin Internet, Transmisión Óptica (Pantalla a Cámara) y Verificación</h3>
+            <h3 style="font-size: 1rem; margin-bottom: 0.5rem;" data-i18n="mostrador.door.share">📲 4. Share Offline (QR / Quine)</h3>
             <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.75rem;">
-                <button type="button" id="btnShareQuine" class="btn-modal-action">📦 Descargar Lector Offline Autónomo (.html)</button>
-                <button type="button" id="btnCopyDirectShareLink" class="uls-chip" data-action="UNMOUNTED_CLIENT_FN:encodeGridStateBitfield12Bytes" data-fn="encodeGridStateBitfield12Bytes decodeGridStateBitfield12Bytes"><span data-action="UNMOUNTED_CLIENT_FN:decodeGridStateBitfield12Bytes">🔗 Copiar enlace directo a este pasaje</span></button>
+                <button type="button" id="btnShareQuine" class="btn-modal-action" data-i18n="mostrador.offline.save_cta">Save active language for offline use</button>
+                <button type="button" id="btnCopyDirectShareLink" class="uls-chip">🔗 Copy direct link to this passage</button>
             </div>
             <div id="offlinePacksCatalogPanel" style="margin-bottom: 0.75rem;"></div>
             <div id="bibleOpticalQrStreamPanel" style="margin-bottom: 0.75rem;"></div>
-            <details class="advanced-editorial-drawer" id="editorialAuditDrawer" style="margin-top: 0.5rem; font-size: 0.85rem;">
-                <summary style="cursor: pointer; color: var(--text-secondary);">🛠️ Verificación Criptográfica y Física de Pliegos (Ed25519 · Imposición · Papel)</summary>
-                <div id="backendParityControls" style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.5rem;">
-                    <button type="button" id="btnVerifyEd25519Signature" class="btn-micro-action" data-inv="INV-EKO-COR-001 INV-EKO-COR-002 INV-EKO-COR-003 INV-EKO-COR-004" data-fn="verify_signature normalize_and_validate_usfm sanitizer.rs signature.rs">🔒 Verificar firma digital y pureza del texto</button>
-                    <button type="button" id="btnCalculateImposition" class="btn-micro-action" data-inv="INV-EKO-TYP-001 INV-EKO-TYP-003 INV-EKO-TYP-004" data-fn="calculate_imposition calculate_shingling_offset compile_bible_edition_typst FoliationEngine SingleSheet generate_typst_header generate_spine_marks imposition.rs foliation.rs">📐 Calcular orden de pliegos y compensación de lomo</button>
-                    <button type="button" id="btnCalculateLayout" class="btn-micro-action" data-inv="INV-EKO-TYP-002 INV-EKO-GRP-001 INV-EKO-GRP-002 INV-EKO-GRP-003 INV-EKO-QRS-001 INV-EKO-WASM-001 INV-EKO-WEB-001 INV-EKO-CLI-001 INV-EKO-XTK-001 INV-EKO-BIB-001" data-fn="calculate_layout audit_language_typographical_laws apply_bilateral_filter apply_sauvola apply_dilatation normalize_grayscale_plate apply_mask masking.rs bilateral.rs sauvola.rs morphology.rs grayscale_norm.rs geometry.rs">📄 Auditar márgenes A4/Carta y contraste de fotocopia</button>
-                </div>
-                <div id="editorialAuditResultPanel" style="margin-top: 0.5rem; padding: 0.65rem; border-radius: 8px; background: var(--card-bg); border: 1px solid var(--card-border);"></div>
-            </details>
         </section>
     </section>
 
     <main class="container" id="felicesSovereignSection" data-active-work="false" hidden style="display: none;">
         <section id="stage-diagnostic">
-        <span class="category-badge" id="categoryBadge">Open Public Domain Resource · Recurso Abierto (Obra Secundaria MVP)</span>
-        <h1 id="workTitle">The Blessed of the Lord Jesus · Los Felices</h1>
-        <p class="subtitle" id="workDesc">Beatitudes Coloring Booklet (Matthew 5) · Cuaderno para Colorear</p>
+        <span class="category-badge" id="categoryBadge" data-i18n="felices.badge">Open Public Domain Resource · Recurso Abierto (Obra Secundaria MVP)</span>
+        <h1 id="workTitle" data-i18n="felices.title">The Blessed of the Lord Jesus · Los Felices</h1>
+        <p class="subtitle" id="workDesc" data-i18n="felices.desc">Beatitudes Coloring Booklet (Matthew 5) · Cuaderno para Colorear</p>
         <details class="advanced-editorial-drawer" id="paperFormatDrawer" style="margin: 0.5rem 0;">
-            <summary style="cursor: pointer; font-size: 0.84rem; color: var(--text-secondary);">⚙️ Tamaño de Hoja (A4 / Carta)</summary>
+            <summary style="cursor: pointer; font-size: 0.84rem; color: var(--text-secondary);">⚙️ Paper Size (A4 / Letter)</summary>
             <div class="paper-toggle-wrapper">
-                <div class="paper-toggle" role="radiogroup" aria-label="Formato de papel">
+                <div class="paper-toggle" role="radiogroup" aria-label="Paper format">
                     <button type="button" id="toggleA4" class="paper-toggle-btn active" role="radio" aria-checked="true" onclick="setPaperFormat('a4')">
-                        <span class="paper-name" id="nameA4">A4</span>
-                        <span class="paper-sub" id="subA4">World 94%</span>
+                        <span class="paper-name" id="nameA4" data-i18n="felices.paperA4">A4</span>
+                        <span class="paper-sub" id="subA4" data-i18n="felices.paperSubA4">World 94%</span>
                     </button>
                     <button type="button" id="toggleCarta" class="paper-toggle-btn" role="radio" aria-checked="false" onclick="setPaperFormat('letter')">
-                        <span class="paper-name" id="nameCarta">Letter / Carta</span>
-                        <span class="paper-sub" id="subCarta">MX / US / CA</span>
+                        <span class="paper-name" id="nameCarta" data-i18n="felices.paperCarta">Letter / Carta</span>
+                        <span class="paper-sub" id="subCarta" data-i18n="felices.paperSubCarta">MX / US / CA</span>
                     </button>
                 </div>
             </div>
         </details>
         <div class="focal-viewer" id="focalViewer">
-            <div class="focal-plate-frame" id="focalPlateFrame" onclick="openActivePlateZoom()" role="button" tabindex="0" title="Ver lámina en alta resolución">
-                <img id="focalPlateImg" src="/dist/en/v1/mostrador/24.jpg" alt="Lámina para colorear">
+            <div class="focal-plate-frame" id="focalPlateFrame" onclick="openActivePlateZoom()" role="button" tabindex="0" title="View high-resolution plate">
+                <img id="focalPlateImg" src="/assets/felices/plates/24.jpg" alt="Coloring plate">
                 <div class="focal-plate-overlay">
                     <span class="focal-plate-verse" id="focalPlateVerse">«…for so they persecuted the prophets who were before you» (Mt 5:12b)</span>
-                    <span class="focal-plate-zoom-hint" id="focalPlateZoomHint">🔍 <span id="focalPlateZoomHintText">Tap to zoom</span></span>
+                    <span class="focal-plate-zoom-hint" id="focalPlateZoomHint">🔍 <span id="focalPlateZoomHintText" data-i18n="felices.zoomHint">Tap to zoom</span></span>
                 </div>
             </div>
             <div class="focal-controls">
-                <button type="button" class="focal-btn" onclick="prevPlate()" aria-label="Lámina anterior" id="btnPrevPlate"><span class="sr-only">Anterior</span>◀</button>
+                <button type="button" class="focal-btn" onclick="prevPlate()" aria-label="Previous plate" id="btnPrevPlate"><span class="sr-only">Previous</span>◀</button>
                 <div class="focal-plate-indicator"><span id="plateIndexText">Plate 24 / 28</span></div>
-                <button type="button" class="focal-btn" onclick="nextPlate()" aria-label="Lámina siguiente" id="btnNextPlate"><span class="sr-only">Siguiente</span>▶</button>
+                <button type="button" class="focal-btn" onclick="nextPlate()" aria-label="Next plate" id="btnNextPlate"><span class="sr-only">Next</span>▶</button>
             </div>
             <details class="advanced-editorial-drawer" style="margin-top: 0.5rem;">
-                <summary style="cursor: pointer; font-size: 0.82rem; color: var(--text-secondary);">Acciones rápidas de lámina</summary>
+                <summary style="cursor: pointer; font-size: 0.82rem; color: var(--text-secondary);">Quick plate actions</summary>
                 <div class="focal-quick-actions">
-                    <button type="button" class="btn-micro-action" onclick="printActivePlate()" id="btnPrintPlate"><span id="btnPrintPlateText">Print this plate</span></button>
-                    <button type="button" class="btn-micro-action" onclick="shareResource()" id="btnShareWork"><span id="btnShareWorkText">Share</span></button>
+                    <button type="button" class="btn-micro-action" onclick="printActivePlate()" id="btnPrintPlate"><span id="btnPrintPlateText" data-i18n="felices.printPlateBtn">Print this plate</span></button>
+                    <button type="button" class="btn-micro-action" onclick="shareResource()" id="btnShareWork"><span id="btnShareWorkText" data-i18n="felices.shareBtn">Share</span></button>
                 </div>
             </details>
         </div>
         <div class="actions-group">
-            <a id="linkSheets" href="/dist/es/v1/mostrador/felices-es-v1-sheets.pdf" class="btn-card btn-sheets" download="felices-es-v1-sheets.pdf">
-                <div class="btn-header"><span id="btnTitleSheets">Láminas Sueltas (PDF)</span></div>
-                <span class="btn-subtitle" id="btnSubSheets">1 página por hoja · Ideal para colorear</span>
+            <a id="linkSheets" href="/dist/en/v1/mostrador/felices-en-v1-sheets.pdf" class="btn-card btn-sheets" download="felices-en-v1-sheets.pdf">
+                <div class="btn-header"><span id="btnTitleSheets" data-i18n="felices.sheetsTitle">Loose Sheets (PDF)</span></div>
+                <span class="btn-subtitle" id="btnSubSheets" data-i18n="felices.sheetsSub">1 page per sheet · Ideal for coloring</span>
             </a>
             <div style="display: flex; flex-direction: column; flex: 1; align-items: center;">
-                <a id="linkBooklet" href="/dist/es/v1/mostrador/felices-es-v1-booklet.pdf" class="btn-card btn-booklet" download="felices-es-v1-booklet.pdf" style="width: 100%;">
-                    <div class="btn-header"><span id="btnTitleBooklet">Cuadernillo (PDF)</span></div>
-                    <span class="btn-subtitle" id="btnSubBooklet">Folleto para doblar y engrapar · A caballo</span>
+                <a id="linkBooklet" href="/dist/en/v1/mostrador/felices-en-v1-booklet.pdf" class="btn-card btn-booklet" download="felices-en-v1-booklet.pdf" style="width: 100%;">
+                    <div class="btn-header"><span id="btnTitleBooklet" data-i18n="felices.bookletTitle">Booklet (PDF)</span></div>
+                    <span class="btn-subtitle" id="btnSubBooklet" data-i18n="felices.bookletSub">Saddle-stitch booklet ready to fold &amp; staple</span>
                 </a>
             </div>
         </div>
         <details class="advanced-editorial-drawer" style="margin-top: 1rem;">
-            <summary style="cursor: pointer; font-size: 0.84rem; color: var(--text-secondary);">📖 Guía de Doblado, Transferencia Óptica y Contacto</summary>
+            <summary style="cursor: pointer; font-size: 0.84rem; color: var(--text-secondary);">📖 Folding Guide, Optical Transfer &amp; Contact</summary>
             <div style="margin-top: 0.65rem; display: flex; flex-direction: column; align-items: center; gap: 0.5rem;">
-                <button type="button" class="fold-guide-trigger" onclick="openModal('foldModal')" id="foldGuideTrigger">📖 ¿Cómo imprimir y doblar?</button>
-                <button type="button" class="optical-trigger" onclick="openModal('opticalModal')"><span id="opticalTriggerText">Compartir sin cables (Pantalla a cámara)</span></button>
-                <button type="button" id="footerContactBtn" onclick="openContactModal()" style="background: none; border: none; color: var(--text-muted); cursor: pointer; text-decoration: underline;">Contacto, Colaboración &amp; Soporte</button>
+                <button type="button" class="fold-guide-trigger" onclick="openModal('foldModal')" id="foldGuideTrigger" data-i18n="felices.foldGuideTrigger">📖 How to print and fold?</button>
+                <button type="button" class="optical-trigger" onclick="openModal('opticalModal')"><span id="opticalTriggerText" data-i18n="felices.opticalBtn">Share without cables (Screen to camera)</span></button>
+                <button type="button" id="footerContactBtn" onclick="openContactModal()" data-i18n="felices.contactBtn" style="background: none; border: none; color: var(--text-muted); cursor: pointer; text-decoration: underline;">Contact, Collaboration &amp; Support</button>
             </div>
         </details>
-        <div class="offline-badge" id="offlineBadge"><span id="offlineBadgeText">100% offline y transferible de pantalla a cámara</span></div>
-        <p class="footer-note" id="footerNote">Obra educativa de dominio público basada en el texto de Mateo 5. Libre para imprimir, colorear y compartir.</p>
+        <div class="offline-badge" id="offlineBadge"><span id="offlineBadgeText" data-i18n="felices.offlineBadge">100% offline and screen-to-camera transferable</span></div>
+        <p class="footer-note" id="footerNote" data-i18n="felices.footer">Public domain educational work based on Matthew 5. Free to print, color, and share.</p>
         </section>
     </main>
 
@@ -613,7 +638,6 @@ button,select,.uls-chip,.uls-trigger-btn{min-height:44px;min-width:44px;}
 
     <div id="toastNotification" class="toast" role="status" aria-live="polite"></div>
 
-    <script src="i18n_ui.js"></script>
-    <script type="module" src="bible_reader.js"></script>
+    <script type="module" src="mostrador.js"></script>
 </body>
 </html>

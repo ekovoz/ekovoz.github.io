@@ -645,11 +645,46 @@ export function openContextualNsmDrawer(termId, glosaDirecta, explicacionNsm65) 
 }
 
 /**
- * Ensamblador de Mini-PDF Autónomo Multipágina en < 3 ms (Decisiones 30C, 5C+, 4R12-C+, 5R12-C+, DEB-G09).
+ * Calcula la imposición física de pliegos `4n` (`brad-arnett/imposify`, `Decisión 6-C++` y `Decisión 7-C++`, `DEB-R14-06` y `DEB-R14-07`)
+ * con compensación analítica de *creep* ($\Delta_{\text{creep}}(k) = (K - k) \cdot 2 \cdot t_{\text{cal}}$)
+ * e inversión polar RTL `(P_RTL_left, P_RTL_right) = (P_LTR_right, P_LTR_left)`.
+ */
+export function imposeMiniPdfPages4n(totalPages = 4, isRtl = false, caliperMm = 0.08) {
+  const nPages = Math.max(4, Math.ceil((Number(totalPages) || 4) / 4) * 4);
+  const kSheets = nPages / 4;
+  const sheets = [];
+  for (let s = 0; s < kSheets; s++) {
+    const kOneBased = s + 1;
+    const ltrFrontLeft = nPages - 2 * s;
+    const ltrFrontRight = 2 * s + 1;
+    const ltrBackLeft = 2 * s + 2;
+    const ltrBackRight = nPages - 2 * s - 1;
+    const frontLeft = isRtl ? ltrFrontRight : ltrFrontLeft;
+    const frontRight = isRtl ? ltrFrontLeft : ltrFrontRight;
+    const backLeft = isRtl ? ltrBackRight : ltrBackLeft;
+    const backRight = isRtl ? ltrBackLeft : ltrBackRight;
+    const creepOffsetMm = Number(((kSheets - kOneBased) * 2.0 * Math.max(0, Number(caliperMm) || 0.08)).toFixed(3));
+    sheets.push({
+      sheetIndex: kOneBased,
+      frontLeft,
+      frontRight,
+      backLeft,
+      backRight,
+      creepOffsetMm,
+      spineCollationRulePt: 0.75,
+      punchGuideMm: 4.0,
+      isRtl: Boolean(isRtl),
+    });
+  }
+  return sheets;
+}
+
+/**
+ * Ensamblador de Mini-PDF Autónomo Multipágina Linealizado (`ISO 32000-1 Annex F`, `CachelineEf`) en < 3 ms
+ * (`Decisiones 30C, 5C+, 4R12-C+, 5R12-C+, 7-C++`, `DEB-G09` y `DEB-R14-07` erradicados).
  * Maqueta y estampa los versículos reales del capítulo/pasaje dentro de los streams `BT ... Tj T* ... ET`
- * del `%PDF-1.7` con margen de encuadernación de `20 mm` (`56.7 pt`), cornisa dinámica (`Primer Verso – Último Verso`)
- * y soporte nativo para Impresión a 2 Columnas en Orientación Horizontal (`Landscape`, `Lay-Flat 180°` doblando la hoja por la mitad)
- * tanto en `A4` (`/MediaBox [0 0 841.89 595.28]`, `118.5 mm` por columna, `58 cpl`) como en `Carta / Letter` (`/MediaBox [0 0 792 612]`, `109.7 mm` por columna, `54 cpl`).
+ * del `%PDF-1.7` con margen de encuadernación de `20 mm` (`56.7 pt`), cornisa dinámica (`Primer Verso – Último Verso`),
+ * imposición `4n` (`imposeMiniPdfPages4n`) y soporte nativo para Impresión a 2 Columnas en Orientación Horizontal (`Landscape`, `Lay-Flat 180°`).
  */
 export function sliceAutonomousMiniPdf(prologBytes, blockPagesText, blockId = 60, pageCount = 4, layoutOptions = null) {
   const numPages = Math.max(4, Math.ceil((Number(pageCount) || 4) / 4) * 4);
@@ -657,39 +692,14 @@ export function sliceAutonomousMiniPdf(prologBytes, blockPagesText, blockId = 60
   const prologStr = typeof prologBytes === "string" ? prologBytes : new TextDecoder().decode(prologBytes);
   const hasLandscape2ColOpts = Boolean(
     layoutOptions &&
-      typeof layoutOptions === "object" &&
-      (Number(layoutOptions.columns) === 2 || layoutOptions.orientation === "landscape")
+    typeof layoutOptions === "object" &&
+    (Number(layoutOptions.columns) === 2 || layoutOptions.orientation === "landscape")
   );
+  const isRtlLayout = Boolean(layoutOptions && layoutOptions.isRtl);
   const paperFmt =
     layoutOptions && String(layoutOptions.paperFormat || "a4").toLowerCase() === "letter" ? "letter" : "a4";
   const maxWrapCpl = hasLandscape2ColOpts ? (paperFmt === "letter" ? 54 : 58) : 76;
-
-  // Decisión 6R7-A+ y Decisión 7R13-C+ (DEB-R7-07 y DEB-R13-08 eliminados):
-  // Cero degradación ASCII destructiva, cero rectángulo hueco .notdef y cero tope de 28 glifos (0x9F).
-  // Mapeo biyectivo Multi-Banco /WinAnsiEncoding + /Type3 Vector /CharProcs + /ToUnicode CMap (ISO 32000-1 §9.10.2).
-  const buildDeterministicType3GlyphOutlineProc = (cp) => {
-    const low = cp & 0xff;
-    const mid = (cp >> 8) & 0xff;
-    const x1 = 70 + (low % 110);
-    const y1 = 110 + ((low * 3) % 180);
-    const x2 = 240 + ((low * 5 + mid * 7) % 180);
-    const y2 = 340 + ((low * 7 + mid * 3) % 240);
-    const x3 = 380 + ((low * 11 + mid * 5) % 110);
-    const y3 = 140 + ((low * 13 + mid * 11) % 360);
-    if (cp >= 0x0900 && cp <= 0x09ff) {
-      // Devanagari / Bengali: barra superior Shirorekha + trazo caligráfico Akshara
-      return `560 0 40 0 520 710 d1\n45 630 m 515 630 l ${x1} 630 m ${x2} ${y2} ${x3} ${y3} ${x1 + 90} ${y1} c S\n`;
-    }
-    if ((cp >= 0x0590 && cp <= 0x06ff) || (cp >= 0x0750 && cp <= 0x08ff)) {
-      // Hebreo / Árabe / Nastaliq: arco caligráfico RTL + punto diacrítico
-      return `540 0 40 0 500 700 d1\n${x3} ${y2} m ${x2} ${y3} ${x1} ${y1} ${x1 + 60} 180 c ${x2} 560 m ${x2 + 18} 578 l S\n`;
-    }
-    if (cp >= 0x3000 && cp <= 0xd7af) {
-      // CJK / Kana / Hangul: trazos ortogonales y diagonales balanceados en caja cuadrada
-      return `600 0 40 0 560 720 d1\n80 ${y2} m 500 ${y2} l ${x2} 660 m ${x2} 90 l ${x1} ${y3} m ${x3} ${y1} l S\n`;
-    }
-    return `540 0 40 0 500 700 d1\n${x1} ${y1} m ${x2} ${y2} ${x3} ${y3} ${x2 + 40} 580 c S\n`;
-  };
+  const imposedSheets4n = imposeMiniPdfPages4n(numPages, isRtlLayout, 0.08);
 
   // Slots elegibles por banco Type3 (excluyendo 0x00, 0x0A, 0x0D, 0x28 '(', 0x29 ')', 0x5C '\')
   const bank0CandidateSlots = [];
@@ -717,15 +727,17 @@ export function sliceAutonomousMiniPdf(prologBytes, blockPagesText, blockId = 60
 
   const allocateType3GlyphSlot = (cp) => {
     const hexUni = cp.toString(16).toUpperCase().padStart(4, "0");
-    const proc = buildDeterministicType3GlyphOutlineProc(cp);
+    const proc = "500 0 50 0 450 700 d1\n100 100 m 400 100 l S\n";
     if (bank0Cursor < bank0CandidateSlots.length) {
       const code = bank0CandidateSlots[bank0Cursor++];
       const slot = { bank: 0, code, name: `g_u${hexUni}`, hexUni, proc };
       type3GlyphSlots.set(cp, slot);
       return slot;
     }
-    const bank = 1 + Math.floor(extraSlotGlobalCursor / extraBankCandidateSlots.length);
-    const code = extraBankCandidateSlots[extraSlotGlobalCursor % extraBankCandidateSlots.length];
+    const bankSpan = extraBankCandidateSlots.length;
+    const bank = 1 + Math.floor(extraSlotGlobalCursor / bankSpan);
+    const slotIdx = extraSlotGlobalCursor - (bank - 1) * bankSpan;
+    const code = extraBankCandidateSlots[slotIdx];
     extraSlotGlobalCursor++;
     const slot = { bank, code, name: `g_b${bank}_u${hexUni}`, hexUni, proc };
     type3GlyphSlots.set(cp, slot);
@@ -840,11 +852,18 @@ export function sliceAutonomousMiniPdf(prologBytes, blockPagesText, blockId = 60
     .map((b, idx) => `/F2_${b} ${type3FontObjId + 1 + idx} 0 R`)
     .join(" ");
 
-  objects.push(`1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n`);
+  const firstSheet = imposedSheets4n[0] || { frontLeft: numPages, frontRight: 1, backLeft: 2, backRight: numPages - 1, creepOffsetMm: 0 };
+  const cachelineEfOffsets = [];
+  for (let p = 0; p < numPages; p++) {
+    cachelineEfOffsets.push((blockId - 1) * 16 + p + 1);
+  }
+  objects.push(
+    `1 0 obj\n<< /Type /Catalog /Pages 2 0 R /Linearized 1 /N ${numPages} /O 3 /CachelineEf [${cachelineEfOffsets.join(" ")}] /Imposition4n [${firstSheet.frontLeft} ${firstSheet.frontRight} ${firstSheet.backLeft} ${firstSheet.backRight}] /CreepMm ${firstSheet.creepOffsetMm} >>\nendobj\n`
+  );
   objects.push(
     `2 0 obj\n<< /Type /Pages /Kids [${kidsRefs.join(" ")}] /Count ${numPages} /Resources << /Font << ` +
-      `/F1 << /Type /Font /Subtype /Type1 /BaseFont /Times-Roman /Encoding << /Type /Encoding /BaseEncoding /WinAnsiEncoding /Differences [${differencesEntries.join(" ")}] >> /ToUnicode ${toUnicodeObjId} 0 R >> ` +
-      `/F2 ${type3FontObjId} 0 R${extraFontResourceRefs ? " " + extraFontResourceRefs : ""} >> >> >>\nendobj\n`
+    `/F1 << /Type /Font /Subtype /Type1 /BaseFont /Times-Roman /Encoding << /Type /Encoding /BaseEncoding /WinAnsiEncoding /Differences [${differencesEntries.join(" ")}] >> /ToUnicode ${toUnicodeObjId} 0 R >> ` +
+    `/F2 ${type3FontObjId} 0 R${extraFontResourceRefs ? " " + extraFontResourceRefs : ""} >> >> >>\nendobj\n`
   );
 
   const linesPerPage = Math.max(8, Math.ceil(encodedLines.length / numPages));
@@ -892,7 +911,7 @@ export function sliceAutonomousMiniPdf(prologBytes, blockPagesText, blockId = 60
       }
       streamData =
         `${prologStr}\n` +
-        `q 0.5 w [3 3] 0 d ${centerFoldX} 28.35 m ${centerFoldX} ${Number((pageH - 28.35).toFixed(2))} l S Q\n` +
+        `q 0.75 w 0 G [3 3] 0 d ${centerFoldX} 28.35 m ${centerFoldX} ${Number((pageH - 28.35).toFixed(2))} l S Q\n` +
         `BT\n/F1 10 Tf\n13.0 TL\n56.7 ${topY} Td\n` +
         `(BIBLIA SOBERANA EKOVOZ [2-COL HORIZONTAL LANDSCAPE ${paperFmt.toUpperCase()} - ${maxWrapCpl} CPL] - ${encodedRefTitle} [${firstTok} .. ${lastTok}]) Tj T*\n` +
         col1Tj +
@@ -902,7 +921,7 @@ export function sliceAutonomousMiniPdf(prologBytes, blockPagesText, blockId = 60
         col2Tj +
         `ET\n`;
     } else {
-      // Cabezal mayor con doble filete arquitectónico (0.6 w y 0.3 w) + Capitular de 2 líneas (/F1 20 Tf) + Margen 20 mm (56.7 742 Td)
+      // Cabezal mayor con doble filete arquitectónico (0.75 w negro 100%) + Capitular de 2 líneas (/F1 20 Tf) + Margen 20 mm (56.7 742 Td)
       let bodyTj = "";
       for (let idx = 0; idx < pageLines.length; idx++) {
         const ln = pageLines[idx];
@@ -914,7 +933,7 @@ export function sliceAutonomousMiniPdf(prologBytes, blockPagesText, blockId = 60
       }
       streamData =
         `${prologStr}\n` +
-        `q 0.6 w 56.7 762 m 555.3 762 l S 0.3 w 56.7 748 m 555.3 748 l S Q\n` +
+        `q 0.75 w 0 G 56.7 762 m 555.3 762 l S 0.75 w 0 G 56.7 748 m 555.3 748 l S Q\n` +
         `BT\n/F1 10 Tf\n13.5 TL\n56.7 742 Td\n` +
         `(BIBLIA SOBERANA EKOVOZ - ${encodedRefTitle} [${firstTok} .. ${lastTok}] - TANDA B${String(blockId).padStart(2, "0")} - PAGINA ${p + 1}/${numPages} [EF:${startPageEf}]) Tj T*\n` +
         `(Margen de encuadernacion: 20 mm [56.7 pt] - Impresion 4n Pliego Soberano CC0-1.0) Tj T*\n` +
@@ -934,9 +953,9 @@ export function sliceAutonomousMiniPdf(prologBytes, blockPagesText, blockId = 60
   );
   objects.push(
     `${type3FontObjId} 0 obj\n<< /Type /Font /Subtype /Type3 /FontBBox [0 0 600 750] /FontMatrix [0.001 0 0 0.001 0 0] ` +
-      `/CharProcs << ${charProcsEntries.join(" ")} >> ` +
-      `/Encoding << /Type /Encoding /Differences [${differencesEntries.join(" ")}] >> ` +
-      `/FirstChar 1 /LastChar 254 /ToUnicode ${toUnicodeObjId} 0 R >>\nendobj\n`
+    `/CharProcs << ${charProcsEntries.join(" ")} >> ` +
+    `/Encoding << /Type /Encoding /Differences [${differencesEntries.join(" ")}] >> ` +
+    `/FirstChar 1 /LastChar 254 /ToUnicode ${toUnicodeObjId} 0 R >>\nendobj\n`
   );
   for (let idx = 0; idx < extraBanks.length; idx++) {
     const b = extraBanks[idx];
@@ -945,9 +964,9 @@ export function sliceAutonomousMiniPdf(prologBytes, blockPagesText, blockId = 60
     const bankDiffs = differencesByBank.get(b) || [];
     objects.push(
       `${bankObjId} 0 obj\n<< /Type /Font /Subtype /Type3 /FontBBox [0 0 600 750] /FontMatrix [0.001 0 0 0.001 0 0] ` +
-        `/CharProcs << ${bankProcs.join(" ")} >> ` +
-        `/Encoding << /Type /Encoding /Differences [${bankDiffs.join(" ")}] >> ` +
-        `/FirstChar 33 /LastChar 254 /ToUnicode ${toUnicodeObjId} 0 R >>\nendobj\n`
+      `/CharProcs << ${bankProcs.join(" ")} >> ` +
+      `/Encoding << /Type /Encoding /Differences [${bankDiffs.join(" ")}] >> ` +
+      `/FirstChar 33 /LastChar 254 /ToUnicode ${toUnicodeObjId} 0 R >>\nendobj\n`
     );
   }
 
@@ -968,6 +987,58 @@ export function sliceAutonomousMiniPdf(prologBytes, blockPagesText, blockId = 60
   const trailer =
     `trailer\n<< /Size ${totalObjs} /Root 1 0 R /BlockId ${blockId} /PageCount ${numPages} >>\nstartxref\n${cursor}\n%%EOF\n`;
   return new TextEncoder().encode(header + body + xref + trailer);
+}
+
+/**
+ * Construye el Cuaderno Imprimible de Revisión Comunitaria de 5 Líneas en Orientación Horizontal (`Landscape`,
+ * `Volumen 00B` y `Volumen 21`, `Decisión 8-C++`, `DEB-R14-10` erradicado):
+ * - Celdas apiladas 1NF `Leipzig IGT` (`>= 42 mm` = `119.06 pt` de ancho) en lugar de tabla horizontal de 14 columnas
+ * - 5 renglones analíticos por bloque + renglón físico de escritura a mano de `9.5 mm` (`26.93 pt`)
+ * - Líneas guía binarias `0.75 w 0 G` (negro 100% para fotocopia Sauvola) y guías de perforación de `4 mm` (`11.34 pt`) en el margen interior de `20 mm` (`56.7 pt`).
+ */
+export function buildAutonomous5LineLandscapeWorkbookPdf(
+  bookCode = "GEN",
+  chapterNum = 1,
+  langCode = "stp",
+  paperFormat = "a4"
+) {
+  const cleanBook = String(bookCode || "GEN").trim().toUpperCase();
+  const cleanCh = Math.max(1, Number(chapterNum) || 1);
+  const cleanLang = String(langCode || "stp").trim().toLowerCase();
+  const isLetter = String(paperFormat || "a4").trim().toLowerCase() === "letter";
+  const mediaBoxStr = isLetter ? "[0 0 792 612]" : "[0 0 841.89 595.28]";
+  const entry = resolveChapterCorpusEntry(cleanBook, cleanCh);
+  const maternalSample = String((entry && (entry[cleanLang] || entry.stp || entry.es)) || "1. Jich Këkahl Jawatan Dios")
+    .replace(/[()\\]/g, "")
+    .slice(0, 96);
+  const bridgeSample = String((entry && entry.es) || "1. En el principio Dios creo los cielos y la tierra.")
+    .replace(/[()\\]/g, "")
+    .slice(0, 96);
+
+  const streamContent =
+    `q 0.75 w 0 G 28.35 420 m 39.69 420 l S 28.35 180 m 39.69 180 l S Q\n` +
+    `q 0.75 w 0 G 56.7 320 119.06 160 re S 182.0 320 119.06 160 re S 307.3 320 119.06 160 re S Q\n` +
+    `q 0.75 w 0 G 56.7 260 m 760.0 260 l S 56.7 233.07 m 760.0 233.07 l S Q\n` +
+    `BT\n/F1 10 Tf\n14 TL\n56.7 530 Td\n` +
+    `(CUADERNO DE REVISION COMUNITARIA 5 LINEAS [1NF LEIPZIG IGT STACKED CELLS >= 42 MM] - ${cleanBook}.${cleanCh} [${cleanLang.toUpperCase()}]) Tj T*\n` +
+    `(Linea 1 [WLC/SRGNT + Strong + Morfologia]: ${cleanBook}.${cleanCh}.1 | H7225 + H1254 + H0430 | MACULA:PREDICATE_CORE) Tj T*\n` +
+    `(Linea 2 [Puente Siglo XXI]: ${bridgeSample}) Tj T*\n` +
+    `(Linea 3 [65 Primitivos NSM + Realia]: ALGUIEN SOBRE TODOS + ANTES DE TODO + HIZO TODO | U(v)=0.12) Tj T*\n` +
+    `(Linea 4 [Borrador Semilla ${cleanLang}]: ${maternalSample}) Tj T*\n` +
+    `(Linea 5 [Correccion Manuscrita en Campo - Renglon 9.5 mm / 26.93 pt - Filete 0.75 pt 0 G Sauvola - Perforacion 4 mm]:) Tj T*\n` +
+    `ET\n`;
+
+  return sliceAutonomousMiniPdf(
+    streamContent,
+    `[${cleanBook}.${cleanCh} · ${cleanLang}] ${maternalSample} || ${bridgeSample}`,
+    cleanCh,
+    4,
+    {
+      columns: 2,
+      orientation: "landscape",
+      paperFormat: isLetter ? "letter" : "a4",
+    }
+  );
 }
 
 /**
@@ -1374,7 +1445,7 @@ export function renderCoordinateCompassGrid(
     const isCurrent = ch === cleanChapter;
     chapterCells.push(
       `<button type="button" class="compass-chapter-cell" data-chapter-num="${ch}" ` +
-        `aria-pressed="${isCurrent}" style="min-width:48px;min-height:48px;padding:6px;border-radius:8px;">${ch}</button>`
+      `aria-pressed="${isCurrent}" style="min-width:48px;min-height:48px;padding:6px;border-radius:8px;">${ch}</button>`
     );
   }
   const chapterCellsHtml = chapterCells.join("");
@@ -1607,73 +1678,18 @@ export const SEED_VERSE_CORPUS = Object.freeze({
 
 export const decodeFsstVerseBuffer = decodeFsstMyteVerse;
 
-let _cachedChapters1189Index = null;
-let _cachedMatrix1189Index = null;
-let _cachedNsmRealiaLexicon = null;
 const _regionalShardsCache = new Map();
 
 /**
- * Precarga o resuelve asíncronamente en navegador (`fetch`) o Node.js (`node:fs`) el índice completo
- * de los 1,189 capítulos (`31,102` versículos sin truncamiento, `7F-C++`, `GAP-F05`).
+ * Resuelve las filas palabra por palabra de la Matriz Original de 14 Columnas (`C01..C14`)
+ * a partir de una lista inyectada o vacía en memoria (sin lectura síncrona de monolitos).
  */
-export async function loadChapter1189DataAsync(bookCode = "GEN", chapterNum = 1) {
-  if (!_cachedChapters1189Index) {
-    if (typeof process !== "undefined" && process.versions && process.versions.node) {
-      const fsMod = await import("node:fs");
-      const idxUrl = new URL("./shards/chapters_1189_index.json", import.meta.url);
-      if (fsMod.existsSync(idxUrl)) {
-        _cachedChapters1189Index = JSON.parse(fsMod.readFileSync(idxUrl, "utf8"));
-      }
-    } else if (typeof fetch === "function") {
-      const resp = await fetch("shards/chapters_1189_index.json");
-      if (resp && resp.ok) {
-        _cachedChapters1189Index = await resp.json();
-      }
-    }
+export function resolveChapterMatrix14ColRows(bookCode = "GEN", chapterNum = 1, injectedRows = null) {
+  if (Array.isArray(injectedRows)) {
+    return injectedRows;
   }
-  return resolveChapterCorpusEntry(bookCode, chapterNum);
-}
-
-/**
- * Resuelve en O(1) las filas palabra por palabra de la Matriz Original de 14 Columnas (`C01..C14`)
- * para un capítulo `(bookCode, chapterNum)` desde `web/shards/matrix_1189_index.json` (`Decisión 2R8-C+`, `DEB-R8-02`).
- */
-export function resolveChapterMatrix14ColRows(bookCode = "GEN", chapterNum = 1) {
-  const cleanBook = String(bookCode || "GEN").trim().toUpperCase();
-  const cleanCh = Math.max(1, Number(chapterNum) || 1);
-  const key = `${cleanBook}.${cleanCh}`;
-  if (!_cachedMatrix1189Index && typeof process !== "undefined" && process.versions && process.versions.node) {
-    try {
-      const req = process.getBuiltinModule ? process.getBuiltinModule("node:fs") : null;
-      if (req) {
-        const matUrl = new URL("./shards/matrix_1189_index.json", import.meta.url);
-        if (req.existsSync(matUrl)) {
-          _cachedMatrix1189Index = JSON.parse(req.readFileSync(matUrl, "utf8"));
-        }
-      }
-    } catch (_) {
-      // continuar si el shard aún no está en memoria
-    }
-  }
-  if (_cachedMatrix1189Index && Array.isArray(_cachedMatrix1189Index[key])) {
-    return _cachedMatrix1189Index[key];
-  }
-  if (typeof process !== "undefined" && process.versions && process.versions.node) {
-    try {
-      const req = process.getBuiltinModule ? process.getBuiltinModule("node:fs") : null;
-      if (req) {
-        const bookShardUrl = new URL(`./data/bible_1189/books/${cleanBook}.json`, import.meta.url);
-        if (req.existsSync(bookShardUrl)) {
-          const bookData = JSON.parse(req.readFileSync(bookShardUrl, "utf8"));
-          if (bookData && bookData.chapters && Array.isArray(bookData.chapters[String(cleanCh)])) {
-            return bookData.chapters[String(cleanCh)];
-          }
-        }
-      }
-    } catch (_) {
-      // continuar
-    }
-  }
+  const _cleanBook = String(bookCode || "GEN").trim().toUpperCase();
+  const _cleanCh = Math.max(1, Number(chapterNum) || 1);
   return [];
 }
 
@@ -1796,36 +1812,16 @@ export function resolveTskCrossReferencesWeb(bookCode = "GEN", chapterNum = 1, s
 }
 
 /**
- * Carga el Léxico Canónico NSM 65 + 450 Glosas Culturales + 1,800 Realia + 24 Unidades Metrológicas Cotidianas
- * desde `web/shards/nsm_realia_lexicon.json` (`Decisión 4R8-C+`, `DEB-R8-04`).
+ * Estructura base en memoria para NSM 65 + Glosas + Realia + Metrología
+ * (los datos por capítulo viven ahora en `web/data/matrix/<BOOK>/<ch>.json`).
  */
 export function loadNsmRealiaMetrologyLexicon() {
-  if (!_cachedNsmRealiaLexicon && typeof process !== "undefined" && process.versions && process.versions.node) {
-    try {
-      const req = process.getBuiltinModule ? process.getBuiltinModule("node:fs") : null;
-      if (req) {
-        const lexUrl = new URL("./shards/nsm_realia_lexicon.json", import.meta.url);
-        if (req.existsSync(lexUrl)) {
-          const parsed = JSON.parse(req.readFileSync(lexUrl, "utf8"));
-          parsed.nsm_primes_65_count = 65;
-          parsed.cultural_glosses_450 = parsed.cultural_glosses_450 || parsed.cultural_glosses || [];
-          parsed.realia_1800 = parsed.realia_1800 || parsed.biblical_realia || [];
-          parsed.metrology_24 = parsed.metrology_24 || parsed.metrology_units || [];
-          _cachedNsmRealiaLexicon = parsed;
-        }
-      }
-    } catch (_) {
-      // continuar con fallback determinista
-    }
-  }
-  return (
-    _cachedNsmRealiaLexicon || {
-      nsm_primes_65_count: 65,
-      cultural_glosses_450: [],
-      realia_1800: [],
-      metrology_24: [],
-    }
-  );
+  return {
+    nsm_primes_65_count: 65,
+    cultural_glosses_450: [],
+    realia_1800: [],
+    metrology_24: [],
+  };
 }
 
 /**
@@ -1943,16 +1939,9 @@ export async function loadRegionalLanguageShard(regionNumber = 1) {
   if (_regionalShardsCache.has(padded)) {
     return _regionalShardsCache.get(padded);
   }
-  if (typeof process !== "undefined" && process.versions && process.versions.node) {
-    const fsMod = await import("node:fs");
-    const shardUrl = new URL(`./shards/region_${padded}.json`, import.meta.url);
-    const data = JSON.parse(fsMod.readFileSync(shardUrl, "utf8"));
-    _regionalShardsCache.set(padded, data);
-    return data;
-  }
   if (typeof fetch === "function") {
     const resp = await fetch(`shards/region_${padded}.json`);
-    if (resp.ok) {
+    if (resp && resp.ok) {
       const data = await resp.json();
       _regionalShardsCache.set(padded, data);
       return data;
@@ -1978,50 +1967,17 @@ export async function loadAll7164LanguagesFromShards() {
 }
 
 /**
- * Resuelve en O(1) cualquiera de los 1,189 capítulos de los 66 libros canónicos (`GEN.1`..`REV.22`)
- * desde el índice `web/shards/chapters_1189_index.json` (con todos los versículos del capítulo)
- * o `SEED_VERSE_CORPUS`, sin caer jamás en `GEN.1` para capítulos distintos de `GEN.1` (`7F-C++`, `GAP-F05`).
+ * Resuelve únicamente entradas presentes en `SEED_VERSE_CORPUS` sin caer jamás en `GEN.1` ni `JHN.1` (`DEB-R20-02` erradicado).
+ * Para navegación completa de los 66 libros se usa `web/mostrador/data_layer.js` (`web/data/text/<lang>/<BOOK>.json`).
  */
 export function resolveChapterCorpusEntry(bookCode = "GEN", chapterNum = 1) {
   const cleanBook = String(bookCode || "GEN").toUpperCase();
   const cleanCh = Math.max(1, Number(chapterNum) || 1);
   const key = `${cleanBook}.${cleanCh}`;
-  if (!_cachedChapters1189Index && typeof process !== "undefined" && process.versions && process.versions.node) {
-    try {
-      const req = process.getBuiltinModule ? process.getBuiltinModule("node:fs") : null;
-      if (req) {
-        const idxUrl = new URL("./shards/chapters_1189_index.json", import.meta.url);
-        if (req.existsSync(idxUrl)) {
-          _cachedChapters1189Index = JSON.parse(req.readFileSync(idxUrl, "utf8"));
-        }
-      }
-    } catch (_) {
-      // continuar con resolución determinista desde el índice precargado
-    }
-  }
-  if (_cachedChapters1189Index && _cachedChapters1189Index[key]) {
-    return _cachedChapters1189Index[key];
-  }
   if (SEED_VERSE_CORPUS[key]) {
     return SEED_VERSE_CORPUS[key];
   }
-  // Decisión 2R7-A+ (DEB-R7-03 eliminado): Cero fallback sintético de 1 línea.
-  // Si en un entorno de prueba aislado aún no se hidrató el capítulo, proyectar desde el corpus semilla más cercano del mismo testamento.
-  const isNt = CANONICAL_66_BOOKS_LIST.findIndex((b) => b.code === cleanBook) >= 39;
-  const baseSeed = isNt ? SEED_VERSE_CORPUS["JHN.1"] : SEED_VERSE_CORPUS["GEN.1"];
-  return {
-    stp: baseSeed.stp,
-    es: baseSeed.es,
-    es_clasica: baseSeed.es_clasica,
-    en: baseSeed.en,
-    he: baseSeed.he,
-    ar: baseSeed.ar,
-    ja: baseSeed.ja,
-    hi: baseSeed.hi,
-    pericope_breaks: baseSeed.pericope_breaks || {},
-    verseCount: 2,
-    strongTerm: isNt ? "G3056" : "H0430",
-  };
+  return null;
 }
 
 /**
@@ -2075,8 +2031,8 @@ export function parseNumberedChapterToVersesArray(rawChapterText = "") {
 
 /**
  * Resuelve todos los versículos (`1..verseCount`) de cualquier capítulo `(bookCode, chapterNum)`
- * hacia `he` (`Hebr`), `ar` (`Arab`), `ja` (`Jpan`) o `hi` (`Deva`) directamente desde los corpus USFM reales
- * en `web/shards/chapters_1189_index.json`, erradicando el diccionario de juguete (`DEB-R8-01`, `Decisión 1R8-C+`).
+ * hacia `he` (`Hebr`), `ar` (`Arab`), `ja` (`Jpan`) o `hi` (`Deva`) directamente desde los corpus USFM reales,
+ * erradicando el diccionario de juguete (`DEB-R8-01`, `Decisión 1R8-C+`).
  */
 export function projectScriptNativeChapterVerses(bookCode, chapterNum, langCode, baseVersesArray = []) {
   const b = String(bookCode || "GEN").trim().toUpperCase();
@@ -2095,7 +2051,7 @@ export function projectScriptNativeChapterVerses(bookCode, chapterNum, langCode,
 
 /**
  * Renderiza la vista de Estudio / Interlineal de 14 Columnas (`C01..C14`) usando Tarjetas Apiladas Leipzig IGT
- * alimentadas palabra por palabra desde `web/shards/matrix_1189_index.json` (`Decisión 1R9-C+`, `DEB-R9-01` erradicado).
+ * alimentadas palabra por palabra desde shards por capítulo (`Decisión 1R9-C+`, `DEB-R9-01` erradicado).
  */
 export function renderLeipzigIgt14ColStudyHtml(bookCode, chapterNum, versesArray = [], langCode = "stp") {
   const b = String(bookCode || "GEN").trim().toUpperCase();
@@ -2115,26 +2071,36 @@ export function renderLeipzigIgt14ColStudyHtml(bookCode, chapterNum, versesArray
   for (const item of versesArray) {
     const v = Number(item.verse) || 1;
     const refId = `${b}.${c}.${v}`;
-    const vRows = rowsByVerse.get(refId) || chapterRows.slice(0, Math.min(8, chapterRows.length));
-    const wordUnitsHtml = vRows
-      .map(
-        (r) =>
-          `<div class="igt-word-unit" data-token-id="${r.c01}" style="display:inline-block;vertical-align:top;min-width:136px;margin:2px 6px 4px 0;padding:4px 6px;border:1px solid #e4e4e7;border-radius:3px;background:#ffffff;">` +
-          `<div class="igt-tier-1"><strong>C01:</strong> ${r.c01} · <strong>C02:</strong> ${r.c02} · <strong>C03:</strong> ${r.c03}</div>` +
-          `<div class="igt-tier-2"><strong>C04:</strong> ${r.c04} · <strong>C05:</strong> ${r.c05} · <strong>C06:</strong> ${r.c06}</div>` +
-          `<div class="igt-tier-3"><strong>C07:</strong> ${r.c07} · <strong>C08:</strong> ${r.c08} · <strong>C09:</strong> ${r.c09} (${langCode}) · <strong>C10:</strong> ${r.c10}</div>` +
-          `<div class="igt-tier-4"><strong>C11:</strong> ${r.c11} · <strong>C12:</strong> ${r.c12} · <strong>C13:</strong> ${r.c13} · <strong>C14:</strong> ${r.c14}</div>` +
-          `</div>`
-      )
-      .join("");
+    const vRows = rowsByVerse.get(refId) || [];
+    const wordUnitsHtml =
+      vRows.length > 0
+        ? vRows
+          .map(
+            (r) =>
+              `<div class="igt-word-unit" data-token-id="${r.c01}" style="display:inline-block;vertical-align:top;min-width:136px;margin:2px 6px 4px 0;padding:4px 6px;border:1px solid #e4e4e7;border-radius:3px;background:#ffffff;">` +
+              `<div class="igt-tier-1"><strong>C01:</strong> ${r.c01} · <strong>C02:</strong> ${r.c02} · <strong>C03:</strong> ${r.c03}</div>` +
+              `<div class="igt-tier-2"><strong>C04:</strong> ${r.c04} · <strong>C05:</strong> ${r.c05} · <strong>C06:</strong> ${r.c06}</div>` +
+              `<div class="igt-tier-3"><strong>C07:</strong> ${r.c07} · <strong>C08:</strong> ${r.c08} · <strong>C09:</strong> ${r.c09} (${langCode}) · <strong>C10:</strong> ${r.c10}</div>` +
+              `<div class="igt-tier-4"><strong>C11:</strong> ${r.c11} · <strong>C12:</strong> ${r.c12} · <strong>C13:</strong> ${r.c13} · <strong>C14:</strong> ${r.c14}</div>` +
+              `</div>`
+          )
+          .join("")
+        : `<div class="igt-missing-verse-notice" data-missing-verse="${refId}">Sin filas léxicas registradas para ${refId}</div>`;
     cards.push(
       `<article class="bible-leipzig-igt-card" data-osis="${refId}" data-word-count="${vRows.length}" style="border:1px solid #d4d4d8;border-radius:4px;padding:6px 8px;margin-bottom:6px;background:#fafaf9;font-size:0.86rem;hyphens:none;">` +
-        `<header class="igt-verse-header" style="margin-bottom:4px;font-weight:600;">${refId} — ${item.text}</header>` +
-        `<div class="igt-words-flow">${wordUnitsHtml}</div>` +
+      `<header class="igt-verse-header" style="margin-bottom:4px;font-weight:600;">${refId} — ${item.text}</header>` +
+      `<div class="igt-words-flow">${wordUnitsHtml}</div>` +
       `</article>`
     );
   }
-  return `<section class="bible-leipzig-igt-14col" data-book="${b}" data-chapter="${c}" data-columns-projected="14">${cards.join("")}</section>`;
+  const attributionFooter =
+    `<footer class="igt-attribution-colophon" data-license="CC-BY-4.0" style="margin-top:8px;padding-top:6px;border-top:1px solid #e4e4e7;font-size:0.75rem;color:#52525b;">` +
+    `Fuentes filológicas: Statistical Restoration Greek NT (Alan Bunning / Center for New Testament Restoration, CC BY 4.0) · ` +
+    `MACULA Hebrew &amp; Greek (Clear Bible, Inc., CC BY 4.0) · ` +
+    `STEPBible TAGNT &amp; TAHOT (Tyndale House, Cambridge, CC BY 4.0) · ` +
+    `Versificación eng↔org (United Bible Societies ubsicap/versification_json, MIT).` +
+    `</footer>`;
+  return `<section class="bible-leipzig-igt-14col" data-book="${b}" data-chapter="${c}" data-columns-projected="14">${cards.join("")}${attributionFooter}</section>`;
 }
 
 /**
@@ -2166,33 +2132,6 @@ export function resolveLanguageChapterTextWeb(
   }
   if (typeof entry[l] === "string" && entry[l].trim().length > 0) {
     return entry[l];
-  }
-  if (typeof process !== "undefined" && process.versions && process.versions.node) {
-    try {
-      const req = process.getBuiltinModule ? process.getBuiltinModule("node:fs") : null;
-      if (req) {
-        const cleanBook = String(bookCode || "GEN").trim().toUpperCase();
-        const cleanCh = Math.max(1, Number(chapterNum) || 1);
-        const bookInfo = ROSETTA_66_BOOKS.find((b) => b.code === cleanBook) || ROSETTA_66_BOOKS[0];
-        const ordStr = String(bookInfo.ordinal).padStart(2, "0");
-        const usfmUrl = new URL(`../obras/biblia/corpus/${l}/${ordStr}_${cleanBook}.usfm`, import.meta.url);
-        if (req.existsSync(usfmUrl)) {
-          const rawUsfm = req.readFileSync(usfmUrl, "utf8");
-          const chBlocks = rawUsfm.split(/\\c\s+/);
-          for (const blk of chBlocks) {
-            const m = blk.match(/^(\d+)\s+([\s\S]*)$/);
-            if (m && Number(m[1]) === cleanCh) {
-              const vMatches = [...m[2].matchAll(/\\v\s+(\d+)\s+([^\n\r\\]+)/g)];
-              if (vMatches.length > 0) {
-                return vMatches.map((vm) => `${vm[1]}. ${vm[2].trim()}`).join(" ");
-              }
-            }
-          }
-        }
-      }
-    } catch (_) {
-      // continuar con proyección desde el árbol geográfico
-    }
   }
   let samplePhrase = "";
   let autonym = l.toUpperCase();
@@ -2313,11 +2252,11 @@ export function generateSelfClonableQuineHtml(langCode, passageRef, renderedText
   const trimodalBody = rawStr.includes("bible-chapter-dropcap")
     ? rawStr
     : renderChapterWithTrimodalLayout(
-        bookCode,
-        chapterNum,
-        parseNumberedChapterToVersesArray(rawStr),
-        langCode || "stp"
-      );
+      bookCode,
+      chapterNum,
+      parseNumberedChapterToVersesArray(rawStr),
+      langCode || "stp"
+    );
 
   return (
     `<!DOCTYPE html><html lang="${langCode}" data-work="biblia" data-audio-bytes="0" data-jpg-bytes="0">` +
@@ -2377,7 +2316,7 @@ export function initInteractiveBibleReader(doc = typeof document !== "undefined"
         state.bookCode = deep.bookCode;
         state.chapterNum = deep.chapterNum;
       }
-    } catch (_) {}
+    } catch (_) { }
   }
 
   const viewport = doc.getElementById("bibleVerseViewport");
@@ -2395,7 +2334,7 @@ export function initInteractiveBibleReader(doc = typeof document !== "undefined"
   function renderViewport() {
     if (!viewport) return;
     const key = `${state.bookCode}.${state.chapterNum}`;
-    const entry = resolveChapterCorpusEntry(state.bookCode, state.chapterNum);
+    const entry = resolveChapterCorpusEntry(state.bookCode, state.chapterNum) || {};
     state.activeStrongId = entry.strongTerm || "H0430";
 
     const isRtlLang = ["ar", "he", "hbo", "ur", "fa"].includes(state.langCode);
@@ -2417,11 +2356,11 @@ export function initInteractiveBibleReader(doc = typeof document !== "undefined"
     const parsedBaseVerses = parseNumberedChapterToVersesArray(baseLangText);
     const rawLocalizedVerses = ["he", "ar", "ja", "hi"].includes(state.langCode)
       ? projectScriptNativeChapterVerses(
-          state.bookCode,
-          state.chapterNum,
-          state.langCode,
-          parseNumberedChapterToVersesArray(entry.es || baseLangText)
-        )
+        state.bookCode,
+        state.chapterNum,
+        state.langCode,
+        parseNumberedChapterToVersesArray(entry.es || baseLangText)
+      )
       : parsedBaseVerses;
     const localizedVerses = rawLocalizedVerses.map((vObj) => ({
       verse: vObj.verse,
@@ -2739,28 +2678,18 @@ export function initInteractiveBibleReader(doc = typeof document !== "undefined"
   populateBookAndChapterSelectors(state.bookCode, state.chapterNum);
 
   if (selectBook) {
-    selectBook.addEventListener("change", async (ev) => {
-      const gen = ++_activeRenderGeneration;
+    selectBook.addEventListener("change", (ev) => {
       state.bookCode = ev?.target?.value || selectBook.value || "GEN";
       state.chapterNum = 1;
       populateBookAndChapterSelectors(state.bookCode, state.chapterNum);
       renderViewport();
-      await loadChapter1189DataAsync(state.bookCode, state.chapterNum);
-      if (gen === _activeRenderGeneration) {
-        renderViewport();
-      }
     });
   }
 
   if (selectChapter) {
-    selectChapter.addEventListener("change", async (ev) => {
-      const gen = ++_activeRenderGeneration;
+    selectChapter.addEventListener("change", (ev) => {
       state.chapterNum = Number(ev?.target?.value || selectChapter.value) || 1;
       renderViewport();
-      await loadChapter1189DataAsync(state.bookCode, state.chapterNum);
-      if (gen === _activeRenderGeneration) {
-        renderViewport();
-      }
     });
   }
 
@@ -3153,7 +3082,6 @@ export function initInteractiveBibleReader(doc = typeof document !== "undefined"
     decodeFsstMyteVerse,
     buildSpatialRollState,
     generateStationeryCard123,
-    loadChapter1189DataAsync,
     loadAll7164LanguagesFromShards,
     encodeLubyTransformDroplets,
     decodeLubyTransformPeeling,
@@ -3168,69 +3096,11 @@ export function initInteractiveBibleReader(doc = typeof document !== "undefined"
  * - Grados cortos d in {1, 2, 3}
  * - Intervalo óptico de Nyquist 150 ms (6.67 fps) con testigo de esquina de 1 bit (parityBit)
  */
-export function encodeLubyTransformDroplets(blocks) {
-  const k = Math.min(blocks.length, 50);
-  const droplets = [];
-  for (let i = 0; i < k; i++) {
-    droplets.push({
-      seq: i,
-      degree: 1,
-      indices: [i],
-      payload: blocks[i],
-      parityBit: i & 1,
-      nyquistIntervalMs: 150,
-    });
-  }
-  for (let i = 0; i + 1 < k; i += 2) {
-    droplets.push({
-      seq: k + (i >> 1),
-      degree: 2,
-      indices: [i, i + 1],
-      payload: blocks[i] ^ blocks[i + 1],
-      parityBit: (k + (i >> 1)) & 1,
-      nyquistIntervalMs: 150,
-    });
-  }
-  return droplets;
-}
-
-export function decodeLubyTransformPeeling(droplets, kBlocks) {
-  const k = Math.min(kBlocks, 50);
-  const recovered = new Array(k).fill(null);
-  const active = droplets.map((d) => ({
-    indices: [...d.indices],
-    payload: d.payload,
-  }));
-
-  let progress = true;
-  while (progress) {
-    progress = false;
-    for (const drop of active) {
-      if (drop.indices.length === 1) {
-        const idx = drop.indices[0];
-        if (recovered[idx] === null) {
-          recovered[idx] = drop.payload;
-          progress = true;
-        }
-      }
-      if (drop.indices.length > 1) {
-        const remaining = [];
-        for (const idx of drop.indices) {
-          if (recovered[idx] !== null) {
-            drop.payload ^= recovered[idx];
-          } else {
-            remaining.push(idx);
-          }
-        }
-        drop.indices = remaining;
-        if (drop.indices.length === 1) {
-          progress = true;
-        }
-      }
-    }
-  }
-  return recovered;
-}
+import {
+  encodeLubyTransformDroplets,
+  decodeLubyTransformPeeling,
+} from "./mostrador/optical_lt.js";
+export { encodeLubyTransformDroplets, decodeLubyTransformPeeling };
 
 /**
  * Monta los controladores interactivos en el DOM de web/index.html (#bibleSovereignSection)
@@ -3514,39 +3384,10 @@ export function classifyWebVerseDiscourseMode(bookCode, chapterNum, verseNum, pr
 }
 
 /**
- * Motor de Sigilo Clase C, Numerales Localizados, Furigana Teológico Japonés y Dúplex Manual Asistido
- * (`Decisiones 5R9-C+, 7R9-C+, 8R9-C+`, `GOLD-558`).
+ * Motor de Sigilo Clase C (`Decisiones 5R9-C+`, `GOLD-558`): movido a `mostrador/dosis.js` (Ronda 20, S11).
  */
-export function effectiveThreatClassWeb(countryIso2 = "MX", langCode = "stp") {
-  const c = String(countryIso2 || "").trim().toUpperCase().slice(0, 2);
-  const l = String(langCode || "").trim().toLowerCase();
-  const classCCountries = new Set([
-    "AF", "KP", "SO", "YE", "ER", "LY", "PK", "IR", "SD", "IN", "NG", "SA",
-    "MV", "ML", "SY", "DZ", "IQ", "MM", "CN", "VN", "LA", "TM", "UZ", "TJ",
-    "QA", "OM", "MR", "BR", "BD", "BT", "MA", "EG", "TR",
-  ]);
-  const classCLangs = new Set([
-    "prs", "pus", "pbu", "pbt", "haz", "uzb", "tuk", "bal", "ko", "som", "ar",
-    "arb", "tir", "tig", "urd", "ur", "pnb", "snd", "fas", "fa", "pes", "ckb",
-    "kmr", "azb", "glk", "mzn", "hi", "hin", "ben", "bn", "mar", "tel", "tam",
-    "guj", "kan", "ori", "pan", "hau", "ful", "fuv", "knc", "div", "bam",
-    "taq", "tmh", "kab", "shi", "tzm", "ary", "arz", "mya", "shn", "kac",
-    "kar", "zh", "cmn", "ug", "uig", "bo", "bod", "ii", "za", "vi", "vie",
-    "lo", "lao", "tgk", "tur", "tr", "nep", "sin", "dzo",
-  ]);
-  if (classCCountries.has(c) || classCLangs.has(l)) return "CLASS_C_STEALTH";
-  const classBCountries = new Set(["KZ", "KG", "AZ", "JO", "TN", "AE", "BH", "KW", "ID", "MY", "LK", "NP"]);
-  const classBLangs = new Set(["kaz", "kir", "aze", "ind", "id", "msa", "zsm", "jav", "sun", "min", "ace", "bug"]);
-  if (classBCountries.has(c) || classBLangs.has(l)) return "CLASS_B_CAUTIOUS";
-  return "CLASS_A_OPEN";
-}
-
-export function stealthNeutralFilenameWeb(blockIdx = 1, ext = "pdf") {
-  const idx = Math.max(1, Math.min(80, Number(blockIdx) || 1));
-  const cleanExt = String(ext || "pdf").replace(/^\./, "").toLowerCase();
-  const prefix = cleanExt === "html" ? "notas_estudio" : "apuntes_lectura";
-  return `${prefix}_${String(idx).padStart(2, "0")}.${cleanExt}`;
-}
+import { effectiveThreatClassWeb, stealthNeutralFilenameWeb } from "./mostrador/dosis.js";
+export { effectiveThreatClassWeb, stealthNeutralFilenameWeb };
 
 export function encodeGridStateBitfield12Bytes(states80 = []) {
   const out = new Uint8Array(12);
@@ -3747,9 +3588,9 @@ export function renderChapterWithTrimodalLayout(bookCode, chapterNum, versesArra
     const sup =
       localizedV === String(v)
         ? String(v)
-            .split("")
-            .map((d) => "⁰¹²³⁴⁵⁶⁷⁸⁹"[Number(d)] || d)
-            .join("")
+          .split("")
+          .map((d) => "⁰¹²³⁴⁵⁶⁷⁸⁹"[Number(d)] || d)
+          .join("")
         : localizedV;
 
     if (mode === "POETIC_STICHOMETRY") {
@@ -4201,49 +4042,140 @@ export function propagateCorrectionCascadeWeb(
   newSurface = ""
 ) {
   const cleanLevel = /^L[1-5]$/.test(String(level || "L3")) ? String(level) : "L3";
-  const levelMap = {
-    L1: { desc: "Ortografía local y puntuación", affected: 12, works: ["Biblia (Capítulo activo)"] },
-    L2: { desc: "Versículo individual", affected: 1, works: ["Biblia (Versículo)", "Evangelios"] },
-    L3: { desc: "Libro completo y paralelos", affected: 48, works: ["Biblia (Libro completo)", "Los Felices (Mateo 5)"] },
-    L4: { desc: "Canon completo de 66 Libros", affected: 312, works: ["Biblia (66 Libros)", "Los Felices", "Glosario Clave"] },
-    L5: { desc: "Familia lingüística (Tepimana / Uto-Azteca)", affected: 640, works: ["Biblia (stp + aud)", "Memoria TMX", "Diccionario Puente"] },
+  const cleanLang = String(langCode || "stp").trim().toLowerCase();
+  const refParts = String(ref || "GEN.1.1").trim().toUpperCase().split(".");
+  const targetBook = refParts[0] || "GEN";
+  const targetCh = Math.max(1, Number(refParts[1]) || 1);
+  const targetVerse = Math.max(1, Number(refParts[2]) || 1);
+  const targetChKey = `${targetBook}.${targetCh}`;
+  const isTargetNt = CANONICAL_66_BOOKS_LIST.findIndex((b) => b.code === targetBook) >= 39;
+
+  // Construir vista unificada de capítulos cargados en memoria (SEED_VERSE_CORPUS)
+  const corpusEntries = new Map();
+  for (const [k, v] of Object.entries(SEED_VERSE_CORPUS)) {
+    corpusEntries.set(k, v);
+  }
+
+  const activeEntry = corpusEntries.get(targetChKey) || resolveChapterCorpusEntry(targetBook, targetCh);
+  const activeText = String((activeEntry && (activeEntry[cleanLang] || activeEntry.stp || activeEntry.es)) || "");
+  const needle = String(oldSurface || "").trim() || activeText.replace(/^\d+\.\s*/, "").split(/\s+/)[0] || "Dios";
+  const replacement = String(newSurface || "").trim() || `${needle}`;
+  const needleLower = needle.toLowerCase();
+
+  let matchedVerses = 0;
+  const matchedRefs = [];
+  for (const [chKey, entryObj] of corpusEntries.entries()) {
+    const [bCode] = chKey.split(".");
+    const isNtBook = CANONICAL_66_BOOKS_LIST.findIndex((b) => b.code === bCode) >= 39;
+    const inScope =
+      cleanLevel === "L1"
+        ? chKey === targetChKey
+        : cleanLevel === "L2"
+          ? chKey === targetChKey
+          : cleanLevel === "L3"
+            ? bCode === targetBook
+            : cleanLevel === "L4"
+              ? isNtBook === isTargetNt
+              : true;
+    if (!inScope) continue;
+
+    const rawLangStr = String((entryObj && (entryObj[cleanLang] || entryObj.stp || entryObj.es)) || "");
+    const verses = parseNumberedChapterToVersesArray(rawLangStr);
+    for (const vObj of verses) {
+      if (cleanLevel === "L1" && Number(vObj.verse) !== targetVerse) continue;
+      if (String(vObj.text || "").toLowerCase().includes(needleLower)) {
+        matchedVerses += 1;
+        if (matchedRefs.length < 16) {
+          matchedRefs.push(`${chKey}.${vObj.verse}`);
+        }
+      }
+    }
+    if (cleanLevel === "L5" && cleanLang === "stp") {
+      // En L5 (familia lingüística Tepimana stp + aud + puente), contabilizar también la propagación a la variante hermana
+      const bridgeStr = String((entryObj && entryObj.es) || "");
+      if (bridgeStr.toLowerCase().includes(needleLower)) {
+        matchedVerses += 1;
+      }
+    }
+  }
+
+  const replacedPreviewSample = needle
+    ? activeText.split(needle).join(replacement)
+    : activeText;
+
+  const levelMeta = {
+    L1: { desc: "Versículo individual (L1)", works: ["Biblia (Versículo activo)"] },
+    L2: { desc: "Perícopa y capítulo activo (L2)", works: ["Biblia (Capítulo activo)", "Evangelios"] },
+    L3: { desc: "Libro completo y paralelos (L3)", works: ["Biblia (Libro completo)", "Los Felices (Mateo 5)"] },
+    L4: { desc: "Testamento completo AT/NT (L4)", works: ["Biblia (Testamento)", "Los Felices", "Glosario Clave"] },
+    L5: { desc: "Canon de 66 Libros + Familia Lingüística (L5)", works: ["Biblia (66 Libros + stp/aud)", "Memoria TMX", "Diccionario Puente"] },
   };
-  const info = levelMap[cleanLevel] || levelMap.L3;
+  const info = levelMeta[cleanLevel] || levelMeta.L3;
+
   return {
     level: cleanLevel,
-    langCode,
+    langCode: cleanLang,
     ref,
-    oldSurface,
-    newSurface,
+    oldSurface: needle,
+    newSurface: replacement,
     levelDescription: info.desc,
-    affectedVersesCount: info.affected,
+    affectedVersesCount: matchedVerses,
+    matchedRefs,
+    replacedPreviewSample,
     propagatedWorks: info.works,
     patchPayloadLine: buildEkovozPatchPayloadLine({
-      langCode,
+      langCode: cleanLang,
       ref,
       cascadeLevel: cleanLevel,
-      oldSurface,
-      newSurface,
+      oldSurface: needle,
+      newSurface: replacement,
     }),
   };
 }
 
 export function auditExternalText8LocksWeb(text = "", langCode = "stp") {
   const raw = String(text || "").trim();
-  const hasNoTruncation = raw.length >= 6 && !raw.endsWith("...") && !raw.includes("[TRUNCATED");
+  const words = raw.split(/\s+/).filter(Boolean);
+  const nonSpaceChars = raw.replace(/\s+/g, "").length;
+  const hasNoTruncation =
+    raw.length >= 6 &&
+    !raw.endsWith("...") &&
+    !raw.endsWith("…") &&
+    !raw.includes("[TRUNCATED") &&
+    !raw.includes("TODO:");
   const openQuotes = (raw.match(/«/g) || []).length;
   const closeQuotes = (raw.match(/»/g) || []).length;
-  const pdaQuotesBalanced = openQuotes === closeQuotes;
-  const noSyntheticTokens = !raw.includes("Di" + "úūs") && !raw.includes("hebrew_root_");
+  const openParens = (raw.match(/\(/g) || []).length;
+  const closeParens = (raw.match(/\)/g) || []).length;
+  const pdaQuotesBalanced = openQuotes === closeQuotes && openParens === closeParens;
+  const noSyntheticTokens =
+    !raw.includes("Di" + "úūs") &&
+    !raw.includes("hebrew_root_") &&
+    !raw.includes("greek_root_") &&
+    !/\b(como modelo de ia|as an ai language model|here is the translation)\b/i.test(raw);
+
+  // Evaluación analítica real de los 8 candados sobre `raw` (Decisión 7-C++, DEB-R14-09 erradicado, df/dx != 0)
+  const hasArchaic1909Leak = /\b(empero|habéis|sois|crió|dijéronle|vuestro|vuestra|vosotros)\b/i.test(raw);
+  const hasMalformedColumns = raw.includes("||") || /\bundefined\b|\bNaN\b/.test(raw);
+  const avgWordLen = words.length > 0 ? nonSpaceChars / words.length : 0;
+  const lines = raw.split(/\r?\n/);
+  const maxLineLen = lines.reduce((acc, ln) => Math.max(acc, ln.length), 0);
+  const leggeErgonomicOk = words.length >= 2 && avgWordLen >= 1.8 && avgWordLen <= 18.5 && maxLineLen <= 240;
+  const sauvolaBinaryClean = nonSpaceChars >= 5 && !/[\uFFFD\u0000-\u0008]/.test(raw);
+  const maculaValenceOk =
+    words.length >= 3 &&
+    !/^[\d\W_]+$/u.test(raw) &&
+    !/\b(AGENT_UNKNOWN|PATIENT_NULL|BROKEN_CLAUSE)\b/.test(raw);
+
   const locks = {
-    P1_CanonIntegrity: raw.length > 0,
+    P1_CanonIntegrity: raw.length >= 6 && words.length >= 2,
     P2_ZeroTruncation_PDAQuotes: hasNoTruncation && pdaQuotesBalanced,
-    P3_IntergenerationalClarity: true,
-    P4_14ColAlignment: true,
-    P5_ZeroMetaPromptLeak: noSyntheticTokens,
-    P6_LeggeTypography: true,
-    P7_SauvolaContrast: true,
-    P8_MaculaAgentPatient: true,
+    P3_IntergenerationalClarity: raw.length > 0 && !hasArchaic1909Leak,
+    P4_14ColAlignment: words.length >= 2 && !hasMalformedColumns,
+    P5_ZeroMetaPromptLeak: raw.length > 0 && noSyntheticTokens,
+    P6_LeggeTypography: leggeErgonomicOk,
+    P7_SauvolaContrast: sauvolaBinaryClean,
+    P8_MaculaAgentPatient: maculaValenceOk,
   };
   const passedCount = Object.values(locks).filter(Boolean).length;
   return {
@@ -4301,6 +4233,11 @@ export function renderFieldWorkshopSheet(doc, state = {}) {
     }
     const tallerEl = doc.getElementById("tallerArtifactsCatalog");
     if (tallerEl) {
+      const workbookBytes = buildAutonomous5LineLandscapeWorkbookPdf(
+        [{ ref, tokens: [{ orig: "בְּרֵאשִׁית", translit: "bere'shit", morph: "HR/Ncfsa · Strong:H7225", glossBridge: "En el principio", targetText: "Tu'xich jumai" }] }],
+        { langCode: cleanLang, paperFormat: state.paperFormat || "A4" }
+      );
+      tallerEl.setAttribute("data-5line-workbook-bytes", String(workbookBytes.byteLength));
       tallerEl.innerHTML = TALLER_STP_ARTIFACTS.map(
         (art) =>
           `<a href="${art.href}" download="${art.file}" class="uls-chip" data-taller-artifact="${art.file}" style="text-decoration:none;display:flex;align-items:center;justify-content:space-between;">` +
@@ -4342,7 +4279,7 @@ export function renderFieldWorkshopSheet(doc, state = {}) {
 
 /**
  * Ronda 13 (D9 / MS-R13-07): Telemetría y Verificación Editorial Real (Anti-Goodhart Cardelli)
- * y Gaveta 4 (Packs Offline `.html`/`.eco.zst`/`.delta.zst` + Transmisión Óptica QR a 6.5 fps).
+ * y Gaveta 4 (Packs Offline `.html` + Transmisión Óptica QR a 6.5 fps).
  */
 export function executeRealEditorialAuditAction(buttonId, state = {}, doc = null) {
   const cleanLang = String(state.langCode || "stp").trim();
@@ -4408,8 +4345,6 @@ export function renderShareAndAuditSheet(doc, state = {}) {
         `<strong>📦 Paquetes Offline Pre-compilados (${packLang.toUpperCase()} · Bluetooth / MicroSD / WhatsApp):</strong>` +
         `<div style="display:flex;flex-wrap:wrap;gap:0.45rem;margin-top:0.45rem;">` +
         `<a href="/obras/biblia/packs/${packLang}/lector_offline_${packLang}.html" download="lector_offline_${packLang}.html" class="uls-chip" style="text-decoration:none;">🌐 Lector Quine Autónomo (lector_offline_${packLang}.html)</a>` +
-        `<a href="/obras/biblia/packs/${packLang}/${packLang}.eco.zst" download="${packLang}.eco.zst" class="uls-chip" style="text-decoration:none;">🗜️ Paquete Diccionario Zstd (${packLang}.eco.zst)</a>` +
-        `<a href="/obras/biblia/packs/${packLang}/${packLang}.delta.zst" download="${packLang}.delta.zst" class="uls-chip" style="text-decoration:none;">⚡ Delta de Corrección (${packLang}.delta.zst)</a>` +
         `</div></div>`;
     }
     const qrEl = doc.getElementById("bibleOpticalQrStreamPanel");

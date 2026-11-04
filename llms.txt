@@ -63,6 +63,10 @@
 # Ekovoz Polyglot Bible — Hierarchical AI Index (< 15 MB Control Plane)
 total_languages: 7164
 regions: 12
+text_shards: https://ekovoz.org/data/text/{lang}/{BOOK}.json
+matrix_shards: https://ekovoz.org/data/matrix/{BOOK}/{ch}.json
+blocks_pdf: https://ekovoz.org/data/blocks/{lang}/{edition}/B01..B80.pdf
+downloads_manifest: https://ekovoz.org/downloads_manifest.json
 - region_01: https://ekovoz.org/shards/region_01.json (repo: ekovoz-b01)
 - region_02: https://ekovoz.org/shards/region_02.json (repo: ekovoz-b02)
 - region_03: https://ekovoz.org/shards/region_03.json (repo: ekovoz-b03)

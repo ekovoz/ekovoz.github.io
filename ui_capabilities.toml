@@ -1,0 +1,137 @@
+# web/ui_capabilities.toml — Matriz Formal de Capacidades UI <-> Motor Rust / JS (Ronda 20 D7, D8, S26)
+# Reemplaza las etiquetas cosméticas data-inv / data-fn / UNMOUNTED_CLIENT_FN (DEB-R20-07)
+# por verificación cruzada real: selector en web/index.html -> handler exportado -> test automatizado.
+
+[meta]
+schema_version = "ronda20-v1"
+default_ui_locale = "en"
+
+[capability.ui_locale_switcher]
+surface = "public-ui"
+selector = "#ulsTriggerBtn"
+module = "mostrador/i18n.js"
+handler = "createI18n"
+test_file = "mostrador/i18n.test.mjs"
+test_name = "negotiate_es_mx_to_es"
+
+[capability.reading_language_selector]
+surface = "public-ui"
+selector = "#bibleSelectLang"
+module = "mostrador/lang_funnel.js"
+handler = "indexRegionShards"
+test_file = "mostrador/lang_funnel.test.mjs"
+test_name = "region_shards_total_7164_unique_iso"
+
+[capability.geo_funnel_7164]
+surface = "public-ui"
+selector = "#bibleGeoFunnel"
+module = "mostrador/lang_funnel.js"
+handler = "searchLanguages"
+test_file = "mostrador/lang_funnel.test.mjs"
+test_name = "search_finds_stp_by_autonym_exonym_and_iso"
+
+[capability.reference_resolver]
+surface = "public-ui"
+selector = "#mostradorRefInput"
+module = "mostrador/reference.js"
+handler = "createReferenceResolver"
+test_file = "mostrador/reference.test.mjs"
+test_name = "resolves_spanish_names_abbreviations_and_aliases"
+
+[capability.async_chapter_viewport]
+surface = "public-ui"
+selector = "#bibleVerseViewport"
+module = "mostrador/data_layer.js"
+handler = "createDataLayer"
+test_file = "mostrador/data_layer.test.mjs"
+test_name = "rom_1_es_contains_pablo"
+
+[capability.epistemic_seal_badge]
+surface = "public-ui"
+selector = "#epistemicStatusSeal"
+module = "mostrador.js"
+handler = "deriveEpistemicSeal"
+test_file = "mostrador/tribunal.test.mjs"
+test_name = "seal_derived_from_loaded_data_not_hardcoded"
+
+[capability.dose1_sheets_around_verse]
+surface = "public-ui"
+selector = "#btnDose1Sheets"
+module = "mostrador.js"
+handler = "createMostradorController"
+test_file = "mostrador/tribunal.test.mjs"
+test_name = "dose1_button_extracts_real_typst_pdf_pages"
+
+[capability.dose1_pdf_page_extractor]
+surface = "public-ui"
+selector = "#btnDose1Sheets"
+module = "mostrador/pdf_pages.js"
+handler = "extractPdfPages"
+test_file = "mostrador/pdf_pages.test.mjs"
+test_name = "extract_returns_requested_page_count"
+
+[capability.dose2_signature_block]
+surface = "public-ui"
+selector = "#linkDose2BlockPdf"
+module = "mostrador/dosis.js"
+handler = "planDose2"
+test_file = "mostrador/dosis.test.mjs"
+test_name = "dose2_and_dose3_from_real_index_and_manifest"
+
+[capability.dose3_full_bible_pdf]
+surface = "public-ui"
+selector = "#linkDose3FullBiblePdf"
+module = "mostrador/dosis.js"
+handler = "planDose3"
+test_file = "mostrador/dosis.test.mjs"
+test_name = "dose2_and_dose3_from_real_index_and_manifest"
+
+[capability.study_14col_drawer]
+surface = "public-ui"
+selector = "#btnRegEstudio"
+module = "mostrador/estudio.js"
+handler = "renderStudy14ColDrawerHtml"
+test_file = "mostrador/estudio.test.mjs"
+test_name = "renders_all_14_columns_for_genesis_1"
+
+[capability.community_patch_drawer]
+surface = "public-ui"
+selector = "#btnOpenFieldWorkshopSheet"
+module = "mostrador/mejorar.js"
+handler = "buildPatchPayload"
+test_file = "mostrador/mejorar.test.mjs"
+test_name = "patch_fields_match_patch_template_toml"
+
+[capability.optical_lt_fountain]
+surface = "public-ui"
+selector = "#btnShareQuine"
+module = "mostrador/optical_lt.js"
+handler = "LTEncoder"
+test_file = "mostrador/optical_lt.test.mjs"
+test_name = "recovers_payload_under_30pct_random_drop"
+
+[capability.extract_rosetta]
+surface = "editor-cli"
+cli_subcommand = "extract-rosetta"
+reason = "Herramienta pesada de alineación léxica corpus-a-corpus; exclusiva de ekovoz-cli."
+
+[capability.complete_bible]
+surface = "editor-cli"
+cli_subcommand = "complete-bible"
+reason = "Motor de síntesis de lotes completos en disco; exclusivo de ekovoz-cli."
+
+[capability.cldf_mirror]
+surface = "editor-cli"
+cli_subcommand = "cldf-mirror"
+reason = "Sincronizador de catálogos Glottolog/CLDF en repositorio local; exclusivo de ekovoz-cli."
+
+[capability.census]
+surface = "editor-cli"
+cli_subcommand = "census"
+reason = "Generador de MASTER_CENSUS.json y RELACION_MAESTRA.md; exclusivo de ekovoz-cli."
+
+[capability.modernize_register]
+surface = "editor-cli"
+cli_subcommand = "modernize-register"
+reason = "Reescritura FST por lote sobre archivos USFM; la UI pública solo selecciona edición precompilada."
+
