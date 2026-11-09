@@ -209,14 +209,24 @@ export function prevPlate(doc) {
   updateFocalPlate(doc);
 }
 
+const ALLOWED_PLATE_MODALS = new Set(["previewModal", "plateModal"]);
+
 export function openModal(id, doc = typeof document !== "undefined" ? document : null) {
+  if (!ALLOWED_PLATE_MODALS.has(String(id || ""))) return;
   const m = doc?.getElementById(id);
   if (m && typeof m.showModal === "function") m.showModal();
 }
 
 export function closeModal(id, doc = typeof document !== "undefined" ? document : null) {
+  if (!ALLOWED_PLATE_MODALS.has(String(id || ""))) return;
   const m = doc?.getElementById(id);
   if (m && typeof m.close === "function") m.close();
+}
+
+export async function syncFelicesWithCorpusLang(corpusLang, doc = typeof document !== "undefined" ? document : null) {
+  if (!doc) return;
+  await ensureLocaleLoaded(corpusLang);
+  updateFocalPlate(doc);
 }
 
 export async function updateUI(doc = typeof document !== "undefined" ? document : null) {

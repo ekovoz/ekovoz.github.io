@@ -30,6 +30,32 @@ export const ISO3_TO_ISO1 = Object.freeze(
 
 export const MACRO_REGION_IDS = Object.freeze([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]);
 
+export const REGION_SLUG_TO_ID = Object.freeze({
+  "americas-mesoamerica": 1,
+  "americas-south": 2,
+  "americas-north": 3,
+  "europe-west": 4,
+  "europe-east-caucasus": 5,
+  "mena": 6,
+  "africa-west": 7,
+  "africa-east-horn": 8,
+  "africa-central-south": 9,
+  "asia-south": 10,
+  "asia-east-se": 11,
+  "oceania-pacific": 12,
+});
+
+export function resolveMacroRegionId(regionCodeOrId) {
+  if (typeof regionCodeOrId === "number" && Number.isInteger(regionCodeOrId) && regionCodeOrId >= 1 && regionCodeOrId <= 12) {
+    return regionCodeOrId;
+  }
+  const str = String(regionCodeOrId || "").trim().toLowerCase();
+  if (REGION_SLUG_TO_ID[str]) return REGION_SLUG_TO_ID[str];
+  const m = str.match(/^(?:region[_-]?)?0?([1-9]|1[0-2])$/);
+  if (m) return Number(m[1]);
+  return 1;
+}
+
 export function normalizeLangSearchToken(input) {
   if (typeof input !== "string") {
     return "";
@@ -113,6 +139,11 @@ export function enrichLanguageTuple(tuple, macroRegionId, catalogLookup) {
   const hasText = Boolean(catEntry?.has_text);
   const hasBlocks = Boolean(catEntry?.has_blocks);
   const isDraft = tier === "seed_draft_field_review_l1_l5";
+  const sovereignSeal = hasText
+    ? isDraft
+      ? "TIER_2_FIELD_DRAFT"
+      : "TIER_1_CANONICAL"
+    : "TIER_3_4_PIONEER";
 
   const record = {
     iso639_3,
@@ -125,6 +156,7 @@ export function enrichLanguageTuple(tuple, macroRegionId, catalogLookup) {
     hasBlocks,
     tier,
     isDraft,
+    sovereignSeal,
     direction: catEntry?.direction || "ltr",
   };
   record.displayLabel = formatBilingualLangLabel(record);
@@ -161,7 +193,9 @@ export function enrichRegionShard(shard, catalog) {
     totalLanguages: languages.length,
     languages,
     subregions: Array.from(subregionMap.entries()).map(([name, items]) => ({
+      code: name,
       name,
+      label: `${name} (${items.length})`,
       total: items.length,
       activeCount: items.filter((l) => l.hasText).length,
       languages: items,
@@ -204,8 +238,9 @@ export function indexRegionShards(shards, catalog = { languages: [] }) {
   }
 
   function search(query, options = {}) {
-    const limit = Number(options.limit) > 0 ? Number(options.limit) : 50;
-    const regionFilter = options.macroRegionId ? Number(options.macroRegionId) : null;
+    const normOpts = typeof options === "number" ? { limit: options } : options || {};
+    const limit = Number(normOpts.limit) > 0 ? Number(normOpts.limit) : 50;
+    const regionFilter = normOpts.macroRegionId ? resolveMacroRegionId(normOpts.macroRegionId) : null;
     const normQuery = normalizeLangSearchToken(query);
     const pool = regionFilter && byRegion.has(regionFilter)
       ? byRegion.get(regionFilter).languages
@@ -256,7 +291,8 @@ export function indexRegionShards(shards, catalog = { languages: [] }) {
   }
 
   function listSubregions(macroRegionId) {
-    const region = byRegion.get(Number(macroRegionId));
+    const resolvedId = resolveMacroRegionId(macroRegionId);
+    const region = byRegion.get(resolvedId);
     if (!region) return [];
     return region.subregions
       .slice()
@@ -264,14 +300,15 @@ export function indexRegionShards(shards, catalog = { languages: [] }) {
   }
 
   function listByRegion(macroRegionId, subregionName = "") {
-    const region = byRegion.get(Number(macroRegionId));
+    const resolvedId = resolveMacroRegionId(macroRegionId);
+    const region = byRegion.get(resolvedId);
     if (!region) return [];
     if (!subregionName) {
       return region.languages
         .slice()
         .sort((a, b) => Number(b.hasText) - Number(a.hasText) || a.displayLabel.localeCompare(b.displayLabel));
     }
-    const sub = region.subregions.find((s) => s.name === subregionName);
+    const sub = region.subregions.find((s) => s.name === subregionName || s.code === subregionName);
     if (!sub) return [];
     return sub.languages
       .slice()

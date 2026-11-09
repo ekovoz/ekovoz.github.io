@@ -135,3 +135,166 @@ surface = "editor-cli"
 cli_subcommand = "modernize-register"
 reason = "Reescritura FST por lote sobre archivos USFM; la UI pública solo selecciona edición precompilada."
 
+[capability.pericope_inline_verse_selection]
+surface = "public-ui"
+selector = "#bibleVerseViewport"
+module = "mostrador.js"
+handler = "renderChapterPreviewHtml"
+test_file = "mostrador/tribunal.test.mjs"
+test_name = "pericope_blocks_and_inline_verse_selection_update_state_and_study"
+
+[capability.register_switcher_es1909_bilingue]
+surface = "public-ui"
+selector = "#btnRegClasica"
+module = "mostrador.js"
+handler = "createMostradorController"
+test_file = "mostrador/tribunal.test.mjs"
+test_name = "register_switching_loads_es1909_and_bilingual_58_42_diptych"
+
+[capability.dose1_secondary_drawer_button]
+surface = "public-ui"
+selector = "#btnPrintAroundVerse"
+module = "mostrador.js"
+handler = "createMostradorController"
+test_file = "mostrador/tribunal.test.mjs"
+test_name = "both_dose1_buttons_receive_listeners_and_print_config_updates_edition"
+
+[capability.study_3_semantic_strata]
+surface = "public-ui"
+selector = "#nsm65StratumCard"
+module = "mostrador/estudio.js"
+handler = "renderStudyStrataCards"
+test_file = "mostrador/estudio.test.mjs"
+test_name = "renders_three_semantic_strata_cards_nsm65_realia_and_tsk"
+
+[capability.field_celf250_and_taller_cc0]
+surface = "public-ui"
+selector = "#cascadeImpactPreviewList"
+module = "mostrador/mejorar.js"
+handler = "renderCascadeAndLadderHtml"
+test_file = "mostrador/mejorar.test.mjs"
+test_name = "renders_cascade_preview_and_6_taller_cc0_artifacts_without_raw_i18n_keys"
+
+[capability.compass_oral_portico_life_trails]
+surface = "public-ui"
+selector = "#btnToggleAudioNarakeet"
+module = "mostrador.js"
+handler = "createMostradorController"
+test_file = "mostrador/tribunal.test.mjs"
+test_name = "compass_modal_oral_portico_and_8_life_trails_navigate_to_anchor_passages"
+
+[capability.conditional_orthography_wfst]
+surface = "public-ui"
+selector = "#bibleOrthographyPills"
+module = "mostrador.js"
+handler = "applyOrthographyProfile"
+test_file = "mostrador/tribunal.test.mjs"
+test_name = "compass_modal_oral_portico_and_8_life_trails_navigate_to_anchor_passages"
+
+[capability.qrbeam_systematic_whitened_stream]
+surface = "public-ui"
+selector = "#bibleOpticalQrStreamPanel"
+module = "mostrador/optical_lt.js"
+handler = "whitenBlockXor"
+test_file = "mostrador/optical_lt.test.mjs"
+test_name = "systematic_first_pass_completes_in_exactly_K_droplets_when_zero_loss"
+
+[capability.foliation_20mm_punch_and_rtl_inversion]
+surface = "public-ui"
+selector = "#bibleFoliationModeSelect"
+module = "mostrador/dosis.js"
+handler = "computeFoliationLayout"
+test_file = "mostrador/dosis.test.mjs"
+test_name = "foliation_layout_20mm_punch_marks_rtl_inversion_and_sauvola_3rd_gen_photocopy"
+
+[capability.sauvola_3rd_gen_photocopy_simulator]
+surface = "public-ui"
+selector = "#btnSimulatePhotocopy3Gen"
+module = "mostrador/dosis.js"
+handler = "simulateThirdGenPhotocopySauvola"
+test_file = "mostrador/dosis.test.mjs"
+test_name = "foliation_layout_20mm_punch_marks_rtl_inversion_and_sauvola_3rd_gen_photocopy"
+
+[capability.optical_gf2_gaussian_camera_rx]
+surface = "public-ui"
+selector = "#btnToggleOpticalCameraRx"
+module = "mostrador/optical_lt.js"
+handler = "createRelayEncoderFromDecoded"
+test_file = "mostrador/optical_lt.test.mjs"
+test_name = "gaussian_gf2_elimination_resolves_stopping_sets_without_degree1_and_supports_relay"
+
+[capability.bicanonical_wlc_occidental_alignment]
+surface = "public-ui"
+selector = "#bibleEasyDrawer"
+module = "mostrador/estudio.js"
+handler = "resolveBicanonicalDivergence"
+test_file = "mostrador/estudio.test.mjs"
+test_name = "resolves_bicanonical_wlc_occidental_divergence_and_enforces_48px_tap_targets"
+
+[capability.lock8_jespersen_macula_and_entropy_queue]
+surface = "public-ui"
+selector = "#btnOpenFieldWorkshopSheet"
+module = "mostrador/mejorar.js"
+handler = "verifyLock8PredicativeAndNegation"
+test_file = "mostrador/mejorar.test.mjs"
+test_name = "patch_and_seed_include_eco_patch_json_hash_and_accept_osis_and_object_lang"
+
+[capability.wfst_reverse_orthography_and_scriptio_continua]
+surface = "public-ui"
+selector = "#bibleOrthographyPills"
+module = "mostrador/orthography_wfst.js"
+handler = "transduceOrthographyWeb"
+test_file = "mostrador/orthography_wfst.test.mjs"
+test_name = "D1-B+: Reglas contextuales WFST en stp (INALI_2018 <-> ILV_1950) preservan préstamos y contexto vocálico"
+
+[capability.diachronic_register_enclitics_and_aoa_metrics]
+surface = "public-ui"
+selector = "#btnRegIntergeneracional"
+module = "mostrador/diachronic_register.js"
+handler = "applySpanish21DiachronicRegister"
+test_file = "mostrador/diachronic_register.test.mjs"
+test_name = "D2-B+: Modernizador diacrónico ejecuta las 3 capas (Tier 1 léxico, Tier 2 morfología, Tier 3 inversión de enclíticos)"
+
+[capability.philology_rosetta_root_lxx_ketiv_qere]
+surface = "public-ui"
+selector = "#bibleEasyDrawer"
+module = "mostrador/estudio.js"
+handler = "resolveConsonantalRootFamily"
+test_file = "mostrador/estudio.test.mjs"
+test_name = "d3_b_plus_philology_rosetta_index_consonantal_root_lxx_mt_bridge_and_ketiv_qere"
+
+[capability.multi_signature_4n_imposition_and_80_blocks]
+surface = "public-ui"
+selector = "#btnOpenPrintEditionsSheet"
+module = "mostrador/dosis.js"
+handler = "computeMultiSignatureImposition"
+test_file = "mostrador/dosis.test.mjs"
+test_name = "d4_b_plus_multi_signature_4n_imposition_creep_bound_9_toml_profiles_and_80_blocks"
+
+[capability.eight_locks_pda_sister_cascade_and_5_ot_waves]
+surface = "public-ui"
+selector = "#btnOpenFieldWorkshopSheet"
+module = "mostrador/mejorar.js"
+handler = "validateAllEightLocksPda"
+test_file = "mostrador/mejorar.test.mjs"
+test_name = "d5_b_plus_pda_quote_balance_llm_metatext_leak_all_8_locks_sister_cascade_and_5_ot_waves"
+
+[capability.eco1_ecom_binary_protocol_and_qr_stream_session]
+surface = "public-ui"
+selector = "#bibleOpticalQrStreamPanel"
+module = "mostrador/optical_lt.js"
+handler = "encodeEco1BinaryPacket"
+test_file = "mostrador/optical_lt.test.mjs"
+test_name = "d6_b_plus_eco1_ecom_binary_protocol_nyquist_bounds_corner_toggle_and_qr_stream_session"
+
+[capability.masoretic_pericopes_and_global_harel_drawers]
+surface = "public-ui"
+selector = "#sovereignGlobalDrawersHost"
+module = "mostrador/evangelios.js"
+handler = "resolveMasoreticPericopeBreaks"
+test_file = "mostrador/tribunal.test.mjs"
+test_name = "d1_to_d9_b_plus_sovereign_parity_wfst_diachronic_rosetta_imposition_pda_eco1_and_global_drawers"
+
+
+
+

@@ -24,6 +24,11 @@ function diskSource({ delays = {} } = {}) {
       const file = path.join(webDir, rel);
       return fs.existsSync(file) ? new Uint8Array(fs.readFileSync(file)) : null;
     },
+    async getText(rel) {
+      await wait(rel);
+      const file = path.join(webDir, rel);
+      return fs.existsSync(file) ? fs.readFileSync(file, "utf8") : null;
+    },
   };
 }
 
@@ -113,4 +118,149 @@ test("runs_with_process_undefined", () => {
   assert.equal(out.result.status, "ready");
   assert.equal(out.result.key, "ROM.1");
   assert.match(out.result.first, /Pablo/i);
+});
+
+test("all_6_verified_registers_including_grc_load_rom_1_with_sovereign_tier", async () => {
+  const layer = createDataLayer({ source: diskSource() });
+  const catalog = await layer.loadCatalog();
+  const codes = catalog.languages.map((l) => l.code);
+  assert.deepEqual(codes, ["es", "es-1909", "en", "stp", "he", "grc"]);
+  for (const code of codes) {
+    const ch = await layer.loadChapter({ lang: code, book: "ROM", chapter: 1 });
+    assert.equal(ch.status, STATUS.READY, `ROM 1 en ${code}`);
+    assert.ok(ch.verses.length >= 25, `ROM 1 en ${code} tiene ${ch.verses.length} versículos`);
+    const expectedTier =
+      code === "stp" ? "tier2_nt_human_ot_synthesized" : "tier1_canonical_human_66";
+    assert.equal(ch.provenance.sovereign_tier, expectedTier, `sovereign_tier en ${code}`);
+  }
+});
+
+test("tier4_unavailable_lang_renders_gmis_4line_scaffold_from_matrix_shard", async () => {
+  const { createMostradorController } = await import("../mostrador.js");
+  const elements = new Map();
+  const makeEl = (id) => ({
+    id,
+    innerHTML: "",
+    textContent: "",
+    value: "",
+    hidden: true,
+    attrs: {},
+    setAttribute(k, v) {
+      this.attrs[k] = String(v);
+    },
+    getAttribute(k) {
+      return this.attrs[k] ?? null;
+    },
+  });
+  for (const id of [
+    "bibleVerseViewport",
+    "bibleSovereignSection",
+    "epistemicStatusSeal",
+    "btnOpenCompass",
+  ]) {
+    elements.set(id, makeEl(id));
+  }
+  const fakeDoc = {
+    getElementById(id) {
+      return elements.get(id) || null;
+    },
+  };
+  const layer = createDataLayer({ source: diskSource() });
+  const ctrl = createMostradorController({
+    doc: fakeDoc,
+    dataLayer: layer,
+    lang: "kgv",
+    book: "GEN",
+    chapter: 1,
+    verse: 1,
+  });
+  const navRes = await ctrl.navigate({ lang: "kgv", book: "GEN", chapter: 1, verse: 1 }, fakeDoc);
+  assert.equal(navRes.status, STATUS.UNAVAILABLE);
+  const vp = elements.get("bibleVerseViewport");
+  assert.equal(vp.getAttribute("data-status"), "unavailable");
+  assert.match(vp.innerHTML, /mostrador-status-unavailable/);
+  assert.match(vp.innerHTML, /data-gmis-scaffold="true"/);
+  assert.match(vp.innerHTML, /data-gmis-line="1"/);
+  assert.match(vp.innerHTML, /data-gmis-line="4"/);
+});
+
+test("loads_nsm_realia_lexicon_celf250_region_shards_merkle_and_evangelios_corpus", async () => {
+  const layer = createDataLayer({ source: diskSource(), cacheLimit: 64 });
+
+  const nsmLex = await layer.loadNsmRealiaLexicon();
+  assert.ok(nsmLex, "nsm_realia_lexicon.json must load");
+  assert.equal(Array.isArray(nsmLex.metrology_units) && nsmLex.metrology_units.length, 24);
+  assert.ok(Array.isArray(nsmLex.biblical_realia) && nsmLex.biblical_realia.length >= 1800);
+
+  const ladder = await layer.loadElicitationLadder250();
+  assert.ok(ladder, "elicitation_ladder_250.json must load");
+  const items = Array.isArray(ladder) ? ladder : ladder.items || ladder.ladder || [];
+  assert.equal(items.length, 250, "CELF-250 ladder must contain 250 diagnostic items");
+
+  const reg1 = await layer.loadRegionShard(1);
+  assert.ok(reg1 && reg1.macro_region_id === 1);
+  assert.equal(await layer.loadRegionShard(99), null);
+
+  const allRegions = await layer.loadAllRegionShards();
+  assert.equal(allRegions.length, 12);
+
+  const merkle = await layer.loadMerkleRoot();
+  assert.ok(merkle && /^[0-9a-f]{64}$/.test(merkle.merkleRootHex));
+
+  const evangelios = await layer.loadEvangeliosCorpus();
+  assert.ok(evangelios && evangelios.work === "evangelios");
+  assert.equal(Array.isArray(evangelios.quarters), true);
+  assert.equal(evangelios.quarters.length, 4);
+  assert.equal(Array.isArray(evangelios.entries), true);
+  assert.equal(evangelios.entries.length, 52);
+});
+
+test("round25_loads_all_6_compiled_rust_artifacts_and_enforces_fail_closed_wasm_sha256", async () => {
+  const layer = createDataLayer({ source: diskSource(), cacheLimit: 64 });
+
+  const rosetta = await layer.loadPhilologyRosettaIndex();
+  assert.ok(rosetta, "philology_rosetta_index.json must load");
+  assert.ok(Array.isArray(rosetta.versification_eng_org) && rosetta.versification_eng_org.length >= 265);
+  assert.ok(Array.isArray(rosetta.ketiv_qere_residuals) && rosetta.ketiv_qere_residuals.length >= 4);
+
+  const pericopes = await layer.loadPericopesAndGlosses();
+  assert.ok(pericopes, "pericopes_and_glosses.json must load");
+  assert.equal(Object.keys(pericopes.evangelios_macro_threads || {}).length, 52);
+  assert.equal(Object.keys(pericopes.felices_12_dichas || {}).length, 12);
+
+  const diachronic = await layer.loadDiachronicRegisterAudit();
+  assert.ok(diachronic, "diachronic_register_es.json must load");
+  assert.ok(Array.isArray(diachronic.intergenerational_core_rules) && diachronic.intergenerational_core_rules.length >= 250);
+
+  const profiles = await layer.loadEditorialProfiles();
+  assert.ok(profiles, "editorial_profiles.json must load");
+  assert.equal(profiles.print_profiles_14.length, 14);
+  assert.equal(profiles.branch_profiles_12.length, 12);
+  assert.equal(profiles.canonical_80_blocks_catalog.length, 80);
+
+  const workshop = await layer.loadFieldWorkshopData();
+  assert.ok(workshop, "field_workshop_stp.json must load");
+  assert.equal(workshop.stp_ot_lexicon_600.length, 600);
+  assert.equal(workshop.canonical_5_ot_translation_waves.length, 5);
+
+  const wasmOk = await layer.loadWasmModule("qr_stream_receiver_wasm");
+  assert.equal(wasmOk.status, STATUS.READY);
+  assert.equal(typeof wasmOk.exports.ekovoz_wasm_abi_version, "function");
+  assert.equal(wasmOk.exports.ekovoz_wasm_abi_version(), 25);
+
+  // Tampered WASM byte must fail closed with WASM_SHA256_MISMATCH
+  const tamperedSource = {
+    ...diskSource(),
+    async getBytes(rel) {
+      const orig = await diskSource().getBytes(rel);
+      if (!orig) return null;
+      const copy = new Uint8Array(orig);
+      copy[copy.length - 1] ^= 0xff;
+      return copy;
+    },
+  };
+  const tamperedLayer = createDataLayer({ source: tamperedSource });
+  const wasmTampered = await tamperedLayer.loadWasmModule("qr_stream_receiver_wasm");
+  assert.equal(wasmTampered.status, STATUS.UNAVAILABLE);
+  assert.equal(wasmTampered.reason, "WASM_SHA256_MISMATCH");
 });

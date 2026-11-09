@@ -7,6 +7,9 @@ import { fileURLToPath } from "node:url";
 import {
   indexRegionShards,
   listMacroRegions,
+  resolveMacroRegionId,
+  listCountriesInRegion,
+  searchLanguages,
 } from "./lang_funnel.js";
 import { createI18n } from "./i18n.js";
 import { runModuleWithoutProcess } from "../test_support/no_process_runner.mjs";
@@ -132,4 +135,23 @@ test("runs_with_process_undefined", () => {
     `,
   );
   assert.match(out, /OK_NO_PROCESS_FUNNEL/);
+});
+
+test("resolves_region_slugs_lists_subregions_and_searches_7164_languages", () => {
+  assert.equal(resolveMacroRegionId("americas-mesoamerica"), 1);
+  assert.equal(resolveMacroRegionId("oceania-pacific"), 12);
+  assert.equal(resolveMacroRegionId("region_06"), 6);
+
+  const shards = loadAll12Shards();
+  const idx = indexRegionShards(shards, SAMPLE_CATALOG);
+
+  const subregions1 = listCountriesInRegion(idx, "americas-mesoamerica");
+  assert.ok(subregions1.length > 0, "Expected subregions for americas-mesoamerica");
+  assert.ok(subregions1.some((s) => /Durango|Mezquital|Mexico|Oaxaca/i.test(s.name)));
+
+  const kgvHits = searchLanguages(idx, "kalamang", 10);
+  assert.ok(kgvHits.some((h) => h.iso639_3 === "kgv" && h.sovereignSeal === "TIER_3_4_PIONEER"));
+
+  const stpHits = searchLanguages(idx, "tepehuano", { limit: 10 });
+  assert.ok(stpHits.some((h) => h.iso639_3 === "stp" && h.sovereignSeal === "TIER_2_FIELD_DRAFT"));
 });

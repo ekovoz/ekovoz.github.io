@@ -11,11 +11,25 @@ import {
   planDose1,
   planDose2,
   planDose3,
+  normalizeEditionSlug,
+  listCatalogEditionsForLang,
+  computeKindlePrintBudget,
+  computeFoliationLayout,
+  simulateThirdGenPhotocopySauvola,
+  CANONICAL_9_TOML_PROFILES,
+  CANONICAL_14_PRINT_PROFILES,
+  CANONICAL_12_BRANCH_PROFILES,
+  hydrateEditorialProfiles,
+  computeMultiSignatureImposition,
+  CANONICAL_80_BLOCKS_CATALOG,
+  POCKET_REFUGE_4_SHEETS_SPEC,
+  renderMultiSignatureAndPocketRefugeHtml,
   paperForRegion,
   chooseEdition,
   effectiveThreatClassWeb,
   doseFilename,
 } from "./dosis.js";
+import { renderEvangeliosPlateActionsHtml } from "./evangelios.js";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const webDir = path.resolve(here, "..");
@@ -104,4 +118,110 @@ test("class_c_uses_neutral_filename", () => {
   const open = doseFilename({ dose: 1, lang: "es", book: "JHN", chapter: 3, verse: 16, blockNumber: 61, edition: "2col-letter", threatClass: "CLASS_A_OPEN" });
   assert.equal(open, "ekovoz-es-JHN-3-16-2col-letter.pdf");
 });
+
+test("plan_dose2_normalizes_legacy_02_2col_pastoral_to_existing_disk_pdf", () => {
+  assert.equal(normalizeEditionSlug("02_2col_pastoral", "a4"), "2col-a4");
+  assert.equal(normalizeEditionSlug("02_2col_pastoral", "letter"), "2col-letter");
+  for (const [lang, ed] of [
+    ["es", "02_2col_pastoral"],
+    ["es-1909", "2col-a4"],
+    ["en", "02_2col_pastoral"],
+    ["stp", "02_2col_pastoral"],
+    ["he", "2col-a4"],
+    ["grc", "2col-a4"],
+  ]) {
+    const d2 = planDose2("B01", lang, ed);
+    assert.ok(!d2.url.includes("02_2col_pastoral"), `Legacy slug leaked for ${lang}: ${d2.url}`);
+    assert.ok(fs.existsSync(path.join(webDir, d2.file)), `Expected disk PDF for ${lang}: ${d2.file}`);
+  }
+  const manifest = readJson("downloads_manifest.json");
+  const editionsEs = listCatalogEditionsForLang(manifest, "es");
+  assert.equal(editionsEs.length, 11, "Expected 9 canonical editions + 2 field PDFs");
+  assert.ok(editionsEs.some((e) => e.url === "obras/biblia/campo/refugio_4_hojas.pdf"));
+  assert.ok(editionsEs.some((e) => e.url === "obras/biblia/campo/checklist_80_bloques.pdf"));
+
+  // Tolerates legacy 1st-arg string call listCatalogEditionsForLang("es", "bloque_01")
+  const editionsLegacyCall = listCatalogEditionsForLang("es", "bloque_01");
+  assert.equal(editionsLegacyCall.length, 11);
+
+  // 5B++: Metamorphic Kindle print budget calculation
+  const bSmall = computeKindlePrintBudget({ fontPt: 8.5, columns: 3, orientation: "landscape", paper: "A4" });
+  const bLarge = computeKindlePrintBudget({ fontPt: 12.0, columns: 3, orientation: "portrait", paper: "Letter" });
+  assert.notEqual(bSmall.summaryText, bLarge.summaryText);
+  assert.equal(bSmall.effectiveColumns, 3);
+  assert.equal(bLarge.effectiveColumns, 2, "12pt with 3 cols must clamp to 2 cols");
+  assert.ok(bLarge.estimatedPages > bSmall.estimatedPages);
+});
+
+test("foliation_layout_20mm_punch_marks_rtl_inversion_and_sauvola_3rd_gen_photocopy", () => {
+  const singleLtr = computeFoliationLayout({ mode: "single_sheet_20mm", paper: "A4", pageCount: 8, dir: "ltr" });
+  assert.equal(singleLtr.bindingMarginMm, 20.0);
+  assert.equal(singleLtr.punchHoleDiameterMm, 4.0);
+  assert.equal(singleLtr.bindingEdge, "left");
+
+  const singleRtl = computeFoliationLayout({ mode: "single_sheet_20mm", paper: "A4", pageCount: 8, dir: "rtl" });
+  assert.equal(singleRtl.bindingEdge, "right");
+
+  const saddleLtr = computeFoliationLayout({ mode: "saddle_stitch", paper: "A4", pageCount: 8, dir: "ltr" });
+  const saddleRtl = computeFoliationLayout({ mode: "saddle_stitch", paper: "A4", pageCount: 8, dir: "rtl" });
+  assert.equal(saddleLtr.spineGutterMm, 9.215);
+  assert.deepEqual(saddleLtr.spreads[0].front, [8, 1]);
+  assert.deepEqual(saddleRtl.spreads[0].front, [1, 8]);
+
+  const sauvolaPass = simulateThirdGenPhotocopySauvola({ strokePt: 0.85, k: 0.2, R: 128 });
+  assert.equal(sauvolaPass.survives3rdGen, true);
+  assert.equal(sauvolaPass.eulerCharacteristicDelta, 0);
+
+  const sauvolaFail = simulateThirdGenPhotocopySauvola({ strokePt: 0.5, k: 0.2, R: 128 });
+  assert.equal(sauvolaFail.survives3rdGen, false);
+  assert.equal(sauvolaFail.eulerCharacteristicDelta, -1);
+
+  const evHtml = renderEvangeliosPlateActionsHtml({ weekId: "s01", passageRef: "JHN.1.1", lang: "es" });
+  assert.match(evHtml, /btn-evangelios-open-print/);
+  assert.match(evHtml, /min-height:48px/);
+});
+
+test("d4_b_plus_multi_signature_4n_imposition_creep_bound_9_toml_profiles_and_80_blocks", () => {
+  assert.equal(CANONICAL_9_TOML_PROFILES.length, 9);
+  assert.ok(CANONICAL_9_TOML_PROFILES.every((p) => p.tomlPath.startsWith("obras/biblia/profiles/")));
+  assert.equal(CANONICAL_80_BLOCKS_CATALOG.length, 80);
+  assert.equal(CANONICAL_80_BLOCKS_CATALOG[0].blockId, "BLK-001");
+  assert.equal(CANONICAL_80_BLOCKS_CATALOG[79].blockId, "BLK-080");
+  assert.equal(POCKET_REFUGE_4_SHEETS_SPEC.klDivergence, 0.0);
+
+  const imp = computeMultiSignatureImposition({
+    totalPages: 160,
+    maxSheetsPerSignature: 8,
+    paperThicknessMm: 0.09,
+    paperBulkFactor: 1.15,
+    dir: "ltr",
+  });
+  assert.equal(imp.signatureCount, 5, "160 pages / 32 pages per signature = 5 signatures");
+  assert.equal(imp.creepWithinBound, true);
+  assert.ok(imp.maxCreepMm <= 2.45, `Expected creep <= 2.45mm, got ${imp.maxCreepMm}`);
+  assert.equal(imp.signatures[0].sheetsCount, 8);
+  assert.ok(imp.signatures[1].steppedCollationMarkYMm > imp.signatures[0].steppedCollationMarkYMm);
+
+  const html = renderMultiSignatureAndPocketRefugeHtml({ totalPages: 160, activeBlockNumber: 5 });
+  assert.match(html, /data-multi-signature="true"/);
+  assert.match(html, /data-active-field-block="BLK-005"/);
+  assert.match(html, /D_KL = 0\.0/);
+
+  // D5-R+: 14 print profiles (01..14), 12 branch profiles (G_01..G_12), 80 real blocks, zero Object.freeze
+  const profilesPath = path.join(webDir, "data", "editorial_profiles.json");
+  if (fs.existsSync(profilesPath)) {
+    hydrateEditorialProfiles(readJson("data/editorial_profiles.json"));
+  }
+  assert.equal(CANONICAL_14_PRINT_PROFILES.length, 14);
+  assert.equal(CANONICAL_12_BRANCH_PROFILES.length, 12);
+  assert.equal(CANONICAL_80_BLOCKS_CATALOG.length, 80);
+
+  const dosisSrc = fs.readFileSync(path.join(webDir, "mostrador", "dosis.js"), "utf8");
+  const diachronicSrc = fs.readFileSync(path.join(webDir, "mostrador", "diachronic_register.js"), "utf8");
+  assert.equal(dosisSrc.includes("Object.freeze("), false, "D5-R+: zero Object.freeze in dosis.js");
+  assert.equal(diachronicSrc.includes("Object.freeze("), false, "D3-R+: zero Object.freeze in diachronic_register.js");
+});
+
+
+
 

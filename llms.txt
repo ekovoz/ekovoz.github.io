@@ -65,6 +65,10 @@ total_languages: 7164
 regions: 12
 text_shards: https://ekovoz.org/data/text/{lang}/{BOOK}.json
 matrix_shards: https://ekovoz.org/data/matrix/{BOOK}/{ch}.json
+nsm_realia_lexicon: https://ekovoz.org/shards/nsm_realia_lexicon.json
+elicitation_ladder_250: https://ekovoz.org/data/elicitation_ladder_250.json
+evangelios_corpus_52: https://ekovoz.org/data/evangelios/corpus.json
+optical_lt_studio: https://ekovoz.org/ekovoz.html
 blocks_pdf: https://ekovoz.org/data/blocks/{lang}/{edition}/B01..B80.pdf
 downloads_manifest: https://ekovoz.org/downloads_manifest.json
 - region_01: https://ekovoz.org/shards/region_01.json (repo: ekovoz-b01)

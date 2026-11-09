@@ -1,0 +1,1309 @@
+{
+  "canonical_gospel_verses_count": 3779,
+  "date_established": "2026-09-21",
+  "plates": [
+    {
+      "book": "Marcos",
+      "gesture": "Redes en la arena. Vengan.",
+      "plate_id": "mc-01-redes",
+      "quarter": 1,
+      "reference": "Mc 1:16-20",
+      "texts": {
+        "en": {
+          "status": "canonico_dominio_publico",
+          "text": "Mc 1:16-20 — As Jesus was walking beside the Sea of Galilee, He saw Simon and his brother Andrew. They were casting a net into the sea, for they were fishermen."
+        },
+        "es": {
+          "status": "canonico",
+          "text": "Mc 1:16-20 — Vengan conmigo y síganme."
+        },
+        "id": {
+          "status": "borrador_canonico_dominio_publico",
+          "text": "Mrk 1:16-20 — Mari, ikutlah Aku dan kamu akan Kujadikan penjala manusia."
+        },
+        "it": {
+          "status": "borrador_canonico_dominio_publico",
+          "text": "Mc 1:16-20 — Venite dietro a me, vi farò pescatori di uomini."
+        },
+        "ru": {
+          "status": "borrador_canonico_dominio_publico",
+          "text": "Мк 1:16-20 — Идите за Мною, и Я сделаю вас ловцами человеков."
+        },
+        "stp": {
+          "status": "canonico_comunitario_abierto",
+          "text": "Mc 1:16-20 — Baꞌ ma jii gu Jesuus mummu jaꞌp juꞌñdharan na paiꞌ gɇꞌ suuꞌnkaꞌ gu suudaiꞌ guiꞌ na Galilea dɨbɨɨr bhaan bipioꞌ. Baꞌ miꞌ ba ja tɨɨ gook gu boptop bhibhiadam daim sɨspidhim nam mi jaꞌp buppaim suudaiꞌ chɨr maaꞌn gu gɇꞌ asaak. Maaꞌn Simoon tɨɨgim, jumai baꞌ Anrees."
+        },
+        "tr": {
+          "status": "borrador_canonico_dominio_publico",
+          "text": "Mrk 1:16-20 — Ardımdan gelin, sizi insan tutan balıkçılar yapacağım."
+        }
+      }
+    },
+    {
+      "book": "Marcos",
+      "gesture": "Hueco. Camilla.",
+      "plate_id": "mc-02-techo",
+      "quarter": 1,
+      "reference": "Mc 2:1-12",
+      "texts": {
+        "en": {
+          "status": "canonico_dominio_publico",
+          "text": "Mc 2:1-12 — A few days later Jesus went back to Capernaum. And when the people heard that He was home,"
+        },
+        "es": {
+          "status": "canonico",
+          "text": "Mc 2:1-12 — A ti te digo: Levántate, toma tu camilla."
+        },
+        "id": {
+          "status": "borrador_canonico_dominio_publico",
+          "text": "Mrk 2:1-12 — Kepadamu Kukatakan, bangunlah, angkatlah tempat tidurmu."
+        },
+        "it": {
+          "status": "borrador_canonico_dominio_publico",
+          "text": "Mc 2:1-12 — Io ti dico: Alzati, prendi il tuo lettuccio."
+        },
+        "ru": {
+          "status": "borrador_canonico_dominio_publico",
+          "text": "Мк 2:1-12 — Тебе говорю: встань, возьми постель твою."
+        },
+        "stp": {
+          "status": "canonico_comunitario_abierto",
+          "text": "Mc 2:1-12 — Baꞌ gatuuk jɨꞌkchi jurniꞌñ kɨꞌn gio miꞌp ba ai gu Jesuus Kapernaum. Miꞌ paiꞌ maaꞌn kiicham pɨx ba kaidhaꞌ na tɨbiap."
+        },
+        "tr": {
+          "status": "borrador_canonico_dominio_publico",
+          "text": "Mrk 2:1-12 — Sana diyorum, kalk, şilteni topla."
+        }
+      }
+    },
+    {
+      "book": "Marcos",
+      "gesture": "Barca. Él duerme. ¡Calla!",
+      "plate_id": "mc-03-tormenta",
+      "quarter": 1,
+      "reference": "Mc 4:35-41",
+      "texts": {
+        "en": {
+          "status": "canonico_dominio_publico",
+          "text": "Mc 4:35-41 — When that evening came, He said to His disciples, “Let us cross to the other side.”"
+        },
+        "es": {
+          "status": "canonico",
+          "text": "Mc 4:35-41 — ¡Calla, enmudece!"
+        },
+        "id": {
+          "status": "borrador_canonico_dominio_publico",
+          "text": "Mrk 4:35-41 — Diam! Tenanglah!"
+        },
+        "it": {
+          "status": "borrador_canonico_dominio_publico",
+          "text": "Mc 4:35-41 — Taci, càlmati!"
+        },
+        "ru": {
+          "status": "borrador_canonico_dominio_publico",
+          "text": "Мк 4:35-41 — Умолкни, перестань."
+        },
+        "stp": {
+          "status": "canonico_comunitario_abierto",
+          "text": "Mc 4:35-41 — Baꞌ moo janoꞌ jurnɨk nat paiꞌ ba ji dhɨdɨmpu, jup ja tɨtda gu Jesuus gu noonbiꞌñ:―Maik gor jach jimiaꞌ bhammɨ baasɨꞌn dɨr jaꞌk dhi gɇꞌ suudaiꞌ."
+        },
+        "tr": {
+          "status": "borrador_canonico_dominio_publico",
+          "text": "Mrk 4:35-41 — Sus, sakin ol!"
+        }
+      }
+    },
+    {
+      "book": "Marcos",
+      "gesture": "Tumbas. Piara al agua.",
+      "plate_id": "mc-04-cerdos",
+      "quarter": 1,
+      "reference": "Mc 5:1-20",
+      "texts": {
+        "en": {
+          "status": "canonico_dominio_publico",
+          "text": "Mc 5:1-20 — On the other side of the sea, they arrived in the region of the Gerasenes."
+        },
+        "es": {
+          "status": "canonico",
+          "text": "Mc 5:1-20 — Vete a tu casa, a los tuyos."
+        },
+        "id": {
+          "status": "borrador_canonico_dominio_publico",
+          "text": "Mrk 5:1-20 — Pulanglah ke rumahmu, kepada orang-orang sekampungmu."
+        },
+        "it": {
+          "status": "borrador_canonico_dominio_publico",
+          "text": "Mc 5:1-20 — Va' a casa tua presso i tuoi."
+        },
+        "ru": {
+          "status": "borrador_canonico_dominio_publico",
+          "text": "Мк 5:1-20 — Иди домой к своим."
+        },
+        "stp": {
+          "status": "canonico_comunitario_abierto",
+          "text": "Mc 5:1-20 — Baꞌ bhammɨ dɨr ba ai mɨt na paiꞌ giop bar juꞌñdharan, Gadaara tɨ tɨɨgim."
+        },
+        "tr": {
+          "status": "borrador_canonico_dominio_publico",
+          "text": "Mrk 5:1-20 — Evine, yakınlarının yanına git."
+        }
+      }
+    },
+    {
+      "book": "Marcos",
+      "gesture": "Manto. Mano de la niña.",
+      "plate_id": "mc-05-jairo",
+      "quarter": 1,
+      "reference": "Mc 5:21-43",
+      "texts": {
+        "en": {
+          "status": "canonico_dominio_publico",
+          "text": "Mc 5:21-43 — When Jesus had again crossed by boat to the other side, a large crowd gathered around Him beside the sea."
+        },
+        "es": {
+          "status": "canonico",
+          "text": "Mc 5:21-43 — Niña, a ti te digo, levántate."
+        },
+        "id": {
+          "status": "borrador_canonico_dominio_publico",
+          "text": "Mrk 5:21-43 — Hai anak, Aku berkata kepadamu, bangunlah!"
+        },
+        "it": {
+          "status": "borrador_canonico_dominio_publico",
+          "text": "Mc 5:21-43 — Fanciulla, io ti dico: Alzati!"
+        },
+        "ru": {
+          "status": "borrador_canonico_dominio_publico",
+          "text": "Мк 5:21-43 — Девица, тебе говорю, встань."
+        },
+        "stp": {
+          "status": "canonico_comunitario_abierto",
+          "text": "Mc 5:21-43 — Baꞌ nat gio bhammɨ dɨr jup ba tɨs gu Jesuus baasɨꞌn dɨr jaꞌk miꞌ na paiꞌ gɇꞌ suuꞌnkaꞌ gu suudaiꞌ, giilhim muiꞌ miꞌ mam jumaap jamɨt ɨp gio gu jaꞌtkam, baꞌ miꞌ pup oirɨ juꞌñdharan."
+        },
+        "tr": {
+          "status": "borrador_canonico_dominio_publico",
+          "text": "Mrk 5:21-43 — Kızım, sana söylüyorum, kalk!"
+        }
+      }
+    },
+    {
+      "book": "Marcos",
+      "gesture": "Cinco panes. Doce cestas.",
+      "plate_id": "mc-06-panes",
+      "quarter": 1,
+      "reference": "Mc 6:30-44",
+      "texts": {
+        "en": {
+          "status": "canonico_dominio_publico",
+          "text": "Mc 6:30-44 — Meanwhile, the apostles gathered around Jesus and brought Him news of all they had done and taught."
+        },
+        "es": {
+          "status": "canonico",
+          "text": "Mc 6:30-44 — Denles ustedes mismos de comer."
+        },
+        "id": {
+          "status": "borrador_canonico_dominio_publico",
+          "text": "Mrk 6:30-44 — Kamu harus memberi mereka makan!"
+        },
+        "it": {
+          "status": "borrador_canonico_dominio_publico",
+          "text": "Mc 6:30-44 — Date loro voi da mangiare."
+        },
+        "ru": {
+          "status": "borrador_canonico_dominio_publico",
+          "text": "Мк 6:30-44 — Вы дайте им есть."
+        },
+        "stp": {
+          "status": "canonico_comunitario_abierto",
+          "text": "Mc 6:30-44 — Baꞌ gio maap jup bam jumaap jamɨt gu noonbiꞌñ gu Jesuus na mɨt jaꞌk suulhgɨk mu jaꞌp paiꞌ nam jax oipimɨk, baꞌ ba aagiꞌñ am na mɨt jɨꞌk tuꞌx bhaiꞌ tu duu, gio nam jax jaꞌk ja tɨtdaim gu jaꞌtkam nam tu ja aꞌgidhim."
+        },
+        "tr": {
+          "status": "borrador_canonico_dominio_publico",
+          "text": "Mrk 6:30-44 — Onlara siz yiyecek verin."
+        }
+      }
+    },
+    {
+      "book": "Marcos",
+      "gesture": "Pies sobre el agua. Soy yo.",
+      "plate_id": "mc-07-lago",
+      "quarter": 1,
+      "reference": "Mc 6:45-52",
+      "texts": {
+        "en": {
+          "status": "canonico_dominio_publico",
+          "text": "Mc 6:45-52 — Immediately Jesus made His disciples get into the boat and go on ahead of Him to Bethsaida, while He dismissed the crowd."
+        },
+        "es": {
+          "status": "canonico",
+          "text": "Mc 6:45-52 — ¡Tened ánimo; yo soy, no temáis!"
+        },
+        "id": {
+          "status": "borrador_canonico_dominio_publico",
+          "text": "Mrk 6:45-52 — Tenanglah! Aku ini, jangan takut!"
+        },
+        "it": {
+          "status": "borrador_canonico_dominio_publico",
+          "text": "Mc 6:45-52 — Coraggio, sono io, non temete!"
+        },
+        "ru": {
+          "status": "borrador_canonico_dominio_publico",
+          "text": "Мк 6:45-52 — Ободритесь; это Я, не бойтесь."
+        },
+        "stp": {
+          "status": "canonico_comunitario_abierto",
+          "text": "Mc 6:45-52 — Miꞌ dhɨr baꞌ nat jax ja chia gu Jesuus nam bha tɨsdiaꞌ kanuub taꞌm gu noonbiꞌñ, mɨjɨ xi ja joot bɨɨpɨꞌ kat nam ba jimiaꞌ Betsaida jaꞌk. Baꞌ guiꞌ miꞌ ji bii, na guꞌ mi jaꞌp ka ja tabuimgiꞌñ gu muiꞌ jaꞌtkam."
+        },
+        "tr": {
+          "status": "borrador_canonico_dominio_publico",
+          "text": "Mrk 6:45-52 — Cesur olun, benim, korkmayın!"
+        }
+      }
+    },
+    {
+      "book": "Marcos",
+      "gesture": "Ropa blanca. Nube.",
+      "plate_id": "mc-08-tabor",
+      "quarter": 1,
+      "reference": "Mc 9:2-8",
+      "texts": {
+        "en": {
+          "status": "canonico_dominio_publico",
+          "text": "Mc 9:2-8 — After six days Jesus took with Him Peter, James, and John, and led them up a high mountain by themselves. There He was transfigured before them."
+        },
+        "es": {
+          "status": "canonico",
+          "text": "Mc 9:2-8 — Este es mi Hijo amado; escúchenlo a él."
+        },
+        "id": {
+          "status": "borrador_canonico_dominio_publico",
+          "text": "Mrk 9:2-8 — Inilah Anak yang Kukasihi, dengarkanlah Dia."
+        },
+        "it": {
+          "status": "borrador_canonico_dominio_publico",
+          "text": "Mc 9:2-8 — Questo è il Figlio mio, l'amato; ascoltatelo!"
+        },
+        "ru": {
+          "status": "borrador_canonico_dominio_publico",
+          "text": "Мк 9:2-8 — Сей есть Сын Мой возлюбленный; Его слушайте."
+        },
+        "stp": {
+          "status": "canonico_comunitario_abierto",
+          "text": "Mc 9:2-8 — Baꞌ gatuuk xijum maaꞌn jurniꞌñ kɨꞌn ma jii gu Jesuus ja bɨɨm baik gu noonbiꞌñ, moo gu Peegro, gio gu Jakoobo, gio baꞌ gu Juan, bhammɨ mɨt ba tɨɨtɨs maaꞌn gu gɇꞌ oidhaꞌ taꞌm. Baꞌ bhaiꞌ jotmodaꞌ maakam tuꞌm bhaiꞌp jim duu,"
+        },
+        "tr": {
+          "status": "borrador_canonico_dominio_publico",
+          "text": "Mrk 9:2-8 — Bu benim sevgili Oğlum'dur, O'nu dinleyin!"
+        }
+      }
+    },
+    {
+      "book": "Marcos",
+      "gesture": "Brazos. Niños.",
+      "plate_id": "mc-09-ninos",
+      "quarter": 1,
+      "reference": "Mc 10:13-16",
+      "texts": {
+        "en": {
+          "status": "canonico_dominio_publico",
+          "text": "Mc 10:13-16 — Now people were bringing the little children to Jesus for Him to place His hands on them, and the disciples rebuked those who brought them."
+        },
+        "es": {
+          "status": "canonico",
+          "text": "Mc 10:13-16 — Dejad a los niños venir a mí."
+        },
+        "id": {
+          "status": "borrador_canonico_dominio_publico",
+          "text": "Mrk 10:13-16 — Biarkan anak-anak itu datang kepada-Ku."
+        },
+        "it": {
+          "status": "borrador_canonico_dominio_publico",
+          "text": "Mc 10:13-16 — Lasciate che i bambini vengano a me."
+        },
+        "ru": {
+          "status": "borrador_canonico_dominio_publico",
+          "text": "Мк 10:13-16 — Пустите детей приходить ко Мне."
+        },
+        "stp": {
+          "status": "canonico_comunitario_abierto",
+          "text": "Mc 10:13-16 — Miꞌ dhɨr baꞌ mɨkkat miꞌ ba ai mɨt gu jaꞌtkam na paiꞌp tuꞌiiꞌ gu Jesuus, ji ja uaꞌdat am gu ja aꞌaalh chuk na sap baꞌ bɨɨx jɨꞌmaꞌn xi ja daagɨi tu aꞌgaꞌ ja aꞌmkam jix dhaam jaꞌk buiñor guch Gɨꞌkoraꞌ. Guꞌ ji nam guꞌ gu noonbiꞌñ cham aaꞌ, ba ja ñiok jamɨt, jup ja tɨtda am na cham bhaiꞌ nam mu jaꞌk ja uaꞌdaꞌ."
+        },
+        "tr": {
+          "status": "borrador_canonico_dominio_publico",
+          "text": "Mrk 10:13-16 — Bırakın, çocuklar bana gelsin."
+        }
+      }
+    },
+    {
+      "book": "Marcos",
+      "gesture": "Manto en el polvo. Ver.",
+      "plate_id": "mc-10-bartimeo",
+      "quarter": 1,
+      "reference": "Mc 10:46-52",
+      "texts": {
+        "en": {
+          "status": "canonico_dominio_publico",
+          "text": "Mc 10:46-52 — Next, they came to Jericho. And as Jesus and His disciples were leaving Jericho with a large crowd, a blind beggar named Bartimaeus, the son of Timaeus, was sitting beside the road."
+        },
+        "es": {
+          "status": "canonico",
+          "text": "Mc 10:46-52 — Ten confianza; levántate, te llama."
+        },
+        "id": {
+          "status": "borrador_canonico_dominio_publico",
+          "text": "Mrk 10:46-52 — Rabuni, supaya aku dapat melihat!"
+        },
+        "it": {
+          "status": "borrador_canonico_dominio_publico",
+          "text": "Mc 10:46-52 — Rabbunì, che io veda di nuovo!"
+        },
+        "ru": {
+          "status": "borrador_canonico_dominio_publico",
+          "text": "Мк 10:46-52 — Учитель! чтобы мне прозреть."
+        },
+        "stp": {
+          "status": "canonico_comunitario_abierto",
+          "text": "Mc 10:46-52 — Baꞌ bhammɨ ba ai mɨt na paiꞌr kikcham Jerikoo tɨ tɨɨgim, alhiom bhaiꞌ xi oipimɨk. Baꞌ jaꞌxpɨx nat gamaiꞌ ji jii gu Jesuus ja bɨɨm gu noonbiꞌñ gio jaiꞌ muiꞌ gu jaꞌtkam, baasɨꞌn juꞌñdharan nam ba bubuakim, bha jaꞌp daakat tu taan gu tuumiñ maaꞌn gu cham ñia kam Bartimeo tɨɨgim."
+        },
+        "tr": {
+          "status": "borrador_canonico_dominio_publico",
+          "text": "Mrk 10:46-52 — Rabbuni, gözlerim görsün."
+        }
+      }
+    },
+    {
+      "book": "Marcos",
+      "gesture": "Tres duermen. Él en el suelo.",
+      "plate_id": "mc-11-huerto",
+      "quarter": 1,
+      "reference": "Mc 14:32-42",
+      "texts": {
+        "en": {
+          "status": "canonico_dominio_publico",
+          "text": "Mc 14:32-42 — Then they came to a place called Gethsemane, and Jesus told His disciples, “Sit here while I pray.”"
+        },
+        "es": {
+          "status": "canonico",
+          "text": "Mc 14:32-42 — No lo que yo quiero, sino lo que tú."
+        },
+        "id": {
+          "status": "borrador_canonico_dominio_publico",
+          "text": "Mrk 14:32-42 — Jangan apa yang Aku kehendaki, melainkan apa yang Engkau kehendaki."
+        },
+        "it": {
+          "status": "borrador_canonico_dominio_publico",
+          "text": "Mc 14:32-42 — Non ciò che voglio io, ma ciò che vuoi tu."
+        },
+        "ru": {
+          "status": "borrador_canonico_dominio_publico",
+          "text": "Мк 14:32-42 — Не чего Я хочу, а чего Ты."
+        },
+        "stp": {
+          "status": "canonico_comunitario_abierto",
+          "text": "Mc 14:32-42 — Baꞌ miꞌ pɨx ji ai mɨt na paiꞌ Getsamanii tɨ tɨɨꞌ, baꞌp ja tɨtda ɨp gio gu Jesuus:―Yaꞌni pim ka darkaꞌ. Aañ bhaꞌñi ka tu aꞌgaraꞌ jix dhaam jaꞌk buiñor guñ Gɨꞌkoraꞌ."
+        },
+        "tr": {
+          "status": "borrador_canonico_dominio_publico",
+          "text": "Mrk 14:32-42 — Benim istediğim değil, senin istediğin olsun."
+        }
+      }
+    },
+    {
+      "book": "Marcos",
+      "gesture": "Simón carga. Letrero.",
+      "plate_id": "mc-12-cruz",
+      "quarter": 1,
+      "reference": "Mc 15:21-32",
+      "texts": {
+        "en": {
+          "status": "canonico_dominio_publico",
+          "text": "Mc 15:21-32 — Now Simon of Cyrene, the father of Alexander and Rufus, was passing by on his way in from the country, and the soldiers forced him to carry the cross of Jesus."
+        },
+        "es": {
+          "status": "canonico",
+          "text": "Mc 15:21-32 — Verdaderamente este hombre era Hijo de Dios."
+        },
+        "id": {
+          "status": "borrador_canonico_dominio_publico",
+          "text": "Mrk 15:21-32 — Sungguh, orang ini adalah Anak Allah!"
+        },
+        "it": {
+          "status": "borrador_canonico_dominio_publico",
+          "text": "Mc 15:21-32 — Davvero quest'uomo era Figlio di Dio!"
+        },
+        "ru": {
+          "status": "borrador_canonico_dominio_publico",
+          "text": "Мк 15:21-32 — Истинно Человек Сей был Сын Божий."
+        },
+        "stp": {
+          "status": "canonico_comunitario_abierto",
+          "text": "Mc 15:21-32 — Baꞌ nam baasɨꞌn ba uaꞌ gu Jesuus na mɨt ba sissapam, maaꞌn bhaiꞌ ka jimchuꞌ gu maaꞌnkam Sireene kam Simoon tɨɨgim, nar taataꞌn gu Alijaanru gio baꞌ gu Ruupu, sap mu paiꞌ dhɨr jaꞌk jimchuꞌ gampɨx. Baꞌ gu sandaaruiꞌx bhaiꞌ dhɨr jaꞌk buak gamaiꞌ chia mɨt na mootikaꞌ gu kuruus, nat guꞌ ba magoo gu Jesuus."
+        },
+        "tr": {
+          "status": "borrador_canonico_dominio_publico",
+          "text": "Mrk 15:21-32 — Gerçekten bu adam Tanrı'nın Oğlu'ydu!"
+        }
+      }
+    },
+    {
+      "book": "Marcos",
+      "gesture": "Piedra corrida. No está aquí.",
+      "plate_id": "mc-13-piedra",
+      "quarter": 1,
+      "reference": "Mc 16:1-8",
+      "texts": {
+        "en": {
+          "status": "canonico_dominio_publico",
+          "text": "Mc 16:1-8 — When the Sabbath was over, Mary Magdalene, Mary the mother of James, and Salome bought spices so they could go and anoint the body of Jesus."
+        },
+        "es": {
+          "status": "canonico",
+          "text": "Mc 16:1-8 — No está aquí; miren el lugar donde lo habían puesto."
+        },
+        "id": {
+          "status": "borrador_canonico_dominio_publico",
+          "text": "Mrk 16:1-8 — Ia telah bangkit. Ia tidak ada di sini."
+        },
+        "it": {
+          "status": "borrador_canonico_dominio_publico",
+          "text": "Mc 16:1-8 — È risorto, non è qui."
+        },
+        "ru": {
+          "status": "borrador_canonico_dominio_publico",
+          "text": "Мк 16:1-8 — Он воскрес, Его нет здесь."
+        },
+        "stp": {
+          "status": "canonico_comunitario_abierto",
+          "text": "Mc 16:1-8 — Baꞌ mɨkkat nat ba buus gu tanoolh na cham tum juanat, gu Mariiya Magdalena, gio gu jumai Mariiya guiꞌ nar dɨꞌɨɨꞌn gu Jakoobo, gio baꞌ gu jumai gu ubii guiꞌ na Salomee tɨɨꞌ, ba tu sabaꞌlh jamɨt guiꞌ na joidham uub nam sap mu juulhdhapuꞌ gu tukgaꞌn gu Jesuus mu na paiꞌ kaat, na sap baꞌ cham giilhim uub kaꞌ na bhaiꞌ ji dhɨbaaꞌ."
+        },
+        "tr": {
+          "status": "borrador_canonico_dominio_publico",
+          "text": "Mrk 16:1-8 — O dirildi, burada yok."
+        }
+      }
+    },
+    {
+      "book": "Mateo",
+      "gesture": "Cofres. Otro camino.",
+      "plate_id": "mt-01-magos",
+      "quarter": 2,
+      "reference": "Mt 2:1-12",
+      "texts": {
+        "en": {
+          "status": "canonico_dominio_publico",
+          "text": "Mt 2:1-12 — After Jesus was born in Bethlehem in Judea, during the time of King Herod, Magi from the east arrived in Jerusalem,"
+        },
+        "es": {
+          "status": "canonico",
+          "text": "Mt 2:1-12 — Vimos su estrella en el oriente."
+        },
+        "stp": {
+          "status": "canonico_comunitario_abierto",
+          "text": "Mt 2:1-12 — Baꞌ gu Jesuus bhammɨ maaxir na paiꞌ puiꞌ tɨ tɨɨꞌ Beleen guiꞌ na bhaan bipioꞌ gu Judea dɨbɨɨr, baꞌ janoꞌ maaxir na paiꞌ dhuuk jir gɇꞌkam kaꞌ gu Eroodis na jɨꞌx jir Judea. Baꞌ janoꞌ jɨꞌkchi bhammɨp ba ji bubua mɨt Jerusaleen guiꞌ nam mu jaꞌk oiꞌñkaꞌ xiaꞌlhbui, guiꞌ nam jix maatɨt ja nɨiꞌñdhaꞌ gu chiichiaꞌ, na mɨt muiꞌ ba tɨɨgim guch Xoiꞌkam nat ba maaxir."
+        }
+      }
+    },
+    {
+      "book": "Mateo",
+      "gesture": "Agua. Paloma.",
+      "plate_id": "mt-02-rio",
+      "quarter": 2,
+      "reference": "Mt 3:13-17",
+      "texts": {
+        "en": {
+          "status": "canonico_dominio_publico",
+          "text": "Mt 3:13-17 — At that time Jesus came from Galilee to the Jordan to be baptized by John."
+        },
+        "es": {
+          "status": "canonico",
+          "text": "Mt 3:13-17 — Este es mi Hijo amado, en quien tengo complacencia."
+        },
+        "stp": {
+          "status": "canonico_comunitario_abierto",
+          "text": "Mt 3:13-17 — Baꞌ janoꞌ jɨꞌ na mummɨ gampɨx jix chu gak kɨr oirɨt ja bopkon gu Juan gu jaꞌtkam, miꞌ dhɨr muiꞌ ma jii Galilea gu Jesuus nat ba chiañim ɨp na puiꞌp bakuanaꞌ."
+        }
+      }
+    },
+    {
+      "book": "Mateo",
+      "gesture": "Piedras. Tres noes.",
+      "plate_id": "mt-03-desierto",
+      "quarter": 2,
+      "reference": "Mt 4:1-11",
+      "texts": {
+        "en": {
+          "status": "canonico_dominio_publico",
+          "text": "Mt 4:1-11 — Then Jesus was led by the Spirit into the wilderness to be tempted by the devil."
+        },
+        "es": {
+          "status": "canonico",
+          "text": "Mt 4:1-11 — No solo de pan vivirá el hombre."
+        },
+        "stp": {
+          "status": "canonico_comunitario_abierto",
+          "text": "Mt 4:1-11 — Baꞌ gux Dhuuduꞌ kam jix Uañ Iiꞌmdaꞌ puiꞌ jaꞌk xi jurtuda gu Jesuus na mu jimiaꞌ mummɨ gampɨx jix chu gak kɨr na sap baꞌ miꞌ maiꞌchiaꞌ gɨt gu jaꞌook."
+        }
+      }
+    },
+    {
+      "book": "Mateo",
+      "gesture": "Dos casas. Lluvia.",
+      "plate_id": "mt-04-roca",
+      "quarter": 2,
+      "reference": "Mt 7:24-27",
+      "texts": {
+        "en": {
+          "status": "canonico_dominio_publico",
+          "text": "Mt 7:24-27 — Therefore everyone who hears these words of Mine and acts on them is like a wise man who built his house on the rock."
+        },
+        "es": {
+          "status": "canonico",
+          "text": "Mt 7:24-27 — Cualquiera que me oye estas palabras, y las hace."
+        },
+        "stp": {
+          "status": "canonico_comunitario_abierto",
+          "text": "Mt 7:24-27 — 'Baꞌ gu jaroiꞌ noꞌt jiñ kɇɇk miꞌ puiꞌ ba jii gu dhiꞌ puiꞌ nañ jax kaiꞌch, jaꞌp ji buusniaꞌ na jax gu jaroiꞌ noꞌx chu matdaꞌ na miꞌ kɨɨsaꞌ gu baꞌkiꞌñ na paiꞌr aiꞌ chaꞌm."
+        }
+      }
+    },
+    {
+      "book": "Mateo",
+      "gesture": "Mesa. Un recaudador se levanta.",
+      "plate_id": "mt-05-banco",
+      "quarter": 2,
+      "reference": "Mt 9:9-13",
+      "texts": {
+        "en": {
+          "status": "canonico_dominio_publico",
+          "text": "Mt 9:9-13 — As Jesus went on from there, He saw a man named Matthew sitting at the tax booth. “Follow Me,” He told him, and Matthew got up and followed Him."
+        },
+        "es": {
+          "status": "canonico",
+          "text": "Mt 9:9-13 — Sígueme. Y se levantó y le siguió."
+        },
+        "stp": {
+          "status": "canonico_comunitario_abierto",
+          "text": "Mt 9:9-13 — Baꞌ jaꞌxpɨx nat miꞌ dhɨr buusnɨk ba jii gu Jesuus, na mu jaꞌp ka jim, miꞌ ba tɨɨ maaꞌn gu maaꞌnkam, Mateo tɨɨgim, guiꞌ nar tuumiñ tutaandam tugiꞌñ kaꞌ gux ioꞌm gɇꞌkam Rooma kam, na miꞌ daakat pɨx ji dhaagim gu tuumiñ guiꞌ nam jɨꞌk mi chu namkidhim. Baꞌ gu Jesuus miaꞌn xi ɇɇk jup tɨtda:―Aañ puiꞌ ɨlhiiꞌñ jiñ jaduuñ nap xib dɨr gammɨjɨ bañ kaichgɨdaꞌ.Baꞌ gu Mateo nat jax jup kɨkbo pɨx miꞌp daibu cham jax ji chɨꞌɨɨk, gammɨjɨ pɨx jiim am."
+        }
+      }
+    },
+    {
+      "book": "Mateo",
+      "gesture": "Semilla. Aves.",
+      "plate_id": "mt-06-mostaza",
+      "quarter": 2,
+      "reference": "Mt 13:31-32",
+      "texts": {
+        "en": {
+          "status": "canonico_dominio_publico",
+          "text": "Mt 13:31-32 — He put before them another parable: “The kingdom of heaven is like a mustard seed that a man planted in his field.”"
+        },
+        "es": {
+          "status": "canonico",
+          "text": "Mt 13:31-32 — El grano de mostaza es la más pequeña de todas las semillas."
+        },
+        "stp": {
+          "status": "canonico_comunitario_abierto",
+          "text": "Mt 13:31-32 — Baꞌ jumai bhaan ji uaꞌrgidhak gio bhaiꞌp ji chu ja aꞌgi gu Jesuus gu jaꞌtkam, jup ja tɨtda:―Jaꞌpni jaꞌk jup ji buusan gu jaroiꞌ noꞌ bhaan ba tɨ nɨidhim gu Dios, na jax gu jaroiꞌ noꞌt mu paiꞌ ɨi gu mostaasa kai."
+        }
+      }
+    },
+    {
+      "book": "Mateo",
+      "gesture": "Un pie que se hunde. Una mano.",
+      "plate_id": "mt-07-pedro",
+      "quarter": 2,
+      "reference": "Mt 14:22-33",
+      "texts": {
+        "en": {
+          "status": "canonico_dominio_publico",
+          "text": "Mt 14:22-33 — Immediately Jesus made the disciples get into the boat and go on ahead of Him to the other side, while He dismissed the crowds."
+        },
+        "es": {
+          "status": "canonico",
+          "text": "Mt 14:22-33 — ¡Señor, sálvame! Al momento Jesús extendió la mano."
+        },
+        "stp": {
+          "status": "canonico_comunitario_abierto",
+          "text": "Mt 14:22-33 — Miꞌ dhɨr baꞌ dai nat ba ja chia gu Jesuus gu noonbiꞌñ nam bha tɨɨsdiaꞌ bhaan gu gɇꞌ kanuub, bɨɨpɨꞌ baꞌ gamaiꞌ xi ja joot nam bhammɨ dɨr ba aayaꞌ baasɨꞌn dɨr jaꞌk jumai juꞌñdharan gu gɇꞌ suudaiꞌ. Dɨɨlh baꞌ miꞌ pup oirɨ, na guꞌ mi jaꞌp ka tabuimgiꞌñ gu muiꞌ jaꞌtkam nam miꞌp tuꞌiiꞌ."
+        }
+      }
+    },
+    {
+      "book": "Mateo",
+      "gesture": "Una al hombro.",
+      "plate_id": "mt-08-oveja",
+      "quarter": 2,
+      "reference": "Mt 18:12-14",
+      "texts": {
+        "en": {
+          "status": "canonico_dominio_publico",
+          "text": "Mt 18:12-14 — What do you think? If a man has a hundred sheep and one of them goes astray, will he not leave the ninety-nine on the hills and go out to search for the one that is lost?"
+        },
+        "es": {
+          "status": "canonico",
+          "text": "Mt 18:12-14 — Va por los montes a buscar la que se había descarriado."
+        },
+        "stp": {
+          "status": "canonico_comunitario_abierto",
+          "text": "Mt 18:12-14 — '¿Jax japim ɨlhdhat jiñ kɇɇ? Puiꞌ na jax maaꞌn gu maaꞌnkam noꞌ ja biaꞌ gu kakasnir jɨꞌk maaꞌn jix chamaam ooꞌm aix kam. Guꞌ baꞌ noꞌt guꞌ jax dhuukat maaꞌn maiꞌ ma bua mu paiꞌ gampɨx noꞌ ka tu bipiaꞌ, ¿cham japim ɨlhiiꞌñ na miꞌ ka xi ja doꞌñchoi gu jaiꞌ xi dhaiꞌññiaꞌ na tu gaaꞌmɨraꞌ?"
+        }
+      }
+    },
+    {
+      "book": "Mateo",
+      "gesture": "Ramas. ¿Quién es este?",
+      "plate_id": "mt-09-ramas",
+      "quarter": 2,
+      "reference": "Mt 21:1-11",
+      "texts": {
+        "en": {
+          "status": "canonico_dominio_publico",
+          "text": "Mt 21:1-11 — As they approached Jerusalem and came to Bethphage on the Mount of Olives, Jesus sent out two disciples,"
+        },
+        "es": {
+          "status": "canonico",
+          "text": "Mt 21:1-11 — ¡Hosanna al Hijo de David! ¡Bendito el que viene!"
+        },
+        "stp": {
+          "status": "canonico_comunitario_abierto",
+          "text": "Mt 21:1-11 — Baꞌ bhammɨ amuub ba ai gu Jesuus na paiꞌr Jerusaleen, maaꞌn kap na paiꞌ puiꞌ tɨ tɨɨꞌ Betpajee, sonpan gu oidhaꞌ guiꞌ nam Oliibus kɨꞌn jup jix mat kaꞌ gu jaꞌtkam. Baꞌ ba ja jootos gook gu noonbiꞌñ nam tɨɨmɨlhdhapuꞌ maaꞌn gu bhuruꞌx,"
+        }
+      }
+    },
+    {
+      "book": "Mateo",
+      "gesture": "Denario. Cara de César.",
+      "plate_id": "mt-10-moneda",
+      "quarter": 2,
+      "reference": "Mt 22:15-22",
+      "texts": {
+        "en": {
+          "status": "canonico_dominio_publico",
+          "text": "Mt 22:15-22 — Then the Pharisees went out and conspired to trap Jesus in His words."
+        },
+        "es": {
+          "status": "canonico",
+          "text": "Mt 22:15-22 — Dad a César lo que es de César, y a Dios lo que es de Dios."
+        },
+        "stp": {
+          "status": "canonico_comunitario_abierto",
+          "text": "Mt 22:15-22 — Baꞌ bhaakuk miꞌ dhɨr pu jii mɨt guiꞌ nam pariseos jum tɨɨtɨꞌndaꞌ. Baꞌ tɨi bɨɨx maap xim jumpadak ma tu aꞌga mɨt nam jax dhui maiꞌchiaꞌ gɨt gu Jesuus na pu tɨꞌyaꞌ gɨt na jax cham puiꞌ jaꞌk tu aagix kaꞌ nam baꞌ puiꞌ ji chɨꞌji iattulhdhai tu chiñiaꞌ nam muꞌaaꞌ."
+        }
+      }
+    },
+    {
+      "book": "Mateo",
+      "gesture": "Aceite. Puerta.",
+      "plate_id": "mt-11-lamparas",
+      "quarter": 2,
+      "reference": "Mt 25:1-13",
+      "texts": {
+        "en": {
+          "status": "canonico_dominio_publico",
+          "text": "Mt 25:1-13 — “At that time the kingdom of heaven will be like ten virgins who took their lamps and went out to meet the bridegroom.”"
+        },
+        "es": {
+          "status": "canonico",
+          "text": "Mt 25:1-13 — ¡Aquí viene el esposo; salid a recibirle!"
+        },
+        "stp": {
+          "status": "canonico_comunitario_abierto",
+          "text": "Mt 25:1-13 — 'Baꞌ noꞌ ja aꞌm ba tɨ nɨidhim gu Dios gu jaꞌtkam, jaꞌp ji buusan na jax jɨꞌk mambhɨɨx gu tɨtɨɨya noꞌ mɨt xi chɨ bɨꞌñdhak miꞌ paiꞌ dhɨr gamaiꞌ ji jii, noꞌ mɨt ba namkim maaꞌn gu biapmaꞌ na miꞌ aayaꞌ na miꞌm tɨɨmoꞌ."
+        }
+      }
+    },
+    {
+      "book": "Mateo",
+      "gesture": "Pan y copa en la mesa.",
+      "plate_id": "mt-12-copa",
+      "quarter": 2,
+      "reference": "Mt 26:26-29",
+      "texts": {
+        "en": {
+          "status": "canonico_dominio_publico",
+          "text": "Mt 26:26-29 — While they were eating, Jesus took bread, spoke a blessing and broke it, and gave it to the disciples, saying, “Take and eat; this is My body.”"
+        },
+        "es": {
+          "status": "canonico",
+          "text": "Mt 26:26-29 — Tomad, comed; esto es mi cuerpo."
+        },
+        "stp": {
+          "status": "canonico_comunitario_abierto",
+          "text": "Mt 26:26-29 — Baꞌ nam pui miꞌ daraat ka tu kuaꞌ, jotmodaꞌ nat jax dhaa gu Jesuus maaꞌn gu paan, xi chu taxchaabgidhak buiñor gu Dios muiꞌ xi ja maa gu noonbiꞌñ taꞌtak jaisak, jup ja tɨtda:―Dhiꞌñi pim muiꞌp xi jugiaꞌ, na guꞌ dhiꞌr jiñ chuukuꞌ."
+        }
+      }
+    },
+    {
+      "book": "Mateo",
+      "gesture": "Ángel sobre la piedra. Vayan.",
+      "plate_id": "mt-13-jardin",
+      "quarter": 2,
+      "reference": "Mt 28:1-10",
+      "texts": {
+        "en": {
+          "status": "canonico_dominio_publico",
+          "text": "Mt 28:1-10 — After the Sabbath, at dawn on the first day of the week, Mary Magdalene and the other Mary went to see the tomb."
+        },
+        "es": {
+          "status": "canonico",
+          "text": "Mt 28:1-10 — Ha resucitado de los muertos y va delante de ustedes a Galilea."
+        },
+        "stp": {
+          "status": "canonico_comunitario_abierto",
+          "text": "Mt 28:1-10 — Baꞌ na bar jumai buimgidhak nat kiaꞌpɨx ba ji chu maaxir, nat paiꞌ dhuuk ba buus janoꞌ na paiꞌ dhuuk aagix kaꞌ na cham tum juandaꞌ, nat kiaꞌpɨx muiꞌ ba jim bhɨi gu maaꞌn simaan, muiꞌ ma jii gu Mariiya Magdaleena gio gu jumai Mariiya na mɨt ba tɨ tɨɨgim mu na mɨt paiꞌ yaas gu Jesuus."
+        }
+      }
+    },
+    {
+      "book": "Lucas",
+      "gesture": "Un cuarto. Hágase.",
+      "plate_id": "lc-01-anuncio",
+      "quarter": 3,
+      "reference": "Lc 1:26-38",
+      "texts": {
+        "en": {
+          "status": "canonico_dominio_publico",
+          "text": "Lc 1:26-38 — In the sixth month, God sent the angel Gabriel to a town in Galilee called Nazareth,"
+        },
+        "es": {
+          "status": "canonico",
+          "text": "Lc 1:26-38 — Miren la sierva del Señor; hágase conmigo conforme a tu palabra."
+        },
+        "stp": {
+          "status": "canonico_comunitario_abierto",
+          "text": "Lc 1:26-38 — Baꞌ na paiꞌ xijum maaꞌn masaaꞌn ba uaꞌ nar alhiꞌch kɨɨkam gu Isabeel, gu Dios gio mu jaꞌk jup joot gu nobiiꞌñ Gabrial na paiꞌ Nasareet tɨ tɨɨꞌ, na Galilea bhaan bipioꞌ guiꞌ gu dɨbɨɨr."
+        }
+      }
+    },
+    {
+      "book": "Lucas",
+      "gesture": "Pesebre. Pastores que llegan.",
+      "plate_id": "lc-02-noche",
+      "quarter": 3,
+      "reference": "Lc 2:1-20",
+      "texts": {
+        "en": {
+          "status": "canonico_dominio_publico",
+          "text": "Lc 2:1-20 — Now in those days a decree went out from Caesar Augustus that a census should be taken of the whole empire."
+        },
+        "es": {
+          "status": "canonico",
+          "text": "Lc 2:1-20 — Hoy les ha nacido, en la ciudad de David, un Salvador."
+        },
+        "stp": {
+          "status": "canonico_comunitario_abierto",
+          "text": "Lc 2:1-20 — Janoꞌ gu Auguusto Seesar bɨɨx kap jir gɇꞌkam kaꞌ na jɨꞌk Rooma bhaan bipioꞌ gu dɨppɨr, baꞌ dhiꞌ ja chia nam jum daasaꞌ bɨɨx gu jaꞌtkam nam jɨꞌk dhiꞌ bhaan tu oiꞌdhaꞌ."
+        }
+      }
+    },
+    {
+      "book": "Lucas",
+      "gesture": "Niño entre los maestros.",
+      "plate_id": "lc-03-templo",
+      "quarter": 3,
+      "reference": "Lc 2:41-52",
+      "texts": {
+        "en": {
+          "status": "canonico_dominio_publico",
+          "text": "Lc 2:41-52 — Every year His parents went to Jerusalem for the Feast of the Passover."
+        },
+        "es": {
+          "status": "canonico",
+          "text": "Lc 2:41-52 — ¿No sabíais que en los negocios de mi Padre me es necesario estar?"
+        },
+        "stp": {
+          "status": "canonico_comunitario_abierto",
+          "text": "Lc 2:41-52 — Baꞌ gu gɨꞌkorgaꞌn gu Jesuus muiꞌ pu jimmɨdaꞌ am bhammɨ Jerusaleen nabap oidhaꞌ na paiꞌ dhuuk jum aajidhaꞌ bhaan Paaskua taꞌm."
+        }
+      }
+    },
+    {
+      "book": "Lucas",
+      "gesture": "Red que se rompe de peces.",
+      "plate_id": "lc-04-redes",
+      "quarter": 3,
+      "reference": "Lc 5:1-11",
+      "texts": {
+        "en": {
+          "status": "canonico_dominio_publico",
+          "text": "Lc 5:1-11 — On one occasion, while Jesus was standing by the Lake of Gennesaret with the crowd pressing in on Him to hear the word of God,"
+        },
+        "es": {
+          "status": "canonico",
+          "text": "Lc 5:1-11 — Boga mar adentro, y echad vuestras redes para pescar."
+        },
+        "stp": {
+          "status": "canonico_comunitario_abierto",
+          "text": "Lc 5:1-11 — Baꞌ mummɨ jaꞌk Genesareet jup ba tu ja aꞌgiꞌñ gu Jesuus gu jaꞌtkam, juꞌñdharam gu gɇꞌ suudaiꞌ Galilea kam. Giilhim muiꞌ mim jumaap jamɨt gu jaꞌtkam nam jix kaim na jax tu aꞌga gu ñioꞌkiꞌñ gu Dios, ba kiꞌsap pɨx baꞌ."
+        }
+      }
+    },
+    {
+      "book": "Lucas",
+      "gesture": "Féretro. Lo devuelve.",
+      "plate_id": "lc-05-nain",
+      "quarter": 3,
+      "reference": "Lc 7:11-17",
+      "texts": {
+        "en": {
+          "status": "canonico_dominio_publico",
+          "text": "Lc 7:11-17 — Soon afterward, Jesus went to a town called Nain. His disciples went with Him, accompanied by a large crowd."
+        },
+        "es": {
+          "status": "canonico",
+          "text": "Lc 7:11-17 — Joven, a ti te digo, levántate."
+        },
+        "stp": {
+          "status": "canonico_comunitario_abierto",
+          "text": "Lc 7:11-17 — Baꞌ miꞌ dhɨr mu jaꞌk pu bhɨi gu Jesuus maaꞌn kap na paiꞌ Naiin tɨ tɨɨꞌ, bɨɨx jiim am sia guiꞌ nam kaichuꞌ gio jaiꞌ muiꞌ gu jaꞌtkam."
+        }
+      }
+    },
+    {
+      "book": "Lucas",
+      "gesture": "Aceite. Dos denarios.",
+      "plate_id": "lc-06-camino",
+      "quarter": 3,
+      "reference": "Lc 10:25-37",
+      "texts": {
+        "en": {
+          "status": "canonico_dominio_publico",
+          "text": "Lc 10:25-37 — One day an expert in the law stood up to test Him. “Teacher,” he asked, “what must I do to inherit eternal life?”"
+        },
+        "es": {
+          "status": "canonico",
+          "text": "Lc 10:25-37 — ¿Quién, pues, de estos tres te parece que fue el prójimo?"
+        },
+        "stp": {
+          "status": "canonico_comunitario_abierto",
+          "text": "Lc 10:25-37 — Baꞌ maadɨt guiꞌ nam sap jix mat kaꞌ gu ñioꞌkiꞌñ gu Dios mu jimɨɨk bhaiꞌ ba tɨkka gu Jesuus, na miꞌ pɨx jix maachim noꞌ sap moo puiꞌ pɨx jup ji bua na jax ɨlhiiꞌñ dɨɨlh. Jup tɨtda:―Jiñ jaduuñ, aañ jaꞌp tuꞌm bham tɨkkam nap iam jiñ aagiꞌñdhaꞌ gɨt nañ jaꞌp tɇ kɇɇ nap bɨxchuꞌ pɨx jix maat. ¿Tuꞌñ jax dhuñiaꞌ nañ baꞌ gammɨjɨ buiñor bap tuiꞌkaꞌ gu Dios?"
+        }
+      }
+    },
+    {
+      "book": "Lucas",
+      "gesture": "Una se sienta.",
+      "plate_id": "lc-07-casa",
+      "quarter": 3,
+      "reference": "Lc 10:38-42",
+      "texts": {
+        "en": {
+          "status": "canonico_dominio_publico",
+          "text": "Lc 10:38-42 — As they traveled along, Jesus entered a village where a woman named Martha welcomed Him into her home."
+        },
+        "es": {
+          "status": "canonico",
+          "text": "Lc 10:38-42 — María ha escogido la buena parte, la cual no le será quitada."
+        },
+        "stp": {
+          "status": "canonico_comunitario_abierto",
+          "text": "Lc 10:38-42 — Baꞌ puiꞌ xi chu aꞌgidhat jimchuꞌ gu Jesuus. Nammɨ gama jaꞌk maaꞌn kap ba ai na paiꞌ jumai jɨꞌdɨlh jup jir kikcham. Baꞌ maaꞌn miꞌ kiokaꞌ gu ubii Maarta tɨɨgim, joidham cham jax ji chɨꞌɨɨk aich na sap miꞌ xi chɨbiapui."
+        }
+      }
+    },
+    {
+      "book": "Lucas",
+      "gesture": "El padre corre. El mayor no entra.",
+      "plate_id": "lc-08-anillo",
+      "quarter": 3,
+      "reference": "Lc 15:11-32",
+      "texts": {
+        "en": {
+          "status": "canonico_dominio_publico",
+          "text": "Lc 15:11-32 — Then Jesus said, “There was a man who had two sons.”"
+        },
+        "es": {
+          "status": "canonico",
+          "text": "Lc 15:11-32 — Este mi hijo muerto era, y ha revivido; se había perdido, y es hallado."
+        },
+        "stp": {
+          "status": "canonico_comunitario_abierto",
+          "text": "Lc 15:11-32 — Baꞌ jumai bhaan jup ji chu uaꞌrgidhak muiꞌ ji chu ja aꞌgi gu Jesuus gu jaꞌtkam, jup ja tɨtda:―Maaꞌnnim maaꞌn gu maaꞌnkam gook tu maamar kaꞌ biipibop."
+        }
+      }
+    },
+    {
+      "book": "Lucas",
+      "gesture": "Uno regresa.",
+      "plate_id": "lc-09-diez",
+      "quarter": 3,
+      "reference": "Lc 17:11-19",
+      "texts": {
+        "en": {
+          "status": "canonico_dominio_publico",
+          "text": "Lc 17:11-19 — While Jesus was on His way to Jerusalem, He was passing between Samaria and Galilee."
+        },
+        "es": {
+          "status": "canonico",
+          "text": "Lc 17:11-19 — ¿No son diez los que fueron limpiados? Y los nueve, ¿dónde están?"
+        },
+        "stp": {
+          "status": "canonico_comunitario_abierto",
+          "text": "Lc 17:11-19 — Baꞌ gu Jesuus na Jerusaleen jaꞌk jim, mi jaꞌp aꞌjim na paiꞌ jax Galilea bhaan bipioꞌ gu dɨbɨɨr gio na paiꞌ jax Samaaria bhaan jup bipioꞌ."
+        }
+      }
+    },
+    {
+      "book": "Lucas",
+      "gesture": "Sicómoro. Baja.",
+      "plate_id": "lc-10-arbol",
+      "quarter": 3,
+      "reference": "Lc 19:1-10",
+      "texts": {
+        "en": {
+          "status": "canonico_dominio_publico",
+          "text": "Lc 19:1-10 — Then Jesus entered Jericho and was passing through."
+        },
+        "es": {
+          "status": "canonico",
+          "text": "Lc 19:1-10 — Zaqueo, date prisa, desciende, porque hoy es necesario que pose yo en tu casa."
+        },
+        "stp": {
+          "status": "canonico_comunitario_abierto",
+          "text": "Lc 19:1-10 — Baꞌ miꞌ ba ai gu Jesuus na paiꞌ Jerikoo tɨ tɨɨꞌ, muiꞌ ji bhɨi ɨrban na paiꞌr kikcham."
+        }
+      }
+    },
+    {
+      "book": "Lucas",
+      "gesture": "Dos lepta.",
+      "plate_id": "lc-11-dos",
+      "quarter": 3,
+      "reference": "Lc 21:1-4",
+      "texts": {
+        "en": {
+          "status": "canonico_dominio_publico",
+          "text": "Lc 21:1-4 — Then Jesus looked up and saw the rich putting their gifts into the treasury,"
+        },
+        "es": {
+          "status": "canonico",
+          "text": "Lc 21:1-4 — Esta viuda pobre echó más que todos."
+        },
+        "stp": {
+          "status": "canonico_comunitario_abierto",
+          "text": "Lc 21:1-4 — Baꞌ jaꞌxpɨx miꞌ jaꞌk jup ba ja nɨiꞌñ gu Jesuus gu jaꞌtkam guiꞌ nam jir jix chutumñigam, nam pɨx miꞌ ji chuꞌaim gu tuumiñ miꞌ na paiꞌm tuaꞌba nam maakim gu Dios na jɨꞌk bhaan jup bipioꞌ. Muiꞌ miꞌ xi chuꞌaim am."
+        }
+      }
+    },
+    {
+      "book": "Lucas",
+      "gesture": "Tres maderos. Hoy.",
+      "plate_id": "lc-12-cruz",
+      "quarter": 3,
+      "reference": "Lc 23:32-43",
+      "texts": {
+        "en": {
+          "status": "canonico_dominio_publico",
+          "text": "Lc 23:32-43 — Two others, who were criminals, were also led away to be executed with Jesus."
+        },
+        "es": {
+          "status": "canonico",
+          "text": "Lc 23:32-43 — De cierto te digo que hoy estarás conmigo en el paraíso."
+        },
+        "stp": {
+          "status": "canonico_comunitario_abierto",
+          "text": "Lc 23:32-43 — Baꞌ gook pup muiꞌp ja uaꞌ am gu jaꞌtkam nam puiꞌp ja sissapaꞌ maap gu Jesuus kukrus taꞌm. Dhi gook jaꞌtkam ɨɨxdharaꞌ kɨꞌn ja koodaꞌ am."
+        }
+      }
+    },
+    {
+      "book": "Lucas",
+      "gesture": "Pan partido. Se les abren los ojos.",
+      "plate_id": "lc-13-pan",
+      "quarter": 3,
+      "reference": "Lc 24:13-35",
+      "texts": {
+        "en": {
+          "status": "canonico_dominio_publico",
+          "text": "Lc 24:13-35 — That same day two of them were going to a village called Emmaus, about seven miles from Jerusalem."
+        },
+        "es": {
+          "status": "canonico",
+          "text": "Lc 24:13-35 — Y tomó el pan y lo bendijo, lo partió, y les dio."
+        },
+        "stp": {
+          "status": "canonico_comunitario_abierto",
+          "text": "Lc 24:13-35 — Baꞌ pu guiꞌ gu tanoolh chaꞌm mu jaꞌk jup ka jiim am Emauus gook guiꞌ nam kaichuꞌ gu Jesuus, tɨi pup chix dhaam ji dhuñiidhak jum aꞌjɨ bhaiꞌ dhɨr Jerusaleen."
+        }
+      }
+    },
+    {
+      "book": "Juan",
+      "gesture": "Vengan y vean.",
+      "plate_id": "jn-01-cordero",
+      "quarter": 4,
+      "reference": "Jn 1:29-42",
+      "texts": {
+        "en": {
+          "status": "canonico_dominio_publico",
+          "text": "Jn 1:29-42 — The next day John saw Jesus coming toward him and said, “Look, the Lamb of God, who takes away the sin of the world!”"
+        },
+        "es": {
+          "status": "canonico",
+          "text": "Jn 1:29-42 — Miren el Cordero de Dios, que quita el pecado del mundo."
+        },
+        "stp": {
+          "status": "canonico_comunitario_abierto",
+          "text": "Jn 1:29-42 — Baꞌ buimgidhak miꞌ ba ai gu Jesuus na paiꞌ ja bopkon suudaiꞌ kɨꞌn gu jaꞌtkam gu Juan. Baꞌ nat ba tɨɨ gu Juan na muiꞌ ba jim gu Jesuus, jup ja tɨtda gu jaꞌtkam:―Dhiꞌñir diꞌ na muni dhɨr bhaiꞌ ba jim guiꞌ nat Dios bha joot nach aꞌmkam mukiaꞌ bɨɨx na jɨꞌk jaꞌtkam yaꞌ dhi oiꞌñgaꞌn, na baꞌ puꞌñi dhuuji tu namkix kaꞌ guch uaꞌtulhdharaꞌ. Dhiꞌ puiꞌ ji buusan na jax maaꞌn gux kɨɨꞌ kasnir, na guꞌm makgartaꞌ gatuuk."
+        }
+      }
+    },
+    {
+      "book": "Juan",
+      "gesture": "Seis tinajas.",
+      "plate_id": "jn-02-tinajas",
+      "quarter": 4,
+      "reference": "Jn 2:1-11",
+      "texts": {
+        "en": {
+          "status": "canonico_dominio_publico",
+          "text": "Jn 2:1-11 — On the third day a wedding took place at Cana in Galilee. Jesus' mother was there,"
+        },
+        "es": {
+          "status": "canonico",
+          "text": "Jn 2:1-11 — Hagan todo lo que él les diga."
+        },
+        "stp": {
+          "status": "canonico_comunitario_abierto",
+          "text": "Jn 2:1-11 — Baꞌ miꞌ dhɨr baik jurniꞌñ kɨꞌn dhiꞌ puiꞌ, mam tɨɨmo maaꞌn gu maaꞌnkam bɨɨmaꞌn gu tɨyaa mu Kanaa, na paiꞌ Galilea bhaan bipioꞌ guiꞌ gu dɨbɨɨr. Baꞌ bɨɨx mup oirɨ gu dɨꞌɨɨꞌn gu Jesuus"
+        }
+      }
+    },
+    {
+      "book": "Juan",
+      "gesture": "Cántaro que se queda.",
+      "plate_id": "jn-03-pozo",
+      "quarter": 4,
+      "reference": "Jn 4:1-26",
+      "texts": {
+        "en": {
+          "status": "canonico_dominio_publico",
+          "text": "Jn 4:1-26 — When Jesus realized that the Pharisees were aware He was gaining and baptizing more disciples than John"
+        },
+        "es": {
+          "status": "canonico",
+          "text": "Jn 4:1-26 — El que bebiere del agua que yo le daré, no tendrá sed jamás."
+        },
+        "stp": {
+          "status": "canonico_comunitario_abierto",
+          "text": "Jn 4:1-26 — Baꞌ ba maat gu Jesuus nam puiꞌ ba tɇ kɇɇ guiꞌ nam pariseos jum tɨɨtɨꞌndaꞌ na amuub oirɨ, sap jup kaiꞌchdhaꞌ am gu jaꞌtkam: “Puiꞌp ba ja bopkon gu Jesuus gu jaꞌtkam, dai guiꞌ pɨx jam baꞌ mu jaꞌk ba kaichuꞌ bɨɨx, gu Juan miꞌ pɨx jaꞌp ji biꞌiim.”"
+        }
+      }
+    },
+    {
+      "book": "Juan",
+      "gesture": "Toma tu camilla.",
+      "plate_id": "jn-04-camilla",
+      "quarter": 4,
+      "reference": "Jn 5:1-9",
+      "texts": {
+        "en": {
+          "status": "canonico_dominio_publico",
+          "text": "Jn 5:1-9 — Some time later there was a feast of the Jews, and Jesus went up to Jerusalem."
+        },
+        "es": {
+          "status": "canonico",
+          "text": "Jn 5:1-9 — Levántate, toma tu camilla, y anda."
+        },
+        "stp": {
+          "status": "canonico_comunitario_abierto",
+          "text": "Jn 5:1-9 — Baꞌ mɨkkat giop ma jii gu Jesuus bhammɨ jaꞌk Jerusaleen, nat guꞌ bam ai nam paiꞌ dhuuk tu piastat gu Israel kam jaꞌtkam."
+        }
+      }
+    },
+    {
+      "book": "Juan",
+      "gesture": "Cinco panes de cebada.",
+      "plate_id": "jn-05-muchacho",
+      "quarter": 4,
+      "reference": "Jn 6:1-14",
+      "texts": {
+        "en": {
+          "status": "canonico_dominio_publico",
+          "text": "Jn 6:1-14 — After this, Jesus crossed to the other side of the Sea of Galilee (that is, the Sea of Tiberias)."
+        },
+        "es": {
+          "status": "canonico",
+          "text": "Jn 6:1-14 — Aquí está un muchacho, que tiene cinco panes de cebada y dos pececillos."
+        },
+        "stp": {
+          "status": "canonico_comunitario_abierto",
+          "text": "Jn 6:1-14 — Baꞌ gatuuk na puiꞌ jɨꞌ xi chu aꞌgimɨk gu Jesuus, ma jii baasɨꞌn dɨr jaꞌk nam paiꞌ gook kɨꞌn jix chu mat kaꞌ, suudaiꞌ gɇꞌ suuꞌn na Galilea bhaan bipioꞌ, gio baꞌ suudaiꞌ gɇꞌ suuꞌn na Tibeeriyas bhaan bipioꞌ."
+        }
+      }
+    },
+    {
+      "book": "Juan",
+      "gesture": "Tierra. Siloé. Ve.",
+      "plate_id": "jn-06-lodo",
+      "quarter": 4,
+      "reference": "Jn 9:1-12",
+      "texts": {
+        "en": {
+          "status": "canonico_dominio_publico",
+          "text": "Jn 9:1-12 — Now as Jesus was passing by, He saw a man blind from birth,"
+        },
+        "es": {
+          "status": "canonico",
+          "text": "Jn 9:1-12 — Fue entonces, y se lavó, y regresó viendo."
+        },
+        "stp": {
+          "status": "canonico_comunitario_abierto",
+          "text": "Jn 9:1-12 — Baꞌ nammɨ gama jaꞌk na ba jimchuꞌ gu Jesuus, ba tɨɨ maaꞌn gu maaꞌnkam cham ñia kam na mi jaꞌp daa, na dɨɨlh pur pu chuꞌm nat dɨr maaxir."
+        }
+      }
+    },
+    {
+      "book": "Juan",
+      "gesture": "Llama por nombre.",
+      "plate_id": "jn-07-puerta",
+      "quarter": 4,
+      "reference": "Jn 10:1-16",
+      "texts": {
+        "en": {
+          "status": "canonico_dominio_publico",
+          "text": "Jn 10:1-16 — “Truly, truly, I tell you, whoever does not enter the sheepfold by the gate, but climbs in some other way, is a thief and a robber.”"
+        },
+        "es": {
+          "status": "canonico",
+          "text": "Jn 10:1-16 — Yo soy el buen pastor; el buen pastor su vida da por las ovejas."
+        },
+        "stp": {
+          "status": "canonico_comunitario_abierto",
+          "text": "Jn 10:1-16 — Baꞌp ja tɨtda gu Jesuus:―Tuꞌ sɨlhkam jañ yaꞌ pu jam tɨɨdaꞌñ jaaduñ, gu jaroiꞌ noꞌt cham miꞌ dhɨr mu baa na paiꞌ kiidhaꞌ gu ja chikiir gu kakasnir, noꞌt guꞌ jaꞌp dɨr jaꞌk mu baa, dhiꞌr diꞌ kaꞌ gux ɨxkum na miꞌx chɨ ɨɨxdham kaꞌ gu kakasnir nam mi kuup."
+        }
+      }
+    },
+    {
+      "book": "Juan",
+      "gesture": "¡Sal! Desatadlo.",
+      "plate_id": "jn-08-tumba",
+      "quarter": 4,
+      "reference": "Jn 11:38-44",
+      "texts": {
+        "en": {
+          "status": "canonico_dominio_publico",
+          "text": "Jn 11:38-44 — Jesus, once again deeply moved, came to the tomb. It was a cave with a stone laid across the entrance."
+        },
+        "es": {
+          "status": "canonico",
+          "text": "Jn 11:38-44 — ¡Lázaro, ven fuera!"
+        },
+        "stp": {
+          "status": "canonico_comunitario_abierto",
+          "text": "Jn 11:38-44 — Baꞌr jix moik aiꞌ dɨꞌn kɨr bhɨjɨ na mɨt paiꞌ yaas gu Laasar, jodai komaarak baꞌ kɨꞌn bha kuup. Baꞌx ioꞌm miaꞌn muiꞌ xi ai gu Jesuus bhaiꞌ na paiꞌ yaasap gu mukdhaꞌ, sia puiꞌ ji ñakgat nax buam tu tatdaꞌ,"
+        }
+      }
+    },
+    {
+      "book": "Juan",
+      "gesture": "La casa huele.",
+      "plate_id": "jn-09-nardo",
+      "quarter": 4,
+      "reference": "Jn 12:1-8",
+      "texts": {
+        "en": {
+          "status": "canonico_dominio_publico",
+          "text": "Jn 12:1-8 — Six days before the Passover, Jesus came to Bethany, the hometown of Lazarus, whom He had raised from the dead."
+        },
+        "es": {
+          "status": "canonico",
+          "text": "Jn 12:1-8 — Y la casa se llenó del olor del perfume."
+        },
+        "stp": {
+          "status": "canonico_comunitario_abierto",
+          "text": "Jn 12:1-8 — Baꞌ na xijum maaꞌn tanoolh pɨx ba biꞌchuꞌ na baꞌ moo bam aayaꞌ gu bhaan Paaskua taꞌm, muiꞌ ma jii gu Jesuus bhammɨ Betaania na paiꞌ kio gu Laasar guiꞌ nat duaꞌñdhak giop bamiiꞌ na ba muukix kat."
+        }
+      }
+    },
+    {
+      "book": "Juan",
+      "gesture": "Se ciñe. Lava pies.",
+      "plate_id": "jn-10-toalla",
+      "quarter": 4,
+      "reference": "Jn 13:1-15",
+      "texts": {
+        "en": {
+          "status": "canonico_dominio_publico",
+          "text": "Jn 13:1-15 — It was now just before the Passover Feast, and Jesus knew that His hour had come to leave this world and return to the Father. Having loved His own who were in the world, He loved them to the very end."
+        },
+        "es": {
+          "status": "canonico",
+          "text": "Jn 13:1-15 — Pues si yo, el Señor y el Maestro, he lavado los pies a ustedes, ustedes también deben lavarse los pies unos a otros."
+        },
+        "stp": {
+          "status": "canonico_comunitario_abierto",
+          "text": "Jn 13:1-15 — Baꞌ takaab dɨr na baꞌ moo bam aayaꞌ gu bhaan Paaskua taꞌm nam paiꞌ dhuuk tu piastatdaꞌ gu Israel kam jaꞌtkam, pux bhaiꞌ bax maat gu Jesuus nat bam ai na paiꞌ dhuuk giop ba jimiaꞌx dhaam buiñor guch Gɨꞌkoraꞌ nat paiꞌ dhɨr bha jii. Cham jax bua sia ku mɨt dɨɨlh yaꞌ ji bii guiꞌ nam jɨꞌk kaichuꞌ, na guꞌ puiꞌ na jax jix ja joiꞌndat bax ja daꞌdaꞌ sia kut ba jii nat jax jix ja joiꞌgɨlh yaꞌ dhi oiꞌñgaꞌn na ja bɨɨm oilhimɨk."
+        }
+      }
+    },
+    {
+      "book": "Juan",
+      "gesture": "Espinas. Miren el hombre.",
+      "plate_id": "jn-11-hombre",
+      "quarter": 4,
+      "reference": "Jn 19:1-5",
+      "texts": {
+        "en": {
+          "status": "canonico_dominio_publico",
+          "text": "Jn 19:1-5 — Then Pilate took Jesus and had Him flogged."
+        },
+        "es": {
+          "status": "canonico",
+          "text": "Jn 19:1-5 — ¡Miren el hombre!"
+        },
+        "stp": {
+          "status": "canonico_comunitario_abierto",
+          "text": "Jn 19:1-5 — Baꞌ gux kaiꞌ Pilaato puiꞌ ma tu chia nam gɨɨꞌbiaꞌ gu Jesuus."
+        }
+      }
+    },
+    {
+      "book": "Juan",
+      "gesture": "Jardín. ¡María!",
+      "plate_id": "jn-12-maria",
+      "quarter": 4,
+      "reference": "Jn 20:11-18",
+      "texts": {
+        "en": {
+          "status": "canonico_dominio_publico",
+          "text": "Jn 20:11-18 — But Mary stood outside the tomb weeping. And as she wept, she bent down to look into the tomb,"
+        },
+        "es": {
+          "status": "canonico",
+          "text": "Jn 20:11-18 — ¡Raboni! (que quiere decir, Maestro)."
+        },
+        "stp": {
+          "status": "canonico_comunitario_abierto",
+          "text": "Jn 20:11-18 — Guꞌ baꞌ gu Mariiya Magdaleena dɨɨlh miꞌ ji biꞌɨɨk suaak mi jaꞌp kɨɨkat nax buam jum aaꞌ na cham tu jaiꞌch gu tukgaꞌn gu Jesuus. Gu Peegro guꞌ ba jii gio gu jumai nam maap jiim. Baꞌ miꞌ puiꞌ na ji suakɨt gu Mariiya gio bhɨjɨp ka xi chɨ tɨɨ dɨꞌn kɨr dumaalh jum tɨkaak."
+        }
+      }
+    },
+    {
+      "book": "Juan",
+      "gesture": "Red a la derecha. Fuego en la orilla.",
+      "plate_id": "jn-13-fuego",
+      "quarter": 4,
+      "reference": "Jn 21:1-14",
+      "texts": {
+        "en": {
+          "status": "canonico_dominio_publico",
+          "text": "Jn 21:1-14 — Later, by the Sea of Tiberias, Jesus again revealed Himself to the disciples. He made Himself known in this way:"
+        },
+        "es": {
+          "status": "canonico",
+          "text": "Jn 21:1-14 — Echad la red a la derecha de la barca, y hallaréis."
+        },
+        "stp": {
+          "status": "canonico_comunitario_abierto",
+          "text": "Jn 21:1-14 — Baꞌ gatuuk jɨꞌkchi tanoolh jurniꞌñ kɨꞌn gio mummɨp bam maax gu Jesuus ja bui xijum gook guiꞌ nam kaichuꞌ, mummu juꞌñdharan gu gɇꞌ suudaiꞌ na Tibeeriyas tɨ tɨɨꞌ. Jaꞌpnim duu."
+        }
+      }
+    }
+  ],
+  "project": "Evangelios para Colorear (Programa del Año - 52 Hojas)",
+  "schema_version": "1.0.0",
+  "total_plates": 52
+}
