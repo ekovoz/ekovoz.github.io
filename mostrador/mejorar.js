@@ -2,6 +2,7 @@
 // Ekovoz Mostrador Ronda 20 — 0 Bytes Audio, texto puro compatible con ekovoz-cli apply-patch.
 
 import {
+  normalizeRootNotesEntries,
   renderCrdtWalAndLockP2AuditCardHtml,
   renderMasterCensus7164CardHtml,
 } from "./drawer_hydrators.js";
@@ -459,13 +460,18 @@ export function hydrateFieldWorkshopData(artifact, ladderArtifact = null) {
     };
   }
   if (artifact.crdt_wal_semilattice && typeof artifact.crdt_wal_semilattice === "object") {
-    CRDT_WAL_SEMILATTICE = artifact.crdt_wal_semilattice;
+    const c = artifact.crdt_wal_semilattice;
+    CRDT_WAL_SEMILATTICE = {
+      ...c,
+      raw_wal_lines_count: Number(c.raw_wal_lines_count ?? c.raw_wal_lines) || 67,
+      canonical_patches_count: Number(c.canonical_patches_count ?? c.folded_canonical_count) || 5,
+    };
   }
   if (artifact.patch_journal_lock_p2 && typeof artifact.patch_journal_lock_p2 === "object") {
     PATCH_JOURNAL_LOCK_P2 = artifact.patch_journal_lock_p2;
   }
-  if (Array.isArray(artifact.root_notes_stp) && artifact.root_notes_stp.length > 0) {
-    ROOT_NOTES_STP = artifact.root_notes_stp;
+  if (artifact.root_notes_stp) {
+    ROOT_NOTES_STP = normalizeRootNotesEntries(artifact.root_notes_stp);
   }
   if (artifact.stp_ledger_summary && typeof artifact.stp_ledger_summary === "object") {
     STP_LEDGER_SUMMARY = artifact.stp_ledger_summary;
@@ -1332,7 +1338,7 @@ export function renderStpLexiconExplorerHtml({
   );
 }
 
-/** Renderiza el catálogo de los 6 artefactos CC0 del Taller de Campo (`web/obras/biblia/taller/<lang>/`). */
+/** Renderiza el catálogo de los 6 artefactos CC0 del Taller de Campo (`web/obras/biblia/taller/<lang>/`) junto con la tarjeta CRDT WAL + Lock P2 (10 snapshots) + Censo 7,164 (`D2-B+`, `D3-B+`). */
 export function renderTallerArtifactsCatalogHtml(langOrOpts = "es") {
   const rawLang =
     typeof langOrOpts === "object" && langOrOpts !== null
@@ -1341,12 +1347,22 @@ export function renderTallerArtifactsCatalogHtml(langOrOpts = "es") {
   const cleanLang = ["es", "en", "stp", "he", "grc"].includes(String(rawLang || "").toLowerCase())
     ? String(rawLang).toLowerCase()
     : "es";
+  const walAuditHtml = renderCrdtWalAndLockP2AuditCardHtml({
+    crdt_wal_semilattice: CRDT_WAL_SEMILATTICE,
+    patch_journal_lock_p2: PATCH_JOURNAL_LOCK_P2,
+    root_notes_stp: ROOT_NOTES_STP,
+  });
+  const censusHtml = renderMasterCensus7164CardHtml(MASTER_CENSUS_SUMMARY, STP_LEDGER_SUMMARY);
   return (
-    `<div class="taller-artifacts-grid" data-taller-lang="${cleanLang}" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:0.45rem;">` +
+    `<div class="taller-artifacts-grid" data-taller-lang="${cleanLang}" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:0.45rem;margin-bottom:0.6rem;">` +
     TALLER_CC0_ARTIFACTS.map(
       (art) =>
         `<a class="uls-chip taller-artifact-link" data-taller-artifact="${art.id}" href="obras/biblia/taller/${cleanLang}/${art.file}" download style="min-height:48px;display:inline-flex;align-items:center;padding:0.4rem 0.65rem;text-decoration:none;font-size:0.8rem;">${art.label}</a>`
     ).join("") +
+    `</div>` +
+    `<div style="display:grid;gap:0.55rem;">` +
+    walAuditHtml +
+    censusHtml +
     `</div>`
   );
 }

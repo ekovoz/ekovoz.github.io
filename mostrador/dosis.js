@@ -138,9 +138,9 @@ export function planDose2(locatedOrBlockId, lang = "es", edition = "2col-a4") {
     const diskLang =
       cleanLang === "es-1909"
         ? "es"
-        : cleanLang === "grc"
-          ? "he"
-          : cleanLang;
+        : ["es", "en", "stp", "he", "grc"].includes(cleanLang)
+          ? cleanLang
+          : "es";
     const defaultPaper = diskLang === "es" ? "letter" : "a4";
     const editionSlug = normalizeEditionSlug(edition, defaultPaper);
     const digits = String(locatedOrBlockId).replace(/\D+/g, "");
@@ -202,13 +202,11 @@ export function listCatalogEditionsForLang(manifestOrLang, maybeLang = "es", opt
       ? manifestOrLang
       : (manifestOrLang && manifestOrLang.entries) || [];
 
-  const diskLang = ["es", "en", "stp", "he"].includes(resolvedLang)
+  const diskLang = ["es", "en", "stp", "he", "grc"].includes(resolvedLang)
     ? resolvedLang
     : resolvedLang === "es-1909"
       ? "es"
-      : resolvedLang === "grc"
-        ? "he"
-        : "es";
+      : "es";
   const defaultPaper = diskLang === "es" ? "letter" : "a4";
   const resolvedSlug = normalizeEditionSlug("02_2col_pastoral", defaultPaper);
 
@@ -242,7 +240,11 @@ export function listCatalogEditionsForLang(manifestOrLang, maybeLang = "es", opt
     const fallbackUrl = fullMatch?.path || `data/blocks/${diskLang}/${resolvedSlug}/B01.pdf`;
     return {
       ...item,
+      profileId: item.id,
+      profileUrl: `${fallbackUrl}?profile=${item.id}`,
       tomlPath: tomlMeta.tomlPath || `obras/biblia/profiles/${item.id}.toml`,
+      columns: tomlMeta.columns || item.columns || 2,
+      fontPt: tomlMeta.fontPt || item.fontPt || 9.5,
       leadingRatio: tomlMeta.leadingRatio || 1.35,
       gutterMm: tomlMeta.gutterMm || 20.0,
       paperSize: tomlMeta.paperSize || (defaultPaper === "letter" ? "Letter" : "A4"),

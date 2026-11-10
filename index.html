@@ -194,8 +194,8 @@ input[type="range"],input[type="checkbox"]{min-height:48px;min-width:48px;color:
 a[href],.mostrador-action-link,.edition-download-link,.ot-echo-jump-chip,.rosetta-jump-chip{min-height:48px;min-width:48px;display:inline-flex;align-items:center;box-sizing:border-box;color:var(--text-primary);}
 .hig-tech-meta{font-size:0.72rem;opacity:0.78;margin-left:0.25rem;}
 @media (max-width: 640px){#bibleProgressiveSheetDoors .hig-tech-meta{display:none;}}
-summary{display:inline-flex;align-items:center;color:var(--text-primary) !important;}
-#bibleLanguageAndRegisterDrawer:not([open])>summary{display:none !important;}
+summary{display:inline-flex;align-items:center;background-color:var(--card-bg, #ffffff) !important;color:var(--text-primary, #141210) !important;}
+#bibleLanguageAndRegisterDrawer>summary{display:none !important;}
 #bibleChapterPericopesRibbon{display:flex;flex-wrap:nowrap !important;overflow-x:auto;white-space:nowrap;scrollbar-width:none;}
 .chapter-pericope-ribbon-chip{flex-shrink:0;white-space:nowrap;}
 @media print{body{background:#ffffff !important;color:#000000 !important;padding:0 !important;margin:0 !important;}.container{box-shadow:none !important;border:none !important;padding:0 !important;max-width:100% !important;background:#ffffff !important;}header,nav,.category-badge,h1,.subtitle,.paper-toggle-wrapper,.language-wrapper,.actions-group,.optical-trigger,.offline-badge,.footer-note,footer,dialog,.focal-controls,.focal-quick-actions,.focal-plate-overlay,.toast,.fold-guide-trigger{display:none !important;}.focal-viewer{margin:0 !important;max-width:100% !important;}.focal-plate-frame{border:none !important;box-shadow:none !important;max-height:none !important;height:98vh !important;display:flex !important;align-items:center !important;justify-content:center !important;}.focal-plate-frame img{max-width:100% !important;max-height:98vh !important;width:auto !important;height:auto !important;object-fit:contain !important;}}
@@ -242,7 +242,7 @@ summary{display:inline-flex;align-items:center;color:var(--text-primary) !import
         </div>
         <!-- Global Orthogonal Corpus Language Funnel (6 Complete Bibles + 7,164 Funnel) & 8 Life Trails (D2-A+) -->
         <details class="advanced-editorial-drawer" id="bibleLanguageAndRegisterDrawer" style="margin-top: 0.25rem;">
-            <summary data-i18n="mostrador.step1.title" style="cursor: pointer; font-size: 0.85rem; font-weight: 600; color: var(--text-primary);">1. Choose Bible language (7,164 languages), reading mode or life trail</summary>
+            <summary hidden aria-hidden="true" data-i18n="mostrador.step1.title" style="display: none; cursor: pointer; font-size: 0.85rem; font-weight: 600; background-color: var(--card-bg, #ffffff); color: var(--text-primary, #141210);">1. Choose Bible language (7,164 languages), reading mode or life trail</summary>
             <div style="margin-top: 0.65rem; display: flex; flex-direction: column; gap: 0.65rem;">
                 <div id="bibleVerifiedCorpusPills" role="group" aria-label="6 Complete Verified Bibles" style="display: flex; flex-wrap: wrap; gap: 0.35rem;">
                     <button type="button" id="quickLangEs" class="uls-chip" data-corpus-lang="es">🇲🇽 Español Siglo XXI (66)</button>
@@ -486,7 +486,7 @@ summary{display:inline-flex;align-items:center;color:var(--text-primary) !import
                 <div class="focal-quick-actions">
                     <button type="button" class="btn-micro-action" id="btnPrintPlate"><span id="btnPrintPlateText" data-i18n="felices.printPlateBtn">Print this plate</span></button>
                     <button type="button" class="btn-micro-action" id="btnShareWork"><span id="btnShareWorkText" data-i18n="felices.shareBtn">Share</span></button>
-                    <button type="button" class="btn-micro-action" id="btnOpenPreviewCarousel" data-i18n="felices.preview_sheets_btn">Preview sheets</button>
+                    <button type="button" class="btn-micro-action" id="btnOpenPreviewCarousel" data-i18n="felices.previewBadge">Preview sheets</button>
                 </div>
             </details>
         </div>
@@ -496,11 +496,11 @@ summary{display:inline-flex;align-items:center;color:var(--text-primary) !import
         <div class="paper-toggle-wrapper" role="group" aria-label="Paper Format">
             <button type="button" class="paper-option active" id="toggleCarta" aria-pressed="true">
                 <span class="paper-name" id="nameCarta" data-i18n="felices.paperCarta">Letter (US/MX)</span>
-                <span class="paper-sub" id="subCarta" data-i18n="felices.paperCartaSub">8.5 × 11 in · 216 × 279 mm</span>
+                <span class="paper-sub" id="subCarta" data-i18n="felices.paperSubCarta">8.5 × 11 in · 216 × 279 mm</span>
             </button>
             <button type="button" class="paper-option" id="toggleA4" aria-pressed="false">
                 <span class="paper-name" id="nameA4" data-i18n="felices.paperA4">ISO A4</span>
-                <span class="paper-sub" id="subA4" data-i18n="felices.paperA4Sub">210 × 297 mm · International</span>
+                <span class="paper-sub" id="subA4" data-i18n="felices.paperSubA4">210 × 297 mm · International</span>
             </button>
         </div>
         <div class="actions-group">
@@ -528,11 +528,11 @@ summary{display:inline-flex;align-items:center;color:var(--text-primary) !import
         </section>
     </main>
 
-    <section id="evangeliosSovereignSection" class="container" data-active-work="false" hidden style="display: none; max-width: 760px; margin: 0 auto 0.5rem auto; padding: 0.45rem 0.65rem; border: 1px solid var(--card-border); border-radius: 14px; background: var(--card-bg);">
-        <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:0.3rem;margin-bottom:0.35rem;">
-            <h2 id="evangeliosMainHeading" style="font-size:0.95rem;margin:0;">🌅 Los Evangelios · 52 Láminas (4 Trimestres)</h2>
-            <div style="display:flex;flex-wrap:wrap;align-items:center;gap:0.3rem;">
-                <select id="evangeliosLangSelect" aria-label="Idioma de Los Evangelios" style="min-height:48px;padding:0.2rem 0.45rem;border-radius:10px;border:1px solid var(--select-border);background:var(--select-bg);color:var(--text-primary);font-size:0.78rem;">
+    <section id="evangeliosSovereignSection" class="container" data-active-work="false" hidden style="display: none; max-width: 760px; margin: 0 auto 0.4rem auto; padding: 0.35rem 0.55rem; border: 1px solid var(--card-border); border-radius: 14px; background: var(--card-bg);">
+        <div style="display:flex;flex-wrap:nowrap;align-items:center;justify-content:space-between;gap:0.25rem;margin-bottom:0.25rem;">
+            <h2 id="evangeliosMainHeading" style="font-size:0.88rem;line-height:1.15;margin:0;">🌅 Los Evangelios · 52 Láminas</h2>
+            <div style="display:flex;flex-wrap:nowrap;align-items:center;gap:0.25rem;">
+                <select id="evangeliosLangSelect" aria-label="Idioma de Los Evangelios" hidden style="display:none;min-height:48px;padding:0.2rem 0.45rem;border-radius:10px;border:1px solid var(--select-border);background:var(--select-bg);color:var(--text-primary);font-size:0.78rem;">
                     <option value="es" selected>🇲🇽 Español (es)</option>
                     <option value="en">🇺🇸 English (en)</option>
                     <option value="pt">🇧🇷 Português (pt)</option>
@@ -541,20 +541,20 @@ summary{display:inline-flex;align-items:center;color:var(--text-primary) !import
                     <option value="gn">🇵🇾 Avañe'ẽ Guaraní (gn)</option>
                     <option value="stp">🏔️ O'dam Tepehuano (stp)</option>
                 </select>
-                <span class="uls-badge" id="evangeliosGlobalLangBadge" data-unified-header="true">🌍 Barra Global</span>
+                <span class="uls-badge" id="evangeliosGlobalLangBadge" data-unified-header="true" style="white-space:nowrap;">🌍 Barra Global</span>
             </div>
         </div>
-        <div id="evangeliosQuarterTabs" role="tablist" aria-label="Trimestres Litúrgicos" style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0.25rem;margin-bottom:0.35rem;">
-            <button type="button" class="uls-chip evangelios-quarter-btn" data-evangelios-quarter="T1" aria-selected="true" style="padding:0.2rem 0.4rem;font-size:0.75rem;">T1 · Luz (S1–13)</button>
-            <button type="button" class="uls-chip evangelios-quarter-btn" data-evangelios-quarter="T2" aria-selected="false" style="padding:0.2rem 0.4rem;font-size:0.75rem;">T2 · Señales (S14–26)</button>
-            <button type="button" class="uls-chip evangelios-quarter-btn" data-evangelios-quarter="T3" aria-selected="false" style="padding:0.2rem 0.4rem;font-size:0.75rem;">T3 · Reino (S27–39)</button>
-            <button type="button" class="uls-chip evangelios-quarter-btn" data-evangelios-quarter="T4" aria-selected="false" style="padding:0.2rem 0.4rem;font-size:0.75rem;">T4 · Amanecer (S40–52)</button>
+        <div id="evangeliosQuarterTabs" role="tablist" aria-label="Trimestres Litúrgicos" style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0.2rem;margin-bottom:0.25rem;">
+            <button type="button" class="uls-chip evangelios-quarter-btn" data-evangelios-quarter="T1" aria-selected="true" style="padding:0.15rem 0.25rem;font-size:0.72rem;min-width:48px;min-height:48px;">T1 · S1–13</button>
+            <button type="button" class="uls-chip evangelios-quarter-btn" data-evangelios-quarter="T2" aria-selected="false" style="padding:0.15rem 0.25rem;font-size:0.72rem;min-width:48px;min-height:48px;">T2 · S14–26</button>
+            <button type="button" class="uls-chip evangelios-quarter-btn" data-evangelios-quarter="T3" aria-selected="false" style="padding:0.15rem 0.25rem;font-size:0.72rem;min-width:48px;min-height:48px;">T3 · S27–39</button>
+            <button type="button" class="uls-chip evangelios-quarter-btn" data-evangelios-quarter="T4" aria-selected="false" style="padding:0.15rem 0.25rem;font-size:0.72rem;min-width:48px;min-height:48px;">T4 · S40–52</button>
         </div>
-        <div style="display:flex;flex-wrap:nowrap;align-items:center;gap:0.35rem;margin-bottom:0.4rem;">
-            <label for="evangeliosWeekSelect" style="font-size:0.78rem;font-weight:600;white-space:nowrap;">Semana:</label>
-            <select id="evangeliosWeekSelect" aria-label="Semana de Los Evangelios" style="min-height:48px;padding:0.25rem 0.45rem;flex:1;min-width:0;"></select>
+        <div style="display:flex;flex-wrap:nowrap;align-items:center;gap:0.3rem;margin-bottom:0.25rem;">
+            <label for="evangeliosWeekSelect" style="font-size:0.76rem;font-weight:600;white-space:nowrap;">Semana:</label>
+            <select id="evangeliosWeekSelect" aria-label="Semana de Los Evangelios" style="min-height:48px;padding:0.2rem 0.4rem;flex:1;min-width:0;"></select>
         </div>
-        <div id="evangeliosActivePlateCard" data-evangelios-id="s01" style="padding:0.65rem;border-radius:10px;border:1px solid var(--card-border);background:var(--bg-secondary);"></div>
+        <div id="evangeliosActivePlateCard" data-evangelios-id="s01" style="padding:0.55rem;border-radius:10px;border:1px solid var(--card-border);background:var(--bg-secondary);"></div>
     </section>
 
     <!-- Global Harel Drawers Host (Shared across La Biblia, Los Felices, and Los Evangelios · D8-B+) -->
@@ -575,6 +575,17 @@ summary{display:inline-flex;align-items:center;color:var(--text-primary) !import
             <div id="tskCrossRefsStratumCard" style="margin-bottom: 0.5rem; display: flex; flex-wrap: wrap; gap: 0.35rem;"></div>
             <div id="leipzig14ColStratumAction">
                 <div id="philologyRosettaStaticHost" class="rosetta-static-slot">
+                    <select id="rosettaFilterCategorySelect" aria-label="Categoría del Índice Rosetta Filológico" style="min-height:48px;padding:0.3rem 0.55rem;border-radius:8px;border:1px solid var(--select-border);background:var(--select-bg);color:var(--text-primary);font-size:0.78rem;margin-bottom:0.4rem;">
+                        <option value="all" selected>Todos los sub-corpus Rosetta + 5 ResidualKind</option>
+                        <option value="roots">1. Raíces Consonánticas Semíticas</option>
+                        <option value="cognates">2. Puente Cognado LXX ↔ MT (PMI)</option>
+                        <option value="ketiv_qere">3. ResidualKind: KETIV_QERE (Masora)</option>
+                        <option value="versification">4. ResidualKind: VERSIFICATION (ENG ↔ ORG)</option>
+                        <option value="tr_supplement">5. ResidualKind: TR_SUPPLEMENT (Textus Receptus)</option>
+                        <option value="surface_variant">6. ResidualKind: SURFACE_VARIANT (Variante Superficial)</option>
+                        <option value="unmatched">7. ResidualKind: UNMATCHED (Sin Alineación Directa)</option>
+                        <option value="divergence">8. Reglas de Divergencia Bicanónica</option>
+                    </select>
                     <input type="search" id="rosettaSearchInput" aria-label="Search Strong ID, Consonantal Root, LXX-MT Cognate, or Bicanonical Verse" placeholder="Search H7225, G3056, GEN.31.55..." style="min-height:48px;width:100%;padding:0.4rem 0.65rem;border-radius:8px;border:1px solid var(--select-border);background:var(--select-bg);color:var(--text-primary);margin-bottom:0.4rem;">
                     <div id="rosettaExplorerResultsRows" role="region" aria-live="polite"></div>
                 </div>
@@ -650,23 +661,23 @@ summary{display:inline-flex;align-items:center;color:var(--text-primary) !import
                 <button type="button" id="btnDosisSubtabGraphics" class="uls-chip" role="tab" data-dosis-subtab-btn="graphics" aria-selected="false" aria-pressed="false">🔐 3. Auditoría Merkle y Ed25519</button>
             </nav>
             <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.75rem;">
-                <button type="button" id="btnShareQuine" class="btn-modal-action" data-i18n="mostrador.offline.save_cta">Save active language for offline use</button>
-                <button type="button" id="btnCopyDirectShareLink" class="uls-chip">🔗 Copy direct link to this passage</button>
-                <button type="button" id="btnVerifyEd25519Signature" class="uls-chip">🔐 Verify Ed25519 Signature</button>
-                <button type="button" id="btnCalculateImposition" class="uls-chip">📐 Calculate Saddle-Stitch Imposition</button>
-                <button type="button" id="btnCalculateLayout" class="uls-chip">📏 Verify A4/Letter Invariant Layout</button>
-                <select id="bibleOpticalFpsSelect" aria-label="Optical Frame Cadence">
+                <button type="button" id="btnShareQuine" class="btn-modal-action" data-dosis-subtab-panel="mesh" data-i18n="mostrador.offline.save_cta">Save active language for offline use</button>
+                <button type="button" id="btnCopyDirectShareLink" class="uls-chip" data-dosis-subtab-panel="mesh">🔗 Copy direct link to this passage</button>
+                <button type="button" id="btnVerifyEd25519Signature" class="uls-chip" data-dosis-subtab-panel="pdf" hidden>🔐 Verify Ed25519 Signature</button>
+                <button type="button" id="btnCalculateImposition" class="uls-chip" data-dosis-subtab-panel="pdf" hidden>📐 Calculate Saddle-Stitch Imposition</button>
+                <button type="button" id="btnCalculateLayout" class="uls-chip" data-dosis-subtab-panel="pdf" hidden>📏 Verify A4/Letter Invariant Layout</button>
+                <select id="bibleOpticalFpsSelect" aria-label="Optical Frame Cadence" data-dosis-subtab-panel="graphics" hidden>
                     <option value="6.67" selected>6.67 FPS · 150 ms (Low-Light Robust)</option>
                     <option value="10">10 FPS · 100 ms (High-Speed C=0.583 N)</option>
                 </select>
-                <button type="button" id="btnToggleOpticalCameraRx" class="uls-chip">📷 Receive with Camera (GF(2) + Peeling)</button>
-                <button type="button" id="btnOpticalRelayTx" class="uls-chip">🔁 Re-Broadcast Relay from Decoded K</button>
+                <button type="button" id="btnToggleOpticalCameraRx" class="uls-chip" data-dosis-subtab-panel="graphics" hidden>📷 Receive with Camera (GF(2) + Peeling)</button>
+                <button type="button" id="btnOpticalRelayTx" class="uls-chip" data-dosis-subtab-panel="graphics" hidden>🔁 Re-Broadcast Relay from Decoded K</button>
             </div>
             <video id="bibleOpticalCameraVideo" hidden playsinline muted style="max-width: 240px; border-radius: 10px; border: 1px solid var(--card-border); margin-bottom: 0.5rem;"></video>
             <div id="offlinePacksCatalogPanel" data-dosis-subtab-panel="mesh" style="margin-bottom: 0.75rem;"></div>
-            <div id="bibleOpticalQrStreamPanel" data-dosis-subtab-panel="pdf" style="margin-bottom: 0.75rem;"></div>
-            <div id="opticalReceiverRxPanel" data-dosis-subtab-panel="pdf" style="margin-bottom: 0.75rem;"></div>
-            <div id="editorialAuditStatusPanel" data-dosis-subtab-panel="graphics" style="font-size: 0.82rem; color: var(--text-secondary);"></div>
+            <div id="bibleOpticalQrStreamPanel" data-dosis-subtab-panel="pdf" hidden style="margin-bottom: 0.75rem;"></div>
+            <div id="opticalReceiverRxPanel" data-dosis-subtab-panel="pdf" hidden style="margin-bottom: 0.75rem;"></div>
+            <div id="editorialAuditStatusPanel" data-dosis-subtab-panel="graphics" hidden style="font-size: 0.82rem; color: var(--text-secondary);"></div>
         </section>
     </section>
 

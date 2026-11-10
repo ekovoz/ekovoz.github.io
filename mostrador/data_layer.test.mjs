@@ -133,7 +133,24 @@ test("all_6_verified_registers_including_grc_load_rom_1_with_sovereign_tier", as
   const layer = createDataLayer({ source: diskSource() });
   const catalog = await layer.loadCatalog();
   const codes = catalog.languages.map((l) => l.code);
-  assert.deepEqual(codes, ["es", "es-1909", "en", "stp", "he", "grc"]);
+  assert.deepEqual(codes, [
+    "es",
+    "es-1909",
+    "en",
+    "stp",
+    "he",
+    "grc",
+    "pt",
+    "fr",
+    "ar",
+    "ru",
+    "zh-Hans",
+    "hi",
+    "bn",
+    "id",
+    "ur",
+    "fa",
+  ]);
   for (const code of codes) {
     const ch = await layer.loadChapter({ lang: code, book: "ROM", chapter: 1 });
     assert.equal(ch.status, STATUS.READY, `ROM 1 en ${code}`);

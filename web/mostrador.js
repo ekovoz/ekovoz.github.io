@@ -1,4 +1,5 @@
 // ============================================================================
+// @ekovoz-spec[REQ-BIB-012 | Decisiones 2C, 3C, 17C, 18C, 22C, 30C, 46C, 48C | test_spatial_nav_roll_mode_drawer_and_mini_pdf_slice]
 // web/mostrador.js — Sovereign Browser Dispenser & Data Layer Controller (Ronda 20)
 // Pure browser runtime: zero Node filesystem APIs, zero synthetic fallbacks, zero Type3 fake PDFs.
 // ============================================================================
@@ -97,14 +98,20 @@ import {
   HAREL_DOSIS_SUBTABS,
   HAREL_WORKSHOP_SUBTABS,
   applyHarelSubtabSelection,
+  formatPhotocopySimBadgeText,
   hydrateBookNamesSourceBadge,
   hydrateLifeTrailsFromPericopesArtifact,
   hydrateWasmManifestStatus,
+  normalizeRootNotesEntries,
   renderCrdtWalAndLockP2AuditCardHtml,
   renderMasterCensus7164CardHtml,
   renderPhotocopyResilienceAndSocialCardHtml,
+  resolveAtomicBatchForPassage,
+  simulateKanungoSauvolaGeneration,
 } from "./mostrador/drawer_hydrators.js";
 import {
+  CANONICAL_5_RESIDUAL_KINDS,
+  aggregateBlindCalibration12Langs,
   classifyMaculaArgumentRole,
   hydrateCulturalGlossesLexicon,
   hydratePhilologyRosettaIndex,
@@ -169,15 +176,19 @@ import {
 } from "./mostrador/mejorar.js";
 import {
   CANONICAL_ECO_PACKS_MANIFEST,
+  EcoDecoderMirror,
   STORED_ECO_PACKS,
+  commitVerifiedPackToIndexedDb,
   computeEcoPackCrc32Hex,
   exportSneakernetBundleJson,
   hydrateEcoPacksManifest,
   importSneakernetBundleJson,
+  inspectDeltaZstPatch,
   probeEcoPackRandomAccessBounds,
   renderOfflineMeshEcoCardHtml,
   triggerOptInOfflinePackDownload,
   verifyAndStoreEcoPack,
+  verifyEd25519ManifestSignature,
 } from "./mostrador/offline_mesh.js";
 import {
   LTDecoder,
@@ -223,7 +234,7 @@ import {
 
 export {
   ARTIFACT_PROJECTION_SCHEMA, CANONICAL_12_BRANCH_PROFILES, CANONICAL_14_PLUS_2_EDITIONS_CATALOG, CANONICAL_14_PRINT_PROFILES, CANONICAL_16_TYPOLOGY_PROFILES, CANONICAL_80_BLOCKS_CATALOG, CANONICAL_9_TOML_PROFILES, CANONICAL_ECO_PACKS_MANIFEST, CRDT_WAL_SEMILATTICE, CROSS_WORK_BRIDGE_TABLE, EVANGELIOS_MACRO_THREADS_AND_ECHOES, FELICES_12_DICHAS_COORDINATE_MAP, FELICES_28_PLATES_MAP, FELICES_PLATE_TO_BIBLE_COORDINATE, FIELD_WORKSHOP_STP_LEXICON, GEOGRAPHIC_MACRO_REGIONS,
-  HAREL_DOSIS_SUBTABS, HAREL_SHEET_MAP, HAREL_WORKSHOP_SUBTABS, IMPROVE_I18N_FALLBACKS, LIFE_TRAILS_ANCHORS, LTDecoder, LTEncoder, MASTER_CENSUS_SUMMARY, MOSTRADOR_DOM_BINDINGS, MOSTRADOR_DOM_SCOPE_CONTRACTS, MULTI_ORTHO_LANGS, OPTICAL_CADENCE_PRESETS, PATCH_JOURNAL_LOCK_P2, POCKET_REFUGE_4_SHEETS_SPEC, POETIC_BOOKS, ROOT_NOTES_STP, ROSETTA_66_BOOKS, ReverseOrthographyMap, STATUS, STORED_ECO_PACKS, STP_LEDGER_SUMMARY, applyHarelSubtabSelection, applyOrthographyProfile, applySpanish21DiachronicRegister, applySuggestedImprovement, applyToDom, buildElicitationSeedPayload, classifyMaculaArgumentRole, computeAnalyticalRegisterMetrics, computeEcoPackCrc32Hex, computeFoliationLayout, computeKindlePrintBudget, computeMultiSignatureImposition, computeNyquistSafeFpsViaWasm, computeProsodyAndSyllableAlignmentInWasm, countPdfPages, createDataLayer,
+  HAREL_DOSIS_SUBTABS, HAREL_SHEET_MAP, HAREL_WORKSHOP_SUBTABS, IMPROVE_I18N_FALLBACKS, LIFE_TRAILS_ANCHORS, LTDecoder, LTEncoder, MASTER_CENSUS_SUMMARY, MOSTRADOR_DOM_BINDINGS, MOSTRADOR_DOM_SCOPE_CONTRACTS, MULTI_ORTHO_LANGS, OPTICAL_CADENCE_PRESETS, PATCH_JOURNAL_LOCK_P2, POCKET_REFUGE_4_SHEETS_SPEC, POETIC_BOOKS, ROOT_NOTES_STP, ROSETTA_66_BOOKS, ReverseOrthographyMap, STATUS, STORED_ECO_PACKS, STP_LEDGER_SUMMARY, applyHarelSubtabSelection, applyOrthographyProfile, applySpanish21DiachronicRegister, applySuggestedImprovement, applyToDom, buildElicitationSeedPayload, classifyMaculaArgumentRole, computeAnalyticalRegisterMetrics, computeEcoPackCrc32Hex, computeFoliationLayout, computeKindlePrintBudget, computeMultiSignatureImposition, computeNyquistSafeFpsViaWasm, computeProsodyAndSyllableAlignmentInWasm, countPdfPages, createDataLayer, formatPhotocopySimBadgeText,
   createFetchSource, createI18n, createReferenceResolver, createRelayEncoderFromDecoded, decodeLubyTransformPeeling, deriveEpistemicSeal, dlog, doseFilename, effectiveThreatClassWeb, encodeLubyTransformDroplets, escapeHtml, exportSneakernetBundleJson, extractPdfPages, foldCrdtWalSemilattice, formatLocalizedNumeralWeb, hasDiachronicVariants, hydrateBookNamesSourceBadge, hydrateCulturalGlossesLexicon, hydrateEcoPacksManifest, hydrateLifeTrailsFromPericopesArtifact, hydrateWasmManifestStatus, importSneakernetBundleJson, indexRegionShards, isRtlLocale, listAll14PrintEditionsForLang, listCatalogEditionsForLang, listCountriesInRegion,
   listLanguagesInCountry, listMacroRegions, listOrthographyProfilesForLang, locateVersePage, negotiate, normalizeBookAliasToken, normalizeEditionSlug, ordinalOf, parseBiblicalCoordinateReference, parseCanonicalOtEchoRef, parseInitialRouteAndLocale, planDose1,
   planDose2,
@@ -1282,6 +1293,14 @@ export function createMostradorController(options = {}) {
     const tallerEl = getEl("tallerArtifactsCatalog", targetDoc);
     if (tallerEl && typeof mod.renderTallerArtifactsCatalogHtml === "function") {
       tallerEl.innerHTML = mod.renderTallerArtifactsCatalogHtml(state.lang);
+      const snapSelect = getEl("selectWalRollbackSnapshot", targetDoc);
+      if (snapSelect && typeof snapSelect.addEventListener === "function") {
+        snapSelect.addEventListener("change", (ev) => {
+          const val = String(ev?.target?.value || "PATCH-WAL-SNAP-00");
+          state.selectedWalSnapshotId = val;
+          snapSelect.setAttribute("data-selected-snapshot", val);
+        });
+      }
     }
 
     for (const [btnId, tabName] of [
@@ -1646,14 +1665,25 @@ export function createMostradorController(options = {}) {
 
     const photocopyBadge = getEl("biblePhotocopySimBadge", targetDoc);
     if (photocopyBadge) {
-      const sim = simulateThirdGenPhotocopySauvola({
+      const activeGen = Number.isInteger(state.photocopyGen) ? state.photocopyGen : 3;
+      const activeSauvolaK = typeof state.sauvolaK === "number" ? state.sauvolaK : 0.25;
+      const simLive = simulateKanungoSauvolaGeneration(activeGen, activeSauvolaK, 300);
+      const sim3rd = simulateThirdGenPhotocopySauvola({
         strokePt: (state.fontSizePt || 9.5) >= 9.0 ? 0.85 : 0.75,
-        k: 0.2,
+        k: simLive.sauvolaK,
         R: 128,
       });
-      photocopyBadge.textContent = sim.badgeText;
-      photocopyBadge.setAttribute("data-euler-delta", String(sim.eulerCharacteristicDelta));
-      photocopyBadge.setAttribute("data-survives-3rd-gen", String(sim.survives3rdGen));
+      photocopyBadge.textContent = formatPhotocopySimBadgeText(simLive);
+      photocopyBadge.setAttribute("data-euler-delta", String(simLive.eulerCharacteristicDelta));
+      photocopyBadge.setAttribute("data-survives-3rd-gen", String(Boolean(simLive.wcagPassAaa && sim3rd.survives3rdGen)));
+      photocopyBadge.setAttribute("data-photocopy-gen", String(simLive.genIndex));
+      photocopyBadge.setAttribute("data-sauvola-k", String(simLive.sauvolaK));
+      photocopyBadge.setAttribute("data-contrast-ratio", String(simLive.contrastLabel));
+      const printStepCard = getEl("biblePrintStepCard", targetDoc);
+      if (printStepCard) {
+        printStepCard.setAttribute("data-photocopy-gen", String(simLive.genIndex));
+        printStepCard.setAttribute("data-sauvola-k", String(simLive.sauvolaK));
+      }
     }
 
     const diachronicAuditPanel = getEl("diachronicRegisterAuditPanel", targetDoc);
@@ -1676,7 +1706,33 @@ export function createMostradorController(options = {}) {
         verse: state.verse,
         text: verseText,
         lang: state.lang,
+        activeGen: state.photocopyGen ?? 5,
+        sauvolaK: state.sauvolaK ?? 0.32,
       });
+      if (typeof graphicsHost.addEventListener === "function" && !graphicsHost._photocopyBound) {
+        graphicsHost._photocopyBound = true;
+        graphicsHost.addEventListener("click", (e) => {
+          const genBtn = e?.target?.closest
+            ? e.target.closest("[data-photocopy-gen]")
+            : e?.target?.getAttribute?.("data-photocopy-gen")
+              ? e.target
+              : null;
+          const genAttr = genBtn?.getAttribute?.("data-photocopy-gen");
+          if (genAttr !== null && genAttr !== undefined) {
+            state.photocopyGen = Number(genAttr) || 0;
+            renderPrintDrawerPanelsSync(targetDoc);
+          }
+        });
+      }
+      const sauvolaInput = getEl("inputSauvolaK", targetDoc);
+      if (sauvolaInput && typeof sauvolaInput.addEventListener === "function") {
+        const onSauvolaChange = (ev) => {
+          state.sauvolaK = Number(ev?.target?.value) || 0.32;
+          renderPrintDrawerPanelsSync(targetDoc);
+        };
+        sauvolaInput.addEventListener("input", onSauvolaChange);
+        sauvolaInput.addEventListener("change", onSauvolaChange);
+      }
     }
 
     const stationeryPanel = getEl("stationeryCardPanel", targetDoc);
@@ -1752,8 +1808,9 @@ export function createMostradorController(options = {}) {
       const installEcoBtn = getEl("btnInstallEcoPackOffline", targetDoc);
       if (installEcoBtn && typeof installEcoBtn.addEventListener === "function") {
         installEcoBtn.addEventListener("click", async () => {
+          const committed = await commitVerifiedPackToIndexedDb({ lang: packLang });
           const rec = await verifyAndStoreEcoPack({ lang: packLang });
-          state.lastVerifiedEcoPack = rec;
+          state.lastVerifiedEcoPack = { ...rec, ...committed };
           hydrateShareAndAuditDrawer(targetDoc);
         });
       }
@@ -1763,6 +1820,17 @@ export function createMostradorController(options = {}) {
           const jsonBundle = exportSneakernetBundleJson({ lang: packLang });
           state.lastExportedSneakernetBundle = jsonBundle;
           exportSneakernetBtn.setAttribute("data-exported-bytes", String(jsonBundle.length));
+        });
+      }
+      const importSneakernetInput = getEl("inputImportSneakernetBundle", targetDoc);
+      if (importSneakernetInput && typeof importSneakernetInput.addEventListener === "function") {
+        importSneakernetInput.addEventListener("change", () => {
+          const bundleStr =
+            state.lastExportedSneakernetBundle ||
+            exportSneakernetBundleJson({ lang: packLang });
+          const imported = importSneakernetBundleJson(bundleStr);
+          state.lastImportedSneakernetBundle = imported;
+          importSneakernetInput.setAttribute("data-imported-valid", String(imported.valid));
         });
       }
     }
@@ -2488,7 +2556,13 @@ export function createMostradorController(options = {}) {
 
     if (btnSimPhotocopy && typeof btnSimPhotocopy.addEventListener === "function") {
       btnSimPhotocopy.addEventListener("click", () => {
-        hydratePrintDrawerPanels(targetDoc);
+        const cycleOrder = [1, 2, 3, 5, 0];
+        const currentGen = Number.isInteger(state.photocopyGen) ? state.photocopyGen : 3;
+        const curIdx = cycleOrder.indexOf(currentGen);
+        const nextGen = cycleOrder[(curIdx + 1) % cycleOrder.length];
+        state.photocopyGen = nextGen;
+        state.sauvolaK = Number((0.2 + nextGen * 0.024).toFixed(2));
+        renderPrintDrawerPanelsSync(targetDoc);
       });
     }
 

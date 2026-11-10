@@ -24,6 +24,7 @@ import {
   resolveFelicesPlate,
   resolveMasoreticPericopeBreaks,
 } from "./evangelios.js";
+import { projectNsmRealiaLexicon3NF } from "./data_layer.js";
 import { runModuleWithoutProcess } from "../test_support/no_process_runner.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -176,9 +177,10 @@ test("metamorphic_verse_filter_and_nsm_realia_lexicon_integration", () => {
   const gen1Shard = JSON.parse(
     fs.readFileSync(path.join(WEB_DIR, "data", "matrix", "GEN", "1.json"), "utf8"),
   );
-  const nsmLexicon = JSON.parse(
-    fs.readFileSync(path.join(WEB_DIR, "shards", "nsm_realia_lexicon.json"), "utf8"),
+  const pericopesDoc = JSON.parse(
+    fs.readFileSync(path.join(WEB_DIR, "data", "pericopes_and_glosses.json"), "utf8"),
   );
+  const nsmLexicon = projectNsmRealiaLexicon3NF(pericopesDoc);
 
   // 1B++: Filtering by verse 1 vs verse 2 produces distinct 14-column cards
   const htmlV1 = renderStudy14ColDrawerHtml(gen1Shard, { book: "GEN", chapter: 1, verse: 1, scope: "verse" });

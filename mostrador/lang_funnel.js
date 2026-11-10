@@ -1,3 +1,4 @@
+// @ekovoz-spec[REQ-BIB-011 | Decisiones 1C, 21C | test_geographic_3_tap_funnel_and_subregions]
 // Embudo soberano de 7,164 idiomas (Glottolog 4.8 / ISO 639-3) — Ekovoz Mostrador Ronda 20.
 // Cero dependencias de Node.js. Opera en navegador sobre shards/region_01..12.json y data/catalog.json.
 
