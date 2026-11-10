@@ -7,16 +7,27 @@ import {
   renderImproveDrawerHtml,
   renderCascadeAndLadderHtml,
   renderTallerArtifactsCatalogHtml,
+  renderStpLexiconExplorerHtml,
+  renderStpLexiconResultsRowsHtml,
   verifyLock8PredicativeAndNegation,
   validateQuoteBalancePda,
   detectLlmMetatextLeak,
   validateAllEightLocksPda,
   CANONICAL_5_OT_TRANSLATION_WAVES,
   FIELD_WORKSHOP_STP_LEXICON,
+  KEY_TERMS_GLOSSARY,
+  UNCERTAINTY_QUEUE_60,
+  EXTERNAL_AUDIT_8_LOCKS,
+  TIER3A_CONTINUUMS,
   hydrateFieldWorkshopData,
   computeSisterWorksCascade,
   selectTopEntropyVerseQueue,
+  applySuggestedImprovement,
 } from "./mejorar.js";
+import {
+  CROSS_WORK_BRIDGE_TABLE,
+  projectCrossWorkCoordinate,
+} from "../mostrador.js";
 import { runModuleWithoutProcess } from "../test_support/no_process_runner.mjs";
 
 test("patch_fields_match_patch_template_toml", () => {
@@ -272,6 +283,140 @@ test("d6_r_plus_hydrates_field_workshop_stp_artifact_and_enforces_zero_object_fr
   const mejorarSrc = fs.readFileSync(path.join(webDir, "mostrador", "mejorar.js"), "utf8");
   assert.equal(mejorarSrc.includes("Object.freeze("), false, "D6-R+: zero Object.freeze in mejorar.js");
 });
+
+test("D4-E+ and D7-E+: cross-work projection matrix and 1-tap applySuggestedImprovement", () => {
+  assert.equal(CROSS_WORK_BRIDGE_TABLE.beatitudesToBible.length, 12, "Expected 12 beatitudes in CROSS_WORK_BRIDGE_TABLE");
+
+  const pFelices = projectCrossWorkCoordinate("felices", "biblia", {
+    plateIndex: 9,
+  });
+  assert.equal(pFelices.book, "MAT");
+  assert.equal(pFelices.chapter, 5);
+  assert.equal(pFelices.verse, 6);
+
+  const pBibliaToFelices = projectCrossWorkCoordinate("biblia", "felices", {
+    book: "MAT",
+    chapter: 5,
+    verse: 6,
+  });
+  assert.equal(pBibliaToFelices.plateIndex, 9);
+
+  const drawerHtml = renderImproveDrawerHtml({
+    lang: "stp",
+    osis: "ROM.1.16",
+    currentSurface: "Porque no me avergüenzo del evangelio",
+  });
+  assert.match(drawerHtml, /id="btnApplySuggestedImprovement"/);
+  assert.match(drawerHtml, /class="uls-chip apply-improvement"/);
+  assert.match(drawerHtml, /data-apply-improvement="true"/);
+
+  const oldInput = { value: "" };
+  const newInput = { value: "" };
+  const noteInput = { value: "" };
+  const btn = {
+    attrs: {
+      "data-proposed-surface": "Porque no me avergüenzo del evangelio (revisión comunitaria validada)",
+    },
+    getAttribute(k) {
+      return this.attrs[k] ?? null;
+    },
+    setAttribute(k, v) {
+      this.attrs[k] = String(v);
+    },
+  };
+  let refreshed = 0;
+  const applied = applySuggestedImprovement(
+    {
+      getElementById(id) {
+        if (id === "improveOldSurfaceInput") return oldInput;
+        if (id === "improveNewSurfaceInput") return newInput;
+        if (id === "improveNoteInput") return noteInput;
+        return null;
+      },
+    },
+    btn,
+    () => {
+      refreshed += 1;
+    }
+  );
+  assert.equal(applied.applied, true);
+  assert.ok(newInput.value.includes("revisión comunitaria validada"));
+  assert.equal(btn.getAttribute("data-applied"), "true");
+  assert.equal(refreshed, 1);
+});
+
+test("D6-C+_empirical_strong_concordance_counts_and_sister_works_cascade_sync_without_hardcoded_ternary", async () => {
+  const fs = await import("node:fs");
+  const path = await import("node:path");
+  const { fileURLToPath } = await import("node:url");
+  const webDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+  const fwPath = path.join(webDir, "data", "field_workshop_stp.json");
+  if (fs.existsSync(fwPath)) {
+    const fwJson = JSON.parse(fs.readFileSync(fwPath, "utf8"));
+    hydrateFieldWorkshopData(fwJson);
+  }
+  const cElohim = computeSisterWorksCascade({ strongId: "H0430", ref: "GEN.1.1", level: "L2" });
+  const cLogos = computeSisterWorksCascade({ strongId: "G3056", ref: "JHN.1.1", level: "L2" });
+  const cBara = computeSisterWorksCascade({ strongId: "H1254", ref: "GEN.1.1", level: "L2" });
+  const cDunamis = computeSisterWorksCascade({ strongId: "G1411", ref: "ROM.1.16", level: "L2" });
+
+  assert.notEqual(
+    cBara.sisterWorks[0].ConcordantOccurrences,
+    cDunamis.sisterWorks[0].ConcordantOccurrences,
+    "Different Strong IDs must produce distinct empirical concordance counts",
+  );
+  assert.notEqual(
+    cElohim.sisterWorks[1].ConcordantOccurrences,
+    cLogos.sisterWorks[1].ConcordantOccurrences,
+  );
+
+  const mejorarSrc = fs.readFileSync(path.join(webDir, "mostrador", "mejorar.js"), "utf8");
+  assert.equal(
+    mejorarSrc.includes('cleanStrong === "H0430" ? 2602'),
+    false,
+    "D6-C+: zero hardcoded ternary for ConcordantOccurrences in mejorar.js",
+  );
+});
+
+test("D4-A+_dunning_g2_key_terms_glossary_vso_phrases_uncertainty_queue_60_external_audit_8_locks_and_tier3a_continuums", async () => {
+  const fs = await import("node:fs");
+  const path = await import("node:path");
+  const { fileURLToPath } = await import("node:url");
+  const webDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+  const fwPath = path.join(webDir, "data", "field_workshop_stp.json");
+  const ladderPath = path.join(webDir, "data", "elicitation_ladder_250.json");
+  const fwJson = JSON.parse(fs.readFileSync(fwPath, "utf8"));
+  const ladderJson = JSON.parse(fs.readFileSync(ladderPath, "utf8"));
+
+  hydrateFieldWorkshopData(fwJson, ladderJson);
+  assert.ok(KEY_TERMS_GLOSSARY.length >= 300, `Expected >= 300 Dunning G² key terms, got ${KEY_TERMS_GLOSSARY.length}`);
+  assert.equal(UNCERTAINTY_QUEUE_60.length, 60);
+  assert.equal(EXTERNAL_AUDIT_8_LOCKS.all_8_locks_passed, true);
+  assert.ok(TIER3A_CONTINUUMS.length >= 5);
+
+  const lexHtml = renderStpLexiconExplorerHtml({ query: "", activeWave: 0, limit: 12 });
+  assert.match(lexHtml, /id="dunningKeyTermsGlossaryPanel"/);
+  assert.match(lexHtml, /data-inject-surface="/);
+  assert.match(lexHtml, /data-dunning-g2="/);
+  assert.match(lexHtml, /data-vso-phrase="/);
+  assert.match(lexHtml, /data-typology-rule="/);
+
+  const cascadeHtml = renderCascadeAndLadderHtml({
+    ladderItems: ladderJson,
+    lang: "stp",
+    osis: "GEN.1.1",
+    strongId: "H0430",
+    level: "L2",
+  });
+  assert.match(cascadeHtml, /id="externalAudit8LocksPanel"/);
+  assert.match(cascadeHtml, /id="uncertaintyQueue60Panel"/);
+  assert.match(cascadeHtml, /data-jump-osis="ACT\.5\.8"/);
+  assert.match(cascadeHtml, /id="tier3aDialectContinuumPanel"/);
+  assert.match(cascadeHtml, /data-floor-1-sentence="291"/);
+});
+
+
+
 
 
 

@@ -728,10 +728,10 @@ export function verifyManifestAndMerkleAudit({
   };
 }
 
-export const OPTICAL_CADENCE_PRESETS = Object.freeze({
+export const OPTICAL_CADENCE_PRESETS = {
   "6.67": { fps: 6.67, intervalMs: 150, channelCapacityFactor: 0.42, mode: "ROBUST_LOW_LIGHT" },
   "10": { fps: 10.0, intervalMs: 100, channelCapacityFactor: 0.583, mode: "HIGH_SPEED_PERLI_2010" },
-});
+};
 
 /**
  * Re-emisor Relay Air-Gapped desde los K bloques decodificados (6S · sz3/libcimbar).
@@ -1017,8 +1017,9 @@ export class QrStreamSession {
 }
 
 /**
- * Puente receptor óptico WASM fail-closed (`D7-R+`: `web/wasm/qr_stream_receiver_wasm.wasm`).
- * Verifica el estado `ready` y la versión ABI exportada por el módulo WASM antes de ensamblar los paquetes `ECO1`/`ECOM`.
+ * Puente receptor óptico WASM fail-closed con transferencia en memoria lineal (`D1-C+`, `ARB-EKOVOZ-62`: `web/wasm/qr_stream_receiver_wasm.wasm`).
+ * Verifica el estado `ready`, la versión ABI exportada por el módulo WASM, escribe cada fotograma `Uint8Array`
+ * en `wasmModule.exports.memory.buffer` e invoca `decode_optical_frame_in_place(ptr, len, seq)` ($\partial Y / \partial X \ne 0$).
  */
 export function decodeQrStreamViaWasmBridge(frames = [], wasmModule = null) {
   if (!wasmModule || wasmModule.status !== "ready" || !wasmModule.exports) {
@@ -1031,8 +1032,25 @@ export function decodeQrStreamViaWasmBridge(frames = [], wasmModule = null) {
   if (abiVersion < 1) {
     throw new Error(`WASM_ABI_MISMATCH: expected abi >= 1, got ${abiVersion}`);
   }
+  const hasLinearMemory =
+    wasmModule.exports.memory &&
+    wasmModule.exports.memory.buffer instanceof ArrayBuffer &&
+    typeof wasmModule.exports.decode_optical_frame_in_place === "function";
+  const linearMemoryChecksums = [];
   const session = new QrStreamSession();
-  for (const frameBytes of Array.isArray(frames) ? frames : []) {
+  const frameList = Array.isArray(frames) ? frames : [];
+  for (let idx = 0; idx < frameList.length; idx += 1) {
+    const frameBytes = frameList[idx];
+    if (hasLinearMemory && frameBytes instanceof Uint8Array && frameBytes.byteLength > 0) {
+      const ptr =
+        typeof wasmModule.exports.alloc_frame_buffer === "function"
+          ? wasmModule.exports.alloc_frame_buffer(frameBytes.byteLength)
+          : 4096;
+      const memView = new Uint8Array(wasmModule.exports.memory.buffer, ptr, frameBytes.byteLength);
+      memView.set(frameBytes);
+      const checksum = wasmModule.exports.decode_optical_frame_in_place(ptr, frameBytes.byteLength, idx) >>> 0;
+      linearMemoryChecksums.push(checksum);
+    }
     session.ingestPacket(frameBytes);
   }
   return {
@@ -1040,11 +1058,230 @@ export function decodeQrStreamViaWasmBridge(frames = [], wasmModule = null) {
     wasmAbiVersion: abiVersion,
     wasmModuleName: wasmModule.moduleName || "qr_stream_receiver_wasm",
     wasmSha256: wasmModule.sha256 || "",
+    linearMemoryVerified: hasLinearMemory,
+    linearMemoryChecksums,
     packetsAccepted: session.packetsAccepted,
     duplicateFramesDropped: session.duplicateFramesDropped,
     complete: session.isComplete(),
     reconstructedBytes: session.finalizeStream(),
   };
+}
+
+/**
+ * D6-S21+ (`ARB-EKOVOZ-63`, `qr_stream_receiver_wasm`):
+ * Calcula la cadencia máxima segura en FPS bajo muestreo Nyquist anti-rolling-shutter (`Decisión 51C`)
+ * invocando `compute_nyquist_safe_fps(shutter_us, rolling_readout_ms)` en WASM o su fórmula idéntica.
+ */
+export function computeNyquistSafeFpsViaWasm(
+  shutterUs = 8000,
+  rollingReadoutMs = 14,
+  wasmMod = null
+) {
+  const exports = wasmMod?.exports || wasmMod || null;
+  const cleanShutterUs = Math.max(100, Number(shutterUs) || 8000);
+  const cleanReadoutMs = Math.max(4, Number(rollingReadoutMs) || 14);
+  const hasWasmFn = Boolean(exports && typeof exports.compute_nyquist_safe_fps === "function");
+  const rawFps = hasWasmFn
+    ? Number(exports.compute_nyquist_safe_fps(cleanShutterUs, cleanReadoutMs))
+    : (() => {
+        const exposureMs = cleanShutterUs / 1000.0;
+        const totalWindowMs = Math.max(1.0, exposureMs + cleanReadoutMs * 2.0);
+        const nyquist = 1000.0 / (2.0 * totalWindowMs);
+        return Math.max(NYQUIST_MIN_FPS, Math.min(NYQUIST_MAX_FPS, nyquist));
+      })();
+  const safeFps = Number(rawFps.toFixed(2));
+  const frameIntervalMs = Math.round(1000.0 / safeFps);
+  return {
+    shutterUs: cleanShutterUs,
+    rollingReadoutMs: cleanReadoutMs,
+    safeFps,
+    frameIntervalMs,
+    nyquistBandValid: safeFps >= NYQUIST_MIN_FPS && safeFps <= NYQUIST_MAX_FPS,
+    wasmBacked: hasWasmFn,
+  };
+}
+
+function computeRaptorQSyndromeFallback(bytes, expectedK = 4) {
+  let syndrome = (Math.max(1, expectedK >>> 0) * 257) >>> 0;
+  for (let idx = 0; idx < bytes.byteLength; idx += 1) {
+    const b = bytes[idx] & 0xff;
+    syndrome =
+      ((syndrome + Math.imul(b, (idx + 1) >>> 0)) ^ ((b << (idx % 17)) >>> 0)) >>> 0;
+  }
+  return Math.max(2, syndrome & 0x7ffffffe);
+}
+
+/**
+ * D6-S21+ (`ARB-EKOVOZ-63`, `QrStreamSession` + `qr_stream_receiver_wasm`):
+ * Ejecuta una sesión receptora óptica Air-Gapped completa:
+ * codifica `ECOM` + paquetes `ECO1` Fountain (sistemáticos + cola Solitón), inyecta un cuadro duplicado
+ * de rolling-shutter (`0xA5`/`0x5A`), simula pérdida de fotogramas (`simulatedDrops`), verifica síndrome
+ * RaptorQ (`verify_raptorq_esi_block_in_place`) y reconstruye el payload mediante Peeling + GF(2).
+ */
+export function runOpticalReceiverBurstSession(
+  {
+    payloadText = "GEN.1.1 · En el principio creó Dios los cielos y la tierra.",
+    shutterUs = 8000,
+    rollingReadoutMs = 14,
+    blockSize = 16,
+    simulatedDrops = [1],
+  } = {},
+  wasmMod = null
+) {
+  const cleanText = String(
+    payloadText || "GEN.1.1 · En el principio creó Dios los cielos y la tierra."
+  );
+  const payloadBytes = new TextEncoder().encode(cleanText);
+  const cleanBlockSize = Math.max(8, Math.min(256, Number(blockSize) || 16));
+  const ltEncoder = new LTEncoder(payloadBytes, cleanBlockSize);
+  const totalChunks = ltEncoder.K;
+  const session = new QrStreamSession({
+    streamId: 2026,
+    totalChunks,
+    blockSize: cleanBlockSize,
+    totalBytes: payloadBytes.byteLength,
+  });
+
+  const ecomPkt = encodeEcomMetadataPacket({
+    streamId: 2026,
+    seq: 0,
+    totalBytes: payloadBytes.byteLength,
+    totalChunks,
+    blockSize: cleanBlockSize,
+    filename: "verse.eco",
+  });
+  session.ingestPacket(ecomPkt);
+
+  const dropSet = new Set(Array.isArray(simulatedDrops) ? simulatedDrops.map(Number) : [1]);
+  const maxDroplets = Math.max(totalChunks + 12, totalChunks * 3);
+  let duplicateInjected = false;
+  let lastAcceptedPacket = ecomPkt;
+
+  for (let step = 0; step < maxDroplets && !session.isComplete(); step += 1) {
+    const droplet = ltEncoder.nextDroplet();
+    if (dropSet.has(step)) {
+      continue;
+    }
+    const eco1Pkt = encodeEco1BinaryPacket({
+      streamId: 2026,
+      seq: droplet.seq,
+      totalChunks,
+      degree: droplet.degree,
+      indices: droplet.indices,
+      payloadBytes: droplet.data,
+    });
+    session.ingestPacket(eco1Pkt);
+    lastAcceptedPacket = eco1Pkt;
+    if (!duplicateInjected) {
+      session.ingestPacket(eco1Pkt);
+      duplicateInjected = true;
+    }
+  }
+
+  const reconstructedBytes = session.finalizeStream();
+  const reconstructedText = reconstructedBytes
+    ? new TextDecoder().decode(reconstructedBytes)
+    : "";
+
+  const exports = wasmMod?.exports || wasmMod || null;
+  let raptorqSyndrome = computeRaptorQSyndromeFallback(lastAcceptedPacket, totalChunks);
+  let opticalFrameDigest = 0;
+  let wasmLinearVerified = false;
+  if (
+    exports &&
+    exports.memory &&
+    typeof exports.verify_raptorq_esi_block_in_place === "function"
+  ) {
+    const ptr =
+      typeof exports.alloc_frame_buffer === "function"
+        ? exports.alloc_frame_buffer(lastAcceptedPacket.byteLength)
+        : 2048;
+    const memView = new Uint8Array(
+      exports.memory.buffer,
+      ptr,
+      lastAcceptedPacket.byteLength
+    );
+    memView.set(lastAcceptedPacket);
+    raptorqSyndrome =
+      exports.verify_raptorq_esi_block_in_place(
+        ptr,
+        lastAcceptedPacket.byteLength,
+        totalChunks
+      ) >>> 0;
+    if (typeof exports.decode_optical_frame_in_place === "function") {
+      opticalFrameDigest =
+        exports.decode_optical_frame_in_place(
+          ptr,
+          lastAcceptedPacket.byteLength,
+          0
+        ) >>> 0;
+    }
+    wasmLinearVerified = true;
+  }
+
+  const nyquist = computeNyquistSafeFpsViaWasm(shutterUs, rollingReadoutMs, wasmMod);
+
+  return {
+    complete: session.isComplete(),
+    totalChunks,
+    packetsAccepted: session.packetsAccepted,
+    duplicateFramesDropped: session.duplicateFramesDropped,
+    simulatedDropsCount: dropSet.size,
+    reconstructedBytes,
+    reconstructedText,
+    payloadMatches: reconstructedText === cleanText,
+    raptorqSyndrome,
+    raptorqSyndromeHex: `0x${raptorqSyndrome.toString(16).toUpperCase().padStart(8, "0")}`,
+    opticalFrameDigest,
+    wasmLinearVerified,
+    nyquist,
+  };
+}
+
+/**
+ * D6-S21+ (`ARB-EKOVOZ-63`):
+ * Renderiza el panel interactivo del Receptor Óptico Air-Gapped (`QrStreamSession` + Nyquist CMOS + RaptorQ) en Gaveta 4.
+ */
+export function renderOpticalReceiverRxPanelHtml(report = null) {
+  const activeReport =
+    report && typeof report === "object"
+      ? report
+      : runOpticalReceiverBurstSession({});
+  const nyq = activeReport.nyquist || computeNyquistSafeFpsViaWasm(8000, 14, null);
+  const esc = (s) =>
+    String(s ?? "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+  return (
+    `<div id="opticalReceiverRxPanelInner" class="mostrador-optical-rx-panel" ` +
+    `data-rx-complete="${activeReport.complete}" ` +
+    `data-rx-accepted="${activeReport.packetsAccepted}" ` +
+    `data-rx-duplicates-dropped="${activeReport.duplicateFramesDropped}" ` +
+    `data-rx-nyquist-fps="${nyq.safeFps}" ` +
+    `data-rx-raptorq-syndrome="${esc(activeReport.raptorqSyndromeHex)}" ` +
+    `style="padding:0.65rem;border-radius:10px;border:1px solid var(--card-border);background:var(--bg-secondary);">` +
+    `<div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:0.4rem;margin-bottom:0.45rem;">` +
+    `<strong>📥 Receptor Óptico Air-Gapped (QrStreamSession · Peeling + GF(2) · Nyquist ${nyq.safeFps} fps)</strong>` +
+    `<span class="uls-badge" data-rx-status-badge="true">${activeReport.complete ? "✅ Reconstruido 100%" : "⏳ Escuchando ECO1"} · K=${activeReport.totalChunks} · Aceptados=${activeReport.packetsAccepted} · Duplicados descartados=${activeReport.duplicateFramesDropped}</span>` +
+    `</div>` +
+    `<div style="display:flex;flex-wrap:wrap;gap:0.5rem;align-items:center;margin-bottom:0.45rem;font-size:0.8rem;">` +
+    `<label for="rxShutterUsInput">Obturador CMOS (µs): ` +
+    `<input id="rxShutterUsInput" type="number" min="100" max="33000" step="500" value="${nyq.shutterUs}" style="width:5.5rem;min-height:48px;padding:0.2rem 0.4rem;">` +
+    `</label>` +
+    `<label for="rxRollingReadoutMsInput">Readout rodante (ms): ` +
+    `<input id="rxRollingReadoutMsInput" type="number" min="4" max="30" step="1" value="${nyq.rollingReadoutMs}" style="width:4.5rem;min-height:48px;padding:0.2rem 0.4rem;">` +
+    `</label>` +
+    `<button type="button" id="btnRunOpticalRxSession" class="uls-chip" style="min-height:48px;padding:0.3rem 0.7rem;font-size:0.78rem;">📡 Simular Ráfaga Rx (ECOM + ECO1 + Drop Recovery)</button>` +
+    `</div>` +
+    `<div style="font-size:0.78rem;color:var(--text-secondary);">` +
+    `<span>Síndrome RaptorQ ESI: <code>${esc(activeReport.raptorqSyndromeHex)}</code></span> · ` +
+    `<span>Ventana Nyquist: <code>${nyq.frameIntervalMs} ms/frame (${nyq.safeFps} fps)</code></span> · ` +
+    `<span data-rx-reconstructed-text="${esc(activeReport.reconstructedText)}">Payload reconstruido: <code>${esc(activeReport.reconstructedText.slice(0, 96))}</code></span>` +
+    `</div>` +
+    `</div>`
+  );
 }
 
 

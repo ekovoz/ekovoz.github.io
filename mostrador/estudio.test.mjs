@@ -15,11 +15,14 @@ import {
   resolveKetivQereResiduals,
   resolveParatextEngOrgMapping,
   hydratePhilologyRosettaIndex,
+  hydrateCulturalGlossesLexicon,
 } from "./estudio.js";
 import {
   hydratePericopesAndGlosses,
   resolveEvangeliosMacroThreadAndEcho,
   resolveFelicesDichaCoordinate,
+  resolveFelicesPlate,
+  resolveMasoreticPericopeBreaks,
 } from "./evangelios.js";
 import { runModuleWithoutProcess } from "../test_support/no_process_runner.mjs";
 
@@ -282,7 +285,96 @@ test("d3_b_plus_philology_rosetta_index_consonantal_root_lxx_mt_bridge_and_ketiv
   const evangeliosSrc = fs.readFileSync(path.join(WEB_DIR, "mostrador", "evangelios.js"), "utf8");
   assert.equal(estudioSrc.includes("Object.freeze("), false, "D2-R+: zero Object.freeze in estudio.js");
   assert.equal(evangeliosSrc.includes("Object.freeze("), false, "D4-R+: zero Object.freeze in evangelios.js");
+
+  // D4-A+: 3rd scope button data-study-scope="gmis" with Brushing & Linking [data-jump-sheet="field"] and Cultural Glosses Accordion
+  const gen1ShardForGmis = JSON.parse(
+    fs.readFileSync(path.join(WEB_DIR, "data", "matrix", "GEN", "1.json"), "utf8"),
+  );
+  const gmisDrawerHtml = renderStudy14ColDrawerHtml(gen1ShardForGmis, {
+    book: "GEN",
+    chapter: 1,
+    verse: 1,
+    scope: "gmis",
+    lang: "stp",
+    wordOrder: "VSO",
+  });
+  assert.match(gmisDrawerHtml, /data-scope="gmis"/);
+  assert.match(gmisDrawerHtml, /data-study-scope="gmis" aria-pressed="true"/);
+  assert.match(gmisDrawerHtml, /data-gmis-scaffold="true"/);
+  assert.match(gmisDrawerHtml, /data-jump-sheet="field"/);
+
+  const pericopesFull = JSON.parse(
+    fs.readFileSync(path.join(WEB_DIR, "data", "pericopes_and_glosses.json"), "utf8"),
+  );
+  hydrateCulturalGlossesLexicon(pericopesFull.cultural_glosses);
+  const strataWithGlosses = renderStudyStrataCards(gen1ShardForGmis, { book: "GEN", chapter: 1, verse: 1 });
+  assert.match(strataWithGlosses.realiaHtml, /id="studyCulturalGlossesCatalogAccordion"/);
+  assert.match(strataWithGlosses.realiaHtml, /data-cultural-gloss-term="denario"/);
+  assert.match(strataWithGlosses.realiaHtml, /data-cultural-gloss-term="siclo"/);
 });
+
+test("D2-C+_and_D3-C+_hydrate_multi_pericope_chapters_52_weeks_28_felices_plates_and_custom_rosetta_bicanonical", () => {
+  // Custom bicanonical rule via options.rosettaIndex forwarded by renderStudy14ColDrawerHtml
+  const customRosetta = {
+    bicanonical_divergence_rules: [
+      {
+        book: "JOB",
+        chapter_min: 40,
+        chapter_max: 41,
+        verse_min: 1,
+        mt_chapter_delta: 0,
+        mt_verse_delta: 8,
+        lxx_chapter_delta: 0,
+        regime: "JOB_BEHEMOTH_LEVIATHAN_SHIFT",
+      },
+    ],
+  };
+  const bicanonJob = resolveBicanonicalDivergence("JOB", 41, 1, customRosetta);
+  assert.equal(bicanonJob.hasDivergence, true);
+  assert.equal(bicanonJob.regime, "JOB_BEHEMOTH_LEVIATHAN_SHIFT");
+  assert.equal(bicanonJob.mtRef, "JOB.41.9");
+
+  // Hydrate chapter_pericopes + evangelios_macro_threads + felices_28_plates schema
+  hydratePericopesAndGlosses({
+    chapter_pericopes: {
+      "GEN.1": [
+        { startVerse: 1, marker: "פ", markerType: "Petuchah (párrafo abierto)", title: "Día 1" },
+        { startVerse: 6, marker: "פ", markerType: "Petuchah (párrafo abierto)", title: "Día 2" },
+        { startVerse: 9, marker: "פ", markerType: "Petuchah (párrafo abierto)", title: "Día 3" },
+        { startVerse: 14, marker: "פ", markerType: "Petuchah (párrafo abierto)", title: "Día 4" },
+      ],
+    },
+    evangelios_macro_threads: Array.from({ length: 52 }, (_, idx) => ({
+      weekNumber: idx + 1,
+      title: `Lámina ${idx + 1}`,
+      cita: `Juan ${(idx % 21) + 1}:1`,
+      macroThread: `Hilo Semanal ${idx + 1}`,
+      otEcho: "GEN 1:1",
+      liturgicalDawnNote: `Nota de alba ${idx + 1}`,
+    })),
+    felices_28_plates: Array.from({ length: 28 }, (_, idx) => ({
+      number: idx + 1,
+      id: `lamina-${idx + 1}`,
+      title: `Felices Lámina ${idx + 1}`,
+      section: idx === 0 ? "INTRO" : idx <= 12 ? "DICHAS" : "CONTRARIOS",
+    })),
+  });
+
+  const breaksGen1 = resolveMasoreticPericopeBreaks("GEN", 1, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 14]);
+  assert.equal(breaksGen1.has(6), true);
+  assert.equal(breaksGen1.has(9), true);
+  assert.equal(breaksGen1.has(14), true);
+
+  const week1 = resolveEvangeliosMacroThreadAndEcho("s01");
+  const week52 = resolveEvangeliosMacroThreadAndEcho("s52");
+  assert.notEqual(week1.macroThread, week52.macroThread);
+  assert.ok(week52.macroThread.includes("Hilo 4"));
+
+  const plate28 = resolveFelicesPlate(28);
+  assert.equal(plate28.number, 28);
+  assert.equal(plate28.title, "Felices Lámina 28");
+});
+
 
 
 

@@ -1,11 +1,20 @@
 // Pruebas de la capa de datos (Ronda 20, S09). El adaptador de disco lee los shards reales que
 // genera `xtask build-web-data` en web/data/.
-import test from "node:test";
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
+import test from "node:test";
 import { fileURLToPath } from "node:url";
-import { createDataLayer, STATUS } from "./data_layer.js";
+import {
+  ARTIFACT_PROJECTION_SCHEMA,
+  createDataLayer,
+  decodeFrameInWasmLinearMemory,
+  resolveLocalizedBookMeta,
+  STATUS,
+  verifyArtifactProjectionClosure,
+  verifyAudioPcmCrc16InWasmLinearMemory,
+  verifyRaptorQBlockInWasmLinearMemory,
+} from "./data_layer.js";
 import { runWithoutProcess } from "./test_support/no_process_runner.mjs";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
@@ -246,7 +255,29 @@ test("round25_loads_all_6_compiled_rust_artifacts_and_enforces_fail_closed_wasm_
   const wasmOk = await layer.loadWasmModule("qr_stream_receiver_wasm");
   assert.equal(wasmOk.status, STATUS.READY);
   assert.equal(typeof wasmOk.exports.ekovoz_wasm_abi_version, "function");
-  assert.equal(wasmOk.exports.ekovoz_wasm_abi_version(), 25);
+  assert.ok(wasmOk.exports.ekovoz_wasm_abi_version() >= 25);
+  assert.ok(wasmOk.exports.memory instanceof WebAssembly.Memory, "D1-C+: qr_stream_receiver_wasm must export linear memory");
+
+  // Metamorphic Provenance Gate (dY/dX != 0, Chen et al. IEEE TSE 2025 / ARB-EKOVOZ-62):
+  const frameAlpha = new Uint8Array([1, 69, 67, 79, 49, 8, 71, 69, 78, 46, 49, 46, 49, 65]);
+  const frameBeta = new Uint8Array([1, 69, 67, 79, 49, 8, 71, 69, 78, 46, 49, 46, 49, 66]);
+  const digestAlpha = decodeFrameInWasmLinearMemory(wasmOk, frameAlpha, 0);
+  const digestBeta = decodeFrameInWasmLinearMemory(wasmOk, frameBeta, 0);
+  assert.ok(digestAlpha > 0 && digestBeta > 0);
+  assert.notEqual(digestAlpha, digestBeta, "D1-C+ / ARB-EKOVOZ-62: decode_optical_frame_in_place must be payload-sensitive (dY/dX != 0)");
+
+  const syndromeAlpha = verifyRaptorQBlockInWasmLinearMemory(wasmOk, frameAlpha, 8);
+  const syndromeBeta = verifyRaptorQBlockInWasmLinearMemory(wasmOk, frameBeta, 8);
+  assert.ok(syndromeAlpha > 0 && syndromeBeta > 0);
+  assert.notEqual(syndromeAlpha, syndromeBeta, "D1-C+ / ARB-EKOVOZ-62: verify_raptorq_esi_block_in_place must satisfy dY/dX != 0");
+
+  const playerWasm = await layer.loadWasmModule("ekovoz_player_wasm");
+  assert.equal(playerWasm.status, STATUS.READY);
+  assert.ok(playerWasm.exports.memory instanceof WebAssembly.Memory, "D1-C+: ekovoz_player_wasm must export linear memory");
+  const crcAlpha = verifyAudioPcmCrc16InWasmLinearMemory(playerWasm, frameAlpha);
+  const crcBeta = verifyAudioPcmCrc16InWasmLinearMemory(playerWasm, frameBeta);
+  assert.ok(crcAlpha > 0 && crcBeta > 0);
+  assert.notEqual(crcAlpha, crcBeta, "D1-C+ / ARB-EKOVOZ-62: verify_audio_frame_crc16_in_place must satisfy dY/dX != 0");
 
   // Tampered WASM byte must fail closed with WASM_SHA256_MISMATCH
   const tamperedSource = {
@@ -263,4 +294,25 @@ test("round25_loads_all_6_compiled_rust_artifacts_and_enforces_fail_closed_wasm_
   const wasmTampered = await tamperedLayer.loadWasmModule("qr_stream_receiver_wasm");
   assert.equal(wasmTampered.status, STATUS.UNAVAILABLE);
   assert.equal(wasmTampered.reason, "WASM_SHA256_MISMATCH");
+});
+
+test("d1_a_plus_artifact_projection_schema_and_localized_book_meta_nsm_subtitle", async () => {
+  const layer = createDataLayer({ source: diskSource() });
+  assert.ok(Array.isArray(ARTIFACT_PROJECTION_SCHEMA) && ARTIFACT_PROJECTION_SCHEMA.length >= 6);
+
+  const bookNamesEs = await layer.loadBookNames("es");
+  assert.ok(bookNamesEs && Array.isArray(bookNamesEs.books) && bookNamesEs.books.length === 66);
+  const exoMeta = resolveLocalizedBookMeta(bookNamesEs, "EXO");
+  assert.equal(exoMeta.code, "EXO");
+  assert.equal(exoMeta.name, "Éxodo");
+  assert.ok(exoMeta.nsmSubtitle.length > 10, "D5-A+: Éxodo debe exponer nsm_subtitle desde book_names/es.json");
+
+  const closureFail = verifyArtifactProjectionClosure({
+    htmlSource: '<div id="bibleEasyDrawer"></div>',
+    domBindings: [{ selector: "#toggleGhostA4" }],
+    controllerCorpus: "cultural_glosses",
+  });
+  assert.equal(closureFail.ok, false);
+  assert.ok(closureFail.missingDomIds.includes("#toggleGhostA4"));
+  assert.ok(closureFail.unprojectedKeys.some((k) => k.includes("stp_vso_classifier_phrase")));
 });

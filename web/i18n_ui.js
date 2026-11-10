@@ -1,282 +1,79 @@
-// ============================================================================
-// web/i18n_ui.js — Controlador Ligero de "Los Felices" sobre web/i18n/<loc>.json
-// y web/data/felices/<loc>.json (Ronda 20 — S19 & S29b, Cero Diccionarios Embebidos)
-// ============================================================================
-
-export const LANGUAGE_PACKS = Object.freeze([
-  { code: "en", name: "English (Default)", autonym: "English", dir: "ltr", script: "Latn" },
-  { code: "es", name: "Español", autonym: "Español", dir: "ltr", script: "Latn" },
-  { code: "bn-BD", name: "Bengali — Bangladesh (Kitabul Mokaddos · ঈসা মসীহ)", autonym: "বাংলা (বাংলাদেশ)", dir: "ltr", script: "Beng" },
-  { code: "bn-IN", name: "Bengali — West Bengal / Traditional (প্রভু যীশু)", autonym: "বাংলা (ভারত/প্রচলিত)", dir: "ltr", script: "Beng" },
-  { code: "fr", name: "Français", autonym: "Français", dir: "ltr", script: "Latn" },
-  { code: "pt", name: "Português", autonym: "Português", dir: "ltr", script: "Latn" },
-  { code: "it", name: "Italiano", autonym: "Italiano", dir: "ltr", script: "Latn" },
-  { code: "id", name: "Bahasa Indonesia", autonym: "Bahasa Indonesia", dir: "ltr", script: "Latn" },
-  { code: "tr", name: "Türkçe", autonym: "Türkçe", dir: "ltr", script: "Latn" },
-  { code: "ru", name: "Русский", autonym: "Русский", dir: "ltr", script: "Cyrl" },
-  { code: "zh-Hans", name: "Chino Simplificado", autonym: "简体中文", dir: "ltr", script: "Hans" },
-  { code: "ja", name: "Japonés", autonym: "日本語", dir: "ltr", script: "Jpan" },
-  { code: "ko", name: "Coreano", autonym: "한국어", dir: "ltr", script: "Kore" },
-  { code: "hi", name: "Hindi", autonym: "हिन्दी", dir: "ltr", script: "Deva" },
-  { code: "bn", name: "Bengalí", autonym: "বাংলা", dir: "ltr", script: "Beng" },
-  { code: "ar", name: "Árabe", autonym: "العربية", dir: "rtl", script: "Arab" },
-  { code: "ur", name: "Urdu", autonym: "اردو", dir: "rtl", script: "Aran" },
-  { code: "fa", name: "Persa", autonym: "فارسی", dir: "rtl", script: "Arab" },
-]);
-
-const TOTAL_PLATES = 28;
-let currentPlateIndex = 24;
-let currentPaperFormat = "a4";
-
-const uiCatalogCache = new Map();
-const felicesContentCache = new Map();
-
-export function resolveDistLangSlug(lang) {
-  const raw = String(lang || "en").trim();
-  if (raw === "zh-Hans" || raw === "zh") return "zh";
-  if (raw === "bn-BD" || raw === "bn-IN" || raw === "bn") return "bn";
-  const pack = LANGUAGE_PACKS.find((p) => p.code === raw);
-  return pack ? pack.code : "en";
+import { renderFelicesSocraticWonderCardHtml } from "./mostrador/evangelios.js";
+export const LANGUAGE_PACKS = Object.freeze("en|English,es|Español,bn-BD|Bengali BD|বাংলা|Beng,bn-IN|Bengali IN|বাংলা|Beng,fr|Français,pt|Português,it|Italiano,id|Indonesia,tr|Türkçe,ru|Русский||Cyrl,zh-Hans|中文||Hans,ja|日本語||Jpan,ko|한국어||Kore,hi|हिन्दी||Deva,bn|বাংলা||Beng,ar|العربية||Arab|rtl,ur|اردو||Aran|rtl,fa|فارسی||Arab|rtl".split(",").map((s) => { const [code, name, a, script = "Latn", dir = "ltr"] = s.split("|"); return { code, name, autonym: a || name, dir, script }; }));
+const N = 28, D = () => (typeof document !== "undefined" ? document : null), $ = (d, id) => d?.getElementById?.(id);
+const clp = (v, h, d = 1) => Math.max(1, Math.min(h, Number(v) || d)), S = (v, d = "") => String(v || d).trim();
+let pIdx = 24, sIdx = 0, pFmt = "a4", onC = null;
+export const FELICES_PLATE_TO_BIBLE_COORDINATE = Object.freeze(Object.fromEntries(Array.from({ length: N }, (_, i) => [i + 1, i < 24 ? { book: "MAT", chapter: 5, verse: i < 4 ? 3 : Math.min(12, (i >> 1) + 2), beatitudeIndex: Math.min(10, i >> 1) } : { book: "PSA", chapter: 1, verse: [1, 2, 3, 6][i - 24], beatitudeIndex: 11 }])));
+const FC = FELICES_PLATE_TO_BIBLE_COORDINATE, WK = ["biblia", "felices", "evangelios"], uC = new Map(), fC = new Map(), pLc = (l) => (S(l).includes("-") ? S(l).split("-")[0] : null);
+const pWk = (s) => { const m = S(s).toLowerCase().match(/^s?0*(\d{1,2})$/); return m ? `s${String(clp(m[1], 52)).padStart(2, "0")}` : null; };
+export const getActivePlateIndex = () => pIdx;
+export function setActivePlateIndex(i, doc = D()) { pIdx = clp(i, N, 1); updateFocalPlate(doc); return pIdx; }
+export function registerPlateCoordinateListener(fn) { onC = typeof fn === "function" ? fn : null; }
+export function resolvePlateForBibleCoordinate(b = "MAT", ch = 5, v = 3, cur = pIdx) {
+const B = S(b, "MAT").toUpperCase(), C = Number(ch) || 1, V = Number(v) || 1, k = clp(cur, N, pIdx), x = FC[k];
+if (x && x.book === B && x.chapter === C && x.verse === V) return k;
+if (B === "PSA" && C === 1) return V <= 1 ? 25 : V === 2 ? 26 : V <= 5 ? 27 : 28;
+if (B === "MAT" && C === 5) for (const [p, y] of Object.entries(FC)) if (y.book === B && y.chapter === 5 && y.verse === V) return Number(p);
+return k;
 }
-
-export function getPlateUrl(idx = currentPlateIndex) {
-  const clamped = Math.max(1, Math.min(TOTAL_PLATES, Number(idx) || 1));
-  const num = String(clamped).padStart(2, "0");
-  return `/assets/felices/plates/${num}.jpg`;
+export function parseInitialRouteAndLocale({ search = "", pathname = "", defaultUi = "en", defaultLang = "es" } = {}) {
+const q = new URLSearchParams(S(search).replace(/^\?/, "")), pL = S(pathname).toLowerCase(), g = (k) => S(q.get(k)), b = (k, h) => { const r = q.get(k), n = r ? Number(r) : 0; return n >= 1 ? clp(Math.round(n), h) : null; };
+const plate = b("plate", N), dicha = b("dicha", 12), week = pWk(g("week")), rW = g("work").toLowerCase(), work = WK.includes(rW) ? rW : plate || dicha ? "felices" : week ? "evangelios" : WK.find((w) => pL.includes(w)) || "biblia";
+const dP = dicha ? (dicha === 12 ? 25 : clp(dicha * 2 - 1, 24)) : null, pC = work === "felices" && (plate || dP) ? FC[plate || dP] : null, rR = g("ref");
+return { work, ui: g("ui") || defaultUi || "en", lang: g("lang") || defaultLang || "es", ref: rR || (pC ? `${pC.book}.${pC.chapter}.${pC.verse}` : "JHN.1.1"), refExplicit: !!rR, plate, dicha, week, reg: S(g("reg") || g("register")).toLowerCase() || null, ortho: g("ortho") || null, sheet: g("sheet").toLowerCase() || null, format: g("format").toLowerCase() === "letter" ? "letter" : "a4" };
 }
-
-/**
- * Resolves UI strings for a locale from loaded catalogs, falling back strictly to `en` (never `es`).
- */
-export function resolveFelicesStrings(locale, catalogsByLocale = {}) {
-  const rawEn = catalogsByLocale.en || uiCatalogCache.get("en") || {};
-  const rawLoc = catalogsByLocale[locale] || uiCatalogCache.get(locale) || {};
-  const enCat = rawEn.messages || rawEn;
-  const locCat = rawLoc.messages || rawLoc;
-  const parentCode = String(locale || "").includes("-")
-    ? String(locale).split("-")[0]
-    : null;
-  const rawParent =
-    (parentCode && (catalogsByLocale[parentCode] || uiCatalogCache.get(parentCode))) ||
-    {};
-  const parentCat = rawParent.messages || rawParent;
-
-  const out = {};
-  const allKeys = new Set([
-    ...Object.keys(enCat),
-    ...Object.keys(parentCat),
-    ...Object.keys(locCat),
-  ]);
-  for (const key of allKeys) {
-    if (!key.startsWith("felices.")) continue;
-    const shortKey = key.slice("felices.".length);
-    const val =
-      locCat[key] !== undefined && locCat[key] !== ""
-        ? locCat[key]
-        : parentCat[key] !== undefined && parentCat[key] !== ""
-          ? parentCat[key]
-          : enCat[key];
-    if (val !== undefined) {
-      out[shortKey] = val;
-      out[key] = val;
-    }
-  }
-  return out;
+export function serializeMostradorRouteQuery(st = {}) {
+const rW = S(st.work || st.activeWork, "biblia").toLowerCase(), work = WK.includes(rW) ? rW : "biblia", q = new URLSearchParams({ work, ui: S(st.ui || st.uiLocale, "en") || "en", lang: S(st.lang, "es") || "es", ref: S(st.ref, `${S(st.book, "JHN").toUpperCase()}.${clp(st.chapter, 999)}.${clp(st.verse, 999)}`) });
+if (work === "felices") { q.set("plate", String(clp(st.plate ?? st.activePlateIndex ?? pIdx, N, 24))); const d = Number(st.dicha ?? st.activeDichaIndex ?? st.felicesDicha); if (d >= 1 && d <= 12) q.set("dicha", String(Math.round(d))); } else if (work === "evangelios") q.set("week", pWk(st.week || st.evangeliosWeekId) || "s01");
+for (const [k, v] of [["reg", S(st.reg || st.register).toLowerCase()], ["ortho", S(st.ortho || st.orthographyProfile)], ["sheet", S(st.sheet || st.activeSheet).toLowerCase()], ["format", S(st.format || st.paperFormat).toLowerCase()]]) if (v && v !== "intergeneracional" && v !== "a4") q.set(k, v);
+return `?${q}`;
 }
-
-/**
- * Resolves plate verse text from `web/data/felices/<locale>.json` with fallback to `en`.
- */
-export function resolveFelicesPlateVerse(idx, locale, contentByLocale = {}) {
-  const key = String(idx);
-  const enData = contentByLocale.en || felicesContentCache.get("en") || {};
-  const locData = contentByLocale[locale] || felicesContentCache.get(locale) || {};
-  const parentCode = String(locale || "").includes("-")
-    ? String(locale).split("-")[0]
-    : null;
-  const parentData =
-    (parentCode &&
-      (contentByLocale[parentCode] || felicesContentCache.get(parentCode))) ||
-    {};
-
-  const locVerses = locData.plate_verses || locData.plateVerses || {};
-  const parentVerses = parentData.plate_verses || parentData.plateVerses || {};
-  const enVerses = enData.plate_verses || enData.plateVerses || {};
-  const raw =
-    locVerses[key] ||
-    parentVerses[key] ||
-    enVerses[key] ||
-    `Plate ${idx}`;
-
-  if (locale === "bn-BD") {
-    return raw
-      .replace(/প্রভু যীশুর আনন্দময় মানুষ/g, "ঈসা মসীহের মোবারক মানুষ")
-      .replace(/প্রভু যীশু/g, "ঈসা মসীহ")
-      .replace(/স্বর্গরাজ্যে/g, "আসমানের রাজ্যে")
-      .replace(/স্বর্গরাজ্য/g, "আসমানের রাজ্য")
-      .replace(/মথি/g, "মতী");
-  }
-  return raw;
+export function resolveDistLangSlug(l) { const r = S(l, "en"); return r === "zh-Hans" || r === "zh" ? "zh" : r.startsWith("bn") ? "bn" : LANGUAGE_PACKS.find((p) => p.code === r)?.code || "en"; }
+export function getPlateUrl(i = pIdx) { return `/assets/felices/plates/${String(clp(i, N)).padStart(2, "0")}.jpg`; }
+export function resolveFelicesStrings(loc, cats = {}) {
+const gC = (l) => { const r = (l && (cats[l] || uC.get(l))) || {}; return r.messages || r; }, e = gC("en"), c = gC(loc), p = gC(pLc(loc)), o = {};
+for (const k of new Set([...Object.keys(e), ...Object.keys(p), ...Object.keys(c)])) if (k.startsWith("felices.")) { const v = c[k] || p[k] || e[k]; if (v !== undefined) o[k.slice(8)] = o[k] = v; }
+return o;
 }
-
-export async function ensureLocaleLoaded(locale, fetchFn = typeof fetch === "function" ? fetch : null) {
-  const targets = new Set(["en", locale]);
-  if (String(locale || "").includes("-")) {
-    targets.add(String(locale).split("-")[0]);
-  }
-  if (!fetchFn) return;
-  for (const loc of targets) {
-    if (!loc) continue;
-    if (!uiCatalogCache.has(loc)) {
-      try {
-        const r = await fetchFn(`/i18n/${loc}.json`);
-        if (r && r.ok) uiCatalogCache.set(loc, await r.json());
-      } catch {
-        // ignore network miss, fallback to en
-      }
-    }
-    if (!felicesContentCache.has(loc)) {
-      try {
-        const r = await fetchFn(`/data/felices/${loc}.json`);
-        if (r && r.ok) felicesContentCache.set(loc, await r.json());
-      } catch {
-        // ignore network miss, fallback to en
-      }
-    }
-  }
+export function resolveFelicesPlateVerse(i, loc, byL = {}) {
+const gV = (l) => { const d = (l && (byL[l] || fC.get(l))) || {}; return d.plate_verses || d.plateVerses || {}; }, k = String(i), r = gV(loc)[k] || gV(pLc(loc))[k] || gV("en")[k] || `Plate ${i}`;
+return loc === "bn-BD" ? [["প্রভু যীশুর আনন্দময় মানুষ", "ঈসা মসীহের মোবারক মানুষ"], ["প্রভু যীশু", "ঈসা মসীহ"], ["স্বর্গরাজ্য", "আসমানের রাজ্য"], ["মথি", "মতী"]].reduce((s, [a, b]) => s.replaceAll(a, b), r) : r;
 }
-
-export function updateDownloadLinks(doc = typeof document !== "undefined" ? document : null) {
-  if (!doc) return null;
-  const lang = doc.getElementById("langSelect")?.value || "en";
-  const distLang = resolveDistLangSlug(lang);
-  const sheetsLink = doc.getElementById("linkSheets");
-  const bookletLink = doc.getElementById("linkBooklet");
-  const sheetsName = `felices-${distLang}-v1-sheets.pdf`;
-  const bookletName = `felices-${distLang}-v1-booklet.pdf`;
-  const sheetsHref = `/dist/${distLang}/v1/mostrador/${sheetsName}`;
-  const bookletHref = `/dist/${distLang}/v1/mostrador/${bookletName}`;
-  if (sheetsLink) {
-    sheetsLink.href = sheetsHref;
-    sheetsLink.setAttribute("download", sheetsName);
-  }
-  if (bookletLink) {
-    bookletLink.href = bookletHref;
-    bookletLink.setAttribute("download", bookletName);
-  }
-  return { distLang, sheetsHref, bookletHref, paperFormat: currentPaperFormat };
+export async function ensureLocaleLoaded(loc, fn = typeof fetch === "function" ? fetch : null) {
+if (!fn) return; for (const l of new Set(["en", loc, pLc(loc)])) if (l) for (const [m, p] of [[uC, `i18n/${l}.json`], [fC, `data/felices/${l}.json`]]) if (!m.has(l)) try { const r = await fn(p); if (r?.ok) m.set(l, await r.json()); } catch {}
 }
-
-export function setPaperFormat(fmt, doc = typeof document !== "undefined" ? document : null) {
-  currentPaperFormat = fmt === "letter" ? "letter" : "a4";
-  if (!doc) return currentPaperFormat;
-  const btnA4 = doc.getElementById("toggleA4");
-  const btnCarta = doc.getElementById("toggleCarta");
-  if (btnA4 && btnCarta) {
-    const isA4 = currentPaperFormat === "a4";
-    btnA4.classList.toggle("active", isA4);
-    btnA4.setAttribute("aria-checked", isA4 ? "true" : "false");
-    btnCarta.classList.toggle("active", !isA4);
-    btnCarta.setAttribute("aria-checked", !isA4 ? "true" : "false");
-  }
-  updateDownloadLinks(doc);
-  return currentPaperFormat;
+export function updateDownloadLinks(doc = D(), lO = "") {
+if (!doc) return null; const d = resolveDistLangSlug(lO || $(doc, "langSelect")?.value || "en"), b = `/dist/${d}/v1/mostrador/felices-${d}-v1-`, sH = `${b}sheets.pdf`, bH = `${b}booklet.pdf`;
+for (const [id, h] of [["linkSheets", sH], ["linkBooklet", bH]]) { const e = $(doc, id); if (e) { e.href = h; e.setAttribute("download", h.split("/").pop()); } }
+return { distLang: d, sheetsHref: sH, bookletHref: bH, paperFormat: pFmt };
 }
-
-export function updateFocalPlate(doc = typeof document !== "undefined" ? document : null) {
-  if (!doc) return;
-  const lang = doc.getElementById("langSelect")?.value || "en";
-  const t = resolveFelicesStrings(lang);
-  const plateLabel = t.plateLabel || "Plate";
-  const img = doc.getElementById("focalPlateImg");
-  const indicator = doc.getElementById("plateIndexText");
-  const verse = doc.getElementById("focalPlateVerse");
-  if (img) {
-    img.src = getPlateUrl(currentPlateIndex);
-    img.alt = `${plateLabel} ${currentPlateIndex} / ${TOTAL_PLATES}`;
-  }
-  if (indicator) indicator.textContent = `${plateLabel} ${currentPlateIndex} / ${TOTAL_PLATES}`;
-  if (verse) verse.textContent = resolveFelicesPlateVerse(currentPlateIndex, lang);
+export function setPaperFormat(f, d = D()) { pFmt = f === "letter" ? "letter" : "a4"; if (!d) return pFmt; for (const [id, on] of [["toggleA4", pFmt === "a4"], ["toggleCarta", pFmt !== "a4"]]) { const b = $(d, id); b?.classList?.toggle?.("active", on); b?.setAttribute?.("aria-checked", String(on)); b?.setAttribute?.("aria-pressed", String(on)); } updateDownloadLinks(d); return pFmt; }
+export function updateFocalPlate(d = D(), lO = "", n = true) {
+if (!d) return; const l = lO || $(d, "langSelect")?.value || "en", lb = `${resolveFelicesStrings(l).plateLabel || "Plate"} ${pIdx} / ${N}`, u = getPlateUrl(pIdx).slice(1), tx = resolveFelicesPlateVerse(pIdx, l), c = FC[pIdx] || FC[24], os = `${c.book}.${c.chapter}.${c.verse}`, dI = clp((c.beatitudeIndex || 0) + 1, 12);
+const im = $(d, "focalPlateImg"), id = $(d, "plateIndexText"), vE = $(d, "focalPlateVerse"), cI = $(d, "carouselImg"), cC = $(d, "carouselCaption"), wC = $(d, "felicesSocraticWonderCard");
+if (im) { im.src = u; im.alt = lb; } if (id) { id.textContent = lb; id.setAttribute("data-osis-ref", os); } if (vE) vE.textContent = tx; if (cI) cI.src = u; if (cC) cC.textContent = tx; if (wC) wC.innerHTML = renderFelicesSocraticWonderCardHtml(pIdx, l);
+sIdx = pIdx <= 11 ? 0 : pIdx <= 23 ? 1 : 2; for (let j = 0; j < 3; j++) $(d, `termPill_${j + 1}`)?.classList?.toggle("active", j === sIdx);
+for (const [k, v] of [["felicesPlateSelect", String(pIdx)], ["felicesDichaSelect", String(dI)]]) { const e = $(d, k); if (e && e.value !== v) e.value = v; }
+$(d, "btnFelicesOpenInBible")?.setAttribute("data-felices-osis", os); if (n) onC?.({ plateIndex: pIdx, dichaIndex: dI, book: c.book, chapter: c.chapter, verse: c.verse });
 }
-
-export function nextPlate(doc) {
-  currentPlateIndex = currentPlateIndex < TOTAL_PLATES ? currentPlateIndex + 1 : 1;
-  updateFocalPlate(doc);
-}
-
-export function prevPlate(doc) {
-  currentPlateIndex = currentPlateIndex > 1 ? currentPlateIndex - 1 : TOTAL_PLATES;
-  updateFocalPlate(doc);
-}
-
-const ALLOWED_PLATE_MODALS = new Set(["previewModal", "plateModal"]);
-
-export function openModal(id, doc = typeof document !== "undefined" ? document : null) {
-  if (!ALLOWED_PLATE_MODALS.has(String(id || ""))) return;
-  const m = doc?.getElementById(id);
-  if (m && typeof m.showModal === "function") m.showModal();
-}
-
-export function closeModal(id, doc = typeof document !== "undefined" ? document : null) {
-  if (!ALLOWED_PLATE_MODALS.has(String(id || ""))) return;
-  const m = doc?.getElementById(id);
-  if (m && typeof m.close === "function") m.close();
-}
-
-export async function syncFelicesWithCorpusLang(corpusLang, doc = typeof document !== "undefined" ? document : null) {
-  if (!doc) return;
-  await ensureLocaleLoaded(corpusLang);
-  updateFocalPlate(doc);
-}
-
-export async function updateUI(doc = typeof document !== "undefined" ? document : null) {
-  if (!doc) return;
-  const lang = doc.getElementById("langSelect")?.value || "en";
-  await ensureLocaleLoaded(lang);
-  const pack = LANGUAGE_PACKS.find((p) => p.code === lang) || LANGUAGE_PACKS[0];
-  const t = resolveFelicesStrings(lang);
-  doc.documentElement.lang = pack.code;
-  doc.documentElement.dir = pack.dir;
-  const setTxt = (id, val) => {
-    const el = doc.getElementById(id);
-    if (el && val) el.textContent = val;
-  };
-  setTxt("categoryBadge", t.badge);
-  setTxt("workTitle", t.title);
-  setTxt("workDesc", t.desc);
-  setTxt("btnTitleSheets", t.btnTitleSheets);
-  setTxt("btnSubSheets", t.btnSubSheets);
-  setTxt("btnTitleBooklet", t.btnTitleBooklet);
-  setTxt("btnSubBooklet", t.btnSubBooklet);
-  setTxt("opticalTriggerText", t.opticalTrigger);
-  setTxt("offlineBadgeText", t.offlineBadge);
-  setTxt("footerNote", t.footerNote);
-  setTxt("btnPrintPlateText", t.btnPrintPlate);
-  setTxt("btnShareWorkText", t.btnShare);
-  setTxt("foldGuideTrigger", t.foldGuideTrigger);
-  setTxt("nameCarta", t.nameCarta);
-  setTxt("subCarta", t.subCarta || t.labelCartaSub);
-  setTxt("nameA4", t.nameA4);
-  setTxt("subA4", t.subA4 || t.labelA4Sub);
-  setTxt("focalPlateZoomHintText", t.tapToZoom);
-  updateDownloadLinks(doc);
-  updateFocalPlate(doc);
-}
-
-if (typeof window !== "undefined") {
-  Object.assign(window, {
-    LANGUAGE_PACKS,
-    resolveDistLangSlug,
-    getPlateUrl,
-    resolveFelicesStrings,
-    resolveFelicesPlateVerse,
-    updateDownloadLinks,
-    setPaperFormat,
-    updateFocalPlate,
-    nextPlate,
-    prevPlate,
-    openModal,
-    closeModal,
-    updateUI,
-  });
+export function syncI18nUiFromState(st = {}, d = D()) { if (st.activePlateIndex !== undefined || st.plate !== undefined) pIdx = clp(st.activePlateIndex ?? st.plate, N, 24); if (st.paperFormat || st.format) setPaperFormat(S(st.paperFormat || st.format).toLowerCase(), d); const l = S(st.lang || st.uiLocale || $(d, "langSelect")?.value, "en"); updateDownloadLinks(d, l); updateFocalPlate(d, l, false); return { plateIndex: pIdx, paperFormat: pFmt }; }
+export function nextPlate(d = D()) { pIdx = pIdx < N ? pIdx + 1 : 1; updateFocalPlate(d); return pIdx; }
+export function prevPlate(d = D()) { pIdx = pIdx > 1 ? pIdx - 1 : N; updateFocalPlate(d); return pIdx; }
+export function openActivePlateZoom(d = D()) { if (!d) return; const l = $(d, "langSelect")?.value || "en", mI = $(d, "plateModalImg"), mC = $(d, "plateModalCaption"); if (mI) mI.src = getPlateUrl(pIdx).slice(1); if (mC) mC.textContent = resolveFelicesPlateVerse(pIdx, l); openModal("plateModal", d); }
+export function printActivePlate(w = typeof window !== "undefined" ? window : null) { w?.print?.(); }
+export function shareResource(d = D(), st = null) { const c = FC[pIdx] || FC[24], u = serializeMostradorRouteQuery(st || { work: "felices", ui: d?.documentElement?.lang || "en", lang: $(d, "langSelect")?.value || "es", plate: pIdx, ref: `${c.book}.${c.chapter}.${c.verse}`, format: pFmt }); if (typeof navigator !== "undefined") navigator.clipboard?.writeText?.(u)?.catch?.(() => {}); const t = $(d, "toastNotification"); if (t) { t.textContent = `Link copied (${c.book} ${c.chapter}:${c.verse})`; t.classList?.add?.("show"); } return u; }
+export function setSlide(i = 0, d = D()) { const n = Number(i) || 0; pIdx = n >= 3 && n <= N ? clp(n, N) : [1, 12, 24][((n % 3) + 3) % 3]; updateFocalPlate(d); return sIdx; }
+export const nextSlide = nextPlate, prevSlide = prevPlate;
+export function applyAriaLabelsToDom(r, d = {}) { const m = d.messages || d || {}; for (const e of r?.querySelectorAll?.("[data-i18n-aria-label]") || []) { const v = m[e.getAttribute("data-i18n-aria-label") || ""]; if (typeof v === "string" && v.trim()) { e.setAttribute("aria-label", v); e.setAttribute("title", v); } } }
+const MD = new Set(["previewModal", "plateModal"]);
+export function openModal(id, d = D()) { if (S(id) === "previewModal") updateFocalPlate(d, "", false); if (MD.has(S(id))) $(d, id)?.showModal?.(); }
+export function closeModal(id, d = D()) { if (MD.has(S(id))) $(d, id)?.close?.(); }
+export async function syncFelicesWithCorpusLang(l, d = D()) { if (d) { await ensureLocaleLoaded(l); updateFocalPlate(d); } }
+export async function updateUI(doc = D()) {
+if (!doc) return;
+const l = $(doc, "langSelect")?.value || "en"; await ensureLocaleLoaded(l);
+const pk = LANGUAGE_PACKS.find((p) => p.code === l) || LANGUAGE_PACKS[0], t = resolveFelicesStrings(l);
+doc.documentElement.lang = pk.code; doc.documentElement.dir = pk.dir;
+for (const s of "categoryBadge:badge,workTitle:title,workDesc:desc,btnTitleSheets,btnSubSheets,btnTitleBooklet,btnSubBooklet,opticalTriggerText:opticalTrigger,offlineBadgeText:offlineBadge,footerNote,btnPrintPlateText:btnPrintPlate,btnShareWorkText:btnShare,foldGuideTrigger,nameCarta,subCarta:subCarta|labelCartaSub,nameA4,subA4:subA4|labelA4Sub,focalPlateZoomHintText:tapToZoom".split(",")) { const [id, k = id] = s.split(":"), [k1, k2] = k.split("|"), e = $(doc, id), v = t[k1] || (k2 && t[k2]); if (e && v) e.textContent = v; }
+applyAriaLabelsToDom(doc, uC.get(l) || uC.get("en") || {}); updateDownloadLinks(doc); updateFocalPlate(doc);
 }

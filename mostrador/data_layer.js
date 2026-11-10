@@ -99,6 +99,176 @@ function createLru(limit) {
 }
 
 /**
+ * D1-C+ (`MSWasm POPL 2023` + `ARB-EKOVOZ-62`):
+ * Copia un payload `Uint8Array` a la memoria lineal compartida `wasmExports.memory`
+ * mediante `alloc_frame_buffer` e invoca `decode_optical_frame_in_place(ptr, len, expectedDropIdx)`.
+ */
+export function decodeFrameInWasmLinearMemory(wasmMod, frameBytes, expectedDropIdx = 0) {
+  const exports = wasmMod?.exports || wasmMod;
+  if (!exports || !exports.memory || typeof exports.decode_optical_frame_in_place !== "function") {
+    return null;
+  }
+  const bytes =
+    frameBytes instanceof Uint8Array
+      ? frameBytes
+      : typeof frameBytes === "string"
+        ? new TextEncoder().encode(frameBytes)
+        : new Uint8Array(frameBytes || []);
+  if (bytes.byteLength === 0) return -1;
+  const ptr =
+    typeof exports.alloc_frame_buffer === "function"
+      ? exports.alloc_frame_buffer(bytes.byteLength)
+      : 1024;
+  const memView = new Uint8Array(exports.memory.buffer, ptr, bytes.byteLength);
+  memView.set(bytes);
+  return exports.decode_optical_frame_in_place(ptr, bytes.byteLength, expectedDropIdx >>> 0);
+}
+
+/**
+ * D1-C+ (`ARB-EKOVOZ-62`):
+ * Copia un bloque RaptorQ / LT Fountain a `wasmExports.memory` e invoca `verify_raptorq_esi_block_in_place(ptr, len, expectedK)`.
+ */
+export function verifyRaptorQBlockInWasmLinearMemory(wasmMod, blockBytes, expectedK = 8) {
+  const exports = wasmMod?.exports || wasmMod;
+  if (!exports || !exports.memory || typeof exports.verify_raptorq_esi_block_in_place !== "function") {
+    return null;
+  }
+  const bytes =
+    blockBytes instanceof Uint8Array
+      ? blockBytes
+      : typeof blockBytes === "string"
+        ? new TextEncoder().encode(blockBytes)
+        : new Uint8Array(blockBytes || []);
+  if (bytes.byteLength === 0) return -1;
+  const ptr =
+    typeof exports.alloc_frame_buffer === "function"
+      ? exports.alloc_frame_buffer(bytes.byteLength)
+      : 2048;
+  const memView = new Uint8Array(exports.memory.buffer, ptr, bytes.byteLength);
+  memView.set(bytes);
+  return exports.verify_raptorq_esi_block_in_place(ptr, bytes.byteLength, Math.max(1, expectedK >>> 0));
+}
+
+/**
+ * D1-C+ (`ARB-EKOVOZ-62`):
+ * Copia un frame PCM/Opus a `wasmExports.memory` de `ekovoz_player_wasm` e invoca `verify_audio_frame_crc16_in_place(ptr, len)`.
+ */
+export function verifyAudioPcmCrc16InWasmLinearMemory(wasmMod, pcmBytes) {
+  const exports = wasmMod?.exports || wasmMod;
+  if (!exports || !exports.memory || typeof exports.verify_audio_frame_crc16_in_place !== "function") {
+    return null;
+  }
+  const bytes =
+    pcmBytes instanceof Uint8Array
+      ? pcmBytes
+      : typeof pcmBytes === "string"
+        ? new TextEncoder().encode(pcmBytes)
+        : new Uint8Array(pcmBytes || []);
+  if (bytes.byteLength === 0) return -1;
+  const ptr =
+    typeof exports.alloc_pcm_buffer === "function"
+      ? exports.alloc_pcm_buffer(bytes.byteLength)
+      : 1024;
+  const memView = new Uint8Array(exports.memory.buffer, ptr, bytes.byteLength);
+  memView.set(bytes);
+  return exports.verify_audio_frame_crc16_in_place(ptr, bytes.byteLength);
+}
+
+/**
+ * Calcula CRC-16-CCITT (`0x1021`) determinista idéntico a `verify_audio_frame_crc16_in_place` en Rust.
+ */
+function computeCrc16CcittFallback(bytes) {
+  let crc = 0xffff;
+  for (let i = 0; i < bytes.byteLength; i += 1) {
+    crc ^= (bytes[i] & 0xff) << 8;
+    for (let b = 0; b < 8; b += 1) {
+      if ((crc & 0x8000) !== 0) {
+        crc = ((crc << 1) ^ 0x1021) & 0xffff;
+      } else {
+        crc = (crc << 1) & 0xffff;
+      }
+    }
+  }
+  return Math.max(1, crc);
+}
+
+/**
+ * D5-S21+ (`ARB-EKOVOZ-63`, `ekovoz_player_wasm`):
+ * Calcula las pausas prosódicas ($\tau_1$ coma, $\tau_2$ punto y coma, $\tau_3$ punto/selah),
+ * alinea el cursor de sílaba activa dado `(elapsedMs, totalMs, syllableCount)` e invoca
+ * `verify_audio_frame_crc16_in_place` sobre la memoria lineal de `ekovoz_player_wasm`.
+ */
+export function computeProsodyAndSyllableAlignmentInWasm(
+  { text = "", wpm = 135, elapsedMs = 0, totalMs = 12000 } = {},
+  wasmMod = null
+) {
+  const exports = wasmMod?.exports || wasmMod || null;
+  const safeWpm = Math.max(70, Math.min(220, Math.floor(Number(wpm) || 135)));
+  const cleanText = String(text || "En el principio creó Dios los cielos y la tierra.").trim();
+  const rawTokens = cleanText
+    .split(/\s+/)
+    .filter(Boolean);
+  const syllables = [];
+  for (const tok of rawTokens) {
+    const parts = tok.match(/[^aeiouáéíóúü]*[aeiouáéíóúü]+(?:[^aeiouáéíóúü]+(?=[^aeiouáéíóúü][aeiouáéíóúü])|[^aeiouáéíóúü]*$)|.+/gi);
+    if (parts && parts.length > 0) {
+      for (const p of parts) syllables.push(p);
+    } else {
+      syllables.push(tok);
+    }
+  }
+  if (syllables.length === 0) {
+    syllables.push(cleanText || "Selah");
+  }
+  const syllableCount = syllables.length;
+  const safeTotalMs = Math.max(500, Math.floor(Number(totalMs) || 12000));
+  const safeElapsedMs = Math.max(0, Math.min(safeTotalMs, Math.floor(Number(elapsedMs) || 0)));
+
+  const baseBeatMs = Math.max(180, Math.floor(60000 / safeWpm));
+  const hasWasmPause = Boolean(exports && typeof exports.compute_prosodic_pause_ms === "function");
+  const pauseCommaMs = hasWasmPause
+    ? Number(exports.compute_prosodic_pause_ms(1, safeWpm)) >>> 0
+    : Math.floor((baseBeatMs * 3) / 5);
+  const pauseSemicolonMs = hasWasmPause
+    ? Number(exports.compute_prosodic_pause_ms(2, safeWpm)) >>> 0
+    : Math.floor((baseBeatMs * 9) / 10);
+  const pausePeriodSelahMs = hasWasmPause
+    ? Number(exports.compute_prosodic_pause_ms(3, safeWpm)) >>> 0
+    : Math.floor((baseBeatMs * 7) / 5);
+
+  const hasWasmAlign = Boolean(exports && typeof exports.align_syllable_cursor_ms === "function");
+  const activeSyllableIndex = hasWasmAlign
+    ? Number(exports.align_syllable_cursor_ms(safeElapsedMs, safeTotalMs, syllableCount)) >>> 0
+    : Math.min(
+      syllableCount - 1,
+      Math.floor((safeElapsedMs * syllableCount) / safeTotalMs)
+    );
+
+  const textBytes = new TextEncoder().encode(`${cleanText}|wpm=${safeWpm}`);
+  const wasmCrc16 = verifyAudioPcmCrc16InWasmLinearMemory(wasmMod, textBytes);
+  const crc16 =
+    typeof wasmCrc16 === "number" && wasmCrc16 > 0
+      ? wasmCrc16
+      : computeCrc16CcittFallback(textBytes);
+
+  return {
+    wpm: safeWpm,
+    elapsedMs: safeElapsedMs,
+    totalMs: safeTotalMs,
+    syllableCount,
+    syllables,
+    activeSyllableIndex,
+    activeSyllable: syllables[activeSyllableIndex] || syllables[0] || "",
+    pauseCommaMs,
+    pauseSemicolonMs,
+    pausePeriodSelahMs,
+    crc16,
+    crc16Hex: `0x${crc16.toString(16).toUpperCase().padStart(4, "0")}`,
+    wasmBacked: hasWasmPause && hasWasmAlign,
+  };
+}
+
+/**
  * Crea la capa de datos. Todas las funciones devuelven objetos con `status` explícito.
  */
 export function createDataLayer({ source, cacheLimit = 32 } = {}) {
@@ -374,44 +544,61 @@ export function createDataLayer({ source, cacheLimit = 32 } = {}) {
     return H.map((v) => (v >>> 0).toString(16).padStart(8, "0")).join("");
   }
 
+  let hydratedRosettaIndex = null;
+  let hydratedPericopesAndGlosses = null;
+  let hydratedDiachronicAudit = null;
+  let hydratedEditorialProfiles = null;
+  let hydratedFieldWorkshopData = null;
+  const hydratedWasmModules = new Map();
+
   /**
-   * D2-R+: Carga el Índice Rosetta Filológico Columnar Particionado (`web/shards/philology_rosetta_index.json`).
+   * D2-C+: Carga el Índice Rosetta Filológico Columnar Particionado (`web/shards/philology_rosetta_index.json`).
    */
   async function loadPhilologyRosettaIndex() {
-    return getJson("shards/philology_rosetta_index.json");
+    const val = await getJson("shards/philology_rosetta_index.json");
+    if (val) hydratedRosettaIndex = val;
+    return val;
   }
 
   /**
-   * D3-R+: Carga el mapa co-localizado de perícopas masoréticas (פ/ס), glosas NSM, 52 semanas y 12 Dichas (`web/data/pericopes_and_glosses.json`).
+   * D3-C+: Carga el mapa co-localizado de perícopas masoréticas (פ/ס), glosas NSM, 52 semanas y 12 Dichas (`web/data/pericopes_and_glosses.json`).
    */
   async function loadPericopesAndGlosses() {
-    return getJson("data/pericopes_and_glosses.json");
+    const val = await getJson("data/pericopes_and_glosses.json");
+    if (val) hydratedPericopesAndGlosses = val;
+    return val;
   }
 
   /**
-   * D4-R+: Carga la matriz FST diacrónica de 3 estratos y vectores de legibilidad de 66 libros (`web/data/diachronic_register_es.json`).
+   * D4-C+: Carga la matriz FST diacrónica de 3 estratos y vectores de legibilidad de 66 libros (`web/data/diachronic_register_es.json`).
    */
   async function loadDiachronicRegisterAudit() {
-    return getJson("data/diachronic_register_es.json");
+    const val = await getJson("data/diachronic_register_es.json");
+    if (val) hydratedDiachronicAudit = val;
+    return val;
   }
 
   /**
-   * D5-R+: Carga los 14 perfiles de impresión TOML, 12 perfiles tipológicos Grambank y 80 bloques (`web/data/editorial_profiles.json`).
+   * D5-C+: Carga los 14 perfiles de impresión TOML, 12 perfiles tipológicos Grambank y 80 bloques (`web/data/editorial_profiles.json`).
    */
   async function loadEditorialProfiles() {
-    return getJson("data/editorial_profiles.json");
+    const val = await getJson("data/editorial_profiles.json");
+    if (val) hydratedEditorialProfiles = val;
+    return val;
   }
 
   /**
-   * D6-R+: Carga el taller de campo O'dam `stp` (5 ondas OT, cola de incertidumbre U(v), léxico 600 y 8 candados) (`web/data/field_workshop_stp.json`).
+   * D6-C+: Carga el taller de campo O'dam `stp` (5 ondas OT, cola de incertidumbre U(v), léxico 600 y 8 candados) (`web/data/field_workshop_stp.json`).
    */
   async function loadFieldWorkshopData() {
-    return getJson("data/field_workshop_stp.json");
+    const val = await getJson("data/field_workshop_stp.json");
+    if (val) hydratedFieldWorkshopData = val;
+    return val;
   }
 
   /**
-   * D7-R+: Instanciador perezoso fail-closed de módulos WebAssembly (`qr_stream_receiver_wasm`, `ekovoz_player_wasm`)
-   * con verificación criptográfica SHA-256 contra `web/wasm/wasm_manifest.json`.
+   * D1-C+ / D7-C+: Instanciador perezoso fail-closed de módulos WebAssembly (`qr_stream_receiver_wasm`, `ekovoz_player_wasm`)
+   * con verificación criptográfica SHA-256 contra `web/wasm/wasm_manifest.json` y memoria lineal exportada.
    */
   async function loadWasmModule(moduleName, imports = {}) {
     if (!EDITION_RE.test(String(moduleName || ""))) {
@@ -437,14 +624,28 @@ export function createDataLayer({ source, cacheLimit = 32 } = {}) {
     }
     const instantiated = await WebAssembly.instantiate(bytes, imports);
     const instance = instantiated.instance || instantiated;
-    return {
+    const modResult = {
       status: STATUS.READY,
       moduleName,
       sha256: actualSha256,
       bytes: bytes.byteLength,
       instance,
       exports: instance.exports,
+      decodeFrame(frameBytes, expectedDropIdx = 0) {
+        return decodeFrameInWasmLinearMemory(instance, frameBytes, expectedDropIdx);
+      },
+      verifyRaptorQBlock(blockBytes, expectedK = 8) {
+        return verifyRaptorQBlockInWasmLinearMemory(instance, blockBytes, expectedK);
+      },
+      verifyAudioPcmCrc16(pcmBytes) {
+        return verifyAudioPcmCrc16InWasmLinearMemory(instance, pcmBytes);
+      },
+      computeProsodyAndSyllableAlignment(opts = {}) {
+        return computeProsodyAndSyllableAlignmentInWasm(opts, instance);
+      },
     };
+    hydratedWasmModules.set(moduleName, modResult);
+    return modResult;
   }
 
   /**
@@ -471,10 +672,10 @@ export function createDataLayer({ source, cacheLimit = 32 } = {}) {
         chapter:
           chapterRes.status === STATUS.READY
             ? {
-                verses: versesMap,
-                rawVerses: chapterRes.verses,
-                pericopeBreaks: chapterRes.pericopeBreaks,
-              }
+              verses: versesMap,
+              rawVerses: chapterRes.verses,
+              pericopeBreaks: chapterRes.pericopeBreaks,
+            }
             : null,
         meta: {
           draft_status: chapterRes.provenance?.status || "",
@@ -516,10 +717,357 @@ export function createDataLayer({ source, cacheLimit = 32 } = {}) {
     loadEditorialProfiles,
     loadFieldWorkshopData,
     loadWasmModule,
+    getHydratedRosettaIndex: () => hydratedRosettaIndex,
+    getHydratedPericopesAndGlosses: () => hydratedPericopesAndGlosses,
+    getHydratedDiachronicAudit: () => hydratedDiachronicAudit,
+    getHydratedEditorialProfiles: () => hydratedEditorialProfiles,
+    getHydratedFieldWorkshopData: () => hydratedFieldWorkshopData,
+    getHydratedWasmModule: (name) => hydratedWasmModules.get(name) || null,
+    decodeFrameInWasmLinearMemory,
+    verifyRaptorQBlockInWasmLinearMemory,
+    verifyAudioPcmCrc16InWasmLinearMemory,
+    computeProsodyAndSyllableAlignmentInWasm,
+    resolveLocalizedBookMeta,
     navigate,
     get generation() {
       return generation;
     },
+  };
+}
+
+/**
+ * Contratos de alcance VPL (`scopeRoot`) para anclas estáticas del Mostrador (`D1-B++` / `GOLD-647`):
+ * Cada selector debe existir físicamente en `web/index.html` y ser descendiente estricto de `scopeRoot`.
+ */
+export const MOSTRADOR_DOM_SCOPE_CONTRACTS = [
+  { id: "rosettaSearchInput", selector: "#rosettaSearchInput", scopeRoot: "#bibleEasyDrawerPanel" },
+  { id: "rosettaExplorerResultsRows", selector: "#rosettaExplorerResultsRows", scopeRoot: "#bibleEasyDrawerPanel" },
+  { id: "stpLexiconSearchInput", selector: "#stpLexiconSearchInput", scopeRoot: "#bibleFieldWorkshopSheet" },
+  { id: "stpLexiconResultsRows", selector: "#stpLexiconResultsRows", scopeRoot: "#bibleFieldWorkshopSheet" },
+  { id: "dunningKeyTermsGlossaryPanel", selector: "#dunningKeyTermsGlossaryPanel", scopeRoot: "#bibleFieldWorkshopSheet" },
+  { id: "externalAudit8LocksPanel", selector: "#externalAudit8LocksPanel", scopeRoot: "#bibleFieldWorkshopSheet" },
+  { id: "uncertaintyQueue60Panel", selector: "#uncertaintyQueue60Panel", scopeRoot: "#bibleFieldWorkshopSheet" },
+  { id: "tier3aDialectContinuumPanel", selector: "#tier3aDialectContinuumPanel", scopeRoot: "#bibleFieldWorkshopSheet" },
+];
+
+/**
+ * Esquema declarativo de Triple Clausura de Proveniencia (`D1-A+` / `D1-B++`..`D4-B++` / `ARB-EKOVOZ-61` / `GOLD-647`):
+ * Asocia cada uno de los 8 artefactos compilados por `xtask build-web-data` con sus claves requeridas y los
+ * selectores DOM donde deben proyectarse en la superficie activa (0 banderas `allowDynamicInCorpus`).
+ */
+export const ARTIFACT_PROJECTION_SCHEMA = [
+  {
+    artifact: "web/data/pericopes_and_glosses.json",
+    requiredKeys: [
+      "chapter_pericopes",
+      "cultural_glosses",
+      "evangelios_macro_threads",
+      "felices_12_dichas",
+      "felices_28_plates",
+      "life_trails",
+      "masoretic_and_gospel_pericopes",
+    ],
+    targetSelectors: ["#bibleEasyDrawer", "#felicesSocraticWonderCard", "#bibleChapterPericopesRibbon"],
+    domSlots: ["#bibleEasyDrawer", "#felicesSocraticWonderCard", "#bibleChapterPericopesRibbon"],
+  },
+  {
+    artifact: "web/data/elicitation_ladder_250.json",
+    requiredKeys: [
+      "estimated_native_speaker_hours",
+      "floor_1_sentence_spec",
+      "items",
+      "reference_tier1",
+      "single_sentence_unlocked_floor",
+      "tier3a_continuums",
+      "total_sentences",
+    ],
+    targetSelectors: ["#bibleFieldWorkshopSheet", "#tier3aDialectContinuumPanel"],
+    domSlots: ["#bibleFieldWorkshopSheet", "#tier3aDialectContinuumPanel"],
+  },
+  {
+    artifact: "web/data/field_workshop_stp.json",
+    requiredKeys: [
+      "canonical_5_ot_translation_waves",
+      "external_audit_8_locks",
+      "key_terms_glossary",
+      "sister_works_cascade_sync",
+      "stp_ot_lexicon_600",
+      "stp_vso_classifier_phrase",
+      "strong_concordance_counts",
+      "taller_cc0_artifacts",
+      "top_uncertainty_queue",
+      "typology_rule",
+    ],
+    targetSelectors: [
+      "#stpLexiconSearchInput",
+      "#stpLexiconResultsRows",
+      "#dunningKeyTermsGlossaryPanel",
+      "#uncertaintyQueue60Panel",
+      "#externalAudit8LocksPanel",
+    ],
+    domSlots: [
+      "#stpLexiconSearchInput",
+      "#stpLexiconResultsRows",
+      "#dunningKeyTermsGlossaryPanel",
+      "#uncertaintyQueue60Panel",
+      "#externalAudit8LocksPanel",
+    ],
+  },
+  {
+    artifact: "web/data/book_names/es.json",
+    requiredKeys: ["books", "lang", "name_source", "nsm_subtitle"],
+    targetSelectors: ["#bibleSelectBook", "#btnOpenCompass", "#bibleCoordinateCompassGrid"],
+    domSlots: ["#bibleSelectBook", "#btnOpenCompass", "#bibleCoordinateCompassGrid"],
+  },
+  {
+    artifact: "web/data/editorial_profiles.json",
+    requiredKeys: [
+      "branch_profiles_12",
+      "canonical_80_blocks_catalog",
+      "canonical_9_plus_2_editions",
+      "canonical_9_toml_profiles",
+      "pocket_refuge_4_sheets_spec",
+      "print_profiles_14",
+      "typology_profiles_16",
+    ],
+    targetSelectors: ["#bibleOrthographyPills", "#biblePrintEditionsSheet"],
+    domSlots: ["#bibleOrthographyPills", "#biblePrintEditionsSheet"],
+  },
+  {
+    artifact: "web/shards/philology_rosetta_index.json",
+    requiredKeys: [
+      "canonical_metrology_units",
+      "canonical_tsk_echoes",
+      "consonantal_root_families",
+      "empirical_hg_pairs_total",
+      "ketiv_qere_residuals",
+      "lxx_mt_cognate_bridge",
+      "strong_lexicon_seed_total",
+      "verse_specific_tsk_echoes",
+      "versification_eng_org",
+    ],
+    targetSelectors: ["#rosettaSearchInput", "#rosettaExplorerResultsRows", "#bibleEasyDrawer"],
+    domSlots: ["#rosettaSearchInput", "#rosettaExplorerResultsRows", "#bibleEasyDrawer"],
+  },
+  {
+    artifact: "web/data/diachronic_register_es.json",
+    requiredKeys: [
+      "book_vectors_66",
+      "corpus_summary",
+      "intergenerational_core_rules",
+      "register_audit_baseline",
+      "tier1_archaic_lexicon",
+      "tier2_morphological_rules",
+      "tier3_postverbal_enclitics",
+      "total_verses_audited",
+    ],
+    targetSelectors: ["#bibleAnalyticalThermometerPanel", "#diachronicSubstitutionsDetails"],
+    domSlots: ["#bibleAnalyticalThermometerPanel", "#diachronicSubstitutionsDetails"],
+  },
+  {
+    artifact: "web/wasm/wasm_manifest.json",
+    requiredKeys: ["modules"],
+    targetSelectors: ["#editorialAuditStatusPanel", "#bibleOpticalQrStreamPanel"],
+    domSlots: ["#editorialAuditStatusPanel", "#bibleOpticalQrStreamPanel"],
+  },
+];
+
+/**
+ * Verifica mediante autómata de pila VPL (Alur & Madhusudan, JACM 2009 · `D1-B++` · `GOLD-647`)
+ * que cada selector en `bindings` exista físicamente en `indexHtmlContent` y esté contenido
+ * jerárquicamente dentro de su `scopeRoot` ($\forall b,\; b.\text{scopeRoot} \in \text{Anc}(b.\text{selector})$).
+ */
+export function verifyVplDomScopeContainment(
+  indexHtmlContent = "",
+  bindings = MOSTRADOR_DOM_SCOPE_CONTRACTS,
+) {
+  const html = String(indexHtmlContent || "");
+  const stack = [];
+  const ancestorMap = new Map();
+  const tagRegex = /<\/?([a-zA-Z0-9-]+)([^>]*)>/g;
+  const voidTags = new Set([
+    "area", "base", "br", "col", "embed", "hr", "img", "input",
+    "link", "meta", "param", "source", "track", "wbr",
+  ]);
+
+  let match;
+  while ((match = tagRegex.exec(html)) !== null) {
+    const fullMatch = match[0];
+    const tagName = match[1].toLowerCase();
+    const attrs = match[2] || "";
+    const isClosing = fullMatch.startsWith("</");
+    const isSelfClosing = fullMatch.endsWith("/>") || voidTags.has(tagName);
+
+    if (isClosing) {
+      for (let i = stack.length - 1; i >= 0; i -= 1) {
+        if (stack[i].tag === tagName) {
+          stack.length = i;
+          break;
+        }
+      }
+      continue;
+    }
+
+    const idMatch = attrs.match(/\bid\s*=\s*["']([^"']+)["']/i);
+    const elemId = idMatch ? `#${idMatch[1].trim()}` : null;
+    if (elemId) {
+      const ancestors = stack.filter((s) => s.id).map((s) => s.id);
+      ancestorMap.set(elemId, ancestors);
+    }
+
+    if (!isSelfClosing) {
+      stack.push({ tag: tagName, id: elemId });
+    }
+  }
+
+  const violations = [];
+  for (const b of bindings || []) {
+    const selector = String(b?.selector || "").trim();
+    const scopeRoot = String(b?.scopeRoot || "document").trim();
+    if (!selector.startsWith("#")) continue;
+    if (!ancestorMap.has(selector)) {
+      violations.push({ selector, scopeRoot, reason: "missing_in_html" });
+      continue;
+    }
+    if (scopeRoot && scopeRoot !== "document" && scopeRoot.startsWith("#")) {
+      const ancestors = ancestorMap.get(selector) || [];
+      if (!ancestors.includes(scopeRoot)) {
+        violations.push({
+          selector,
+          scopeRoot,
+          ancestors,
+          reason: "scope_root_not_ancestor",
+        });
+      }
+    }
+  }
+
+  return {
+    ok: violations.length === 0,
+    violations,
+    totalChecked: Array.isArray(bindings) ? bindings.length : 0,
+  };
+}
+
+/**
+ * Verifica algebraicamente la Triple Clausura de Proveniencia $\mathbb{N}[X]\setminus\{0\}$ (`D1-A+` / `D1-B++`):
+ * 1. Todo selector `#id` en `domBindings`, `MOSTRADOR_DOM_SCOPE_CONTRACTS` y `ARTIFACT_PROJECTION_SCHEMA`
+ *    existe físicamente en `htmlSource` (0 exenciones dinámicas).
+ * 2. Toda clave en `requiredKeys` de `ARTIFACT_PROJECTION_SCHEMA` es consumida en `controllerCorpus`.
+ */
+export function verifyArtifactProjectionClosure({
+  htmlSource = "",
+  domBindings = [],
+  controllerCorpus = "",
+} = {}) {
+  const html = String(htmlSource || "");
+  const corpus = String(controllerCorpus || "");
+  const missingDomIds = [];
+  const checkedSelectors = new Set();
+
+  const checkSelector = (sel) => {
+    const clean = String(sel || "").trim();
+    if (!clean.startsWith("#") || checkedSelectors.has(clean)) return;
+    checkedSelectors.add(clean);
+    const id = clean.slice(1);
+    const inHtml = html.includes(`id="${id}"`) || html.includes(`id='${id}'`);
+    if (!inHtml) {
+      missingDomIds.push(clean);
+    }
+  };
+
+  if (Array.isArray(domBindings)) {
+    for (const b of domBindings) {
+      if (typeof b === "string") checkSelector(b);
+      else if (b && b.selector) checkSelector(b.selector);
+    }
+  } else if (domBindings && typeof domBindings === "object") {
+    for (const sel of Object.keys(domBindings)) {
+      checkSelector(sel);
+    }
+  }
+
+  for (const sc of MOSTRADOR_DOM_SCOPE_CONTRACTS) {
+    checkSelector(sc.selector);
+  }
+
+  for (const entry of ARTIFACT_PROJECTION_SCHEMA) {
+    for (const sel of entry.targetSelectors || []) {
+      checkSelector(sel);
+    }
+  }
+
+  const vplScope = verifyVplDomScopeContainment(html, MOSTRADOR_DOM_SCOPE_CONTRACTS);
+
+  const unprojectedKeys = [];
+  for (const entry of ARTIFACT_PROJECTION_SCHEMA) {
+    for (const key of entry.requiredKeys || []) {
+      if (!corpus.includes(key)) {
+        unprojectedKeys.push(`${entry.artifact}:${key}`);
+      }
+    }
+  }
+
+  return {
+    ok: missingDomIds.length === 0 && unprojectedKeys.length === 0 && vplScope.ok,
+    missingDomIds,
+    unprojectedKeys,
+    scopeViolations: vplScope.violations,
+  };
+}
+
+const CANONICAL_NSM_BOOK_SUBTITLES = {
+  GEN: "Cómo Dios hizo todo en el principio y habló con Abraham",
+  EXO: "Cómo Dios sacó a su pueblo de Egipto y les dio su palabra",
+  LEV: "Cómo vivir cerca del Dios santo sin mancha",
+  PSA: "Cantos y oraciones del corazón delante de Dios",
+  MAT: "Las buenas noticias de Jesús el Mesías y su Reino",
+  MRK: "Lo que Jesús el Hijo de Dios hizo con poder",
+  LUK: "La historia verdadera de Jesús para todas las personas",
+  JHN: "La Palabra viva de Dios que vino a dar vida eterna",
+  ROM: "Cómo Dios hace justos a los que confían en Jesús",
+  "1CO": "Cómo vivir unidos en amor como cuerpo de Cristo",
+  REV: "Lo que Jesús mostró que sucederá cuando Dios haga nuevas todas las cosas",
+};
+
+/**
+ * Resuelve los metadatos localizados de un libro bíblico desde `web/data/book_names/<lang>.json`,
+ * incluyendo su nombre vernáculo, abreviatura y subtítulo semántico NSM-65 (`nsm_subtitle`, `D5-A+`).
+ */
+export function resolveLocalizedBookMeta(bookNamesDoc, bookCode, fallbackMeta = null) {
+  const code = String(bookCode || "GEN").toUpperCase();
+  const books = Array.isArray(bookNamesDoc?.books) ? bookNamesDoc.books : [];
+  const found = books.find((b) => String(b.code || "").toUpperCase() === code);
+  if (found) {
+    const name = String(found.name || fallbackMeta?.es || fallbackMeta?.en || code);
+    const chapters = Number(found.chapters) || fallbackMeta?.chapters || 1;
+    const nsm = String(
+      found.nsm_subtitle ||
+      CANONICAL_NSM_BOOK_SUBTITLES[code] ||
+      `Libro de ${name} (${chapters} capítulos en palabras sencillas NSM-65)`,
+    );
+    return {
+      code,
+      ordinal: Number(found.ordinal) || fallbackMeta?.ord || 1,
+      name,
+      abbr: String(found.abbr || code),
+      nsmSubtitle: nsm,
+      nsm_subtitle: nsm,
+      chapters,
+    };
+  }
+  const fallbackName = String(fallbackMeta?.es || fallbackMeta?.en || code);
+  const fallbackNsm =
+    CANONICAL_NSM_BOOK_SUBTITLES[code] ||
+    `Libro de ${fallbackName} en palabras sencillas NSM-65`;
+  return {
+    code,
+    ordinal: fallbackMeta?.ord || 1,
+    name: fallbackName,
+    abbr: code,
+    nsmSubtitle: fallbackNsm,
+    nsm_subtitle: fallbackNsm,
+    chapters: fallbackMeta?.chapters || 1,
   };
 }
 

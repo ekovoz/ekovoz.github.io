@@ -295,6 +295,138 @@ handler = "resolveMasoreticPericopeBreaks"
 test_file = "mostrador/tribunal.test.mjs"
 test_name = "d1_to_d9_b_plus_sovereign_parity_wfst_diachronic_rosetta_imposition_pda_eco1_and_global_drawers"
 
+[capability.wfst_5_families_and_reverse_lemma_map]
+surface = "public-ui"
+selector = "#bibleOrthographyPills"
+module = "mostrador/orthography_wfst.js"
+handler = "listOrthographyProfilesForLang"
+test_file = "mostrador/tribunal.test.mjs"
+test_name = "D1_to_D9_S21_plus_ARB_EKOVOZ_63_complete_section_2_1_backend_surface_projection"
+
+[capability.catalog_all_14_print_profiles]
+surface = "public-ui"
+selector = "#bibleEditionsCatalogGrid"
+module = "mostrador/dosis.js"
+handler = "listAll14PrintEditionsForLang"
+test_file = "mostrador/tribunal.test.mjs"
+test_name = "D1_to_D9_S21_plus_ARB_EKOVOZ_63_complete_section_2_1_backend_surface_projection"
+
+[capability.canonical_80_blocks_selector]
+surface = "public-ui"
+selector = "#duplexAssistantPanel"
+module = "mostrador/dosis.js"
+handler = "resolveCanonicalBlockForPassage"
+test_file = "mostrador/tribunal.test.mjs"
+test_name = "D1_to_D9_S21_plus_ARB_EKOVOZ_63_complete_section_2_1_backend_surface_projection"
+
+[capability.grambank_12_branches_and_16_typology_sheets]
+surface = "public-ui"
+selector = "#bibleBranchAndTypologyPanel"
+module = "mostrador/dosis.js"
+handler = "renderBranchAndTypologyInspectorHtml"
+test_file = "mostrador/tribunal.test.mjs"
+test_name = "D1_to_D9_S21_plus_ARB_EKOVOZ_63_complete_section_2_1_backend_surface_projection"
+
+[capability.wasm_prosodic_pause_and_syllable_cursor]
+surface = "public-ui"
+selector = "#bibleOralPorticoBanner"
+module = "mostrador/data_layer.js"
+handler = "computeProsodyAndSyllableAlignmentInWasm"
+test_file = "mostrador/tribunal.test.mjs"
+test_name = "D1_to_D9_S21_plus_ARB_EKOVOZ_63_complete_section_2_1_backend_surface_projection"
+
+[capability.optical_receiver_qr_stream_session_and_nyquist]
+surface = "public-ui"
+selector = "#opticalReceiverRxPanel"
+module = "mostrador/optical_lt.js"
+handler = "runOpticalReceiverBurstSession"
+test_file = "mostrador/tribunal.test.mjs"
+test_name = "D1_to_D9_S21_plus_ARB_EKOVOZ_63_complete_section_2_1_backend_surface_projection"
+
+[capability.stp_lexicon_600_explorer_and_ot_waves_filter]
+surface = "public-ui"
+selector = "#stpLexiconExplorerHost"
+module = "mostrador/mejorar.js"
+handler = "renderStpLexiconExplorerHtml"
+test_file = "mostrador/tribunal.test.mjs"
+test_name = "D1_to_D9_S21_plus_ARB_EKOVOZ_63_complete_section_2_1_backend_surface_projection"
+
+[capability.diachronic_3_tiers_and_66_book_vectors_thermometer]
+surface = "public-ui"
+selector = "#bibleAnalyticalThermometerPanel"
+module = "mostrador/diachronic_register.js"
+handler = "renderAnalyticalThermometerHtml"
+test_file = "mostrador/tribunal.test.mjs"
+test_name = "D1_to_D9_S21_plus_ARB_EKOVOZ_63_complete_section_2_1_backend_surface_projection"
+
+[capability.philology_rosetta_explorer_u7]
+surface = "public-ui"
+selector = "#bibleEasyDrawer"
+module = "mostrador/estudio.js"
+handler = "renderPhilologyRosettaExplorerHtml"
+test_file = "mostrador/tribunal.test.mjs"
+test_name = "D52_to_D59_ARB_EKOVOZ_64_stage3_apple_hig_and_rosetta_explorer_u7"
+
+[capability.felices_dichas_and_plates_bar]
+surface = "public-ui"
+selector = "#felicesDichasAndPlatesBar"
+module = "mostrador.js"
+handler = "projectCrossWorkCoordinate"
+test_file = "mostrador/tribunal.test.mjs"
+test_name = "D52_to_D59_ARB_EKOVOZ_64_stage3_apple_hig_and_rosetta_explorer_u7"
+
+[capability.isomorphic_url_route_codec]
+surface = "public-ui"
+selector = "#sovereignTopBar"
+module = "i18n_ui.js"
+handler = "parseInitialRouteAndLocale"
+test_file = "mostrador/tribunal.test.mjs"
+test_name = "D52_to_D59_ARB_EKOVOZ_64_stage3_apple_hig_and_rosetta_explorer_u7"
+
+[capability.felices_preview_carousel_modal]
+surface = "public-ui"
+selector = "#btnOpenPreviewCarousel"
+module = "i18n_ui.js"
+handler = "openModal"
+test_file = "mostrador/tribunal.test.mjs"
+test_name = "D62_to_D69_ARB_EKOVOZ_65_reactive_router_quotient_lens_focus_preservation_and_zero_404"
+
+[capability.paper_format_toggle_carta_a4]
+surface = "public-ui"
+selector = "#toggleA4"
+module = "i18n_ui.js"
+handler = "setPaper"
+test_file = "mostrador/tribunal.test.mjs"
+test_name = "D1_to_D10_A_plus_ARB_EKOVOZ_61_triple_provenance_closure_and_full_backend_ui_parity"
+
+[capability.evangelios_polyglot_7_lang_selector]
+surface = "public-ui"
+selector = "#evangeliosLangSelect"
+module = "mostrador.js"
+handler = "hydrateEvangeliosSection"
+test_file = "mostrador/tribunal.test.mjs"
+test_name = "D1_to_D10_A_plus_ARB_EKOVOZ_61_triple_provenance_closure_and_full_backend_ui_parity"
+
+[capability.bible_chapter_pericopes_ribbon]
+surface = "public-ui"
+selector = "#bibleChapterPericopesRibbon"
+module = "mostrador/evangelios.js"
+handler = "renderChapterPericopesRibbonHtml"
+test_file = "mostrador/tribunal.test.mjs"
+test_name = "D1_to_D10_A_plus_ARB_EKOVOZ_61_triple_provenance_closure_and_full_backend_ui_parity"
+
+[capability.felices_socratic_wonder_card]
+surface = "public-ui"
+selector = "#felicesSocraticWonderCard"
+module = "mostrador/evangelios.js"
+handler = "renderFelicesSocraticWonderCardHtml"
+test_file = "mostrador/tribunal.test.mjs"
+test_name = "D1_to_D10_A_plus_ARB_EKOVOZ_61_triple_provenance_closure_and_full_backend_ui_parity"
+
+
+
+
+
 
 
 

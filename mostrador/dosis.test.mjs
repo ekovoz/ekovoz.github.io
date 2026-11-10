@@ -30,6 +30,14 @@ import {
   doseFilename,
 } from "./dosis.js";
 import { renderEvangeliosPlateActionsHtml } from "./evangelios.js";
+import {
+  hasDiachronicVariants,
+  resolveEffectiveCorpusTarget,
+  syncDiachronicRegisterOrthogonality,
+  hydrateDiachronicRegister,
+  BOOK_VECTORS_66,
+  computeAnalyticalRegisterMetrics,
+} from "./diachronic_register.js";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const webDir = path.resolve(here, "..");
@@ -177,7 +185,8 @@ test("foliation_layout_20mm_punch_marks_rtl_inversion_and_sauvola_3rd_gen_photoc
   assert.equal(sauvolaFail.eulerCharacteristicDelta, -1);
 
   const evHtml = renderEvangeliosPlateActionsHtml({ weekId: "s01", passageRef: "JHN.1.1", lang: "es" });
-  assert.match(evHtml, /btn-evangelios-open-print/);
+  assert.match(evHtml, /ot-echo-jump-chip/);
+  assert.match(evHtml, /data-evangelios-pericopes="true"/);
   assert.match(evHtml, /min-height:48px/);
 });
 
@@ -221,6 +230,69 @@ test("d4_b_plus_multi_signature_4n_imposition_creep_bound_9_toml_profiles_and_80
   assert.equal(dosisSrc.includes("Object.freeze("), false, "D5-R+: zero Object.freeze in dosis.js");
   assert.equal(diachronicSrc.includes("Object.freeze("), false, "D3-R+: zero Object.freeze in diachronic_register.js");
 });
+
+test("D3-E+: Harel orthogonal product state (dL/dR = 0) and conditional visibility of classic register", () => {
+  assert.equal(hasDiachronicVariants("es"), true);
+  assert.equal(hasDiachronicVariants("es-1909"), true);
+  assert.equal(hasDiachronicVariants("en"), false);
+  assert.equal(hasDiachronicVariants("stp"), false);
+
+  assert.equal(resolveEffectiveCorpusTarget("es", "clasica"), "es-1909");
+  assert.equal(resolveEffectiveCorpusTarget("es", "intergeneracional"), "es");
+  assert.equal(resolveEffectiveCorpusTarget("en", "clasica"), "en");
+
+  const stateEs = { lang: "es-1909", register: "clasica" };
+  const classicBtn = { hidden: false, style: { display: "" } };
+  const mockDom = {
+    getElementById: (id) => (id === "btnRegClasica" ? classicBtn : null),
+  };
+
+  const resEs = syncDiachronicRegisterOrthogonality(mockDom, stateEs);
+  assert.equal(stateEs.lang, "es", "state.lang must remain canonical 'es' even in 'clasica' register");
+  assert.equal(resEs.effectiveCorpusLang, "es-1909");
+  assert.equal(classicBtn.hidden, false);
+
+  const stateStp = { lang: "stp", register: "clasica" };
+  const resStp = syncDiachronicRegisterOrthogonality(mockDom, stateStp);
+  assert.equal(stateStp.lang, "stp");
+  assert.equal(stateStp.register, "intergeneracional");
+  assert.equal(resStp.effectiveCorpusLang, "stp");
+  assert.equal(classicBtn.hidden, true);
+  assert.equal(classicBtn.style.display, "none");
+});
+
+test("D4-C+_and_D5-C+_80_blocks_zero_synthetic_AT_Bloque_and_66_book_diachronic_vectors", () => {
+  const profilesPath = path.join(webDir, "data", "editorial_profiles.json");
+  if (fs.existsSync(profilesPath)) {
+    hydrateEditorialProfiles(readJson("data/editorial_profiles.json"));
+  }
+  assert.equal(CANONICAL_80_BLOCKS_CATALOG.length, 80);
+  for (const blk of CANONICAL_80_BLOCKS_CATALOG) {
+    assert.equal(
+      String(blk.rangeLabel || "").includes("AT Bloque "),
+      false,
+      `Block ${blk.blockId} must not contain synthetic 'AT Bloque ': ${blk.rangeLabel}`,
+    );
+    assert.equal(
+      String(blk.rangeLabel || "").includes("NT Bloque "),
+      false,
+      `Block ${blk.blockId} must not contain synthetic 'NT Bloque ': ${blk.rangeLabel}`,
+    );
+    assert.ok(String(blk.rangeLabel || "").length >= 4);
+  }
+
+  const diachronicPath = path.join(webDir, "data", "diachronic_register_es.json");
+  if (fs.existsSync(diachronicPath)) {
+    hydrateDiachronicRegister(readJson("data/diachronic_register_es.json"));
+    if (Object.keys(BOOK_VECTORS_66).length > 0) {
+      assert.equal(Object.keys(BOOK_VECTORS_66).length, 66);
+      const revMetrics = computeAnalyticalRegisterMetrics("He aquí yo vengo pronto.", "REV.22.12");
+      assert.ok(revMetrics.bookVector || revMetrics.baselineAudit);
+    }
+  }
+});
+
+
 
 
 

@@ -4,22 +4,32 @@
 
 export const CACHE_NAME = "ekovoz-mostrador-v20";
 
-export const SHELL_CORE_ASSETS = Object.freeze([
+export const SHELL_CORE_ASSETS = [
   "/",
   "/index.html",
   "/mostrador.js",
+  "/i18n_ui.js",
+  "/mostrador/bridge_and_chapter.js",
+  "/mostrador/drawer_hydrators.js",
   "/mostrador/i18n.js",
   "/mostrador/data_layer.js",
   "/mostrador/pdf_pages.js",
   "/mostrador/dosis.js",
+  "/mostrador/evangelios.js",
+  "/mostrador/orthography_wfst.js",
+  "/mostrador/diachronic_register.js",
   "/mostrador/reference.js",
   "/mostrador/lang_funnel.js",
   "/mostrador/optical_lt.js",
+  "/mostrador/estudio.js",
+  "/mostrador/mejorar.js",
+  "/mostrador/offline_mesh.js",
   "/i18n/index.json",
   "/i18n/en.json",
+  "/i18n/es.json",
   "/data/catalog.json",
   "/manifest.webmanifest",
-]);
+];
 
 let _offlineOptInEnabled = false;
 

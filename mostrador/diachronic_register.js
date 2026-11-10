@@ -106,27 +106,87 @@ export const REGISTER_AUDIT_ES_BASELINE = {
   "ROM.8.28": { aoa_years: 7.4, lexical_prevalence: 0.984, mdd: 2.18, eipen_l: 82.6 },
 };
 
+export const BOOK_VECTORS_66 = {};
+export let INTERGENERATIONAL_CORE_RULES = {};
+export let CORPUS_SUMMARY = {
+  total_books: 66,
+  total_chapters: 1189,
+  total_verses_audited: 31102,
+};
+export let TOTAL_VERSES_AUDITED = 31102;
+export const CORE_SUBSTITUTIONS = [];
+
 /**
- * Hidrata el registro diacrónico español con el artefacto compilado por Rust (`web/data/diachronic_register_es.json`, `D3-R+`).
+ * Hidrata el registro diacrónico español con el artefacto compilado por Rust (`web/data/diachronic_register_es.json`, `D2-B++`, `D4-C+`, `ARB-EKOVOZ-62`).
  */
 export function hydrateDiachronicRegister(artifact) {
   if (!artifact || typeof artifact !== "object") return REGISTER_AUDIT_ES_BASELINE;
-  if (Array.isArray(artifact.tier_1_archaic_lexicon) && artifact.tier_1_archaic_lexicon.length > 0) {
+  const tier1Raw = Array.isArray(artifact.tier1_archaic_lexicon) && artifact.tier1_archaic_lexicon.length > 0
+    ? artifact.tier1_archaic_lexicon
+    : Array.isArray(artifact.tier_1_archaic_lexicon) && artifact.tier_1_archaic_lexicon.length > 0
+      ? artifact.tier_1_archaic_lexicon
+      : null;
+  if (tier1Raw) {
     TIER_1_ARCHAIC_LEXICON.length = 0;
-    for (const pair of artifact.tier_1_archaic_lexicon) {
-      if (Array.isArray(pair) && pair.length >= 2) TIER_1_ARCHAIC_LEXICON.push([pair[0], pair[1]]);
+    for (const item of tier1Raw) {
+      if (Array.isArray(item) && item.length >= 2) {
+        TIER_1_ARCHAIC_LEXICON.push([item[0], item[1]]);
+      } else if (item && typeof item === "object" && (item.archaic || item.from) && (item.modern || item.to)) {
+        TIER_1_ARCHAIC_LEXICON.push([item.archaic || item.from, item.modern || item.to]);
+      }
     }
   }
-  if (Array.isArray(artifact.tier_3_postverbal_enclitics) && artifact.tier_3_postverbal_enclitics.length > 0) {
+  const tier2Raw = Array.isArray(artifact.tier2_morphological_rules) && artifact.tier2_morphological_rules.length > 0
+    ? artifact.tier2_morphological_rules
+    : Array.isArray(artifact.tier_2_morphological_rules) && artifact.tier_2_morphological_rules.length > 0
+      ? artifact.tier_2_morphological_rules
+      : null;
+  if (tier2Raw && TIER_2_MORPHOLOGICAL_RULES.length === 0) {
+    for (const item of tier2Raw) {
+      if (item && typeof item === "object" && item.pattern && item.replacement) {
+        TIER_2_MORPHOLOGICAL_RULES.push([new RegExp(item.pattern, "gi"), String(item.replacement)]);
+      }
+    }
+  }
+  const tier3Raw = Array.isArray(artifact.tier3_postverbal_enclitics) && artifact.tier3_postverbal_enclitics.length > 0
+    ? artifact.tier3_postverbal_enclitics
+    : Array.isArray(artifact.tier_3_postverbal_enclitics) && artifact.tier_3_postverbal_enclitics.length > 0
+      ? artifact.tier_3_postverbal_enclitics
+      : null;
+  if (tier3Raw) {
     TIER_3_POSTVERBAL_ENCLITICS.length = 0;
-    for (const pair of artifact.tier_3_postverbal_enclitics) {
-      if (Array.isArray(pair) && pair.length >= 2) TIER_3_POSTVERBAL_ENCLITICS.push([pair[0], pair[1]]);
+    for (const item of tier3Raw) {
+      if (Array.isArray(item) && item.length >= 2) {
+        TIER_3_POSTVERBAL_ENCLITICS.push([item[0], item[1]]);
+      } else if (item && typeof item === "object" && (item.archaic || item.enclitic) && (item.modern || item.proclitic)) {
+        TIER_3_POSTVERBAL_ENCLITICS.push([item.archaic || item.enclitic, item.modern || item.proclitic]);
+      }
+    }
+  }
+  if (Array.isArray(artifact.core_substitutions) && artifact.core_substitutions.length > 0) {
+    CORE_SUBSTITUTIONS.length = 0;
+    for (const sub of artifact.core_substitutions) {
+      CORE_SUBSTITUTIONS.push(sub);
     }
   }
   if (artifact.register_audit_baseline && typeof artifact.register_audit_baseline === "object") {
     for (const [k, v] of Object.entries(artifact.register_audit_baseline)) {
       REGISTER_AUDIT_ES_BASELINE[k] = v;
     }
+  }
+  if (artifact.book_vectors_66 && typeof artifact.book_vectors_66 === "object") {
+    for (const [bookKey, vec] of Object.entries(artifact.book_vectors_66)) {
+      BOOK_VECTORS_66[bookKey] = vec;
+    }
+  }
+  if (artifact.intergenerational_core_rules && typeof artifact.intergenerational_core_rules === "object") {
+    INTERGENERATIONAL_CORE_RULES = artifact.intergenerational_core_rules;
+  }
+  if (artifact.corpus_summary && typeof artifact.corpus_summary === "object") {
+    CORPUS_SUMMARY = { ...CORPUS_SUMMARY, ...artifact.corpus_summary };
+  }
+  if (typeof artifact.total_verses_audited === "number" && artifact.total_verses_audited > 0) {
+    TOTAL_VERSES_AUDITED = artifact.total_verses_audited;
   }
   return REGISTER_AUDIT_ES_BASELINE;
 }
@@ -311,6 +371,11 @@ export function computeAnalyticalRegisterMetrics(text, osisRef = null) {
     eipenL >= 80.0 &&
     eipenL <= 88.0;
 
+  const bookPrefix = osisRef ? String(osisRef).split(/[.\s:]/)[0].toUpperCase() : "GEN";
+  const resolvedBaseline = osisRef
+    ? REGISTER_AUDIT_ES_BASELINE[osisRef] || BOOK_VECTORS_66[bookPrefix] || null
+    : BOOK_VECTORS_66.GEN || null;
+
   return {
     aoaYears,
     meanAoa: aoaYears,
@@ -322,7 +387,234 @@ export function computeAnalyticalRegisterMetrics(text, osisRef = null) {
     passesAllGates,
     archaicHits,
     osisRef: osisRef || "GEN.1.1",
-    baselineAudit: osisRef ? REGISTER_AUDIT_ES_BASELINE[osisRef] || null : null,
+    baselineAudit: resolvedBaseline,
+    bookVector: BOOK_VECTORS_66[bookPrefix] || null,
   };
 }
+
+/**
+ * Idiomas que cuentan con estratos diacrónicos verificados (Siglo XXI vs Clásica 1909, `D3-E+` · `ARB-EKOVOZ-61`).
+ */
+export const DIACHRONIC_SUPPORTED_LANGS = ["es"];
+
+/**
+ * Determina si un idioma de lectura posee variantes diacrónicas documentadas (`D3-E+`).
+ */
+export function hasDiachronicVariants(lang = "es") {
+  const clean = String(lang || "es").trim().toLowerCase();
+  const base = clean === "es-1909" ? "es" : clean;
+  return DIACHRONIC_SUPPORTED_LANGS.includes(base);
+}
+
+/**
+ * Lente funcional pura de Producto Ortogonal de Harel (`dL/dR = 0`, `D3-E+` · `PeshoVurtoleta/lite-statechart` + `rayokota/json-lenses`):
+ * Resuelve el identificador del shard de corpus efectivo sin mutar jamás `state.lang`.
+ */
+export function resolveEffectiveCorpusTarget(lang = "es", register = "intergeneracional") {
+  const cleanLang = String(lang || "es").trim();
+  const baseLang = cleanLang === "es-1909" ? "es" : cleanLang;
+  const cleanReg = String(register || "intergeneracional").trim().toLowerCase();
+  if (baseLang === "es" && cleanReg === "clasica") {
+    return "es-1909";
+  }
+  return baseLang;
+}
+
+/**
+ * Sincroniza la visibilidad condicional del selector de registro diacrónico (`#btnRegClasica`)
+ * y garantiza que cambiar de estrato jamás sobrescriba `state.lang` (`dL/dR = 0`, `D3-E+`).
+ */
+export function syncDiachronicRegisterOrthogonality(container, state) {
+  if (!state || typeof state !== "object") return { visible: false, effectiveCorpusLang: "es" };
+  if (state.lang === "es-1909") {
+    state.lang = "es";
+    state.register = "clasica";
+  }
+  const hasVariants = hasDiachronicVariants(state.lang);
+  if (!hasVariants && state.register === "clasica") {
+    state.register = "intergeneracional";
+  }
+  if (container) {
+    const classicBtn =
+      typeof container.querySelector === "function"
+        ? container.querySelector("#btnRegClasica")
+        : typeof container.getElementById === "function"
+          ? container.getElementById("btnRegClasica")
+          : null;
+    if (classicBtn) {
+      classicBtn.hidden = !hasVariants;
+      if (classicBtn.style) {
+        classicBtn.style.display = hasVariants ? "" : "none";
+      }
+    }
+  }
+  return {
+    visible: hasVariants,
+    canonicalLang: state.lang,
+    register: state.register || "intergeneracional",
+    effectiveCorpusLang: resolveEffectiveCorpusTarget(state.lang, state.register),
+  };
+}
+
+/**
+ * D8-S21+ (`ARB-EKOVOZ-63`, `diachronic_register_es.json`):
+ * Agrega las transformaciones diacrónicas de las 3 capas (`Tier 1` Léxico, `Tier 2` Morfología verbal y subjuntivo `-are/-iere`,
+ * `Tier 3` Inversión de enclíticos postverbales) a lo largo de un capítulo completo, junto con el vector de legibilidad
+ * del libro (`BOOK_VECTORS_66`) y las reglas del núcleo intergeneracional (`INTERGENERATIONAL_CORE_RULES`).
+ */
+export function summarizeChapterDiachronicTransformations(verses = [], bookCode = "GEN") {
+  const cleanBook = String(bookCode || "GEN").toUpperCase();
+  const textList = Array.isArray(verses)
+    ? verses.map((v) => (typeof v === "string" ? v : String(v?.text || "")))
+    : verses && typeof verses === "object"
+      ? Object.values(verses).map((v) => (typeof v === "string" ? v : String(v?.text || "")))
+      : [];
+
+  let tier1LexicalCount = 0;
+  let tier2MorphologicalCount = 0;
+  let tier3EncliticCount = 0;
+  const tiersSet = new Set();
+
+  for (const rawVerse of textList) {
+    const res = modernizeVerseDiachronic(rawVerse);
+    tier1LexicalCount += res.lexicalReplacementsCount;
+    tier2MorphologicalCount += res.morphologicalRewritesCount;
+    tier3EncliticCount += res.encliticInversionsCount;
+    for (const t of res.appliedTiers) tiersSet.add(t);
+  }
+
+  const bookVec = BOOK_VECTORS_66[cleanBook] || {
+    book: cleanBook,
+    mean_aoa_years: 6.8,
+    lexical_prevalence: 0.988,
+    mean_mdd: 1.92,
+    eipen_l: 84.6,
+  };
+  const coreRules =
+    INTERGENERATIONAL_CORE_RULES && Object.keys(INTERGENERATIONAL_CORE_RULES).length > 0
+      ? INTERGENERATIONAL_CORE_RULES
+      : {
+        max_aoa_years: 11.0,
+        min_lexical_prevalence: 0.96,
+        max_mdd: 2.6,
+        eipen_band: [80.0, 88.0],
+      };
+
+  return {
+    bookCode: cleanBook,
+    versesInspected: textList.length,
+    tier1LexicalCount,
+    tier2MorphologicalCount,
+    tier3EncliticCount,
+    totalTransformations: tier1LexicalCount + tier2MorphologicalCount + tier3EncliticCount,
+    appliedTiers: Array.from(tiersSet),
+    tierCatalogSizes: {
+      tier1Rules: TIER_1_ARCHAIC_LEXICON.length,
+      tier2Rules: TIER_2_MORPHOLOGICAL_RULES.length,
+      tier3Rules: TIER_3_POSTVERBAL_ENCLITICS.length,
+    },
+    bookVector: bookVec,
+    coreRules,
+  };
+}
+
+/**
+ * D8-S21+ (`ARB-EKOVOZ-63`):
+ * Renderiza el Termómetro Analítico de Legibilidad Intergeneracional y el desglose FST de 3 Capas (`Tier 1/2/3`)
+ * en `#bibleAnalyticalThermometerPanel`.
+ */
+export function renderAnalyticalThermometerHtml({
+  verses = [],
+  bookCode = "GEN",
+  osisRef = "GEN.1.1",
+} = {}) {
+  const textList = Array.isArray(verses)
+    ? verses.map((v) => (typeof v === "string" ? v : String(v?.text || "")))
+    : verses && typeof verses === "object"
+      ? Object.values(verses).map((v) => (typeof v === "string" ? v : String(v?.text || "")))
+      : [];
+  const sampleText =
+    textList.filter(Boolean).slice(0, 6).join(" ") ||
+    "En el principio creó Dios los cielos y la tierra.";
+  const metrics = computeAnalyticalRegisterMetrics(sampleText, osisRef);
+  const summary = summarizeChapterDiachronicTransformations(textList, bookCode);
+  const maxAoaRule = Number(summary.coreRules.max_aoa_years ?? 11.0);
+  const minPrevRule = Number(summary.coreRules.min_lexical_prevalence ?? 0.96);
+  const maxMddRule = Number(summary.coreRules.max_mdd ?? 2.6);
+  const bookEipen = Number(summary.bookVector.eipen_l ?? metrics.eipenL ?? 85.0);
+  const totalAudited = Number(CORPUS_SUMMARY?.total_verses_audited ?? TOTAL_VERSES_AUDITED ?? 31102);
+  const tier1Sample = TIER_1_ARCHAIC_LEXICON.slice(0, 4)
+    .map(([a, m]) => `${a}→${m}`)
+    .join(" · ");
+  const tier3Sample = TIER_3_POSTVERBAL_ENCLITICS.slice(0, 3)
+    .map(([a, m]) => `${a}→${m}`)
+    .join(" · ");
+
+  return (
+    `<div class="mostrador-analytical-thermometer" ` +
+    `data-osis-ref="${metrics.osisRef}" ` +
+    `data-aoa-years="${metrics.aoaYears}" ` +
+    `data-lexical-prevalence="${metrics.lexicalPrevalence}" ` +
+    `data-mdd="${metrics.mdd}" ` +
+    `data-eipen-l="${metrics.eipenL}" ` +
+    `data-passes-gates="${metrics.passesAllGates}" ` +
+    `data-tier1-count="${summary.tier1LexicalCount}" ` +
+    `data-tier2-count="${summary.tier2MorphologicalCount}" ` +
+    `data-tier3-count="${summary.tier3EncliticCount}" ` +
+    `data-book-vector-code="${summary.bookCode}" ` +
+    `data-core-rules-max-aoa="${maxAoaRule}" ` +
+    `data-total-verses-audited="${totalAudited}" ` +
+    `style="padding:0.45rem 0.65rem;border-radius:8px;border:1px solid var(--card-border);background:var(--bg-secondary);display:flex;flex-wrap:wrap;gap:0.45rem;align-items:center;justify-content:space-between;">` +
+    `<div>` +
+    `<strong style="font-size:0.78rem;">🌡️ Termómetro Intergeneracional (${summary.bookCode} · ${metrics.passesAllGates ? "✅ 4 Candados OK" : "⚠️ Revisión"} · ${totalAudited} vv.)</strong> ` +
+    `<span style="font-size:0.75rem;color:var(--text-secondary);">AoA=${metrics.aoaYears}a (≤${maxAoaRule}a) · Prev=${metrics.lexicalPrevalence} (≥${minPrevRule}) · MDD=${metrics.mdd} (≤${maxMddRule}) · Eipen L=${metrics.eipenL} (Libro=${bookEipen})</span>` +
+    `</div>` +
+    `<div style="display:inline-flex;flex-wrap:wrap;gap:0.3rem;font-size:0.73rem;">` +
+    `<span class="uls-badge" data-diachronic-tier="1">Tier 1 Léxico (${summary.tierCatalogSizes.tier1Rules} reglas · ${summary.tier1LexicalCount} aplic.)</span>` +
+    `<span class="uls-badge" data-diachronic-tier="2">Tier 2 Morfología (${summary.tierCatalogSizes.tier2Rules} reglas · ${summary.tier2MorphologicalCount} aplic.)</span>` +
+    `<span class="uls-badge" data-diachronic-tier="3">Tier 3 Enclíticos (${summary.tierCatalogSizes.tier3Rules} reglas · ${summary.tier3EncliticCount} aplic.)</span>` +
+    `</div>` +
+    `<details id="diachronicSubstitutionsDetails" class="diachronic-substitutions-details" style="width:100%;font-size:0.74rem;color:var(--text-secondary);">` +
+    `<summary style="cursor:pointer;">Ver sustituciones FST activas (Tier 1/2/3 · 66 vectores)</summary>` +
+    `<div style="margin-top:0.25rem;">Léxico: ${tier1Sample} | Enclíticos: ${tier3Sample}</div>` +
+    `</details>` +
+    `</div>`
+  );
+}
+
+/**
+ * D5-R32 (`5B+` · `summarizeChapterDiachronicTransformations`):
+ * Renderiza el panel de auditoría diacrónica de capítulo completo (`#diachronicRegisterAuditPanel`)
+ * contrastando el registro Clásico 1909 vs. Intergeneracional Siglo XXI en las 3 capas FST (`Tier 1/2/3`).
+ */
+export function renderChapterDiachronicAuditCardHtml({
+  verses = [],
+  bookCode = "GEN",
+  chapter = 1,
+} = {}) {
+  const summary = summarizeChapterDiachronicTransformations(verses, bookCode);
+  const bookVec = summary.bookVector || {};
+  return (
+    `<div id="diachronicChapterAuditBadge" class="diachronic-chapter-audit-card" ` +
+    `data-chapter-diachronic-audit="true" ` +
+    `data-book="${summary.bookCode}" ` +
+    `data-chapter="${Number(chapter) || 1}" ` +
+    `data-verses-inspected="${summary.versesInspected}" ` +
+    `data-tier1-lexical="${summary.tier1LexicalCount}" ` +
+    `data-tier2-morphological="${summary.tier2MorphologicalCount}" ` +
+    `data-tier3-enclitics="${summary.tier3EncliticCount}" ` +
+    `data-total-transformations="${summary.totalTransformations}" ` +
+    `style="padding:0.45rem 0.65rem;border-radius:8px;border:1px solid var(--card-border);background:var(--card-bg);font-size:0.76rem;display:flex;flex-wrap:wrap;gap:0.4rem;align-items:center;justify-content:space-between;">` +
+    `<strong>📊 Auditoría Diacrónica de Capítulo (${summary.bookCode} ${Number(chapter) || 1} · ${summary.versesInspected} vv. · ${summary.totalTransformations} transformaciones 1909→2026)</strong>` +
+    `<div style="display:inline-flex;flex-wrap:wrap;gap:0.3rem;">` +
+    `<span class="uls-badge" data-audit-tier="1">Tier 1 Léxico: ${summary.tier1LexicalCount}/${summary.tierCatalogSizes.tier1Rules}</span>` +
+    `<span class="uls-badge" data-audit-tier="2">Tier 2 Morfología: ${summary.tier2MorphologicalCount}/${summary.tierCatalogSizes.tier2Rules}</span>` +
+    `<span class="uls-badge" data-audit-tier="3">Tier 3 Enclíticos: ${summary.tier3EncliticCount}/${summary.tierCatalogSizes.tier3Rules}</span>` +
+    `<span class="uls-badge" data-audit-book-eipen="${bookVec.eipen_l || 84.6}">Eipen-L: ${bookVec.eipen_l || 84.6} · AoA: ${bookVec.mean_aoa_years || 6.8}a</span>` +
+    `</div>` +
+    `</div>`
+  );
+}
+
+
 

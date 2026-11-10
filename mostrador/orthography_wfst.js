@@ -13,6 +13,63 @@ export const SCRIPTIO_CONTINUA_7_SCRIPTS = Object.freeze([
   "Mymr",
 ]);
 
+const STP_FAMILY_LANGS = new Set(["stp", "aud", "quc", "nah", "tzj", "cak", "mam"]);
+
+/**
+ * Resuelve la clave de familia ortográfica WFST ("stp", "bn", "arb", "uzn", "tzm") o null (`D1-S21+`).
+ */
+export function resolveOrthoFamilyKey(lang = "") {
+  const raw = String(lang || "").trim().toLowerCase();
+  if (!raw) return null;
+  const base = raw.split("-")[0];
+  if (STP_FAMILY_LANGS.has(raw) || STP_FAMILY_LANGS.has(base)) return "stp";
+  if (base === "bn") return "bn";
+  if (base === "arb" || base === "ar") return "arb";
+  if (base === "uzn" || base === "uz") return "uzn";
+  if (base === "tzm") return "tzm";
+  return null;
+}
+
+/**
+ * Lista los perfiles ortográficos canónicos disponibles para la lengua activa (`D1-S21+`).
+ */
+export function listOrthographyProfilesForLang(lang = "stp") {
+  const familyKey = resolveOrthoFamilyKey(lang);
+  if (!familyKey || !CANONICAL_ORTHOGRAPHY_PROFILES[familyKey]) {
+    return [];
+  }
+  const family = CANONICAL_ORTHOGRAPHY_PROFILES[familyKey];
+  return Object.values(family.profiles).map((p) => ({
+    id: p.id,
+    label: p.label,
+    script: p.script,
+    familyLang: familyKey,
+    isDefault: p.id === family.defaultProfile,
+  }));
+}
+
+/**
+ * Resuelve el código ISO 15924 de escritura Scriptio Continua para un código de idioma o escritura (`D2-S21+`).
+ */
+export function resolveScriptioContinuaCodeForLang(langOrScript = "") {
+  const raw = String(langOrScript || "").trim();
+  if (!raw) return null;
+  if (SCRIPTIO_CONTINUA_7_SCRIPTS.includes(raw)) return raw;
+  const lower = raw.toLowerCase();
+  if (lower === "zh-hant" || lower === "zh-tw" || lower === "zh-hk" || lower === "yue" || lower === "hant") {
+    return "Hant";
+  }
+  if (lower === "zh" || lower === "zh-hans" || lower === "zh-cn" || lower === "cmn" || lower === "hans") {
+    return "Hans";
+  }
+  if (lower === "ja" || lower === "jpn" || lower === "jpan") return "Jpan";
+  if (lower === "th" || lower === "tha" || lower === "thai") return "Thai";
+  if (lower === "lo" || lower === "lao" || lower === "laoo") return "Laoo";
+  if (lower === "km" || lower === "khm" || lower === "khmr") return "Khmr";
+  if (lower === "my" || lower === "mya" || lower === "mymr") return "Mymr";
+  return null;
+}
+
 /**
  * Perfiles ortográficos canónicos pluricéntricos y multiescritura sincronizados con orthography.rs.
  */

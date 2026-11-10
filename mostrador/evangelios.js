@@ -95,29 +95,135 @@ export const FELICES_12_DICHAS_COORDINATE_MAP = {
   12: { book: "REV", chapter: 22, verse: 14, title: "Dicha 12 · Los que Lavan sus Ropas (Árbol de la Vida)" },
 };
 
+export const FELICES_28_PLATES_MAP = {};
+
 /**
- * Hidrata los mapas de perícopas, las 52 semanas de Evangelios y las 12 Dichas de Felices
- * desde el artefacto compilado por Rust (`web/data/pericopes_and_glosses.json`, `D4-R+`).
+ * Hidrata los mapas de perícopas, las 52 semanas de Evangelios y las 12 Dichas / 28 Láminas de Felices
+ * desde el artefacto compilado por Rust (`web/data/pericopes_and_glosses.json`, `D3-C+`, `ARB-EKOVOZ-62`).
  */
 export function hydratePericopesAndGlosses(artifact) {
-  if (!artifact || typeof artifact !== "object") return;
-  if (artifact.pericopes_by_chapter && typeof artifact.pericopes_by_chapter === "object") {
-    for (const [k, v] of Object.entries(artifact.pericopes_by_chapter)) {
+  if (!artifact || typeof artifact !== "object") return false;
+  const rawPericopes =
+    artifact.masoretic_and_gospel_pericopes ||
+    artifact.pericopes_by_chapter ||
+    artifact.chapter_pericopes;
+  if (rawPericopes && typeof rawPericopes === "object") {
+    for (const [k, v] of Object.entries(rawPericopes)) {
       if (Array.isArray(v) && v.length > 0) {
-        MASORETIC_AND_GOSPEL_PERICOPE_MAP[k] = v;
+        MASORETIC_AND_GOSPEL_PERICOPE_MAP[k] = v.map((item) => ({
+          beforeVerse: Number(item.beforeVerse ?? item.startVerse ?? 1) || 1,
+          startVerse: Number(item.startVerse ?? item.beforeVerse ?? 1) || 1,
+          kind: String(item.kind || item.markerType || "petuhah").toLowerCase().includes("setum")
+            ? "setumah"
+            : "petuhah",
+          marker: item.marker || "פ",
+          title: item.title || "",
+          synopticParallel: item.synopticParallel || "",
+        }));
       }
     }
   }
-  if (artifact.evangelios_52_weeks && typeof artifact.evangelios_52_weeks === "object") {
+  if (artifact.evangelios_52_weeks && typeof artifact.evangelios_52_weeks === "object" && !Array.isArray(artifact.evangelios_52_weeks)) {
     for (const [wKey, wVal] of Object.entries(artifact.evangelios_52_weeks)) {
       EVANGELIOS_MACRO_THREADS_AND_ECHOES[wKey] = wVal;
     }
   }
-  if (artifact.felices_12_dichas && typeof artifact.felices_12_dichas === "object") {
+  const rawMacroThreads = Array.isArray(artifact.evangelios_macro_threads)
+    ? artifact.evangelios_macro_threads
+    : Array.isArray(artifact.evangelios_52_weeks)
+      ? artifact.evangelios_52_weeks
+      : null;
+  if (rawMacroThreads && rawMacroThreads.length > 0) {
+    for (const entry of rawMacroThreads) {
+      const wNum = Number(entry.weekNumber ?? entry.week) || 1;
+      const wKey = `s${String(wNum).padStart(2, "0")}`;
+      const existing = EVANGELIOS_MACRO_THREADS_AND_ECHOES[wKey] || EVANGELIOS_MACRO_THREADS_AND_ECHOES.s01;
+      const quarterPrefix = existing?.macroThread ? existing.macroThread.split("·")[0].trim() : "";
+      const enrichedMacro = entry.macroThread
+        ? quarterPrefix && !String(entry.macroThread).includes(quarterPrefix)
+          ? `${quarterPrefix} · ${entry.macroThread}`
+          : String(entry.macroThread)
+        : existing?.macroThread || "";
+      EVANGELIOS_MACRO_THREADS_AND_ECHOES[wKey] = {
+        weekId: wKey,
+        weekNumber: wNum,
+        title: entry.title || existing?.title || `Semana ${wNum}`,
+        cita: entry.cita || entry.ref || "",
+        anchorOsis: entry.anchorOsis || "JHN.1.1",
+        book: entry.book || "JHN",
+        chapter: Number(entry.chapter) || 1,
+        macroThread: enrichedMacro,
+        otEchoes: Array.isArray(entry.otEchoes) && entry.otEchoes.length > 0
+          ? entry.otEchoes
+          : entry.otEcho
+            ? [String(entry.otEcho), ...(existing?.otEchoes || []).slice(1)]
+            : existing?.otEchoes || [],
+        culturalRealia: entry.culturalRealia || entry.liturgicalDawnNote || existing?.culturalRealia || "",
+        questions: Array.isArray(entry.questions) ? entry.questions : [],
+        pericopeBlocks: Array.isArray(entry.pericopeBlocks) ? entry.pericopeBlocks : [],
+      };
+    }
+  }
+  if (Array.isArray(artifact.felices_12_dichas)) {
+    for (const item of artifact.felices_12_dichas) {
+      const num = Number(item.number) || 1;
+      const parts = String(item.anchorRef || "MAT.5.3").split(".");
+      const existing = FELICES_12_DICHAS_COORDINATE_MAP[num] || FELICES_12_DICHAS_COORDINATE_MAP[1];
+      FELICES_12_DICHAS_COORDINATE_MAP[num] = {
+        book: item.book || parts[0] || existing.book,
+        chapter: Number(item.chapter || parts[1]) || existing.chapter,
+        verse: Number(item.verse || parts[2]) || existing.verse,
+        title: item.title || existing.title,
+        virtue: item.virtue || "",
+      };
+    }
+  } else if (artifact.felices_12_dichas && typeof artifact.felices_12_dichas === "object") {
     for (const [dKey, dVal] of Object.entries(artifact.felices_12_dichas)) {
       FELICES_12_DICHAS_COORDINATE_MAP[Number(dKey) || dKey] = dVal;
     }
   }
+  if (Array.isArray(artifact.felices_28_plates)) {
+    artifact.felices_28_plates.forEach((plate, idx) => {
+      const pNum = Number(plate.number ?? plate.plateNumber) || (idx + 1);
+      const dichaIdx = pNum >= 25 ? 1 : Math.max(1, Math.min(12, Math.floor((pNum + 1) / 2)));
+      const dichaMeta = FELICES_12_DICHAS_COORDINATE_MAP[dichaIdx] || FELICES_12_DICHAS_COORDINATE_MAP[1];
+      const fallbackRef = `${dichaMeta.book}.${dichaMeta.chapter}.${dichaMeta.verse}`;
+      FELICES_28_PLATES_MAP[pNum] = {
+        ...plate,
+        number: pNum,
+        type: String(plate.type || "condicion"),
+        title_es: String(plate.title_es || plate.title || `${dichaMeta.title} (Lámina ${pNum}/28)`),
+        cita_es: String(plate.cita_es || plate.ref || fallbackRef),
+        preguntas_es:
+          Array.isArray(plate.preguntas_es) && plate.preguntas_es.length > 0
+            ? plate.preguntas_es
+            : [
+                `¿Dónde has experimentado hoy la necesidad o la promesa de «${dichaMeta.title}» (${fallbackRef})?`,
+                `¿Qué paso concreto de misericordia o paz nos invita a dar esta lámina en familia?`,
+              ],
+      };
+    });
+  }
+  return true;
+}
+
+export function resolveFelicesPlate(plateNumber = 1, artifact = null) {
+  if (artifact) hydratePericopesAndGlosses(artifact);
+  const idx = Math.max(1, Math.min(28, Number(plateNumber) || 1));
+  if (FELICES_28_PLATES_MAP[idx]) return FELICES_28_PLATES_MAP[idx];
+  const dichaIdx = idx >= 25 ? 1 : Math.max(1, Math.min(12, Math.floor((idx + 1) / 2)));
+  const dichaMeta = FELICES_12_DICHAS_COORDINATE_MAP[dichaIdx] || FELICES_12_DICHAS_COORDINATE_MAP[1];
+  const fallbackRef = `${dichaMeta.book}.${dichaMeta.chapter}.${dichaMeta.verse}`;
+  return {
+    number: idx,
+    type: idx % 2 === 0 ? "condicion" : "promesa",
+    title_es: `${dichaMeta.title} (Lámina ${idx}/28)`,
+    cita_es: fallbackRef,
+    preguntas_es: [
+      `¿Dónde has experimentado hoy la necesidad o la promesa de «${dichaMeta.title}» (${fallbackRef})?`,
+      `¿Qué paso concreto de misericordia o paz nos invita a dar esta lámina en familia?`,
+    ],
+  };
 }
 
 export function resolvePericopeHeaderForVerse(book, chapter, verse, artifact = null) {
@@ -126,12 +232,13 @@ export function resolvePericopeHeaderForVerse(book, chapter, verse, artifact = n
   const list = MASORETIC_AND_GOSPEL_PERICOPE_MAP[key];
   if (!Array.isArray(list)) return null;
   const v = Number(verse) || 1;
-  return list.find((item) => Number(item.beforeVerse) === v) || null;
+  return list.find((item) => Number(item.beforeVerse ?? item.startVerse) === v) || null;
 }
 
 export function resolveEvangeliosMacroThreadAndEcho(weekId = "s01", artifact = null) {
   if (artifact) hydratePericopesAndGlosses(artifact);
-  const cleanWeek = String(weekId || "s01").trim().toLowerCase();
+  const raw = String(weekId || "s01").trim().toLowerCase();
+  const cleanWeek = /^\d+$/.test(raw) ? `s${raw.padStart(2, "0")}` : raw;
   return EVANGELIOS_MACRO_THREADS_AND_ECHOES[cleanWeek] || EVANGELIOS_MACRO_THREADS_AND_ECHOES.s01;
 }
 
@@ -143,7 +250,7 @@ export function resolveFelicesDichaCoordinate(dichaIndex = 1, artifact = null) {
 
 /**
  * Resuelve las particiones de perícopa Masoréticas (`Petuhah פ` / `Setumah ס`) y de tradición
- * manuscrita griega (Kephalaia / Ammonian Sections) sin usar cortes sintéticos `i += 5` (`D7-B+`).
+ * manuscrita griega (Kephalaia / Ammonian Sections) sin usar cortes sintéticos (`D3-C+`).
  */
 export function resolveMasoreticPericopeBreaks(book, chapter, verseNums = [], chapterData = null) {
   const map = new Map();
@@ -151,8 +258,8 @@ export function resolveMasoreticPericopeBreaks(book, chapter, verseNums = [], ch
     for (const item of chapterData.pericopeBreaks) {
       if (typeof item === "number") {
         map.set(item, "petuhah");
-      } else if (item && typeof item === "object" && Number.isFinite(Number(item.beforeVerse))) {
-        map.set(Number(item.beforeVerse), String(item.kind || "petuhah"));
+      } else if (item && typeof item === "object" && Number.isFinite(Number(item.beforeVerse ?? item.startVerse))) {
+        map.set(Number(item.beforeVerse ?? item.startVerse), String(item.kind || item.markerType || "petuhah"));
       }
     }
     return map;
@@ -160,21 +267,18 @@ export function resolveMasoreticPericopeBreaks(book, chapter, verseNums = [], ch
 
   const key = `${String(book || "GEN").toUpperCase()}.${Number(chapter) || 1}`;
   const canonicalBreaks = MASORETIC_AND_GOSPEL_PERICOPE_MAP[key];
-  if (Array.isArray(canonicalBreaks)) {
+  if (Array.isArray(canonicalBreaks) && canonicalBreaks.length > 0) {
     for (const br of canonicalBreaks) {
-      if (br.beforeVerse > 1) {
-        map.set(br.beforeVerse, br.kind);
+      const bv = Number(br.beforeVerse ?? br.startVerse) || 1;
+      if (bv > 1 || canonicalBreaks.length === 1) {
+        map.set(bv, br.kind || "petuhah");
       }
     }
     return map;
   }
 
-  // Partición estructural proporcional en 3 movimientos discursivos (Apertura, Nudo, Coda) cuando no hay tabla explícita
-  if (Array.isArray(verseNums) && verseNums.length >= 6) {
-    const firstTurn = verseNums[Math.floor(verseNums.length / 3)];
-    const secondTurn = verseNums[Math.floor((verseNums.length * 2) / 3)];
-    if (firstTurn > 1) map.set(firstTurn, "setumah");
-    if (secondTurn > firstTurn) map.set(secondTurn, "petuhah");
+  if (Array.isArray(verseNums) && verseNums.length > 0) {
+    map.set(verseNums[0] || 1, "petuhah");
   }
   return map;
 }
@@ -187,35 +291,191 @@ function escapeHtml(val) {
     .replace(/"/g, "&quot;");
 }
 
+/**
+ * Extrae una referencia OSIS canónica `{ book, chapter, verse, refCode }` desde una cita de Eco AT (`D56 / 5C+`).
+ */
+export function parseCanonicalOtEchoRef(echoStr = "") {
+  const raw = String(echoStr || "").trim();
+  const dotMatch = raw.match(/\b([1-3]?[A-Za-z]{2,3})\.(\d+)(?:\.(\d+))?/);
+  if (dotMatch) {
+    const book = dotMatch[1].toUpperCase();
+    const chapter = Math.max(1, Number(dotMatch[2]) || 1);
+    const verse = Math.max(1, Number(dotMatch[3]) || 1);
+    return { book, chapter, verse, refCode: `${book}.${chapter}.${verse}` };
+  }
+  const colonMatch = raw.match(/\b([1-3]?[A-Za-z]{2,3})\s+(\d+)(?::(\d+))?/);
+  if (colonMatch) {
+    const book = colonMatch[1].toUpperCase();
+    const chapter = Math.max(1, Number(colonMatch[2]) || 1);
+    const verse = Math.max(1, Number(colonMatch[3]) || 1);
+    return { book, chapter, verse, refCode: `${book}.${chapter}.${verse}` };
+  }
+  return { book: "GEN", chapter: 1, verse: 1, refCode: "GEN.1.1" };
+}
+
 export function renderEvangeliosPlateActionsHtml({
   weekId = "s01",
   passageRef = "JHN.1.1",
   lang = "es",
 } = {}) {
-  const cleanWeek = String(weekId || "s01").trim();
+  const cleanWeek = String(weekId || "s01").trim().toLowerCase();
   const cleanRef = String(passageRef || "JHN.1.1").trim().toUpperCase();
   const cleanLang = String(lang || "es").trim().toLowerCase();
   const enrichment =
     EVANGELIOS_MACRO_THREADS_AND_ECHOES[cleanWeek] ||
     EVANGELIOS_MACRO_THREADS_AND_ECHOES.s01;
 
-  const echoesHtml = enrichment.otEchoes
-    .map(
-      (ec) =>
-        `<span class="uls-badge" data-ot-echo="${escapeHtml(ec)}" style="font-size:0.74rem;padding:0.15rem 0.45rem;">📜 Eco AT: ${escapeHtml(ec)}</span>`,
-    )
+  const parsedPassage = parseCanonicalOtEchoRef(enrichment.anchorOsis || cleanRef);
+  const bookKey = `${enrichment.book || parsedPassage.book}.${enrichment.chapter || parsedPassage.chapter}`;
+
+  const echoesHtml = (enrichment.otEchoes || [])
+    .map((ec) => {
+      const parsedEcho = parseCanonicalOtEchoRef(ec);
+      return (
+        `<button type="button" class="uls-chip ot-echo-jump-chip" ` +
+        `data-ot-echo="${escapeHtml(ec)}" data-ot-echo-ref="${escapeHtml(parsedEcho.refCode)}" ` +
+        `style="min-height:48px;min-width:48px;padding:0.35rem 0.65rem;font-size:0.76rem;display:inline-flex;align-items:center;">` +
+        `📜 Eco AT: ${escapeHtml(ec)}</button>`
+      );
+    })
     .join(" ");
 
+  const rawPericopes =
+    Array.isArray(enrichment.pericopeBlocks) && enrichment.pericopeBlocks.length > 0
+      ? enrichment.pericopeBlocks
+      : Array.isArray(MASORETIC_AND_GOSPEL_PERICOPE_MAP[bookKey]) &&
+          MASORETIC_AND_GOSPEL_PERICOPE_MAP[bookKey].length > 0
+        ? MASORETIC_AND_GOSPEL_PERICOPE_MAP[bookKey]
+        : [
+            {
+              beforeVerse: parsedPassage.verse || 1,
+              kind: "petuhah",
+              marker: "פ",
+              title: enrichment.title || `Apertura de Perícopa (${bookKey})`,
+            },
+          ];
+
+  const pericopesHtml = rawPericopes
+    .map((pb, idx) => {
+      const vStart = Number(pb.beforeVerse ?? pb.startVerse ?? pb.verse ?? 1) || 1;
+      const pRef = `${enrichment.book || parsedPassage.book}.${enrichment.chapter || parsedPassage.chapter}.${vStart}`;
+      const label = pb.title || pb.heading || pb.label || `Bloque ${idx + 1} (v. ${vStart})`;
+      const marker = pb.marker || (pb.kind === "setumah" ? "ס" : "פ");
+      return (
+        `<button type="button" class="uls-chip evangelios-pericope-chip" ` +
+        `data-pericope-block="${idx + 1}" data-pericope-verse="${vStart}" data-pericope-ref="${escapeHtml(pRef)}" ` +
+        `style="min-height:48px;min-width:48px;padding:0.3rem 0.65rem;font-size:0.76rem;display:inline-flex;align-items:center;">` +
+        `${escapeHtml(marker)} v.${vStart} · ${escapeHtml(label)}</button>`
+      );
+    })
+    .join(" ");
+
+  const rawQuestions =
+    Array.isArray(enrichment.questions) && enrichment.questions.length > 0
+      ? enrichment.questions
+      : [
+          `¿Qué revela este pasaje (${cleanRef}) sobre la promesa cumplida en el hilo «${enrichment.macroThread}»?`,
+          `¿Cómo transforma esta palabra nuestra vida comunitaria hoy al amanecer?`,
+        ];
+
+  const questionsHtml = rawQuestions
+    .map(
+      (q, qIdx) =>
+        `<li data-evangelios-question="${qIdx + 1}" style="margin-bottom:0.2rem;">${escapeHtml(q)}</li>`,
+    )
+    .join("");
+
   return (
-    `<div class="evangelios-exegesis-enrichment" data-macro-thread="${escapeHtml(enrichment.macroThread)}" style="margin-top:0.55rem;padding:0.55rem;border-radius:8px;border:1px solid var(--card-border);background:var(--card-bg);font-size:0.8rem;">` +
-    `<div style="font-weight:700;margin-bottom:0.25rem;">🧵 ${escapeHtml(enrichment.macroThread)}</div>` +
-    `<div style="display:flex;flex-wrap:wrap;gap:0.3rem;margin-bottom:0.35rem;">${echoesHtml}</div>` +
+    `<div class="evangelios-exegesis-enrichment" data-week="${escapeHtml(cleanWeek)}" data-lang="${escapeHtml(cleanLang)}" data-macro-thread="${escapeHtml(enrichment.macroThread)}" style="margin-top:0.55rem;padding:0.65rem;border-radius:8px;border:1px solid var(--card-border);background:var(--card-bg);font-size:0.8rem;display:flex;flex-direction:column;gap:0.45rem;">` +
+    `<div style="font-weight:700;">🧵 ${escapeHtml(enrichment.macroThread)}</div>` +
+    `<div class="evangelios-ot-echoes-bar" style="display:flex;flex-wrap:wrap;gap:0.35rem;">${echoesHtml}</div>` +
     `<div data-realia-gloss="true" style="color:var(--text-secondary);">🏺 <strong>Glosa Cultural Realia:</strong> ${escapeHtml(enrichment.culturalRealia)}</div>` +
+    `<div id="evangeliosPericopeBlocksList" data-evangelios-pericopes="true" style="display:flex;flex-wrap:wrap;gap:0.35rem;align-items:center;">` +
+    `<strong style="font-size:0.76rem;color:var(--text-secondary);">📑 Bloques de Perícopa:</strong> ${pericopesHtml}` +
     `</div>` +
-    `<div class="evangelios-inspector-actions" data-evangelios-actions="${escapeHtml(cleanWeek)}" style="display:flex;flex-wrap:wrap;gap:0.45rem;margin-top:0.65rem;">` +
-    `<button type="button" class="uls-chip btn-evangelios-open-study" data-evangelios-ref="${escapeHtml(cleanRef)}" style="min-height:48px;padding:0.35rem 0.75rem;">🔬 Estudiar 14-Col (${escapeHtml(cleanRef)})</button>` +
-    `<button type="button" class="uls-chip btn-evangelios-open-print" data-evangelios-week="${escapeHtml(cleanWeek)}" data-evangelios-lang="${escapeHtml(cleanLang)}" style="min-height:48px;padding:0.35rem 0.75rem;">🖨️ Imprimir Lámina / Foliación 20 mm</button>` +
-    `<button type="button" class="uls-chip btn-evangelios-open-share" data-evangelios-week="${escapeHtml(cleanWeek)}" style="min-height:48px;padding:0.35rem 0.75rem;">📲 Compartir QRBeam Óptico</button>` +
+    `<div id="evangeliosQuestionsList" data-evangelios-questions="true" style="border-top:1px dashed var(--card-border);padding-top:0.4rem;">` +
+    `<strong style="font-size:0.78rem;display:block;margin-bottom:0.2rem;">🌅 Preguntas Contemplativas de Alborada:</strong>` +
+    `<ol style="margin:0;padding-left:1.2rem;color:var(--text-secondary);">${questionsHtml}</ol>` +
+    `</div>` +
     `</div>`
   );
 }
+
+/**
+ * D5-A+: Renderiza la cinta horizontal de bloques de perícopa Masoréticas (`Petuhah פ` / `Setumah ס`)
+ * y paralelos sinópticos (`#bibleChapterPericopesRibbon`) para navegación de capítulo en 1 toque.
+ */
+export function renderChapterPericopesRibbonHtml(bookCode = "GEN", chapterNum = 1, uiLang = "es") {
+  const cleanBook = String(bookCode || "GEN").toUpperCase();
+  const cleanChap = Math.max(1, Number(chapterNum) || 1);
+  const key = `${cleanBook}.${cleanChap}`;
+  const rawList =
+    Array.isArray(MASORETIC_AND_GOSPEL_PERICOPE_MAP[key]) &&
+    MASORETIC_AND_GOSPEL_PERICOPE_MAP[key].length > 0
+      ? MASORETIC_AND_GOSPEL_PERICOPE_MAP[key]
+      : [
+          {
+            beforeVerse: 1,
+            startVerse: 1,
+            kind: "petuhah",
+            marker: "פ",
+            title: `[פ Petuhah] ${cleanBook} ${cleanChap}:1`,
+            synopticParallel: `${cleanBook}.${cleanChap}.1`,
+          },
+        ];
+
+  return rawList
+    .map((pb, idx) => {
+      const vStart = Number(pb.beforeVerse ?? pb.startVerse ?? 1) || 1;
+      const marker = pb.marker || (pb.kind === "setumah" ? "ס" : "פ");
+      const title = pb.title || `Perícopa ${idx + 1} (v.${vStart})`;
+      const synoptic = String(pb.synopticParallel || `${cleanBook}.${cleanChap}.${vStart}`);
+      return (
+        `<button type="button" class="uls-chip chapter-pericope-ribbon-chip" ` +
+        `data-pericope-verse="${vStart}" ` +
+        `data-synoptic-jump="${escapeHtml(synoptic)}" ` +
+        `data-pericope-kind="${escapeHtml(pb.kind || "petuhah")}" ` +
+        `data-ui-lang="${escapeHtml(uiLang)}" ` +
+        `style="min-height:48px;min-width:48px;padding:0.25rem 0.65rem;font-size:0.75rem;display:inline-flex;align-items:center;gap:0.3rem;white-space:nowrap;">` +
+        `<strong>${escapeHtml(marker)} v.${vStart}</strong> · <span>${escapeHtml(title)}</span>` +
+        `</button>`
+      );
+    })
+    .join("");
+}
+
+/**
+ * D9-A+: Renderiza la Tarjeta de Maravilla Socrática (`#felicesSocraticWonderCard`) para las 28 láminas
+ * de Los Felices (`felices_28_plates`), exponiendo `title_es`, `cita_es` y `preguntas_es`.
+ */
+export function renderFelicesSocraticWonderCardHtml(plateIndex = 1, uiLang = "es") {
+  const plate = resolveFelicesPlate(plateIndex);
+  const pNum = Number(plate.number) || Math.max(1, Math.min(28, Number(plateIndex) || 1));
+  const titleStr = String(plate.title_es || `Lámina ${pNum} / 28`);
+  const citaStr = String(plate.cita_es || "MAT.5.3");
+  const typeStr = String(plate.type || "condicion");
+  const questions = Array.isArray(plate.preguntas_es) && plate.preguntas_es.length > 0
+    ? plate.preguntas_es
+    : [
+        `¿Cómo resuena esta dicha (${citaStr}) en nuestra vida hoy?`,
+        `¿Con quién podemos compartir esta promesa esta semana?`,
+      ];
+
+  const questionsHtml = questions
+    .map(
+      (q, qIdx) =>
+        `<li data-socratic-question="${qIdx + 1}" style="margin-bottom:0.2rem;">${escapeHtml(q)}</li>`,
+    )
+    .join("");
+
+  return (
+    `<div class="felices-socratic-wonder-inner" data-plate-number="${pNum}" data-plate-type="${escapeHtml(typeStr)}" data-ui-lang="${escapeHtml(uiLang)}">` +
+    `<div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:0.4rem;margin-bottom:0.35rem;">` +
+    `<strong style="font-size:0.84rem;">✨ ${escapeHtml(titleStr)}</strong>` +
+    `<button type="button" class="uls-chip felices-wonder-cite-btn" data-wonder-cite="${escapeHtml(citaStr)}" style="min-height:48px;padding:0.2rem 0.6rem;font-size:0.74rem;">📖 ${escapeHtml(citaStr)} (${escapeHtml(typeStr)})</button>` +
+    `</div>` +
+    `<ol style="margin:0;padding-left:1.25rem;font-size:0.79rem;color:var(--text-secondary);">${questionsHtml}</ol>` +
+    `</div>`
+  );
+}
+
