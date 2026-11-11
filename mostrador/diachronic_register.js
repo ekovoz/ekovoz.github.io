@@ -813,8 +813,8 @@ export function renderChapterDiachronicAuditCardHtml({
     `<details id="diachronicAll156RulesExplorer" style="width:100%;margin-top:0.3rem;">` +
     `<summary style="cursor:pointer;font-size:0.74rem;font-weight:600;">🔎 Explorar catálogo completo de reglas diacrónicas (${catalog.length} sustituciones FST en 3 capas)</summary>` +
     `<div style="margin-top:0.35rem;display:flex;flex-wrap:wrap;gap:0.35rem;align-items:center;">` +
-    `<input type="search" id="diachronicSubstitutionsSearchInput" placeholder="Buscar término 1909 o Siglo XXI..." value="${searchQuery}" style="flex:1;min-width:160px;min-height:40px;padding:0.25rem 0.5rem;border-radius:8px;border:1px solid var(--select-border);background:var(--select-bg);color:var(--text-primary);font-size:0.75rem;">` +
-    `<select id="diachronicTierFilterSelect" aria-label="Filtrar por capa diacrónica" style="min-height:40px;padding:0.25rem 0.5rem;border-radius:8px;border:1px solid var(--select-border);background:var(--select-bg);color:var(--text-primary);font-size:0.75rem;">` +
+    `<input type="search" id="diachronicSubstitutionsSearchInput" placeholder="Buscar término 1909 o Siglo XXI..." value="${searchQuery}" style="flex:1;min-width:160px;min-height:48px;padding:0.45rem 0.65rem;border-radius:8px;border:1px solid var(--select-border);background:var(--select-bg);color:var(--text-primary);font-size:0.75rem;">` +
+    `<select id="diachronicTierFilterSelect" aria-label="Filtrar por capa diacrónica" style="min-height:48px;min-width:48px;padding:0.45rem 0.65rem;border-radius:8px;border:1px solid var(--select-border);background:var(--select-bg);color:var(--text-primary);font-size:0.75rem;">` +
     `<option value="0"${activeTier === 0 ? " selected" : ""}>Todas las capas (${catalog.length})</option>` +
     `<option value="1"${activeTier === 1 ? " selected" : ""}>Tier 1 · Léxico (${summary.tierCatalogSizes.tier1Rules})</option>` +
     `<option value="2"${activeTier === 2 ? " selected" : ""}>Tier 2 · Morfología (${summary.tierCatalogSizes.tier2Rules})</option>` +

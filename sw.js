@@ -2,7 +2,7 @@
 // Cero precarga invasiva sin consentimiento del usuario (protección de cuota en celulares de gama baja).
 // Jamás intercepta ni almacena en caché PDFs de Biblia completa o cuadernos completos.
 
-export const CACHE_NAME = "ekovoz-mostrador-v20";
+export const CACHE_NAME = "ekovoz-mostrador-v39";
 
 export const SHELL_CORE_ASSETS = [
   "/",
@@ -84,14 +84,14 @@ export function classifyRequestRoute(rawUrl, options = {}) {
   if (
     path === "/" ||
     path.endsWith("/index.html") ||
+    path.endsWith(".js") ||
+    path.includes("/i18n/") ||
     /^\/[a-z]{2,3}(?:-[a-z0-9]+)?\/$/i.test(path)
   ) {
     return "network-first";
   }
 
   if (
-    path.includes("/mostrador") ||
-    path.includes("/i18n/") ||
     path.includes("/data/text/") ||
     path.includes("/data/pages/") ||
     path.includes("/data/book_names/") ||

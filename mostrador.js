@@ -1293,8 +1293,12 @@ export function createMostradorController(options = {}) {
       compassBtn.addEventListener("click", () => {
         hydrateCompassGrid(targetDoc);
         if (compassModal) {
-          const nextHidden = !compassModal.hidden;
+          const isOpen =
+            !compassModal.hidden &&
+            (Boolean(compassModal.open) || compassModal.style?.display === "block");
+          const nextHidden = isOpen;
           compassModal.hidden = nextHidden;
+          compassModal.open = !nextHidden;
           if (compassModal.style) {
             compassModal.style.display = nextHidden ? "none" : "block";
           }
@@ -1306,6 +1310,7 @@ export function createMostradorController(options = {}) {
       closeCompassBtn.addEventListener("click", () => {
         if (compassModal) {
           compassModal.hidden = true;
+          compassModal.open = false;
           if (compassModal.style) compassModal.style.display = "none";
         }
       });
@@ -1322,6 +1327,7 @@ export function createMostradorController(options = {}) {
         if (bookCode) {
           if (compassModal) {
             compassModal.hidden = true;
+            compassModal.open = false;
             if (compassModal.style) compassModal.style.display = "none";
           }
           await navigate({ book: bookCode, chapter: 1, verse: 1 }, targetDoc);

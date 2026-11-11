@@ -181,7 +181,22 @@ dialog::backdrop{background:rgba(0,0,0,0.65);backdrop-filter:blur(4px);}
 .mostrador-verse.is-selected{background:var(--badge-bg);box-shadow:0 0 0 1px var(--badge-border);}
 .bible-word-token{cursor:pointer;border-radius:3px;padding:0 1px;transition:background-color 0.12s ease;}
 .bible-word-token:hover,.bible-word-token:focus{background:rgba(217,119,6,0.22);outline:1px solid var(--accent-amber);}
+[hidden]{display:none !important;}
+#bibleCoordinateCompassModal:not([hidden]){position:fixed;inset:4vh auto auto 50%;transform:translateX(-50%);z-index:9999;max-height:90vh;overflow-y:auto;display:block;}
+#sovereignWorkTabs{display:grid !important;grid-template-columns:repeat(3,minmax(0,1fr));width:100%;gap:0.25rem !important;}
+#sovereignWorkTabs>button{padding:0.15rem 0.2rem !important;font-size:0.72rem !important;line-height:1.1 !important;text-align:center;justify-content:center;}
+.language-region-pill-group{display:grid !important;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);width:100%;gap:0.25rem !important;}
+.language-region-pill-group>button{padding:0.15rem 0.25rem !important;font-size:0.72rem !important;line-height:1.1 !important;text-align:center;justify-content:center;}
+#bibleVerseViewport{max-height:200px;overflow-y:auto;min-height:200px !important;padding:0.45rem 0.65rem !important;}
+#bibleVerseViewport[data-roll-mode="roll"]:not([data-inspector-open="true"]){max-height:none;overflow-y:visible;}
 #bibleVerseViewport[data-inspector-open="true"]{min-height:200px !important;overflow-y:auto !important;}
+body:has(#bibleVerseViewport[data-inspector-open="true"]){padding-top:0.1rem !important;}
+body:has(#bibleVerseViewport[data-inspector-open="true"]) #sovereignTopBar{margin-bottom:0.1rem !important;padding:0.15rem 0.35rem !important;}
+body:has(#bibleVerseViewport[data-inspector-open="true"]) #bibleSovereignSection{margin-bottom:0.15rem !important;padding:0.2rem 0.45rem !important;}
+body:has(#bibleVerseViewport[data-inspector-open="true"]) #bibleSpatialNav{margin-bottom:0.1rem !important;}
+body:has(#bibleVerseViewport[data-inspector-open="true"]) #bibleProgressiveSheetDoors{gap:0.15rem !important;margin-top:0 !important;}
+body:has(#bibleVerseViewport[data-inspector-open="true"]) .apple-sheet{margin-top:0.15rem !important;}
+body:has(#bibleVerseViewport[data-inspector-open="true"]) #stage-action,body:has(#bibleVerseViewport[data-inspector-open="true"]) #bibleOrthographyPills,body:has(#bibleVerseViewport[data-inspector-open="true"]) .language-region-pill-group,body:has(#bibleVerseViewport[data-inspector-open="true"]) #bibleSovereignSection>div:first-child{display:none !important;}
 #bibleSovereignSection:has(#bibleVerseViewport[data-inspector-open="true"]) #bibleOralPorticoBanner:not([hidden]){display:flex !important;align-items:center;justify-content:space-between;gap:0.35rem;max-height:36px !important;overflow:hidden !important;padding:2px 8px !important;margin-bottom:0.2rem !important;font-size:0.75rem !important;white-space:nowrap !important;}
 #bibleSovereignSection:has(#bibleVerseViewport[data-inspector-open="true"]) #bibleOralPorticoBanner .hig-tech-meta,#bibleSovereignSection:has(#bibleVerseViewport[data-inspector-open="true"]) #bibleOralPorticoBanner .oral-portico-secondary{display:none !important;}
 .hig-tech-receipt-details{font-size:0.76rem;color:var(--text-secondary);margin-top:0.25rem;}
@@ -361,7 +376,7 @@ summary{display:inline-flex;align-items:center;background-color:var(--card-bg, #
         <div id="bibleAnalyticalThermometerPanel" style="font-size: 0.82rem; margin-top: 0.35rem;"></div>
         </div>
 
-        <dialog id="bibleCoordinateCompassModal" aria-label="Tactile 66-Book Compass">
+        <dialog id="bibleCoordinateCompassModal" aria-label="Tactile 66-Book Compass" hidden>
             <div class="modal-header">
                 <h3 class="modal-title" data-i18n="mostrador.step2.title">2. Choose passage (66 Books)</h3>
                 <button type="button" class="modal-close" id="btnCloseCompassModal" aria-label="Close">✕</button>
@@ -722,6 +737,27 @@ summary{display:inline-flex;align-items:center;background-color:var(--card-bg, #
 
     <div id="toastNotification" class="toast" role="status" aria-live="polite"></div>
 
+    <script>
+    (function(){
+      try {
+        var EPOCH = "ekovoz-r39c";
+        if (typeof localStorage !== "undefined" && localStorage.getItem("ekovoz_epoch") !== EPOCH) {
+          localStorage.setItem("ekovoz_epoch", EPOCH);
+          var hadSw = typeof navigator !== "undefined" && navigator.serviceWorker && navigator.serviceWorker.controller;
+          var p = [];
+          if (typeof caches !== "undefined" && caches.keys) {
+            p.push(caches.keys().then(function(ks){ return Promise.all(ks.map(function(k){ return caches.delete(k); })); }));
+          }
+          if (typeof navigator !== "undefined" && navigator.serviceWorker && navigator.serviceWorker.getRegistrations) {
+            p.push(navigator.serviceWorker.getRegistrations().then(function(rs){ return Promise.all(rs.map(function(r){ return r.unregister(); })); }));
+          }
+          if (hadSw && p.length) {
+            Promise.all(p).then(function(){ location.reload(); }).catch(function(){});
+          }
+        }
+      } catch (e) {}
+    })();
+    </script>
     <script type="module" src="mostrador.js"></script>
 </body>
 </html>
