@@ -6,9 +6,11 @@ import { fileURLToPath } from "node:url";
 
 import {
   applyOrthographyProfile,
+  buildEvangeliosWeekOptionsHtml,
   createMostradorController,
   deriveEpistemicSeal,
   renderChapterPreviewHtml,
+  renderEvangeliosStageCardHtml,
   STATUS,
 } from "../mostrador.js";
 import { runWithProcessUndefined } from "../test_support/no_process_runner.mjs";
@@ -1850,6 +1852,24 @@ test("R39_SLICE_127_to_132_split_brain_elimination_dark_mode_contrast_and_100pct
   });
   assert.match(evEnActions, /Cultural Realia Gloss:/);
   assert.match(evEnActions, /Dawn Contemplative Questions:/);
+  const sampleEvEntry = {
+    id: "s01",
+    week: 1,
+    quarter: "T1",
+    reference: "JHN 1:1-18",
+    gesture: "Encender una vela al amanecer",
+    texts: {
+      es: { title: "El Verbo se hizo carne", text: "En el principio era el Verbo." },
+      en: { title: "The Word became flesh", text: "In the beginning was the Word." },
+    },
+  };
+  const evOptsEnUi = buildEvangeliosWeekOptionsHtml([sampleEvEntry], "s01", "es", "en");
+  assert.match(evOptsEnUi, /Week 1 \(T1\) · El Verbo se hizo carne/);
+  const evCardEnUi = renderEvangeliosStageCardHtml(sampleEvEntry, "es", "en");
+  assert.match(evCardEnUi, /Week 1\/52 \(T1\) · El Verbo se hizo carne/);
+  assert.match(evCardEnUi, /Open in The Bible: JHN 1:1-18/);
+  assert.match(evCardEnUi, /Liturgical Gesture:/);
+  assert.match(evCardEnUi, /Cultural Realia Gloss:/);
 
   // 6. D5-R39 (5A) & D6-R39 (6A): Live Branch/Typology specimen, populated 12 macro-regions, WAL rollback preview
   const branchHtml = dosisMod.renderBranchAndTypologyInspectorHtml({ lang: "stp" });

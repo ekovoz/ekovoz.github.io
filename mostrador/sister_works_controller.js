@@ -57,8 +57,13 @@ export function resolveEvangeliosActiveSelection({
 /**
  * Construye las opciones HTML del selector semanal `#evangeliosWeekSelect` (`D8-R37` / `D8-R38`).
  */
-export function buildEvangeliosWeekOptionsHtml(pool = [], activeEntryId = "s01", activeEvLang = "es") {
-  const isEn = String(activeEvLang || "es").toLowerCase().startsWith("en");
+export function buildEvangeliosWeekOptionsHtml(
+  pool = [],
+  activeEntryId = "s01",
+  activeEvLang = "es",
+  uiLocale = activeEvLang,
+) {
+  const isEn = String(uiLocale || activeEvLang || "es").toLowerCase().startsWith("en");
   const weekWord = isEn ? "Week" : "Semana";
   return (Array.isArray(pool) ? pool : [])
     .map((e) => {
@@ -73,9 +78,13 @@ export function buildEvangeliosWeekOptionsHtml(pool = [], activeEntryId = "s01",
 /**
  * Renderiza la tarjeta principal de *1 Evangelio* (`#evangeliosActivePlateCard`) con perícopas y ecos AT (`D8-R37` / `D8-R38`).
  */
-export function renderEvangeliosStageCardHtml(activeEntry, activeEvLang = "es") {
+export function renderEvangeliosStageCardHtml(
+  activeEntry,
+  activeEvLang = "es",
+  uiLocale = activeEvLang,
+) {
   if (!activeEntry) return "";
-  const isEn = String(activeEvLang || "es").toLowerCase().startsWith("en");
+  const isEn = String(uiLocale || activeEvLang || "es").toLowerCase().startsWith("en");
   const weekWord = isEn ? "Week" : "Semana";
   const openBibleLabel = isEn ? "Open in The Bible" : "Abrir en La Biblia";
   const gestureLabel = isEn ? "Liturgical Gesture" : "Gesto Litúrgico";
@@ -97,6 +106,7 @@ export function renderEvangeliosStageCardHtml(activeEntry, activeEvLang = "es") 
       weekId: activeEntry.id,
       passageRef: activeEntry.reference,
       lang: activeEvLang,
+      uiLocale,
     })
   );
 }

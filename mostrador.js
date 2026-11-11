@@ -2136,9 +2136,26 @@ export function createMostradorController(options = {}) {
       syncLifeTrailsActiveState(targetDoc);
       syncUrlFromState(targetDoc, { push: false });
 
+      const activeUiLocale = state.uiLocale || "en";
+      const isUiEn = String(activeUiLocale).toLowerCase().startsWith("en");
+      const evHeadingEl = getEl("evangeliosMainHeading", targetDoc);
+      if (evHeadingEl) {
+        evHeadingEl.textContent = isUiEn
+          ? "🌅 The Gospels · 52 Plates"
+          : "🌅 Los Evangelios · 52 Láminas";
+      }
+      const evWeekLblEl = getEl("evangeliosWeekSelectLabel", targetDoc);
+      if (evWeekLblEl) {
+        evWeekLblEl.textContent = isUiEn ? "Week:" : "Semana:";
+      }
       const weekSelect = getEl("evangeliosWeekSelect", targetDoc);
       if (weekSelect) {
-        weekSelect.innerHTML = buildEvangeliosWeekOptionsHtml(pool, activeEntry.id, activeEvLang);
+        weekSelect.innerHTML = buildEvangeliosWeekOptionsHtml(
+          pool,
+          activeEntry.id,
+          activeEvLang,
+          activeUiLocale,
+        );
         weekSelect.value = activeEntry.id;
       }
 
@@ -2155,7 +2172,7 @@ export function createMostradorController(options = {}) {
         cardEl.setAttribute("data-evangelios-id", activeEntry.id);
         cardEl.setAttribute("data-evangelios-quarter", activeEntry.quarter);
         cardEl.setAttribute("data-evangelios-lang", activeEvLang);
-        cardEl.innerHTML = renderEvangeliosStageCardHtml(activeEntry, activeEvLang);
+        cardEl.innerHTML = renderEvangeliosStageCardHtml(activeEntry, activeEvLang, activeUiLocale);
       }
       if (state.activeSheet === "study") {
         await hydrateStudyDrawer(targetDoc);

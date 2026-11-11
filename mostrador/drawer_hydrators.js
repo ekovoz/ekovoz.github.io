@@ -1924,6 +1924,16 @@ export function applyStaticChromeTranslations(targetDoc, uiLocale = "es", state 
       ? "🔬 Optical & Typographic Verification (Kanungo-Sauvola)"
       : "🔬 Verificación Óptica y Tipográfica (Kanungo-Sauvola)";
   }
+  const evHeadingEl = getEl("evangeliosMainHeading");
+  if (evHeadingEl) {
+    evHeadingEl.textContent = isEn
+      ? "🌅 The Gospels · 52 Plates"
+      : "🌅 Los Evangelios · 52 Láminas";
+  }
+  const evWeekLblEl = getEl("evangeliosWeekSelectLabel");
+  if (evWeekLblEl) {
+    evWeekLblEl.textContent = isEn ? "Week:" : "Semana:";
+  }
   if (state && typeof state.hydrateEvangeliosSection === "function" && state.activeWork === "evangelios") {
     state.hydrateEvangeliosSection(state.evangeliosQuarter || "T1", state.evangeliosWeekId || "s01");
   }
