@@ -2,7 +2,7 @@
 // Cero precarga invasiva sin consentimiento del usuario (protección de cuota en celulares de gama baja).
 // Jamás intercepta ni almacena en caché PDFs de Biblia completa o cuadernos completos.
 
-export const CACHE_NAME = "ekovoz-mostrador-v39";
+export const CACHE_NAME = "ekovoz-mostrador-v40";
 
 export const SHELL_CORE_ASSETS = [
   "/",

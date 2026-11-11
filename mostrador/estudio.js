@@ -159,13 +159,14 @@ export function classifyMaculaArgumentRole(roleRaw, morphRaw = "") {
  * Humaniza las columnas técnicas de la Matriz de 14 Columnas (`D4-R39` / `DEB-R39-03`),
  * limpiando prefijos internos (`NSM_65:SDBH:`, `|PRIM:`) y evitando mostrar `Rol: ∅`.
  */
-export function formatHumanReadable14ColFields(row = {}) {
+export function formatHumanReadable14ColFields(row = {}, uiLocale = "es") {
+  const isEn = String(uiLocale || "es").trim().toLowerCase().startsWith("en");
   const rawRole = String(row.c09_macula_role || "").trim();
   const rawClause = String(row.c10_clause_id || "").trim();
   const rawDomain = String(row.c11_semantic_domain || "").trim();
   const rawNsm = String(row.c13_nsm_65 || "").trim();
 
-  const roleHuman = !rawRole || rawRole === "∅" ? "Núcleo léxico" : rawRole;
+  const roleHuman = !rawRole || rawRole === "∅" ? (isEn ? "Lexical core" : "Núcleo léxico") : rawRole;
   const clauseHuman = !rawClause || rawClause === "∅" ? "C1" : rawClause;
   const domainHuman =
     rawDomain
@@ -175,11 +176,11 @@ export function formatHumanReadable14ColFields(row = {}) {
   const nsmHuman =
     rawNsm
       .replace(/NSM_65:(?:SDBH|LN):/gi, "")
-      .replace(/\|PRIM:/gi, " · Primitivos: ")
+      .replace(/\|PRIM:/gi, isEn ? " · Primitives: " : " · Primitivos: ")
       .replace(/NSM_65:/gi, "")
       .replace(/(?:SDBH|LN):/gi, "")
       .replace(/_/g, " ")
-      .trim() || "DIOS · DECIR · HACER";
+      .trim() || (isEn ? "GOD · SAY · DO" : "DIOS · DECIR · HACER");
 
   return {
     roleHuman,
@@ -191,6 +192,8 @@ export function formatHumanReadable14ColFields(row = {}) {
 
 export function renderStudy14ColDrawerHtml(matrixShard, options = {}) {
   const shard = matrixShard?.matrixChapter || matrixShard;
+  const uiLocale = String(options.uiLocale || options.locale || shard?.uiLocale || "es").trim().toLowerCase();
+  const isEn = uiLocale.startsWith("en");
   const book = String(shard?.book || matrixShard?.book || options.book || "GEN").toUpperCase();
   const chapter = Number(shard?.chapter || matrixShard?.chapter || options.chapter) || 1;
   const filterStrongId = (options.strongId || matrixShard?.strongId)
@@ -223,21 +226,33 @@ export function renderStudy14ColDrawerHtml(matrixShard, options = {}) {
     activeVerseNum,
     options.rosettaIndex || shard?.rosettaIndex || null,
   );
+  const wordSummaryText = isEn
+    ? `${normalizedRows.length} of ${rawRows.length} words`
+    : `${normalizedRows.length} de ${rawRows.length} palabras`;
+  const scopeVerseLabel = isEn
+    ? `Current verse (v. ${activeVerseNum})`
+    : `Versículo actual (v. ${activeVerseNum})`;
+  const scopeChapterLabel = isEn
+    ? `Full chapter (${rawRows.length})`
+    : `Capítulo completo (${rawRows.length})`;
+  const scopeGmisLabel = isEn
+    ? `4-Line Scaffolding (GMIS)`
+    : `Andamiaje 4-Líneas (GMIS)`;
   const scopeBarHtml =
-    `<div class="study-scope-bar" role="group" aria-label="Alcance de Matriz Interlineal" style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:0.5rem;margin-bottom:0.65rem;">` +
-    `<span style="font-size:0.8rem;color:var(--text-secondary);font-weight:600;">${escapeHtml(book)} ${chapter}${isVerseScope || isGmisScope ? `:${activeVerseNum}` : ""} · ${normalizedRows.length} de ${rawRows.length} palabras</span>` +
+    `<div class="study-scope-bar" role="group" aria-label="${isEn ? "Interlinear Matrix Scope" : "Alcance de Matriz Interlineal"}" style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:0.5rem;margin-bottom:0.65rem;">` +
+    `<span style="font-size:0.8rem;color:var(--text-secondary);font-weight:600;">${escapeHtml(book)} ${chapter}${isVerseScope || isGmisScope ? `:${activeVerseNum}` : ""} · ${wordSummaryText}</span>` +
     `<span class="uls-badge bicanonical-badge" data-bicanonical-regime="${escapeHtml(bicanon.regime)}" data-bicanonical-mt="${escapeHtml(bicanon.mtRef)}" data-bicanonical-occidental="${escapeHtml(bicanon.occidentalRef)}">⚖️ ${escapeHtml(bicanon.label)}</span>` +
     `<div style="display:inline-flex;flex-wrap:wrap;gap:0.35rem;">` +
-    `<button type="button" class="uls-chip study-scope-btn" data-study-scope="verse" aria-pressed="${isVerseScope ? "true" : "false"}" style="min-height:48px;padding:0.35rem 0.75rem;font-size:0.78rem;">Versículo actual (v. ${activeVerseNum})</button>` +
-    `<button type="button" class="uls-chip study-scope-btn" data-study-scope="chapter" aria-pressed="${isChapterScope ? "true" : "false"}" style="min-height:48px;padding:0.35rem 0.75rem;font-size:0.78rem;">Capítulo completo (${rawRows.length})</button>` +
-    `<button type="button" class="uls-chip study-scope-btn" data-study-scope="gmis" aria-pressed="${isGmisScope ? "true" : "false"}" style="min-height:48px;padding:0.35rem 0.75rem;font-size:0.78rem;">Andamiaje 4-Líneas (GMIS)</button>` +
+    `<button type="button" class="uls-chip study-scope-btn" data-study-scope="verse" aria-pressed="${isVerseScope ? "true" : "false"}" style="min-height:48px;padding:0.35rem 0.75rem;font-size:0.78rem;">${scopeVerseLabel}</button>` +
+    `<button type="button" class="uls-chip study-scope-btn" data-study-scope="chapter" aria-pressed="${isChapterScope ? "true" : "false"}" style="min-height:48px;padding:0.35rem 0.75rem;font-size:0.78rem;">${scopeChapterLabel}</button>` +
+    `<button type="button" class="uls-chip study-scope-btn" data-study-scope="gmis" aria-pressed="${isGmisScope ? "true" : "false"}" style="min-height:48px;padding:0.35rem 0.75rem;font-size:0.78rem;">${scopeGmisLabel}</button>` +
     `</div></div>`;
 
   const activeStrongTarget = String(options.activeStrongId || "").trim().toUpperCase();
   const wordCardsHtml = normalizedRows
     .map((r) => {
       const maculaFrame = classifyMaculaArgumentRole(r.c09_macula_role, r.c08_morph_code);
-      const human = formatHumanReadable14ColFields(r);
+      const human = formatHumanReadable14ColFields(r, uiLocale);
       const isStrongSelected =
         Boolean(activeStrongTarget) &&
         String(r.c07_strong_id || "").trim().toUpperCase() === activeStrongTarget;
@@ -254,14 +269,14 @@ export function renderStudy14ColDrawerHtml(matrixShard, options = {}) {
         `<code data-col="c08_morph_code">${escapeHtml(r.c08_morph_code)}</code>` +
         `</div>` +
         `<div style="font-size:0.76rem;color:var(--text-secondary);">` +
-        `<span data-col="c09_macula_role" data-raw-role="${escapeHtml(r.c09_macula_role)}">Función: ${escapeHtml(human.roleHuman)}</span> · ` +
-        `<span data-col="c10_clause_id">Cláusula: ${escapeHtml(human.clauseHuman)}</span> · ` +
-        `<span data-col="c11_semantic_domain">Dominio: ${escapeHtml(human.domainHuman)}</span>` +
+        `<span data-col="c09_macula_role" data-raw-role="${escapeHtml(r.c09_macula_role)}">${isEn ? "Role" : "Función"}: ${escapeHtml(human.roleHuman)}</span> · ` +
+        `<span data-col="c10_clause_id">${isEn ? "Clause" : "Cláusula"}: ${escapeHtml(human.clauseHuman)}</span> · ` +
+        `<span data-col="c11_semantic_domain">${isEn ? "Domain" : "Dominio"}: ${escapeHtml(human.domainHuman)}</span>` +
         `</div>` +
         `<div data-col="c12_gloss_es" style="font-size:0.86rem;font-weight:600;">${escapeHtml(r.c12_gloss_es)}</div>` +
         `<div data-col="c13_nsm_65" style="font-size:0.76rem;color:var(--accent-amber);">NSM-65: ${escapeHtml(human.nsmHuman)}</div>` +
-        `<div data-col="c14_target_gloss" style="font-size:0.84rem;color:var(--accent-emerald);">Meta: ${escapeHtml(r.c14_target_gloss)}</div>` +
-        `<button type="button" class="uls-chip btn-propose-strong-root" data-propose-strong-id="${escapeHtml(r.c07_strong_id)}" data-osis-ref="${escapeHtml(r.c02_ref)}" style="min-height:48px;padding:0.25rem 0.55rem;font-size:0.74rem;margin-top:0.2rem;align-self:flex-start;">✍️ Mejorar raíz (${escapeHtml(r.c07_strong_id)})</button>` +
+        `<div data-col="c14_target_gloss" style="font-size:0.84rem;color:var(--accent-emerald);">${isEn ? "Target" : "Meta"}: ${escapeHtml(r.c14_target_gloss)}</div>` +
+        `<button type="button" class="uls-chip btn-propose-strong-root" data-propose-strong-id="${escapeHtml(r.c07_strong_id)}" data-osis-ref="${escapeHtml(r.c02_ref)}" style="min-height:48px;padding:0.25rem 0.55rem;font-size:0.74rem;margin-top:0.2rem;align-self:flex-start;">✍️ ${isEn ? "Improve root" : "Mejorar raíz"} (${escapeHtml(r.c07_strong_id)})</button>` +
         `</article>`
       );
     })
@@ -277,12 +292,12 @@ export function renderStudy14ColDrawerHtml(matrixShard, options = {}) {
   const nsmHtml =
     nsmEntries.length > 0
       ? `<div class="study-nsm-section" style="margin-top:0.75rem;">` +
-      `<strong>🧭 Primitivos Universales NSM-65:</strong>` +
+      `<strong>🧭 ${isEn ? "Universal Semantic Primitives NSM-65:" : "Primitivos Universales NSM-65:"}</strong>` +
       `<ul style="margin:0.35rem 0 0 1.1rem;font-size:0.83rem;">` +
       nsmEntries
         .map(
           (n) =>
-            `<li data-nsm-strong="${escapeHtml(n.strong_id)}"><code>${escapeHtml(n.strong_id)}</code> <strong>${escapeHtml(n.lemma)}</strong> (${escapeHtml(n.gloss)}): ${escapeHtml(formatHumanReadable14ColFields({ c13_nsm_65: n.nsm_explication }).nsmHuman)}</li>`,
+            `<li data-nsm-strong="${escapeHtml(n.strong_id)}"><code>${escapeHtml(n.strong_id)}</code> <strong>${escapeHtml(n.lemma)}</strong> (${escapeHtml(n.gloss)}): ${escapeHtml(formatHumanReadable14ColFields({ c13_nsm_65: n.nsm_explication }, uiLocale).nsmHuman)}</li>`,
         )
         .join("") +
       `</ul></div>`
@@ -291,13 +306,13 @@ export function renderStudy14ColDrawerHtml(matrixShard, options = {}) {
   const realiaHtml =
     realiaEntries.length > 0 || metrologyEntries.length > 0
       ? `<div class="study-realia-metrology-section" style="margin-top:0.75rem;">` +
-      `<strong>🏛️ Mundo Bíblico (Realia) y Metrología Fiel:</strong>` +
+      `<strong>🏛️ ${isEn ? "Biblical World (Realia) & Faithful Metrology:" : "Mundo Bíblico (Realia) y Metrología Fiel:"}</strong>` +
       `<ul style="margin:0.35rem 0 0 1.1rem;font-size:0.83rem;">` +
       realiaEntries
         .map((re) => {
           const rId = re.id || re.term_id || re.title || re.surface_es || "realia";
           const rTitle = re.title || `${re.surface_es || ""} (${re.lemma_original || re.strong_code || ""})`.trim();
-          const rExp = formatHumanReadable14ColFields({ c13_nsm_65: re.explanation || re.footnote_gloss_es || re.nsm_65_decomposition || "" }).nsmHuman;
+          const rExp = formatHumanReadable14ColFields({ c13_nsm_65: re.explanation || re.footnote_gloss_es || re.nsm_65_decomposition || "" }, uiLocale).nsmHuman;
           return `<li data-realia-id="${escapeHtml(rId)}"><strong>${escapeHtml(rTitle)}:</strong> ${escapeHtml(rExp)}</li>`;
         })
         .join("") +
@@ -326,6 +341,7 @@ export function renderStudy14ColDrawerHtml(matrixShard, options = {}) {
     rosettaQuery: options.rosettaQuery || "",
     rosettaCategory: options.rosettaCategory || "all",
     includeExplorer: options.includeExplorer !== false,
+    uiLocale,
   });
 
   const gmisSectionHtml = isGmisScope
@@ -335,6 +351,7 @@ export function renderStudy14ColDrawerHtml(matrixShard, options = {}) {
       chapter,
       verse: activeVerseNum,
       wordOrder: options.wordOrder || "VSO",
+      uiLocale,
     })
     : "";
 
@@ -827,6 +844,8 @@ export function resolveParatextEngOrgMapping(book, chapter, verse, rosettaIndex 
 }
 
 function renderPhilologyRosettaInspectorHtml(activeRows, options = {}) {
+  const uiLocale = String(options.uiLocale || options.locale || "es").trim().toLowerCase();
+  const isEn = uiLocale.startsWith("en");
   const book = String(options.book || "GEN").toUpperCase();
   const chapter = Number(options.chapter) || 1;
   const verse = Number(options.verse) || 1;
@@ -871,7 +890,7 @@ function renderPhilologyRosettaInspectorHtml(activeRows, options = {}) {
             `<span class="rosetta-root-member" data-root-strong="${escapeHtml(m.strong)}"><code>${escapeHtml(m.strong)}</code> ${escapeHtml(m.lemma)} (${escapeHtml(m.gloss_es)})</span>`,
         )
         .join(" · ");
-      return `<li data-consonantal-root="${escapeHtml(fam.root_consonants)}"><strong>Raíz consonántica ${escapeHtml(fam.root_consonants)} (${escapeHtml(fam.transliteration)}):</strong> ${escapeHtml(fam.primary_gloss_es)} → ${membersPills}</li>`;
+      return `<li data-consonantal-root="${escapeHtml(fam.root_consonants)}"><strong>${isEn ? "Consonantal root" : "Raíz consonántica"} ${escapeHtml(fam.root_consonants)} (${escapeHtml(fam.transliteration)}):</strong> ${escapeHtml(fam.primary_gloss_es)} → ${membersPills}</li>`;
     })
     .join("");
 
@@ -880,10 +899,10 @@ function renderPhilologyRosettaInspectorHtml(activeRows, options = {}) {
       const cognates = (br.greek_cognates || [])
         .map(
           (g) =>
-            `<span data-lxx-cognate="${escapeHtml(g.greek_strong)}"><code>${escapeHtml(g.greek_strong)}</code> <strong>${escapeHtml(g.greek_lemma)}</strong> (${escapeHtml(g.gloss_es)}, PMI=${escapeHtml(g.mutual_information_pmi)}, eco ${escapeHtml(g.nt_echo_ref)})</span>`,
+            `<span data-lxx-cognate="${escapeHtml(g.greek_strong)}"><code>${escapeHtml(g.greek_strong)}</code> <strong>${escapeHtml(g.greek_lemma)}</strong> (${escapeHtml(g.gloss_es)}, PMI=${escapeHtml(g.mutual_information_pmi)}, ${isEn ? "echo" : "eco"} ${escapeHtml(g.nt_echo_ref)})</span>`,
         )
         .join(" ↔ ");
-      return `<li data-mt-strong="${escapeHtml(br.hebrew_strong)}"><strong>Puente Cognado LXX↔MT <code>${escapeHtml(br.hebrew_strong)}</code> (${escapeHtml(br.hebrew_lemma)}):</strong> ${cognates}</li>`;
+      return `<li data-mt-strong="${escapeHtml(br.hebrew_strong)}"><strong>${isEn ? "LXX↔MT Cognate Bridge" : "Puente Cognado LXX↔MT"} <code>${escapeHtml(br.hebrew_strong)}</code> (${escapeHtml(br.hebrew_lemma)}):</strong> ${cognates}</li>`;
     })
     .join("");
 
@@ -891,7 +910,7 @@ function renderPhilologyRosettaInspectorHtml(activeRows, options = {}) {
     .slice(0, 2)
     .map(
       (kq) =>
-        `<li data-ketiv-qere-ref="${escapeHtml(kq.verse_id)}"><strong>Masora Ketiv/Qere (${escapeHtml(kq.verse_id)} · <code>${escapeHtml(kq.strong)}</code>):</strong> Ketiv escrito <code>${escapeHtml(kq.ketiv_written)}</code> ↔ Qere leído <code>${escapeHtml(kq.qere_read)}</code> — ${escapeHtml(kq.masoretic_note)}</li>`,
+        `<li data-ketiv-qere-ref="${escapeHtml(kq.verse_id)}"><strong>Masora Ketiv/Qere (${escapeHtml(kq.verse_id)} · <code>${escapeHtml(kq.strong)}</code>):</strong> ${isEn ? "Ketiv written" : "Ketiv escrito"} <code>${escapeHtml(kq.ketiv_written)}</code> ↔ ${isEn ? "Qere read" : "Qere leído"} <code>${escapeHtml(kq.qere_read)}</code> — ${escapeHtml(kq.masoretic_note)}</li>`,
     )
     .join("");
 
@@ -912,7 +931,7 @@ function renderPhilologyRosettaInspectorHtml(activeRows, options = {}) {
 
   const residualClassesLine =
     `<li data-residual-classes-5="true" data-residuals-total="${totalResiduals}">` +
-    `<strong>Variantes y notas de transmisión (${totalResiduals.toLocaleString("en-US")} casos) <span class="hig-tech-meta" style="font-size:0.72rem;color:var(--text-secondary);font-weight:400;">(<code>alignment_residuals.tsv</code>)</span>:</strong> ` +
+    `<strong>${isEn ? `Transmission variants & notes (${totalResiduals.toLocaleString("en-US")} cases)` : `Variantes y notas de transmisión (${totalResiduals.toLocaleString("en-US")} casos)`} <span class="hig-tech-meta" style="font-size:0.72rem;color:var(--text-secondary);font-weight:400;">(<code>alignment_residuals.tsv</code>)</span>:</strong> ` +
     `<span class="uls-badge" data-residual-kind="KETIV_QERE">KETIV_QERE (${kqCount})</span> · ` +
     `<span class="uls-badge" data-residual-kind="VERSIFICATION">VERSIFICATION (${versCount})</span> · ` +
     `<span class="uls-badge" data-residual-kind="TR_SUPPLEMENT">TR_SUPPLEMENT (${trCount})</span> · ` +
@@ -938,8 +957,8 @@ function renderPhilologyRosettaInspectorHtml(activeRows, options = {}) {
   const oovRate = Number(annotReport.oov_rate || 0.0).toFixed(2);
   const annotationLine =
     `<li data-annotation-tokens="${totalTokens}" data-annotation-hebrew="${hebrewTokens}" data-annotation-greek="${greekTokens}" data-annotation-oov="${oovRate}">` +
-    `<strong>Cobertura morfológica palabra por palabra <span class="hig-tech-meta" style="font-size:0.72rem;color:var(--text-secondary);font-weight:400;">(<code>annotation_index_report.json</code>)</span>:</strong> ` +
-    `<code>${totalTokens.toLocaleString("en-US")} tokens</code> (AT Hebreo/Arameo: <code>${hebrewTokens.toLocaleString("en-US")}</code> · NT Griego: <code>${greekTokens.toLocaleString("en-US")}</code> · <code>${strongEntriesCount.toLocaleString("en-US")} Strongs</code> · <code>${morphTagsCount.toLocaleString("en-US")} tags</code> · <code>OOV = ${oovRate}%</code>)` +
+    `<strong>${isEn ? "Word-by-word morphological coverage" : "Cobertura morfológica palabra por palabra"} <span class="hig-tech-meta" style="font-size:0.72rem;color:var(--text-secondary);font-weight:400;">(<code>annotation_index_report.json</code>)</span>:</strong> ` +
+    `<code>${totalTokens.toLocaleString("en-US")} tokens</code> (${isEn ? "OT Hebrew/Aramaic" : "AT Hebreo/Arameo"}: <code>${hebrewTokens.toLocaleString("en-US")}</code> · ${isEn ? "NT Greek" : "NT Griego"}: <code>${greekTokens.toLocaleString("en-US")}</code> · <code>${strongEntriesCount.toLocaleString("en-US")} Strongs</code> · <code>${morphTagsCount.toLocaleString("en-US")} tags</code> · <code>OOV = ${oovRate}%</code>)` +
     `</li>`;
 
   const calSummary = aggregateBlindCalibration12Langs(
@@ -955,8 +974,8 @@ function renderPhilologyRosettaInspectorHtml(activeRows, options = {}) {
     .join(" ");
   const blindCalibrationLine =
     `<li data-blind-calibration-chrf="${escapeHtml(chrfScore)}" data-blind-calibration-langs="${calSummary.langsCount}" data-blind-calibration-rows="${calSummary.rowsCount}">` +
-    `<strong>Fidelidad verificada en ${calSummary.langsCount} lenguas <span class="hig-tech-meta" style="font-size:0.72rem;color:var(--text-secondary);font-weight:400;">(<code>blind_calibration_report.json</code>)</span>:</strong> ` +
-    `<code>${escapeHtml(chrfScore)} chrF++</code> · <strong>${calSummary.langsCount} lenguas</strong> (${calSummary.rowsCount} pruebas · ${calSummary.passRatePct}% aprobadas)` +
+    `<strong>${isEn ? `Verified fidelity across ${calSummary.langsCount} languages` : `Fidelidad verificada en ${calSummary.langsCount} lenguas`} <span class="hig-tech-meta" style="font-size:0.72rem;color:var(--text-secondary);font-weight:400;">(<code>blind_calibration_report.json</code>)</span>:</strong> ` +
+    `<code>${escapeHtml(chrfScore)} chrF++</code> · <strong>${calSummary.langsCount} ${isEn ? "languages" : "lenguas"}</strong> (${calSummary.rowsCount} ${isEn ? "tests" : "pruebas"} · ${calSummary.passRatePct}% ${isEn ? "passed" : "aprobadas"})` +
     `<div id="rosettaBlindCalibration12Table" style="margin-top:0.25rem;display:flex;flex-wrap:wrap;gap:0.25rem;">${byLangPills}</div>` +
     `</li>`;
 
@@ -968,11 +987,12 @@ function renderPhilologyRosettaInspectorHtml(activeRows, options = {}) {
         category: options.rosettaCategory || "all",
         activeRef: activeOsis,
         rosettaIndex,
+        uiLocale,
       });
 
   return (
     `<div class="stratum-card philology-rosetta-stratum" data-stratum="philology-rosetta" data-ref="${escapeHtml(activeOsis)}" data-chrf-plus-plus="${escapeHtml(chrfScore)}" data-residuals-total="${totalResiduals}" data-annotation-tokens="${totalTokens}" style="margin-top:0.75rem;padding:0.65rem;border-radius:10px;border:1px solid var(--card-border);background:var(--card-bg);">` +
-    `<strong style="font-size:0.84rem;display:block;margin-bottom:0.35rem;">🧬 Inspector Rosetta Filológico · Familia de Raíces Consonánticas, Puente LXX↔MT, 5 Clases de Residuos (${totalResiduals.toLocaleString("en-US")}), ${totalTokens.toLocaleString("en-US")} Tokens y Calibración 12 Lenguas (${escapeHtml(book)} ${chapter}:${verse})</strong>` +
+    `<strong style="font-size:0.84rem;display:block;margin-bottom:0.35rem;">🧬 ${isEn ? `Philological Rosetta Inspector · Consonantal Root Family, LXX↔MT Bridge, 5 Residual Classes (${totalResiduals.toLocaleString("en-US")}), ${totalTokens.toLocaleString("en-US")} Tokens & 12-Language Calibration (${escapeHtml(book)} ${chapter}:${verse})` : `Inspector Rosetta Filológico · Familia de Raíces Consonánticas, Puente LXX↔MT, 5 Clases de Residuos (${totalResiduals.toLocaleString("en-US")}), ${totalTokens.toLocaleString("en-US")} Tokens y Calibración 12 Lenguas (${escapeHtml(book)} ${chapter}:${verse})`}</strong>` +
     `<ul style="margin:0;padding-left:1.1rem;font-size:0.81rem;display:grid;gap:0.28rem;">` +
     rootsHtml +
     bridgeHtml +
@@ -1160,22 +1180,38 @@ export function renderPhilologyRosettaExplorerHtml({
   category = "all",
   activeRef = "GEN.1.1",
   rosettaIndex = null,
+  uiLocale = "es",
 } = {}) {
+  const isEn = String(uiLocale || "es").trim().toLowerCase().startsWith("en");
   const cleanCat = String(category || "all").trim().toLowerCase();
   const cleanQuery = String(query || "").trim();
   const results = searchPhilologyRosettaIndex(cleanQuery, cleanCat, 12, rosettaIndex);
 
-  const catOptions = [
-    ["all", "Todos los sub-corpus Rosetta + 5 ResidualKind"],
-    ["roots", "1. Raíces Consonánticas Semíticas"],
-    ["cognates", "2. Puente Cognado LXX ↔ MT (PMI)"],
-    ["ketiv_qere", "3. ResidualKind: KETIV_QERE (Masora)"],
-    ["versification", "4. ResidualKind: VERSIFICATION (ENG ↔ ORG)"],
-    ["tr_supplement", "5. ResidualKind: TR_SUPPLEMENT (Textus Receptus)"],
-    ["surface_variant", "6. ResidualKind: SURFACE_VARIANT (Variante Superficial)"],
-    ["unmatched", "7. ResidualKind: UNMATCHED (Sin Alineación Directa)"],
-    ["divergence", "8. Reglas de Divergencia Bicanónica"],
-  ]
+  const catOptions = (
+    isEn
+      ? [
+        ["all", "All Rosetta sub-corpora + 5 ResidualKinds"],
+        ["roots", "1. Semitic Consonantal Roots"],
+        ["cognates", "2. LXX ↔ MT Cognate Bridge (PMI)"],
+        ["ketiv_qere", "3. ResidualKind: KETIV_QERE (Masorah)"],
+        ["versification", "4. ResidualKind: VERSIFICATION (ENG ↔ ORG)"],
+        ["tr_supplement", "5. ResidualKind: TR_SUPPLEMENT (Textus Receptus)"],
+        ["surface_variant", "6. ResidualKind: SURFACE_VARIANT (Surface Variant)"],
+        ["unmatched", "7. ResidualKind: UNMATCHED (Unaligned Token)"],
+        ["divergence", "8. Bicanonical Divergence Rules"],
+      ]
+      : [
+        ["all", "Todos los sub-corpus Rosetta + 5 ResidualKind"],
+        ["roots", "1. Raíces Consonánticas Semíticas"],
+        ["cognates", "2. Puente Cognado LXX ↔ MT (PMI)"],
+        ["ketiv_qere", "3. ResidualKind: KETIV_QERE (Masora)"],
+        ["versification", "4. ResidualKind: VERSIFICATION (ENG ↔ ORG)"],
+        ["tr_supplement", "5. ResidualKind: TR_SUPPLEMENT (Textus Receptus)"],
+        ["surface_variant", "6. ResidualKind: SURFACE_VARIANT (Variante Superficial)"],
+        ["unmatched", "7. ResidualKind: UNMATCHED (Sin Alineación Directa)"],
+        ["divergence", "8. Reglas de Divergencia Bicanónica"],
+      ]
+  )
     .map(
       ([val, label]) =>
         `<option value="${escapeHtml(val)}"${val === cleanCat ? " selected" : ""}>${escapeHtml(label)}</option>`,
@@ -1195,8 +1231,8 @@ export function renderPhilologyRosettaExplorerHtml({
   return (
     `<div id="philologyRosettaExplorerPanel" data-rosetta-explorer="true" data-rosetta-category="${escapeHtml(cleanCat)}" data-active-ref="${escapeHtml(activeRef)}" data-hg-pairs-total="${hgPairsTotal}" data-strong-seed-total="${strongSeedTotal}" style="margin-top:0.65rem;padding-top:0.55rem;border-top:1px dashed var(--card-border);">` +
     `<div style="display:flex;flex-wrap:wrap;gap:0.4rem;align-items:center;margin-bottom:0.45rem;">` +
-    `<select id="rosettaFilterCategorySelect" aria-label="Categoría del Índice Rosetta Filológico" style="min-height:48px;padding:0.3rem 0.55rem;border-radius:8px;border:1px solid var(--select-border);background:var(--select-bg);color:var(--text-primary);font-size:0.78rem;">${catOptions}</select>` +
-    `<input type="search" id="rosettaSearchInput" value="${escapeHtml(cleanQuery)}" aria-label="Buscar en Índice Rosetta Filológico" placeholder="Buscar raíz (ברא), Strong (H7225/G3056), Ketiv/Qere o pasaje..." style="flex:1;min-width:180px;min-height:48px;padding:0.35rem 0.65rem;border-radius:8px;border:1px solid var(--select-border);background:var(--select-bg);color:var(--text-primary);font-size:0.78rem;">` +
+    `<select id="rosettaFilterCategorySelect" aria-label="${isEn ? "Philological Rosetta Index Category" : "Categoría del Índice Rosetta Filológico"}" style="min-height:48px;padding:0.3rem 0.55rem;border-radius:8px;border:1px solid var(--select-border);background:var(--select-bg);color:var(--text-primary);font-size:0.78rem;">${catOptions}</select>` +
+    `<input type="search" id="rosettaSearchInput" value="${escapeHtml(cleanQuery)}" aria-label="${isEn ? "Search in Philological Rosetta Index" : "Buscar en Índice Rosetta Filológico"}" placeholder="${isEn ? "Search root (ברא), Strong (H7225/G3056), Ketiv/Qere or passage..." : "Buscar raíz (ברא), Strong (H7225/G3056), Ketiv/Qere o pasaje..."}" style="flex:1;min-width:180px;min-height:48px;padding:0.35rem 0.65rem;border-radius:8px;border:1px solid var(--select-border);background:var(--select-bg);color:var(--text-primary);font-size:0.78rem;">` +
     `</div>` +
     `<div id="rosettaExplorerResultsList" data-results-count="${results.length}"><div id="rosettaExplorerResultsRows" data-rosetta-results="true" style="display:flex;flex-wrap:wrap;gap:0.35rem;">${chipsHtml}</div></div>` +
     `</div>`
@@ -1316,6 +1352,8 @@ const VERSE_SPECIFIC_TSK_ECHOES = {
  */
 export function renderStudyStrataCards(matrixShard, options = {}) {
   const shard = matrixShard?.matrixChapter || matrixShard;
+  const uiLocale = String(options.uiLocale || options.locale || shard?.uiLocale || "es").trim().toLowerCase();
+  const isEn = uiLocale.startsWith("en");
   const book = String(shard?.book || matrixShard?.book || options.book || "GEN").toUpperCase();
   const chapter = Number(shard?.chapter || matrixShard?.chapter || options.chapter) || 1;
   const rawVerse = Number(options.verse ?? matrixShard?.verse);
@@ -1356,17 +1394,17 @@ export function renderStudyStrataCards(matrixShard, options = {}) {
   const nsmItems = Array.from(uniqueNsm.values()).slice(0, 8);
   const nsmHtml =
     `<div class="stratum-card nsm65-stratum" data-stratum="nsm65" data-ref="${escapeHtml(activeOsis)}" style="padding:0.65rem;border-radius:10px;border:1px solid var(--card-border);background:var(--card-bg);">` +
-    `<strong style="font-size:0.84rem;display:block;margin-bottom:0.35rem;">🧭 Estrato 1 · Primitivos Semánticos Universales NSM-65 (${escapeHtml(book)} ${chapter}:${verse})</strong>` +
+    `<strong style="font-size:0.84rem;display:block;margin-bottom:0.35rem;">🧭 ${isEn ? `Stratum 1 · Universal Semantic Primitives NSM-65 (${escapeHtml(book)} ${chapter}:${verse})` : `Estrato 1 · Primitivos Semánticos Universales NSM-65 (${escapeHtml(book)} ${chapter}:${verse})`}</strong>` +
     (nsmItems.length > 0
       ? `<ul style="margin:0;padding-left:1.1rem;font-size:0.82rem;display:grid;gap:0.25rem;">` +
       nsmItems
         .map(
           (r) =>
-            `<li data-nsm-strong="${escapeHtml(r.c07_strong_id)}"><code>${escapeHtml(r.c07_strong_id)}</code> <strong>${escapeHtml(r.c05_orig_text)}</strong> (${escapeHtml(r.c12_gloss_es)}) → <span style="color:var(--accent-amber);font-weight:600;">${escapeHtml(formatHumanReadable14ColFields(r).nsmHuman)}</span></li>`
+            `<li data-nsm-strong="${escapeHtml(r.c07_strong_id)}"><code>${escapeHtml(r.c07_strong_id)}</code> <strong>${escapeHtml(r.c05_orig_text)}</strong> (${escapeHtml(r.c12_gloss_es)}) → <span style="color:var(--accent-amber);font-weight:600;">${escapeHtml(formatHumanReadable14ColFields(r, uiLocale).nsmHuman)}</span></li>`
         )
         .join("") +
       `</ul>`
-      : `<p style="margin:0;font-size:0.81rem;color:var(--text-secondary);">DIOS · DECIR · HACER · BUENO · VIVIR · SABER · VERDAD (65 primitivos universales libres de circularidad).</p>`) +
+      : `<p style="margin:0;font-size:0.81rem;color:var(--text-secondary);">${isEn ? "GOD · SAY · DO · GOOD · LIVE · KNOW · TRUTH (65 non-circular universal semantic primitives)." : "DIOS · DECIR · HACER · BUENO · VIVIR · SABER · VERDAD (65 primitivos universales libres de circularidad)."}</p>`) +
     `</div>`;
 
   const rawShardRealia = Array.isArray(shard?.realia) ? shard.realia : [];
@@ -1419,7 +1457,7 @@ export function renderStudyStrataCards(matrixShard, options = {}) {
 
   const realiaHtml =
     `<div class="stratum-card realia-metrology-stratum" data-stratum="realia-metrology" data-ref="${escapeHtml(activeOsis)}" style="padding:0.65rem;border-radius:10px;border:1px solid var(--card-border);background:var(--card-bg);">` +
-    `<strong style="font-size:0.84rem;display:block;margin-bottom:0.35rem;">⚖️ Estrato 2 · Realia Material y 24 Unidades Metrológicas Cotidianas (${escapeHtml(book)} ${chapter}:${verse})</strong>` +
+    `<strong style="font-size:0.84rem;display:block;margin-bottom:0.35rem;">⚖️ ${isEn ? `Stratum 2 · Material Realia & 24 Everyday Metrological Units (${escapeHtml(book)} ${chapter}:${verse})` : `Estrato 2 · Realia Material y 24 Unidades Metrológicas Cotidianas (${escapeHtml(book)} ${chapter}:${verse})`}</strong>` +
     `<ul style="margin:0;padding-left:1.1rem;font-size:0.82rem;display:grid;gap:0.25rem;">` +
     combinedRealia
       .map((re) => {
@@ -1427,7 +1465,7 @@ export function renderStudyStrataCards(matrixShard, options = {}) {
         const rTitle =
           re.title ||
           `${re.surface_es || re.term_es || ""} (${re.lemma_original || re.original_lemma || re.strong_code || ""})`.trim();
-        const rExp = formatHumanReadable14ColFields({ c13_nsm_65: re.explanation || re.footnote_gloss_es || re.nsm_65_decomposition || re.nsm_65_explanation || "" }).nsmHuman;
+        const rExp = formatHumanReadable14ColFields({ c13_nsm_65: re.explanation || re.footnote_gloss_es || re.nsm_65_decomposition || re.nsm_65_explanation || "" }, uiLocale).nsmHuman;
         return `<li data-realia-id="${escapeHtml(rId)}"><strong>${escapeHtml(rTitle)}:</strong> ${escapeHtml(rExp)}</li>`;
       })
       .join("") +
@@ -1439,7 +1477,7 @@ export function renderStudyStrataCards(matrixShard, options = {}) {
       .join("") +
     `</ul>` +
     `<details id="studyCulturalGlossesCatalogAccordion" class="cultural-glosses-accordion" style="margin-top:0.5rem;padding-top:0.4rem;border-top:1px dashed var(--card-border);">` +
-    `<summary style="cursor:pointer;font-size:0.79rem;font-weight:600;color:var(--text-primary);min-height:48px;">📚 Glosas Culturales NSM-65 (${Object.keys(HYDRATED_CULTURAL_GLOSSES_MAP).length} términos: Pesos, Monedas, Oficios y Realia)</summary>` +
+    `<summary style="cursor:pointer;font-size:0.79rem;font-weight:600;color:var(--text-primary);min-height:48px;">📚 ${isEn ? `Cultural Glosses NSM-65 (${Object.keys(HYDRATED_CULTURAL_GLOSSES_MAP).length} terms: Weights, Coins, Crafts & Realia)` : `Glosas Culturales NSM-65 (${Object.keys(HYDRATED_CULTURAL_GLOSSES_MAP).length} términos: Pesos, Monedas, Oficios y Realia)`}</summary>` +
     `<ul style="margin:0.35rem 0 0 1.1rem;font-size:0.8rem;display:grid;gap:0.22rem;">` +
     Object.values(HYDRATED_CULTURAL_GLOSSES_MAP)
       .map(
@@ -1463,11 +1501,12 @@ export function renderStudyStrataCards(matrixShard, options = {}) {
     activeOsis,
     rosettaIndex: options.rosettaIndex || shard?.rosettaIndex || null,
     includeExplorer: false,
+    uiLocale,
   });
   const includeInlineRosettaInTsk = Boolean(options.includeInlineRosettaInTsk);
   const tskHtml =
     `<div class="stratum-card tsk-crossrefs-stratum" data-stratum="tsk" data-ref="${escapeHtml(activeOsis)}" data-primary-strong="${escapeHtml(firstStrong)}" style="padding:0.65rem;border-radius:10px;border:1px solid var(--card-border);background:var(--card-bg);">` +
-    `<strong style="font-size:0.84rem;display:block;margin-bottom:0.35rem;">🔗 Estrato 3 · Ecos Intertextuales AT↔NT (TSK · ${escapeHtml(book)} ${chapter}:${verse} · ${escapeHtml(firstStrong)})</strong>` +
+    `<strong style="font-size:0.84rem;display:block;margin-bottom:0.35rem;">🔗 ${isEn ? `Stratum 3 · Intertextual OT↔NT Echoes (TSK · ${escapeHtml(book)} ${chapter}:${verse} · ${escapeHtml(firstStrong)})` : `Estrato 3 · Ecos Intertextuales AT↔NT (TSK · ${escapeHtml(book)} ${chapter}:${verse} · ${escapeHtml(firstStrong)})`}</strong>` +
     `<div style="display:flex;flex-wrap:wrap;gap:0.4rem;">` +
     baseTsk
       .map(
@@ -1488,6 +1527,8 @@ export function renderStudyStrataCards(matrixShard, options = {}) {
  */
 export function renderLeipzig4LineGmisHtml(matrixShard, options = {}) {
   const shard = matrixShard?.matrixChapter || matrixShard;
+  const uiLocale = String(options.uiLocale || options.locale || shard?.uiLocale || "es").trim().toLowerCase();
+  const isEn = uiLocale.startsWith("en");
   const lang = String(options.lang || "tier4").trim();
   const book = String(shard?.book || matrixShard?.book || options.book || "GEN").toUpperCase();
   const chapter = Number(shard?.chapter || matrixShard?.chapter || options.chapter) || 1;
@@ -1522,7 +1563,7 @@ export function renderLeipzig4LineGmisHtml(matrixShard, options = {}) {
             `<code>${escapeHtml(w.c07_strong_id)}</code> · <span>${escapeHtml(w.c08_morph_code)}</span> · <span>${escapeHtml(w.c09_macula_role)}</span>` +
             `</div>` +
             `<div class="gmis-line-3" data-gmis-line="3" style="font-size:0.76rem;color:var(--accent-amber);">` +
-            `NSM-65: ${escapeHtml(formatHumanReadable14ColFields(w).nsmHuman)}` +
+            `NSM-65: ${escapeHtml(formatHumanReadable14ColFields(w, uiLocale).nsmHuman)}` +
             `</div>` +
             `<div class="gmis-line-4" data-gmis-line="4" style="font-size:0.8rem;display:flex;align-items:center;justify-content:space-between;gap:0.35rem;">` +
             `<span class="gmis-bridge-gloss">${escapeHtml(w.c12_gloss_es)}</span>` +
@@ -1544,7 +1585,7 @@ export function renderLeipzig4LineGmisHtml(matrixShard, options = {}) {
   return (
     `<section class="gmis-4line-scaffold" data-gmis-scaffold="true" data-lang="${escapeHtml(lang)}" data-book="${escapeHtml(book)}" data-chapter="${chapter}" data-word-order="${escapeHtml(wordOrder)}" style="margin-top:1rem;padding:0.9rem;border-radius:12px;border:1px dashed var(--card-border);">` +
     `<header style="margin-bottom:0.65rem;">` +
-    `<strong>🔬 Andamiaje Interlineal Soberano de 4 Líneas (GMIS · Leipzig / WLC / SRGNT / NSM-65)</strong>` +
+    `<strong>🔬 ${isEn ? "Sovereign 4-Line Interlinear Scaffolding (GMIS · Leipzig / WLC / SRGNT / NSM-65)" : "Andamiaje Interlineal Soberano de 4 Líneas (GMIS · Leipzig / WLC / SRGNT / NSM-65)"}</strong>` +
     `</header>` +
     verseBlocksHtml +
     `</section>`

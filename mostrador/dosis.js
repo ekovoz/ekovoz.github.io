@@ -175,34 +175,42 @@ export function planDose2(locatedOrBlockId, lang = "es", edition = "2col-a4") {
 }
 
 export const CANONICAL_9_PLUS_2_EDITIONS_CATALOG = [
-  { id: "01_1col_lectura", editionSlug: "01_1col_lectura", label: "1. Lectura Continua (1 col · 10.5pt)", kind: "edition", columns: 1, fontPt: 10.5 },
-  { id: "02_2col_pastoral", editionSlug: "02_2col_pastoral", label: "2. Pastoral Clásica (2 col · 9.5pt)", kind: "edition", columns: 2, fontPt: 9.5 },
-  { id: "03_3col_compacta", editionSlug: "03_3col_compacta", label: "3. Compacta de Bolsillo (3 col · 8.0pt)", kind: "edition", columns: 3, fontPt: 8.0 },
-  { id: "04_1col_letra_grande", editionSlug: "04_1col_letra_grande", label: "4. Letra Grande Abuelos (1 col · 13.5pt)", kind: "edition", columns: 1, fontPt: 13.5 },
-  { id: "05_interlineal_estudio", editionSlug: "05_interlineal_estudio", label: "5. Interlineal de Estudio 14-Col (A4)", kind: "edition", columns: 1, fontPt: 9.0 },
-  { id: "06_bilingue_paralela", editionSlug: "06_bilingue_paralela", label: "6. Díptico Bilingüe 58/42 (Materna + Puente)", kind: "edition", columns: 2, fontPt: 9.5 },
-  { id: "07_cuaderno_5lineas_apaisado", editionSlug: "07_cuaderno_5lineas_apaisado", label: "7. Cuaderno de Campo 5 Líneas (Landscape)", kind: "edition", columns: 1, fontPt: 10.0 },
-  { id: "08_bolsillo_misionero", editionSlug: "08_bolsillo_misionero", label: "8. Pliego Saddle-Stitch 4n (Imposición)", kind: "edition", columns: 2, fontPt: 8.5 },
-  { id: "09_atril_liturgico", editionSlug: "09_atril_liturgico", label: "9. Edición de Atril y Asamblea (Folio)", kind: "edition", columns: 2, fontPt: 12.0 },
-  { id: "10_refugio_4_hojas", editionSlug: "refugio_4_hojas", label: "10. Refugio de Emergencia (4 Hojas · PDF)", kind: "field_pdf", url: "obras/biblia/campo/refugio_4_hojas.pdf" },
-  { id: "11_checklist_80_bloques", editionSlug: "checklist_80_bloques", label: "11. Checklist de 80 Bloques de Campo (PDF)", kind: "field_pdf", url: "obras/biblia/campo/checklist_80_bloques.pdf" },
+  { id: "01_1col_lectura", editionSlug: "01_1col_lectura", label: "1. Lectura Continua (1 col · 10.5pt)", label_en: "1. Continuous Reading (1 col · 10.5pt)", kind: "edition", columns: 1, fontPt: 10.5 },
+  { id: "02_2col_pastoral", editionSlug: "02_2col_pastoral", label: "2. Pastoral Clásica (2 col · 9.5pt)", label_en: "2. Classic Pastoral (2 col · 9.5pt)", kind: "edition", columns: 2, fontPt: 9.5 },
+  { id: "03_3col_compacta", editionSlug: "03_3col_compacta", label: "3. Compacta de Bolsillo (3 col · 8.0pt)", label_en: "3. Pocket Compact (3 col · 8.0pt)", kind: "edition", columns: 3, fontPt: 8.0 },
+  { id: "04_1col_letra_grande", editionSlug: "04_1col_letra_grande", label: "4. Letra Grande Abuelos (1 col · 13.5pt)", label_en: "4. Large Print Elders (1 col · 13.5pt)", kind: "edition", columns: 1, fontPt: 13.5 },
+  { id: "05_interlineal_estudio", editionSlug: "05_interlineal_estudio", label: "5. Interlineal de Estudio 14-Col (A4)", label_en: "5. 14-Col Study Interlinear (A4)", kind: "edition", columns: 1, fontPt: 9.0 },
+  { id: "06_bilingue_paralela", editionSlug: "06_bilingue_paralela", label: "6. Díptico Bilingüe 58/42 (Materna + Puente)", label_en: "6. Bilingual Diptych 58/42 (Vernacular + Bridge)", kind: "edition", columns: 2, fontPt: 9.5 },
+  { id: "07_cuaderno_5lineas_apaisado", editionSlug: "07_cuaderno_5lineas_apaisado", label: "7. Cuaderno de Campo 5 Líneas (Landscape)", label_en: "7. 5-Line Field Notebook (Landscape)", kind: "edition", columns: 1, fontPt: 10.0 },
+  { id: "08_bolsillo_misionero", editionSlug: "08_bolsillo_misionero", label: "8. Pliego Saddle-Stitch 4n (Imposición)", label_en: "8. Saddle-Stitch 4n Booklet (Imposition)", kind: "edition", columns: 2, fontPt: 8.5 },
+  { id: "09_atril_liturgico", editionSlug: "09_atril_liturgico", label: "9. Edición de Atril y Asamblea (Folio)", label_en: "9. Pulpit & Assembly Folio Edition", kind: "edition", columns: 2, fontPt: 12.0 },
+  { id: "10_refugio_4_hojas", editionSlug: "refugio_4_hojas", label: "10. Refugio de Emergencia (4 Hojas · PDF)", label_en: "10. Emergency Pocket Refuge (4 Sheets · PDF)", kind: "field_pdf", url: "obras/biblia/campo/refugio_4_hojas.pdf" },
+  { id: "11_checklist_80_bloques", editionSlug: "checklist_80_bloques", label: "11. Checklist de 80 Bloques de Campo (PDF)", label_en: "11. 80 Canonical Field Blocks Checklist (PDF)", kind: "field_pdf", url: "obras/biblia/campo/checklist_80_bloques.pdf" },
 ];
 
 export const CANONICAL_14_PLUS_2_EDITIONS_CATALOG = [
   ...CANONICAL_9_PLUS_2_EDITIONS_CATALOG.slice(0, 9),
-  { id: "10_evangelio_14_pericopas", editionSlug: "10_evangelio_14_pericopas", label: "10. Evangelio 14 Perícopas (2 col · 10.0pt)", kind: "edition", columns: 2, fontPt: 10.0 },
-  { id: "11_braille_nemeth_b70", editionSlug: "11_braille_nemeth_b70", label: "11. Braille Táctil BEB B70 (1 col · 16.0pt)", kind: "edition", columns: 1, fontPt: 16.0 },
-  { id: "12_dislexia_espaciado_amplio", editionSlug: "12_dislexia_espaciado_amplio", label: "12. Dislexia Espaciado Amplio (1 col · 12.5pt)", kind: "edition", columns: 1, fontPt: 12.5 },
-  { id: "13_contraste_extremo_baja_vision", editionSlug: "13_contraste_extremo_baja_vision", label: "13. Baja Visión Contraste Extremo (1 col · 15.0pt)", kind: "edition", columns: 1, fontPt: 15.0 },
-  { id: "14_pliego_mural_comunitario", editionSlug: "14_pliego_mural_comunitario", label: "14. Pliego Mural Comunitario A3 (3 col · 11.0pt)", kind: "edition", columns: 3, fontPt: 11.0 },
-  { id: "15_refugio_4_hojas", editionSlug: "refugio_4_hojas", label: "15. Refugio de Emergencia (4 Hojas · PDF)", kind: "field_pdf", url: "obras/biblia/campo/refugio_4_hojas.pdf" },
-  { id: "16_checklist_80_bloques", editionSlug: "checklist_80_bloques", label: "16. Checklist de 80 Bloques de Campo (PDF)", kind: "field_pdf", url: "obras/biblia/campo/checklist_80_bloques.pdf" },
+  { id: "10_evangelio_14_pericopas", editionSlug: "10_evangelio_14_pericopas", label: "10. Evangelio 14 Perícopas (2 col · 10.0pt)", label_en: "10. Gospel 14 Pericopes (2 col · 10.0pt)", kind: "edition", columns: 2, fontPt: 10.0 },
+  { id: "11_braille_nemeth_b70", editionSlug: "11_braille_nemeth_b70", label: "11. Braille Táctil BEB B70 (1 col · 16.0pt)", label_en: "11. Tactile Braille BEB B70 (1 col · 16.0pt)", kind: "edition", columns: 1, fontPt: 16.0 },
+  { id: "12_dislexia_espaciado_amplio", editionSlug: "12_dislexia_espaciado_amplio", label: "12. Dislexia Espaciado Amplio (1 col · 12.5pt)", label_en: "12. Dyslexia Wide Spacing (1 col · 12.5pt)", kind: "edition", columns: 1, fontPt: 12.5 },
+  { id: "13_contraste_extremo_baja_vision", editionSlug: "13_contraste_extremo_baja_vision", label: "13. Baja Visión Contraste Extremo (1 col · 15.0pt)", label_en: "13. Low Vision High Contrast (1 col · 15.0pt)", kind: "edition", columns: 1, fontPt: 15.0 },
+  { id: "14_pliego_mural_comunitario", editionSlug: "14_pliego_mural_comunitario", label: "14. Pliego Mural Comunitario A3 (3 col · 11.0pt)", label_en: "14. Community Mural Sheet A3 (3 col · 11.0pt)", kind: "edition", columns: 3, fontPt: 11.0 },
+  { id: "15_refugio_4_hojas", editionSlug: "refugio_4_hojas", label: "15. Refugio de Emergencia (4 Hojas · PDF)", label_en: "15. Emergency Pocket Refuge (4 Sheets · PDF)", kind: "field_pdf", url: "obras/biblia/campo/refugio_4_hojas.pdf" },
+  { id: "16_checklist_80_bloques", editionSlug: "checklist_80_bloques", label: "16. Checklist de 80 Bloques de Campo (PDF)", label_en: "16. 80 Canonical Field Blocks Checklist (PDF)", kind: "field_pdf", url: "obras/biblia/campo/checklist_80_bloques.pdf" },
 ];
 
 /** Devuelve las ediciones tipográficas canónicas + 2 PDFs de campo enriquecidas con `downloads_manifest.json` y perfiles TOML (`D3-S21+`). */
 export function listCatalogEditionsForLang(manifestOrLang, maybeLang = "es", options = {}) {
   const isFirstArgLang = typeof manifestOrLang === "string";
   const resolvedLang = String(isFirstArgLang ? manifestOrLang : maybeLang || "es").trim().toLowerCase() || "es";
+  const resolvedOptions =
+    isFirstArgLang && typeof maybeLang === "object" && maybeLang !== null
+      ? maybeLang
+      : isFirstArgLang && typeof maybeLang === "string" && arguments.length >= 2
+        ? { ...options, uiLocale: options?.uiLocale || maybeLang }
+        : options || {};
+  const uiLocale = String(resolvedOptions?.uiLocale || resolvedOptions?.locale || "es").trim().toLowerCase();
+  const isEn = uiLocale.startsWith("en");
   const list = isFirstArgLang
     ? []
     : Array.isArray(manifestOrLang)
@@ -237,10 +245,12 @@ export function listCatalogEditionsForLang(manifestOrLang, maybeLang = "es", opt
       tomlLookup.get(item.id) ||
       (CANONICAL_14_PRINT_PROFILES && CANONICAL_14_PRINT_PROFILES[idx]) ||
       {};
+    const localizedLabel = isEn && item.label_en ? item.label_en : item.label;
     if (item.kind === "field_pdf") {
       const cleanFieldUrl = buildRelativePdfAssetUrl(item.url || "obras/biblia/campo/refugio_4_hojas.pdf");
       return {
         ...item,
+        label: localizedLabel,
         profileId: item.id,
         profileUrl: cleanFieldUrl,
         lang: resolvedLang,
@@ -266,6 +276,7 @@ export function listCatalogEditionsForLang(manifestOrLang, maybeLang = "es", opt
     });
     return {
       ...item,
+      label: localizedLabel,
       profileId: item.id,
       profileUrl: `${fallbackUrl}?profile=${item.id}&cols=${resolvedCols}&font=${resolvedFontPt}pt&paper=${encodeURIComponent(resolvedPaper)}&mode=${encodeURIComponent(impositionMode)}`,
       tomlPath: tomlMeta.tomlPath || `obras/biblia/profiles/${item.id}.toml`,
@@ -277,7 +288,7 @@ export function listCatalogEditionsForLang(manifestOrLang, maybeLang = "es", opt
       impositionMode,
       cpl: budget.cpl,
       estimatedPages: budget.estimatedPages,
-      summarySpec: `${resolvedCols} col · ${resolvedFontPt}pt · ${resolvedPaper} (~${budget.estimatedPages} págs)`,
+      summarySpec: `${resolvedCols} col · ${resolvedFontPt}pt · ${resolvedPaper} (~${budget.estimatedPages} ${isEn ? "pages" : "págs"})`,
       lang: resolvedLang,
       path: fallbackUrl,
       url: fallbackUrl,
@@ -288,8 +299,8 @@ export function listCatalogEditionsForLang(manifestOrLang, maybeLang = "es", opt
 }
 
 /** Devuelve las 16 ediciones completas (los 14 perfiles TOML `01..14` + 2 PDFs de campo, `D3-S21+`). */
-export function listAll14PrintEditionsForLang(manifestOrLang, maybeLang = "es") {
-  return listCatalogEditionsForLang(manifestOrLang, maybeLang, { includeAll14Profiles: true });
+export function listAll14PrintEditionsForLang(manifestOrLang, maybeLang = "es", options = {}) {
+  return listCatalogEditionsForLang(manifestOrLang, maybeLang, { ...options, includeAll14Profiles: true });
 }
 
 /**
@@ -352,13 +363,39 @@ export function planDose3(manifest, lang, edition) {
 const LETTER_TERRITORIES = new Set(["BZ", "CA", "CL", "CO", "CR", "GT", "MX", "NI", "PA", "PH", "PR", "SV", "US", "VE"]);
 
 export function paperForRegion(regionIso2) {
-  return LETTER_TERRITORIES.has(String(regionIso2 || "").toUpperCase()) ? "letter" : "a4";
+  const clean = String(regionIso2 || "").trim().split(/[-_]/).pop().toUpperCase();
+  return LETTER_TERRITORIES.has(clean) ? "letter" : "a4";
 }
 
 /** Elige la edición disponible del idioma que mejor coincide con el papel preferido. */
 export function chooseEdition(editions, paper) {
   const list = Array.isArray(editions) ? editions : [];
   return list.find((e) => e.endsWith(`-${paper}`)) || list[0] || null;
+}
+
+/**
+ * D5-R40 (`5A` · `resolveRegionalPrintDefaults`):
+ * Resuelve el papel CLDR (`letter` vs `a4`) mediante `paperForRegion(regionIso2)` y la edición recomendada
+ * mediante `chooseEdition(editions, paper)`.
+ */
+export function resolveRegionalPrintDefaults(
+  regionIso2 = "MX",
+  langOrOptions = "es",
+  editions = ["2col-a4", "2col-letter", "1col-a4", "1col-letter"],
+) {
+  const isObj = typeof langOrOptions === "object" && langOrOptions !== null && !Array.isArray(langOrOptions);
+  const resolvedLang = String(isObj ? langOrOptions.lang || "es" : langOrOptions || "es").toLowerCase();
+  const resolvedEditions = isObj && Array.isArray(langOrOptions.editions) ? langOrOptions.editions : editions;
+  const paper = paperForRegion(regionIso2);
+  const edition = chooseEdition(resolvedEditions, paper) || `2col-${paper}`;
+  return {
+    regionIso2: String(regionIso2 || "MX").trim().split(/[-_]/).pop().toUpperCase() || "MX",
+    lang: resolvedLang,
+    paper,
+    paperFormat: paper,
+    edition,
+    recommendedEdition: { slug: edition, paperFormat: paper },
+  };
 }
 
 /**
@@ -871,7 +908,9 @@ export function renderBranchAndTypologyInspectorHtml({
   lang = "es",
   activeBranchId = "",
   activeTypologyId = "",
+  uiLocale = "es",
 } = {}) {
+  const isEn = String(uiLocale || "es").trim().toLowerCase().startsWith("en");
   const cleanLang = String(lang || "es").toLowerCase().split("-")[0];
   const branches = CANONICAL_12_BRANCH_PROFILES;
   const typologies = CANONICAL_16_TYPOLOGY_PROFILES;
@@ -891,7 +930,7 @@ export function renderBranchAndTypologyInspectorHtml({
   const branchOptions = branches
     .map((b, idx) => {
       const sel = b.id === matchedBranch.id ? " selected" : "";
-      const name = b.parsed?.name_es || `Rama G_${String(idx + 1).padStart(2, "0")} · ${b.id}`;
+      const name = b.parsed?.name_es || `${isEn ? "Branch" : "Rama"} G_${String(idx + 1).padStart(2, "0")} · ${b.id}`;
       const order = b.parsed?.word_order || "SVO";
       return `<option value="${b.id}"${sel}>${name} (${order})</option>`;
     })
@@ -916,17 +955,17 @@ export function renderBranchAndTypologyInspectorHtml({
         : `[S: Dios] [V: creó] [O: los cielos y la tierra] · Cópula=${specimenCopula} · Neg=${specimenNeg}`;
   return (
     `<div id="bibleBranchAndTypologyInspector" class="branch-typology-inspector-card" data-branch-count="${branches.length}" data-typology-count="${typologies.length}" data-active-branch="${matchedBranch.id}" data-active-typology="${matchedTypology.id}" style="padding:0.65rem;border-radius:10px;border:1px solid var(--card-border);background:var(--card-bg);font-size:0.8rem;">` +
-    `<div style="font-weight:700;margin-bottom:0.4rem;">🌐 Inspector de 12 Ramas de Escritura (G_01–G_12) y 16 Hojas Tipológicas</div>` +
+    `<div style="font-weight:700;margin-bottom:0.4rem;">🌐 ${isEn ? "12 Script Branches Inspector (G_01–G_12) & 16 Typological Sheets" : "Inspector de 12 Ramas de Escritura (G_01–G_12) y 16 Hojas Tipológicas"}</div>` +
     `<div style="display:flex;flex-wrap:wrap;gap:0.45rem;margin-bottom:0.45rem;">` +
-    `<label style="flex:1;min-width:210px;">Rama (12): <select id="branchProfileSelect" aria-label="Rama Tipográfica G_01 a G_12" style="width:100%;min-height:48px;">${branchOptions}</select></label>` +
-    `<label style="flex:1;min-width:210px;">Tipología (16): <select id="typologySheetSelect" aria-label="Hoja de Tipología Lingüística (16)" style="width:100%;min-height:48px;">${typologyOptions}</select></label>` +
+    `<label style="flex:1;min-width:210px;">${isEn ? "Branch (12)" : "Rama (12)"}: <select id="branchProfileSelect" aria-label="${isEn ? "Typographic Branch G_01 to G_12" : "Rama Tipográfica G_01 a G_12"}" style="width:100%;min-height:48px;">${branchOptions}</select></label>` +
+    `<label style="flex:1;min-width:210px;">${isEn ? "Typology (16)" : "Tipología (16)"}: <select id="typologySheetSelect" aria-label="${isEn ? "Linguistic Typology Sheet (16)" : "Hoja de Tipología Lingüística (16)"}" style="width:100%;min-height:48px;">${typologyOptions}</select></label>` +
     `</div>` +
     `<div style="display:flex;flex-wrap:wrap;gap:0.45rem;color:var(--text-secondary);">` +
-    `<span class="uls-chip" data-branch-meta="${matchedBranch.id}" style="font-size:0.75rem;padding:0.2rem 0.5rem;">Rama: <strong>${bParsed.name_es || matchedBranch.id}</strong> · Orden=${bParsed.word_order || "SVO"} · Morfología=${bParsed.morphology || "FUSIONAL"} · Alineamiento=${bParsed.alignment || "NOM_ACC"}</span>` +
-    `<span class="uls-chip" data-typology-meta="${matchedTypology.id}" style="font-size:0.75rem;padding:0.2rem 0.5rem;">Tipología: <strong>${matchedTypology.lang_code}</strong> · Orden=${matchedTypology.word_order} · Clado=${matchedTypology.family_subclade} · Cópula=${matchedTypology.copula_affirmative || "∅"} · Negación=${matchedTypology.negation_preverbal || "∅"}</span>` +
+    `<span class="uls-chip" data-branch-meta="${matchedBranch.id}" style="font-size:0.75rem;padding:0.2rem 0.5rem;">${isEn ? "Branch" : "Rama"}: <strong>${bParsed.name_es || matchedBranch.id}</strong> · ${isEn ? "Order" : "Orden"}=${bParsed.word_order || "SVO"} · ${isEn ? "Morphology" : "Morfología"}=${bParsed.morphology || "FUSIONAL"} · ${isEn ? "Alignment" : "Alineamiento"}=${bParsed.alignment || "NOM_ACC"}</span>` +
+    `<span class="uls-chip" data-typology-meta="${matchedTypology.id}" style="font-size:0.75rem;padding:0.2rem 0.5rem;">${isEn ? "Typology" : "Tipología"}: <strong>${matchedTypology.lang_code}</strong> · ${isEn ? "Order" : "Orden"}=${matchedTypology.word_order} · ${isEn ? "Clade" : "Clado"}=${matchedTypology.family_subclade} · ${isEn ? "Copula" : "Cópula"}=${matchedTypology.copula_affirmative || "∅"} · ${isEn ? "Negation" : "Negación"}=${matchedTypology.negation_preverbal || "∅"}</span>` +
     `</div>` +
     `<div id="branchTypologyLiveSpecimen" data-live-specimen-branch="${matchedBranch.id}" data-live-specimen-typology="${matchedTypology.id}" data-live-specimen-order="${specimenOrder}" style="margin-top:0.45rem;padding:0.45rem 0.65rem;border-radius:8px;border:1px dashed var(--card-border);background:var(--bg-secondary);font-size:0.78rem;">` +
-    `<strong>🔍 Especimen Morfosintáctico y Tipográfico en Vivo (${matchedBranch.id} · ${matchedTypology.id}):</strong> ` +
+    `<strong>🔍 ${isEn ? `Live Morphosyntactic & Typographic Specimen (${matchedBranch.id} · ${matchedTypology.id}):` : `Especimen Morfosintáctico y Tipográfico en Vivo (${matchedBranch.id} · ${matchedTypology.id}):`}</strong> ` +
     `<code>${specimenClause}</code>` +
     `</div>` +
     `</div>`
@@ -941,7 +980,9 @@ export function renderMultiSignatureAndPocketRefugeHtml({
   totalPages = 160,
   activeBlockNumber = 1,
   dir = "ltr",
+  uiLocale = "es",
 } = {}) {
+  const isEn = String(uiLocale || "es").trim().toLowerCase().startsWith("en");
   const multiSig = computeMultiSignatureImposition({ totalPages, dir });
   const blkIndex = Math.max(1, Math.min(80, Number(activeBlockNumber) || 1)) - 1;
   const blk = CANONICAL_80_BLOCKS_CATALOG[blkIndex] || CANONICAL_80_BLOCKS_CATALOG[0];
@@ -950,7 +991,7 @@ export function renderMultiSignatureAndPocketRefugeHtml({
     .slice(0, 5)
     .map(
       (s) =>
-        `<span class="uls-chip" data-signature-code="${s.signatureCode}" style="font-size:0.74rem;padding:0.2rem 0.5rem;">${s.signatureCode} (p.${s.startPage}–${s.endPage} · creep ${s.maxCreepMm}mm · marca Y=${s.steppedCollationMarkYMm}mm)</span>`,
+        `<span class="uls-chip" data-signature-code="${s.signatureCode}" style="font-size:0.74rem;padding:0.2rem 0.5rem;">${s.signatureCode} (p.${s.startPage}–${s.endPage} · creep ${s.maxCreepMm}mm · ${isEn ? "mark" : "marca"} Y=${s.steppedCollationMarkYMm}mm)</span>`,
     )
     .join(" ");
 
@@ -961,15 +1002,15 @@ export function renderMultiSignatureAndPocketRefugeHtml({
 
   return (
     `<div class="multi-signature-imposition-card" data-multi-signature="true" data-signature-count="${multiSig.signatureCount}" data-max-creep-mm="${multiSig.maxCreepMm}" data-kl-divergence="${POCKET_REFUGE_4_SHEETS_SPEC.klDivergence}" style="margin-top:0.55rem;padding:0.65rem;border-radius:10px;border:1px solid var(--card-border);background:var(--card-bg);font-size:0.8rem;">` +
-    `<div style="font-weight:700;margin-bottom:0.3rem;">📐 Imposición Multi-Pliego 4n (${multiSig.summary})</div>` +
+    `<div style="font-weight:700;margin-bottom:0.3rem;">📐 ${isEn ? `4n Multi-Signature Imposition (${multiSig.summary})` : `Imposición Multi-Pliego 4n (${multiSig.summary})`}</div>` +
     `<div style="display:flex;flex-wrap:wrap;gap:0.35rem;margin-bottom:0.45rem;">${sigRows}</div>` +
     `<div style="display:flex;align-items:center;flex-wrap:wrap;gap:0.45rem;margin-bottom:0.45rem;">` +
-    `<label for="canonicalBlockSelect" style="font-weight:600;">Explorar 80 Bloques Canónicos:</label>` +
-    `<select id="canonicalBlockSelect" data-action="select-canonical-block" aria-label="Seleccionar Bloque Canónico (1 a 80)" style="min-height:48px;flex:1;min-width:210px;">${blockOptionsHtml}</select>` +
+    `<label for="canonicalBlockSelect" style="font-weight:600;">${isEn ? "Explore 80 Canonical Blocks:" : "Explorar 80 Bloques Canónicos:"}</label>` +
+    `<select id="canonicalBlockSelect" data-action="select-canonical-block" aria-label="${isEn ? "Select Canonical Block (1 to 80)" : "Seleccionar Bloque Canónico (1 a 80)"}" style="min-height:48px;flex:1;min-width:210px;">${blockOptionsHtml}</select>` +
     `</div>` +
     `<div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:0.4rem;color:var(--text-secondary);">` +
-    `<span data-active-field-block="${blk.blockId}">📦 Bloque activo: <strong>${blk.blockId}</strong> (${blk.rangeLabel} · ${blk.title})</span>` +
-    `<span data-pocket-refuge="refugio_4_hojas">🛡️ Refugio 4 Hojas (16 págs · D_KL = ${POCKET_REFUGE_4_SHEETS_SPEC.klDivergence.toFixed(1)})</span>` +
+    `<span data-active-field-block="${blk.blockId}">📦 ${isEn ? "Active block" : "Bloque activo"}: <strong>${blk.blockId}</strong> (${blk.rangeLabel} · ${blk.title})</span>` +
+    `<span data-pocket-refuge="refugio_4_hojas">🛡️ ${isEn ? `4-Sheet Pocket Refuge (16 pp · D_KL = ${POCKET_REFUGE_4_SHEETS_SPEC.klDivergence.toFixed(1)})` : `Refugio 4 Hojas (16 págs · D_KL = ${POCKET_REFUGE_4_SHEETS_SPEC.klDivergence.toFixed(1)})`}</span>` +
     `</div>` +
     `</div>`
   );

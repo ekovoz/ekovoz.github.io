@@ -311,7 +311,7 @@ export const LIFE_TRAILS_ANCHORS = {
 };
 
 export const POETIC_BOOKS = new Set(["PSA", "PRO", "JOB", "SNG", "LAM"]);
-export const MULTI_ORTHO_LANGS = new Set(["stp", "aud", "quc", "nah", "bn", "bn-bd", "bn-in", "tzj", "cak", "mam", "ar", "arb", "uzn", "uz", "tzm"]);
+export const MULTI_ORTHO_LANGS = new Set(["stp", "aud", "quc", "nah", "bn", "bn-bd", "bn-in", "tzj", "cak", "mam", "ar", "arb", "uzn", "uz", "tzm", "kk", "ber"]);
 const SUPERSCRIPT_DIGITS = {
   "0": "⁰",
   "1": "¹",
@@ -680,10 +680,10 @@ export function renderChapterPreviewHtml(
     const dropcapClass = vNum === 1 ? " bible-chapter-dropcap" : "";
 
     currentSpans.push(
-      `<span class="mostrador-verse bible-verse-line${dropcapClass}${isSelected ? " is-selected" : ""
+      `<span class="mostrador-verse bible-verse-line${isSelected ? " is-selected" : ""
       }" data-verse="${vNum}" data-osis="${escapeHtml(
         osis
-      )}"><sup class="bible-v-sup"${supHiddenAttr}>${escapeHtml(
+      )}"><sup class="bible-v-sup mostrador-verse-num${dropcapClass}"${supHiddenAttr}>${escapeHtml(
         supNum
       )}</sup> ${renderedBody}</span>`
     );

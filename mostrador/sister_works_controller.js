@@ -4,7 +4,10 @@
 // ============================================================================
 
 import { escapeHtml, CROSS_WORK_BRIDGE_TABLE } from "./bridge_and_chapter.js";
-import { renderEvangeliosPlateActionsHtml } from "./evangelios.js";
+import {
+  renderEvangeliosPlateActionsHtml,
+  shouldShowEvangeliosBridgeLine,
+} from "./evangelios.js";
 import { parseBiblicalCoordinateReference } from "./reference.js";
 
 /**
@@ -99,7 +102,7 @@ export function renderEvangeliosStageCardHtml(
     `</header>` +
     `<p style="margin:0 0 0.45rem 0;font-size:0.82rem;color:var(--accent-amber);"><strong>🕊️ ${gestureLabel}:</strong> ${escapeHtml(activeEntry.gesture || "")}</p>` +
     `<blockquote style="margin:0 0 0.45rem 0;font-size:0.95rem;line-height:1.5;">${escapeHtml(tObj.text || "")}</blockquote>` +
-    (bridgeObj && bridgeObj.text
+    (shouldShowEvangeliosBridgeLine(activeEvLang) && bridgeObj && bridgeObj.text
       ? `<p style="margin:0;font-size:0.8rem;color:var(--text-secondary);border-top:1px dashed var(--card-border);padding-top:0.4rem;"><em>${bridgeLabel}:</em> ${escapeHtml(bridgeObj.text)}</p>`
       : "") +
     renderEvangeliosPlateActionsHtml({

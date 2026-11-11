@@ -68,7 +68,7 @@
     </script>
     <style>
 :root{--bg-canvas:#f8f5f0;--bg-secondary:#f4efe6;--card-bg:#ffffff;--card-border:rgba(28,25,23,0.08);--card-shadow:0 1px 3px rgba(28,25,23,0.04),0 8px 24px -4px rgba(28,25,23,0.08),0 24px 48px -12px rgba(28,25,23,0.12);--text-primary:#1c1917;--text-secondary:#4a4036;--text-muted:#4a4036;--accent:#69300c;--accent-primary:#1c1917;--accent-primary-hover:#292524;--accent-secondary-bg:#f4efe6;--accent-secondary-hover:#ebe4d8;--accent-secondary-border:#d6cfc7;--accent-amber:#69300c;--accent-amber-light:#69300c;--badge-bg:rgba(105,48,12,0.08);--badge-border:rgba(105,48,12,0.22);--badge-text:#69300c;--select-bg:#ffffff;--select-border:#d6cfc7;--select-focus:#69300c;--pill-bg:#ebe4d8;--pill-active-bg:#ffffff;--pill-active-text:#1c1917;--focal-frame-bg:#faf8f5;--focal-frame-border:#ebe4d8;}
-@media (prefers-color-scheme: dark){:root{--bg-canvas:#121316;--bg-secondary:#1c1917;--card-bg:#1c1917;--card-border:rgba(255,255,255,0.08);--card-shadow:0 4px 20px rgba(0,0,0,0.6),0 16px 40px -8px rgba(0,0,0,0.8);--text-primary:#f5f5f4;--text-secondary:#a8a29e;--text-muted:#78716c;--accent-primary:#f5f5f4;--accent-primary-hover:#e7e5e4;--accent-secondary-bg:#292524;--accent-secondary-hover:#44403c;--accent-secondary-border:#57534e;--accent-amber:#f59e0b;--accent-amber-light:#fbbf24;--badge-bg:rgba(245,158,11,0.12);--badge-border:rgba(245,158,11,0.3);--badge-text:#fbbf24;--select-bg:#292524;--select-border:#44403c;--select-focus:#f59e0b;--pill-bg:#292524;--pill-active-bg:#44403c;--pill-active-text:#f5f5f4;--focal-frame-bg:#18181b;--focal-frame-border:#27272a;}}
+@media (prefers-color-scheme: dark){:root{--bg-canvas:#121316;--bg-secondary:#1c1917;--card-bg:#1c1917;--card-border:rgba(255,255,255,0.08);--card-shadow:0 4px 20px rgba(0,0,0,0.6),0 16px 40px -8px rgba(0,0,0,0.8);--text-primary:#f5f5f4;--text-secondary:#a8a29e;--text-muted:#78716c;--accent-primary:#f5f5f4;--accent-primary-hover:#e7e5e4;--accent-secondary-bg:#292524;--accent-secondary-hover:#44403c;--accent-secondary-border:#57534e;--accent-amber:#f59e0b;--accent-amber-light:#fbbf24;--badge-bg:rgba(245,158,11,0.12);--badge-border:rgba(245,158,11,0.3);--badge-text:#fbbf24;--select-bg:#292524;--select-border:#44403c;--select-focus:#f59e0b;--pill-bg:#292524;--pill-active-bg:#44403c;--pill-active-text:#f5f5f4;--focal-frame-bg:#faf7f0;--focal-frame-border:#27272a;}}
 *{box-sizing:border-box;margin:0;padding:0;}
 html,body{overflow-x:hidden;max-width:100vw;}
 body{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif;background-color:var(--bg-canvas);background-image:radial-gradient(ellipse at 50% 0%,rgba(180,83,9,0.03) 0%,transparent 60%),radial-gradient(ellipse at 50% 100%,rgba(146,64,14,0.04) 0%,transparent 60%);color:var(--text-primary);min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:0.4rem 0.5rem;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;}
@@ -83,13 +83,13 @@ h1{font-family:"EB Garamond",Garamond,Georgia,"Times New Roman",serif;font-size:
 .paper-toggle-btn.active{background:var(--pill-active-bg);color:var(--pill-active-text);font-weight:600;box-shadow:0 1px 4px rgba(0,0,0,0.08);}
 .paper-sub{font-size:0.72rem;opacity:0.75;font-weight:400;}
 .focal-viewer{margin:0.5rem auto 1.5rem auto;max-width:520px;width:100%;display:flex;flex-direction:column;align-items:center;}
-.focal-plate-frame{width:100%;height:330px;background:var(--focal-frame-bg);border:1px solid var(--focal-frame-border);border-radius:16px;overflow:hidden;position:relative;cursor:zoom-in;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px -2px rgba(0,0,0,0.08);transition:transform 0.2s ease,box-shadow 0.2s ease,border-color 0.2s ease;}
+.focal-plate-frame{width:100%;min-height:330px;height:auto;background:var(--focal-frame-bg);color:#1c1917;border:1px solid var(--focal-frame-border);border-radius:16px;overflow:hidden;position:relative;cursor:zoom-in;display:flex;flex-direction:column;align-items:center;justify-content:space-between;box-shadow:0 4px 20px -2px rgba(0,0,0,0.08);transition:transform 0.2s ease,box-shadow 0.2s ease,border-color 0.2s ease;}
 .focal-plate-frame:hover{transform:translateY(-2px);box-shadow:0 12px 28px -4px rgba(28,25,23,0.12);border-color:rgba(28,25,23,0.25);}
-.focal-plate-frame img{width:100%;height:100%;object-fit:contain;display:block;user-select:none;-webkit-user-drag:none;}
-.focal-plate-overlay{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(to top,rgba(28,25,23,0.88) 0%,rgba(28,25,23,0.55) 65%,transparent 100%);color:#ffffff;padding:1.25rem 1rem 0.65rem 1rem;display:flex;justify-content:space-between;align-items:flex-end;gap:0.75rem;text-align:left;}
+.focal-plate-frame img{width:100%;max-height:290px;object-fit:contain;display:block;user-select:none;-webkit-user-drag:none;padding:0.35rem 0.35rem 0 0.35rem;}
+.focal-plate-overlay{position:static;width:100%;background:var(--focal-frame-bg);color:#1c1917;border-top:1px solid var(--focal-frame-border);padding:0.55rem 0.9rem;display:flex;justify-content:space-between;align-items:center;gap:0.75rem;text-align:left;}
 [dir="rtl"] .focal-plate-overlay{text-align:right;}
-.focal-plate-verse{font-family:"EB Garamond",Garamond,Georgia,serif;font-size:0.96rem;font-style:italic;line-height:1.35;text-shadow:0 1px 2px rgba(0,0,0,0.6);flex:1;}
-.focal-plate-zoom-hint{font-size:0.72rem;opacity:0.9;white-space:nowrap;font-family:system-ui,sans-serif;font-style:normal;}
+.focal-plate-verse{font-family:"EB Garamond",Garamond,Georgia,serif;font-size:0.96rem;font-style:italic;line-height:1.35;color:#1c1917;text-shadow:none;flex:1;}
+.focal-plate-zoom-hint{font-size:0.72rem;color:#4a4036;white-space:nowrap;font-family:system-ui,sans-serif;font-style:normal;}
 .focal-controls{display:flex;align-items:center;justify-content:center;gap:1rem;margin-top:0.85rem;width:100%;}
 .focal-btn{background:var(--accent-secondary-bg);border:1px solid var(--accent-secondary-border);color:var(--text-primary);width:48px;height:48px;min-width:48px;min-height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.15s ease;touch-action:manipulation;-webkit-tap-highlight-color:transparent;user-select:none;}
 .focal-btn:hover{background:var(--accent-secondary-hover);transform:scale(1.05);}
@@ -169,11 +169,11 @@ dialog::backdrop{background:rgba(0,0,0,0.65);backdrop-filter:blur(4px);}
 .toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
 .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;}
 .apple-sheet{margin-top:0.75rem;padding:1rem;border-radius:14px;border:1px solid var(--card-border);background:var(--accent-secondary-bg);}
-.mostrador-dose-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0.4rem;margin:0.55rem 0;}
-.dose-card{display:flex;flex-direction:column;justify-content:space-between;gap:0.25rem;padding:0.45rem 0.5rem;border-radius:10px;border:1px solid var(--card-border);background:var(--accent-secondary-bg);text-align:left;}
-.dose-card-meta{display:none;}
-@media (min-width: 640px){.mostrador-dose-grid{gap:0.65rem;}.dose-card{padding:0.75rem;}.dose-card-meta{display:block;}}
-.dose-card-cta{min-height:48px;width:100%;justify-content:center;text-align:center;padding:0.4rem 0.45rem;font-size:0.8rem;line-height:1.15;}
+.mostrador-dose-grid{display:grid;grid-template-columns:1fr;gap:0.45rem;margin:0.55rem 0;}
+.dose-card{display:flex;flex-direction:column;justify-content:space-between;gap:0.35rem;padding:0.55rem 0.65rem;border-radius:10px;border:1px solid var(--card-border);background:var(--accent-secondary-bg);text-align:left;}
+.dose-card-meta{display:block;}
+@media (min-width: 560px){.mostrador-dose-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:0.65rem;}.dose-card{padding:0.75rem;}}
+.dose-card-cta{min-height:48px;width:100%;justify-content:center;text-align:center;padding:0.4rem 0.65rem;font-size:0.84rem;line-height:1.2;}
 .mostrador-pericope-block{margin:0 0 0.75rem 0;text-align:justify;hyphens:none;}
 .mostrador-pericope-block[data-break-kind="setumah"]{text-indent:1.1em;}
 .mostrador-verse{cursor:pointer;border-radius:4px;padding:0.05rem 0.12rem;transition:background-color 0.15s ease;}
@@ -196,13 +196,13 @@ body:has(#bibleVerseViewport[data-inspector-open="true"]) #bibleSovereignSection
 body:has(#bibleVerseViewport[data-inspector-open="true"]) #bibleSpatialNav{margin-bottom:0.1rem !important;}
 body:has(#bibleVerseViewport[data-inspector-open="true"]) #bibleProgressiveSheetDoors{gap:0.15rem !important;margin-top:0 !important;}
 body:has(#bibleVerseViewport[data-inspector-open="true"]) .apple-sheet{margin-top:0.15rem !important;}
-body:has(#bibleVerseViewport[data-inspector-open="true"]) #stage-action,body:has(#bibleVerseViewport[data-inspector-open="true"]) #bibleOrthographyPills,body:has(#bibleVerseViewport[data-inspector-open="true"]) .language-region-pill-group,body:has(#bibleVerseViewport[data-inspector-open="true"]) #bibleSovereignSection>div:first-child{display:none !important;}
+body:has(#bibleVerseViewport[data-inspector-open="true"]) #bibleOrthographyPills,body:has(#bibleVerseViewport[data-inspector-open="true"]) .language-region-pill-group,body:has(#bibleVerseViewport[data-inspector-open="true"]) #bibleSovereignSection>div:first-child{display:none !important;}
 #bibleSovereignSection:has(#bibleVerseViewport[data-inspector-open="true"]) #bibleOralPorticoBanner:not([hidden]){display:flex !important;align-items:center;justify-content:space-between;gap:0.35rem;max-height:36px !important;overflow:hidden !important;padding:2px 8px !important;margin-bottom:0.2rem !important;font-size:0.75rem !important;white-space:nowrap !important;}
 #bibleSovereignSection:has(#bibleVerseViewport[data-inspector-open="true"]) #bibleOralPorticoBanner .hig-tech-meta,#bibleSovereignSection:has(#bibleVerseViewport[data-inspector-open="true"]) #bibleOralPorticoBanner .oral-portico-secondary{display:none !important;}
 .hig-tech-receipt-details{font-size:0.76rem;color:var(--text-secondary);margin-top:0.25rem;}
 header,section,main,nav,.apple-sheet,pre,code{width:100%;min-width:0;max-width:100%;overflow-x:clip;word-break:break-word;}
 pre,code{overflow-x:auto;white-space:pre-wrap;}
-.bible-chapter-dropcap{float:left;font-size:2.15em;line-height:0.88;font-weight:700;padding-right:0.22rem;color:var(--accent-amber);}
+.bible-chapter-dropcap{font-size:1.25em;line-height:1;font-weight:700;padding-right:0.18rem;color:var(--accent-amber);vertical-align:baseline;}
 .mostrador-diptych-row{display:grid;grid-template-columns:58fr 42fr;gap:0.65rem;padding:0.35rem 0;border-bottom:1px dashed var(--card-border);align-items:baseline;}
 button,select,.uls-chip,.uls-trigger-btn,summary{min-height:48px;min-width:48px;}
 input[type="range"],input[type="checkbox"]{min-height:48px;min-width:48px;color:var(--text-primary);background-color:var(--card-bg);accent-color:var(--accent-primary);}
@@ -223,7 +223,7 @@ summary{display:inline-flex;align-items:center;background-color:var(--card-bg, #
             <nav id="sovereignWorkTabs" role="tablist" aria-label="Editorial Works" style="display: flex; flex-wrap: wrap; gap: 0.35rem;">
                 <button type="button" id="tabWorkBiblia" class="uls-chip" role="tab" aria-selected="true" aria-controls="bibleSovereignSection" data-work-tab="biblia" data-i18n="mostrador.tab.bible" style="font-weight: 700; border-width: 2px; padding: 0.3rem 0.65rem;">📖 Bible (66)</button>
                 <button type="button" id="tabWorkFelices" class="uls-chip" role="tab" aria-selected="false" aria-controls="felicesSovereignSection" data-work-tab="felices" data-i18n="mostrador.tab.felices" style="padding: 0.3rem 0.65rem;">🎨 Beatitudes</button>
-                <button type="button" id="tabWorkEvangelios" class="uls-chip" role="tab" aria-selected="false" aria-controls="evangeliosSovereignSection" data-work-tab="evangelios" data-work-i18n="evangelios" style="padding: 0.3rem 0.65rem;">🌅 The Gospels (52)</button>
+                <button type="button" id="tabWorkEvangelios" class="uls-chip" role="tab" aria-selected="false" aria-controls="evangeliosSovereignSection" data-work-tab="evangelios" data-work-i18n="evangelios" data-i18n="mostrador.tab.evangelios" style="padding: 0.3rem 0.65rem;">🌅 The Gospels (52)</button>
             </nav>
             <div class="language-wrapper language-region-pill-group" role="group" aria-label="Language and Bible Edition" style="margin: 0; display: inline-flex; flex-wrap: wrap; align-items: center; gap: 0.35rem; padding: 0; background: transparent; border: none;">
                 <button type="button" class="uls-chip" id="sovereignCorpusLangBtn" aria-expanded="false" aria-controls="bibleLanguageAndRegisterDrawer" style="padding: 0.3rem 0.65rem;">
@@ -260,13 +260,23 @@ summary{display:inline-flex;align-items:center;background-color:var(--card-bg, #
         <details class="advanced-editorial-drawer" id="bibleLanguageAndRegisterDrawer" style="margin-top: 0.25rem;">
             <summary hidden aria-hidden="true" data-i18n="mostrador.step1.title" style="display: none; cursor: pointer; font-size: 0.85rem; font-weight: 600; background-color: var(--card-bg, #ffffff); color: var(--text-primary, #141210);">1. Choose Bible language (7,164 languages), reading mode or life trail</summary>
             <div style="margin-top: 0.65rem; display: flex; flex-direction: column; gap: 0.65rem;">
-                <div id="bibleVerifiedCorpusPills" role="group" aria-label="6 Complete Verified Bibles" style="display: flex; flex-wrap: wrap; gap: 0.35rem;">
+                <div id="bibleVerifiedCorpusPills" role="group" aria-label="16 Complete Verified Bibles" style="display: flex; flex-wrap: wrap; gap: 0.35rem;">
                     <button type="button" id="quickLangEs" class="uls-chip" data-corpus-lang="es">🇲🇽 Español Siglo XXI (66)</button>
                     <button type="button" id="quickLangEs1909" class="uls-chip" data-corpus-lang="es-1909">📜 Español Clásica 1909 (66)</button>
                     <button type="button" id="quickLangEn" class="uls-chip" data-corpus-lang="en">🇺🇸 English KJV (66)</button>
+                    <button type="button" id="quickLangPt" class="uls-chip" data-corpus-lang="pt">🇧🇷 Português (66)</button>
+                    <button type="button" id="quickLangFr" class="uls-chip" data-corpus-lang="fr">🇫🇷 Français (66)</button>
                     <button type="button" id="quickLangStp" class="uls-chip" data-corpus-lang="stp">🏔️ O'dam Tepehuano (66)</button>
                     <button type="button" id="quickLangHe" class="uls-chip" data-corpus-lang="he">🕎 עברית WLC+Delitzsch (66)</button>
                     <button type="button" id="quickLangGrc" class="uls-chip" data-corpus-lang="grc">🏛️ Ἑλληνική LXX+SRGNT (66)</button>
+                    <button type="button" id="quickLangAr" class="uls-chip" data-corpus-lang="ar">🇸🇦 العربية (66)</button>
+                    <button type="button" id="quickLangFa" class="uls-chip" data-corpus-lang="fa">🇮🇷 فارسی (66)</button>
+                    <button type="button" id="quickLangUr" class="uls-chip" data-corpus-lang="ur">🇵🇰 اردو (66)</button>
+                    <button type="button" id="quickLangHi" class="uls-chip" data-corpus-lang="hi">🇮🇳 हिन्दी (66)</button>
+                    <button type="button" id="quickLangBn" class="uls-chip" data-corpus-lang="bn">🇧🇩 বাংলা (66)</button>
+                    <button type="button" id="quickLangId" class="uls-chip" data-corpus-lang="id">🇮🇩 Bahasa Indonesia (66)</button>
+                    <button type="button" id="quickLangRu" class="uls-chip" data-corpus-lang="ru">🇷🇺 Русский (66)</button>
+                    <button type="button" id="quickLangZhHans" class="uls-chip" data-corpus-lang="zh-Hans">🇨🇳 简体中文 (66)</button>
                 </div>
                 <div style="display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center;">
                     <input type="search" id="quickLangFilterInput" placeholder="Search 7,164 languages (ISO, autonym, country)..." style="flex: 1; min-width: 180px; min-height: 48px; padding: 0.4rem 0.7rem; border-radius: 10px; border: 1px solid var(--select-border); background: var(--select-bg); color: var(--text-primary);">
@@ -297,17 +307,22 @@ summary{display:inline-flex;align-items:center;background-color:var(--card-bg, #
                         <option value="es" selected>Español Siglo XXI (es)</option>
                         <option value="es-1909">Español Clásica 1909 (es-1909)</option>
                         <option value="en">English KJV (en)</option>
+                        <option value="pt">Português (pt)</option>
+                        <option value="fr">Français (fr)</option>
                         <option value="stp">O'dam · Tepehuano del Sur (stp · Draft)</option>
                         <option value="he">עברית (he · WLC + Delitzsch)</option>
                         <option value="grc">Ἑλληνική (grc · LXX + SRGNT)</option>
+                        <option value="ar">العربية (ar)</option>
+                        <option value="fa">فارسی (fa)</option>
+                        <option value="ur">اردو (ur)</option>
+                        <option value="hi">हिन्दी (hi)</option>
+                        <option value="bn">বাংলা (bn)</option>
                         <option value="bn-BD">বাংলা — বাংলাদেশ (bn-BD · ঈসা মসীহ)</option>
                         <option value="bn-IN">বাংলা — ভারত/প্রচলিত (bn-IN · প্রভু যীশু)</option>
-                        <option value="ar">العربية (ar)</option>
-                        <option value="ja">日本語 (ja)</option>
-                        <option value="hi">हिन्दी (hi)</option>
+                        <option value="id">Bahasa Indonesia (id)</option>
+                        <option value="ru">Русский (ru)</option>
                         <option value="zh-Hans">简体中文 (zh-Hans)</option>
-                        <option value="pt">Português (pt)</option>
-                        <option value="fr">Français (fr)</option>
+                        <option value="ja">日本語 (ja)</option>
                         <option value="quc">K'iche' (quc)</option>
                         <option value="aud">Au'dam (aud · Draft)</option>
                         <option value="kgv">Kalamang (kgv · Draft)</option>
@@ -525,7 +540,7 @@ summary{display:inline-flex;align-items:center;background-color:var(--card-bg, #
         <div style="display:flex;flex-wrap:nowrap;align-items:center;justify-content:space-between;gap:0.25rem;margin-bottom:0.25rem;">
             <h2 id="evangeliosMainHeading" style="font-size:0.88rem;line-height:1.15;margin:0;">🌅 Los Evangelios · 52 Láminas</h2>
             <div style="display:flex;flex-wrap:nowrap;align-items:center;gap:0.25rem;">
-                <select id="evangeliosLangSelect" aria-label="Idioma de Los Evangelios" hidden style="display:none;min-height:48px;padding:0.2rem 0.45rem;border-radius:10px;border:1px solid var(--select-border);background:var(--select-bg);color:var(--text-primary);font-size:0.78rem;">
+                <select id="evangeliosLangSelect" aria-label="Idioma de Los Evangelios" style="min-height:48px;padding:0.2rem 0.45rem;border-radius:10px;border:1px solid var(--select-border);background:var(--select-bg);color:var(--text-primary);font-size:0.78rem;">
                     <option value="es" selected>🇲🇽 Español (es)</option>
                     <option value="en">🇺🇸 English (en)</option>
                     <option value="pt">🇧🇷 Português (pt)</option>
@@ -566,14 +581,14 @@ summary{display:inline-flex;align-items:center;background-color:var(--card-bg, #
             <div id="leipzig14ColStratumAction" style="margin-bottom: 0.6rem;"></div>
             <div id="philologyRosettaStaticHost" class="rosetta-static-slot" style="margin-bottom: 0.6rem;">
                 <select id="rosettaFilterCategorySelect" aria-label="Philology Rosetta Category" style="min-height:48px;padding:0.3rem 0.55rem;border-radius:8px;border:1px solid var(--select-border);background:var(--select-bg);color:var(--text-primary);font-size:0.78rem;margin-bottom:0.4rem;">
-                    <option value="all" selected>All Rosetta Sub-Corpora &amp; 5 Alignment Classes</option>
+                    <option value="all" selected data-i18n="rosetta.filter.all">All 5 alignment classes (4,036 tokens)</option>
                     <option value="roots">1. Semitic Consonantal Roots</option>
                     <option value="cognates">2. LXX ↔ MT Cognate Bridge</option>
-                    <option value="ketiv_qere">3. Masoretic Ketiv / Qere Notes</option>
-                    <option value="versification">4. Versification Parallels (ENG ↔ ORG)</option>
-                    <option value="tr_supplement">5. Textus Receptus Supplements</option>
-                    <option value="surface_variant">6. Surface Textual Variants</option>
-                    <option value="unmatched">7. Unaligned Grammatical Tokens</option>
+                    <option value="ketiv_qere" data-i18n="rosetta.filter.ketiv">Ketiv/Qere Masoretic (1,318)</option>
+                    <option value="versification" data-i18n="rosetta.filter.versification">ENG/ORG Versification (1,842)</option>
+                    <option value="tr_supplement" data-i18n="rosetta.filter.tr">Byzantine / TR Supplement (512)</option>
+                    <option value="surface_variant" data-i18n="rosetta.filter.variant">Surface Variant (284)</option>
+                    <option value="unmatched" data-i18n="rosetta.filter.unmatched">Unmatched Audit (80)</option>
                     <option value="divergence">8. Bicanonical Divergence Rules</option>
                 </select>
                 <input type="search" id="rosettaSearchInput" aria-label="Search Strong ID, Consonantal Root, LXX-MT Cognate, or Bicanonical Verse" placeholder="Search H7225, G3056, GEN.31.55..." style="min-height:48px;width:100%;padding:0.4rem 0.65rem;border-radius:8px;border:1px solid var(--select-border);background:var(--select-bg);color:var(--text-primary);margin-bottom:0.4rem;">
@@ -582,6 +597,7 @@ summary{display:inline-flex;align-items:center;background-color:var(--card-bg, #
             <div id="nsm65StratumCard" style="margin-bottom: 0.5rem;"></div>
             <div id="realiaMetrologyStratumCard" style="margin-bottom: 0.5rem; font-size: 0.88rem;"></div>
             <div id="tskCrossRefsStratumCard" style="margin-bottom: 0.5rem; display: flex; flex-wrap: wrap; gap: 0.35rem;"></div>
+            <div id="wfstAndScriptioContinuaHost" style="margin-bottom: 0.5rem; font-size: 0.82rem;"></div>
             <details id="diachronicSubstitutionsDetails" class="diachronic-substitutions-details" style="margin-top: 0.45rem;">
                 <summary id="diachronicSubstitutionsSummary" style="cursor:pointer;font-size:0.78rem;color:var(--text-secondary);">View 1909 → 21st Century substitutions in this chapter</summary>
                 <div id="diachronicRegisterAuditPanel" style="margin-top:0.35rem;font-size:0.82rem;"></div>
@@ -591,6 +607,11 @@ summary{display:inline-flex;align-items:center;background-color:var(--card-bg, #
         <!-- Drawer 2: Print Settings & 14 Canonical PDF Editions -->
         <section id="biblePrintEditionsSheet" class="apple-sheet" data-sheet="print" hidden>
             <h3 style="font-size: 1rem; margin-bottom: 0.5rem;" data-i18n="mostrador.door.print">🖨️ 2. Print &amp; 14 PDF Editions</h3>
+            <nav id="printDosisHarelSubtabsBar" role="tablist" aria-label="Print and Editions Subtabs" style="display:flex;flex-wrap:wrap;gap:0.35rem;margin-bottom:0.6rem;">
+                <button type="button" id="btnPrintSubtabDoses" class="uls-chip" role="tab" data-print-subtab-btn="doses" data-i18n="print.subtab.doses" aria-selected="true" aria-pressed="true">📄 1. Doses &amp; 14 Editions</button>
+                <button type="button" id="btnPrintSubtabImposition" class="uls-chip" role="tab" data-print-subtab-btn="imposition" data-i18n="print.subtab.imposition" aria-selected="false" aria-pressed="false">🖨️ 2. Imposition &amp; Duplex</button>
+                <button type="button" id="btnPrintSubtabStationery" class="uls-chip" role="tab" data-print-subtab-btn="stationery" data-i18n="print.subtab.stationery" aria-selected="false" aria-pressed="false">🎨 3. Stationery, Photocopy &amp; Social Card</button>
+            </nav>
             <!-- Post-Fixation 1-Row Tri-Column Paper Dispenser (Dose 1, Dose 2, Dose 3 · D5-R38) -->
             <div id="mostradorDoseCards" class="mostrador-dose-grid" data-print-subtab-panel="doses" aria-label="Choose printable dose" style="margin-bottom: 0.7rem;">
                 <div class="dose-card" data-dose="1">
@@ -615,8 +636,8 @@ summary{display:inline-flex;align-items:center;background-color:var(--card-bg, #
                     <a id="linkDose3FullBiblePdf" href="data/full/es/2col-a4.pdf" download="ekovoz-biblia-es.pdf" class="btn-modal-secondary dose-card-cta" style="text-decoration: none; display: inline-flex; align-items: center;" data-i18n="dose.3.cta">📚 Full Bible</a>
                 </div>
             </div>
-            <div id="bibleEditionsCatalogGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 0.65rem; margin-bottom: 0.85rem;"></div>
-            <div id="bibleKindleConfigurator" aria-label="Paper and Sheet Count Settings" style="display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem; font-size: 0.85rem;">
+            <div id="bibleEditionsCatalogGrid" data-print-subtab-panel="doses" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 0.65rem; margin-bottom: 0.85rem;"></div>
+            <div id="bibleKindleConfigurator" data-print-subtab-panel="imposition" aria-label="Paper and Sheet Count Settings" style="display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem; font-size: 0.85rem;">
                 <label><span id="kindleFontSizeLabel">Font size (pt):</span> <input type="range" id="kindleFontSizeSlider" min="7.2" max="16" step="0.3" value="9.5"></label>
                 <select id="kindleColumnSelector" aria-label="Print Columns">
                     <option value="1">1 Column (Portrait / Pulpit)</option>
@@ -638,7 +659,7 @@ summary{display:inline-flex;align-items:center;background-color:var(--card-bg, #
                 <label><input type="checkbox" id="kindleDuplexToggle" checked> <span data-i18n="dose.1.duplex_label">Double-sided printing (duplex)</span></label>
                 <output id="kindleBudgetOutput" style="font-weight: 600;">9.5pt · 2 col · Landscape · A4 (58 cpl)</output>
             </div>
-            <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; margin-bottom: 0.85rem;">
+            <div data-print-subtab-panel="imposition" style="display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; margin-bottom: 0.85rem;">
                 <button type="button" id="btnSimulatePhotocopy3Gen" class="uls-chip">🔬 Test Photocopy Legibility (3rd Gen)</button>
                 <button type="button" id="btnCalculateImposition" class="uls-chip" data-print-tool="imposition">📐 Calculate Booklet Folding</button>
                 <button type="button" id="btnCalculateLayout" class="uls-chip" data-print-tool="layout">📏 Check Page Margins (A4 / Letter)</button>
@@ -647,19 +668,19 @@ summary{display:inline-flex;align-items:center;background-color:var(--card-bg, #
                     <span id="biblePhotocopySimBadge" class="uls-badge" data-euler-delta="0" data-min-stroke-pt="0.75">Sauvola R=128 · ≥0.75 pt · Δχ=0</span>
                 </details>
             </div>
-            <div id="impositionBookletPreviewHost" style="margin-bottom: 0.65rem; font-size: 0.82rem;"></div>
-            <div id="duplexAssistantPanel" style="margin-bottom: 0.75rem; font-size: 0.85rem;"></div>
-            <div id="bibleBranchAndTypologyPanel" style="margin-bottom: 0.75rem; font-size: 0.85rem;"></div>
-            <div id="editorialGraphicsPhotocopyHost" style="margin-bottom: 0.75rem; font-size: 0.85rem;"></div>
-            <div id="stationeryCardPanel" style="margin-bottom: 0.75rem; font-size: 0.85rem;"></div>
+            <div id="impositionBookletPreviewHost" data-print-subtab-panel="imposition" style="margin-bottom: 0.65rem; font-size: 0.82rem;"></div>
+            <div id="duplexAssistantPanel" data-print-subtab-panel="imposition" style="margin-bottom: 0.75rem; font-size: 0.85rem;"></div>
+            <div id="bibleBranchAndTypologyPanel" data-print-subtab-panel="stationery" style="margin-bottom: 0.75rem; font-size: 0.85rem;"></div>
+            <div id="editorialGraphicsPhotocopyHost" data-print-subtab-panel="stationery" style="margin-bottom: 0.75rem; font-size: 0.85rem;"></div>
+            <div id="stationeryCardPanel" data-print-subtab-panel="stationery" style="margin-bottom: 0.75rem; font-size: 0.85rem;"></div>
         </section>
 
         <!-- Drawer 3: Community Review & Patch Workshop (Lazy-loaded via mejorar.js) -->
         <section id="bibleFieldWorkshopSheet" class="apple-sheet" data-sheet="field" hidden>
             <nav id="workshopHarelSubtabsBar" role="tablist" aria-label="Field Workshop Subtabs" style="display:flex;flex-wrap:wrap;gap:0.35rem;margin-bottom:0.6rem;">
-                <button type="button" id="btnWorkshopSubtabPatch" class="uls-chip" role="tab" data-workshop-subtab-btn="patch" aria-selected="true" aria-pressed="true">✏️ 1. Patch &amp; O'dam Lexicon</button>
-                <button type="button" id="btnWorkshopSubtabLadder" class="uls-chip" role="tab" data-workshop-subtab-btn="ladder" aria-selected="false" aria-pressed="false">🪜 2. 250-Verse Cascade</button>
-                <button type="button" id="btnWorkshopSubtabAudit" class="uls-chip" role="tab" data-workshop-subtab-btn="audit" aria-selected="false" aria-pressed="false">🛡️ 3. History, Census 7,164 &amp; CC0</button>
+                <button type="button" id="btnWorkshopSubtabPatch" class="uls-chip" role="tab" data-workshop-subtab-btn="patch" data-i18n="workshop.subtab.patch" aria-selected="true" aria-pressed="true">✏️ 1. Patch &amp; O'dam Lexicon</button>
+                <button type="button" id="btnWorkshopSubtabLadder" class="uls-chip" role="tab" data-workshop-subtab-btn="ladder" data-i18n="workshop.subtab.ladder" aria-selected="false" aria-pressed="false">🪜 2. 250-Verse Cascade</button>
+                <button type="button" id="btnWorkshopSubtabAudit" class="uls-chip" role="tab" data-workshop-subtab-btn="audit" data-i18n="workshop.subtab.audit" aria-selected="false" aria-pressed="false">🛡️ 3. History, Census 7,164 &amp; CC0</button>
             </nav>
             <div id="socraticElicitorContainer" data-workshop-subtab-panel="patch" style="margin-bottom: 0.75rem;"></div>
             <div id="stpLexiconExplorerHost" data-workshop-subtab-panel="patch" style="margin-bottom: 0.75rem;">
@@ -679,9 +700,9 @@ summary{display:inline-flex;align-items:center;background-color:var(--card-bg, #
         <section id="bibleShareAndAuditSheet" class="apple-sheet" data-sheet="share" hidden>
             <h3 style="font-size: 1rem; margin-bottom: 0.5rem;" data-i18n="mostrador.door.share">📲 4. Share Offline &amp; QR</h3>
             <nav id="dosisHarelSubtabsBar" role="tablist" aria-label="Offline and Optical Sharing Subtabs" style="display:flex;flex-wrap:wrap;gap:0.35rem;margin-bottom:0.6rem;">
-                <button type="button" id="btnDosisSubtabMesh" class="uls-chip" role="tab" data-dosis-subtab-btn="mesh" aria-selected="true" aria-pressed="true">📦 1. Offline Packs &amp; Quine</button>
-                <button type="button" id="btnDosisSubtabPdf" class="uls-chip" role="tab" data-dosis-subtab-btn="pdf" aria-selected="false" aria-pressed="false">📡 2. Screen-to-Camera QR Stream</button>
-                <button type="button" id="btnDosisSubtabGraphics" class="uls-chip" role="tab" data-dosis-subtab-btn="graphics" aria-selected="false" aria-pressed="false">🔐 3. Authenticity &amp; Signature Verification</button>
+                <button type="button" id="btnDosisSubtabMesh" class="uls-chip" role="tab" data-dosis-subtab-btn="mesh" data-i18n="share.subtab.mesh" aria-selected="true" aria-pressed="true">📦 1. Offline Packs &amp; Quine</button>
+                <button type="button" id="btnDosisSubtabPdf" class="uls-chip" role="tab" data-dosis-subtab-btn="pdf" data-i18n="share.subtab.pdf" aria-selected="false" aria-pressed="false">📡 2. Screen-to-Camera QR Stream</button>
+                <button type="button" id="btnDosisSubtabGraphics" class="uls-chip" role="tab" data-dosis-subtab-btn="graphics" data-i18n="share.subtab.graphics" aria-selected="false" aria-pressed="false">🔐 3. Authenticity &amp; Signature Verification</button>
             </nav>
             <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.75rem;">
                 <button type="button" id="btnShareQuine" class="btn-modal-action" data-dosis-subtab-panel="mesh" data-i18n="mostrador.offline.save_cta">Save active language for offline use</button>
@@ -698,7 +719,7 @@ summary{display:inline-flex;align-items:center;background-color:var(--card-bg, #
             <div id="offlinePacksCatalogPanel" data-dosis-subtab-panel="mesh" style="margin-bottom: 0.75rem;"></div>
             <div id="bibleOpticalQrStreamPanel" data-dosis-subtab-panel="pdf" hidden style="margin-bottom: 0.75rem;"></div>
             <div id="opticalReceiverRxPanel" data-dosis-subtab-panel="pdf" hidden style="margin-bottom: 0.75rem;"></div>
-            <div id="editorialAuditStatusPanel" data-dosis-subtab-panel="graphics" hidden style="font-size: 0.82rem; color: var(--text-secondary);"></div>
+            <div id="editorialAuditStatusPanel" hidden style="font-size: 0.82rem; color: var(--text-secondary);"></div>
         </section>
     </section>
 
@@ -737,27 +758,6 @@ summary{display:inline-flex;align-items:center;background-color:var(--card-bg, #
 
     <div id="toastNotification" class="toast" role="status" aria-live="polite"></div>
 
-    <script>
-    (function(){
-      try {
-        var EPOCH = "ekovoz-r39c";
-        if (typeof localStorage !== "undefined" && localStorage.getItem("ekovoz_epoch") !== EPOCH) {
-          localStorage.setItem("ekovoz_epoch", EPOCH);
-          var hadSw = typeof navigator !== "undefined" && navigator.serviceWorker && navigator.serviceWorker.controller;
-          var p = [];
-          if (typeof caches !== "undefined" && caches.keys) {
-            p.push(caches.keys().then(function(ks){ return Promise.all(ks.map(function(k){ return caches.delete(k); })); }));
-          }
-          if (typeof navigator !== "undefined" && navigator.serviceWorker && navigator.serviceWorker.getRegistrations) {
-            p.push(navigator.serviceWorker.getRegistrations().then(function(rs){ return Promise.all(rs.map(function(r){ return r.unregister(); })); }));
-          }
-          if (hadSw && p.length) {
-            Promise.all(p).then(function(){ location.reload(); }).catch(function(){});
-          }
-        }
-      } catch (e) {}
-    })();
-    </script>
     <script type="module" src="mostrador.js"></script>
 </body>
 </html>

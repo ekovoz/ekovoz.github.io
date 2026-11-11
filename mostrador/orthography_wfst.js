@@ -25,8 +25,8 @@ export function resolveOrthoFamilyKey(lang = "") {
   if (STP_FAMILY_LANGS.has(raw) || STP_FAMILY_LANGS.has(base)) return "stp";
   if (base === "bn") return "bn";
   if (base === "arb" || base === "ar") return "arb";
-  if (base === "uzn" || base === "uz") return "uzn";
-  if (base === "tzm") return "tzm";
+  if (base === "uzn" || base === "uz" || base === "kk") return "uzn";
+  if (base === "tzm" || base === "ber" || base === "kab") return "tzm";
   return null;
 }
 
@@ -616,7 +616,7 @@ export function segmentScriptioContinuaSyllables(text, scriptIso15924 = "Hans") 
 }
 
 /**
- * Renderiza el Inspector de Transducción Ortográfica WFST + Préstamos Protegidos + Mapa Inverso a Strong + 7 Escrituras Scriptio Continua (`D3-R39`).
+ * Renderiza el Inspector de Transducción Ortográfica WFST + Préstamos Protegidos + Mapa Inverso a Strong + 7 Escrituras Scriptio Continua (`D3-R39` / `D3-R40`).
  */
 export function renderWfstAndScriptioContinuaInspectorHtml({
   text = "",
@@ -624,16 +624,31 @@ export function renderWfstAndScriptioContinuaInspectorHtml({
   profileId = "inali",
   tokenStrongPairs = [],
   scriptIso15924 = null,
+  uiLocale = "es",
 } = {}) {
+  const isEn = String(uiLocale || "es").toLowerCase().startsWith("en");
   const familyKey = resolveOrthoFamilyKey(lang) || "stp";
+  const availableProfiles = listOrthographyProfilesForLang(familyKey);
+  const profileIds = availableProfiles.map((p) => (typeof p === "string" ? p : p.id));
   const resolvedProfileId = resolveCanonicalOrthoProfileId(familyKey, profileId);
-  const familyProfiles = CANONICAL_ORTHOGRAPHY_PROFILES[familyKey] || CANONICAL_ORTHOGRAPHY_PROFILES.stp || {};
+  const familyObj = CANONICAL_ORTHOGRAPHY_PROFILES[familyKey] || CANONICAL_ORTHOGRAPHY_PROFILES.stp || {};
+  const familyProfiles = familyObj.profiles || familyObj;
   const activeProfile = familyProfiles[resolvedProfileId] || Object.values(familyProfiles)[0] || {};
   const whitelist = Array.isArray(activeProfile.loanwordWhitelist) ? activeProfile.loanwordWhitelist : [];
   const transduced = transduceVerseWithReverseMap(text, familyKey, resolvedProfileId, tokenStrongPairs);
   const activeScript = scriptIso15924 || resolveScriptioContinuaCodeForLang(lang) || "Hans";
   const sampleScriptio = segmentScriptioContinuaSyllables(text || "太初有道，道与神同在", activeScript);
   const zwspCount = (sampleScriptio.match(/\u200B/g) || []).length;
+
+  const profileOptionsHtml = availableProfiles
+    .map((p) => {
+      const pid = typeof p === "string" ? p : p.id;
+      const pMeta = familyProfiles[pid] || {};
+      const plabel = (typeof p === "object" && p && p.label) || pMeta.label || pid;
+      const sel = pid === resolvedProfileId ? " selected" : "";
+      return `<option value="${pid}"${sel}>${plabel}</option>`;
+    })
+    .join("");
 
   const reversePairs = [];
   if (transduced.reverseMap && transduced.reverseMap.transducedToCanonical instanceof Map) {
@@ -653,7 +668,7 @@ export function renderWfstAndScriptioContinuaInspectorHtml({
             `<span class="uls-badge" data-canonical-token="${p.canonical}" data-reverse-strong-id="${p.strongId || ""}">${p.surface} ⇄ ${p.canonical}${p.strongId ? ` (${p.strongId})` : ""}</span>`
         )
         .join(" ")
-    : `<span style="font-size:0.74rem;color:var(--text-secondary);">100% biyectivo hacia base canónica (${resolvedProfileId})</span>`;
+    : `<span style="font-size:0.74rem;color:var(--text-secondary);">${isEn ? "100% bijective to canonical base" : "100% biyectivo hacia base canónica"} (${resolvedProfileId})</span>`;
 
   const whitelistHtml = whitelist
     .slice(0, 10)
@@ -669,18 +684,20 @@ export function renderWfstAndScriptioContinuaInspectorHtml({
     `<div id="wfstOrthographyAndScriptioInspector" class="wfst-orthography-inspector" ` +
     `data-ortho-family="${familyKey}" ` +
     `data-ortho-profile="${resolvedProfileId}" ` +
+    `data-available-profiles="${profileIds.join(",")}" ` +
     `data-protected-loanwords-count="${whitelist.length}" ` +
     `data-zwsp-boundaries="${zwspCount}" ` +
     `style="margin-top:0.35rem;padding:0.45rem 0.65rem;border-radius:8px;border:1px solid var(--card-border);background:var(--bg-secondary);font-size:0.76rem;display:flex;flex-direction:column;gap:0.3rem;">` +
     `<div style="display:flex;flex-wrap:wrap;justify-content:space-between;gap:0.35rem;align-items:center;">` +
-    `<strong>🔤 Transductor WFST (${activeProfile.label || resolvedProfileId}) · Mapa Inverso a Strong</strong>` +
-    `<span class="uls-badge">Préstamos protegidos: ${whitelist.length} · U+200B cortes: ${zwspCount}</span>` +
+    `<strong>🔤 ${isEn ? "WFST Transducer" : "Transductor WFST"} (${activeProfile.label || resolvedProfileId}) · ${isEn ? "Reverse Strong Map" : "Mapa Inverso a Strong"}</strong>` +
+    `<select id="wfstInspectorProfileSelect" aria-label="${isEn ? "WFST Orthography Profile" : "Perfil Ortográfico WFST"}" style="min-height:48px;min-width:48px;padding:0.3rem 0.55rem;border-radius:8px;border:1px solid var(--select-border);background:var(--select-bg);color:var(--text-primary);font-size:0.75rem;">${profileOptionsHtml}</select>` +
+    `<span class="uls-badge">${isEn ? "Protected loanwords" : "Préstamos protegidos"}: ${whitelist.length} · U+200B: ${zwspCount}</span>` +
     `</div>` +
-    `<div style="display:flex;flex-wrap:wrap;gap:0.25rem;align-items:center;"><strong>Mapeo inverso:</strong> ${reverseHtml}</div>` +
+    `<div style="display:flex;flex-wrap:wrap;gap:0.25rem;align-items:center;"><strong>${isEn ? "Reverse mapping:" : "Mapeo inverso:"}</strong> ${reverseHtml}</div>` +
     (whitelist.length > 0
-      ? `<div style="display:flex;flex-wrap:wrap;gap:0.25rem;align-items:center;"><strong>Préstamos teológicos intactos:</strong> ${whitelistHtml}</div>`
+      ? `<div style="display:flex;flex-wrap:wrap;gap:0.25rem;align-items:center;"><strong>${isEn ? "Protected loanwords:" : "Préstamos teológicos intactos:"}</strong> ${whitelistHtml}</div>`
       : "") +
-    `<div style="display:flex;flex-wrap:wrap;gap:0.25rem;align-items:center;"><strong>7 segmentadores Scriptio Continua (U+200B):</strong> ${scriptioBadges}</div>` +
+    `<div style="display:flex;flex-wrap:wrap;gap:0.25rem;align-items:center;"><strong>${isEn ? "7 Scriptio Continua segmenters (U+200B):" : "7 segmentadores Scriptio Continua (U+200B):"}</strong> ${scriptioBadges}</div>` +
     `</div>`
   );
 }

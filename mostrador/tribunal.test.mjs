@@ -1910,3 +1910,178 @@ test("R39_SLICE_127_to_132_split_brain_elimination_dark_mode_contrast_and_100pct
   assert.match(diaCardHtml, /id="diachronicTierFilterSelect"/);
   assert.match(diaCardHtml, /id="diachronicSubstitutionsResultsList"/);
 });
+
+test("R40 (D1-R40..D9-R40 / ARB-EKOVOZ-77 / DEB-R40-01..10): Full i18n template projection, dropcap on sup, viewport scroll, WFST inspector, IndexedDB vault, Harel print subtabs, 16 verified Bible corpora, and zero duplicate DOM IDs", async () => {
+  const estudioMod = await import("./estudio.js");
+  const evangeliosMod = await import("./evangelios.js");
+  const dosisMod = await import("./dosis.js");
+  const mejorarMod = await import("./mejorar.js");
+  const offlineMod = await import("./offline_mesh.js");
+  const diachronicMod = await import("./diachronic_register.js");
+  const orthoMod = await import("./orthography_wfst.js");
+  const hydratorsMod = await import("./drawer_hydrators.js");
+  const { renderEvangeliosStageCardHtml } = await import("./sister_works_controller.js");
+
+  // 1. D1-R40 & DEB-R40-06..08: Dynamic generators honor uiLocale="en" with zero Spanish literal leaks
+  const study14En = estudioMod.renderStudy14ColDrawerHtml(
+    {
+      book: "JHN",
+      chapter: 1,
+      rows: [
+        {
+          c01_ordinal_31102: 26046,
+          c02_ref: "JHN.1.1",
+          c03_source_corpus: "SRGNT",
+          c04_word_pos: 1,
+          c05_orig_text: "Ἐν",
+          c06_translit: "En",
+          c07_strong_id: "G1722",
+          c08_morph_code: "PREP",
+          c09_macula_role: "∅",
+          c10_clause_id: "C1",
+          c11_semantic_domain: "LN:89.5",
+          c12_gloss_es: "En",
+          c13_nsm_65: "NSM_65:EN+LUGAR",
+          c14_target_gloss: "In",
+        },
+      ],
+    },
+    { book: "JHN", chapter: 1, verse: 1, scope: "verse", uiLocale: "en" },
+  );
+  assert.match(study14En, /1 of 1 words/);
+  assert.match(study14En, /Current verse \(v\. 1\)/);
+  assert.match(study14En, /Full chapter \(1\)/);
+  assert.doesNotMatch(study14En, /de 1 palabras/);
+  assert.doesNotMatch(study14En, /Versículo actual/);
+
+  const rosettaEn = estudioMod.renderPhilologyRosettaExplorerHtml({
+    book: "JHN",
+    chapter: 1,
+    verse: 1,
+    uiLocale: "en",
+  });
+  assert.match(rosettaEn, /All Rosetta sub-corpora \+ 5 ResidualKinds/);
+  assert.doesNotMatch(rosettaEn, /Todos los sub-corpus Rosetta/);
+
+  const improveEn = mejorarMod.renderImproveDrawerHtml({
+    ref: "JHN.1.1",
+    lang: "stp",
+    locale: "en",
+    currentVerseText: "In the beginning",
+  });
+  assert.match(improveEn, /Lock 8 \(MACULA A0\/A1 \+ Jespersen\):/);
+  assert.doesNotMatch(improveEn, /Candado 8 \(MACULA A0\/A1 \+ Jespersen\):/);
+
+  const cascadeEn = mejorarMod.renderCascadeAndLadderHtml({
+    lang: "stp",
+    ref: "JHN.1.1",
+    uiLocale: "en",
+  });
+  assert.match(cascadeEn, /External 8-Lock Audit/);
+  assert.doesNotMatch(cascadeEn, /Auditoría Externa de 8 Candados/);
+
+  const edsEn = dosisMod.listCatalogEditionsForLang("es", "en");
+  assert.match(edsEn[0].label, /^1\. Continuous Reading/);
+  const pocketEn = dosisMod.renderMultiSignatureAndPocketRefugeHtml({
+    lang: "es",
+    totalPages: 48,
+    uiLocale: "en",
+  });
+  assert.match(pocketEn, /4n Multi-Signature Imposition/);
+  assert.doesNotMatch(pocketEn, /Imposición Multi-Pliego 4n/);
+
+  // 2. D2-R40 & DEB-R40-01: .bible-chapter-dropcap applied only on verse 1 <sup>, never on <p class="mostrador-verse">
+  const chapHtml = renderChapterPreviewHtml(
+    "JHN",
+    1,
+    "es",
+    {
+      verses: {
+        "1": "En el principio era el Verbo.",
+        "16": "Porque de su plenitud tomamos todos.",
+      },
+    },
+    null,
+    { selectedVerse: 16 },
+  );
+  assert.match(chapHtml, /<sup class="bible-v-sup mostrador-verse-num bible-chapter-dropcap">¹<\/sup>/);
+  assert.doesNotMatch(chapHtml, /class="mostrador-verse[^"]*bible-chapter-dropcap"/);
+  assert.match(chapHtml, /class="mostrador-verse bible-verse-line is-selected" data-verse="16"/);
+
+  // 3. D3-R40 & DEB-R40-02: Stage thermometer omits duplicate #diachronicSubstitutionsSearchInput IDs; WFST inspector exposes profile selector
+  const stageThermoEn = diachronicMod.renderAnalyticalThermometerHtml({
+    verses: { "1": "En el principio creó Dios los cielos y la tierra." },
+    bookCode: "GEN",
+    osisRef: "GEN.1.1",
+    includeInlineSubstitutionsDetails: false,
+    uiLocale: "en",
+  });
+  assert.doesNotMatch(stageThermoEn, /id="diachronicSubstitutionsSearchInput"/);
+  assert.doesNotMatch(stageThermoEn, /id="diachronicSubstitutionsDetails"/);
+  assert.match(stageThermoEn, /Intergenerational Thermometer/);
+
+  const wfstHtml = orthoMod.renderWfstAndScriptioContinuaInspectorHtml({
+    lang: "kk",
+    profileId: "CYRL",
+    sampleVerseText: "Әуелде Құдай аспан мен жерді жаратты.",
+    uiLocale: "en",
+  });
+  assert.match(wfstHtml, /id="wfstInspectorProfileSelect"/);
+  assert.match(wfstHtml, /data-ortho-family="uzn"/);
+  const bridgeMod = await import("./bridge_and_chapter.js");
+  assert.ok(bridgeMod.MULTI_ORTHO_LANGS.has("kk") && bridgeMod.MULTI_ORTHO_LANGS.has("ber"));
+
+  // 4. D4-R40 & DEB-R40-03..04: Offline Mesh IndexedDB controls + Gen 5 Bilateral photocopy badge
+  const ecoCardEn = offlineMod.renderOfflineMeshEcoCardHtml({
+    activeLang: "es",
+    activeVerseOrdinal: 0,
+    activeVerseRef: "GEN.1.1",
+    activeVerseText: "In the beginning God created the heavens and the earth.",
+    uiLocale: "en",
+  });
+  assert.match(ecoCardEn, /id="btnOfflineOptInSwDownload"/);
+  assert.match(ecoCardEn, /id="btnOfflineListIndexedDbPacks"/);
+  assert.match(ecoCardEn, /id="offlineIndexedDbVaultStatus"/);
+
+  const graphicsCardEn = hydratorsMod.renderEditorialGraphicsAndPrintSpecsCard({
+    lang: "es",
+    uiLocale: "en",
+  });
+  assert.match(graphicsCardEn, /data-fifth-gen-min-contrast="7\.8"/);
+  assert.match(graphicsCardEn, /Rural Photocopy Gen 5/);
+
+  // 5. D5-R40 & DEB-R40-09: Regional print defaults (paperForRegion + chooseEdition) & Harel print subtabs
+  const regionalDefaults = dosisMod.resolveRegionalPrintDefaults("en-US", {
+    threatClass: "S1_OPEN",
+    lang: "en",
+    uiLocale: "en",
+  });
+  assert.equal(regionalDefaults.paperFormat, "letter");
+  assert.ok(regionalDefaults.recommendedEdition && regionalDefaults.recommendedEdition.slug);
+  assert.deepEqual(hydratorsMod.HAREL_PRINT_SUBTABS, ["doses", "imposition", "stationery"]);
+
+  // 6. D6-R40, D7-R40 & DEB-R40-10: 16 verified Bible corpora in index.html, dark-mode --focal-frame-bg, and conditional Evangelios bridge
+  const indexHtml = fs.readFileSync(path.join(WEB_DIR, "index.html"), "utf8");
+  assert.match(indexHtml, /--focal-frame-bg:#faf7f0/);
+  assert.match(indexHtml, /id="wfstAndScriptioContinuaHost"/);
+  assert.match(indexHtml, /id="printDosisHarelSubtabsBar"/);
+  for (const code of ["es", "es-1909", "en", "pt", "fr", "stp", "he", "grc", "ar", "fa", "ur", "hi", "bn", "id", "ru", "zh-Hans"]) {
+    assert.match(indexHtml, new RegExp(`data-corpus-lang="${code}"`), `Missing verified pill for ${code}`);
+  }
+  const sampleEvEntry = {
+    id: "s01",
+    week: 1,
+    quarter: "T1",
+    reference: "JHN 1:1-18",
+    gesture: "Encender una vela al amanecer",
+    texts: {
+      es: { title: "El Verbo se hizo carne", text: "En el principio era el Verbo." },
+      en: { title: "The Word became flesh", text: "In the beginning was the Word." },
+      quc: { title: "Ri Tzij xux winaq", text: "Pa ri chapletajik k'o ri Tzij." },
+    },
+  };
+  const evMajorEs = renderEvangeliosStageCardHtml(sampleEvEntry, "es", "es");
+  assert.doesNotMatch(evMajorEs, /<em>Puente:<\/em>/, "DEB-R40-10: major language 'es' must not render redundant English bridge line");
+  const evMinorQuc = renderEvangeliosStageCardHtml(sampleEvEntry, "quc", "es");
+  assert.match(evMinorQuc, /<em>Puente:<\/em> En el principio era el Verbo\./, "DEB-R40-10: indigenous language 'quc' must render Spanish bridge line");
+});

@@ -670,7 +670,10 @@ export function renderAnalyticalThermometerHtml({
   verses = [],
   bookCode = "GEN",
   osisRef = "GEN.1.1",
+  includeInlineSubstitutionsDetails = true,
+  uiLocale = "es",
 } = {}) {
+  const isEn = String(uiLocale || "es").toLowerCase().startsWith("en");
   const textList = Array.isArray(verses)
     ? verses.map((v) => (typeof v === "string" ? v : String(v?.text || "")))
     : verses && typeof verses === "object"
@@ -693,6 +696,16 @@ export function renderAnalyticalThermometerHtml({
     .map(([a, m]) => `${a}→${m}`)
     .join(" · ");
 
+  const inlineDetailsHtml = includeInlineSubstitutionsDetails
+    ? `<details id="diachronicSubstitutionsDetails" class="diachronic-substitutions-details" style="width:100%;font-size:0.74rem;color:var(--text-secondary);">` +
+      `<summary style="cursor:pointer;">Ver sustituciones 1909 → Siglo XXI en este capítulo (Tier 1/2/3 · 66 vectores · ΔAoA=${summary.deltaAoaChapter}a · ΔMDD=${summary.deltaMddChapter})</summary>` +
+      `<div style="margin-top:0.25rem;">Léxico: ${tier1Sample} | Enclíticos: ${tier3Sample}</div>` +
+      `<div id="diachronicRegisterAuditPanel" style="margin-top:0.35rem;font-size:0.82rem;">` +
+      renderChapterDiachronicAuditCardHtml({ verses: textList, bookCode, chapter: Number(String(osisRef).split(".")[1]) || 1, uiLocale }) +
+      `</div>` +
+      `</details>`
+    : "";
+
   return (
     `<div class="mostrador-analytical-thermometer" ` +
     `data-osis-ref="${metrics.osisRef}" ` +
@@ -709,21 +722,15 @@ export function renderAnalyticalThermometerHtml({
     `data-total-verses-audited="${totalAudited}" ` +
     `style="padding:0.45rem 0.65rem;border-radius:8px;border:1px solid var(--card-border);background:var(--bg-secondary);display:flex;flex-wrap:wrap;gap:0.45rem;align-items:center;justify-content:space-between;">` +
     `<div>` +
-    `<strong style="font-size:0.78rem;">🌡️ Termómetro Intergeneracional (${summary.bookCode} · ${metrics.passesAllGates ? "✅ 4 Candados OK" : "⚠️ Revisión"} · ${totalAudited} vv.)</strong> ` +
-    `<span style="font-size:0.75rem;color:var(--text-secondary);">AoA=${metrics.aoaYears}a (≤${maxAoaRule}a) · Prev=${metrics.lexicalPrevalence} (≥${minPrevRule}) · MDD=${metrics.mdd} (≤${maxMddRule}) · Eipen L=${metrics.eipenL} (Libro=${bookEipen})</span>` +
+    `<strong style="font-size:0.78rem;">🌡️ ${isEn ? "Intergenerational Thermometer" : "Termómetro Intergeneracional"} (${summary.bookCode} · ${metrics.passesAllGates ? (isEn ? "✅ 4 Gates OK" : "✅ 4 Candados OK") : (isEn ? "⚠️ Review" : "⚠️ Revisión")} · ${totalAudited} vv.)</strong> ` +
+    `<span style="font-size:0.75rem;color:var(--text-secondary);">AoA=${metrics.aoaYears}a (≤${maxAoaRule}a) · Prev=${metrics.lexicalPrevalence} (≥${minPrevRule}) · MDD=${metrics.mdd} (≤${maxMddRule}) · Eipen L=${metrics.eipenL} (${isEn ? "Book" : "Libro"}=${bookEipen})</span>` +
     `</div>` +
     `<div style="display:inline-flex;flex-wrap:wrap;gap:0.3rem;font-size:0.73rem;">` +
-    `<span class="uls-badge" data-diachronic-tier="1">Tier 1 Léxico (${summary.tierCatalogSizes.tier1Rules} reglas · ${summary.tier1LexicalCount} aplic.)</span>` +
-    `<span class="uls-badge" data-diachronic-tier="2">Tier 2 Morfología (${summary.tierCatalogSizes.tier2Rules} reglas · ${summary.tier2MorphologicalCount} aplic.)</span>` +
-    `<span class="uls-badge" data-diachronic-tier="3">Tier 3 Enclíticos (${summary.tierCatalogSizes.tier3Rules} reglas · ${summary.tier3EncliticCount} aplic.)</span>` +
+    `<span class="uls-badge" data-diachronic-tier="1">Tier 1 ${isEn ? "Lexicon" : "Léxico"} (${summary.tierCatalogSizes.tier1Rules} ${isEn ? "rules" : "reglas"} · ${summary.tier1LexicalCount} ${isEn ? "hits" : "aplic."})</span>` +
+    `<span class="uls-badge" data-diachronic-tier="2">Tier 2 ${isEn ? "Morphology" : "Morfología"} (${summary.tierCatalogSizes.tier2Rules} ${isEn ? "rules" : "reglas"} · ${summary.tier2MorphologicalCount} ${isEn ? "hits" : "aplic."})</span>` +
+    `<span class="uls-badge" data-diachronic-tier="3">Tier 3 ${isEn ? "Enclitics" : "Enclíticos"} (${summary.tierCatalogSizes.tier3Rules} ${isEn ? "rules" : "reglas"} · ${summary.tier3EncliticCount} ${isEn ? "hits" : "aplic."})</span>` +
     `</div>` +
-    `<details id="diachronicSubstitutionsDetails" class="diachronic-substitutions-details" style="width:100%;font-size:0.74rem;color:var(--text-secondary);">` +
-    `<summary style="cursor:pointer;">Ver sustituciones 1909 → Siglo XXI en este capítulo (Tier 1/2/3 · 66 vectores · ΔAoA=${summary.deltaAoaChapter}a · ΔMDD=${summary.deltaMddChapter})</summary>` +
-    `<div style="margin-top:0.25rem;">Léxico: ${tier1Sample} | Enclíticos: ${tier3Sample}</div>` +
-    `<div id="diachronicRegisterAuditPanel" style="margin-top:0.35rem;font-size:0.82rem;">` +
-    renderChapterDiachronicAuditCardHtml({ verses: textList, bookCode, chapter: Number(String(osisRef).split(".")[1]) || 1 }) +
-    `</div>` +
-    `</details>` +
+    inlineDetailsHtml +
     `</div>`
   );
 }

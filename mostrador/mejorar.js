@@ -936,6 +936,7 @@ export function renderImproveDrawerHtml({
     )
     .join(" ");
 
+  const isEn = String(locale || "en").trim().toLowerCase().startsWith("en");
   return (
     `<section class="improve-drawer" data-lang="${patch.lang}" data-ref="${patch.ref}" data-strong-id="${patch.strong_id}" data-audio-bytes="0" data-lock8-status="${verifyLock8PredicativeAndNegation({ oldSurface: patch.old_surface, newSurface: patch.new_surface }).status}" data-eight-locks-status="${eightLocksReport.status}">` +
     `<header style="margin-bottom:0.65rem;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:0.4rem;">` +
@@ -943,7 +944,7 @@ export function renderImproveDrawerHtml({
     `<h4 style="margin:0;" data-i18n="improve.title">${t("improve.title")}</h4>` +
     `<p style="margin:0.25rem 0 0 0;font-size:0.84rem;color:var(--text-secondary);" data-i18n="improve.subtitle">${t("improve.subtitle")}</p>` +
     `</div>` +
-    `<span class="uls-badge" data-lock8-badge="true">🔒 Candado 8 (MACULA A0/A1 + Jespersen): ${verifyLock8PredicativeAndNegation({ oldSurface: patch.old_surface, newSurface: patch.new_surface }).status}</span>` +
+    `<span class="uls-badge" data-lock8-badge="true">🔒 ${isEn ? "Lock 8 (MACULA A0/A1 + Jespersen):" : "Candado 8 (MACULA A0/A1 + Jespersen):"} ${verifyLock8PredicativeAndNegation({ oldSurface: patch.old_surface, newSurface: patch.new_surface }).status}</span>` +
     `</header>` +
     `<div class="eight-locks-pda-bar" data-eight-locks-bar="true" style="display:flex;flex-wrap:wrap;gap:0.3rem;margin-bottom:0.55rem;">${eightLocksPillsHtml}</div>` +
     `<div style="display:grid;gap:0.55rem;">` +
@@ -978,11 +979,11 @@ export function renderImproveDrawerHtml({
     `</label>` +
     `<pre id="improvePatchOutput" style="padding:0.6rem;border-radius:8px;background:var(--bg-secondary);font-size:0.78rem;overflow-x:auto;">${patch.payloadLine}</pre>` +
     `<div class="celf250-ladder-panel" data-celf250-ladder="true" data-celf250-rank="${seed250.rank}" style="padding:0.6rem;border-radius:8px;border:1px solid var(--card-border);">` +
-    `<strong style="font-size:0.82rem;">🧬 Escalera Activa CELF-250 (#${seed250.rank}/250 · 30 Horas · 0 Bytes Audio)</strong>` +
+    `<strong style="font-size:0.82rem;">🧬 ${isEn ? `Active CELF-250 Ladder (#${seed250.rank}/250 · 30 Hours · 0 Bytes Audio)` : `Escalera Activa CELF-250 (#${seed250.rank}/250 · 30 Horas · 0 Bytes Audio)`}</strong>` +
     `<pre id="celf250SeedOutput" style="margin:0.35rem 0 0 0;font-size:0.75rem;overflow-x:auto;">${seed250.payloadLine}</pre>` +
     `</div>` +
     `<div style="display:flex;flex-wrap:wrap;gap:0.5rem;">` +
-    `<button type="button" id="btnApplySuggestedImprovement" class="uls-chip apply-improvement" data-apply-improvement="true" data-proposed-surface="${patch.new_surface.replace(/"/g, "&quot;")}" style="min-height:48px;">✅ Apply improvement to cascade</button>` +
+    `<button type="button" id="btnApplySuggestedImprovement" class="uls-chip apply-improvement" data-apply-improvement="true" data-proposed-surface="${patch.new_surface.replace(/"/g, "&quot;")}" style="min-height:48px;">✅ ${isEn ? "Apply improvement to cascade" : "Aplicar mejora a la cascada"}</button>` +
     `<button type="button" id="btnCopyPatchPayload" class="uls-chip" style="min-height:48px;" data-i18n="improve.copy_patch">${t("improve.copy_patch")}</button>` +
     `<button type="button" id="btnDownloadPatchFile" class="uls-chip" style="min-height:48px;" data-i18n="improve.download_patch">${t("improve.download_patch")}</button>` +
     `</div>` +
@@ -1053,7 +1054,9 @@ export function renderCascadeAndLadderHtml({
   limit = 24,
   includeWalCard = false,
   includeCensusCard = false,
+  uiLocale = "es",
 } = {}) {
+  const isEn = String(uiLocale || "es").trim().toLowerCase().startsWith("en");
   const cleanLang = sanitizePipeField(lang || "stp").toLowerCase();
   const resolvedRef = sanitizePipeField(currentRef || osis || "GEN.1.1").toUpperCase();
   const cleanLevel = CASCADE_LEVELS.includes(String(level).toUpperCase())
@@ -1108,12 +1111,12 @@ export function renderCascadeAndLadderHtml({
   const nextEntropyItem = entropyQueue[0] || { ref: "GEN.1.1", shannon_entropy: 2.45, marginal_gain_bits: 48.2 };
 
   const rungFilterHtml =
-    `<div class="celf-rung-filter-bar" role="group" aria-label="Filtro por Peldaño CELF-250" style="display:flex;flex-wrap:wrap;gap:0.35rem;margin-bottom:0.5rem;">` +
-    `<button type="button" id="btnNextHighEntropyVerse" class="uls-chip" data-next-entropy-ref="${nextEntropyItem.ref}" data-shannon-entropy="${nextEntropyItem.shannon_entropy}" style="min-height:48px;padding:0.35rem 0.75rem;font-size:0.78rem;font-weight:700;">⚡ Siguiente alta incertidumbre: ${nextEntropyItem.ref} (H=${nextEntropyItem.shannon_entropy}b)</button>` +
+    `<div class="celf-rung-filter-bar" role="group" aria-label="${isEn ? "Filter by CELF-250 Rung" : "Filtro por Peldaño CELF-250"}" style="display:flex;flex-wrap:wrap;gap:0.35rem;margin-bottom:0.5rem;">` +
+    `<button type="button" id="btnNextHighEntropyVerse" class="uls-chip" data-next-entropy-ref="${nextEntropyItem.ref}" data-shannon-entropy="${nextEntropyItem.shannon_entropy}" style="min-height:48px;padding:0.35rem 0.75rem;font-size:0.78rem;font-weight:700;">⚡ ${isEn ? "Next high uncertainty" : "Siguiente alta incertidumbre"}: ${nextEntropyItem.ref} (H=${nextEntropyItem.shannon_entropy}b)</button>` +
     Object.entries(CELF_RUNG_LABELS)
       .map(
         ([rungKey, label]) =>
-          `<button type="button" class="uls-chip celf-rung-filter-btn" data-celf-rung-filter="${rungKey}" aria-pressed="${activeRung === rungKey ? "true" : "false"}" style="min-height:48px;padding:0.35rem 0.65rem;font-size:0.76rem;">${label}</button>`
+          `<button type="button" class="uls-chip celf-rung-filter-btn" data-celf-rung-filter="${rungKey}" aria-pressed="${activeRung === rungKey ? "true" : "false"}" style="min-height:48px;padding:0.35rem 0.65rem;font-size:0.76rem;">${isEn && rungKey === "ALL" ? "All (250)" : label}</button>`
       )
       .join("") +
     `</div>`;
@@ -1145,7 +1148,7 @@ export function renderCascadeAndLadderHtml({
         (sw) =>
           `<div data-sister-work="${sw.workId}" style="padding:0.4rem 0.55rem;border-radius:8px;border:1px solid var(--card-border);">` +
           `<strong>${sw.workLabel}</strong><br>` +
-          `<span>${sw.ConcordantOccurrences} ocurrencias · ${sw.sampleTargets.slice(0, 2).join(", ")}</span>` +
+          `<span>${sw.ConcordantOccurrences} ${isEn ? "occurrences" : "ocurrencias"} · ${sw.sampleTargets.slice(0, 2).join(", ")}</span>` +
           `</div>`,
       )
       .join("") +
@@ -1153,7 +1156,7 @@ export function renderCascadeAndLadderHtml({
 
   const otWavesHtml =
     `<div class="ot-translation-waves-bar" data-ot-waves="5" data-active-ot-wave="${waveNum}" style="display:flex;flex-wrap:wrap;gap:0.35rem;margin-top:0.55rem;font-size:0.75rem;">` +
-    `<button type="button" class="uls-chip ot-wave-filter-btn" data-ot-wave="0" aria-pressed="${waveNum === 0 ? "true" : "false"}" style="min-height:48px;padding:0.25rem 0.55rem;font-size:0.74rem;">Todas las Ondas</button>` +
+    `<button type="button" class="uls-chip ot-wave-filter-btn" data-ot-wave="0" aria-pressed="${waveNum === 0 ? "true" : "false"}" style="min-height:48px;padding:0.25rem 0.55rem;font-size:0.74rem;">${isEn ? "All Waves" : "Todas las Ondas"}</button>` +
     CANONICAL_5_OT_TRANSLATION_WAVES.map(
       (w) =>
         `<button type="button" class="uls-chip ot-wave-filter-btn" data-ot-wave="${w.wave}" data-uncertainty-bits="${w.meanUncertaintyBits}" aria-pressed="${waveNum === Number(w.wave) ? "true" : "false"}" style="min-height:48px;padding:0.25rem 0.55rem;font-size:0.74rem;">${w.title} (U=${w.meanUncertaintyBits}b)</button>`,
@@ -1165,7 +1168,7 @@ export function renderCascadeAndLadderHtml({
   const externalAuditHtml =
     `<div id="externalAudit8LocksPanel" data-external-audit-8-locks="true" data-all-8-locks-passed="${Boolean(extAudit.all_8_locks_passed)}" style="margin-top:0.55rem;padding:0.45rem 0.6rem;border-radius:8px;border:1px solid var(--card-border);background:var(--bg-secondary);font-size:0.75rem;">` +
     `<div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:0.35rem;">` +
-    `<strong>🛡️ Auditoría Externa de 8 Candados (${sanitizePipeField(extAudit.detected_format || "DOCX_OOXML")} · ${sanitizePipeField(extAudit.detected_tradition || "ProtestantKjv")})</strong>` +
+    `<strong>🛡️ ${isEn ? "External 8-Lock Audit" : "Auditoría Externa de 8 Candados"} (${sanitizePipeField(extAudit.detected_format || "DOCX_OOXML")} · ${sanitizePipeField(extAudit.detected_tradition || "ProtestantKjv")})</strong>` +
     `<span class="uls-badge" style="font-size:0.71rem;">${extAudit.all_8_locks_passed !== false ? "✅ 8/8 PASS" : "⛔ VETO"} · Rosetta Key Terms: ${Number(extAudit.rosetta_key_terms_extracted || 552)} · Onomasticon: ${Number(extAudit.rosetta_onomasticon_rules || 3100)}</span>` +
     `</div>` +
     `</div>`;
@@ -1174,7 +1177,7 @@ export function renderCascadeAndLadderHtml({
   const uqSlice = UNCERTAINTY_QUEUE_60.slice(0, 8);
   const uncertaintyQueueHtml =
     `<div id="uncertaintyQueue60Panel" data-uncertainty-queue-total="${UNCERTAINTY_QUEUE_60.length}" style="margin-top:0.55rem;padding:0.45rem 0.6rem;border-radius:8px;border:1px solid var(--card-border);background:var(--bg-secondary);">` +
-    `<strong style="font-size:0.76rem;display:block;margin-bottom:0.3rem;">🎯 Cola de Incertidumbre Semántica Top-60 (D4-A+ · Dawid-Skene + Entropía U)</strong>` +
+    `<strong style="font-size:0.76rem;display:block;margin-bottom:0.3rem;">🎯 ${isEn ? "Top-60 Semantic Uncertainty Queue (D4-A+ · Dawid-Skene + Entropy U)" : "Cola de Incertidumbre Semántica Top-60 (D4-A+ · Dawid-Skene + Entropía U)"}</strong>` +
     `<div style="display:flex;flex-wrap:wrap;gap:0.35rem;">` +
     uqSlice
       .map((uItem, idx) => {
@@ -1194,7 +1197,7 @@ export function renderCascadeAndLadderHtml({
   // D4-A+ / D3-B++: Tier 3A Dialect Continuum ASJP Swadesh-40 + 1-Sentence Unlocked Floor (tier3a_continuums + floor_1_sentence_spec + reference_tier1 + total_sentences)
   const tier3aHtml =
     `<div id="tier3aDialectContinuumPanel" data-tier3a-continuums="${TIER3A_CONTINUUMS.length}" data-floor-1-sentence="${Number(FLOOR_1_SENTENCE_SPEC.single_sentence_unlocked_floor || 291)}" data-reference-tier1="${sanitizePipeField(FLOOR_1_SENTENCE_SPEC.reference_tier1 || "spa_rv1909")}" data-total-sentences="${Number(FLOOR_1_SENTENCE_SPEC.total_sentences || 250)}" style="margin-top:0.55rem;padding:0.45rem 0.6rem;border-radius:8px;border:1px solid var(--card-border);background:var(--bg-secondary);font-size:0.75rem;">` +
-    `<strong style="display:block;margin-bottom:0.25rem;">🌐 Continuos Dialectales Tier 3A (ASJP Swadesh-40 LDND ≤ 0.28) · Piso de 1 Oración: ${sanitizePipeField(FLOOR_1_SENTENCE_SPEC.floor_1_sentence_spec)}</strong>` +
+    `<strong style="display:block;margin-bottom:0.25rem;">🌐 ${isEn ? "Tier 3A Dialect Continuums (ASJP Swadesh-40 LDND ≤ 0.28) · 1-Sentence Floor:" : "Continuos Dialectales Tier 3A (ASJP Swadesh-40 LDND ≤ 0.28) · Piso de 1 Oración:"} ${sanitizePipeField(FLOOR_1_SENTENCE_SPEC.floor_1_sentence_spec)}</strong>` +
     `<div style="display:flex;flex-wrap:wrap;gap:0.35rem;">` +
     TIER3A_CONTINUUMS.map(
       (tc) =>
@@ -1223,9 +1226,9 @@ export function renderCascadeAndLadderHtml({
 
   return (
     `<div class="cascade-impact-box" data-cascade-level="${cleanLevel}" data-cascade-lang="${cleanLang}" data-celf-total="${totalCount}" data-active-ot-wave="${waveNum}" style="padding:0.65rem;border-radius:10px;border:1px solid var(--card-border);background:var(--card-bg);">` +
-    `<strong style="font-size:0.84rem;display:block;margin-bottom:0.3rem;">🌊 Cascada Determinista ${cleanLevel} · Escalera CELF-250 (${totalCount} peldaños · ${sanitizePipeField(strongId)} en ${resolvedRef} → Biblia + Evangelios + Felices)</strong>` +
+    `<strong style="font-size:0.84rem;display:block;margin-bottom:0.3rem;">🌊 ${isEn ? `Deterministic Cascade ${cleanLevel} · CELF-250 Ladder (${totalCount} rungs · ${sanitizePipeField(strongId)} in ${resolvedRef} → Bible + Gospels + Beatitudes)` : `Cascada Determinista ${cleanLevel} · Escalera CELF-250 (${totalCount} peldaños · ${sanitizePipeField(strongId)} en ${resolvedRef} → Biblia + Evangelios + Felices)`}</strong>` +
     `<p style="margin:0 0 0.45rem 0;font-size:0.8rem;color:var(--text-secondary);">` +
-    `Al corregir esta raíz en <code>${cleanLang}</code>, el motor propaga la mejora a todas las ocurrencias concordantes con cuarentena bayesiana Dawid-Skene + SPRT (0 Bytes Audio). Pulsa cualquier peldaño para saltar al versículo diagnóstico:` +
+    `${isEn ? `When refining this root in <code>${cleanLang}</code>, the engine propagates the improvement across all concordant occurrences with Dawid-Skene + SPRT Bayesian quarantine (0 Bytes Audio). Tap any rung to jump to the diagnostic verse:` : `Al corregir esta raíz en <code>${cleanLang}</code>, el motor propaga la mejora a todas las ocurrencias concordantes con cuarentena bayesiana Dawid-Skene + SPRT (0 Bytes Audio). Pulsa cualquier peldaño para saltar al versículo diagnóstico:`}` +
     `</p>` +
     sisterCascadeHtml +
     rungFilterHtml +

@@ -448,21 +448,50 @@ export function renderChapterPericopesRibbonHtml(bookCode = "GEN", chapterNum = 
 }
 
 /**
+ * DEB-R40-10: Solo muestra la línea puente en Los Evangelios cuando la lengua seleccionada
+ * es una lengua focal/indígena (`quc`, `gn`, `stp` o no en `["es", "en", "pt", "fr"]`),
+ * evitando duplicar el texto inglés con un prefijo español redundante ("Puente:").
+ */
+export function shouldShowEvangeliosBridgeLine(corpusLang = "es") {
+  const clean = String(corpusLang || "es").trim().toLowerCase();
+  return !["es", "en", "pt", "fr"].includes(clean);
+}
+
+export function formatEvangeliosBridgeLine(bridgeText = "", corpusLang = "es", uiLocale = "es") {
+  if (!bridgeText || !shouldShowEvangeliosBridgeLine(corpusLang)) {
+    return "";
+  }
+  const isEnUi = String(uiLocale || "es").trim().toLowerCase().startsWith("en");
+  return `${isEnUi ? "Bridge:" : "Puente:"} ${bridgeText}`;
+}
+
+/**
  * D9-A+: Renderiza la Tarjeta de Maravilla Socrática (`#felicesSocraticWonderCard`) para las 28 láminas
  * de Los Felices (`felices_28_plates`), exponiendo `title_es`, `cita_es` y `preguntas_es`.
  */
 export function renderFelicesSocraticWonderCardHtml(plateIndex = 1, uiLang = "es") {
+  const isEn = String(uiLang || "es").trim().toLowerCase().startsWith("en");
   const plate = resolveFelicesPlate(plateIndex);
   const pNum = Number(plate.number) || Math.max(1, Math.min(28, Number(plateIndex) || 1));
-  const titleStr = String(plate.title_es || `Lámina ${pNum} / 28`);
+  const titleStr = String(
+    (isEn && plate.title_en) || plate.title_es || (isEn ? `Plate ${pNum} / 28` : `Lámina ${pNum} / 28`),
+  );
   const citaStr = String(plate.cita_es || "MAT.5.3");
   const typeStr = String(plate.type || "condicion");
-  const questions = Array.isArray(plate.preguntas_es) && plate.preguntas_es.length > 0
-    ? plate.preguntas_es
-    : [
-        `¿Cómo resuena esta dicha (${citaStr}) en nuestra vida hoy?`,
-        `¿Con quién podemos compartir esta promesa esta semana?`,
-      ];
+  const questions = Array.isArray(isEn ? plate.preguntas_en : plate.preguntas_es) &&
+    (isEn ? plate.preguntas_en : plate.preguntas_es).length > 0
+    ? (isEn ? plate.preguntas_en : plate.preguntas_es)
+    : Array.isArray(plate.preguntas_es) && plate.preguntas_es.length > 0 && !isEn
+      ? plate.preguntas_es
+      : isEn
+        ? [
+            `How does this Beatitude (${citaStr}) resonate in our life today?`,
+            `With whom can we share this promise this week?`,
+          ]
+        : [
+            `¿Cómo resuena esta dicha (${citaStr}) en nuestra vida hoy?`,
+            `¿Con quién podemos compartir esta promesa esta semana?`,
+          ];
 
   const questionsHtml = questions
     .map(

@@ -199,6 +199,7 @@ import {
   CANONICAL_ECO_PACKS_MANIFEST,
   EcoDecoderMirror,
   STORED_ECO_PACKS,
+  buildQuineHtml,
   commitVerifiedPackToIndexedDb,
   computeEcoPackCrc32Hex,
   exportSneakernetBundleJson,
@@ -283,7 +284,7 @@ export function createMostradorController(options = {}) {
     });
 
   const state = {
-    uiLocale: options.uiLocale || "en",
+    uiLocale: options.uiLocale || (options.lang && options.lang !== "en" ? "es" : "en"),
     lang: options.lang || "es",
     countryIso2: options.countryIso2 || "MX",
     regionCode: options.regionCode || "americas",
@@ -520,6 +521,21 @@ export function createMostradorController(options = {}) {
       baseHtml += state.lastMatrixFallbackHtml;
     }
     viewport.innerHTML = baseHtml;
+    if (typeof viewport.querySelector === "function") {
+      const selectedEl = viewport.querySelector(".mostrador-verse.is-selected");
+      if (selectedEl) {
+        if (typeof selectedEl.offsetTop === "number" && typeof viewport.offsetTop === "number") {
+          const relTop = Math.max(0, selectedEl.offsetTop - viewport.offsetTop - 48);
+          viewport.scrollTop = relTop;
+        } else if (typeof selectedEl.scrollIntoView === "function") {
+          try {
+            selectedEl.scrollIntoView({ block: "nearest", inline: "nearest" });
+          } catch {
+            selectedEl.scrollIntoView();
+          }
+        }
+      }
+    }
 
     const thermoPanel = getEl("bibleAnalyticalThermometerPanel", targetDoc);
     if (thermoPanel) {
@@ -527,6 +543,8 @@ export function createMostradorController(options = {}) {
         verses: res.status === STATUS.READY ? res.chapter?.verses || {} : {},
         bookCode: state.book,
         osisRef: `${state.book}.${state.chapter}.${state.verse}`,
+        includeInlineSubstitutionsDetails: false,
+        uiLocale: state.uiLocale || state.lang || "es",
       });
     }
     if (state.oralPorticoActive) {
@@ -1213,8 +1231,23 @@ export function createMostradorController(options = {}) {
       });
       applyAriaLabelsToDom(targetDoc, activeCatalog);
       applyStaticChromeTranslations(targetDoc, resolved, state);
+      const ulsCurr = getEl("ulsCurrentLang", targetDoc);
+      if (ulsCurr) {
+        ulsCurr.textContent = resolved.startsWith("en")
+          ? "English"
+          : resolved.startsWith("es")
+          ? "Español"
+          : resolved.toUpperCase();
+      }
+      const ulsSel = getEl("langSelect", targetDoc);
+      if (ulsSel) ulsSel.value = resolved;
       updateSealDom(state.seal, targetDoc);
       updateCompassTriggerDom(targetDoc);
+      if (state.lastNavResult && state.lastNavResult.status === STATUS.READY) {
+        renderViewportFromState(targetDoc);
+        renderPrintDrawerPanelsSync(targetDoc);
+        hydrateShareAndAuditDrawer(targetDoc);
+      }
       syncI18nUiFromState(state, targetDoc);
       syncUrlFromState(targetDoc, { push: false });
     }
@@ -1831,13 +1864,14 @@ export function createMostradorController(options = {}) {
 
       if (shareBtnId === "btnShareQuine") {
         const quineUrl = `obras/biblia/packs/${packLang}/lector_offline_${packLang}.html`;
+        const quinePayload = buildQuineHtml(packLang);
         if (statusPanel) {
           statusPanel.setAttribute("data-audit-action", "share-quine");
           statusPanel.innerHTML =
-            `<div class="audit-receipt" data-action="share-quine" data-quine-lang="${escapeHtml(packLang)}">` +
+            `<div class="audit-receipt" data-action="share-quine" data-quine-lang="${escapeHtml(packLang)}" data-quine-bytes="${quinePayload.length}">` +
             `✅ <strong>Quine Autónomo Listo (${escapeHtml(packLang.toUpperCase())}):</strong> ` +
             `<a href="${escapeHtml(quineUrl)}" download="lector_offline_${escapeHtml(packLang)}.html">Descargar lector_offline_${escapeHtml(packLang)}.html</a> ` +
-            `(DecompressionStream deflate-raw · 100% offline).</div>`;
+            `(${quinePayload.length} B · DecompressionStream deflate-raw · 100% offline).</div>`;
         }
       } else if (shareBtnId === "btnCopyDirectShareLink") {
         const shareUrl = serializeMostradorRouteQuery(state);
@@ -1964,6 +1998,8 @@ export function createMostradorController(options = {}) {
         const videoEl = getEl("bibleOpticalCameraVideo", targetDoc);
         if (videoEl) videoEl.hidden = !videoEl.hidden;
         if (statusPanel) {
+          statusPanel.hidden = false;
+          if (statusPanel.style) statusPanel.style.display = "";
           statusPanel.setAttribute("data-audit-action", "optical-camera-rx");
           statusPanel.setAttribute("data-wasm-bridge", "loading");
           statusPanel.innerHTML =
@@ -2017,6 +2053,8 @@ export function createMostradorController(options = {}) {
         state.lastRelayDroplet = relayDroplet;
         const statusPanel = getEl("editorialAuditStatusPanel", targetDoc);
         if (statusPanel) {
+          statusPanel.hidden = false;
+          if (statusPanel.style) statusPanel.style.display = "";
           statusPanel.setAttribute("data-audit-action", "optical-relay-tx");
           statusPanel.setAttribute("data-relay-k", String(relayEncoder.K));
           statusPanel.innerHTML =
@@ -2540,6 +2578,17 @@ export async function bootBrowserMostrador(
   options = {},
 ) {
   if (!win || !win.document) return null;
+  try {
+    const EPOCH = "ekovoz-r40";
+    if (win.localStorage && win.localStorage.getItem("ekovoz_cache_epoch") !== EPOCH) {
+      win.localStorage.setItem("ekovoz_cache_epoch", EPOCH);
+      if (win.caches && typeof win.caches.keys === "function") {
+        win.caches.keys().then((ks) => ks.forEach((k) => win.caches.delete(k))).catch(() => {});
+      }
+    }
+  } catch {
+    // Ignore storage/cache access restrictions in private contexts
+  }
   const doc = win.document;
   const route = parseInitialRouteAndLocale({
     search: win.location?.search || "",

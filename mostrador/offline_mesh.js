@@ -515,12 +515,15 @@ export function renderOfflineMeshEcoCardHtml({
   activeVerseOrdinal = 0,
   activeVerseRef = "GEN.1.1",
   activeVerseText = "",
+  uiLocale = "es",
 } = {}) {
   if (packsManifest) hydrateEcoPacksManifest(packsManifest);
+  const isEn = String(uiLocale || "es").trim().toLowerCase().startsWith("en");
   const cleanLang = String(activeLang || "es").toLowerCase().split("-")[0];
   const packs = CANONICAL_ECO_PACKS_MANIFEST;
   const activePack = packs.find((p) => p.lang === cleanLang) || packs[0];
   const storedRecord = STORED_ECO_PACKS.get(activePack.lang) || null;
+  const vaultPacks = listPacksFromIndexedDb();
   const safeOrdinal = Math.max(0, Number(activeVerseOrdinal) || 0);
   const probe = probeEcoPackRandomAccessBounds(
     new TextEncoder().encode(`ECO_ZST_V1:${activePack.lang}:${activePack.sha256}`),
@@ -562,21 +565,26 @@ export function renderOfflineMeshEcoCardHtml({
     `data-delta-zst-file="${deltaInspect.deltaFile}" ` +
     `style="padding:0.65rem;border-radius:10px;border:1px solid var(--card-border);background:var(--card-bg);font-size:0.8rem;">` +
     `<div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:0.4rem;margin-bottom:0.45rem;">` +
-    `<strong>📡 Malla Offline FSST+MYTE (<code>.eco.zst</code> / <code>.delta.zst</code> · EcoDecoder WASM &lt; 2 µs/verso · Sneakernet P2P)</strong>` +
+    `<strong>📡 ${isEn ? "FSST+MYTE Offline Mesh (<code>.eco.zst</code> / <code>.delta.zst</code> · EcoDecoder WASM &lt; 2 µs/verse · Sneakernet P2P)" : "Malla Offline FSST+MYTE (<code>.eco.zst</code> / <code>.delta.zst</code> · EcoDecoder WASM &lt; 2 µs/verso · Sneakernet P2P)"}</strong>` +
     `<span id="ecoPackVerificationBadge" class="uls-badge" data-eco-verified="${storedRecord ? "true" : "ready"}">` +
-    `${storedRecord ? `✅ Two-Gate CRC32 ${storedRecord.crc32Hex} + Ed25519 (${storedRecord.randomAccessUs} µs/v)` : `⚡ ${packs.length} Paquetes .eco.zst Listos (0 Red · Rebase ${rebaseHex})`}` +
+    `${storedRecord ? `✅ Two-Gate CRC32 ${storedRecord.crc32Hex} + Ed25519 (${storedRecord.randomAccessUs} µs/v)` : isEn ? `⚡ ${packs.length} .eco.zst Packs Ready (0 Network · Rebase ${rebaseHex})` : `⚡ ${packs.length} Paquetes .eco.zst Listos (0 Red · Rebase ${rebaseHex})`}` +
     `</span>` +
     `</div>` +
     `<div style="font-size:0.74rem;opacity:0.88;margin-bottom:0.4rem;">` +
     `<span>🔍 EcoDecoder O(1) (${activeVerseRef}): <code>${probe.versePreview}</code></span> · ` +
-    `<span>🔄 Parche Diferencial <code>${deltaInspect.deltaFile}</code>: ${deltaInspect.deltaBytes} B (Ahorro ${deltaInspect.byteSavingPct}% · CRC32 ${deltaInspect.deltaCrc32})</span>` +
+    `<span>🔄 ${isEn ? "Differential Patch" : "Parche Diferencial"} <code>${deltaInspect.deltaFile}</code>: ${deltaInspect.deltaBytes} B (${isEn ? "Savings" : "Ahorro"} ${deltaInspect.byteSavingPct}% · CRC32 ${deltaInspect.deltaCrc32})</span>` +
     `</div>` +
     `<div style="display:flex;flex-wrap:wrap;gap:0.4rem;margin-bottom:0.5rem;">${packBadgesHtml}</div>` +
     `<div style="display:flex;flex-wrap:wrap;gap:0.45rem;align-items:center;">` +
-    `<button type="button" id="btnInstallEcoPackOffline" class="uls-chip" data-action="install-eco-pack" data-eco-lang="${activePack.lang}" style="min-height:48px;min-width:48px;box-sizing:border-box;padding:8px 12px;font-size:0.78rem;font-weight:600;">⚡ Instalar y Verificar ${activePack.file} (Two-Gate CRC32 + Ed25519)</button>` +
-    `<button type="button" id="btnExportSneakernetBundle" class="uls-chip" data-action="export-sneakernet-bundle" data-eco-lang="${activePack.lang}" style="min-height:48px;min-width:48px;box-sizing:border-box;padding:8px 12px;font-size:0.78rem;">📤 Exportar Bundle Sneakernet (.sneakernet.json)</button>` +
-    `<label for="inputImportSneakernetBundle" id="btnImportSneakernetBundle" class="uls-chip" data-action="import-sneakernet-bundle" style="min-height:48px;min-width:48px;box-sizing:border-box;display:inline-flex;align-items:center;padding:8px 12px;font-size:0.78rem;cursor:pointer;">📥 Importar Bundle Sneakernet</label>` +
+    `<button type="button" id="btnInstallEcoPackOffline" class="uls-chip" data-action="install-eco-pack" data-eco-lang="${activePack.lang}" style="min-height:48px;min-width:48px;box-sizing:border-box;padding:8px 12px;font-size:0.78rem;font-weight:600;">⚡ ${isEn ? `Install & Verify ${activePack.file} (Two-Gate CRC32 + Ed25519)` : `Instalar y Verificar ${activePack.file} (Two-Gate CRC32 + Ed25519)`}</button>` +
+    `<button type="button" id="btnOfflineOptInSwDownload" class="uls-chip" data-action="opt-in-offline-pack" data-eco-lang="${activePack.lang}" style="min-height:48px;min-width:48px;box-sizing:border-box;padding:8px 12px;font-size:0.78rem;">📥 ${isEn ? "Preload Offline Vault (Opt-In SW)" : "Precargar Bóveda Offline (Opt-In SW)"}</button>` +
+    `<button type="button" id="btnOfflineListIndexedDbPacks" class="uls-chip" data-action="list-indexeddb-packs" data-eco-lang="${activePack.lang}" style="min-height:48px;min-width:48px;box-sizing:border-box;padding:8px 12px;font-size:0.78rem;">🗄️ ${isEn ? `IndexedDB Vault (${vaultPacks.length} packs)` : `Bóveda IndexedDB (${vaultPacks.length} paquetes)`}</button>` +
+    `<button type="button" id="btnExportSneakernetBundle" class="uls-chip" data-action="export-sneakernet-bundle" data-eco-lang="${activePack.lang}" style="min-height:48px;min-width:48px;box-sizing:border-box;padding:8px 12px;font-size:0.78rem;">📤 ${isEn ? "Export Sneakernet Bundle (.sneakernet.json)" : "Exportar Bundle Sneakernet (.sneakernet.json)"}</button>` +
+    `<label for="inputImportSneakernetBundle" id="btnImportSneakernetBundle" class="uls-chip" data-action="import-sneakernet-bundle" style="min-height:48px;min-width:48px;box-sizing:border-box;display:inline-flex;align-items:center;padding:8px 12px;font-size:0.78rem;cursor:pointer;">📥 ${isEn ? "Import Sneakernet Bundle" : "Importar Bundle Sneakernet"}</label>` +
     `<input type="file" id="inputImportSneakernetBundle" accept=".json,.sneakernet.json" style="display:none;" />` +
+    `</div>` +
+    `<div id="offlineIndexedDbVaultStatus" data-vault-packs-count="${vaultPacks.length}" style="margin-top:0.4rem;font-size:0.74rem;color:var(--text-secondary);">` +
+    `🗄️ ${isEn ? "IndexedDB Vault:" : "Bóveda IndexedDB:"} <strong>${vaultPacks.length}</strong> ${isEn ? "verified packs" : "paquetes verificados"}${vaultPacks.length > 0 ? ` (${vaultPacks.map((vp) => vp.lang).join(", ")})` : ""}` +
     `</div>` +
     `</div>`
   );
