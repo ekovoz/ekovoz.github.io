@@ -5,7 +5,11 @@
 
 import { escapeHtml } from "./bridge_and_chapter.js";
 import { STATUS } from "./data_layer.js";
-import { hydrateDiachronicRegister, renderChapterDiachronicAuditCardHtml } from "./diachronic_register.js";
+import {
+  getAll156DiachronicSubstitutionsCatalog,
+  hydrateDiachronicRegister,
+  renderChapterDiachronicAuditCardHtml,
+} from "./diachronic_register.js";
 import {
   buildRelativePdfAssetUrl,
   computeFoliationLayout,
@@ -995,14 +999,47 @@ export async function hydrateStudyDrawerPanel(ctx = {}) {
     if (tskCard) tskCard.innerHTML = strata.tskHtml;
   }
 
-  // D5-R38: Hidrata las Sustituciones Diacrónicas en su hogar natural de la Gaveta 1 (Estudio).
+  // D5-R38 / D9-R39: Hidrata las Sustituciones Diacrónicas y enlaza el buscador/filtro por Tier 1/2/3 de las 156 reglas.
   const diachronicAuditPanel = getEl("diachronicRegisterAuditPanel", targetDoc);
   if (diachronicAuditPanel) {
     diachronicAuditPanel.innerHTML = renderChapterDiachronicAuditCardHtml({
       verses: state.lastNavResult?.chapter?.verses || {},
       bookCode: state.book,
       chapter: state.chapter,
+      query: state.diachronicQuery || "",
+      activeTier: state.diachronicTier || 0,
     });
+    const diaSearchInp = getEl("diachronicSubstitutionsSearchInput", targetDoc);
+    const diaTierSel = getEl("diachronicTierFilterSelect", targetDoc);
+    const refreshDiachronicRulesList = () => {
+      const listEl = getEl("diachronicSubstitutionsResultsList", targetDoc);
+      if (!listEl) return;
+      const q = String(diaSearchInp?.value ?? state.diachronicQuery ?? "").trim().toLowerCase();
+      const t = Number(diaTierSel?.value ?? state.diachronicTier ?? 0);
+      state.diachronicQuery = q;
+      state.diachronicTier = t;
+      const filtered = getAll156DiachronicSubstitutionsCatalog().filter((r) => {
+        if (t >= 1 && t <= 3 && r.tier !== t) return false;
+        if (q) return r.archaic.toLowerCase().includes(q) || r.modern.toLowerCase().includes(q);
+        return true;
+      });
+      listEl.setAttribute("data-shown-rules", String(filtered.length));
+      listEl.innerHTML = filtered
+        .map(
+          (r) =>
+            `<span class="uls-badge diachronic-rule-chip" data-diachronic-rule-tier="${r.tier}" data-archaic="${escHtml(r.archaic)}" data-modern="${escHtml(r.modern)}">[T${r.tier}] ${escHtml(r.archaic)} → <strong>${escHtml(r.modern)}</strong></span>`,
+        )
+        .join(" ");
+    };
+    if (diaSearchInp && typeof diaSearchInp.addEventListener === "function" && !diaSearchInp._diaBound) {
+      diaSearchInp._diaBound = true;
+      diaSearchInp.addEventListener("input", refreshDiachronicRulesList);
+      diaSearchInp.addEventListener("change", refreshDiachronicRulesList);
+    }
+    if (diaTierSel && typeof diaTierSel.addEventListener === "function" && !diaTierSel._diaBound) {
+      diaTierSel._diaBound = true;
+      diaTierSel.addEventListener("change", refreshDiachronicRulesList);
+    }
   }
 
   return html;
@@ -1114,15 +1151,6 @@ export async function hydrateImproveDrawerPanel(ctx = {}) {
       lang: state.lang,
       includeCensusCard: true,
     });
-    const snapSelect = getEl("selectWalRollbackSnapshot", targetDoc);
-    if (snapSelect && typeof snapSelect.addEventListener === "function" && !snapSelect._walSnapBound) {
-      snapSelect._walSnapBound = true;
-      snapSelect.addEventListener("change", (ev) => {
-        const val = String(ev?.target?.value || "PATCH-WAL-SNAP-00");
-        state.selectedWalSnapshotId = val;
-        snapSelect.setAttribute("data-selected-snapshot", val);
-      });
-    }
   }
 
   for (const [btnId, tabName] of [
@@ -1322,16 +1350,32 @@ export function bindImproveFormControlsInDrawer(mod, ctx = {}) {
 
   const walSnapSel = getEl("selectWalRollbackSnapshot", targetDoc);
   const walRestoreBtn = getEl("btnRestoreWalSnapshot", targetDoc);
+  const resolveSnapshotIndexFromSelect = () => {
+    if (!walSnapSel) return 1;
+    if (typeof walSnapSel.selectedIndex === "number" && walSnapSel.selectedIndex >= 0) {
+      return walSnapSel.selectedIndex + 1;
+    }
+    const rawVal = String(walSnapSel.value || "");
+    const m = rawVal.match(/(\d+)$/);
+    return m ? Math.max(1, Math.min(10, Number(m[1]) + 1)) : 1;
+  };
   const updateWalSnapshotPreviewDom = () => {
-    const previewBox = getEl("walSnapshotRollbackPreviewBox", targetDoc);
-    if (!previewBox) return;
-    const selIdx = walSnapSel && typeof walSnapSel.selectedIndex === "number" ? walSnapSel.selectedIndex + 1 : 1;
+    const selIdx = resolveSnapshotIndexFromSelect();
+    const val = String(walSnapSel?.value || `PATCH-WAL-SNAP-${String(selIdx - 1).padStart(2, "0")}`);
+    state.selectedWalSnapshotId = val;
+    if (walSnapSel && typeof walSnapSel.setAttribute === "function") {
+      walSnapSel.setAttribute("data-selected-snapshot", val);
+    }
     const preview = computeWalSnapshotRollbackPreview(selIdx);
     state.lastWalRollbackPreview = preview;
-    previewBox.textContent = preview.previewText;
-    previewBox.setAttribute("data-snapshot-index", String(preview.snapshotIndex));
-    previewBox.setAttribute("data-snapshot-sha256", preview.sha256Prefix);
-    previewBox.setAttribute("data-snapshot-patch-id", preview.patchId);
+    const previewBox = getEl("walSnapshotRollbackPreviewBox", targetDoc);
+    if (previewBox) {
+      previewBox.textContent = preview.previewText;
+      previewBox.setAttribute("data-snapshot-index", String(preview.snapshotIndex));
+      previewBox.setAttribute("data-snapshot-sha256", preview.sha256Prefix);
+      previewBox.setAttribute("data-snapshot-patch-id", preview.patchId);
+    }
+    return preview;
   };
   if (walSnapSel && typeof walSnapSel.addEventListener === "function" && !walSnapSel._walSnapBound) {
     walSnapSel._walSnapBound = true;
@@ -1339,7 +1383,16 @@ export function bindImproveFormControlsInDrawer(mod, ctx = {}) {
   }
   if (walRestoreBtn && typeof walRestoreBtn.addEventListener === "function" && !walRestoreBtn._walRestoreBound) {
     walRestoreBtn._walRestoreBound = true;
-    walRestoreBtn.addEventListener("click", updateWalSnapshotPreviewDom);
+    walRestoreBtn.addEventListener("click", () => {
+      const preview = updateWalSnapshotPreviewDom();
+      if (preview && preview.surfaceStp && newInput) {
+        newInput.value = preview.surfaceStp;
+      }
+      if (preview && preview.strong) {
+        state.activeStrongId = String(preview.strong).toUpperCase();
+      }
+      (state.refreshPatchPreview || refreshPatchPreview)();
+    });
   }
 
   if (downloadBtn && typeof downloadBtn.addEventListener === "function" && !downloadBtn._downloadPatchBound) {
@@ -1715,11 +1768,16 @@ export function hydrateShareAndAuditDrawerPanel(ctx = {}) {
       activeVerseRef: `${state.book}.${state.chapter}.${state.verse}`,
       activeVerseText,
     });
+    const quineBtnEl = getEl("btnShareQuine", targetDoc);
+    if (quineBtnEl && typeof quineBtnEl.setAttribute === "function") {
+      quineBtnEl.setAttribute("data-quine-download", "true");
+      quineBtnEl.setAttribute("data-quine-url", quineRelUrl);
+    }
     packsPanel.innerHTML =
       `<div class="mostrador-offline-packs" data-lang="${escapeHtml(state.lang)}" data-quine-url="${escapeHtml(quineRelUrl)}">` +
       `<strong>Paquete Offline Soberano (${escapeHtml(state.lang.toUpperCase())})</strong>` +
       `<p style="margin:4px 0 6px;font-size:0.84rem;">Cero telemetría · Quine HTML autónomo (<code>DecompressionStream("deflate-raw")</code>) + Verificación SHA-256 / Merkle lista para USB, Bluetooth y MicroSD.</p>` +
-      `<a class="uls-chip" href="${escapeHtml(quineRelUrl)}" download="lector_offline_${escapeHtml(packLang)}.html" data-quine-download="true" style="text-decoration:none;display:inline-flex;align-items:center;min-height:48px;padding:0.35rem 0.7rem;margin-bottom:0.5rem;">💾 Descargar Quine Offline (${escapeHtml(packLang.toUpperCase())})</a>` +
+      `<a href="${escapeHtml(quineRelUrl)}" download="lector_offline_${escapeHtml(packLang)}.html" data-quine-download="true" hidden style="display:none;"></a>` +
       ecoMeshCardHtml +
       `</div>`;
 
@@ -1911,6 +1969,21 @@ export function applyStaticChromeTranslations(targetDoc, uiLocale = "es", state 
   const felOpenLbl = getEl("felicesOpenInBibleLabel");
   if (felOpenLbl) {
     felOpenLbl.textContent = isEn ? "📖 Open in The Bible:" : "📖 Abrir en La Biblia:";
+  }
+  const btnFelOpen = getEl("btnFelicesOpenInBible");
+  if (btnFelOpen) {
+    btnFelOpen.textContent = isEn
+      ? "📖 Open passage in The Bible"
+      : "📖 Abrir pasaje en La Biblia";
+  }
+  const felPlateSel = getEl("felicesPlateSelect");
+  if (felPlateSel && felPlateSel.options) {
+    for (const opt of Array.from(felPlateSel.options)) {
+      const txt = String(opt.textContent || "");
+      opt.textContent = isEn
+        ? txt.replace(/^Lámina\b/i, "Plate").replace(/\(Sal\s+/g, "(Ps ")
+        : txt.replace(/^Plate\b/i, "Lámina").replace(/\(Ps\s+/g, "(Sal ");
+    }
   }
   const diaLbl = getEl("diachronicAuditSummaryLabel");
   if (diaLbl) {

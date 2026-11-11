@@ -49,15 +49,15 @@ for (const [id, h, fn] of [["linkSheets", sH, `felices-${d}-v1-sheets-${fmt}.pdf
 return { distLang: d, sheetsHref: sH, bookletHref: bH, paperFormat: pFmt };
 }
 export function setPaperFormat(f, d = D()) { pFmt = f === "letter" ? "letter" : "a4"; if (!d) return pFmt; for (const [id, on] of [["toggleA4", pFmt === "a4"], ["toggleCarta", pFmt !== "a4"]]) { const b = $(d, id), s = String(on); b?.classList?.toggle?.("active", on); b?.setAttribute?.("aria-checked", s); b?.setAttribute?.("aria-pressed", s); } updateDownloadLinks(d); return pFmt; }
-export function updateFocalPlate(d = D(), lO = "", n = true) {
-if (!d) return; const l = gL(d, lO), lb = `${resolveFelicesStrings(l).plateLabel || "Plate"} ${pIdx} / ${N}`, u = getPlateUrl(pIdx).slice(1), tx = resolveFelicesPlateVerse(pIdx, l), c = FC[pIdx] || FC[24], os = `${c.book}.${c.chapter}.${c.verse}`, dI = clp((c.beatitudeIndex || 0) + 1, 12);
-const im = $(d, "focalPlateImg"), id = $(d, "plateIndexText"), vE = $(d, "focalPlateVerse"), cI = $(d, "carouselImg"), cC = $(d, "carouselCaption"), wC = $(d, "felicesSocraticWonderCard");
-if (im) { im.src = u; im.alt = lb; } if (id) { id.textContent = lb; id.setAttribute("data-osis-ref", os); } if (vE) vE.textContent = tx; if (cI) cI.src = u; if (cC) cC.textContent = tx; if (wC) wC.innerHTML = renderFelicesSocraticWonderCardHtml(pIdx, l);
-sIdx = pIdx <= 11 ? 0 : pIdx <= 23 ? 1 : 2; for (let j = 0; j < 3; j++) $(d, `termPill_${j + 1}`)?.classList?.toggle("active", j === sIdx);
-for (const [k, v] of [["felicesPlateSelect", `${pIdx}`], ["felicesDichaSelect", `${dI}`]]) { const e = $(d, k); if (e && e.value !== v) e.value = v; }
-$(d, "btnFelicesOpenInBible")?.setAttribute("data-felices-osis", os); if (n) onC?.({ plateIndex: pIdx, dichaIndex: dI, book: c.book, chapter: c.chapter, verse: c.verse });
+export function updateFocalPlate(d = D(), lO = "", n = true, uO = "") {
+if (!d) return;const l=gL(d,lO),uL=uO||l,lb=`${resolveFelicesStrings(uL).plateLabel||"Plate"} ${pIdx} / ${N}`,u=getPlateUrl(pIdx).slice(1),tx=resolveFelicesPlateVerse(pIdx,l),c=FC[pIdx]||FC[24],os=`${c.book}.${c.chapter}.${c.verse}`,dI=clp((c.beatitudeIndex||0)+1,12);
+const im=$(d,"focalPlateImg"),id=$(d,"plateIndexText"),vE=$(d,"focalPlateVerse"),cI=$(d,"carouselImg"),cC=$(d,"carouselCaption"),wC=$(d,"felicesSocraticWonderCard");
+if(im){im.src=u;im.alt=lb;}if(id){id.textContent=lb;id.setAttribute("data-osis-ref",os);}if(vE)vE.textContent=tx;if(cI)cI.src=u;if(cC)cC.textContent=tx;if(wC)wC.innerHTML=renderFelicesSocraticWonderCardHtml(pIdx,uL);
+sIdx=pIdx<=11?0:pIdx<=23?1:2;for(let j=0;j<3;j++)$(d,`termPill_${j+1}`)?.classList?.toggle("active",j===sIdx);
+for(const [k,v] of [["felicesPlateSelect",`${pIdx}`],["felicesDichaSelect",`${dI}`]]){const e=$(d,k);if(e&&e.value!==v)e.value=v;}
+$(d,"btnFelicesOpenInBible")?.setAttribute("data-felices-osis",os);if(n)onC?.({plateIndex:pIdx,dichaIndex:dI,book:c.book,chapter:c.chapter,verse:c.verse});
 }
-export function syncI18nUiFromState(st = {}, d = D()) { if (st.activePlateIndex !== undefined || st.plate !== undefined) pIdx = clp(st.activePlateIndex ?? st.plate, N, 24); if (st.paperFormat || st.format) setPaperFormat(L(st.paperFormat || st.format), d); const l = gL(d, st.lang || st.uiLocale); updateDownloadLinks(d, l); updateFocalPlate(d, l, false); if (d) ensureLocaleLoaded(l).then(() => updateFocalPlate(d, l, false)).catch(() => {}); return { plateIndex: pIdx, paperFormat: pFmt }; }
+export function syncI18nUiFromState(st={},d=D()){if(st.activePlateIndex!==undefined||st.plate!==undefined)pIdx=clp(st.activePlateIndex??st.plate,N,24);if(st.paperFormat||st.format)setPaperFormat(L(st.paperFormat||st.format),d);const l=gL(d,st.lang||st.uiLocale),u=st.uiLocale||l;updateDownloadLinks(d,l);updateFocalPlate(d,l,false,u);if(d)ensureLocaleLoaded(l).then(()=>updateFocalPlate(d,l,false,u)).catch(()=>{});return{plateIndex:pIdx,paperFormat:pFmt};}
 export const nextPlate = (d = D()) => (pIdx = pIdx < N ? pIdx + 1 : 1, updateFocalPlate(d), pIdx), prevPlate = (d = D()) => (pIdx = pIdx > 1 ? pIdx - 1 : N, updateFocalPlate(d), pIdx), nextSlide = nextPlate, prevSlide = prevPlate;
 export function openActivePlateZoom(d = D()) { if (!d) return; const l = gL(d), mI = $(d, "plateModalImg"), mC = $(d, "plateModalCaption"); if (mI) mI.src = getPlateUrl(pIdx).slice(1); if (mC) mC.textContent = resolveFelicesPlateVerse(pIdx, l); openModal("plateModal", d); }
 export const printActivePlate = (w = typeof window !== "undefined" ? window : null) => w?.print?.();

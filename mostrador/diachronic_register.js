@@ -769,20 +769,23 @@ export function renderChapterDiachronicAuditCardHtml({
   const bookMdd = Number(bookVec.mean_mdd ?? bookVec.mdd ?? 1.92);
   const bookEipen = Number(bookVec.eipen_l ?? 84.6);
   const catalog = getAll156DiachronicSubstitutionsCatalog();
-  const tier1Chips = catalog
-    .filter((r) => r.tier === 1)
-    .slice(0, 18)
-    .map((r) => `<span class="uls-badge" data-diachronic-rule-tier="1">${r.archaic} → <strong>${r.modern}</strong></span>`)
-    .join(" ");
-  const tier2Chips = catalog
-    .filter((r) => r.tier === 2)
-    .slice(0, 8)
-    .map((r) => `<span class="uls-badge" data-diachronic-rule-tier="2">${r.archaic} → <strong>${r.modern}</strong></span>`)
-    .join(" ");
-  const tier3Chips = catalog
-    .filter((r) => r.tier === 3)
-    .slice(0, 14)
-    .map((r) => `<span class="uls-badge" data-diachronic-rule-tier="3">${r.archaic} → <strong>${r.modern}</strong></span>`)
+  const activeTier = Number(arguments[0]?.activeTier) || 0;
+  const searchQuery = String(arguments[0]?.query || "").trim().toLowerCase();
+  const filteredCatalog = catalog.filter((r) => {
+    if (activeTier >= 1 && activeTier <= 3 && r.tier !== activeTier) return false;
+    if (searchQuery) {
+      return (
+        r.archaic.toLowerCase().includes(searchQuery) ||
+        r.modern.toLowerCase().includes(searchQuery)
+      );
+    }
+    return true;
+  });
+  const allChipsHtml = filteredCatalog
+    .map(
+      (r) =>
+        `<span class="uls-badge diachronic-rule-chip" data-diachronic-rule-tier="${r.tier}" data-archaic="${r.archaic}" data-modern="${r.modern}">[T${r.tier}] ${r.archaic} → <strong>${r.modern}</strong></span>`,
+    )
     .join(" ");
   const witnessesHtml = renderChapterDiachronicWitnessesHtml({ verses, bookCode, chapter });
   return (
@@ -809,11 +812,16 @@ export function renderChapterDiachronicAuditCardHtml({
     `<div style="width:100%;margin-top:0.25rem;">${witnessesHtml}</div>` +
     `<details id="diachronicAll156RulesExplorer" style="width:100%;margin-top:0.3rem;">` +
     `<summary style="cursor:pointer;font-size:0.74rem;font-weight:600;">🔎 Explorar catálogo completo de reglas diacrónicas (${catalog.length} sustituciones FST en 3 capas)</summary>` +
-    `<div style="margin-top:0.3rem;display:flex;flex-direction:column;gap:0.3rem;">` +
-    `<div><strong>Tier 1 · Léxico Arcaico:</strong> ${tier1Chips}</div>` +
-    `<div><strong>Tier 2 · Morfología Verbal:</strong> ${tier2Chips}</div>` +
-    `<div><strong>Tier 3 · Enclíticos Postverbales:</strong> ${tier3Chips}</div>` +
+    `<div style="margin-top:0.35rem;display:flex;flex-wrap:wrap;gap:0.35rem;align-items:center;">` +
+    `<input type="search" id="diachronicSubstitutionsSearchInput" placeholder="Buscar término 1909 o Siglo XXI..." value="${searchQuery}" style="flex:1;min-width:160px;min-height:40px;padding:0.25rem 0.5rem;border-radius:8px;border:1px solid var(--select-border);background:var(--select-bg);color:var(--text-primary);font-size:0.75rem;">` +
+    `<select id="diachronicTierFilterSelect" aria-label="Filtrar por capa diacrónica" style="min-height:40px;padding:0.25rem 0.5rem;border-radius:8px;border:1px solid var(--select-border);background:var(--select-bg);color:var(--text-primary);font-size:0.75rem;">` +
+    `<option value="0"${activeTier === 0 ? " selected" : ""}>Todas las capas (${catalog.length})</option>` +
+    `<option value="1"${activeTier === 1 ? " selected" : ""}>Tier 1 · Léxico (${summary.tierCatalogSizes.tier1Rules})</option>` +
+    `<option value="2"${activeTier === 2 ? " selected" : ""}>Tier 2 · Morfología (${summary.tierCatalogSizes.tier2Rules})</option>` +
+    `<option value="3"${activeTier === 3 ? " selected" : ""}>Tier 3 · Enclíticos (${summary.tierCatalogSizes.tier3Rules})</option>` +
+    `</select>` +
     `</div>` +
+    `<div id="diachronicSubstitutionsResultsList" data-shown-rules="${filteredCatalog.length}" style="margin-top:0.35rem;display:flex;flex-wrap:wrap;gap:0.25rem;">${allChipsHtml}</div>` +
     `</details>` +
     `</div>`
   );

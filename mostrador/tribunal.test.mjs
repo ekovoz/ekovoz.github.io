@@ -1889,4 +1889,24 @@ test("R39_SLICE_127_to_132_split_brain_elimination_dark_mode_contrast_and_100pct
   assert.doesNotMatch(ecoCardHtml, /ECO_VERSE\[ord=0\.\.31102/);
   assert.match(ecoCardHtml, /En el principio creó Dios los cielos y la tierra/);
   assert.doesNotMatch(ecoCardHtml, /Quine HTML Autónomo/, "DEB-R39-09: duplicate Quine CTA inside #offlineEcoMeshCard must be removed");
+
+  // 8. #9.1 & #9.2: Contextual cultural gloss banner on canvas and 156-rule diachronic explorer with Tier filter
+  const chapWithGlossHtml = renderChapterPreviewHtml(
+    "MAT",
+    22,
+    "es",
+    { verses: { "19": "Mostradme la moneda del tributo. Y ellos le presentaron un denario." } },
+    null,
+    { selectedVerse: 19 },
+  );
+  assert.match(chapWithGlossHtml, /id="activeVerseCulturalGlossBanner"/);
+  assert.match(chapWithGlossHtml, /denario/i);
+  const diaCardHtml = diachronicMod.renderChapterDiachronicAuditCardHtml({
+    verses: ["En el principio creó Dios los cielos y la tierra."],
+    bookCode: "GEN",
+    chapter: 1,
+  });
+  assert.match(diaCardHtml, /id="diachronicSubstitutionsSearchInput"/);
+  assert.match(diaCardHtml, /id="diachronicTierFilterSelect"/);
+  assert.match(diaCardHtml, /id="diachronicSubstitutionsResultsList"/);
 });

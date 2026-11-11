@@ -14,6 +14,7 @@ import {
   applySpanish21DiachronicRegister,
   computeAnalyticalRegisterMetrics,
 } from "./diachronic_register.js";
+import { detectContextualCulturalGlossesForVerse } from "./estudio.js";
 import {
   EVANGELIOS_MACRO_THREADS_AND_ECHOES,
   FELICES_12_DICHAS_COORDINATE_MAP,
@@ -706,6 +707,19 @@ export function renderChapterPreviewHtml(
     allRenderedVersesText.join(" "),
     `${book}.${chapter}.${selectedVerse}`,
   );
+  const selectedRawVerseText = String(chapterData.verses[String(selectedVerse)] || "");
+  const contextualGlosses = detectContextualCulturalGlossesForVerse(selectedRawVerseText);
+  const contextualGlossBannerHtml =
+    contextualGlosses.length > 0
+      ? `<aside id="activeVerseCulturalGlossBanner" class="cultural-gloss-canvas-banner" data-cultural-gloss-count="${contextualGlosses.length}" style="margin-top:0.55rem;padding:0.4rem 0.65rem;border-radius:8px;border:1px solid var(--card-border);background:var(--bg-secondary);font-size:0.78rem;line-height:1.4;">` +
+        contextualGlosses
+          .map(
+            (g) =>
+              `<span data-cultural-gloss-term="${escapeHtml(g.term)}">🏺 <strong>${escapeHtml(g.term)}</strong>: ${escapeHtml(g.nsm_gloss || "")}</span>`,
+          )
+          .join(" · ") +
+        `</aside>`
+      : "";
 
   return `<article class="bible-trimodal-chapter${isPoetic ? " mostrador-poetic-stichometry" : ""
     }" data-book="${escapeHtml(book)}" data-chapter="${Number(
@@ -718,6 +732,6 @@ export function renderChapterPreviewHtml(
       scriptioCode || "none"
     )}" data-reverse-ortho-size="${reverseMapTarget.size}" data-aoa="${regMetrics.meanAoa}" data-mdd="${regMetrics.meanDependencyDistance}" data-eipen-l="${regMetrics.eipenReadabilityL}" dir="${dir}">${blocks.join(
       "\n"
-    )}</article>`;
+    )}${contextualGlossBannerHtml}</article>`;
 }
 

@@ -39,28 +39,6 @@ export function setOfflineOptInState(enabled) {
   return _offlineOptInEnabled;
 }
 
-export function serveVirtualRangeSlice206(packBytes, rangeHeader = "bytes=0-63") {
-  const bytes = packBytes instanceof Uint8Array ? packBytes : new Uint8Array(0);
-  const total = bytes.byteLength;
-  const m = String(rangeHeader || "").match(/bytes=(\d+)-(\d+)?/i);
-  const start = m ? Math.max(0, Math.min(total - 1, Number(m[1]) || 0)) : 0;
-  const end = m && m[2] !== undefined ? Math.max(start, Math.min(total - 1, Number(m[2]))) : Math.max(0, total - 1);
-  const slice = bytes.slice(start, end + 1);
-  return {
-    status: 206,
-    headers: {
-      "Content-Range": `bytes ${start}-${end}/${total}`,
-      "Content-Length": String(slice.byteLength),
-      "Accept-Ranges": "bytes",
-    },
-    body: slice,
-  };
-}
-
-export function synthesizeOfflineClientQuine(lang = "es", autonym = "Español", base64Payload = "", bootScript = "") {
-  return `<!DOCTYPE html><html lang="${lang}" data-audio-bytes="0" data-jpg-bytes="0"><head><meta charset="utf-8"><title>Ekovoz Quine (${autonym})</title></head><body><script id="ecoPackBase64" type="application/octet-stream">${base64Payload}</script><script>${bootScript}</script></body></html>`;
-}
-
 export function serializeFieldFeedbackPatchL1L5({
   langCode = "es",
   cascadeLevel = "L1",
