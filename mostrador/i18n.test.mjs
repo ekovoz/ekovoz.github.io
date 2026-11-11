@@ -11,6 +11,7 @@ import {
   formatMessage,
   createI18n,
   requestedUiLocales,
+  verifyDataI18nCatalogBijection,
   DEFAULT_LOCALE,
 } from "./i18n.js";
 import { runWithoutProcess } from "./test_support/no_process_runner.mjs";
@@ -131,3 +132,31 @@ test("runs_with_process_undefined", () => {
   assert.deepEqual(out.result, { n: "es", f: "2 hojas" });
 });
 
+test("D1_R44_data_i18n_bijection_index_html_vs_18_catalogs", async () => {
+  const html = fs.readFileSync(path.resolve(here, "..", "index.html"), "utf8");
+  const catalogs = {};
+  for (const code of available) catalogs[code] = await loadCatalog(code);
+  const report = verifyDataI18nCatalogBijection(html, catalogs);
+  assert.ok(report.keys.length >= 100, `se esperaban >= 100 claves data-i18n, hay ${report.keys.length}`);
+  assert.ok(report.keys.includes("share.btn.copyLink"));
+  assert.ok(report.keys.includes("study.subtab.calibrate"));
+  assert.deepEqual(report.missingByLocale, {}, `claves data-i18n huérfanas: ${JSON.stringify(report.missingByLocale)}`);
+  assert.equal(report.ok, true);
+});
+
+test("D1_R44_data_i18n_bijection_detects_orphan_keys_and_es_ui_has_no_english_buttons", async () => {
+  const report = verifyDataI18nCatalogBijection('<b data-i18n="a.ok">x</b><i data-i18n="a.missing">y</i>', {
+    es: { messages: { "a.ok": "Bien" } },
+    en: { messages: { "a.ok": "Ok", "a.missing": "Missing" } },
+  });
+  assert.deepEqual(report.missingByLocale, { es: ["a.missing"] });
+  assert.equal(report.ok, false);
+  const es = await loadCatalog("es");
+  const en = await loadCatalog("en");
+  for (const key of ["share.btn.copyLink", "share.btn.cameraRx", "print.btn.imposition", "felices.closeBtn"]) {
+    assert.notEqual(es.messages[key], en.messages[key], `es.${key} no debe quedar en inglés`);
+  }
+  const i18n = createI18n({ locale: "es", catalogs: { es, en } });
+  const t = typeof i18n.t === "function" ? i18n.t("share.btn.copyLink") : es.messages["share.btn.copyLink"];
+  assert.equal(t, "🔗 Copiar enlace directo a este pasaje");
+});

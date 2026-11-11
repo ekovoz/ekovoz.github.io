@@ -128,10 +128,15 @@ export function hydratePericopesAndGlosses(artifact) {
       EVANGELIOS_MACRO_THREADS_AND_ECHOES[wKey] = wVal;
     }
   }
-  const rawMacroThreads = Array.isArray(artifact.evangelios_macro_threads)
-    ? artifact.evangelios_macro_threads
-    : Array.isArray(artifact.evangelios_52_weeks)
-      ? artifact.evangelios_52_weeks
+  // D4-R44 / DEB-R44-06: `pericopes_and_glosses.json` publica `evangelios_macro_threads` como objeto
+  // indexado `s01..s52`; antes sólo se aceptaba un arreglo y las 52 semanas caían al hilo genérico.
+  const macroSource = artifact.evangelios_macro_threads ?? artifact.evangelios_52_weeks;
+  const rawMacroThreads = Array.isArray(macroSource)
+    ? macroSource
+    : macroSource && typeof macroSource === "object"
+      ? Object.entries(macroSource)
+        .filter(([, v]) => v && typeof v === "object" && (v.macroThread || v.weekNumber || v.cita))
+        .map(([k, v]) => ({ ...v, weekNumber: v.weekNumber ?? (Number(String(k).replace(/\D/g, "")) || 1) }))
       : null;
   if (rawMacroThreads && rawMacroThreads.length > 0) {
     for (const entry of rawMacroThreads) {
@@ -140,18 +145,19 @@ export function hydratePericopesAndGlosses(artifact) {
       const existing = EVANGELIOS_MACRO_THREADS_AND_ECHOES[wKey] || EVANGELIOS_MACRO_THREADS_AND_ECHOES.s01;
       const quarterPrefix = existing?.macroThread ? existing.macroThread.split("·")[0].trim() : "";
       const enrichedMacro = entry.macroThread
-        ? quarterPrefix && !String(entry.macroThread).includes(quarterPrefix)
+        ? quarterPrefix && !String(entry.macroThread).includes(quarterPrefix) && !/^\s*Hilo\s+(?:Q?\d+)\b/i.test(String(entry.macroThread))
           ? `${quarterPrefix} · ${entry.macroThread}`
           : String(entry.macroThread)
         : existing?.macroThread || "";
+      const citaMatch = /^([1-3]?[A-Z]{2,3})\s+(\d+):(\d+)/.exec(String(entry.cita || entry.ref || "").trim().toUpperCase());
       EVANGELIOS_MACRO_THREADS_AND_ECHOES[wKey] = {
         weekId: wKey,
         weekNumber: wNum,
         title: entry.title || existing?.title || `Semana ${wNum}`,
         cita: entry.cita || entry.ref || "",
-        anchorOsis: entry.anchorOsis || "JHN.1.1",
-        book: entry.book || "JHN",
-        chapter: Number(entry.chapter) || 1,
+        anchorOsis: entry.anchorOsis || (citaMatch ? `${citaMatch[1]}.${citaMatch[2]}.${citaMatch[3]}` : "JHN.1.1"),
+        book: entry.book || (citaMatch ? citaMatch[1] : "JHN"),
+        chapter: Number(entry.chapter) || (citaMatch ? Number(citaMatch[2]) : 1),
         macroThread: enrichedMacro,
         otEchoes: Array.isArray(entry.otEchoes) && entry.otEchoes.length > 0
           ? entry.otEchoes

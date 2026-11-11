@@ -12,6 +12,20 @@ import {
 export { CACHE_NAME, SHELL_CORE_ASSETS, buildOptInAssetList };
 
 /**
+ * Recorta un texto a `maxChars` sin partir palabras (`D8-R44` / `DEB-R44-09`):
+ * `"…llenad la tie"` nunca ocurre; se corta en el último espacio y se añade `…` sólo si hubo recorte.
+ */
+export function truncateAtWordBoundary(text, maxChars = 120) {
+  const clean = String(text ?? "").replace(/\s+/g, " ").trim();
+  const limit = Math.max(1, Number(maxChars) || 120);
+  if (clean.length <= limit) return clean;
+  const head = clean.slice(0, limit + 1);
+  const cut = head.lastIndexOf(" ");
+  const kept = (cut > 0 ? head.slice(0, cut) : clean.slice(0, limit)).replace(/[\s,;:.·—-]+$/u, "");
+  return `${kept}…`;
+}
+
+/**
  * Triggers an explicit opt-in offline pack download into CacheStorage and notifies
  * the active Service Worker controller (if present).
  * Never runs without explicit user action (preserving low-end mobile storage quota).
@@ -205,7 +219,7 @@ export class EcoDecoderMirror {
     const rebaseHex = `0x${this.unicode_block_base().toString(16).toUpperCase().padStart(4, "0")}`;
     const ordHuman = Math.max(1, Math.min(this.verse_count(), (Number(ordinal) || 0) + 1));
     const snippet =
-      String(activeVerseText || "").trim().slice(0, 72) ||
+      truncateAtWordBoundary(activeVerseText, 120) ||
       (this.langHint === "en"
         ? "In the beginning God created the heaven and the earth."
         : "En el principio creó Dios los cielos y la tierra.");

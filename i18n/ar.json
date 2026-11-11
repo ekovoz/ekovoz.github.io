@@ -290,6 +290,21 @@
   "print.tech_receipt_summary": "🔬 Optical & typographic receipt",
   "felices.open_in_bible": "📖 Open passage in The Bible",
   "felices.quick_actions": "Quick plate actions",
-  "felices.folding_optical_summary": "📖 Folding Guide, Optical Transfer & Contact"
+  "felices.folding_optical_summary": "📖 Folding Guide, Optical Transfer & Contact",
+  "felices.quickActionsSummary": "إجراءات سريعة للوحة",
+  "felices.foldingGuideSummary": "📖 دليل الطي والنقل البصري والتواصل",
+  "study.diachronic_summary": "عرض استبدالات 1909 → القرن الحادي والعشرين في هذا الأصحاح",
+  "print.fontSizeLabel": "حجم الخط (pt):",
+  "print.btn.imposition": "📐 حساب طي الكتيّب",
+  "print.btn.layout": "📏 فحص هوامش الصفحة (A4 / Letter)",
+  "print.btn.photocopy3gen": "🔬 اختبار وضوح النسخة المصوّرة (الجيل الثالث)",
+  "print.photocopyReceiptSummary": "🔬 إيصال بصري وطباعي",
+  "share.btn.copyLink": "🔗 نسخ رابط مباشر لهذا المقطع",
+  "share.fps.667": "6.67 FPS · 150 ms (آمن في الإضاءة الخافتة)",
+  "share.fps.10": "10 FPS · 100 ms (نقل سريع من الشاشة)",
+  "share.btn.cameraRx": "📷 الاستقبال بالكاميرا (بدون إنترنت)",
+  "share.btn.relayTx": "🔁 إعادة إرسال المقطع المستلم إلى هاتف آخر",
+  "share.btn.verifySig": "🔐 التحقق من التوقيع التحريري الأصلي",
+  "felices.closeBtn": "إغلاق"
  }
 }

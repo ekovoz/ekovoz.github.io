@@ -290,6 +290,21 @@
   "print.tech_receipt_summary": "🔬 Optical & typographic receipt",
   "felices.open_in_bible": "📖 Open passage in The Bible",
   "felices.quick_actions": "Quick plate actions",
-  "felices.folding_optical_summary": "📖 Folding Guide, Optical Transfer & Contact"
+  "felices.folding_optical_summary": "📖 Folding Guide, Optical Transfer & Contact",
+  "felices.quickActionsSummary": "ছবির দ্রুত কাজ",
+  "felices.foldingGuideSummary": "📖 ভাঁজ নির্দেশিকা, অপটিক্যাল স্থানান্তর ও যোগাযোগ",
+  "study.diachronic_summary": "এই অধ্যায়ে ১৯০৯ → একবিংশ শতকের প্রতিস্থাপন দেখুন",
+  "print.fontSizeLabel": "অক্ষরের আকার (pt):",
+  "print.btn.imposition": "📐 পুস্তিকার ভাঁজ হিসাব করুন",
+  "print.btn.layout": "📏 পৃষ্ঠার মার্জিন যাচাই করুন (A4 / লেটার)",
+  "print.btn.photocopy3gen": "🔬 ফটোকপির পাঠযোগ্যতা পরীক্ষা (৩য় প্রজন্ম)",
+  "print.photocopyReceiptSummary": "🔬 অপটিক্যাল ও টাইপোগ্রাফিক রসিদ",
+  "share.btn.copyLink": "🔗 এই অংশের সরাসরি লিংক কপি করুন",
+  "share.fps.667": "6.67 FPS · 150 ms (কম আলোতে নিরাপদ)",
+  "share.fps.10": "10 FPS · 100 ms (দ্রুত স্ক্রিন স্থানান্তর)",
+  "share.btn.cameraRx": "📷 ক্যামেরা দিয়ে গ্রহণ করুন (ইন্টারনেট ছাড়া)",
+  "share.btn.relayTx": "🔁 প্রাপ্ত অংশ অন্য ফোনে পাঠান",
+  "share.btn.verifySig": "🔐 আসল সম্পাদকীয় স্বাক্ষর যাচাই করুন",
+  "felices.closeBtn": "বন্ধ করুন"
  }
 }

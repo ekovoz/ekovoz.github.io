@@ -487,3 +487,24 @@ test("R36_SLICE_111_field_workshop_census_and_editorial_graphics_hydrators_mount
 
 
 
+
+test("D7_R44_patch_receipt_is_collapsed_and_root_notes_show_full_exegesis", async () => {
+  const html = renderImproveDrawerHtml({ kind: "verse", lang: "stp", locale: "es", uiLocale: "es", ref: "ROM.1.16", strongId: "H0430", currentVerseText: "Jich Xoi'kam" });
+  const detailsIdx = html.indexOf('<details id="improvePatchTechReceiptDetails"');
+  const preIdx = html.indexOf('id="improvePatchOutput"');
+  const closeIdx = html.indexOf("</details>", detailsIdx);
+  assert.ok(detailsIdx >= 0 && preIdx > detailsIdx && preIdx < closeIdx, "#improvePatchOutput debe vivir dentro del recibo plegable");
+  assert.ok(!html.slice(detailsIdx, preIdx).includes(" open"), "el recibo inicia plegado");
+  assert.ok(!html.includes('class="eight-locks-pda-bar"'), "la Sub-pestaña 1 no repite la barra de 8 candados");
+
+  const { renderCrdtWalAndLockP2AuditCardHtml } = await import("./drawer_workshop.js");
+  const card = renderCrdtWalAndLockP2AuditCardHtml({
+    root_notes_stp: {
+      H0430: { surface_stp: "Jich Xoi'kam", note: "Raíz divina en plural mayestático; se conserva el saltillo ꞌ." },
+      H7225: { surface_stp: "Bhaimuk", note: "Principio absoluto; evita calco de 'cabeza'." },
+    },
+  });
+  assert.ok(card.includes('id="rootNotesStpFullNotes"'));
+  assert.ok(card.includes("Raíz divina en plural mayestático"), "nota exegética completa visible");
+  assert.ok(card.includes("Jich Xoi&#39;kam") || card.includes("Jich Xoi'kam"), "superficie stp visible");
+});

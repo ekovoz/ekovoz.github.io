@@ -470,3 +470,84 @@ test("R37_SLICE_116_highlight_study_card_by_strong_id_and_active_strong_option",
 
 
 
+
+test("D2_R44_semantic_tags_humanized_bilingually_without_raw_jargon", async () => {
+  const { formatHumanReadable14ColFields, humanizeSemanticTagChain } = await import("./estudio.js");
+  const es = formatHumanReadable14ColFields(
+    {
+      c11_semantic_domain: "MACULA:A1_PATIENT|EVID:DIRECT_SENSORY",
+      c13_nsm_65: "VOICE:THEOPHANIC_DIRECT_SPEECH|UNIVERSAL_TRANSPARENT:NONE",
+    },
+    "es",
+  );
+  assert.equal(es.domainHuman, "Paciente (quien recibe la acción) · Evidencia sensorial directa");
+  assert.equal(es.nsmHuman, "Discurso directo de Dios");
+  const en = formatHumanReadable14ColFields({ c11_semantic_domain: "MACULA:PREDICATE_CORE", c13_nsm_65: "VOICE:∅|UNIVERSAL_TRANSPARENT:NONE" }, "en");
+  assert.equal(en.domainHuman, "Predicate core");
+  assert.equal(en.nsmHuman, "GOD · SAY · DO");
+  assert.equal(humanizeSemanticTagChain("SDBH:Names_of_Constructions", "es"), "Nombres de construcciones");
+  assert.equal(humanizeSemanticTagChain("NSM_65:SDBH:DO_HAPPEN", "es"), "Do happen");
+  for (const v of [es.domainHuman, es.nsmHuman, en.domainHuman]) {
+    assert.ok(!/MACULA:|EVID:|VOICE:|SDBH:|UNIVERSAL_TRANSPARENT/.test(v), `jerga cruda filtrada: ${v}`);
+  }
+});
+
+test("D3_R44_diachronic_rule_chips_strip_regex_markers", async () => {
+  const { getAll156DiachronicSubstitutionsCatalog, humanizeDiachronicPatternSource } = await import("./diachronic_register.js");
+  assert.equal(humanizeDiachronicPatternSource("(?i)\\bhabéis\\b"), "habéis");
+  assert.equal(humanizeDiachronicPatternSource("\\bhabéis dicho\\b"), "habéis dicho");
+  const catalog = getAll156DiachronicSubstitutionsCatalog();
+  assert.ok(catalog.length >= 60);
+  for (const r of catalog) {
+    assert.ok(!r.archaic.includes("\\b") && !r.archaic.includes("(?i)"), `marcador regex visible: ${r.archaic}`);
+  }
+  assert.ok(catalog.some((r) => r.tier === 2 && r.archaic === "habéis" && r.modern === "han"));
+});
+
+test("D2_R44_diachronic_audit_panel_mounts_without_nested_duplicate_id", async () => {
+  const { hydrateStudyDrawerPanel } = await import("./drawer_study.js");
+  const els = new Map();
+  const mkEl = (id) => {
+    const el = {
+      id,
+      innerHTML: "",
+      value: "",
+      attrs: {},
+      getAttribute(k) { return k === "id" ? id : this.attrs[k] ?? null; },
+      setAttribute(k, v) { this.attrs[k] = String(v); },
+      addEventListener() {},
+    };
+    els.set(id, el);
+    return el;
+  };
+  for (const id of ["leipzig14ColStratumAction", "diachronicRegisterAuditPanel", "wfstAndScriptioContinuaHost"]) mkEl(id);
+  const targetDoc = { getElementById: (id) => els.get(id) || null };
+  const state = {
+    book: "MAT",
+    chapter: 5,
+    verse: 3,
+    lang: "es",
+    uiLocale: "es",
+    lastNavResult: { chapter: { verses: { "3": "Bienaventurados los pobres en espíritu, porque habéis visto el reino." } } },
+  };
+  const studyMod = await import("./estudio.js");
+  await hydrateStudyDrawerPanel({
+    state,
+    targetDoc,
+    getEl: (id, d = targetDoc) => d.getElementById(id),
+    getI18n: () => null,
+    dataLayer: { loadMatrixChapter: async () => ({ book: "MAT", chapter: 5, rows: [] }) },
+    loadStudyModule: async () => studyMod,
+    withPreservedInputFocus: (_d, fn) => fn(),
+    navigate: async () => {},
+    transitionSheet: async () => {},
+    hydrateBookAndChapterSelectors: () => {},
+  });
+  const panelHtml = els.get("diachronicRegisterAuditPanel").innerHTML;
+  assert.ok(panelHtml.length > 0, "el panel diacrónico debe hidratarse");
+  assert.equal(
+    (panelHtml.match(/id="diachronicRegisterAuditPanel"/g) || []).length,
+    0,
+    "INV-ERG-23: el panel no debe anidar otro nodo con su mismo id",
+  );
+});

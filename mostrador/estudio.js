@@ -156,6 +156,53 @@ export function classifyMaculaArgumentRole(roleRaw, morphRaw = "") {
 }
 
 /**
+ * Glosario bilingüe de etiquetas semánticas compiladas en la Matriz 14-Col (`D2-R44` / `DEB-R44-04`):
+ * roles MACULA, evidencialidad, voz/foco y dominios léxicos SDBH, para que la UI nunca muestre jerga cruda.
+ */
+export const SEMANTIC_TAG_GLOSSARY = {
+  "MACULA:PREDICATE_CORE": ["Núcleo predicativo", "Predicate core"],
+  "MACULA:A0_AGENT": ["Agente (quien actúa)", "Agent (who acts)"],
+  "MACULA:A1_PATIENT": ["Paciente (quien recibe la acción)", "Patient (receives the action)"],
+  "MACULA:A2_INDIRECT_LOCATIVE": ["Destinatario o lugar", "Recipient or place"],
+  "EVID:DIRECT_SENSORY": ["Evidencia sensorial directa", "Direct sensory evidence"],
+  "EVID:INFERENTIAL_WISDOM": ["Inferencia sapiencial", "Inferential wisdom"],
+  "VOICE:ACTIVE_AGENT_FOCUS": ["Voz activa (foco en quien actúa)", "Active voice (agent focus)"],
+  "VOICE:PASSIVE_PATIENT_PROMOTION": ["Voz pasiva (foco en quien recibe)", "Passive voice (patient focus)"],
+  "VOICE:THEOPHANIC_DIRECT_SPEECH": ["Discurso directo de Dios", "God's direct speech"],
+  "VOICE:POETIC_PARALLELISM_AB": ["Paralelismo poético A‖B", "Poetic parallelism A‖B"],
+  "SDBH:NAMES_OF_CONSTRUCTIONS": ["Nombres de construcciones", "Names of constructions"],
+  "SDBH:HAPPEN": ["Acontecer", "Happen"],
+  "SDBH:MOVE": ["Movimiento", "Movement"],
+  "SDBH:SPACE": ["Espacio", "Space"],
+  "SDBH:TIME": ["Tiempo", "Time"],
+  "SDBH:PEOPLE": ["Personas / pueblos", "People"],
+  "SDBH:AFFIRMATION": ["Afirmación", "Affirmation"],
+  "SDBH:COMMUNICATION": ["Comunicación", "Communication"],
+  "SDBH:KNOW": ["Conocimiento", "Knowing"],
+};
+
+const SEMANTIC_TAG_SILENT = new Set(["VOICE:∅", "UNIVERSAL_TRANSPARENT:NONE", "∅", "MACULA:∅", "EVID:∅"]);
+
+/**
+ * Traduce una etiqueta compuesta (`MACULA:A1_PATIENT|EVID:DIRECT_SENSORY`) a lenguaje humano en `uiLocale`.
+ */
+export function humanizeSemanticTagChain(rawTag, uiLocale = "es") {
+  const isEn = String(uiLocale || "es").trim().toLowerCase().startsWith("en");
+  const parts = String(rawTag || "")
+    .split("|")
+    .map((p) => p.trim())
+    .filter((p) => p && !SEMANTIC_TAG_SILENT.has(p.toUpperCase()));
+  const human = parts.map((p) => {
+    const key = p.toUpperCase().replace(/\s+/g, "_").replace(/^NSM_65:/, "");
+    const hit = SEMANTIC_TAG_GLOSSARY[key];
+    if (hit) return isEn ? hit[1] : hit[0];
+    const bare = p.replace(/^(?:NSM_65:)?(?:SDBH|LN|MACULA|EVID|VOICE|PRIM):/i, "").replace(/_/g, " ").trim().toLowerCase();
+    return bare ? bare.charAt(0).toUpperCase() + bare.slice(1) : "";
+  });
+  return [...new Set(human.filter(Boolean))].join(" · ");
+}
+
+/**
  * Humaniza las columnas técnicas de la Matriz de 14 Columnas (`D4-R39` / `DEB-R39-03`),
  * limpiando prefijos internos (`NSM_65:SDBH:`, `|PRIM:`) y evitando mostrar `Rol: ∅`.
  */
@@ -168,19 +215,10 @@ export function formatHumanReadable14ColFields(row = {}, uiLocale = "es") {
 
   const roleHuman = !rawRole || rawRole === "∅" ? (isEn ? "Lexical core" : "Núcleo léxico") : rawRole;
   const clauseHuman = !rawClause || rawClause === "∅" ? "C1" : rawClause;
-  const domainHuman =
-    rawDomain
-      .replace(/^(?:SDBH|LN):/i, "")
-      .replace(/_/g, " ")
-      .trim() || "General";
+  const domainHuman = humanizeSemanticTagChain(rawDomain, uiLocale) || "General";
   const nsmHuman =
-    rawNsm
-      .replace(/NSM_65:(?:SDBH|LN):/gi, "")
-      .replace(/\|PRIM:/gi, isEn ? " · Primitives: " : " · Primitivos: ")
-      .replace(/NSM_65:/gi, "")
-      .replace(/(?:SDBH|LN):/gi, "")
-      .replace(/_/g, " ")
-      .trim() || (isEn ? "GOD · SAY · DO" : "DIOS · DECIR · HACER");
+    humanizeSemanticTagChain(rawNsm.replace(/\|PRIM:/gi, "|"), uiLocale) ||
+    (isEn ? "GOD · SAY · DO" : "DIOS · DECIR · HACER");
 
   return {
     roleHuman,
@@ -650,7 +688,7 @@ export function aggregateBlindCalibration12Langs(calibrationReport = null) {
       const lang = String(row.lang_code || row.language || row.lang || "es");
       const score = Number(
         row.chrf_plus_plus ??
-          (row.exact_match_ratio !== undefined ? Number(row.exact_match_ratio) * 100 : 96.5),
+        (row.exact_match_ratio !== undefined ? Number(row.exact_match_ratio) * 100 : 96.5),
       );
       const passed = row.passed !== false;
       totalChrf += score;
@@ -966,7 +1004,7 @@ export function renderPhilologyRosettaInspectorHtml(activeRows = [], options = {
 
   const calSummary = aggregateBlindCalibration12Langs(
     rosettaIndex?.blind_calibration_report ||
-      PHILOLOGY_ROSETTA_DEFAULT_INDEX.blind_calibration_report,
+    PHILOLOGY_ROSETTA_DEFAULT_INDEX.blind_calibration_report,
   );
   const chrfScore = calSummary.meanChrfPlusPlus.toFixed(2);
   const byLangPills = (calSummary.byLanguage || [])
@@ -1610,8 +1648,8 @@ export function highlightStudyCardByStrongId(containerEl, strongId) {
   for (const card of cards) {
     const cardStrong = String(
       (typeof card.getAttribute === "function" && card.getAttribute("data-strong-id")) ||
-        card.dataset?.strongId ||
-        ""
+      card.dataset?.strongId ||
+      ""
     )
       .trim()
       .toUpperCase();

@@ -355,6 +355,15 @@ export function createI18n(opts = {}) {
     if (doc && doc.documentElement) {
       doc.documentElement.setAttribute("lang", locale);
       doc.documentElement.setAttribute("dir", meta().dir === "rtl" ? "rtl" : "ltr");
+      if (typeof doc.documentElement.innerHTML === "string" && cache.size > 0) {
+        const bij = verifyDataI18nCatalogBijection(
+          doc.documentElement.innerHTML,
+          Object.fromEntries(cache),
+        );
+        for (const key of bij.keys) {
+          if (!resolve(key)) missing.add(key);
+        }
+      }
     }
   }
 
@@ -437,6 +446,24 @@ export function applyToDom(root, i18nInstance, params = {}) {
 }
 
 const RTL_LANG_SET = new Set(["ar", "ur", "fa", "he", "ar-xb", "ps", "sd", "ug", "yi", "dv", "ckb"]);
+
+/**
+ * Biyección 1:1 `data-i18n` ↔ catálogos (`D1-R44`, `INV-ERG-25`): devuelve, por locale, las claves
+ * `data-i18n="…"` del HTML estático que no existen como cadena en `catalog.messages`. Un resultado vacío
+ * garantiza que `applyToDom` nunca deje texto obsoleto ni mezcle idiomas en el cromo.
+ */
+export function verifyDataI18nCatalogBijection(htmlText, catalogsByLocale = {}) {
+  const keys = [...new Set([...String(htmlText || "").matchAll(/data-i18n="([^"]+)"/g)].map((m) => m[1].trim()))]
+    .filter(Boolean)
+    .sort();
+  const missingByLocale = {};
+  for (const [locale, catalog] of Object.entries(catalogsByLocale || {})) {
+    const messages = extractMessagesDict(catalog);
+    const missing = keys.filter((k) => typeof messages[k] !== "string" || messages[k].trim() === "");
+    if (missing.length > 0) missingByLocale[locale] = missing;
+  }
+  return { keys, missingByLocale, ok: Object.keys(missingByLocale).length === 0 };
+}
 
 export function isRtlLocale(tag) {
   const clean = String(tag || "").trim().toLowerCase();

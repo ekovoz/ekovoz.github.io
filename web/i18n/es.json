@@ -290,6 +290,21 @@
   "print.tech_receipt_summary": "🔬 Recibo óptico y tipográfico",
   "felices.open_in_bible": "📖 Abrir pasaje en La Biblia",
   "felices.quick_actions": "Acciones rápidas de lámina",
-  "felices.folding_optical_summary": "📖 Guía de doblado, transferencia óptica y contacto"
+  "felices.folding_optical_summary": "📖 Guía de doblado, transferencia óptica y contacto",
+  "felices.quickActionsSummary": "Acciones rápidas de la lámina",
+  "felices.foldingGuideSummary": "📖 Guía de plegado, transferencia óptica y contacto",
+  "study.diachronic_summary": "Ver sustituciones 1909 → Siglo XXI en este capítulo",
+  "print.fontSizeLabel": "Tamaño de letra (pt):",
+  "print.btn.imposition": "📐 Calcular plegado del cuadernillo",
+  "print.btn.layout": "📏 Revisar márgenes de página (A4 / Carta)",
+  "print.btn.photocopy3gen": "🔬 Probar legibilidad en fotocopia (3.ª generación)",
+  "print.photocopyReceiptSummary": "🔬 Comprobante óptico y tipográfico",
+  "share.btn.copyLink": "🔗 Copiar enlace directo a este pasaje",
+  "share.fps.667": "6.67 FPS · 150 ms (seguro con poca luz)",
+  "share.fps.10": "10 FPS · 100 ms (transferencia rápida de pantalla)",
+  "share.btn.cameraRx": "📷 Recibir con la cámara (sin internet)",
+  "share.btn.relayTx": "🔁 Reenviar el pasaje recibido a otro teléfono",
+  "share.btn.verifySig": "🔐 Verificar firma editorial auténtica",
+  "felices.closeBtn": "Cerrar"
  }
 }

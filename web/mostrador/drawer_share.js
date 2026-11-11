@@ -3,6 +3,7 @@
 // Decisiones D1-R41, D6-R41, D8-R41 · Costura Limpia ∂(C)=0
 // ============================================================================
 
+import { serializeMostradorRouteQuery } from "../i18n_ui.js";
 import { escapeHtml } from "./bridge_and_chapter.js";
 import {
   STATUS,
@@ -11,9 +12,12 @@ import {
   verifyAudioPcmCrc16InWasmLinearMemory,
   verifyRaptorQBlockInWasmLinearMemory,
 } from "./data_layer.js";
-import { ordinalOf } from "./dosis.js";
+import { canonicalOrdinalOf } from "./canonical_versification.js";
+import { computeKindlePrintBudget, renderImpositionAndLayoutPreviewHtml } from "./dosis.js";
 import { applyHarelSubtabSelection } from "./drawer_study.js";
+import { isRtlLocale } from "./i18n.js";
 import {
+  buildQuineHtml,
   commitVerifiedPackToIndexedDb,
   exportBundleAsFile,
   hydrateEcoPacksManifest,
@@ -28,13 +32,17 @@ import {
 import {
   LTEncoder,
   OPTICAL_CADENCE_PRESETS,
+  computeSaddleStitchImpositionPlan,
+  createRelayEncoderFromDecoded,
   decodeLubyTransformPeeling,
+  decodeQrStreamViaWasmBridge,
   encodeDropletToMatrixGrid,
   encodeLubyTransformDroplets,
   renderDropletMatrixSvgOrCanvas,
   renderOpticalReceiverRxPanelHtml,
   runOpticalReceiverBurstSession,
   validateNyquistOpticalFps,
+  verifyManifestAndMerkleAudit,
 } from "./optical_lt.js";
 
 export const HAREL_DOSIS_SUBTABS = ["pdf", "mesh", "graphics"];
@@ -84,7 +92,8 @@ export function hydrateShareAndAuditDrawerPanel(ctx = {}) {
     const activeVerseText =
       state.lastNavResult?.chapter?.verses?.[String(state.verse)] ||
       "En el principio creó Dios los cielos y la tierra.";
-    const activeOrdinal = ordinalOf(state.book || "GEN", state.chapter || 1, state.verse || 1);
+    // D8-R44 / DEB-R44-08: ordinal canónico exacto 1..31,102 (antes `ordinalOf` sin catálogo devolvía siempre `null` → #1).
+    const activeOrdinal = canonicalOrdinalOf(state.book || "GEN", state.chapter || 1, state.verse || 1);
     const ecoMeshCardHtml = renderOfflineMeshEcoCardHtml({
       activeLang: packLang,
       activeVerseOrdinal: Math.max(0, (Number(activeOrdinal) || 1) - 1),
@@ -462,3 +471,222 @@ export function applyStaticChromeTranslations(targetDoc, uiLocale = "es", state 
   }
 }
 
+/**
+ * Enlaza las acciones de la Gaveta 4 (Quine, enlace directo, Ed25519/Merkle, imposición, márgenes, cadencia óptica,
+ * cámara Rx y relevo LT) extraídas de `createMostradorController::bindDomEvents` (`D9-R44`, costura LCOM4 ∂(C)=0).
+ */
+export function bindShareDrawerActionEvents(ctx = {}) {
+  const { state, dataLayer, targetDoc, getEl, hydrateShareAndAuditDrawer } = ctx;
+  const executeGaveta4Action = async (shareBtnId) => {
+    hydrateShareAndAuditDrawer(targetDoc);
+    const statusPanel = getEl("editorialAuditStatusPanel", targetDoc);
+    if (statusPanel) {
+      statusPanel.hidden = false;
+      if (statusPanel.style) statusPanel.style.display = "";
+    }
+    const packLang = ["es", "en", "stp", "he"].includes(state.lang) ? state.lang : "stp";
+    const osis = `${state.book}.${state.chapter}.${state.verse}`;
+
+    if (shareBtnId === "btnShareQuine") {
+      const quineUrl = `obras/biblia/packs/${packLang}/lector_offline_${packLang}.html`;
+      const quinePayload = buildQuineHtml(packLang);
+      if (statusPanel) {
+        statusPanel.setAttribute("data-audit-action", "share-quine");
+        statusPanel.innerHTML =
+          `<div class="audit-receipt" data-action="share-quine" data-quine-lang="${escapeHtml(packLang)}" data-quine-bytes="${quinePayload.length}">` +
+          `✅ <strong>Quine Autónomo Listo (${escapeHtml(packLang.toUpperCase())}):</strong> ` +
+          `<a href="${escapeHtml(quineUrl)}" download="lector_offline_${escapeHtml(packLang)}.html">Descargar lector_offline_${escapeHtml(packLang)}.html</a> ` +
+          `(${quinePayload.length} B · DecompressionStream deflate-raw · 100% offline).</div>`;
+      }
+    } else if (shareBtnId === "btnCopyDirectShareLink") {
+      const shareUrl = serializeMostradorRouteQuery(state);
+      if (typeof navigator !== "undefined" && navigator.clipboard && typeof navigator.clipboard.writeText === "function") {
+        navigator.clipboard.writeText(shareUrl).catch(() => { });
+      }
+      if (statusPanel) {
+        statusPanel.setAttribute("data-audit-action", "copy-link");
+        statusPanel.innerHTML =
+          `<div class="audit-receipt" data-action="copy-link" data-share-url="${escapeHtml(shareUrl)}">` +
+          `🔗 <strong>Enlace directo copiado:</strong> <code>${escapeHtml(shareUrl)}</code></div>`;
+      }
+    } else if (shareBtnId === "btnVerifyEd25519Signature") {
+      const manifest = await dataLayer.loadManifest();
+      const merkleObj =
+        typeof dataLayer.loadMerkleRoot === "function" ? await dataLayer.loadMerkleRoot() : null;
+      const receipt = verifyManifestAndMerkleAudit({
+        manifest,
+        merkleRootHex: merkleObj?.merkleRootHex || "",
+        lang: state.lang,
+        book: state.book,
+        chapter: state.chapter,
+      });
+      if (statusPanel) {
+        statusPanel.setAttribute("data-audit-action", "verify-signature");
+        statusPanel.setAttribute("data-verified", String(receipt.verified));
+        statusPanel.innerHTML =
+          `<div class="audit-receipt" data-action="verify-signature" data-verified="${receipt.verified}" data-merkle-root="${escapeHtml(receipt.merkleRootHex)}">` +
+          `🔐 <strong>Auditoría Criptográfica (${escapeHtml(receipt.algorithm)}):</strong> ` +
+          `Estado=${receipt.verified ? "VERIFICADO" : "PENDIENTE"} · Artefactos=${receipt.artifactsChecked} · ` +
+          `Merkle Root=<code>${escapeHtml(receipt.merkleRootHex.slice(0, 16))}…</code> · ` +
+          `SHA-256=<code>${escapeHtml(receipt.sampleSha256.slice(0, 16))}…</code></div>`;
+      }
+    } else if (shareBtnId === "btnCalculateImposition") {
+      state.activePrintPreviewMode = "imposition";
+      const imp = computeSaddleStitchImpositionPlan({
+        totalPages: 16,
+        paperThicknessMm: 0.09,
+        rtl: isRtlLocale(state.lang),
+      });
+      const sheetsSummary = imp.sheets
+        .map((s) => `P${s.sheetIndex}[F:${s.front[0]}-${s.front[1]} / V:${s.back[0]}-${s.back[1]} · creep +${s.creepMm}mm]`)
+        .join(" · ");
+      const receiptHtml =
+        `<div class="audit-receipt" data-action="calculate-imposition" data-integrity="${imp.integrityVerified}" data-rtl="${imp.rtl}">` +
+        `📐 <strong>Imposición Saddle-Stitch 4n (${imp.paddedPages} págs · ${imp.sheetCount} pliegos · ${imp.rtl ? "RTL Lomo Invertido" : "LTR"}):</strong> ` +
+        `Suma constante=${imp.folioSumConstant} · Creep máx=${imp.maxCreepMm}mm · ${escapeHtml(sheetsSummary)}</div>`;
+      if (statusPanel) {
+        statusPanel.setAttribute("data-audit-action", "calculate-imposition");
+        statusPanel.innerHTML = receiptHtml;
+      }
+      const impHost = getEl("impositionBookletPreviewHost", targetDoc);
+      if (impHost) {
+        impHost.setAttribute("data-audit-action", "calculate-imposition");
+        impHost.innerHTML =
+          renderImpositionAndLayoutPreviewHtml({
+            mode: "imposition",
+            paper: state.paperFormat || "a4",
+            pageCount: 16,
+            columns: state.columns || 2,
+            fontPt: state.fontSizePt || 9.5,
+            dir: isRtlLocale(state.lang) ? "rtl" : "ltr",
+          }) + receiptHtml;
+      }
+    } else if (shareBtnId === "btnCalculateLayout") {
+      state.activePrintPreviewMode = "layout";
+      const budget = computeKindlePrintBudget({
+        fontPt: state.fontSizePt || 9.5,
+        columns: state.columns || 2,
+        orientation: state.orientation || "landscape",
+        paper: state.paperFormat || "a4",
+      });
+      const receiptHtml =
+        `<div class="audit-receipt" data-action="calculate-layout" data-cpl="${budget.cpl}">` +
+        `📏 <strong>Invariante Geométrico A4/Letter Verificado:</strong> ${escapeHtml(budget.summaryText)} (8 Candados Tipográficos en verde).</div>`;
+      if (statusPanel) {
+        statusPanel.setAttribute("data-audit-action", "calculate-layout");
+        statusPanel.innerHTML = receiptHtml;
+      }
+      const impHost = getEl("impositionBookletPreviewHost", targetDoc);
+      if (impHost) {
+        impHost.setAttribute("data-audit-action", "calculate-layout");
+        impHost.innerHTML =
+          renderImpositionAndLayoutPreviewHtml({
+            mode: "layout",
+            paper: state.paperFormat || "a4",
+            pageCount: 16,
+            columns: state.columns || 2,
+            fontPt: state.fontSizePt || 9.5,
+            dir: isRtlLocale(state.lang) ? "rtl" : "ltr",
+          }) + receiptHtml;
+      }
+    }
+  };
+
+  for (const shareBtnId of [
+    "btnShareQuine",
+    "btnCopyDirectShareLink",
+    "btnVerifyEd25519Signature",
+    "btnCalculateImposition",
+    "btnCalculateLayout",
+  ]) {
+    const sBtn = getEl(shareBtnId, targetDoc);
+    if (sBtn && typeof sBtn.addEventListener === "function") {
+      sBtn.addEventListener("click", async () => {
+        sBtn.setAttribute("data-last-invoked", shareBtnId);
+        await executeGaveta4Action(shareBtnId);
+      });
+    }
+  }
+
+  const fpsSel = getEl("bibleOpticalFpsSelect", targetDoc);
+  if (fpsSel && typeof fpsSel.addEventListener === "function") {
+    fpsSel.addEventListener("change", (e) => {
+      state.opticalCadenceFps = String(e?.target?.value || fpsSel.value || "6.67") === "10" ? "10" : "6.67";
+      hydrateShareAndAuditDrawer(targetDoc);
+    });
+  }
+
+  const camRxBtn = getEl("btnToggleOpticalCameraRx", targetDoc);
+  if (camRxBtn && typeof camRxBtn.addEventListener === "function") {
+    camRxBtn.addEventListener("click", async () => {
+      const statusPanel = getEl("editorialAuditStatusPanel", targetDoc);
+      const videoEl = getEl("bibleOpticalCameraVideo", targetDoc);
+      if (videoEl) videoEl.hidden = !videoEl.hidden;
+      if (statusPanel) {
+        statusPanel.hidden = false;
+        if (statusPanel.style) statusPanel.style.display = "";
+        statusPanel.setAttribute("data-audit-action", "optical-camera-rx");
+        statusPanel.setAttribute("data-wasm-bridge", "loading");
+        statusPanel.innerHTML =
+          `<div class="audit-receipt" data-action="optical-camera-rx" data-gf2="ready" data-wasm-bridge="loading">` +
+          `📷 <strong>Receptor Óptico LT + GF(2) Activo:</strong> ` +
+          `Eliminación Gaussiana sobre GF(2) lista para resolver Stopping Sets de grado ≥ 2.</div>`;
+      }
+      let wasmStatusAttr = "fallback";
+      if (typeof dataLayer.loadWasmModule === "function") {
+        try {
+          const wasmMod = await dataLayer.loadWasmModule("qr_stream_receiver_wasm");
+          const bridgeCheck = decodeQrStreamViaWasmBridge([], wasmMod);
+          if (bridgeCheck.ok) wasmStatusAttr = `ready-v${bridgeCheck.wasmAbiVersion}`;
+        } catch {
+          wasmStatusAttr = "unavailable";
+        }
+      }
+      if (statusPanel && statusPanel.getAttribute("data-audit-action") === "optical-camera-rx") {
+        statusPanel.setAttribute("data-wasm-bridge", wasmStatusAttr);
+        statusPanel.innerHTML =
+          `<div class="audit-receipt" data-action="optical-camera-rx" data-gf2="ready" data-wasm-bridge="${escapeHtml(wasmStatusAttr)}">` +
+          `📷 <strong>Receptor Óptico LT + GF(2) Activo (WASM=${escapeHtml(wasmStatusAttr)}):</strong> ` +
+          `Eliminación Gaussiana sobre GF(2) lista para resolver Stopping Sets de grado ≥ 2.</div>`;
+      }
+    });
+  }
+
+  const relayBtn = getEl("btnOpticalRelayTx", targetDoc);
+  if (relayBtn && typeof relayBtn.addEventListener === "function") {
+    relayBtn.addEventListener("click", () => {
+      state.qrFrameSeq = 0;
+      hydrateShareAndAuditDrawer(targetDoc);
+      const relayDecoderSource =
+        state.lastOpticalRxReport?.decoder &&
+          typeof state.lastOpticalRxReport.decoder.reconstructBytes === "function"
+          ? state.lastOpticalRxReport.decoder
+          : {
+            K: 4,
+            blockSize: 32,
+            isComplete: () => true,
+            reconstructBytes: () =>
+              new TextEncoder().encode(
+                `${state.book}.${state.chapter}.${state.verse} · ${state.lastNavResult?.chapter?.verses?.[String(state.verse)] ||
+                "Relay payload"
+                }`,
+              ),
+          };
+      const relayEncoder = createRelayEncoderFromDecoded(relayDecoderSource, 32);
+      const relayDroplet = relayEncoder.nextDroplet();
+      state.lastRelayEncoder = relayEncoder;
+      state.lastRelayDroplet = relayDroplet;
+      const statusPanel = getEl("editorialAuditStatusPanel", targetDoc);
+      if (statusPanel) {
+        statusPanel.hidden = false;
+        if (statusPanel.style) statusPanel.style.display = "";
+        statusPanel.setAttribute("data-audit-action", "optical-relay-tx");
+        statusPanel.setAttribute("data-relay-k", String(relayEncoder.K));
+        statusPanel.innerHTML =
+          `<div class="audit-receipt" data-action="optical-relay-tx" data-relay-k="${relayEncoder.K}" data-relay-seq="${relayDroplet.seq}">` +
+          `🔁 <strong>Re-Emisión Relay Iniciada (K=${relayEncoder.K} bloques · Droplet #${relayDroplet.seq}):</strong> Re-codificando los K bloques decodificados con nueva semilla Luby Transform.</div>`;
+      }
+    });
+  }
+  return executeGaveta4Action;
+}

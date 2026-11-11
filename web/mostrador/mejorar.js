@@ -1001,7 +1001,11 @@ export function renderImproveDrawerHtml({
     `<span data-i18n="improve.note">${t("improve.note")}</span>` +
     `<input id="improveNoteInput" type="text" value="" style="width:100%;min-height:48px;padding:0.4rem;">` +
     `</label>` +
+    // D7-R44 / DEB-R44-10: el recibo JSONL/SHA-256 queda plegado por defecto (Apple HIG: lo técnico, a un toque).
+    `<details id="improvePatchTechReceiptDetails" class="hig-tech-meta hig-tech-receipt-details">` +
+    `<summary>${isEn ? "🧾 View JSONL / SHA-256 cryptographic receipt" : "🧾 Ver recibo criptográfico JSONL / SHA-256"}</summary>` +
     `<pre id="improvePatchOutput" style="padding:0.6rem;border-radius:8px;background:var(--bg-secondary);font-size:0.78rem;overflow-x:auto;">${patch.payloadLine}</pre>` +
+    `</details>` +
     (includeInlineSeedPanel
       ? `<div class="celf250-ladder-panel" data-celf250-ladder="true" data-celf250-rank="${seed250.rank}" style="padding:0.6rem;border-radius:8px;border:1px solid var(--card-border);">` +
         `<strong style="font-size:0.82rem;">🧬 ${isEn ? `Active CELF-250 Ladder (#${seed250.rank}/250 · 30 Hours · 0 Bytes Audio)` : `Escalera Activa CELF-250 (#${seed250.rank}/250 · 30 Horas · 0 Bytes Audio)`}</strong>` +

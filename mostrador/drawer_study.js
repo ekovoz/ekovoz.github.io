@@ -609,25 +609,27 @@ export async function hydrateStudyDrawerPanel(ctx = {}) {
       state.book,
       state.chapter,
     );
+    // D2-R44 / DEB-R44-05: el termómetro del pasaje se proyecta sin su `<details>` interno, porque Gaveta 1 ya
+    // monta `#diachronicSubstitutionsDetails` + `#diachronicRegisterAuditPanel` estáticos (evita IDs anidados).
     const unifiedCtxHtml = renderUnifiedDiachronicContextHtml({
-      verseText: chapterVerses[String(state.verse)] || "",
+      verses: chapterVerses,
       bookCode: state.book,
       chapter: state.chapter,
-      verse: state.verse,
+      osisRef: `${state.book}.${state.chapter}.${state.verse}`,
+      includeInlineSubstitutionsDetails: false,
     });
-    const combinedAuditHtml =
-      renderChapterDiachronicAuditCardHtml({
-        verses: chapterVerses,
-        bookCode: state.book,
-        chapter: state.chapter,
-        query: state.diachronicQuery || "",
-        activeTier: state.diachronicTier || 0,
-        uiLocale: state.uiLocale || "es",
-      }) +
-      witnessesHtml +
-      unifiedCtxHtml;
-    mountCardHtmlIntoHost(diachronicAuditPanel, combinedAuditHtml);
-    diachronicAuditPanel.innerHTML = combinedAuditHtml;
+    const auditCardHtml = renderChapterDiachronicAuditCardHtml({
+      verses: chapterVerses,
+      bookCode: state.book,
+      chapter: state.chapter,
+      query: state.diachronicQuery || "",
+      activeTier: state.diachronicTier || 0,
+      uiLocale: state.uiLocale || "es",
+    });
+    // D2-R44 / DEB-R44-05: la tarjeta trae su propio `id="diachronicRegisterAuditPanel"`; se monta una sola vez
+    // desenvolviendo el contenedor (sin anidar el mismo id) y después se anexan testigos + contexto unificado.
+    mountCardHtmlIntoHost(diachronicAuditPanel, auditCardHtml);
+    diachronicAuditPanel.innerHTML = `${diachronicAuditPanel.innerHTML || ""}${witnessesHtml}${unifiedCtxHtml}`;
     const diaSearchInp = getEl("diachronicSubstitutionsSearchInput", targetDoc);
     const diaTierSel = getEl("diachronicTierFilterSelect", targetDoc);
     const refreshDiachronicRulesList = () => {

@@ -290,6 +290,21 @@
   "print.tech_receipt_summary": "🔬 Optical & typographic receipt",
   "felices.open_in_bible": "📖 Open passage in The Bible",
   "felices.quick_actions": "Quick plate actions",
-  "felices.folding_optical_summary": "📖 Folding Guide, Optical Transfer & Contact"
+  "felices.folding_optical_summary": "📖 Folding Guide, Optical Transfer & Contact",
+  "felices.quickActionsSummary": "चित्र के त्वरित कार्य",
+  "felices.foldingGuideSummary": "📖 मोड़ने की मार्गदर्शिका, ऑप्टिकल स्थानांतरण और संपर्क",
+  "study.diachronic_summary": "इस अध्याय में 1909 → 21वीं सदी के प्रतिस्थापन देखें",
+  "print.fontSizeLabel": "अक्षर आकार (pt):",
+  "print.btn.imposition": "📐 पुस्तिका की तह की गणना करें",
+  "print.btn.layout": "📏 पृष्ठ हाशिये जाँचें (A4 / लेटर)",
+  "print.btn.photocopy3gen": "🔬 फोटोकॉपी पठनीयता जाँचें (तीसरी पीढ़ी)",
+  "print.photocopyReceiptSummary": "🔬 ऑप्टिकल और टाइपोग्राफ़िक रसीद",
+  "share.btn.copyLink": "🔗 इस अंश का सीधा लिंक कॉपी करें",
+  "share.fps.667": "6.67 FPS · 150 ms (कम रोशनी में सुरक्षित)",
+  "share.fps.10": "10 FPS · 100 ms (तेज़ स्क्रीन स्थानांतरण)",
+  "share.btn.cameraRx": "📷 कैमरे से प्राप्त करें (बिना इंटरनेट)",
+  "share.btn.relayTx": "🔁 प्राप्त अंश को दूसरे फ़ोन पर भेजें",
+  "share.btn.verifySig": "🔐 प्रामाणिक संपादकीय हस्ताक्षर सत्यापित करें",
+  "felices.closeBtn": "बंद करें"
  }
 }

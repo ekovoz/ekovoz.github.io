@@ -131,6 +131,21 @@ export let TOTAL_VERSES_AUDITED = 31102;
 export const CORE_SUBSTITUTIONS = [];
 
 /**
+ * Humaniza el `source` de una regla RegExp para la UI (`D3-R44` / `DEB-R44-05`):
+ * `(?i)\bhabéis\b` → `habéis` (sin marcadores `(?i)`, `\b`, anclas `^`/`$` ni grupos no capturantes).
+ */
+export function humanizeDiachronicPatternSource(source) {
+  return String(source || "")
+    .replace(/\(\?[a-z]+\)/gi, "")
+    .replace(/\\b/g, "")
+    .replace(/\(\?:/g, "(")
+    .replace(/^\^|\$$/g, "")
+    .replace(/\\s\+?/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+/**
  * Devuelve el catálogo completo de sustituciones diacrónicas (Tier 1 Léxico, Tier 2 Morfología, Tier 3 Enclíticos + Core Substitutions) (`D3-R39`).
  */
 export function getAll156DiachronicSubstitutionsCatalog() {
@@ -144,7 +159,7 @@ export function getAll156DiachronicSubstitutionsCatalog() {
     }
   }
   for (const [pattern, replacement] of TIER_2_MORPHOLOGICAL_RULES) {
-    const patStr = pattern instanceof RegExp ? pattern.source : String(pattern);
+    const patStr = humanizeDiachronicPatternSource(pattern instanceof RegExp ? pattern.source : String(pattern));
     const key = `2:${patStr}->${replacement}`;
     if (!seen.has(key)) {
       seen.add(key);
@@ -161,7 +176,7 @@ export function getAll156DiachronicSubstitutionsCatalog() {
   for (const sub of CORE_SUBSTITUTIONS) {
     if (sub && (sub.archaic || sub.from) && (sub.modern || sub.to)) {
       const t = Number(sub.tier) || 1;
-      const a = String(sub.archaic || sub.from);
+      const a = humanizeDiachronicPatternSource(sub.archaic || sub.from);
       const m = String(sub.modern || sub.to);
       const key = `${t}:${a}->${m}`;
       if (!seen.has(key)) {
@@ -745,12 +760,14 @@ export function renderUnifiedDiachronicContextHtml({
   bookCode = "GEN",
   chapter = 1,
   osisRef = null,
+  includeInlineSubstitutionsDetails = true,
 } = {}) {
   const effectiveOsis = osisRef || `${String(bookCode || "GEN").toUpperCase()}.${Number(chapter) || 1}.1`;
   return renderAnalyticalThermometerHtml({
     verses,
     bookCode,
     osisRef: effectiveOsis,
+    includeInlineSubstitutionsDetails,
   });
 }
 

@@ -237,6 +237,13 @@ export function renderPrintDrawerPanelsSyncInDrawer(ctx = {}) {
       dir: isRtlLocale(state.lang) ? "rtl" : "ltr",
     });
     const resolvedBlock = resolveCanonicalBlockForPassage(state.book, state.chapter);
+    // D6-R44: al navegar a otro libro/capítulo, el bloque canónico (1..80) se re-sincroniza con el pasaje activo;
+    // la selección manual del usuario se respeta mientras permanezca en el mismo pasaje.
+    const passageKey = `${state.book}.${state.chapter}`;
+    if (state.activeBlockPassageKey !== passageKey) {
+      state.activeBlockPassageKey = passageKey;
+      state.activeBlockNumber = resolvedBlock.blockNumber || 1;
+    }
     const activeBlockNum = Number(state.activeBlockNumber) || resolvedBlock.blockNumber || 1;
     const multiSigHtml = renderMultiSignatureAndPocketRefugeHtml({
       totalPages: 160,
@@ -266,6 +273,9 @@ export function renderPrintDrawerPanelsSyncInDrawer(ctx = {}) {
       foliation.bindingEdge,
     )}"><strong>${duplexHeader}</strong><p style="margin:4px 0 0;font-size:0.84rem;">${duplexBody}</p>${multiSigHtml}${branchPanel ? "" : branchTypoHtml}</div>`;
     const blockSel = getEl("canonicalBlockSelect", targetDoc);
+    if (blockSel && String(blockSel.value) !== String(activeBlockNum)) {
+      blockSel.value = String(activeBlockNum);
+    }
     if (blockSel && typeof blockSel.addEventListener === "function" && !blockSel._blockSelBound) {
       blockSel._blockSelBound = true;
       blockSel.addEventListener("change", (e) => {
@@ -397,9 +407,18 @@ export function renderPrintDrawerPanelsSyncInDrawer(ctx = {}) {
     );
     catalogGrid.setAttribute("data-editions-count", String(editions.length));
     catalogGrid.innerHTML = editions
-      .map(
-        (ed) =>
-          `<a class="uls-chip print-edition-card" href="${escapeHtml(
+      .map((ed) => {
+        // D6-R44: tarjeta Apple HIG sin subrayado con la ficha tipográfica viva de `editorial_profiles.json`.
+        const specParts = [
+          ed.columns ? `${ed.columns} col` : "",
+          ed.fontPt ? `${ed.fontPt} pt` : "",
+          ed.paperSize ? String(ed.paperSize).toUpperCase() : "",
+        ].filter(Boolean);
+        const specBadge = specParts.length
+          ? `<span class="edition-spec-badge">${escapeHtml(specParts.join(" · "))}</span>`
+          : "";
+        return (
+          `<a class="uls-chip print-edition-card" style="text-decoration:none;" href="${escapeHtml(
             buildRelativePdfAssetUrl(ed.profileUrl || ed.url),
           )}" data-profile-id="${escapeHtml(ed.profileId || ed.id)}" data-edition-slug="${escapeHtml(
             ed.editionSlug,
@@ -411,8 +430,9 @@ export function renderPrintDrawerPanelsSyncInDrawer(ctx = {}) {
             ed.paperSize || "",
           )}" data-has-precompiled-pdf="${Boolean(ed.hasPrecompiledPdf)}" data-availability-mode="${escapeHtml(
             ed.availabilityMode || "precompiled_pdf",
-          )}" download>📄 ${escapeHtml(ed.label)}</a>`,
-      )
+          )}" download>📄 ${escapeHtml(ed.label)}${specBadge}</a>`
+        );
+      })
       .join("");
     if (typeof catalogGrid.addEventListener === "function" && !catalogGrid._editionsBound) {
       catalogGrid._editionsBound = true;

@@ -387,3 +387,49 @@ test("R37_SLICE_118_resolvePrintEditionPdfAssetUrl_syncPrintDrawerControls_and_i
 
 
 
+
+test("D8_R44_canonical_ordinal_is_exact_1_to_31102_and_drives_atomic_batches", async () => {
+  const { canonicalOrdinalOf, canonicalRefOfOrdinal, CANONICAL_VERSIFICATION, CANONICAL_TOTAL_VERSES } = await import(
+    "./canonical_versification.js"
+  );
+  const { resolveAtomicBatchForPassage } = await import("./drawer_workshop.js");
+  const fs = await import("node:fs");
+  const path = await import("node:path");
+  const { fileURLToPath } = await import("node:url");
+  const webDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+  const catalog = JSON.parse(fs.readFileSync(path.join(webDir, "data", "catalog.json"), "utf8"));
+  assert.deepEqual(CANONICAL_VERSIFICATION.book_order, catalog.book_order, "versificación embebida = catalog.json");
+  assert.deepEqual({ ...CANONICAL_VERSIFICATION.verse_counts }, catalog.verse_counts);
+  const expected = { "GEN 1 1": 1, "PSA 23 1": 14237, "MAT 1 1": 23146, "JHN 3 16": 26137, "ROM 8 28": 28145, "REV 22 21": 31102 };
+  for (const [k, ord] of Object.entries(expected)) {
+    const [b, c, v] = k.split(" ");
+    assert.equal(canonicalOrdinalOf(b, Number(c), Number(v)), ord, k);
+    assert.deepEqual(canonicalRefOfOrdinal(ord), { book: b, chapter: Number(c), verse: Number(v) });
+  }
+  assert.equal(CANONICAL_TOTAL_VERSES, 31102);
+  assert.equal(canonicalOrdinalOf("GEN", 1, 32), null, "GEN 1 tiene 31 versículos");
+  assert.equal(resolveAtomicBatchForPassage("GEN", 1, 1).batchId, "BLK-0001");
+  assert.equal(resolveAtomicBatchForPassage("PSA", 23, 1).batchNumber, Math.floor((14237 - 1) / 25) + 1);
+  assert.equal(resolveAtomicBatchForPassage("ROM", 8, 28).batchNumber, Math.floor((28145 - 1) / 25) + 1);
+  assert.equal(resolveAtomicBatchForPassage("REV", 22, 21).batchId, "BLK-1245");
+});
+
+test("D8_R44_eco_preview_truncates_at_word_boundary", async () => {
+  const { truncateAtWordBoundary, renderOfflineMeshEcoCardHtml } = await import("./offline_mesh.js");
+  const gen128 =
+    "Y los bendijo Dios, y les dijo: Fructificad y multiplicaos; llenad la tierra, y sojuzgadla, y señoread en los peces del mar, en las aves de los cielos, y en todas las bestias que se mueven sobre la tierra.";
+  const cut = truncateAtWordBoundary(gen128, 120);
+  assert.ok(cut.endsWith("…"));
+  assert.ok(cut.length <= 121, `longitud ${cut.length}`);
+  const lastWord = cut.slice(0, -1).split(" ").pop();
+  assert.ok(gen128.split(/[\s,;:.]+/).includes(lastWord), `palabra cortada a la mitad: «${lastWord}»`);
+  assert.equal(truncateAtWordBoundary("Jesús lloró.", 120), "Jesús lloró.");
+  const html = renderOfflineMeshEcoCardHtml({
+    activeLang: "es",
+    activeVerseOrdinal: 27,
+    activeVerseRef: "GEN.1.28",
+    activeVerseText: gen128,
+    uiLocale: "es",
+  });
+  assert.ok(!html.includes("llenad la tie»"), "la vista previa no debe cortar «tierra»");
+});

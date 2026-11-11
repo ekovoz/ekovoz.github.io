@@ -2337,3 +2337,42 @@ test("R43 (ARB-EKOVOZ-80 / D1-R43..D4-R43 / DEB-R43-01..05): Drawer 1 exact 3-su
   const subtab3Html = mejorarMod.renderTallerArtifactsCatalogHtml("stp");
   assert.match(subtab3Html, /class="eight-locks-pda-bar"[^>]*data-eight-locks-bar="true"/);
 });
+
+test("D9_R44_mostrador_controller_partitioned_below_2000_loc_with_seam_modules", async () => {
+  const here = path.dirname(fileURLToPath(import.meta.url));
+  const controllerSrc = fs.readFileSync(path.resolve(here, "..", "mostrador.js"), "utf8");
+  const loc = controllerSrc.split(/\r?\n/).length;
+  assert.ok(loc < 2000, `web/mostrador.js debe quedar < 2,000 LOC (tiene ${loc})`);
+  for (const sym of ["bindShareDrawerActionEvents", "bindSisterWorksStageEvents", "bindFelicesStageEvents", "syncStickyDrawerContextHeader"]) {
+    assert.ok(controllerSrc.includes(`${sym}(`), `mostrador.js debe delegar en ${sym}`);
+  }
+  assert.ok(!controllerSrc.includes("const executeGaveta4Action = async"), "executeGaveta4Action vive en drawer_share.js");
+  assert.ok(!controllerSrc.includes("const hydrateEvangeliosSection = async"), "el hidratador de Evangelios vive en sister_works_controller.js");
+  const share = await import("./drawer_share.js");
+  const sister = await import("./sister_works_controller.js");
+  assert.equal(typeof share.bindShareDrawerActionEvents, "function");
+  assert.equal(typeof sister.bindSisterWorksStageEvents, "function");
+  assert.equal(typeof sister.bindFelicesStageEvents, "function");
+});
+
+test("D1_R44_sticky_drawer_header_hidden_without_active_sheet_and_tracks_passage", async () => {
+  const { syncStickyDrawerContextHeader } = await import("./projection_contract.js");
+  const els = {};
+  for (const id of ["stickyDrawerContextHeader", "stickyActiveVersePill", "stickyActiveLangBtn", "btnStickyJumpToCanvas"]) {
+    els[id] = { id, hidden: true, textContent: "", attrs: {}, setAttribute(k, v) { this.attrs[k] = v; } };
+  }
+  const getEl = (id) => els[id] || null;
+  assert.equal(syncStickyDrawerContextHeader({ activeSheet: null, book: "JHN", chapter: 1, verse: 1, lang: "es", uiLocale: "es" }, getEl), false);
+  assert.equal(els.stickyDrawerContextHeader.hidden, true, "sin gaveta abierta la barra se oculta");
+  assert.equal(syncStickyDrawerContextHeader({ activeSheet: "study", book: "ROM", chapter: 8, verse: 28, lang: "stp", uiLocale: "es" }, getEl), true);
+  assert.equal(els.stickyDrawerContextHeader.hidden, false);
+  assert.equal(els.stickyActiveVersePill.textContent, "📖 ROM 8:28");
+  assert.equal(els.stickyActiveLangBtn.textContent, "🌍 STP");
+  assert.equal(els.btnStickyJumpToCanvas.textContent, "↑ Lienzo");
+  syncStickyDrawerContextHeader({ activeSheet: "print", book: "PSA", chapter: 23, verse: 1, lang: "en", uiLocale: "en" }, getEl);
+  assert.equal(els.stickyActiveVersePill.textContent, "📖 PSA 23:1");
+  assert.equal(els.btnStickyJumpToCanvas.textContent, "↑ Canvas");
+  const html = fs.readFileSync(path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "index.html"), "utf8");
+  assert.match(html, /<div id="stickyDrawerContextHeader" hidden/);
+  assert.match(html, /#stickyDrawerContextHeader\[hidden\][^{]*\{display:none !important;\}/);
+});

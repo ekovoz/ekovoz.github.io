@@ -290,6 +290,21 @@
   "print.tech_receipt_summary": "🔬 Optical & typographic receipt",
   "felices.open_in_bible": "📖 Open passage in The Bible",
   "felices.quick_actions": "Quick plate actions",
-  "felices.folding_optical_summary": "📖 Folding Guide, Optical Transfer & Contact"
+  "felices.folding_optical_summary": "📖 Folding Guide, Optical Transfer & Contact",
+  "felices.quickActionsSummary": "Быстрые действия с листом",
+  "felices.foldingGuideSummary": "📖 Схема сгибания, оптическая передача и контакт",
+  "study.diachronic_summary": "Замены 1909 → XXI век в этой главе",
+  "print.fontSizeLabel": "Размер шрифта (pt):",
+  "print.btn.imposition": "📐 Рассчитать фальцовку брошюры",
+  "print.btn.layout": "📏 Проверить поля страницы (A4 / Letter)",
+  "print.btn.photocopy3gen": "🔬 Проверить читаемость ксерокопии (3-е поколение)",
+  "print.photocopyReceiptSummary": "🔬 Оптическая и типографская квитанция",
+  "share.btn.copyLink": "🔗 Скопировать прямую ссылку на этот отрывок",
+  "share.fps.667": "6.67 FPS · 150 ms (при слабом свете)",
+  "share.fps.10": "10 FPS · 100 ms (быстрая передача с экрана)",
+  "share.btn.cameraRx": "📷 Принять камерой (без интернета)",
+  "share.btn.relayTx": "🔁 Передать полученный отрывок на другой телефон",
+  "share.btn.verifySig": "🔐 Проверить подлинную редакционную подпись",
+  "felices.closeBtn": "Закрыть"
  }
 }

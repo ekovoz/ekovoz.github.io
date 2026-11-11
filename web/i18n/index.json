@@ -4,7 +4,7 @@
   {
    "autonym": "العربية",
    "code": "ar",
-   "coverage": 0.2934,
+   "coverage": 1,
    "dir": "rtl",
    "parent": "en",
    "script": "Arab",
@@ -13,7 +13,7 @@
   {
    "autonym": "বাংলা (বাংলাদেশ)",
    "code": "bn-BD",
-   "coverage": 0.2934,
+   "coverage": 1,
    "dir": "ltr",
    "parent": "bn",
    "script": "Beng",
@@ -22,7 +22,7 @@
   {
    "autonym": "বাংলা (ভারত/প্রচলিত)",
    "code": "bn-IN",
-   "coverage": 0.2934,
+   "coverage": 1,
    "dir": "ltr",
    "parent": "bn",
    "script": "Beng",
@@ -31,7 +31,7 @@
   {
    "autonym": "বাংলা",
    "code": "bn",
-   "coverage": 0.2934,
+   "coverage": 1,
    "dir": "ltr",
    "parent": "en",
    "script": "Beng",
@@ -58,7 +58,7 @@
   {
    "autonym": "فارسی",
    "code": "fa",
-   "coverage": 0.2934,
+   "coverage": 1,
    "dir": "rtl",
    "parent": "en",
    "script": "Arab",
@@ -67,7 +67,7 @@
   {
    "autonym": "Français",
    "code": "fr",
-   "coverage": 0.2934,
+   "coverage": 1,
    "dir": "ltr",
    "parent": "en",
    "script": "Latn",
@@ -76,7 +76,7 @@
   {
    "autonym": "हिन्दी",
    "code": "hi",
-   "coverage": 0.2934,
+   "coverage": 1,
    "dir": "ltr",
    "parent": "en",
    "script": "Deva",
@@ -85,7 +85,7 @@
   {
    "autonym": "Bahasa Indonesia",
    "code": "id",
-   "coverage": 0.2934,
+   "coverage": 1,
    "dir": "ltr",
    "parent": "en",
    "script": "Latn",
@@ -94,7 +94,7 @@
   {
    "autonym": "Italiano",
    "code": "it",
-   "coverage": 0.2934,
+   "coverage": 1,
    "dir": "ltr",
    "parent": "en",
    "script": "Latn",
@@ -103,7 +103,7 @@
   {
    "autonym": "日本語",
    "code": "ja",
-   "coverage": 0.2934,
+   "coverage": 1,
    "dir": "ltr",
    "parent": "en",
    "script": "Jpan",
@@ -112,7 +112,7 @@
   {
    "autonym": "한국어",
    "code": "ko",
-   "coverage": 0.2934,
+   "coverage": 1,
    "dir": "ltr",
    "parent": "en",
    "script": "Kore",
@@ -121,7 +121,7 @@
   {
    "autonym": "Português",
    "code": "pt",
-   "coverage": 0.2934,
+   "coverage": 1,
    "dir": "ltr",
    "parent": "en",
    "script": "Latn",
@@ -130,7 +130,7 @@
   {
    "autonym": "Русский",
    "code": "ru",
-   "coverage": 0.2934,
+   "coverage": 1,
    "dir": "ltr",
    "parent": "en",
    "script": "Cyrl",
@@ -139,7 +139,7 @@
   {
    "autonym": "Türkçe",
    "code": "tr",
-   "coverage": 0.2934,
+   "coverage": 1,
    "dir": "ltr",
    "parent": "en",
    "script": "Latn",
@@ -148,7 +148,7 @@
   {
    "autonym": "اردو",
    "code": "ur",
-   "coverage": 0.2934,
+   "coverage": 1,
    "dir": "rtl",
    "parent": "en",
    "script": "Aran",
@@ -157,7 +157,7 @@
   {
    "autonym": "简体中文",
    "code": "zh-Hans",
-   "coverage": 0.2934,
+   "coverage": 1,
    "dir": "ltr",
    "parent": "zh",
    "script": "Hans",

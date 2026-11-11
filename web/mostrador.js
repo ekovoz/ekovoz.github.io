@@ -5,98 +5,93 @@
 // ============================================================================
 
 import {
-  FELICES_PLATE_TO_BIBLE_COORDINATE, applyAriaLabelsToDom, closeModal, getActivePlateIndex, nextPlate, nextSlide,
-  openActivePlateZoom, openModal, parseInitialRouteAndLocale, prevPlate, prevSlide, printActivePlate,
-  registerPlateCoordinateListener, resolvePlateForBibleCoordinate, serializeMostradorRouteQuery, setActivePlateIndex,
-  setPaperFormat, setSlide, shareResource, syncFelicesWithCorpusLang, syncI18nUiFromState, updateDownloadLinks,
-  updateFocalPlate, updateUI,
+  FELICES_PLATE_TO_BIBLE_COORDINATE, applyAriaLabelsToDom, getActivePlateIndex, parseInitialRouteAndLocale, resolvePlateForBibleCoordinate,
+  serializeMostradorRouteQuery, setActivePlateIndex, setPaperFormat, syncFelicesWithCorpusLang, syncI18nUiFromState, updateUI,
 } from "./i18n_ui.js";
 import {
-  CROSS_WORK_BRIDGE_TABLE, HAREL_SHEET_MAP, LIFE_TRAILS_ANCHORS, MOSTRADOR_DOM_BINDINGS, MULTI_ORTHO_LANGS,
-  POETIC_BOOKS, applyOrthographyProfile, deriveEpistemicSeal, escapeHtml, lookupWordTokenStrongEntry,
-  projectCrossWorkCoordinate, renderChapterPreviewHtml, renderInteractiveVerseTokensHtml, toUnicodeSuperscript,
+  CROSS_WORK_BRIDGE_TABLE, HAREL_SHEET_MAP, LIFE_TRAILS_ANCHORS, MOSTRADOR_DOM_BINDINGS, MULTI_ORTHO_LANGS, POETIC_BOOKS,
+  applyOrthographyProfile, deriveEpistemicSeal, escapeHtml, lookupWordTokenStrongEntry, projectCrossWorkCoordinate,
+  renderChapterPreviewHtml, renderInteractiveVerseTokensHtml, toUnicodeSuperscript,
 } from "./mostrador/bridge_and_chapter.js";
 import {
-  ARTIFACT_PROJECTION_SCHEMA, MOSTRADOR_DOM_SCOPE_CONTRACTS, STATUS, computeProsodyAndSyllableAlignmentInWasm,
-  createDataLayer, createFetchSource, resolveLocalizedBookMeta, verifyArtifactProjectionClosure, verifyVplDomScopeContainment,
+  ARTIFACT_PROJECTION_SCHEMA, MOSTRADOR_DOM_SCOPE_CONTRACTS, STATUS, computeProsodyAndSyllableAlignmentInWasm, createDataLayer,
+  createFetchSource, resolveLocalizedBookMeta, verifyArtifactProjectionClosure, verifyVplDomScopeContainment,
 } from "./mostrador/data_layer.js";
 import {
   applySpanish21DiachronicRegister, computeAnalyticalRegisterMetrics, hasDiachronicVariants, hydrateDiachronicRegister,
-  renderAnalyticalThermometerHtml, renderChapterDiachronicAuditCardHtml, renderUnifiedDiachronicContextHtml,
-  resolveEffectiveCorpusTarget, summarizeChapterDiachronicTransformations, syncDiachronicRegisterOrthogonality,
+  renderAnalyticalThermometerHtml, renderChapterDiachronicAuditCardHtml, renderUnifiedDiachronicContextHtml, resolveEffectiveCorpusTarget,
+  summarizeChapterDiachronicTransformations, syncDiachronicRegisterOrthogonality,
 } from "./mostrador/diachronic_register.js";
 import {
-  CANONICAL_12_BRANCH_PROFILES, CANONICAL_14_PLUS_2_EDITIONS_CATALOG, CANONICAL_14_PRINT_PROFILES,
-  CANONICAL_16_TYPOLOGY_PROFILES, CANONICAL_80_BLOCKS_CATALOG, CANONICAL_9_TOML_PROFILES, POCKET_REFUGE_4_SHEETS_SPEC,
-  PRECOMPILED_PDF_LANGS, VERIFIED_TEXT_BIBLE_LANGS, buildRelativePdfAssetUrl, computeFoliationLayout,
-  computeKindlePrintBudget, computeMultiSignatureImposition, doseFilename, effectiveThreatClassWeb,
-  hydrateEditorialProfiles, listAll14PrintEditionsForLang, listCatalogEditionsForLang, locateVersePage,
-  normalizeEditionSlug, ordinalOf, planDose1, planDose2, planDose3, refOfOrdinal, renderBranchAndTypologyInspectorHtml,
-  renderImpositionAndLayoutPreviewHtml, renderMultiSignatureAndPocketRefugeHtml, resolveCanonicalBlockForPassage,
-  resolvePrintEditionPdfAssetUrl, simulateFifthGenPhotocopySauvolaBilateral, simulateThirdGenPhotocopySauvola,
-  stealthNeutralFilenameWeb, syncDose2AndDose3LinksForActiveLang, syncPrintDrawerControlsFromEditionProfile,
-  synthesizeLiveChapterDose1PdfBytes,
+  CANONICAL_12_BRANCH_PROFILES, CANONICAL_14_PLUS_2_EDITIONS_CATALOG, CANONICAL_14_PRINT_PROFILES, CANONICAL_16_TYPOLOGY_PROFILES,
+  CANONICAL_80_BLOCKS_CATALOG, CANONICAL_9_TOML_PROFILES, POCKET_REFUGE_4_SHEETS_SPEC, PRECOMPILED_PDF_LANGS, VERIFIED_TEXT_BIBLE_LANGS,
+  buildRelativePdfAssetUrl, computeFoliationLayout, computeKindlePrintBudget, computeMultiSignatureImposition, doseFilename,
+  effectiveThreatClassWeb, listAll14PrintEditionsForLang, listCatalogEditionsForLang, locateVersePage, normalizeEditionSlug, ordinalOf,
+  planDose1, planDose2, planDose3, refOfOrdinal, renderBranchAndTypologyInspectorHtml, renderImpositionAndLayoutPreviewHtml,
+  renderMultiSignatureAndPocketRefugeHtml, resolveCanonicalBlockForPassage, resolvePrintEditionPdfAssetUrl,
+  simulateFifthGenPhotocopySauvolaBilateral, simulateThirdGenPhotocopySauvola, stealthNeutralFilenameWeb,
+  syncDose2AndDose3LinksForActiveLang, syncPrintDrawerControlsFromEditionProfile, synthesizeLiveChapterDose1PdfBytes,
 } from "./mostrador/dosis.js";
 import {
   HAREL_DOSIS_SUBTABS, HAREL_PRINT_SUBTABS, HAREL_STUDY_SUBTABS, HAREL_WORKSHOP_SUBTABS, applyHarelSubtabSelection,
-  applyStaticChromeTranslations, bindImproveFormControlsInDrawer, formatPhotocopySimBadgeText,
-  hydrateBookNamesSourceBadge, hydrateImproveDrawerPanel, hydrateLifeTrailsFromPericopesArtifact,
-  hydratePrintDrawerPanelsInDrawer, hydrateShareAndAuditDrawerPanel, hydrateStudyDrawerPanel,
-  hydrateWasmManifestStatus, mountCardHtmlIntoHost, normalizeRootNotesEntries, renderCrdtWalAndLockP2AuditCardHtml,
-  renderEditorialGraphicsAndPrintSpecsCard, renderFieldWorkshopCensus7164Html, renderMasterCensus7164CardHtml,
-  renderPhotocopyResilienceAndSocialCardHtml, renderPrintDrawerPanelsSyncInDrawer, resolveAtomicBatchForPassage,
-  resolvePrimaryStrongForVerse, simulateKanungoSauvolaGeneration, syncActiveStrongInStudyDrawer,
+  applyStaticChromeTranslations, formatPhotocopySimBadgeText, hydrateBookNamesSourceBadge, hydrateImproveDrawerPanel,
+  hydrateLifeTrailsFromPericopesArtifact, hydratePrintDrawerPanelsInDrawer, hydrateShareAndAuditDrawerPanel, hydrateStudyDrawerPanel,
+  hydrateWasmManifestStatus, renderCrdtWalAndLockP2AuditCardHtml, renderMasterCensus7164CardHtml,
+  renderPhotocopyResilienceAndSocialCardHtml, renderPrintDrawerPanelsSyncInDrawer, syncActiveStrongInStudyDrawer,
 } from "./mostrador/drawer_hydrators.js";
 import {
-  CANONICAL_5_RESIDUAL_KINDS, aggregateBlindCalibration12Langs, classifyMaculaArgumentRole, highlightStudyCardByStrongId,
-  hydrateCulturalGlossesLexicon, hydratePhilologyRosettaIndex, renderLeipzig4LineGmisHtml,
+  classifyMaculaArgumentRole, highlightStudyCardByStrongId, hydrateCulturalGlossesLexicon, renderLeipzig4LineGmisHtml,
   renderPhilologyRosettaExplorerHtml, renderPhilologyRosettaInspectorHtml, renderPhilologyRosettaResultsRowsHtml,
   renderStudy14ColDrawerHtml, renderStudyStrataCards, resolveBicanonicalDivergence, searchPhilologyRosettaIndex,
 } from "./mostrador/estudio.js";
 import {
-  EVANGELIOS_MACRO_THREADS_AND_ECHOES, FELICES_12_DICHAS_COORDINATE_MAP, FELICES_28_PLATES_MAP,
-  hydratePericopesAndGlosses, parseCanonicalOtEchoRef, renderChapterPericopesRibbonHtml,
-  renderEvangeliosPlateActionsHtml, renderFelicesSocraticWonderCardHtml, resolveEvangeliosMacroThreadAndEcho,
-  resolveFelicesDichaCoordinate, resolveFelicesPlate, resolveMasoreticPericopeBreaks,
+  EVANGELIOS_MACRO_THREADS_AND_ECHOES, FELICES_12_DICHAS_COORDINATE_MAP, FELICES_28_PLATES_MAP, hydratePericopesAndGlosses,
+  parseCanonicalOtEchoRef, renderChapterPericopesRibbonHtml, renderEvangeliosPlateActionsHtml, renderFelicesSocraticWonderCardHtml,
+  resolveEvangeliosMacroThreadAndEcho, resolveFelicesDichaCoordinate, resolveFelicesPlate, resolveMasoreticPericopeBreaks,
 } from "./mostrador/evangelios.js";
 import {
   applyToDom, createI18n, formatLocalizedNumeralWeb, isRtlLocale, localizeWorkChromeLabels, negotiate,
 } from "./mostrador/i18n.js";
 import {
-  GEOGRAPHIC_MACRO_REGIONS, indexRegionShards, listCountriesInRegion, listLanguagesInCountry,
-  listMacroRegions, searchLanguages, suggestLayer0Languages,
+  GEOGRAPHIC_MACRO_REGIONS, indexRegionShards, listCountriesInRegion, listLanguagesInCountry, listMacroRegions, searchLanguages,
+  suggestLayer0Languages,
 } from "./mostrador/lang_funnel.js";
 import {
-  CRDT_WAL_SEMILATTICE, FIELD_WORKSHOP_STP_LEXICON, IMPROVE_I18N_FALLBACKS, IMPROVE_I18N_FALLBACKS_ES,
-  MASTER_CENSUS_SUMMARY, PATCH_JOURNAL_LOCK_P2, ROOT_NOTES_STP, STP_LEDGER_SUMMARY, applySuggestedImprovement,
-  buildElicitationSeedPayload, buildPatchPayload, foldCrdtWalSemilattice, hydrateFieldWorkshopData,
-  renderCascadeAndLadderHtml, renderImproveDrawerHtml, renderStpLexiconExplorerHtml, renderStpLexiconResultsRowsHtml,
-  renderTallerArtifactsCatalogHtml, selectTopEntropyVerseQueue, verifyLock8PredicativeAndNegation,
+  CRDT_WAL_SEMILATTICE, FIELD_WORKSHOP_STP_LEXICON, IMPROVE_I18N_FALLBACKS, IMPROVE_I18N_FALLBACKS_ES, MASTER_CENSUS_SUMMARY,
+  PATCH_JOURNAL_LOCK_P2, ROOT_NOTES_STP, STP_LEDGER_SUMMARY, applySuggestedImprovement, buildElicitationSeedPayload,
+  foldCrdtWalSemilattice, renderCascadeAndLadderHtml, renderImproveDrawerHtml, renderStpLexiconExplorerHtml,
+  renderStpLexiconResultsRowsHtml, renderTallerArtifactsCatalogHtml, selectTopEntropyVerseQueue, verifyLock8PredicativeAndNegation,
 } from "./mostrador/mejorar.js";
 import {
-  CANONICAL_ECO_PACKS_MANIFEST, EcoDecoderMirror, STORED_ECO_PACKS, buildQuineHtml, commitVerifiedPackToIndexedDb,
-  computeEcoPackCrc32Hex, exportSneakernetBundleJson, hydrateEcoPacksManifest, importSneakernetBundleJson,
-  inspectDeltaZstPatch, probeEcoPackRandomAccessBounds, renderOfflineMeshEcoCardHtml,
-  triggerOptInOfflinePackDownload, verifyAndStoreEcoPack, verifyEd25519ManifestSignature,
+  CANONICAL_ECO_PACKS_MANIFEST, STORED_ECO_PACKS, computeEcoPackCrc32Hex, exportSneakernetBundleJson, hydrateEcoPacksManifest,
+  importSneakernetBundleJson, probeEcoPackRandomAccessBounds, renderOfflineMeshEcoCardHtml, triggerOptInOfflinePackDownload,
+  verifyAndStoreEcoPack,
 } from "./mostrador/offline_mesh.js";
 import {
-  LTDecoder, LTEncoder, OPTICAL_CADENCE_PRESETS, computeNyquistSafeFpsViaWasm, computeSaddleStitchImpositionPlan,
-  createRelayEncoderFromDecoded, decodeLubyTransformPeeling, decodeQrStreamViaWasmBridge, dlog,
-  encodeDropletToMatrixGrid, encodeLubyTransformDroplets, renderDropletMatrixSvgOrCanvas,
-  renderOpticalReceiverRxPanelHtml, runOpticalReceiverBurstSession, solitonCdf, splitmix32,
-  verifyManifestAndMerkleAudit, whitenBlockXor,
+  LTDecoder, LTEncoder, OPTICAL_CADENCE_PRESETS, computeNyquistSafeFpsViaWasm, createRelayEncoderFromDecoded, decodeLubyTransformPeeling,
+  dlog, encodeLubyTransformDroplets, renderOpticalReceiverRxPanelHtml, runOpticalReceiverBurstSession, solitonCdf, splitmix32,
+  whitenBlockXor,
 } from "./mostrador/optical_lt.js";
 import {
   ReverseOrthographyMap, listOrthographyProfilesForLang, resolveCanonicalOrthoProfileId, resolveOrthoFamilyKey,
   resolveScriptioContinuaCodeForLang, segmentScriptioContinuaSyllables, transduceOrthographyWeb, transduceVerseWithReverseMap,
 } from "./mostrador/orthography_wfst.js";
-import { countPdfPages, extractPdfPages } from "./mostrador/pdf_pages.js";
+import {
+  countPdfPages, extractPdfPages,
+} from "./mostrador/pdf_pages.js";
 import {
   ROSETTA_66_BOOKS, createReferenceResolver, normalizeBookAliasToken, parseBiblicalCoordinateReference, resolveBookCodeByAliasOrName,
 } from "./mostrador/reference.js";
 import {
-  buildEvangeliosWeekOptionsHtml, renderEvangeliosStageCardHtml, resolveEvangeliosActiveSelection, syncSisterWorksTabsDom,
+  bindFelicesStageEvents, bindSisterWorksStageEvents, buildEvangeliosWeekOptionsHtml, renderEvangeliosStageCardHtml,
+  resolveEvangeliosActiveSelection, syncSisterWorksTabsDom,
 } from "./mostrador/sister_works_controller.js";
+import {
+  bindShareDrawerActionEvents,
+} from "./mostrador/drawer_share.js";
+import {
+  syncStickyDrawerContextHeader,
+} from "./mostrador/projection_contract.js";
 
 export {
   ARTIFACT_PROJECTION_SCHEMA, CANONICAL_12_BRANCH_PROFILES, CANONICAL_14_PLUS_2_EDITIONS_CATALOG, CANONICAL_14_PRINT_PROFILES, CANONICAL_16_TYPOLOGY_PROFILES, CANONICAL_80_BLOCKS_CATALOG, CANONICAL_9_TOML_PROFILES, CANONICAL_ECO_PACKS_MANIFEST, CRDT_WAL_SEMILATTICE, CROSS_WORK_BRIDGE_TABLE, EVANGELIOS_MACRO_THREADS_AND_ECHOES, FELICES_12_DICHAS_COORDINATE_MAP, FELICES_28_PLATES_MAP, FELICES_PLATE_TO_BIBLE_COORDINATE, FIELD_WORKSHOP_STP_LEXICON, GEOGRAPHIC_MACRO_REGIONS,
@@ -565,20 +560,7 @@ export function createMostradorController(options = {}) {
       state.evangeliosLang = state.lang;
     }
     syncI18nUiFromState(state, targetDoc);
-    const stickyVersePill = getEl("stickyActiveVersePill", targetDoc);
-    if (stickyVersePill) {
-      stickyVersePill.textContent = `📖 ${state.book} ${state.chapter}:${state.verse}`;
-    }
-    const stickyLangBtn = getEl("stickyActiveLangBtn", targetDoc);
-    if (stickyLangBtn) {
-      stickyLangBtn.textContent = `🌍 ${String(state.lang || "es").toUpperCase()}`;
-    }
-    const stickyJumpBtn = getEl("btnStickyJumpToCanvas", targetDoc);
-    if (stickyJumpBtn) {
-      stickyJumpBtn.textContent = String(state.uiLocale || "en").toLowerCase().startsWith("es")
-        ? "↑ Lienzo"
-        : "↑ Canvas";
-    }
+    syncStickyDrawerContextHeader(state, getEl, targetDoc);
     if (!state.macroRegionsCatalog) {
       state.macroRegionsCatalog = listMacroRegions();
     }
@@ -1055,6 +1037,7 @@ export function createMostradorController(options = {}) {
         drawersHost.hidden = true;
         if (drawersHost.style) drawersHost.style.display = "none";
       }
+      syncStickyDrawerContextHeader(state, getEl, targetDoc);
       return null;
     }
 
@@ -1110,6 +1093,7 @@ export function createMostradorController(options = {}) {
       }
     }
 
+    syncStickyDrawerContextHeader(state, getEl, targetDoc);
     syncUrlFromState(targetDoc, { push: false });
     return state.activeSheet;
   }
@@ -1735,483 +1719,15 @@ export function createMostradorController(options = {}) {
       });
     }
 
-    const executeGaveta4Action = async (shareBtnId) => {
-      hydrateShareAndAuditDrawer(targetDoc);
-      const statusPanel = getEl("editorialAuditStatusPanel", targetDoc);
-      if (statusPanel) {
-        statusPanel.hidden = false;
-        if (statusPanel.style) statusPanel.style.display = "";
-      }
-      const packLang = ["es", "en", "stp", "he"].includes(state.lang) ? state.lang : "stp";
-      const osis = `${state.book}.${state.chapter}.${state.verse}`;
-
-      if (shareBtnId === "btnShareQuine") {
-        const quineUrl = `obras/biblia/packs/${packLang}/lector_offline_${packLang}.html`;
-        const quinePayload = buildQuineHtml(packLang);
-        if (statusPanel) {
-          statusPanel.setAttribute("data-audit-action", "share-quine");
-          statusPanel.innerHTML =
-            `<div class="audit-receipt" data-action="share-quine" data-quine-lang="${escapeHtml(packLang)}" data-quine-bytes="${quinePayload.length}">` +
-            `✅ <strong>Quine Autónomo Listo (${escapeHtml(packLang.toUpperCase())}):</strong> ` +
-            `<a href="${escapeHtml(quineUrl)}" download="lector_offline_${escapeHtml(packLang)}.html">Descargar lector_offline_${escapeHtml(packLang)}.html</a> ` +
-            `(${quinePayload.length} B · DecompressionStream deflate-raw · 100% offline).</div>`;
-        }
-      } else if (shareBtnId === "btnCopyDirectShareLink") {
-        const shareUrl = serializeMostradorRouteQuery(state);
-        if (typeof navigator !== "undefined" && navigator.clipboard && typeof navigator.clipboard.writeText === "function") {
-          navigator.clipboard.writeText(shareUrl).catch(() => { });
-        }
-        if (statusPanel) {
-          statusPanel.setAttribute("data-audit-action", "copy-link");
-          statusPanel.innerHTML =
-            `<div class="audit-receipt" data-action="copy-link" data-share-url="${escapeHtml(shareUrl)}">` +
-            `🔗 <strong>Enlace directo copiado:</strong> <code>${escapeHtml(shareUrl)}</code></div>`;
-        }
-      } else if (shareBtnId === "btnVerifyEd25519Signature") {
-        const manifest = await dataLayer.loadManifest();
-        const merkleObj =
-          typeof dataLayer.loadMerkleRoot === "function" ? await dataLayer.loadMerkleRoot() : null;
-        const receipt = verifyManifestAndMerkleAudit({
-          manifest,
-          merkleRootHex: merkleObj?.merkleRootHex || "",
-          lang: state.lang,
-          book: state.book,
-          chapter: state.chapter,
-        });
-        if (statusPanel) {
-          statusPanel.setAttribute("data-audit-action", "verify-signature");
-          statusPanel.setAttribute("data-verified", String(receipt.verified));
-          statusPanel.innerHTML =
-            `<div class="audit-receipt" data-action="verify-signature" data-verified="${receipt.verified}" data-merkle-root="${escapeHtml(receipt.merkleRootHex)}">` +
-            `🔐 <strong>Auditoría Criptográfica (${escapeHtml(receipt.algorithm)}):</strong> ` +
-            `Estado=${receipt.verified ? "VERIFICADO" : "PENDIENTE"} · Artefactos=${receipt.artifactsChecked} · ` +
-            `Merkle Root=<code>${escapeHtml(receipt.merkleRootHex.slice(0, 16))}…</code> · ` +
-            `SHA-256=<code>${escapeHtml(receipt.sampleSha256.slice(0, 16))}…</code></div>`;
-        }
-      } else if (shareBtnId === "btnCalculateImposition") {
-        state.activePrintPreviewMode = "imposition";
-        const imp = computeSaddleStitchImpositionPlan({
-          totalPages: 16,
-          paperThicknessMm: 0.09,
-          rtl: isRtlLocale(state.lang),
-        });
-        const sheetsSummary = imp.sheets
-          .map((s) => `P${s.sheetIndex}[F:${s.front[0]}-${s.front[1]} / V:${s.back[0]}-${s.back[1]} · creep +${s.creepMm}mm]`)
-          .join(" · ");
-        const receiptHtml =
-          `<div class="audit-receipt" data-action="calculate-imposition" data-integrity="${imp.integrityVerified}" data-rtl="${imp.rtl}">` +
-          `📐 <strong>Imposición Saddle-Stitch 4n (${imp.paddedPages} págs · ${imp.sheetCount} pliegos · ${imp.rtl ? "RTL Lomo Invertido" : "LTR"}):</strong> ` +
-          `Suma constante=${imp.folioSumConstant} · Creep máx=${imp.maxCreepMm}mm · ${escapeHtml(sheetsSummary)}</div>`;
-        if (statusPanel) {
-          statusPanel.setAttribute("data-audit-action", "calculate-imposition");
-          statusPanel.innerHTML = receiptHtml;
-        }
-        const impHost = getEl("impositionBookletPreviewHost", targetDoc);
-        if (impHost) {
-          impHost.setAttribute("data-audit-action", "calculate-imposition");
-          impHost.innerHTML =
-            renderImpositionAndLayoutPreviewHtml({
-              mode: "imposition",
-              paper: state.paperFormat || "a4",
-              pageCount: 16,
-              columns: state.columns || 2,
-              fontPt: state.fontSizePt || 9.5,
-              dir: isRtlLocale(state.lang) ? "rtl" : "ltr",
-            }) + receiptHtml;
-        }
-      } else if (shareBtnId === "btnCalculateLayout") {
-        state.activePrintPreviewMode = "layout";
-        const budget = computeKindlePrintBudget({
-          fontPt: state.fontSizePt || 9.5,
-          columns: state.columns || 2,
-          orientation: state.orientation || "landscape",
-          paper: state.paperFormat || "a4",
-        });
-        const receiptHtml =
-          `<div class="audit-receipt" data-action="calculate-layout" data-cpl="${budget.cpl}">` +
-          `📏 <strong>Invariante Geométrico A4/Letter Verificado:</strong> ${escapeHtml(budget.summaryText)} (8 Candados Tipográficos en verde).</div>`;
-        if (statusPanel) {
-          statusPanel.setAttribute("data-audit-action", "calculate-layout");
-          statusPanel.innerHTML = receiptHtml;
-        }
-        const impHost = getEl("impositionBookletPreviewHost", targetDoc);
-        if (impHost) {
-          impHost.setAttribute("data-audit-action", "calculate-layout");
-          impHost.innerHTML =
-            renderImpositionAndLayoutPreviewHtml({
-              mode: "layout",
-              paper: state.paperFormat || "a4",
-              pageCount: 16,
-              columns: state.columns || 2,
-              fontPt: state.fontSizePt || 9.5,
-              dir: isRtlLocale(state.lang) ? "rtl" : "ltr",
-            }) + receiptHtml;
-        }
-      }
+    const stageCtx = {
+      state, dataLayer, targetDoc, getEl, navigate, selectVerse, hydrateBookAndChapterSelectors, updateCompassTriggerDom,
+      syncLifeTrailsActiveState, syncUrlFromState, hydrateStudyDrawer, hydrateImproveDrawer, hydratePrintDrawerPanels,
+      hydrateShareAndAuditDrawer, transitionSheet: (...a) => transitionSheet(...a), switchWork: (...a) => switchWork(...a),
     };
+    // D9-R44: clústeres LCOM4 de Gaveta 4 y Obras Hermanas viven en sus módulos dueños (drawer_share / sister_works_controller).
+    bindShareDrawerActionEvents(stageCtx);
 
-    for (const shareBtnId of [
-      "btnShareQuine",
-      "btnCopyDirectShareLink",
-      "btnVerifyEd25519Signature",
-      "btnCalculateImposition",
-      "btnCalculateLayout",
-    ]) {
-      const sBtn = getEl(shareBtnId, targetDoc);
-      if (sBtn && typeof sBtn.addEventListener === "function") {
-        sBtn.addEventListener("click", async () => {
-          sBtn.setAttribute("data-last-invoked", shareBtnId);
-          await executeGaveta4Action(shareBtnId);
-        });
-      }
-    }
-
-    const fpsSel = getEl("bibleOpticalFpsSelect", targetDoc);
-    if (fpsSel && typeof fpsSel.addEventListener === "function") {
-      fpsSel.addEventListener("change", (e) => {
-        state.opticalCadenceFps = String(e?.target?.value || fpsSel.value || "6.67") === "10" ? "10" : "6.67";
-        hydrateShareAndAuditDrawer(targetDoc);
-      });
-    }
-
-    const camRxBtn = getEl("btnToggleOpticalCameraRx", targetDoc);
-    if (camRxBtn && typeof camRxBtn.addEventListener === "function") {
-      camRxBtn.addEventListener("click", async () => {
-        const statusPanel = getEl("editorialAuditStatusPanel", targetDoc);
-        const videoEl = getEl("bibleOpticalCameraVideo", targetDoc);
-        if (videoEl) videoEl.hidden = !videoEl.hidden;
-        if (statusPanel) {
-          statusPanel.hidden = false;
-          if (statusPanel.style) statusPanel.style.display = "";
-          statusPanel.setAttribute("data-audit-action", "optical-camera-rx");
-          statusPanel.setAttribute("data-wasm-bridge", "loading");
-          statusPanel.innerHTML =
-            `<div class="audit-receipt" data-action="optical-camera-rx" data-gf2="ready" data-wasm-bridge="loading">` +
-            `📷 <strong>Receptor Óptico LT + GF(2) Activo:</strong> ` +
-            `Eliminación Gaussiana sobre GF(2) lista para resolver Stopping Sets de grado ≥ 2.</div>`;
-        }
-        let wasmStatusAttr = "fallback";
-        if (typeof dataLayer.loadWasmModule === "function") {
-          try {
-            const wasmMod = await dataLayer.loadWasmModule("qr_stream_receiver_wasm");
-            const bridgeCheck = decodeQrStreamViaWasmBridge([], wasmMod);
-            if (bridgeCheck.ok) wasmStatusAttr = `ready-v${bridgeCheck.wasmAbiVersion}`;
-          } catch {
-            wasmStatusAttr = "unavailable";
-          }
-        }
-        if (statusPanel && statusPanel.getAttribute("data-audit-action") === "optical-camera-rx") {
-          statusPanel.setAttribute("data-wasm-bridge", wasmStatusAttr);
-          statusPanel.innerHTML =
-            `<div class="audit-receipt" data-action="optical-camera-rx" data-gf2="ready" data-wasm-bridge="${escapeHtml(wasmStatusAttr)}">` +
-            `📷 <strong>Receptor Óptico LT + GF(2) Activo (WASM=${escapeHtml(wasmStatusAttr)}):</strong> ` +
-            `Eliminación Gaussiana sobre GF(2) lista para resolver Stopping Sets de grado ≥ 2.</div>`;
-        }
-      });
-    }
-
-    const relayBtn = getEl("btnOpticalRelayTx", targetDoc);
-    if (relayBtn && typeof relayBtn.addEventListener === "function") {
-      relayBtn.addEventListener("click", () => {
-        state.qrFrameSeq = 0;
-        hydrateShareAndAuditDrawer(targetDoc);
-        const relayDecoderSource =
-          state.lastOpticalRxReport?.decoder &&
-            typeof state.lastOpticalRxReport.decoder.reconstructBytes === "function"
-            ? state.lastOpticalRxReport.decoder
-            : {
-              K: 4,
-              blockSize: 32,
-              isComplete: () => true,
-              reconstructBytes: () =>
-                new TextEncoder().encode(
-                  `${state.book}.${state.chapter}.${state.verse} · ${state.lastNavResult?.chapter?.verses?.[String(state.verse)] ||
-                  "Relay payload"
-                  }`,
-                ),
-            };
-        const relayEncoder = createRelayEncoderFromDecoded(relayDecoderSource, 32);
-        const relayDroplet = relayEncoder.nextDroplet();
-        state.lastRelayEncoder = relayEncoder;
-        state.lastRelayDroplet = relayDroplet;
-        const statusPanel = getEl("editorialAuditStatusPanel", targetDoc);
-        if (statusPanel) {
-          statusPanel.hidden = false;
-          if (statusPanel.style) statusPanel.style.display = "";
-          statusPanel.setAttribute("data-audit-action", "optical-relay-tx");
-          statusPanel.setAttribute("data-relay-k", String(relayEncoder.K));
-          statusPanel.innerHTML =
-            `<div class="audit-receipt" data-action="optical-relay-tx" data-relay-k="${relayEncoder.K}" data-relay-seq="${relayDroplet.seq}">` +
-            `🔁 <strong>Re-Emisión Relay Iniciada (K=${relayEncoder.K} bloques · Droplet #${relayDroplet.seq}):</strong> Re-codificando los K bloques decodificados con nueva semilla Luby Transform.</div>`;
-        }
-      });
-    }
-
-    const pericopesRibbon = getEl("bibleChapterPericopesRibbon", targetDoc);
-    if (pericopesRibbon && typeof pericopesRibbon.addEventListener === "function") {
-      pericopesRibbon.addEventListener("click", async (e) => {
-        const synBtn = e?.target?.closest
-          ? e.target.closest("[data-synoptic-jump]")
-          : e?.target?.getAttribute?.("data-synoptic-jump")
-            ? e.target
-            : null;
-        const synRef = synBtn?.getAttribute?.("data-synoptic-jump");
-        if (synRef) {
-          const parsedSyn = parseBiblicalCoordinateReference(synRef);
-          if (parsedSyn && parsedSyn.bookCode) {
-            await navigate(
-              {
-                book: parsedSyn.bookCode,
-                chapter: parsedSyn.chapter || 1,
-                verse: parsedSyn.verse || 1,
-              },
-              targetDoc,
-            );
-            hydrateBookAndChapterSelectors(targetDoc);
-          }
-          return;
-        }
-        const vBtn = e?.target?.closest
-          ? e.target.closest("[data-pericope-verse]")
-          : e?.target?.getAttribute?.("data-pericope-verse")
-            ? e.target
-            : null;
-        const vNum = Number(vBtn?.getAttribute?.("data-pericope-verse"));
-        if (Number.isFinite(vNum) && vNum >= 1) {
-          await selectVerse(vNum, targetDoc);
-        }
-      });
-    }
-
-    const wonderCard = getEl("felicesSocraticWonderCard", targetDoc);
-    if (wonderCard && typeof wonderCard.addEventListener === "function") {
-      wonderCard.addEventListener("click", async (e) => {
-        const citeBtn = e?.target?.closest
-          ? e.target.closest("[data-wonder-cite]")
-          : e?.target?.getAttribute?.("data-wonder-cite")
-            ? e.target
-            : null;
-        const citeRef = citeBtn?.getAttribute?.("data-wonder-cite");
-        if (citeRef) {
-          const parsedCite = parseBiblicalCoordinateReference(citeRef);
-          await switchWork("biblia", targetDoc);
-          if (parsedCite && parsedCite.bookCode) {
-            await navigate(
-              {
-                book: parsedCite.bookCode,
-                chapter: parsedCite.chapter || 1,
-                verse: parsedCite.verse || 1,
-              },
-              targetDoc,
-            );
-            hydrateBookAndChapterSelectors(targetDoc);
-          }
-        }
-      });
-    }
-
-    const hydrateEvangeliosSection = async (quarterFilter = state.evangeliosQuarter || "T1", weekId = state.evangeliosWeekId || "") => {
-      const evSec = getEl("evangeliosSovereignSection", targetDoc);
-      if (!evSec) return null;
-      if (!state.pericopesAndGlossesLoaded && typeof dataLayer.loadPericopesAndGlosses === "function") {
-        state.pericopesAndGlossesLoaded = true;
-        try {
-          const pgData = await dataLayer.loadPericopesAndGlosses();
-          if (pgData) {
-            hydratePericopesAndGlosses(pgData);
-            hydrateCulturalGlossesLexicon(pgData.cultural_glosses || pgData);
-          }
-        } catch {
-          // Non-fatal
-        }
-      }
-      if (!state.diachronicRegisterLoaded && typeof dataLayer.loadDiachronicRegisterAudit === "function") {
-        state.diachronicRegisterLoaded = true;
-        try {
-          const drData = await dataLayer.loadDiachronicRegisterAudit();
-          if (drData) hydrateDiachronicRegister(drData);
-        } catch {
-          // Non-fatal
-        }
-      }
-      const corpus =
-        typeof dataLayer.loadEvangeliosCorpus === "function"
-          ? await dataLayer.loadEvangeliosCorpus()
-          : null;
-      if (!corpus || !Array.isArray(corpus.entries)) return null;
-      state.evangeliosCorpus = corpus;
-      const evLangSel = getEl("evangeliosLangSelect", targetDoc);
-      const fallbackEvLang = evLangSel?.value || state.evangeliosLang || state.lang || "es";
-      const resolvedEv = resolveEvangeliosActiveSelection({
-        corpus,
-        quarterFilter,
-        weekId,
-        fallbackLang: fallbackEvLang,
-      });
-      if (!resolvedEv) return null;
-      const { activeEntry, pool, effectiveQuarter, activeLang: activeEvLang, coordinate } = resolvedEv;
-      state.evangeliosQuarter = effectiveQuarter;
-      state.evangeliosLang = activeEvLang;
-      state.evangeliosWeekId = activeEntry.id;
-      if (coordinate) {
-        state.book = coordinate.book;
-        state.chapter = coordinate.chapter;
-        state.verse = coordinate.verse;
-      }
-      hydrateBookAndChapterSelectors(targetDoc);
-      updateCompassTriggerDom(targetDoc);
-      syncLifeTrailsActiveState(targetDoc);
-      syncUrlFromState(targetDoc, { push: false });
-
-      const activeUiLocale = state.uiLocale || "en";
-      const isUiEn = String(activeUiLocale).toLowerCase().startsWith("en");
-      const evHeadingEl = getEl("evangeliosMainHeading", targetDoc);
-      if (evHeadingEl) {
-        evHeadingEl.textContent = isUiEn
-          ? "🌅 The Gospels · 52 Plates"
-          : "🌅 Los Evangelios · 52 Láminas";
-      }
-      const evWeekLblEl = getEl("evangeliosWeekSelectLabel", targetDoc);
-      if (evWeekLblEl) {
-        evWeekLblEl.textContent = isUiEn ? "Week:" : "Semana:";
-      }
-      const weekSelect = getEl("evangeliosWeekSelect", targetDoc);
-      if (weekSelect) {
-        weekSelect.innerHTML = buildEvangeliosWeekOptionsHtml(
-          pool,
-          activeEntry.id,
-          activeEvLang,
-          activeUiLocale,
-        );
-        weekSelect.value = activeEntry.id;
-      }
-
-      const qTabs = getEl("evangeliosQuarterTabs", targetDoc);
-      if (qTabs && typeof qTabs.querySelectorAll === "function") {
-        for (const btn of qTabs.querySelectorAll("[data-evangelios-quarter]")) {
-          const qCode = btn.getAttribute("data-evangelios-quarter");
-          btn.setAttribute("aria-selected", qCode === quarterFilter ? "true" : "false");
-        }
-      }
-
-      const cardEl = getEl("evangeliosActivePlateCard", targetDoc);
-      if (cardEl && activeEntry) {
-        cardEl.setAttribute("data-evangelios-id", activeEntry.id);
-        cardEl.setAttribute("data-evangelios-quarter", activeEntry.quarter);
-        cardEl.setAttribute("data-evangelios-lang", activeEvLang);
-        cardEl.innerHTML = renderEvangeliosStageCardHtml(activeEntry, activeEvLang, activeUiLocale);
-      }
-      if (state.activeSheet === "study") {
-        await hydrateStudyDrawer(targetDoc);
-      } else if (state.activeSheet === "field") {
-        await hydrateImproveDrawer(targetDoc);
-      } else if (state.activeSheet === "print") {
-        hydratePrintDrawerPanels(targetDoc);
-      } else if (state.activeSheet === "share") {
-        hydrateShareAndAuditDrawer(targetDoc);
-      }
-      return activeEntry;
-    };
-
-    state.hydrateEvangeliosSection = hydrateEvangeliosSection;
-
-    const evSec = getEl("evangeliosSovereignSection", targetDoc);
-    if (evSec && typeof evSec.addEventListener === "function" && !evSec._evBound) {
-      evSec._evBound = true;
-      evSec.addEventListener("click", async (e) => {
-        const qBtn = e?.target?.closest
-          ? e.target.closest("[data-evangelios-quarter]")
-          : e?.target?.getAttribute?.("data-evangelios-quarter")
-            ? e.target
-            : null;
-        const nextQ = qBtn?.getAttribute?.("data-evangelios-quarter");
-        if (nextQ) {
-          await hydrateEvangeliosSection(nextQ, "");
-          return;
-        }
-        const echoBtn = e?.target?.closest
-          ? e.target.closest("[data-ot-echo-ref]")
-          : e?.target?.getAttribute?.("data-ot-echo-ref")
-            ? e.target
-            : null;
-        const echoRef = echoBtn?.getAttribute?.("data-ot-echo-ref");
-        if (echoRef) {
-          const parsedEcho = parseBiblicalCoordinateReference(echoRef);
-          if (parsedEcho && parsedEcho.bookCode) {
-            await switchWork("biblia", targetDoc);
-            await navigate(
-              {
-                book: parsedEcho.bookCode,
-                chapter: parsedEcho.chapter || 1,
-                verse: parsedEcho.verse || 1,
-              },
-              targetDoc,
-            );
-            hydrateBookAndChapterSelectors(targetDoc);
-          }
-          return;
-        }
-        const pericopeBtn = e?.target?.closest
-          ? e.target.closest("[data-pericope-ref]")
-          : e?.target?.getAttribute?.("data-pericope-ref")
-            ? e.target
-            : null;
-        const pericopeRef = pericopeBtn?.getAttribute?.("data-pericope-ref");
-        if (pericopeRef) {
-          const parsedPer = parseBiblicalCoordinateReference(pericopeRef);
-          if (parsedPer && parsedPer.bookCode) {
-            await switchWork("biblia", targetDoc);
-            await navigate(
-              {
-                book: parsedPer.bookCode,
-                chapter: parsedPer.chapter || 1,
-                verse: parsedPer.verse || 1,
-              },
-              targetDoc,
-            );
-            hydrateBookAndChapterSelectors(targetDoc);
-          }
-          return;
-        }
-        const refBtn = e?.target?.closest
-          ? e.target.closest("[data-evangelios-ref]")
-          : e?.target?.getAttribute?.("data-evangelios-ref")
-            ? e.target
-            : null;
-        const rawRef = refBtn?.getAttribute?.("data-evangelios-ref");
-        if (rawRef) {
-          const parsed = parseBiblicalCoordinateReference(rawRef);
-          if (parsed && parsed.bookCode) {
-            await switchWork("biblia", targetDoc);
-            await navigate(
-              {
-                book: parsed.bookCode,
-                chapter: parsed.chapter || 1,
-                verse: parsed.verse || 1,
-              },
-              targetDoc
-            );
-            hydrateBookAndChapterSelectors(targetDoc);
-          }
-        }
-      });
-    }
-
-    const evWeekSelect = getEl("evangeliosWeekSelect", targetDoc);
-    if (evWeekSelect && typeof evWeekSelect.addEventListener === "function") {
-      evWeekSelect.addEventListener("change", async (e) => {
-        const wId = e?.target?.value || evWeekSelect.value || "s01";
-        await hydrateEvangeliosSection(state.evangeliosQuarter || "T1", wId);
-      });
-    }
-
-    const evLangSelect = getEl("evangeliosLangSelect", targetDoc);
-    if (evLangSelect && typeof evLangSelect.addEventListener === "function") {
-      evLangSelect.addEventListener("change", async (e) => {
-        state.evangeliosLang = e?.target?.value || evLangSelect.value || "es";
-        await hydrateEvangeliosSection(state.evangeliosQuarter || "T1", state.evangeliosWeekId || "s01");
-      });
-    }
+    const hydrateEvangeliosSection = bindSisterWorksStageEvents(stageCtx);
 
     const switchWork = async (workId, docRef = targetDoc) => {
       const cleanWork = ["biblia", "felices", "evangelios"].includes(workId) ? workId : "biblia";
@@ -2278,148 +1794,7 @@ export function createMostradorController(options = {}) {
       return cleanWork;
     };
 
-    registerPlateCoordinateListener(async (coord) => {
-      if (!coord) return;
-      state.activePlateIndex = coord.plateIndex;
-      if (coord.dichaIndex) state.activeDichaIndex = coord.dichaIndex;
-      if (state.activeWork === "felices") {
-        if (coord.book) state.book = coord.book;
-        if (coord.chapter) state.chapter = coord.chapter;
-        if (coord.verse) state.verse = coord.verse;
-      }
-      hydrateBookAndChapterSelectors(targetDoc);
-      updateCompassTriggerDom(targetDoc);
-      syncLifeTrailsActiveState(targetDoc);
-      syncUrlFromState(targetDoc, { push: false });
-      if (state.activeSheet === "study") {
-        await hydrateStudyDrawer(targetDoc);
-      } else if (state.activeSheet === "field") {
-        await hydrateImproveDrawer(targetDoc);
-      } else if (state.activeSheet === "print") {
-        hydratePrintDrawerPanels(targetDoc);
-      } else if (state.activeSheet === "share") {
-        hydrateShareAndAuditDrawer(targetDoc);
-      }
-    });
-
-    const focalFrame = getEl("focalPlateFrame", targetDoc);
-    if (focalFrame && typeof focalFrame.addEventListener === "function") {
-      focalFrame.addEventListener("click", () => openActivePlateZoom(targetDoc));
-    }
-    const btnOpenPreview = getEl("btnOpenPreviewCarousel", targetDoc);
-    if (btnOpenPreview && typeof btnOpenPreview.addEventListener === "function") {
-      btnOpenPreview.addEventListener("click", () => openModal("previewModal", targetDoc));
-    }
-    const btnPrevP = getEl("btnPrevPlate", targetDoc);
-    if (btnPrevP && typeof btnPrevP.addEventListener === "function") {
-      btnPrevP.addEventListener("click", () => prevPlate(targetDoc));
-    }
-    const btnNextP = getEl("btnNextPlate", targetDoc);
-    if (btnNextP && typeof btnNextP.addEventListener === "function") {
-      btnNextP.addEventListener("click", () => nextPlate(targetDoc));
-    }
-    const btnPrintP = getEl("btnPrintPlate", targetDoc);
-    if (btnPrintP && typeof btnPrintP.addEventListener === "function") {
-      btnPrintP.addEventListener("click", () => printActivePlate());
-    }
-    const btnShareW = getEl("btnShareWork", targetDoc);
-    if (btnShareW && typeof btnShareW.addEventListener === "function") {
-      btnShareW.addEventListener("click", () => shareResource(targetDoc));
-    }
-    const foldTrig = getEl("foldGuideTrigger", targetDoc);
-    if (foldTrig && typeof foldTrig.addEventListener === "function") {
-      foldTrig.addEventListener("click", () => transitionSheet("print", targetDoc));
-    }
-    const felOptShare = getEl("btnFelicesOpticalShare", targetDoc);
-    if (felOptShare && typeof felOptShare.addEventListener === "function") {
-      felOptShare.addEventListener("click", () => transitionSheet("share", targetDoc));
-    }
-    const footContact = getEl("footerContactBtn", targetDoc);
-    if (footContact && typeof footContact.addEventListener === "function") {
-      footContact.addEventListener("click", () => transitionSheet("field", targetDoc));
-    }
-    const felLangSel = getEl("felicesLangSelect", targetDoc);
-    if (felLangSel && typeof felLangSel.addEventListener === "function") {
-      felLangSel.addEventListener("change", (e) => {
-        const nextFelLang = String(e?.target?.value || felLangSel.value || "es");
-        state.lang = nextFelLang;
-        syncFelicesWithCorpusLang(nextFelLang, targetDoc);
-        updateFocalPlate(state.activePlateIndex ?? getActivePlateIndex(), nextFelLang, targetDoc);
-        updateDownloadLinks(targetDoc, nextFelLang);
-      });
-    }
-    const felPlateSel = getEl("felicesPlateSelect", targetDoc);
-    if (felPlateSel && typeof felPlateSel.addEventListener === "function") {
-      felPlateSel.addEventListener("change", (e) => {
-        const pIdx = Math.max(1, Math.min(28, Number(e?.target?.value || felPlateSel.value) || 24));
-        setActivePlateIndex(pIdx, targetDoc);
-      });
-    }
-    const felDichaSel = getEl("felicesDichaSelect", targetDoc);
-    if (felDichaSel && typeof felDichaSel.addEventListener === "function") {
-      felDichaSel.addEventListener("change", (e) => {
-        const dIdx = Math.max(1, Math.min(12, Number(e?.target?.value || felDichaSel.value) || 1));
-        state.activeDichaIndex = dIdx;
-        const dCoord = resolveFelicesDichaCoordinate(dIdx);
-        if (dCoord) {
-          state.book = dCoord.book;
-          state.chapter = dCoord.chapter;
-          state.verse = dCoord.verse;
-          const pIdx = resolvePlateForBibleCoordinate(dCoord.book, dCoord.chapter, dCoord.verse);
-          setActivePlateIndex(pIdx, targetDoc);
-        }
-      });
-    }
-    const btnFelOpenBib = getEl("btnFelicesOpenInBible", targetDoc);
-    if (btnFelOpenBib && typeof btnFelOpenBib.addEventListener === "function") {
-      btnFelOpenBib.addEventListener("click", async () => {
-        const rawOsis =
-          btnFelOpenBib.getAttribute?.("data-felices-osis") ||
-          `${state.book}.${state.chapter}.${state.verse}`;
-        const parsed = parseBiblicalCoordinateReference(rawOsis);
-        await switchWork("biblia", targetDoc);
-        if (parsed && parsed.bookCode) {
-          await navigate(
-            {
-              book: parsed.bookCode,
-              chapter: parsed.chapter || 1,
-              verse: parsed.verse || 1,
-            },
-            targetDoc,
-          );
-          hydrateBookAndChapterSelectors(targetDoc);
-        }
-      });
-    }
-    for (const [closeBtnId, modalId] of [
-      ["previewModalCloseBtn", "previewModal"],
-      ["btnPreviewClose", "previewModal"],
-      ["plateModalCloseBtn", "plateModal"],
-      ["btnPlateClose", "plateModal"],
-    ]) {
-      const cBtn = getEl(closeBtnId, targetDoc);
-      if (cBtn && typeof cBtn.addEventListener === "function") {
-        cBtn.addEventListener("click", () => closeModal(modalId, targetDoc));
-      }
-    }
-    const cPrev = getEl("carouselPrevBtn", targetDoc);
-    if (cPrev && typeof cPrev.addEventListener === "function") {
-      cPrev.addEventListener("click", () => prevSlide(targetDoc));
-    }
-    const cNext = getEl("carouselNextBtn", targetDoc);
-    if (cNext && typeof cNext.addEventListener === "function") {
-      cNext.addEventListener("click", () => nextSlide(targetDoc));
-    }
-    for (const [pillId, slideIdx] of [
-      ["termPill_1", 0],
-      ["termPill_2", 1],
-      ["termPill_3", 2],
-    ]) {
-      const pEl = getEl(pillId, targetDoc);
-      if (pEl && typeof pEl.addEventListener === "function") {
-        pEl.addEventListener("click", () => setSlide(slideIdx, targetDoc));
-      }
-    }
+    bindFelicesStageEvents(stageCtx);
 
     state.switchWork = switchWork;
     globalThis.switchSovereignWork = (w) => switchWork(w, targetDoc);

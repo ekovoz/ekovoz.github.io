@@ -290,6 +290,21 @@
   "print.tech_receipt_summary": "🔬 Optical & typographic receipt",
   "felices.open_in_bible": "📖 Open passage in The Bible",
   "felices.quick_actions": "Quick plate actions",
-  "felices.folding_optical_summary": "📖 Folding Guide, Optical Transfer & Contact"
+  "felices.folding_optical_summary": "📖 Folding Guide, Optical Transfer & Contact",
+  "felices.quickActionsSummary": "تصویر کے فوری اقدامات",
+  "felices.foldingGuideSummary": "📖 تہ کرنے کی رہنمائی، بصری منتقلی اور رابطہ",
+  "study.diachronic_summary": "اس باب میں 1909 → اکیسویں صدی کی تبدیلیاں دیکھیں",
+  "print.fontSizeLabel": "حروف کا سائز (pt):",
+  "print.btn.imposition": "📐 کتابچے کی تہ کا حساب لگائیں",
+  "print.btn.layout": "📏 صفحے کے حاشیے جانچیں (A4 / لیٹر)",
+  "print.btn.photocopy3gen": "🔬 فوٹو کاپی کی پڑھنے کی صلاحیت جانچیں (تیسری نسل)",
+  "print.photocopyReceiptSummary": "🔬 بصری اور طباعتی رسید",
+  "share.btn.copyLink": "🔗 اس حوالے کا براہِ راست لنک کاپی کریں",
+  "share.fps.667": "6.67 FPS · 150 ms (کم روشنی میں محفوظ)",
+  "share.fps.10": "10 FPS · 100 ms (تیز اسکرین منتقلی)",
+  "share.btn.cameraRx": "📷 کیمرے سے وصول کریں (بغیر انٹرنیٹ)",
+  "share.btn.relayTx": "🔁 موصولہ حوالہ دوسرے فون کو آگے بھیجیں",
+  "share.btn.verifySig": "🔐 مستند ادارتی دستخط کی تصدیق کریں",
+  "felices.closeBtn": "بند کریں"
  }
 }

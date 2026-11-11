@@ -2,7 +2,7 @@
 // Cero precarga invasiva sin consentimiento del usuario (protección de cuota en celulares de gama baja).
 // Jamás intercepta ni almacena en caché PDFs de Biblia completa o cuadernos completos.
 
-export const CACHE_NAME = "ekovoz-mostrador-v40";
+export const CACHE_NAME = "ekovoz-mostrador-v44";
 
 export const SHELL_CORE_ASSETS = [
   "/",
@@ -10,6 +10,7 @@ export const SHELL_CORE_ASSETS = [
   "/mostrador.js",
   "/i18n_ui.js",
   "/mostrador/bridge_and_chapter.js",
+  "/mostrador/canonical_versification.js",
   "/mostrador/drawer_hydrators.js",
   "/mostrador/drawer_study.js",
   "/mostrador/drawer_print.js",
@@ -28,6 +29,7 @@ export const SHELL_CORE_ASSETS = [
   "/mostrador/estudio.js",
   "/mostrador/mejorar.js",
   "/mostrador/offline_mesh.js",
+  "/mostrador/projection_contract.js",
   "/mostrador/sister_works_controller.js",
   "/i18n/index.json",
   "/i18n/en.json",

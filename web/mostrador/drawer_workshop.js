@@ -17,6 +17,12 @@ import {
   renderStpLexiconResultsRowsHtml,
 } from "./mejorar.js";
 import { parseBiblicalCoordinateReference } from "./reference.js";
+import {
+  CANONICAL_BOOK_ORDER,
+  CANONICAL_TOTAL_VERSES,
+  canonicalOrdinalOf,
+  canonicalRefOfOrdinal,
+} from "./canonical_versification.js";
 
 export const HAREL_WORKSHOP_SUBTABS = ["patch", "ladder", "audit"];
 
@@ -33,19 +39,15 @@ function escHtml(val) {
  * al que pertenece cualquier pasaje bíblico (`D2-B+` / `SLICE-93`).
  */
 export function resolveAtomicBatchForPassage(bookId = "GEN", chapter = 1, verse = 1) {
-  const BOOK_ORDER = [
-    "GEN","EXO","LEV","NUM","DEU","JOS","JDG","RUT","1SA","2SA","1KI","2KI","1CH","2CH","EZR","NEH","EST","JOB","PSA","PRO","ECC","SNG","ISA","JER","LAM","EZE","DAN","HOS","JOE","AMO","OBA","JON","MIC","NAH","HAB","ZEP","HAG","ZEC","MAL",
-    "MAT","MAR","LUK","JHN","ACT","ROM","1CO","2CO","GAL","EPH","PHP","COL","1TH","2TH","1TI","2TI","TIT","PHM","HEB","JAS","1PE","2PE","1JN","2JN","3JN","JUD","REV"
-  ];
   const cleanBook = String(bookId || "GEN").toUpperCase().trim();
-  const bookIdx = Math.max(0, BOOK_ORDER.indexOf(cleanBook));
   const ch = Math.max(1, Number(chapter) || 1);
   const vs = Math.max(1, Number(verse) || 1);
-  let approxOrdinal = Math.min(31101, bookIdx * 470 + (ch - 1) * 24 + (vs - 1));
-  if (cleanBook === "REV" && ch >= 22) {
-    approxOrdinal = 31101;
-  }
-  const batchNumber = Math.min(1245, Math.max(1, Math.floor(approxOrdinal / 25) + 1));
+  // D8-R44 / DEB-R44-08: ordinal canónico exacto (1..31,102) en lugar de `bookIdx * 470 + (ch - 1) * 24`.
+  const exactOrdinal =
+    canonicalOrdinalOf(cleanBook, ch, vs) ??
+    canonicalOrdinalOf(CANONICAL_BOOK_ORDER.includes(cleanBook) ? cleanBook : "GEN", 1, 1);
+  const zeroBasedOrdinal = Math.min(CANONICAL_TOTAL_VERSES - 1, Math.max(0, exactOrdinal - 1));
+  const batchNumber = Math.min(1245, Math.max(1, Math.floor(zeroBasedOrdinal / 25) + 1));
   const batchId = `BLK-${String(batchNumber).padStart(4, "0")}`;
   const startOrdinal = (batchNumber - 1) * 25 + 1;
   const endOrdinal = Math.min(31102, batchNumber * 25);
@@ -55,6 +57,8 @@ export function resolveAtomicBatchForPassage(bookId = "GEN", chapter = 1, verse 
     totalBatches: 1245,
     startOrdinal,
     endOrdinal,
+    startRef: canonicalRefOfOrdinal(startOrdinal),
+    endRef: canonicalRefOfOrdinal(endOrdinal),
     passageRef: `${cleanBook}.${ch}.${vs}`,
   };
 }
@@ -291,11 +295,24 @@ export function renderCrdtWalAndLockP2AuditCardHtml(workshopArtifact = null) {
   const rootNotesPillsHtml = rootNotes
     .map(
       (rn) =>
-        `<span class="uls-badge" data-root-note-strong="${escHtml(rn.strong_id)}" style="font-size:0.71rem;padding:0.15rem 0.4rem;">` +
-        `<strong>${escHtml(rn.strong_id)}</strong> (${escHtml(rn.ref || "GEN.1.1")})` +
+        `<span class="uls-badge" data-root-note-strong="${escHtml(rn.strong_id)}" data-root-note="${escHtml(rn.note || "")}" title="${escHtml(rn.note || "")}" style="font-size:0.71rem;padding:0.15rem 0.4rem;">` +
+        `<strong>${escHtml(rn.strong_id)}</strong> ${escHtml(rn.surface_stp || "")} (${escHtml(rn.ref || "GEN.1.1")})` +
         `</span>`,
     )
     .join(" ");
+  // D7-R44: notas exegéticas completas de las raíces verificadas (`surface_stp` + `note`), plegadas bajo un toque.
+  const rootNotesDetailsHtml = rootNotes.length
+    ? `<details id="rootNotesStpFullNotes" class="hig-tech-receipt-details" style="width:100%;margin-top:0.3rem;">` +
+      `<summary>📖 Notas exegéticas de las ${rootNotes.length} raíces</summary>` +
+      `<ul style="margin:0.3rem 0 0;padding-left:1.1rem;">` +
+      rootNotes
+        .map(
+          (rn) =>
+            `<li data-root-note-strong="${escHtml(rn.strong_id)}"><strong>${escHtml(rn.strong_id)} · ${escHtml(rn.surface_stp || "")}</strong> — ${escHtml(rn.note || "")}</li>`,
+        )
+        .join("") +
+      `</ul></details>`
+    : "";
 
   const rollbackId = lockP2.patch_id || lockP2.last_rollback_patch_id || "PATCH-WAL-ROLLBACK-R16";
   const rollbackStatus = lockP2.status || "ROLLED_BACK";
@@ -324,6 +341,7 @@ export function renderCrdtWalAndLockP2AuditCardHtml(workshopArtifact = null) {
     `</div>` +
     `<div style="font-size:0.75rem;color:var(--text-secondary);display:flex;flex-wrap:wrap;align-items:center;gap:0.3rem;">` +
     `<span>📒 Ledger de Notas de Raíz (<code>root_notes_stp.json</code>): <strong>${rootNotes.length}</strong> raíces verificadas:</span> ${rootNotesPillsHtml}` +
+    rootNotesDetailsHtml +
     `</div>` +
     `</div>`
   );

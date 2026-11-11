@@ -290,6 +290,21 @@
   "print.tech_receipt_summary": "🔬 Optical & typographic receipt",
   "felices.open_in_bible": "📖 Open passage in The Bible",
   "felices.quick_actions": "Quick plate actions",
-  "felices.folding_optical_summary": "📖 Folding Guide, Optical Transfer & Contact"
+  "felices.folding_optical_summary": "📖 Folding Guide, Optical Transfer & Contact",
+  "felices.quickActionsSummary": "Actions rapides de la planche",
+  "felices.foldingGuideSummary": "📖 Guide de pliage, transfert optique et contact",
+  "study.diachronic_summary": "Voir les substitutions 1909 → XXIe siècle dans ce chapitre",
+  "print.fontSizeLabel": "Taille de police (pt) :",
+  "print.btn.imposition": "📐 Calculer le pliage du livret",
+  "print.btn.layout": "📏 Vérifier les marges (A4 / Lettre)",
+  "print.btn.photocopy3gen": "🔬 Tester la lisibilité en photocopie (3e génération)",
+  "print.photocopyReceiptSummary": "🔬 Reçu optique et typographique",
+  "share.btn.copyLink": "🔗 Copier le lien direct vers ce passage",
+  "share.fps.667": "6.67 FPS · 150 ms (sûr en faible lumière)",
+  "share.fps.10": "10 FPS · 100 ms (transfert d’écran rapide)",
+  "share.btn.cameraRx": "📷 Recevoir avec la caméra (sans internet)",
+  "share.btn.relayTx": "🔁 Relayer le passage reçu vers un autre téléphone",
+  "share.btn.verifySig": "🔐 Vérifier la signature éditoriale authentique",
+  "felices.closeBtn": "Fermer"
  }
 }
