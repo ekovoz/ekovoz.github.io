@@ -250,11 +250,23 @@ export function createI18n(opts = {}) {
 
   const cache = new Map(preloaded);
   const missing = new Set();
-  let locale = initialLocale || defaultLocale;
+  const initialCandidates = requestedUiLocales({
+    search: opts.search || "",
+    savedPreference: initialLocale || null,
+    navigatorLanguages: Array.isArray(opts.navigatorLanguages) ? opts.navigatorLanguages : [],
+  });
+  let locale = initialCandidates[0] || initialLocale || defaultLocale;
   let chain = [...new Set([locale, defaultLocale])];
 
   async function catalogFor(code) {
-    if (!cache.has(code)) cache.set(code, (await loadCatalog(code)) || null);
+    if (!cache.has(code)) {
+      let loaded = (await loadCatalog(code)) || null;
+      if (!loaded && (code === "en-XA" || code === "ar-XB")) {
+        const baseCat = (await loadCatalog(defaultLocale)) || cache.get(defaultLocale);
+        if (baseCat) loaded = pseudoLocalizeCatalog(baseCat, code);
+      }
+      cache.set(code, loaded);
+    }
     return cache.get(code);
   }
 

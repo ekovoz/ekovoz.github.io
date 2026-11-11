@@ -11,6 +11,7 @@ import {
   applySuggestedImprovement,
   buildPatchPayload,
   computeWalSnapshotRollbackPreview,
+  foldCrdtWalSemilattice,
   hydrateFieldWorkshopData,
   renderStpLexiconExplorerHtml,
   renderStpLexiconResultsRowsHtml,
@@ -228,7 +229,6 @@ export function renderCrdtWalAndLockP2AuditCardHtml(workshopArtifact = null) {
   const rootNotes = normalizeRootNotesEntries(workshopArtifact?.root_notes_stp);
 
   const rawLines = Number(crdt.raw_wal_lines ?? crdt.raw_wal_lines_count) || 67;
-  const canonicalCount = Number(crdt.folded_canonical_count ?? crdt.canonical_patches_count) || 5;
   const patches =
     Array.isArray(crdt.canonical_patches) && crdt.canonical_patches.length > 0
       ? crdt.canonical_patches
@@ -239,6 +239,11 @@ export function renderCrdtWalAndLockP2AuditCardHtml(workshopArtifact = null) {
           { patch_id: "PATCH-STP-L4-BEATITUDE-CLI", level: "L4", ref: "MAT.5.3", strong_id: "G3107", status: "COMMITTED" },
           { patch_id: "PATCH-WAL-COMMIT-R16", level: "L2", ref: "GEN.1.1", strong_id: "H0430", status: "COMMITTED" },
         ];
+  const foldedWal = foldCrdtWalSemilattice(patches);
+  const canonicalCount =
+    Number(crdt.folded_canonical_count ?? crdt.canonical_patches_count) ||
+    foldedWal.canonicalCount ||
+    5;
 
   const rawJournalEntries = Array.isArray(lockP2.entries)
     ? lockP2.entries
@@ -515,16 +520,19 @@ export function bindImproveFormControlsInDrawer(mod, ctx = {}) {
         limit: 24,
       });
     } else if (lexHostEl) {
-      const renderLexFn =
-        typeof mod.renderStpLexiconExplorerHtml === "function"
-          ? mod.renderStpLexiconExplorerHtml
-          : renderStpLexiconExplorerHtml;
       withPreservedInputFocus(targetDoc, () => {
-        lexHostEl.innerHTML = renderLexFn({
-          query: state.stpLexiconQuery || "",
-          activeWave: state.activeOtWave || 0,
-          limit: 24,
-        });
+        lexHostEl.innerHTML =
+          typeof mod.renderStpLexiconExplorerHtml === "function"
+            ? mod.renderStpLexiconExplorerHtml({
+                query: state.stpLexiconQuery || "",
+                activeWave: state.activeOtWave || 0,
+                limit: 24,
+              })
+            : renderStpLexiconExplorerHtml({
+                query: state.stpLexiconQuery || "",
+                activeWave: state.activeOtWave || 0,
+                limit: 24,
+              });
       });
       bindLexiconExplorerEvents(lexHostEl);
     }
@@ -610,14 +618,15 @@ export function bindImproveFormControlsInDrawer(mod, ctx = {}) {
   }
 
   const applyBtn = getEl("btnApplySuggestedImprovement", targetDoc);
-  const applyFn =
-    typeof mod.applySuggestedImprovement === "function"
-      ? mod.applySuggestedImprovement
-      : applySuggestedImprovement;
   if (applyBtn && typeof applyBtn.addEventListener === "function" && !applyBtn._applySuggestedBound) {
     applyBtn._applySuggestedBound = true;
     applyBtn.addEventListener("click", () => {
-      applyFn(targetDoc, applyBtn, state.refreshPatchPreview || refreshPatchPreview);
+      const refreshFn = state.refreshPatchPreview || refreshPatchPreview;
+      if (typeof mod.applySuggestedImprovement === "function") {
+        mod.applySuggestedImprovement(targetDoc, applyBtn, refreshFn);
+      } else {
+        applySuggestedImprovement(targetDoc, applyBtn, refreshFn);
+      }
     });
   }
 

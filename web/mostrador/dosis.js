@@ -89,6 +89,8 @@ export function locateVersePage(pagesIndex, ordinal) {
   const block = blocks[bi];
   const pi = lastIndexAtMost(block.first_ordinal_per_page, ordinal);
   if (pi < 0) return null;
+  const pageStartOrd = block.first_ordinal_per_page[pi] ?? ordinal;
+  const pageStartRef = pagesIndex.catalog ? refOfOrdinal(pageStartOrd, pagesIndex.catalog) : null;
   return {
     blockIndex: bi,
     block,
@@ -96,6 +98,7 @@ export function locateVersePage(pagesIndex, ordinal) {
     pageInBlock: pi + 1,
     pageCountInBlock: block.page_count,
     globalPage: block.page_start + pi,
+    pageStartRef,
   };
 }
 
@@ -240,6 +243,106 @@ export function synthesizeLiveChapterDose1PdfBytes({
   pdf += `${contentObjId} 0 obj << /Length ${streamText.length} >>\nstream\n${streamText}\nendstream\nendobj\n`;
   pdf += `% Live Dose1 (${lang} ${book} ${chapter}:${verse}): ${safeText}\n%%EOF\n`;
   return new TextEncoder().encode(pdf);
+}
+
+function encodePdfBytesToDataUri(bytes) {
+  let binary = "";
+  for (let i = 0; i < bytes.byteLength; i += 1) {
+    binary += String.fromCharCode(bytes[i]);
+  }
+  const b64 =
+    typeof globalThis.btoa === "function"
+      ? globalThis.btoa(binary)
+      : Buffer.from(bytes).toString("base64");
+  return `data:application/pdf;base64,${b64}`;
+}
+
+/**
+ * D2-R42 (`2A` · `ARB-EKOVOZ-79`):
+ * Sincroniza `#linkDose2BlockPdf` y `#linkDose3FullBiblePdf` para que las 11 lenguas verificadas en texto
+ * sin bloques PDF precompilados reciban un PDF `%PDF-1.4` sintetizado en vivo en su propio idioma (`state.lang`),
+ * eliminando por completo la caída silenciosa a `es`.
+ */
+export function syncDose2AndDose3LinksForActiveLang({
+  state = {},
+  targetDoc = null,
+  getEl = null,
+} = {}) {
+  const resolveEl =
+    typeof getEl === "function"
+      ? (id) => getEl(id, targetDoc)
+      : (id) => targetDoc?.getElementById?.(id) || null;
+  const lang = String(state.lang || "es").trim() || "es";
+  const isEn = String(state.uiLocale || "es").trim().toLowerCase().startsWith("en");
+  const book = String(state.book || "GEN").toUpperCase();
+  const chapter = Number(state.chapter) || 1;
+  const verse = Number(state.verse) || 1;
+  const edition = normalizeEditionSlug(
+    state.edition || "2col-a4",
+    lang === "es" ? "letter" : "a4",
+  );
+  const resolvedBlock = resolveCanonicalBlockForPassage(book, chapter);
+  const blockNum = Number(state.activeBlockNumber) || resolvedBlock.blockNumber || 1;
+  const padded = String(Math.max(1, Math.min(80, blockNum))).padStart(2, "0");
+  const hasPrecompiled = PRECOMPILED_PDF_LANGS.includes(lang);
+
+  const linkDose2 = resolveEl("linkDose2BlockPdf");
+  const linkDose3 = resolveEl("linkDose3FullBiblePdf");
+
+  if (hasPrecompiled) {
+    const d2Href = `data/blocks/${lang}/${edition}/B${padded}.pdf`;
+    const d3Href = `data/full/${lang}/${edition}.pdf`;
+    if (linkDose2) {
+      linkDose2.href = d2Href;
+      linkDose2.setAttribute?.("href", d2Href);
+      linkDose2.setAttribute?.("download", `ekovoz_${lang}_B${padded}_${edition}.pdf`);
+      linkDose2.setAttribute?.("data-dose-mode", "precompiled");
+      linkDose2.setAttribute?.("data-lang", lang);
+    }
+    if (linkDose3) {
+      linkDose3.href = d3Href;
+      linkDose3.setAttribute?.("href", d3Href);
+      linkDose3.setAttribute?.("download", `ekovoz_${lang}_biblia_${edition}.pdf`);
+      linkDose3.setAttribute?.("data-dose-mode", "precompiled");
+      linkDose3.setAttribute?.("data-lang", lang);
+    }
+    return { mode: "precompiled", lang, dose2Href: d2Href, dose3Href: d3Href };
+  }
+
+  const versesMap = state.lastNavResult?.chapter?.verses || null;
+  const verseText =
+    (versesMap && versesMap[String(verse)]) || `${book} ${chapter}:${verse} (${lang})`;
+  const liveBytes = synthesizeLiveChapterDose1PdfBytes({
+    lang,
+    book,
+    chapter,
+    verse,
+    text: verseText,
+    versesMap,
+    sheets: 3,
+  });
+  const dataUri = encodePdfBytesToDataUri(liveBytes);
+  if (linkDose2) {
+    linkDose2.href = dataUri;
+    linkDose2.setAttribute?.("href", dataUri);
+    linkDose2.setAttribute?.("download", `ekovoz-${lang}-${book.toLowerCase()}-${chapter}-B${padded}-live.pdf`);
+    linkDose2.setAttribute?.("data-dose-mode", "live-synthesis");
+    linkDose2.setAttribute?.("data-lang", lang);
+    linkDose2.textContent = isEn
+      ? `📚 2. Download Live Booklet PDF (${lang.toUpperCase()} · ${book} ${chapter})`
+      : `📚 2. Descargar Cuadernillo PDF en Vivo (${lang.toUpperCase()} · ${book} ${chapter})`;
+  }
+  if (linkDose3) {
+    linkDose3.href = dataUri;
+    linkDose3.setAttribute?.("href", dataUri);
+    linkDose3.setAttribute?.("download", `ekovoz-${lang}-${book.toLowerCase()}-${chapter}-edition-live.pdf`);
+    linkDose3.setAttribute?.("data-dose-mode", "live-synthesis");
+    linkDose3.setAttribute?.("data-lang", lang);
+    linkDose3.textContent = isEn
+      ? `🏛️ 3. Download Live Chapter Edition PDF (${lang.toUpperCase()})`
+      : `🏛️ 3. Descargar Edición PDF en Vivo (${lang.toUpperCase()})`;
+  }
+  return { mode: "live-synthesis", lang, dose2Href: dataUri, dose3Href: dataUri };
 }
 
 /** Devuelve las ediciones tipográficas canónicas + 2 PDFs de campo enriquecidas con `downloads_manifest.json` y perfiles TOML (`D3-S21+`, `D5-R41`). */

@@ -468,6 +468,17 @@ test("R36_SLICE_111_field_workshop_census_and_editorial_graphics_hydrators_mount
   const auditSubtabHtml = renderTallerArtifactsCatalogHtml({ lang: "stp", includeCensusCard: true });
   assert.equal((auditSubtabHtml.match(/id="crdtWalAndLockP2AuditCard"/g) || []).length, 1);
   assert.equal((auditSubtabHtml.match(/id="masterCensus7164InspectorCard"/g) || []).length, 1);
+  // D4-R43 / DEB-R43-04: .eight-locks-pda-bar lives in Sub-tab 3 (audit / renderTallerArtifactsCatalogHtml), not in Sub-tab 1 (patch / renderImproveDrawerHtml default)
+  const subtab1PatchHtml = renderImproveDrawerHtml({ lang: "stp", osis: "ROM.1.16", currentSurface: "Tet na tu' nii'ñ" });
+  assert.equal(
+    subtab1PatchHtml.includes('class="eight-locks-pda-bar"'),
+    false,
+    "D4-R43 / DEB-R43-04: Sub-tab 1 (patch) must not render .eight-locks-pda-bar by default",
+  );
+  assert.match(auditSubtabHtml, /class="eight-locks-pda-bar"[^>]*data-eight-locks-bar="true"/);
+  for (const lockId of ["P1", "P2", "P3", "P4", "P5", "P6", "P7", "P8"]) {
+    assert.match(auditSubtabHtml, new RegExp(`data-lock-id="${lockId}"`), `Audit Sub-tab 3 must include lock pill ${lockId}`);
+  }
 });
 
 

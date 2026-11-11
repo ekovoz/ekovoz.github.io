@@ -1738,8 +1738,8 @@ test("R38_SLICE_126_canvas_non_mutilation_word_to_rosetta_workshop_dedup_14_edit
   assert.ok(idxDoseCards > idxPrintDrawer && idxDoseCards < idxWorkshopDrawer, "#mostradorDoseCards must reside inside Drawer 2");
   assert.match(indexHtml, /id="bibleOpticalCameraVideo"[^>]*data-dosis-subtab-panel="pdf"/);
 
-  // 5. D7-R38 (7A): Zero broken dist/en/v1/mostrador/felices-en-v1-*.pdf links in index.html
-  assert.doesNotMatch(indexHtml, /dist\/en\/v1\/mostrador\/felices-en-v1-/);
+  // 5. D7-R38 (7A): Zero broken dist/en/v1/mostrador/felices-en-v1-a4.pdf links in index.html
+  assert.doesNotMatch(indexHtml, /dist\/en\/v1\/mostrador\/felices-en-v1-a4\.pdf/);
 
   // 6. D8-R38 (8A): buildEvangeliosWeekOptionsHtml and renderEvangeliosStageCardHtml localize to English when activeEvLang="en"
   const evEnOpts = mostradorMod.buildEvangeliosWeekOptionsHtml(
@@ -2194,4 +2194,146 @@ test("R41 (D1-R41..D10-R41 / ARB-EKOVOZ-78 / GOLD-665): Sovereign Surface & Asse
   assert.equal(mockEls.sovereignGlobalDrawersHost.hidden, true, "D9-R41: #sovereignGlobalDrawersHost must be hidden on Felices tab");
   sisterMod.syncSisterWorksTabsDom("biblia", (id) => mockEls[id] || null);
   assert.equal(mockEls.sovereignGlobalDrawersHost.hidden, false, "D9-R41: #sovereignGlobalDrawersHost must be visible on Biblia tab");
+});
+
+test("R42 (ARB-EKOVOZ-79 / GOLD-666): Zero-Orphan Closure (0 unreferenced JSONs, CallsInProd >= 1 for all exported functions, Sticky Drawer Context Header, Live Dose 2/3 & Pack Synthesis, 32 Los Felices PDFs)", async () => {
+  const indexHtml = fs.readFileSync(path.join(WEB_DIR, "index.html"), "utf8");
+
+  // 1. D1-R42: .language-region-pill-group must not be hidden when a drawer is open, and #stickyDrawerContextHeader must exist inside #bibleProgressiveSheetDoors
+  assert.doesNotMatch(
+    indexHtml,
+    /body:has\(#bibleVerseViewport\[data-inspector-open="true"\]\)\s*\.language-region-pill-group/,
+    "D1-R42: .language-region-pill-group must remain visible when a drawer is open",
+  );
+  assert.match(indexHtml, /id="stickyDrawerContextHeader"/);
+  assert.match(indexHtml, /id="stickyActiveVersePill"/);
+  assert.match(indexHtml, /id="stickyActiveLangBtn"/);
+  assert.match(indexHtml, /id="btnStickyJumpToCanvas"/);
+
+  // 2. D2-R42: syncDose2AndDose3LinksForActiveLang synthesizes live PDFs for the 11 text-only languages without falling back to es
+  const dosisMod = await import("./dosis.js");
+  const mockLink2 = { href: "", textContent: "", attrs: {}, setAttribute(k, v) { this.attrs[k] = v; } };
+  const mockLink3 = { href: "", textContent: "", attrs: {}, setAttribute(k, v) { this.attrs[k] = v; } };
+  const liveSync = dosisMod.syncDose2AndDose3LinksForActiveLang({
+    state: {
+      lang: "pt",
+      uiLocale: "en",
+      book: "JHN",
+      chapter: 1,
+      verse: 1,
+      lastNavResult: { chapter: { verses: { "1": "No princípio era o Verbo." } } },
+    },
+    getEl: (id) => (id === "linkDose2BlockPdf" ? mockLink2 : id === "linkDose3FullBiblePdf" ? mockLink3 : null),
+  });
+  assert.equal(liveSync.mode, "live-synthesis");
+  assert.ok(mockLink2.href.startsWith("data:application/pdf;base64,"), "Dose 2 must use live PDF synthesis for pt");
+  assert.equal(mockLink2.attrs["data-lang"], "pt");
+  assert.ok(mockLink3.href.startsWith("data:application/pdf;base64,"), "Dose 3 must use live PDF synthesis for pt");
+  assert.equal(mockLink3.attrs["data-lang"], "pt");
+
+  // 3. D3-R42: loadMasterCensusSummary and loadOfflinePacksCatalog exist in data_layer.js
+  const dataLayerMod = await import("./data_layer.js");
+  const dl = dataLayerMod.createDataLayer({ source: createDiskBackedSource() });
+  const censusDoc = await dl.loadMasterCensusSummary();
+  assert.ok(censusDoc && typeof censusDoc === "object", "loadMasterCensusSummary must load master_census_summary.json");
+  const offlineCat = await dl.loadOfflinePacksCatalog();
+  assert.ok(offlineCat && typeof offlineCat === "object", "loadOfflinePacksCatalog must load offline_packs_catalog.json + packs_manifest.json");
+
+  // 4. D4-R42: updateDownloadLinks points #linkSheets and #linkBooklet to the 32 mirrored Los Felices PDFs
+  const i18nUiMod = await import("../i18n_ui.js");
+  const felLinks = i18nUiMod.updateDownloadLinks(
+    {
+      getElementById(id) {
+        return { href: "", setAttribute() {}, value: id === "langSelect" ? "pt" : "" };
+      },
+    },
+    "pt",
+  );
+  assert.equal(felLinks.sheetsHref, "dist/pt/v1/mostrador/felices-pt-v1-sheets.pdf");
+  assert.equal(felLinks.bookletHref, "dist/pt/v1/mostrador/felices-pt-v1-booklet.pdf");
+  assert.ok(
+    fs.existsSync(path.join(WEB_DIR, felLinks.sheetsHref)),
+    "Mirrored Los Felices sheets PDF must exist under web/dist/",
+  );
+  assert.ok(
+    fs.existsSync(path.join(WEB_DIR, felLinks.bookletHref)),
+    "Mirrored Los Felices booklet PDF must exist under web/dist/",
+  );
+
+  // 5. D5-R42..D8-R42: Every exported function across all production JS files has CallsInProd >= 1
+  const prodFiles = [
+    path.join(WEB_DIR, "i18n_ui.js"),
+    path.join(WEB_DIR, "mostrador.js"),
+    path.join(WEB_DIR, "sw.js"),
+    ...fs
+      .readdirSync(path.join(WEB_DIR, "mostrador"))
+      .filter((f) => f.endsWith(".js") && !f.endsWith(".test.mjs"))
+      .map((f) => path.join(WEB_DIR, "mostrador", f)),
+  ];
+  const fullProdCorpus = prodFiles.map((p) => fs.readFileSync(p, "utf8")).join("\n");
+  for (const filePath of prodFiles) {
+    const content = fs.readFileSync(filePath, "utf8");
+    const exportRe = /export\s+(?:async\s+)?function\s+([A-Za-z0-9_]+)/g;
+    let m;
+    while ((m = exportRe.exec(content)) !== null) {
+      const fnName = m[1];
+      if (fnName === "bootBrowserMostrador" || fnName === "createMostradorController") continue;
+      const callRe = new RegExp(`\\b${fnName}\\s*\\(`, "g");
+      const matches = fullProdCorpus.match(callRe) || [];
+      assert.ok(
+        matches.length >= 2,
+        `D5-R42..D8-R42: Exported function '${fnName}' in ${path.basename(filePath)} must have at least 1 production call (found ${matches.length - 1})`,
+      );
+    }
+  }
+});
+
+test("R43 (ARB-EKOVOZ-80 / D1-R43..D4-R43 / DEB-R43-01..05): Drawer 1 exact 3-subtab grouping & open details, #felicesLangSelect 18-language bijection, Drawer 3 .eight-locks-pda-bar in Sub-tab 3 audit, and deploy_web.ps1 dist exclusion", async () => {
+  const indexHtml = fs.readFileSync(path.join(WEB_DIR, "index.html"), "utf8");
+  const deployPs1 = fs.readFileSync(path.resolve(WEB_DIR, "..", "deploy_web.ps1"), "utf8");
+  const estudioMod = await import("./estudio.js");
+  const mejorarMod = await import("./mejorar.js");
+  const i18nUiMod = await import("../i18n_ui.js");
+
+  // 1. D1-R43 (DEB-R43-05): deploy_web.ps1 excludes \\dist\\ from $ControlPlaneBytes
+  assert.match(
+    deployPs1,
+    /\$ControlPlaneBytes\s*=\s*\(Get-ChildItem[^\r\n]*-notmatch\s*"\\\\dist\\\\"/,
+    "D1-R43 / DEB-R43-05: deploy_web.ps1 must exclude \\\\dist\\\\ from $ControlPlaneBytes calculation",
+  );
+
+  // 2. D2-R43 (DEB-R43-01): #felicesLangSelect has exact 1:1 bijection with the 18 LANGUAGE_PACKS & web/data/felices/*.json
+  const selectMatch = indexHtml.match(/<select[^>]*id="felicesLangSelect"[^>]*>([\s\S]*?)<\/select>/);
+  assert.ok(selectMatch, "#felicesLangSelect must exist in web/index.html");
+  const felOptions = [...selectMatch[1].matchAll(/<option\s+value="([^"]+)"/g)].map((m) => m[1]);
+  assert.equal(felOptions.length, 18);
+  assert.deepEqual(
+    [...felOptions].sort(),
+    i18nUiMod.LANGUAGE_PACKS.map((p) => p.code).sort(),
+    "D2-R43: #felicesLangSelect options must match LANGUAGE_PACKS 1:1",
+  );
+
+  // 3. D3-R43 (DEB-R43-02, DEB-R43-03): Drawer 1 (#bibleEasyDrawerPanel) exact 3-subtab grouping and open <details>
+  assert.match(indexHtml, /id="nsm65StratumCard"\s+data-study-subtab-panel="rosetta"\s+hidden/);
+  assert.match(indexHtml, /id="philologyRosettaStaticHost"\s+data-study-subtab-panel="calibrate"\s+hidden/);
+  assert.match(indexHtml, /<details\s+id="diachronicSubstitutionsDetails"\s+open\s+data-study-subtab-panel="calibrate"\s+hidden/);
+  const strataCards = estudioMod.renderStudyStrataCards(
+    {
+      book: "GEN",
+      chapter: 1,
+      rows: [{ idx: 1, verse: 1, surface: "בְּרֵאשִׁית", strong: "H7225", gloss_es: "En el principio" }],
+    },
+    { verse: 1 },
+  );
+  assert.match(
+    strataCards.realiaHtml,
+    /<details\s+id="studyCulturalGlossesCatalogAccordion"\s+open\b/,
+    "D3-R43 / DEB-R43-03: #studyCulturalGlossesCatalogAccordion must render open by default",
+  );
+
+  // 4. D4-R43 (DEB-R43-04): .eight-locks-pda-bar omitted from Sub-tab 1 (patch) and mounted in Sub-tab 3 (audit)
+  const subtab1Html = mejorarMod.renderImproveDrawerHtml({ lang: "stp", osis: "GEN.1.1" });
+  assert.doesNotMatch(subtab1Html, /class="eight-locks-pda-bar"/);
+  const subtab3Html = mejorarMod.renderTallerArtifactsCatalogHtml("stp");
+  assert.match(subtab3Html, /class="eight-locks-pda-bar"[^>]*data-eight-locks-bar="true"/);
 });

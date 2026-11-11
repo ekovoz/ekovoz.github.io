@@ -1479,7 +1479,7 @@ export function renderStudyStrataCards(matrixShard, options = {}) {
       )
       .join("") +
     `</ul>` +
-    `<details id="studyCulturalGlossesCatalogAccordion" class="cultural-glosses-accordion" style="margin-top:0.5rem;padding-top:0.4rem;border-top:1px dashed var(--card-border);">` +
+    `<details id="studyCulturalGlossesCatalogAccordion" open class="cultural-glosses-accordion" style="margin-top:0.5rem;padding-top:0.4rem;border-top:1px dashed var(--card-border);">` +
     `<summary style="cursor:pointer;font-size:0.79rem;font-weight:600;color:var(--text-primary);min-height:48px;">📚 ${isEn ? `Cultural Glosses NSM-65 (${Object.keys(HYDRATED_CULTURAL_GLOSSES_MAP).length} terms: Weights, Coins, Crafts & Realia)` : `Glosas Culturales NSM-65 (${Object.keys(HYDRATED_CULTURAL_GLOSSES_MAP).length} términos: Pesos, Monedas, Oficios y Realia)`}</summary>` +
     `<ul style="margin:0.35rem 0 0 1.1rem;font-size:0.8rem;display:grid;gap:0.22rem;">` +
     Object.values(HYDRATED_CULTURAL_GLOSSES_MAP)

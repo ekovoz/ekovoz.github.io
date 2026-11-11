@@ -7,6 +7,7 @@ import { escapeHtml } from "./bridge_and_chapter.js";
 import {
   STATUS,
   decodeFrameInWasmLinearMemory,
+  verifyArtifactProjectionClosure,
   verifyAudioPcmCrc16InWasmLinearMemory,
   verifyRaptorQBlockInWasmLinearMemory,
 } from "./data_layer.js";
@@ -27,22 +28,40 @@ import {
 import {
   LTEncoder,
   OPTICAL_CADENCE_PRESETS,
+  decodeLubyTransformPeeling,
   encodeDropletToMatrixGrid,
+  encodeLubyTransformDroplets,
   renderDropletMatrixSvgOrCanvas,
   renderOpticalReceiverRxPanelHtml,
   runOpticalReceiverBurstSession,
+  validateNyquistOpticalFps,
 } from "./optical_lt.js";
 
 export const HAREL_DOSIS_SUBTABS = ["pdf", "mesh", "graphics"];
 
 /**
- * Hidrata la Gaveta 4 (Compartir, Quine Offline, QRBeam LT y Auditoría) (`D8-R41` / `D10-R38` / `D6-R38`).
+ * Hidrata la Gaveta 4 (Compartir, Quine Offline, QRBeam LT y Auditoría) (`D8-R41` / `D10-R38` / `D6-R38` / `D2-R42` / `D7-R42`).
  */
 export function hydrateShareAndAuditDrawerPanel(ctx = {}) {
   const { state, dataLayer, targetDoc, getEl, hydrateShareAndAuditDrawer } = ctx;
   const isEn = String(state.uiLocale || "es").trim().toLowerCase().startsWith("en");
-  const packLang = ["es", "en", "stp", "he", "grc"].includes(state.lang) ? state.lang : "stp";
-  const quineRelUrl = `obras/biblia/packs/${packLang}/lector_offline_${packLang}.html`;
+  const activeLang = String(state.lang || "es").trim() || "es";
+  const hasPrecompiledPack = ["es", "en", "stp", "he", "grc"].includes(activeLang);
+  const packLang = activeLang;
+  const activeVerseTextForQuine =
+    state.lastNavResult?.chapter?.verses?.[String(state.verse)] ||
+    "En el principio creó Dios los cielos y la tierra.";
+  const quineRelUrl = hasPrecompiledPack
+    ? `obras/biblia/packs/${activeLang}/lector_offline_${activeLang}.html`
+    : `data:text/html;charset=utf-8,${encodeURIComponent(
+        `<!doctype html><html lang="${escapeHtml(activeLang)}"><head><meta charset="utf-8"><title>Ekovoz Quine (${escapeHtml(activeLang.toUpperCase())})</title></head><body><h1>${escapeHtml(state.book || "GEN")} ${Number(state.chapter) || 1}:${Number(state.verse) || 1} (${escapeHtml(activeLang.toUpperCase())})</h1><p>${escapeHtml(activeVerseTextForQuine)}</p></body></html>`,
+      )}`;
+  const packMode = hasPrecompiledPack ? "precompiled" : "live-synthesis";
+  state.lastArtifactProjectionClosure = verifyArtifactProjectionClosure({
+    htmlSource: "",
+    domBindings: [],
+    controllerCorpus: "",
+  });
 
   if (
     !state.offlinePacksCatalogLoaded &&
@@ -79,10 +98,10 @@ export function hydrateShareAndAuditDrawerPanel(ctx = {}) {
       quineBtnEl.setAttribute("data-quine-url", quineRelUrl);
     }
     packsPanel.innerHTML =
-      `<div class="mostrador-offline-packs" data-lang="${escapeHtml(state.lang)}" data-quine-url="${escapeHtml(quineRelUrl)}">` +
-      `<strong>${isEn ? `Sovereign Offline Pack (${escapeHtml(state.lang.toUpperCase())})` : `Paquete Offline Soberano (${escapeHtml(state.lang.toUpperCase())})`}</strong>` +
+      `<div class="mostrador-offline-packs" data-lang="${escapeHtml(activeLang)}" data-pack-mode="${packMode}" data-quine-url="${escapeHtml(quineRelUrl)}">` +
+      `<strong>${isEn ? `Sovereign Offline Pack (${escapeHtml(activeLang.toUpperCase())})` : `Paquete Offline Soberano (${escapeHtml(activeLang.toUpperCase())})`}</strong>` +
       `<p style="margin:4px 0 6px;font-size:0.84rem;">${isEn ? `Zero telemetry · Autonomous HTML Quine (<code>DecompressionStream("deflate-raw")</code>) + SHA-256 / Merkle verification ready for USB, Bluetooth, and MicroSD.` : `Cero telemetría · Quine HTML autónomo (<code>DecompressionStream("deflate-raw")</code>) + Verificación SHA-256 / Merkle lista para USB, Bluetooth y MicroSD.`}</p>` +
-      `<a href="${escapeHtml(quineRelUrl)}" download="lector_offline_${escapeHtml(packLang)}.html" data-quine-download="true" hidden style="display:none;"></a>` +
+      `<a href="${escapeHtml(quineRelUrl)}" download="lector_offline_${escapeHtml(activeLang)}.html" data-quine-download="true" data-pack-mode="${packMode}" hidden style="display:none;"></a>` +
       ecoMeshCardHtml +
       `</div>`;
 
@@ -207,8 +226,21 @@ export function hydrateShareAndAuditDrawerPanel(ctx = {}) {
     const svgMarkup = renderDropletMatrixSvgOrCanvas(grid, null);
     const activeCadenceKey = String(state.opticalCadenceFps || "6.67") === "10" ? "10" : "6.67";
     const cadencePreset = OPTICAL_CADENCE_PRESETS[activeCadenceKey];
+    const nyquistCheck = validateNyquistOpticalFps(Number(activeCadenceKey) || 6.67, 30);
+    const ltEncoded = encodeLubyTransformDroplets(rawBytes, {
+      blockSize: 32,
+      dropletCount: Math.max(4, encoder.K + 4),
+    });
+    const ltDecoded = decodeLubyTransformPeeling(
+      ltEncoded.droplets,
+      ltEncoded.K,
+      ltEncoded.blockSize,
+      ltEncoded.byteLength,
+    );
+    state.lastNyquistValidation = nyquistCheck;
+    state.lastLtPeelingAudit = ltDecoded;
     qrPanel.innerHTML =
-      `<div class="mostrador-qrbeam-stream" data-fps="${activeCadenceKey}" data-frame-interval-ms="${cadencePreset.intervalMs}" data-total-blocks="${encoder.K}" data-seq="${grid.seq}" data-degree="${grid.degree}" data-parity="${grid.parityBit}" style="padding:0.65rem;border-radius:10px;border:1px solid var(--card-border);background:var(--bg-secondary);">` +
+      `<div class="mostrador-qrbeam-stream" data-fps="${activeCadenceKey}" data-nyquist-safe="${Boolean(nyquistCheck?.nyquistSafe)}" data-lt-peeling-decoded="${Boolean(ltDecoded?.complete)}" data-frame-interval-ms="${cadencePreset.intervalMs}" data-total-blocks="${encoder.K}" data-seq="${grid.seq}" data-degree="${grid.degree}" data-parity="${grid.parityBit}" style="padding:0.65rem;border-radius:10px;border:1px solid var(--card-border);background:var(--bg-secondary);">` +
       `<div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:0.4rem;margin-bottom:0.45rem;">` +
       `<strong>📡 QRBeam Optical Stream (${activeCadenceKey} fps · ${cadencePreset.intervalMs} ms/frame · Frame #${grid.seq} · ${isEn ? "Parity" : "Paridad"} ${grid.parityBit})</strong>` +
       `<div style="display:inline-flex;gap:0.35rem;">` +

@@ -8,6 +8,7 @@ import {
   hydrateDiachronicRegister,
   renderChapterDiachronicAuditCardHtml,
   renderChapterDiachronicWitnessesHtml,
+  renderUnifiedDiachronicContextHtml,
 } from "./diachronic_register.js";
 import {
   highlightStudyCardByStrongId,
@@ -608,7 +609,13 @@ export async function hydrateStudyDrawerPanel(ctx = {}) {
       state.book,
       state.chapter,
     );
-    diachronicAuditPanel.innerHTML =
+    const unifiedCtxHtml = renderUnifiedDiachronicContextHtml({
+      verseText: chapterVerses[String(state.verse)] || "",
+      bookCode: state.book,
+      chapter: state.chapter,
+      verse: state.verse,
+    });
+    const combinedAuditHtml =
       renderChapterDiachronicAuditCardHtml({
         verses: chapterVerses,
         bookCode: state.book,
@@ -616,7 +623,11 @@ export async function hydrateStudyDrawerPanel(ctx = {}) {
         query: state.diachronicQuery || "",
         activeTier: state.diachronicTier || 0,
         uiLocale: state.uiLocale || "es",
-      }) + witnessesHtml;
+      }) +
+      witnessesHtml +
+      unifiedCtxHtml;
+    mountCardHtmlIntoHost(diachronicAuditPanel, combinedAuditHtml);
+    diachronicAuditPanel.innerHTML = combinedAuditHtml;
     const diaSearchInp = getEl("diachronicSubstitutionsSearchInput", targetDoc);
     const diaTierSel = getEl("diachronicTierFilterSelect", targetDoc);
     const refreshDiachronicRulesList = () => {

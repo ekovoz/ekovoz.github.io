@@ -188,13 +188,26 @@ const DEFAULT_BOOK_RESOLVER = createReferenceResolver([
   },
 ]);
 
+const DEFAULT_VERSE_COUNTS = Object.fromEntries(
+  ROSETTA_66_BOOKS.map((b) => [b.code, Array.from({ length: b.chapters }, () => 176)]),
+);
+
 export function resolveBookCodeByAliasOrName(query) {
   return DEFAULT_BOOK_RESOLVER.resolveBook(query);
 }
 
-export function parseBiblicalCoordinateReference(input) {
+export function parseBiblicalCoordinateReference(input, verseCounts = null) {
   const raw = asciiDigits(String(input || "")).trim();
   if (!raw) return null;
+  const parsed = parseReference(raw, DEFAULT_BOOK_RESOLVER, verseCounts || DEFAULT_VERSE_COUNTS);
+  if (parsed && parsed.book) {
+    return {
+      book: parsed.book,
+      bookCode: parsed.book,
+      chapter: parsed.chapter,
+      verse: parsed.verse,
+    };
+  }
   const dot = /^([1-3]?[A-Za-z]{2,3})\.(\d+)(?:\.(\d+))?$/.exec(raw);
   if (dot) {
     const bookCode = resolveBookCodeByAliasOrName(dot[1]) || dot[1].toUpperCase();

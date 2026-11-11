@@ -11,6 +11,10 @@ export const SHELL_CORE_ASSETS = [
   "/i18n_ui.js",
   "/mostrador/bridge_and_chapter.js",
   "/mostrador/drawer_hydrators.js",
+  "/mostrador/drawer_study.js",
+  "/mostrador/drawer_print.js",
+  "/mostrador/drawer_workshop.js",
+  "/mostrador/drawer_share.js",
   "/mostrador/i18n.js",
   "/mostrador/data_layer.js",
   "/mostrador/pdf_pages.js",
@@ -157,6 +161,14 @@ if (typeof self !== "undefined" && typeof self.addEventListener === "function") 
     } else if (data.type === "EKOVOZ_OFFLINE_CLEAR") {
       _offlineOptInEnabled = false;
       event.waitUntil(caches.delete(CACHE_NAME));
+    } else if (data.type === "EKOVOZ_SERIALIZE_FIELD_PATCH_L1_L5") {
+      const serialized = serializeFieldFeedbackPatchL1L5(data.payload || {});
+      if (event.source && typeof event.source.postMessage === "function") {
+        event.source.postMessage({
+          type: "EKOVOZ_FIELD_PATCH_SERIALIZED",
+          payload: serialized,
+        });
+      }
     }
   });
 

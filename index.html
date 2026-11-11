@@ -202,7 +202,7 @@ body:has(#bibleVerseViewport[data-inspector-open="true"]) #bibleSovereignSection
 body:has(#bibleVerseViewport[data-inspector-open="true"]) #bibleSpatialNav{margin-bottom:0.1rem !important;}
 body:has(#bibleVerseViewport[data-inspector-open="true"]) #bibleProgressiveSheetDoors{gap:0.15rem !important;margin-top:0 !important;}
 body:has(#bibleVerseViewport[data-inspector-open="true"]) .apple-sheet{margin-top:0.15rem !important;}
-body:has(#bibleVerseViewport[data-inspector-open="true"]) #stage-action,body:has(#bibleVerseViewport[data-inspector-open="true"]) #bibleOrthographyPills,body:has(#bibleVerseViewport[data-inspector-open="true"]) .language-region-pill-group,body:has(#bibleVerseViewport[data-inspector-open="true"]) #bibleSovereignSection>div:first-child{display:none !important;}
+body:has(#bibleVerseViewport[data-inspector-open="true"]) #stage-action,body:has(#bibleVerseViewport[data-inspector-open="true"]) #bibleOrthographyPills,body:has(#bibleVerseViewport[data-inspector-open="true"]) #bibleSovereignSection>div:first-child{display:none !important;}
 #bibleSovereignSection:has(#bibleVerseViewport[data-inspector-open="true"]) #bibleOralPorticoBanner:not([hidden]){display:flex !important;align-items:center;justify-content:space-between;gap:0.35rem;max-height:36px !important;overflow:hidden !important;padding:2px 8px !important;margin-bottom:0.2rem !important;font-size:0.75rem !important;white-space:nowrap !important;}
 #bibleSovereignSection:has(#bibleVerseViewport[data-inspector-open="true"]) #bibleOralPorticoBanner .hig-tech-meta,#bibleSovereignSection:has(#bibleVerseViewport[data-inspector-open="true"]) #bibleOralPorticoBanner .oral-portico-secondary{display:none !important;}
 .hig-tech-receipt-details{font-size:0.76rem;color:var(--text-secondary);margin-top:0.25rem;}
@@ -563,20 +563,20 @@ summary{display:inline-flex;align-items:center;background-color:var(--card-bg, #
                     <option value="en">🇺🇸 English (en)</option>
                     <option value="pt">🇧🇷 Português (pt)</option>
                     <option value="fr">🇫🇷 Français (fr)</option>
-                    <option value="de">🇩🇪 Deutsch (de)</option>
                     <option value="it">🇮🇹 Italiano (it)</option>
-                    <option value="ar">🇸🇦 العربية (ar)</option>
+                    <option value="id">🇮🇩 Bahasa Indonesia (id)</option>
+                    <option value="tr">🇹🇷 Türkçe (tr)</option>
                     <option value="ru">🇷🇺 Русский (ru)</option>
-                    <option value="zh">🇨🇳 简体中文 (zh)</option>
+                    <option value="zh-Hans">🇨🇳 简体中文 (zh-Hans)</option>
                     <option value="ja">🇯🇵 日本語 (ja)</option>
                     <option value="ko">🇰🇷 한국어 (ko)</option>
                     <option value="hi">🇮🇳 हिन्दी (hi)</option>
                     <option value="bn">🇧🇩 বাংলা (bn)</option>
-                    <option value="id">🇮🇩 Bahasa Indonesia (id)</option>
-                    <option value="tr">🇹🇷 Türkçe (tr)</option>
-                    <option value="vi">🇻🇳 Tiếng Việt (vi)</option>
-                    <option value="sw">🇰🇪 Kiswahili (sw)</option>
-                    <option value="tl">🇵🇭 Tagalog (tl)</option>
+                    <option value="bn-BD">🇧🇩 বাংলা বাংলাদেশ (bn-BD)</option>
+                    <option value="bn-IN">🇮🇳 বাংলা ভারত (bn-IN)</option>
+                    <option value="ar">🇸🇦 العربية (ar)</option>
+                    <option value="ur">🇵🇰 اردو (ur)</option>
+                    <option value="fa">🇮🇷 فارسی (fa)</option>
                 </select>
                 <select id="felicesDichaSelect" aria-label="12 Dichas de Los Felices"
                     style="min-height:48px;padding:0.35rem 0.6rem;border-radius:10px;border:1px solid var(--select-border);background:var(--select-bg);color:var(--text-primary);font-size:0.82rem;">
@@ -677,7 +677,7 @@ summary{display:inline-flex;align-items:center;background-color:var(--card-bg, #
                 </button>
             </div>
             <div class="actions-group">
-                <a id="linkSheets" href="data/full/en/2col-letter.pdf" class="btn-card btn-sheets"
+                <a id="linkSheets" href="dist/en/v1/mostrador/felices-en-v1-sheets.pdf" class="btn-card btn-sheets"
                     download="felices-en-v1-sheets.pdf">
                     <div class="btn-header"><span id="btnTitleSheets" data-i18n="felices.sheetsTitle">Loose Sheets
                             (PDF)</span></div>
@@ -685,7 +685,7 @@ summary{display:inline-flex;align-items:center;background-color:var(--card-bg, #
                         for coloring</span>
                 </a>
                 <div style="display: flex; flex-direction: column; flex: 1; align-items: center;">
-                    <a id="linkBooklet" href="data/blocks/en/2col-letter/B50.pdf" class="btn-card btn-booklet"
+                    <a id="linkBooklet" href="dist/en/v1/mostrador/felices-en-v1-booklet.pdf" class="btn-card btn-booklet"
                         download="felices-en-v1-booklet.pdf" style="width: 100%;">
                         <div class="btn-header"><span id="btnTitleBooklet" data-i18n="felices.bookletTitle">Booklet
                                 (PDF)</span></div>
@@ -769,6 +769,16 @@ summary{display:inline-flex;align-items:center;background-color:var(--card-bg, #
         <!-- 4 Progressive Harel XOR Doors (<= 1 sheet open at any time) -->
         <nav id="bibleProgressiveSheetDoors" aria-label="Bible Dispenser Drawers"
             style="position: sticky; top: 0; z-index: 30; background: var(--bg-primary); padding: 0.25rem 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.35rem; margin-top: 0.15rem;">
+            <div id="stickyDrawerContextHeader"
+                style="grid-column: 1 / -1; display: flex; flex-wrap: nowrap; align-items: center; justify-content: space-between; gap: 0.35rem; padding: 0.15rem 0.4rem; border-radius: 8px; border: 1px solid var(--card-border); background: var(--bg-secondary); font-size: 0.74rem;">
+                <span id="stickyActiveVersePill" style="font-weight: 700; white-space: nowrap;">📖 JHN 1:1</span>
+                <div style="display: inline-flex; align-items: center; gap: 0.25rem;">
+                    <button type="button" id="stickyActiveLangBtn" class="uls-chip"
+                        style="min-height: 48px; min-width: 48px; padding: 0.15rem 0.45rem; font-size: 0.72rem;">🌍 ES</button>
+                    <button type="button" id="btnStickyJumpToCanvas" class="uls-chip"
+                        style="min-height: 48px; min-width: 48px; padding: 0.15rem 0.45rem; font-size: 0.72rem;">↑ Lienzo</button>
+                </div>
+            </div>
             <button type="button" id="bibleEasyDrawer" class="uls-chip" data-open="false" aria-expanded="false"
                 aria-controls="bibleEasyDrawerPanel"
                 style="padding:0.25rem 0.45rem;font-size:0.76rem;line-height:1.15;"><strong
@@ -796,19 +806,19 @@ summary{display:inline-flex;align-items:center;background-color:var(--card-bg, #
                 style="display:flex;flex-wrap:wrap;gap:0.35rem;margin-bottom:0.6rem;">
                 <button type="button" id="btnStudySubtabWords" class="uls-chip" role="tab"
                     data-study-subtab-btn="words" data-i18n="study.subtab.words" aria-selected="true"
-                    aria-pressed="true">🔤 1. Words (14-Col) &amp; NSM</button>
+                    aria-pressed="true">🔤 1. Words (14-Col) &amp; Lexicon</button>
                 <button type="button" id="btnStudySubtabRosetta" class="uls-chip" role="tab"
                     data-study-subtab-btn="rosetta" data-i18n="study.subtab.rosetta" aria-selected="false"
-                    aria-pressed="false">🏛️ 2. Rosetta, Realia &amp; Echoes</button>
+                    aria-pressed="false">🏛️ 2. NSM-65, Realia &amp; TSK Echoes</button>
                 <button type="button" id="btnStudySubtabCalibrate" class="uls-chip" role="tab"
                     data-study-subtab-btn="calibrate" data-i18n="study.subtab.calibrate" aria-selected="false"
-                    aria-pressed="false">📐 3. Orthography &amp; Diachronic Register</button>
+                    aria-pressed="false">📐 3. Rosetta, WFST &amp; Diachronic</button>
             </nav>
             <div data-study-subtab-panel="words">
                 <div id="leipzig14ColStratumAction" style="margin-bottom: 0.6rem;"></div>
             </div>
-            <div id="nsm65StratumCard" data-study-subtab-panel="words" style="margin-bottom: 0.5rem;"></div>
-            <div id="philologyRosettaStaticHost" data-study-subtab-panel="rosetta" hidden class="rosetta-static-slot" style="margin-bottom: 0.6rem;">
+            <div id="nsm65StratumCard" data-study-subtab-panel="rosetta" hidden style="margin-bottom: 0.5rem;"></div>
+            <div id="philologyRosettaStaticHost" data-study-subtab-panel="calibrate" hidden class="rosetta-static-slot" style="margin-bottom: 0.6rem;">
                 <select id="rosettaFilterCategorySelect" aria-label="Philology Rosetta Category"
                     style="min-height:48px;padding:0.3rem 0.55rem;border-radius:8px;border:1px solid var(--select-border);background:var(--select-bg);color:var(--text-primary);font-size:0.78rem;margin-bottom:0.4rem;">
                     <option value="all" selected data-i18n="rosetta.filter.all">All 5 alignment classes (4,036 tokens)
@@ -834,7 +844,7 @@ summary{display:inline-flex;align-items:center;background-color:var(--card-bg, #
                 style="margin-bottom: 0.5rem; display: flex; flex-wrap: wrap; gap: 0.35rem;"></div>
             <div id="bibleAnalyticalThermometerPanel" data-study-subtab-panel="calibrate" hidden style="font-size: 0.82rem; margin-bottom: 0.5rem;"></div>
             <div id="wfstAndScriptioContinuaHost" data-study-subtab-panel="calibrate" hidden style="margin-bottom: 0.5rem; font-size: 0.82rem;"></div>
-            <details id="diachronicSubstitutionsDetails" data-study-subtab-panel="calibrate" hidden class="diachronic-substitutions-details"
+            <details id="diachronicSubstitutionsDetails" open data-study-subtab-panel="calibrate" hidden class="diachronic-substitutions-details"
                 style="margin-top: 0.45rem;">
                 <summary id="diachronicSubstitutionsSummary" data-i18n="study.diachronic_summary"
                     style="cursor:pointer;font-size:0.78rem;color:var(--text-secondary);">View 1909 → 21st Century

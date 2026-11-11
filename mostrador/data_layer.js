@@ -553,6 +553,8 @@ export function createDataLayer({ source, cacheLimit = 32 } = {}) {
   let hydratedDiachronicAudit = null;
   let hydratedEditorialProfiles = null;
   let hydratedFieldWorkshopData = null;
+  let hydratedMasterCensusSummary = null;
+  let hydratedOfflinePacksCatalog = null;
   const hydratedWasmModules = new Map();
 
   /**
@@ -598,6 +600,32 @@ export function createDataLayer({ source, cacheLimit = 32 } = {}) {
     const val = await getJson("data/field_workshop_stp.json");
     if (val) hydratedFieldWorkshopData = val;
     return val;
+  }
+
+  /**
+   * D3-R42: Carga el resumen del censo maestro soberano de las 7,164 lenguas (`web/data/master_census_summary.json`).
+   */
+  async function loadMasterCensusSummary() {
+    const val = await getJson("data/master_census_summary.json");
+    if (val) hydratedMasterCensusSummary = val;
+    return val;
+  }
+
+  /**
+   * D3-R42: Carga y unifica el catálogo de paquetes offline (`web/data/offline_packs_catalog.json`)
+   * con el manifiesto de paquetes RLZ-FSST (`web/data/packs/packs_manifest.json`).
+   */
+  async function loadOfflinePacksCatalog() {
+    const [catalogDoc, packsManifest] = await Promise.all([
+      getJson("data/offline_packs_catalog.json"),
+      getJson("data/packs/packs_manifest.json"),
+    ]);
+    const unified = {
+      ...(catalogDoc || {}),
+      packsManifest: packsManifest || null,
+    };
+    hydratedOfflinePacksCatalog = unified;
+    return unified;
   }
 
   /**
@@ -720,12 +748,16 @@ export function createDataLayer({ source, cacheLimit = 32 } = {}) {
     loadDiachronicRegisterAudit,
     loadEditorialProfiles,
     loadFieldWorkshopData,
+    loadMasterCensusSummary,
+    loadOfflinePacksCatalog,
     loadWasmModule,
     getHydratedRosettaIndex: () => hydratedRosettaIndex,
     getHydratedPericopesAndGlosses: () => hydratedPericopesAndGlosses,
     getHydratedDiachronicAudit: () => hydratedDiachronicAudit,
     getHydratedEditorialProfiles: () => hydratedEditorialProfiles,
     getHydratedFieldWorkshopData: () => hydratedFieldWorkshopData,
+    getHydratedMasterCensusSummary: () => hydratedMasterCensusSummary,
+    getHydratedOfflinePacksCatalog: () => hydratedOfflinePacksCatalog,
     getHydratedWasmModule: (name) => hydratedWasmModules.get(name) || null,
     decodeFrameInWasmLinearMemory,
     verifyRaptorQBlockInWasmLinearMemory,

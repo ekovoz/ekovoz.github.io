@@ -324,12 +324,20 @@ export function renderEvangeliosPlateActionsHtml({
   const cleanLang = String(lang || "es").trim().toLowerCase();
   const effectiveUi = String(uiLocale || lang || "es").trim().toLowerCase();
   const isEnUi = effectiveUi.startsWith("en");
-  const enrichment =
-    EVANGELIOS_MACRO_THREADS_AND_ECHOES[cleanWeek] ||
-    EVANGELIOS_MACRO_THREADS_AND_ECHOES.s01;
+  const enrichment = resolveEvangeliosMacroThreadAndEcho(cleanWeek);
 
   const parsedPassage = parseCanonicalOtEchoRef(enrichment.anchorOsis || cleanRef);
   const bookKey = `${enrichment.book || parsedPassage.book}.${enrichment.chapter || parsedPassage.chapter}`;
+  const openingHeader = resolvePericopeHeaderForVerse(
+    enrichment.book || parsedPassage.book,
+    enrichment.chapter || parsedPassage.chapter,
+    parsedPassage.verse || 1,
+  );
+  const bridgeLine = formatEvangeliosBridgeLine(
+    enrichment.title || openingHeader?.title || "",
+    cleanLang,
+    effectiveUi,
+  );
 
   const echoesHtml = (enrichment.otEchoes || [])
     .map((ec) => {
@@ -391,6 +399,7 @@ export function renderEvangeliosPlateActionsHtml({
   return (
     `<div class="evangelios-exegesis-enrichment" data-week="${escapeHtml(cleanWeek)}" data-lang="${escapeHtml(cleanLang)}" data-ui-locale="${escapeHtml(effectiveUi)}" data-macro-thread="${escapeHtml(enrichment.macroThread)}" style="margin-top:0.55rem;padding:0.65rem;border-radius:8px;border:1px solid var(--card-border);background:var(--card-bg);font-size:0.8rem;display:flex;flex-direction:column;gap:0.45rem;">` +
     `<div style="font-weight:700;">🧵 ${escapeHtml(enrichment.macroThread)}</div>` +
+    (bridgeLine ? `<div class="evangelios-bridge-line" style="font-size:0.76rem;color:var(--text-secondary);">${escapeHtml(bridgeLine)}</div>` : "") +
     `<div class="evangelios-ot-echoes-bar" style="display:flex;flex-wrap:wrap;gap:0.35rem;">${echoesHtml}</div>` +
     `<div data-realia-gloss="true" style="color:var(--text-secondary);">🏺 <strong>${isEnUi ? "Cultural Realia Gloss:" : "Glosa Cultural Realia:"}</strong> ${escapeHtml(enrichment.culturalRealia)}</div>` +
     `<div id="evangeliosPericopeBlocksList" data-evangelios-pericopes="true" style="display:flex;flex-wrap:wrap;gap:0.35rem;align-items:center;">` +

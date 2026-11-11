@@ -5,7 +5,10 @@
 
 import { escapeHtml, CROSS_WORK_BRIDGE_TABLE } from "./bridge_and_chapter.js";
 import {
+  formatEvangeliosBridgeLine,
   renderEvangeliosPlateActionsHtml,
+  resolveEvangeliosMacroThreadAndEcho,
+  resolvePericopeHeaderForVerse,
   shouldShowEvangeliosBridgeLine,
 } from "./evangelios.js";
 import { parseBiblicalCoordinateReference } from "./reference.js";
@@ -95,15 +98,23 @@ export function renderEvangeliosStageCardHtml(
   const tObj = activeEntry.texts?.[activeEvLang] || activeEntry.texts?.es || {};
   const bridgeObj = activeEvLang === "es" ? activeEntry.texts?.en : activeEntry.texts?.es;
   const labelTitle = tObj.title || activeEntry.plate_id || activeEntry.id;
+  const macroMeta = resolveEvangeliosMacroThreadAndEcho(activeEntry.id || "s01");
+  const parsedRef = parseBiblicalCoordinateReference(activeEntry.reference || macroMeta?.anchorOsis || "JHN.1.1");
+  const pericopeHdr = parsedRef
+    ? resolvePericopeHeaderForVerse(parsedRef.bookCode, parsedRef.chapter || 1, parsedRef.verse || 1)
+    : null;
+  const formattedBridge = bridgeObj?.text
+    ? formatEvangeliosBridgeLine(bridgeObj.text, activeEvLang, uiLocale)
+    : "";
   return (
-    `<header style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:0.4rem;margin-bottom:0.5rem;">` +
+    `<header data-pericope-header="${escapeHtml(pericopeHdr?.title || "")}" style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:0.4rem;margin-bottom:0.5rem;">` +
     `<strong>${weekWord} ${activeEntry.week}/52 (${escapeHtml(activeEntry.quarter)}) · ${escapeHtml(labelTitle)}</strong>` +
     `<button type="button" class="uls-chip" data-evangelios-ref="${escapeHtml(activeEntry.reference)}" style="min-height:48px;padding:0.35rem 0.75rem;font-size:0.8rem;">📖 ${openBibleLabel}: ${escapeHtml(activeEntry.reference)}</button>` +
     `</header>` +
     `<p style="margin:0 0 0.45rem 0;font-size:0.82rem;color:var(--accent-amber);"><strong>🕊️ ${gestureLabel}:</strong> ${escapeHtml(activeEntry.gesture || "")}</p>` +
     `<blockquote style="margin:0 0 0.45rem 0;font-size:0.95rem;line-height:1.5;">${escapeHtml(tObj.text || "")}</blockquote>` +
     (shouldShowEvangeliosBridgeLine(activeEvLang) && bridgeObj && bridgeObj.text
-      ? `<p style="margin:0;font-size:0.8rem;color:var(--text-secondary);border-top:1px dashed var(--card-border);padding-top:0.4rem;"><em>${bridgeLabel}:</em> ${escapeHtml(bridgeObj.text)}</p>`
+      ? `<p data-formatted-bridge="${escapeHtml(formattedBridge)}" style="margin:0;font-size:0.8rem;color:var(--text-secondary);border-top:1px dashed var(--card-border);padding-top:0.4rem;"><em>${bridgeLabel}:</em> ${escapeHtml(bridgeObj.text)}</p>`
       : "") +
     renderEvangeliosPlateActionsHtml({
       weekId: activeEntry.id,

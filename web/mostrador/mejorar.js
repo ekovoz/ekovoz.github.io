@@ -910,6 +910,7 @@ export function renderImproveDrawerHtml({
   elicitationRank = 1,
   level = "L2",
   includeInlineSeedPanel = true,
+  includeEightLocksBar = false,
 } = {}) {
   const resolvedRef = sanitizePipeField(ref || osis || "GEN.1.1").toUpperCase();
   const resolvedVerseText = String(currentVerseText || currentSurface || "");
@@ -967,7 +968,9 @@ export function renderImproveDrawerHtml({
     `</div>` +
     `<span class="uls-badge" data-lock8-badge="true">🔒 ${isEn ? "Lock 8 (MACULA A0/A1 + Jespersen):" : "Candado 8 (MACULA A0/A1 + Jespersen):"} ${verifyLock8PredicativeAndNegation({ oldSurface: patch.old_surface, newSurface: patch.new_surface }).status}</span>` +
     `</header>` +
-    `<div class="eight-locks-pda-bar" data-eight-locks-bar="true" style="display:flex;flex-wrap:wrap;gap:0.3rem;margin-bottom:0.55rem;">${eightLocksPillsHtml}</div>` +
+    (includeEightLocksBar
+      ? `<div class="eight-locks-pda-bar" data-eight-locks-bar="true" style="display:flex;flex-wrap:wrap;gap:0.3rem;margin-bottom:0.55rem;">${eightLocksPillsHtml}</div>`
+      : "") +
     `<div style="display:grid;gap:0.55rem;">` +
     `<label style="font-size:0.84rem;">` +
     `<span data-i18n="improve.kind_label">${t("improve.kind_label")}</span> ` +
@@ -1465,7 +1468,18 @@ export function renderTallerArtifactsCatalogHtml(langOrOpts = "es") {
   const censusHtml = includeCensusCard
     ? renderMasterCensus7164CardHtml(customMasterCensus, customStpLedger)
     : "";
+  const eightLocksReport = validateAllEightLocksPda({
+    oldSurface: "En el principio creó Dios los cielos y la tierra.",
+    newSurface: "En el principio creó Dios los cielos y la tierra.",
+  });
+  const eightLocksPillsHtml = eightLocksReport.locks
+    .map(
+      (lk) =>
+        `<span class="uls-badge" data-lock-id="${lk.id}" data-lock-passed="${lk.passed}" style="font-size:0.72rem;padding:0.15rem 0.45rem;">${lk.passed ? "✅" : "⛔"} ${lk.label}</span>`,
+    )
+    .join(" ");
   return (
+    `<div class="eight-locks-pda-bar" data-eight-locks-bar="true" style="grid-column:1 / -1;width:100%;display:flex;flex-wrap:wrap;gap:0.3rem;margin-bottom:0.55rem;">${eightLocksPillsHtml}</div>` +
     `<div class="taller-artifacts-grid" data-taller-lang="${cleanLang}" style="grid-column:1 / -1;width:100%;display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:0.45rem;margin-bottom:0.6rem;">` +
     TALLER_CC0_ARTIFACTS.map(
       (art) =>

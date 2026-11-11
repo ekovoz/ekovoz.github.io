@@ -20,6 +20,7 @@ import {
   resolveRegionalPrintDefaults,
   simulateFifthGenPhotocopySauvolaBilateral,
   simulateThirdGenPhotocopySauvola,
+  syncDose2AndDose3LinksForActiveLang,
   syncPrintDrawerControlsFromEditionProfile,
 } from "./dosis.js";
 import { applyHarelSubtabSelection } from "./drawer_study.js";
@@ -184,6 +185,7 @@ export function renderPhotocopyResilienceAndSocialCardHtml(opts = {}) {
  */
 export function renderPrintDrawerPanelsSyncInDrawer(ctx = {}) {
   const { state, targetDoc, getEl, hydratePrintDrawerPanels } = ctx;
+  syncDose2AndDose3LinksForActiveLang({ state, targetDoc, getEl });
   const isEn = String(state.uiLocale || "es").trim().toLowerCase().startsWith("en");
   const regionalDefaults = resolveRegionalPrintDefaults(state.region || "MX", {
     lang: state.lang,
