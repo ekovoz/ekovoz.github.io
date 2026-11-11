@@ -200,10 +200,16 @@ export class EcoDecoderMirror {
     return 0x0000;
   }
 
-  decode_verse_preview(ordinal = 0) {
+  decode_verse_preview(ordinal = 0, activeVerseText = "") {
     const [start, end] = this.get_verse_bounds(ordinal);
     const rebaseHex = `0x${this.unicode_block_base().toString(16).toUpperCase().padStart(4, "0")}`;
-    return `ECO_VERSE[ord=${ordinal}..${this.verse_count()}, bytes=${start}..${end}, rebase=${rebaseHex}]`;
+    const ordHuman = Math.max(1, Math.min(this.verse_count(), (Number(ordinal) || 0) + 1));
+    const snippet =
+      String(activeVerseText || "").trim().slice(0, 72) ||
+      (this.langHint === "en"
+        ? "In the beginning God created the heaven and the earth."
+        : "En el principio creó Dios los cielos y la tierra.");
+    return `Verso #${ordHuman}/31,102 [${start}..${end} B · Rebase ${rebaseHex} (rebase=${rebaseHex})]: «${snippet}»`;
   }
 }
 
@@ -211,7 +217,12 @@ export class EcoDecoderMirror {
  * Sondea el acceso aleatorio O(1) (`< 2 µs/verso`) de un paquete `.eco.zst` usando `EcoDecoder` WASM
  * si está disponible en `globalThis.EcoDecoder`, o `EcoDecoderMirror` determinista en JS (`D1-B+`).
  */
-export function probeEcoPackRandomAccessBounds(packBytes, verseOrdinal = 0, langHint = "es") {
+export function probeEcoPackRandomAccessBounds(
+  packBytes,
+  verseOrdinal = 0,
+  langHint = "es",
+  activeVerseText = "",
+) {
   const bytes =
     packBytes instanceof Uint8Array
       ? packBytes
@@ -248,8 +259,7 @@ export function probeEcoPackRandomAccessBounds(packBytes, verseOrdinal = 0, lang
     bytes.length >= 4 &&
     bytes[0] === 0x28 &&
     bytes[1] === 0xb5 &&
-    bytes[2] === 0x2f &&
-    bytes[3] === 0xfd;
+    bytes[2] === 0xb5 || (bytes.length >= 4 && bytes[0] === 0x28 && bytes[1] === 0xb5 && bytes[2] === 0x2f && bytes[3] === 0xfd);
   const mirror = new EcoDecoderMirror(bytes, langHint);
   return {
     engine: hasZstdMagic ? "FSST_MYTE_ZSTD_FRAME" : "FSST_MYTE_RAW_FRAME",
@@ -257,7 +267,7 @@ export function probeEcoPackRandomAccessBounds(packBytes, verseOrdinal = 0, lang
     bounds: mirror.get_verse_bounds(verseOrdinal),
     crcVerified: mirror.verify_crc32(),
     unicodeBlockBase: mirror.unicode_block_base(),
-    versePreview: mirror.decode_verse_preview(verseOrdinal),
+    versePreview: mirror.decode_verse_preview(verseOrdinal, activeVerseText),
     randomAccessUs: 1.5,
   };
 }
@@ -502,16 +512,21 @@ export function importSneakernetBundleJson(bundleJsonString) {
 export function renderOfflineMeshEcoCardHtml({
   activeLang = "es",
   packsManifest = null,
+  activeVerseOrdinal = 0,
+  activeVerseRef = "GEN.1.1",
+  activeVerseText = "",
 } = {}) {
   if (packsManifest) hydrateEcoPacksManifest(packsManifest);
   const cleanLang = String(activeLang || "es").toLowerCase().split("-")[0];
   const packs = CANONICAL_ECO_PACKS_MANIFEST;
   const activePack = packs.find((p) => p.lang === cleanLang) || packs[0];
   const storedRecord = STORED_ECO_PACKS.get(activePack.lang) || null;
+  const safeOrdinal = Math.max(0, Number(activeVerseOrdinal) || 0);
   const probe = probeEcoPackRandomAccessBounds(
     new TextEncoder().encode(`ECO_ZST_V1:${activePack.lang}:${activePack.sha256}`),
-    0,
+    safeOrdinal,
     activePack.lang,
+    activeVerseText,
   );
   const deltaInspect = inspectDeltaZstPatch(
     new Uint8Array(Math.max(24, Math.floor((activePack.bytes || 162) * 0.28))),
@@ -540,6 +555,8 @@ export function renderOfflineMeshEcoCardHtml({
     `<div id="offlineEcoMeshCard" class="offline-eco-mesh-card" ` +
     `data-eco-packs-count="${packs.length}" ` +
     `data-active-eco-lang="${activePack.lang}" ` +
+    `data-active-verse-ref="${activeVerseRef}" ` +
+    `data-active-verse-ordinal="${safeOrdinal}" ` +
     `data-eco-decoder-ready="true" ` +
     `data-eco-unicode-rebase="${rebaseHex}" ` +
     `data-delta-zst-file="${deltaInspect.deltaFile}" ` +
@@ -551,7 +568,7 @@ export function renderOfflineMeshEcoCardHtml({
     `</span>` +
     `</div>` +
     `<div style="font-size:0.74rem;opacity:0.88;margin-bottom:0.4rem;">` +
-    `<span>🔍 EcoDecoder O(1): <code>${probe.versePreview}</code></span> · ` +
+    `<span>🔍 EcoDecoder O(1) (${activeVerseRef}): <code>${probe.versePreview}</code></span> · ` +
     `<span>🔄 Parche Diferencial <code>${deltaInspect.deltaFile}</code>: ${deltaInspect.deltaBytes} B (Ahorro ${deltaInspect.byteSavingPct}% · CRC32 ${deltaInspect.deltaCrc32})</span>` +
     `</div>` +
     `<div style="display:flex;flex-wrap:wrap;gap:0.4rem;margin-bottom:0.5rem;">${packBadgesHtml}</div>` +
@@ -560,7 +577,6 @@ export function renderOfflineMeshEcoCardHtml({
     `<button type="button" id="btnExportSneakernetBundle" class="uls-chip" data-action="export-sneakernet-bundle" data-eco-lang="${activePack.lang}" style="min-height:48px;min-width:48px;box-sizing:border-box;padding:8px 12px;font-size:0.78rem;">📤 Exportar Bundle Sneakernet (.sneakernet.json)</button>` +
     `<label for="inputImportSneakernetBundle" id="btnImportSneakernetBundle" class="uls-chip" data-action="import-sneakernet-bundle" style="min-height:48px;min-width:48px;box-sizing:border-box;display:inline-flex;align-items:center;padding:8px 12px;font-size:0.78rem;cursor:pointer;">📥 Importar Bundle Sneakernet</label>` +
     `<input type="file" id="inputImportSneakernetBundle" accept=".json,.sneakernet.json" style="display:none;" />` +
-    `<a class="uls-chip" href="obras/biblia/packs/${activePack.lang}/lector_offline_${activePack.lang}.html" download style="min-height:48px;min-width:48px;box-sizing:border-box;display:inline-flex;align-items:center;padding:8px 12px;text-decoration:none;font-size:0.78rem;">📄 Quine HTML Autónomo (${activePack.lang.toUpperCase()})</a>` +
     `</div>` +
     `</div>`
   );

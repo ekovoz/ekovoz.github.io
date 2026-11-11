@@ -111,3 +111,14 @@ test("coverage_reported_per_locale", () => {
   }
 });
 
+test("R38_SLICE_124_monolingual_pastoral_i18n_catalog_parity_and_zero_jargon_leak", () => {
+  const es = read("es");
+  assert.equal(Object.keys(es.messages).length, enKeys.length);
+  for (const [k, v] of Object.entries(es.messages)) {
+    assert.equal(/INV-EKO-TYP|Sauvola|GF\(2\)/i.test(v), false, `es.${k} must not leak raw technical jargon: ${v}`);
+  }
+  for (const [k, v] of Object.entries(en.messages)) {
+    assert.equal(/INV-EKO-TYP|Sauvola|GF\(2\)/i.test(v), false, `en.${k} must not leak raw technical jargon: ${v}`);
+  }
+});
+

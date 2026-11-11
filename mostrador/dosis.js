@@ -131,6 +131,13 @@ export function normalizeEditionSlug(edition, fallbackPaper = "a4") {
   return fallbackPaper === "letter" ? "2col-letter" : "2col-a4";
 }
 
+/** Normaliza cualquier ruta de activo PDF a ruta relativa sin `/` inicial para sub-rutas GitHub Pages (Decisión 7A). */
+export function buildRelativePdfAssetUrl(rawUrl = "") {
+  const clean = String(rawUrl || "").trim();
+  if (!clean) return "";
+  return clean.replace(/^\/+(?=(?:data|obras)\/)/, "");
+}
+
 /** Dosis 2: el bloque completo que contiene el versículo. */
 export function planDose2(locatedOrBlockId, lang = "es", edition = "2col-a4") {
   if (typeof locatedOrBlockId === "string") {
@@ -231,24 +238,46 @@ export function listCatalogEditionsForLang(manifestOrLang, maybeLang = "es", opt
       (CANONICAL_14_PRINT_PROFILES && CANONICAL_14_PRINT_PROFILES[idx]) ||
       {};
     if (item.kind === "field_pdf") {
+      const cleanFieldUrl = buildRelativePdfAssetUrl(item.url || "obras/biblia/campo/refugio_4_hojas.pdf");
       return {
         ...item,
+        profileId: item.id,
+        profileUrl: cleanFieldUrl,
         lang: resolvedLang,
-        path: item.url,
+        path: cleanFieldUrl,
+        url: cleanFieldUrl,
       };
     }
-    const fallbackUrl = fullMatch?.path || `data/blocks/${diskLang}/${resolvedSlug}/B01.pdf`;
+    const resolvedCols = tomlMeta.columns || item.columns || 2;
+    const resolvedFontPt = tomlMeta.fontPt || item.fontPt || 9.5;
+    const resolvedPaper = tomlMeta.paperSize || (defaultPaper === "letter" ? "Letter" : "A4");
+    const impositionMode = tomlMeta.impositionMode || "single_sheet_20mm";
+    const fallbackUrl = resolvePrintEditionPdfAssetUrl(
+      item.id,
+      resolvedLang,
+      resolvedPaper,
+      "B01",
+      null,
+    );
+    const budget = computeKindlePrintBudget({
+      fontPt: resolvedFontPt,
+      columns: resolvedCols,
+      paper: resolvedPaper.includes("Letter") ? "Letter" : "A4",
+    });
     return {
       ...item,
       profileId: item.id,
-      profileUrl: `${fallbackUrl}?profile=${item.id}`,
+      profileUrl: `${fallbackUrl}?profile=${item.id}&cols=${resolvedCols}&font=${resolvedFontPt}pt&paper=${encodeURIComponent(resolvedPaper)}&mode=${encodeURIComponent(impositionMode)}`,
       tomlPath: tomlMeta.tomlPath || `obras/biblia/profiles/${item.id}.toml`,
-      columns: tomlMeta.columns || item.columns || 2,
-      fontPt: tomlMeta.fontPt || item.fontPt || 9.5,
+      columns: resolvedCols,
+      fontPt: resolvedFontPt,
       leadingRatio: tomlMeta.leadingRatio || 1.35,
       gutterMm: tomlMeta.gutterMm || 20.0,
-      paperSize: tomlMeta.paperSize || (defaultPaper === "letter" ? "Letter" : "A4"),
-      impositionMode: tomlMeta.impositionMode || "single_sheet_20mm",
+      paperSize: resolvedPaper,
+      impositionMode,
+      cpl: budget.cpl,
+      estimatedPages: budget.estimatedPages,
+      summarySpec: `${resolvedCols} col · ${resolvedFontPt}pt · ${resolvedPaper} (~${budget.estimatedPages} págs)`,
       lang: resolvedLang,
       path: fallbackUrl,
       url: fallbackUrl,
@@ -876,6 +905,15 @@ export function renderBranchAndTypologyInspectorHtml({
     .join("");
 
   const bParsed = matchedBranch.parsed || {};
+  const specimenOrder = matchedTypology.word_order || bParsed.word_order || "SVO";
+  const specimenCopula = matchedTypology.copula_affirmative || "es / is";
+  const specimenNeg = matchedTypology.negation_preverbal || "no / not";
+  const specimenClause =
+    String(specimenOrder).toUpperCase().startsWith("VSO")
+      ? `[V: Creó] [S: Dios] [O: los cielos y la tierra] · Cópula=${specimenCopula} · Neg=${specimenNeg}`
+      : String(specimenOrder).toUpperCase().startsWith("SOV")
+        ? `[S: Dios] [O: los cielos y la tierra] [V: creó] · Cópula=${specimenCopula} · Neg=${specimenNeg}`
+        : `[S: Dios] [V: creó] [O: los cielos y la tierra] · Cópula=${specimenCopula} · Neg=${specimenNeg}`;
   return (
     `<div id="bibleBranchAndTypologyInspector" class="branch-typology-inspector-card" data-branch-count="${branches.length}" data-typology-count="${typologies.length}" data-active-branch="${matchedBranch.id}" data-active-typology="${matchedTypology.id}" style="padding:0.65rem;border-radius:10px;border:1px solid var(--card-border);background:var(--card-bg);font-size:0.8rem;">` +
     `<div style="font-weight:700;margin-bottom:0.4rem;">🌐 Inspector de 12 Ramas de Escritura (G_01–G_12) y 16 Hojas Tipológicas</div>` +
@@ -886,6 +924,10 @@ export function renderBranchAndTypologyInspectorHtml({
     `<div style="display:flex;flex-wrap:wrap;gap:0.45rem;color:var(--text-secondary);">` +
     `<span class="uls-chip" data-branch-meta="${matchedBranch.id}" style="font-size:0.75rem;padding:0.2rem 0.5rem;">Rama: <strong>${bParsed.name_es || matchedBranch.id}</strong> · Orden=${bParsed.word_order || "SVO"} · Morfología=${bParsed.morphology || "FUSIONAL"} · Alineamiento=${bParsed.alignment || "NOM_ACC"}</span>` +
     `<span class="uls-chip" data-typology-meta="${matchedTypology.id}" style="font-size:0.75rem;padding:0.2rem 0.5rem;">Tipología: <strong>${matchedTypology.lang_code}</strong> · Orden=${matchedTypology.word_order} · Clado=${matchedTypology.family_subclade} · Cópula=${matchedTypology.copula_affirmative || "∅"} · Negación=${matchedTypology.negation_preverbal || "∅"}</span>` +
+    `</div>` +
+    `<div id="branchTypologyLiveSpecimen" data-live-specimen-branch="${matchedBranch.id}" data-live-specimen-typology="${matchedTypology.id}" data-live-specimen-order="${specimenOrder}" style="margin-top:0.45rem;padding:0.45rem 0.65rem;border-radius:8px;border:1px dashed var(--card-border);background:var(--bg-secondary);font-size:0.78rem;">` +
+    `<strong>🔍 Especimen Morfosintáctico y Tipográfico en Vivo (${matchedBranch.id} · ${matchedTypology.id}):</strong> ` +
+    `<code>${specimenClause}</code>` +
     `</div>` +
     `</div>`
   );
@@ -959,6 +1001,249 @@ export function simulateFifthGenPhotocopySauvolaBilateral({
     socialCardDimensions: "1200x630",
   };
 }
+
+/**
+ * D4-R38 (`4A` · `resolveEditionGeometrySpec`):
+ * Devuelve la especificación geométrica e imposición diferenciada para cada uno de los 14 perfiles de impresión (`01..14`).
+ */
+export function resolveEditionGeometrySpec(profileId = "02_2col_pastoral", paperFormat = "a4") {
+  const cleanId = String(profileId || "02_2col_pastoral").trim();
+  const numPrefix = cleanId.match(/^(\d{2})_/)?.[1] || "";
+  const exactIdx = CANONICAL_14_PRINT_PROFILES.findIndex((p) => p && p.id === cleanId);
+  const prefixIdx = numPrefix
+    ? CANONICAL_14_PRINT_PROFILES.findIndex((p) => p && String(p.id || "").startsWith(`${numPrefix}_`))
+    : -1;
+  const fallbackIdx = numPrefix ? Math.max(0, Math.min(13, parseInt(numPrefix, 10) - 1)) : 1;
+  const resolvedIdx = exactIdx >= 0 ? exactIdx : prefixIdx >= 0 ? prefixIdx : fallbackIdx;
+  const found =
+    CANONICAL_14_PRINT_PROFILES[resolvedIdx] ||
+    CANONICAL_14_PRINT_PROFILES[1] ||
+    CANONICAL_14_PRINT_PROFILES[0];
+  const resolvedPrefix =
+    numPrefix ||
+    String(found?.id || cleanId).match(/^(\d{2})_/)?.[1] ||
+    String(resolvedIdx + 1).padStart(2, "0");
+  const paperSize =
+    resolvedPrefix === "01"
+      ? "A4"
+      : resolvedPrefix === "02"
+        ? "Letter"
+        : String(found?.paperSize || paperFormat || "A4");
+  const editionDir =
+    resolvedPrefix === "01"
+      ? "2col-a4"
+      : resolvedPrefix === "02"
+        ? "2col-letter"
+        : paperSize.toLowerCase().includes("letter")
+          ? "2col-letter"
+          : "2col-a4";
+  const prefixSampleBlockMap = {
+    "01": null,
+    "02": null,
+    "03": "B03",
+    "04": "B04",
+    "05": "B05",
+    "06": "B06",
+    "07": "B07",
+    "08": "B01",
+    "09": "B09",
+    "10": "B65",
+    "11": "B11",
+    "12": "B12",
+    "13": "B13",
+    "14": "B14",
+  };
+  const defaultColsByPrefix = {
+    "01": 1, "02": 2, "03": 3, "04": 1, "05": 1, "06": 2, "07": 1,
+    "08": 2, "09": 2, "10": 2, "11": 1, "12": 1, "13": 1, "14": 3,
+  };
+  const defaultFontByPrefix = {
+    "01": 10.5, "02": 9.5, "03": 8.0, "04": 13.5, "05": 9.0, "06": 9.5, "07": 10.0,
+    "08": 8.5, "09": 12.0, "10": 10.0, "11": 16.0, "12": 12.5, "13": 15.0, "14": 11.0,
+  };
+  const usePrefixDefaults = Boolean(numPrefix && exactIdx < 0 && prefixIdx < 0);
+  return {
+    profileId: usePrefixDefaults ? cleanId : found.id,
+    columns: usePrefixDefaults
+      ? defaultColsByPrefix[resolvedPrefix] || 2
+      : Number(found.columns) || defaultColsByPrefix[resolvedPrefix] || 2,
+    fontPt: usePrefixDefaults
+      ? defaultFontByPrefix[resolvedPrefix] || 9.5
+      : Number(found.fontPt) || defaultFontByPrefix[resolvedPrefix] || 9.5,
+    leadingRatio: Number(found.leadingRatio) || 1.35,
+    gutterMm: Number(found.gutterMm) || 20.0,
+    paperSize,
+    editionDir,
+    impositionMode: String(found.impositionMode || "single_sheet_20mm"),
+    tomlPath: String(found.tomlPath || `obras/biblia/profiles/${found.id}.toml`),
+    sampleBlockId:
+      resolvedPrefix in prefixSampleBlockMap ? prefixSampleBlockMap[resolvedPrefix] : null,
+  };
+}
+
+/**
+ * D5-R37 (`5A`) + D4-R38 (`4A` · `resolvePrintEditionPdfAssetUrl`):
+ * Resuelve cada uno de los 14 perfiles de impresión (`01..14`) y las 2 herramientas de campo (`refugio_4_hojas`,
+ * `checklist_80_bloques`) a un archivo PDF físico real y diferenciado en disco (`0` enlaces `404` y `0` colisiones idénticas).
+ */
+export function resolvePrintEditionPdfAssetUrl(
+  profileId = "02_2col_pastoral",
+  lang = "es",
+  paper = "a4",
+  blockId = null,
+  manifestFallbackPath = null,
+) {
+  const id = String(profileId || "02_2col_pastoral").trim();
+  if (id.includes("refugio_4_hojas")) {
+    return "obras/biblia/campo/refugio_4_hojas.pdf";
+  }
+  if (id.includes("checklist_80_bloques")) {
+    return "obras/biblia/campo/checklist_80_bloques.pdf";
+  }
+  const cleanLang = String(lang || "es").trim().toLowerCase();
+  const diskLang = ["es", "en", "stp", "he", "grc"].includes(cleanLang)
+    ? cleanLang
+    : cleanLang === "es-1909"
+      ? "es"
+      : "es";
+  const spec = resolveEditionGeometrySpec(id, paper);
+  const editionDir = spec.editionDir;
+
+  if (spec.sampleBlockId) {
+    const chosenBlock =
+      blockId && /^B\d{2}$/i.test(String(blockId)) && String(blockId).toUpperCase() !== "B01"
+        ? String(blockId).toUpperCase()
+        : spec.sampleBlockId;
+    return `data/blocks/${diskLang}/${editionDir}/${chosenBlock}.pdf`;
+  }
+  if (manifestFallbackPath) {
+    return buildRelativePdfAssetUrl(manifestFallbackPath);
+  }
+  return `data/full/${diskLang}/${editionDir}.pdf`;
+}
+
+/**
+ * D5-R37 (`5A` · `syncPrintDrawerControlsFromEditionProfile`):
+ * Sincroniza los controles del configurador de impresión en la Gaveta 2 (`#bibleKindleConfigurator`)
+ * cuando el lector selecciona cualquiera de las 14 tarjetas de edición (`.print-edition-card[data-profile-id]`).
+ */
+export function syncPrintDrawerControlsFromEditionProfile(
+  profileId = "02_2col_pastoral",
+  targetDoc = null,
+  catalog = CANONICAL_14_PRINT_PROFILES,
+) {
+  const list = Array.isArray(catalog) && catalog.length > 0 ? catalog : CANONICAL_14_PRINT_PROFILES;
+  const cleanId = String(profileId || "02_2col_pastoral").trim();
+  const numPrefix = cleanId.match(/^(\d{2})_/)?.[1] || "";
+  const found =
+    list.find((p) => p && (p.id === cleanId || p.editionSlug === cleanId)) ||
+    CANONICAL_9_TOML_PROFILES.find((p) => p && p.id === cleanId) ||
+    CANONICAL_14_PLUS_2_EDITIONS_CATALOG.find((p) => p && p.id === cleanId) ||
+    (numPrefix && list.find((p) => p && String(p.id || "").startsWith(`${numPrefix}_`))) ||
+    CANONICAL_14_PRINT_PROFILES[1] ||
+    CANONICAL_14_PRINT_PROFILES[0];
+
+  const columns = Number(found.columns) || (cleanId.includes("3col") ? 3 : cleanId.includes("1col") ? 1 : 2);
+  const fontPt = Number(found.fontPt) || (cleanId.includes("3col") ? 8.0 : 9.5);
+  const rawPaper = String(found.paperSize || found.paper_size || "A4");
+  const paper = rawPaper.toLowerCase().includes("letter") ? "letter" : "a4";
+  const orientation =
+    rawPaper.toLowerCase().includes("landscape") || columns === 2 ? "landscape" : "portrait";
+  const rawImpMode = String(
+    found.impositionMode ||
+      found.imposition_mode ||
+      found.parsed?.imposition?.mode ||
+      (cleanId.includes("refugio") ||
+      cleanId.includes("3col") ||
+      cleanId.includes("bolsillo") ||
+      cleanId.includes("evangelio")
+        ? "saddle_stitch"
+        : "single_sheet_20mm"),
+  );
+  const foliationMode =
+    rawImpMode === "saddle_stitch" || rawImpMode === "multi_signature_4n"
+      ? "saddle_stitch"
+      : "single_sheet_20mm";
+
+  const budget = computeKindlePrintBudget({
+    fontPt,
+    columns,
+    orientation,
+    paper: paper === "letter" ? "Letter" : "A4",
+  });
+
+  if (targetDoc && typeof targetDoc.getElementById === "function") {
+    const fontEl = targetDoc.getElementById("kindleFontSizeSlider");
+    if (fontEl) fontEl.value = String(fontPt);
+    const colEl = targetDoc.getElementById("kindleColumnSelector");
+    if (colEl) colEl.value = String(columns);
+    const paperEl = targetDoc.getElementById("kindlePaperFormatSelector");
+    if (paperEl) paperEl.value = paper;
+    const orientEl = targetDoc.getElementById("kindleOrientationSelector");
+    if (orientEl) orientEl.value = orientation;
+    const folEl = targetDoc.getElementById("bibleFoliationModeSelect");
+    if (folEl) folEl.value = foliationMode;
+    const outEl = targetDoc.getElementById("kindleBudgetOutput");
+    if (outEl) outEl.textContent = budget.summaryText;
+  }
+
+  return {
+    profileId: found.id,
+    columns,
+    fontPt,
+    paper,
+    orientation,
+    foliationMode,
+    tomlPath: found.tomlPath || `obras/biblia/profiles/${found.id}.toml`,
+    budget,
+  };
+}
+
+/**
+ * D6-R37 (`6A` · `renderImpositionAndLayoutPreviewHtml`):
+ * Renderiza la vista previa de imposición de cuadernillo Saddle-Stitch (`4n`) o verificación de márgenes A4/Carta
+ * directamente en `#impositionBookletPreviewHost` dentro de la Gaveta 2 (`#biblePrintEditionsSheet`).
+ */
+export function renderImpositionAndLayoutPreviewHtml({
+  mode = "imposition",
+  paper = "A4",
+  pageCount = 16,
+  columns = 2,
+  fontPt = 9.5,
+  dir = "ltr",
+} = {}) {
+  const normPaper = String(paper || "A4").toLowerCase().includes("letter") ? "Letter" : "A4";
+  const foliation = computeFoliationLayout({
+    mode: mode === "layout" ? "single_sheet_20mm" : "saddle_stitch",
+    paper: normPaper,
+    pageCount,
+    dir,
+  });
+  const imp = computeMultiSignatureImposition({
+    totalPages: Math.max(16, Number(pageCount) || 16),
+    maxSheetsPerSignature: 4,
+    dir,
+  });
+  const budget = computeKindlePrintBudget({ fontPt, columns, paper: normPaper });
+  const firstSpread =
+    foliation.spreads && foliation.spreads[0]
+      ? `Frente [${foliation.spreads[0].front.join(", ")}] · Dorso [${foliation.spreads[0].back.join(", ")}]`
+      : "Pliego [16, 1] / [2, 15]";
+
+  return (
+    `<div class="imposition-booklet-preview-card" ` +
+    `data-print-preview-mode="${mode}" ` +
+    `data-paper="${normPaper}" ` +
+    `data-spine-gutter-mm="${foliation.spineGutterMm || 9.215}" ` +
+    `data-binding-margin-mm="${foliation.bindingMarginMm || 20.0}" ` +
+    `data-creep-mm="${imp.maxCreepMm}" ` +
+    `style="padding:0.45rem 0.65rem;border-radius:8px;border:1px solid var(--badge-border);background:var(--badge-bg);display:flex;flex-wrap:wrap;gap:0.4rem;align-items:center;justify-content:space-between;">` +
+    `<strong>${mode === "layout" ? "📏 Geometría A4/Carta Verificada (INV-EKO-TYP-003)" : "📐 Imposición Saddle-Stitch 4n Lista para Doblar"}</strong>` +
+    `<span>Papel: ${normPaper} · ${budget.summaryText} · ${firstSpread} · Lomo √2=${foliation.spineGutterMm || 9.215} mm · Margen perforado=${foliation.bindingMarginMm || 20.0} mm (Ø ${foliation.punchHoleDiameterMm || 4.0} mm) · Creep máx=${imp.maxCreepMm} mm</span>` +
+    `</div>`
+  );
+}
+
 
 
 

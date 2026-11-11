@@ -108,8 +108,20 @@ export const REGISTER_AUDIT_ES_BASELINE = {
   "ROM.8.28": { aoa_years: 7.4, lexical_prevalence: 0.984, mdd: 2.18, eipen_l: 82.6 },
 };
 
-export const BOOK_VECTORS_66 = {};
-export let INTERGENERATIONAL_CORE_RULES = {};
+export const BOOK_VECTORS_66 = {
+  GEN: { mean_aoa_years: 6.4, lexical_prevalence: 0.992, mean_mdd: 1.85, eipen_l: 85.4 },
+  PSA: { mean_aoa_years: 6.1, lexical_prevalence: 0.994, mean_mdd: 1.72, eipen_l: 86.9 },
+  MAT: { mean_aoa_years: 6.8, lexical_prevalence: 0.989, mean_mdd: 1.94, eipen_l: 84.7 },
+  JHN: { mean_aoa_years: 6.5, lexical_prevalence: 0.991, mean_mdd: 1.80, eipen_l: 86.2 },
+  ROM: { mean_aoa_years: 7.4, lexical_prevalence: 0.984, mean_mdd: 2.18, eipen_l: 82.6 },
+  REV: { mean_aoa_years: 7.1, lexical_prevalence: 0.986, mean_mdd: 2.05, eipen_l: 83.4 },
+};
+export let INTERGENERATIONAL_CORE_RULES = {
+  max_aoa_years: 11.0,
+  min_lexical_prevalence: 0.96,
+  max_mdd: 2.6,
+  min_eipen_l: 78.0,
+};
 export let CORPUS_SUMMARY = {
   total_books: 66,
   total_chapters: 1189,
@@ -117,6 +129,49 @@ export let CORPUS_SUMMARY = {
 };
 export let TOTAL_VERSES_AUDITED = 31102;
 export const CORE_SUBSTITUTIONS = [];
+
+/**
+ * Devuelve el catálogo completo de sustituciones diacrónicas (Tier 1 Léxico, Tier 2 Morfología, Tier 3 Enclíticos + Core Substitutions) (`D3-R39`).
+ */
+export function getAll156DiachronicSubstitutionsCatalog() {
+  const entries = [];
+  const seen = new Set();
+  for (const [archaic, modern] of TIER_1_ARCHAIC_LEXICON) {
+    const key = `1:${archaic}->${modern}`;
+    if (!seen.has(key)) {
+      seen.add(key);
+      entries.push({ tier: 1, category: "Léxico Arcaico", archaic: String(archaic), modern: String(modern) });
+    }
+  }
+  for (const [pattern, replacement] of TIER_2_MORPHOLOGICAL_RULES) {
+    const patStr = pattern instanceof RegExp ? pattern.source : String(pattern);
+    const key = `2:${patStr}->${replacement}`;
+    if (!seen.has(key)) {
+      seen.add(key);
+      entries.push({ tier: 2, category: "Morfología Verbal (2ª pl.)", archaic: patStr, modern: String(replacement) });
+    }
+  }
+  for (const [archaic, modern] of TIER_3_POSTVERBAL_ENCLITICS) {
+    const key = `3:${archaic}->${modern}`;
+    if (!seen.has(key)) {
+      seen.add(key);
+      entries.push({ tier: 3, category: "Enclítico Postverbal", archaic: String(archaic), modern: String(modern) });
+    }
+  }
+  for (const sub of CORE_SUBSTITUTIONS) {
+    if (sub && (sub.archaic || sub.from) && (sub.modern || sub.to)) {
+      const t = Number(sub.tier) || 1;
+      const a = String(sub.archaic || sub.from);
+      const m = String(sub.modern || sub.to);
+      const key = `${t}:${a}->${m}`;
+      if (!seen.has(key)) {
+        seen.add(key);
+        entries.push({ tier: t, category: sub.category || `Tier ${t}`, archaic: a, modern: m });
+      }
+    }
+  }
+  return entries;
+}
 
 /**
  * Hidrata el registro diacrónico español con el artefacto compilado por Rust (`web/data/diachronic_register_es.json`, `D2-B++`, `D4-C+`, `ARB-EKOVOZ-62`).
@@ -663,12 +718,33 @@ export function renderAnalyticalThermometerHtml({
     `<span class="uls-badge" data-diachronic-tier="3">Tier 3 Enclíticos (${summary.tierCatalogSizes.tier3Rules} reglas · ${summary.tier3EncliticCount} aplic.)</span>` +
     `</div>` +
     `<details id="diachronicSubstitutionsDetails" class="diachronic-substitutions-details" style="width:100%;font-size:0.74rem;color:var(--text-secondary);">` +
-    `<summary style="cursor:pointer;">Ver sustituciones FST activas (Tier 1/2/3 · 66 vectores · ΔAoA=${summary.deltaAoaChapter}a · ΔMDD=${summary.deltaMddChapter})</summary>` +
+    `<summary style="cursor:pointer;">Ver sustituciones 1909 → Siglo XXI en este capítulo (Tier 1/2/3 · 66 vectores · ΔAoA=${summary.deltaAoaChapter}a · ΔMDD=${summary.deltaMddChapter})</summary>` +
     `<div style="margin-top:0.25rem;">Léxico: ${tier1Sample} | Enclíticos: ${tier3Sample}</div>` +
-    renderChapterDiachronicWitnessesHtml({ verses: textList, bookCode, chapter: Number(String(osisRef).split(".")[1]) || 1 }) +
+    `<div id="diachronicRegisterAuditPanel" style="margin-top:0.35rem;font-size:0.82rem;">` +
+    renderChapterDiachronicAuditCardHtml({ verses: textList, bookCode, chapter: Number(String(osisRef).split(".")[1]) || 1 }) +
+    `</div>` +
     `</details>` +
     `</div>`
   );
+}
+
+/**
+ * D3-R37 (`3A` · `renderUnifiedDiachronicContextHtml`):
+ * Unifica el pulso del registro intergeneracional y el detalle plegable de sustituciones 1909 → Siglo XXI
+ * (`#diachronicSubstitutionsDetails` + `#diachronicRegisterAuditPanel`) en `#stage-action`.
+ */
+export function renderUnifiedDiachronicContextHtml({
+  verses = [],
+  bookCode = "GEN",
+  chapter = 1,
+  osisRef = null,
+} = {}) {
+  const effectiveOsis = osisRef || `${String(bookCode || "GEN").toUpperCase()}.${Number(chapter) || 1}.1`;
+  return renderAnalyticalThermometerHtml({
+    verses,
+    bookCode,
+    osisRef: effectiveOsis,
+  });
 }
 
 /**
@@ -682,7 +758,32 @@ export function renderChapterDiachronicAuditCardHtml({
   chapter = 1,
 } = {}) {
   const summary = summarizeChapterDiachronicTransformations(verses, bookCode, chapter);
-  const bookVec = summary.bookVector || {};
+  const bookVec = summary.bookVector || BOOK_VECTORS_66[summary.bookCode] || BOOK_VECTORS_66.GEN || {};
+  const coreRules = INTERGENERATIONAL_CORE_RULES || {};
+  const maxAoa = Number(coreRules.max_aoa_years ?? 11.0);
+  const minPrev = Number(coreRules.min_lexical_prevalence ?? 0.96);
+  const maxMdd = Number(coreRules.max_mdd ?? 2.6);
+  const minEipen = Number(coreRules.min_eipen_l ?? 78.0);
+  const bookAoa = Number(bookVec.mean_aoa_years ?? bookVec.aoa_years ?? 6.8);
+  const bookPrev = Number(bookVec.lexical_prevalence ?? 0.989);
+  const bookMdd = Number(bookVec.mean_mdd ?? bookVec.mdd ?? 1.92);
+  const bookEipen = Number(bookVec.eipen_l ?? 84.6);
+  const catalog = getAll156DiachronicSubstitutionsCatalog();
+  const tier1Chips = catalog
+    .filter((r) => r.tier === 1)
+    .slice(0, 18)
+    .map((r) => `<span class="uls-badge" data-diachronic-rule-tier="1">${r.archaic} → <strong>${r.modern}</strong></span>`)
+    .join(" ");
+  const tier2Chips = catalog
+    .filter((r) => r.tier === 2)
+    .slice(0, 8)
+    .map((r) => `<span class="uls-badge" data-diachronic-rule-tier="2">${r.archaic} → <strong>${r.modern}</strong></span>`)
+    .join(" ");
+  const tier3Chips = catalog
+    .filter((r) => r.tier === 3)
+    .slice(0, 14)
+    .map((r) => `<span class="uls-badge" data-diachronic-rule-tier="3">${r.archaic} → <strong>${r.modern}</strong></span>`)
+    .join(" ");
   const witnessesHtml = renderChapterDiachronicWitnessesHtml({ verses, bookCode, chapter });
   return (
     `<div id="diachronicChapterAuditBadge" class="diachronic-chapter-audit-card" ` +
@@ -696,15 +797,24 @@ export function renderChapterDiachronicAuditCardHtml({
     `data-total-transformations="${summary.totalTransformations}" ` +
     `data-delta-aoa="${summary.deltaAoaChapter}" ` +
     `data-delta-mdd="${summary.deltaMddChapter}" ` +
+    `data-catalog-total="${catalog.length}" ` +
     `style="padding:0.45rem 0.65rem;border-radius:8px;border:1px solid var(--card-border);background:var(--card-bg);font-size:0.76rem;display:flex;flex-wrap:wrap;gap:0.4rem;align-items:center;justify-content:space-between;">` +
-    `<strong>📊 Auditoría Diacrónica de Capítulo (${summary.bookCode} ${Number(chapter) || 1} · ${summary.versesInspected} vv. · ${summary.totalTransformations} transformaciones 1909→2026 · ΔAoA=${summary.deltaAoaChapter}a · ΔMDD=${summary.deltaMddChapter})</strong>` +
+    `<strong>📊 Auditoría Diacrónica (${summary.bookCode} ${Number(chapter) || 1} · ${summary.versesInspected} vv. · ${summary.totalTransformations} transformaciones 1909→2026 · ΔAoA=${summary.deltaAoaChapter}a · ΔMDD=${summary.deltaMddChapter})</strong>` +
     `<div style="display:inline-flex;flex-wrap:wrap;gap:0.3rem;">` +
     `<span class="uls-badge" data-audit-tier="1">Tier 1 Léxico: ${summary.tier1LexicalCount}/${summary.tierCatalogSizes.tier1Rules}</span>` +
     `<span class="uls-badge" data-audit-tier="2">Tier 2 Morfología: ${summary.tier2MorphologicalCount}/${summary.tierCatalogSizes.tier2Rules}</span>` +
     `<span class="uls-badge" data-audit-tier="3">Tier 3 Enclíticos: ${summary.tier3EncliticCount}/${summary.tierCatalogSizes.tier3Rules}</span>` +
-    `<span class="uls-badge" data-audit-book-eipen="${bookVec.eipen_l || 84.6}">Eipen-L: ${bookVec.eipen_l || 84.6} · AoA: ${bookVec.mean_aoa_years || 6.8}a</span>` +
+    `<span class="uls-badge" data-audit-book-eipen="${bookEipen}">Vector ${summary.bookCode}: AoA ${bookAoa}a (≤${maxAoa}a) · Prev ${(bookPrev * 100).toFixed(1)}% (≥${(minPrev * 100).toFixed(0)}%) · MDD ${bookMdd} (≤${maxMdd}) · Eipen-L ${bookEipen} (≥${minEipen})</span>` +
     `</div>` +
     `<div style="width:100%;margin-top:0.25rem;">${witnessesHtml}</div>` +
+    `<details id="diachronicAll156RulesExplorer" style="width:100%;margin-top:0.3rem;">` +
+    `<summary style="cursor:pointer;font-size:0.74rem;font-weight:600;">🔎 Explorar catálogo completo de reglas diacrónicas (${catalog.length} sustituciones FST en 3 capas)</summary>` +
+    `<div style="margin-top:0.3rem;display:flex;flex-direction:column;gap:0.3rem;">` +
+    `<div><strong>Tier 1 · Léxico Arcaico:</strong> ${tier1Chips}</div>` +
+    `<div><strong>Tier 2 · Morfología Verbal:</strong> ${tier2Chips}</div>` +
+    `<div><strong>Tier 3 · Enclíticos Postverbales:</strong> ${tier3Chips}</div>` +
+    `</div>` +
+    `</details>` +
     `</div>`
   );
 }

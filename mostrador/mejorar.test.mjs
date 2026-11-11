@@ -415,6 +415,62 @@ test("D4-A+_dunning_g2_key_terms_glossary_vso_phrases_uncertainty_queue_60_exter
   assert.match(cascadeHtml, /data-floor-1-sentence="291"/);
 });
 
+test("R36_SLICE_111_field_workshop_census_and_editorial_graphics_hydrators_mount_without_duplicate_ids", async () => {
+  const {
+    renderFieldWorkshopCensus7164Html,
+    renderEditorialGraphicsAndPrintSpecsCard,
+    mountCardHtmlIntoHost,
+  } = await import("./drawer_hydrators.js");
+
+  const censusHtml = renderFieldWorkshopCensus7164Html(null, null, { book: "GEN", chapter: 1, verse: 1 });
+  assert.match(censusHtml, /id="masterCensus7164InspectorCard"/);
+
+  const graphicsHtml = renderEditorialGraphicsAndPrintSpecsCard({
+    book: "GEN",
+    chapter: 1,
+    verse: 1,
+    activeGen: 5,
+    sauvolaK: 0.32,
+  });
+  assert.match(graphicsHtml, /id="editorialGraphicsPhotocopyPanel"/);
+
+  const attrs = { id: "masterCensus7164InspectorCard" };
+  const hostEl = {
+    id: "masterCensus7164InspectorCard",
+    innerHTML: "",
+    getAttribute(k) {
+      return attrs[k] ?? null;
+    },
+    setAttribute(k, v) {
+      attrs[k] = String(v);
+    },
+  };
+  mountCardHtmlIntoHost(hostEl, censusHtml);
+  assert.equal(
+    hostEl.innerHTML.includes('id="masterCensus7164InspectorCard"'),
+    false,
+    "mountCardHtmlIntoHost must unwrap outer matching id to prevent duplicate DOM IDs",
+  );
+  assert.equal(attrs["data-total-world-languages"], "7164");
+
+  // D3-R38: renderCascadeAndLadderHtml defaults to includeWalCard=false and includeCensusCard=false (zero duplicate IDs across Subtabs 1/2/3)
+  const cascadeNoDup = renderCascadeAndLadderHtml({ lang: "stp", currentRef: "GEN.1.1", strongId: "H0430", level: "L2" });
+  assert.equal(
+    cascadeNoDup.includes('id="crdtWalAndLockP2AuditCard"'),
+    false,
+    "D3-R38: renderCascadeAndLadderHtml must not inject duplicate #crdtWalAndLockP2AuditCard by default",
+  );
+  assert.equal(
+    cascadeNoDup.includes('id="masterCensus7164InspectorCard"'),
+    false,
+    "D3-R38: renderCascadeAndLadderHtml must not inject duplicate #masterCensus7164InspectorCard by default",
+  );
+  const auditSubtabHtml = renderTallerArtifactsCatalogHtml({ lang: "stp", includeCensusCard: true });
+  assert.equal((auditSubtabHtml.match(/id="crdtWalAndLockP2AuditCard"/g) || []).length, 1);
+  assert.equal((auditSubtabHtml.match(/id="masterCensus7164InspectorCard"/g) || []).length, 1);
+});
+
+
 
 
 

@@ -24,6 +24,7 @@ export const SHELL_CORE_ASSETS = [
   "/mostrador/estudio.js",
   "/mostrador/mejorar.js",
   "/mostrador/offline_mesh.js",
+  "/mostrador/sister_works_controller.js",
   "/i18n/index.json",
   "/i18n/en.json",
   "/i18n/es.json",
@@ -36,6 +37,48 @@ let _offlineOptInEnabled = false;
 export function setOfflineOptInState(enabled) {
   _offlineOptInEnabled = Boolean(enabled);
   return _offlineOptInEnabled;
+}
+
+export function serveVirtualRangeSlice206(packBytes, rangeHeader = "bytes=0-63") {
+  const bytes = packBytes instanceof Uint8Array ? packBytes : new Uint8Array(0);
+  const total = bytes.byteLength;
+  const m = String(rangeHeader || "").match(/bytes=(\d+)-(\d+)?/i);
+  const start = m ? Math.max(0, Math.min(total - 1, Number(m[1]) || 0)) : 0;
+  const end = m && m[2] !== undefined ? Math.max(start, Math.min(total - 1, Number(m[2]))) : Math.max(0, total - 1);
+  const slice = bytes.slice(start, end + 1);
+  return {
+    status: 206,
+    headers: {
+      "Content-Range": `bytes ${start}-${end}/${total}`,
+      "Content-Length": String(slice.byteLength),
+      "Accept-Ranges": "bytes",
+    },
+    body: slice,
+  };
+}
+
+export function synthesizeOfflineClientQuine(lang = "es", autonym = "Español", base64Payload = "", bootScript = "") {
+  return `<!DOCTYPE html><html lang="${lang}" data-audio-bytes="0" data-jpg-bytes="0"><head><meta charset="utf-8"><title>Ekovoz Quine (${autonym})</title></head><body><script id="ecoPackBase64" type="application/octet-stream">${base64Payload}</script><script>${bootScript}</script></body></html>`;
+}
+
+export function serializeFieldFeedbackPatchL1L5({
+  langCode = "es",
+  cascadeLevel = "L1",
+  targetRefOrLemma = "GEN.1.1",
+  oldSurface = "",
+  newSurface = "",
+  notePureText = "",
+} = {}) {
+  return {
+    lang_code: String(langCode || "es"),
+    cascade_level: String(cascadeLevel || "L1"),
+    target: String(targetRefOrLemma || "GEN.1.1"),
+    old_surface: String(oldSurface || ""),
+    new_surface: String(newSurface || ""),
+    note_pure_text: String(notePureText || ""),
+    audio_bytes: 0,
+    jpg_bytes: 0,
+  };
 }
 
 export function isFullBibleOrWorkPdfUrl(rawUrl) {

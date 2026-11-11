@@ -11,8 +11,10 @@ import {
   planDose1,
   planDose2,
   planDose3,
+  buildRelativePdfAssetUrl,
   normalizeEditionSlug,
   listCatalogEditionsForLang,
+  listAll14PrintEditionsForLang,
   computeKindlePrintBudget,
   computeFoliationLayout,
   simulateThirdGenPhotocopySauvola,
@@ -28,6 +30,10 @@ import {
   chooseEdition,
   effectiveThreatClassWeb,
   doseFilename,
+  resolveEditionGeometrySpec,
+  resolvePrintEditionPdfAssetUrl,
+  syncPrintDrawerControlsFromEditionProfile,
+  renderImpositionAndLayoutPreviewHtml,
 } from "./dosis.js";
 import { renderEvangeliosPlateActionsHtml } from "./evangelios.js";
 import {
@@ -291,6 +297,90 @@ test("D4-C+_and_D5-C+_80_blocks_zero_synthetic_AT_Bloque_and_66_book_diachronic_
     }
   }
 });
+
+test("R36_SLICE_110_relative_pdf_asset_urls_and_14_differentiated_print_profiles", () => {
+  assert.equal(
+    buildRelativePdfAssetUrl("/data/blocks/es/lectura-continua/B65.pdf"),
+    "data/blocks/es/lectura-continua/B65.pdf",
+  );
+  assert.equal(
+    buildRelativePdfAssetUrl("/data/full/es-2col-a4.pdf"),
+    "data/full/es-2col-a4.pdf",
+  );
+  const manifest = readJson("downloads_manifest.json");
+  const all16 = listAll14PrintEditionsForLang(manifest, "es");
+  assert.equal(all16.length, 16);
+  const printProfiles = all16.filter((e) => e.kind === "edition");
+  assert.equal(printProfiles.length, 14);
+  for (const p of printProfiles) {
+    assert.equal(p.url.startsWith("/"), false, `Profile ${p.id} URL must be relative: ${p.url}`);
+    assert.ok(p.profileUrl.includes(`?profile=${p.id}`), `Profile ${p.id} must have distinct profileUrl`);
+    assert.ok(p.summarySpec && p.summarySpec.includes("col") && p.summarySpec.includes("pt"));
+  }
+});
+
+test("R37_SLICE_118_resolvePrintEditionPdfAssetUrl_syncPrintDrawerControls_and_imposition_preview", () => {
+  assert.equal(
+    resolvePrintEditionPdfAssetUrl("10_refugio_4_hojas", "es"),
+    "obras/biblia/campo/refugio_4_hojas.pdf",
+  );
+  assert.equal(
+    resolvePrintEditionPdfAssetUrl("11_checklist_80_bloques", "es"),
+    "obras/biblia/campo/checklist_80_bloques.pdf",
+  );
+  for (const p of CANONICAL_14_PRINT_PROFILES) {
+    const resolvedPath = resolvePrintEditionPdfAssetUrl(p.id, "es", p.paperSize, "B01");
+    assert.equal(resolvedPath.startsWith("/"), false);
+    assert.ok(
+      fs.existsSync(path.join(webDir, resolvedPath)),
+      `Expected physical PDF on disk for ${p.id}: ${resolvedPath}`,
+    );
+  }
+
+  const domControls = {
+    kindleFontSizeSlider: { value: "" },
+    kindleColumnSelector: { value: "" },
+    kindlePaperFormatSelector: { value: "" },
+    kindleOrientationSelector: { value: "" },
+    bibleFoliationModeSelect: { value: "" },
+    kindleBudgetOutput: { textContent: "" },
+  };
+  const mockDoc = {
+    getElementById: (id) => domControls[id] || null,
+  };
+  const synced = syncPrintDrawerControlsFromEditionProfile("02_2col_pastoral", mockDoc);
+  assert.equal(synced.columns, 2);
+  assert.equal(synced.foliationMode, "single_sheet_20mm");
+  assert.equal(domControls.kindleColumnSelector.value, "2");
+  assert.equal(domControls.bibleFoliationModeSelect.value, "single_sheet_20mm");
+  assert.ok(domControls.kindleBudgetOutput.textContent.includes("col"));
+
+  const syncedBooklet = syncPrintDrawerControlsFromEditionProfile("03_3col_compacta", mockDoc);
+  assert.equal(syncedBooklet.columns, 3);
+  assert.equal(syncedBooklet.foliationMode, "saddle_stitch");
+  assert.equal(domControls.bibleFoliationModeSelect.value, "saddle_stitch");
+
+  const impHtml = renderImpositionAndLayoutPreviewHtml({ mode: "imposition", paper: "A4", pageCount: 16 });
+  assert.match(impHtml, /data-print-preview-mode="imposition"/);
+  assert.match(impHtml, /9\.215/);
+
+  // D4-R38: 14 print profiles must resolve to 14 distinct physical PDF paths on disk (0 identical-path collisions)
+  const resolvedPaths14 = CANONICAL_14_PRINT_PROFILES.map((p) =>
+    resolvePrintEditionPdfAssetUrl(p.id, "es", p.paperSize, "B01"),
+  );
+  const uniquePaths14 = new Set(resolvedPaths14);
+  assert.equal(
+    uniquePaths14.size,
+    14,
+    `D4-R38: All 14 print profiles must resolve to 14 distinct PDF paths, got ${uniquePaths14.size}: ${JSON.stringify(resolvedPaths14)}`,
+  );
+  const specBraille = resolveEditionGeometrySpec("11_braille_nemeth_b70");
+  assert.equal(specBraille.columns, 1);
+  assert.equal(specBraille.fontPt, 16.0);
+  assert.equal(specBraille.sampleBlockId, "B11");
+});
+
+
 
 
 

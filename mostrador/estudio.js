@@ -155,6 +155,40 @@ export function classifyMaculaArgumentRole(roleRaw, morphRaw = "") {
   return "MOD";
 }
 
+/**
+ * Humaniza las columnas técnicas de la Matriz de 14 Columnas (`D4-R39` / `DEB-R39-03`),
+ * limpiando prefijos internos (`NSM_65:SDBH:`, `|PRIM:`) y evitando mostrar `Rol: ∅`.
+ */
+export function formatHumanReadable14ColFields(row = {}) {
+  const rawRole = String(row.c09_macula_role || "").trim();
+  const rawClause = String(row.c10_clause_id || "").trim();
+  const rawDomain = String(row.c11_semantic_domain || "").trim();
+  const rawNsm = String(row.c13_nsm_65 || "").trim();
+
+  const roleHuman = !rawRole || rawRole === "∅" ? "Núcleo léxico" : rawRole;
+  const clauseHuman = !rawClause || rawClause === "∅" ? "C1" : rawClause;
+  const domainHuman =
+    rawDomain
+      .replace(/^(?:SDBH|LN):/i, "")
+      .replace(/_/g, " ")
+      .trim() || "General";
+  const nsmHuman =
+    rawNsm
+      .replace(/NSM_65:(?:SDBH|LN):/gi, "")
+      .replace(/\|PRIM:/gi, " · Primitivos: ")
+      .replace(/NSM_65:/gi, "")
+      .replace(/(?:SDBH|LN):/gi, "")
+      .replace(/_/g, " ")
+      .trim() || "DIOS · DECIR · HACER";
+
+  return {
+    roleHuman,
+    clauseHuman,
+    domainHuman,
+    nsmHuman,
+  };
+}
+
 export function renderStudy14ColDrawerHtml(matrixShard, options = {}) {
   const shard = matrixShard?.matrixChapter || matrixShard;
   const book = String(shard?.book || matrixShard?.book || options.book || "GEN").toUpperCase();
@@ -199,11 +233,16 @@ export function renderStudy14ColDrawerHtml(matrixShard, options = {}) {
     `<button type="button" class="uls-chip study-scope-btn" data-study-scope="gmis" aria-pressed="${isGmisScope ? "true" : "false"}" style="min-height:48px;padding:0.35rem 0.75rem;font-size:0.78rem;">Andamiaje 4-Líneas (GMIS)</button>` +
     `</div></div>`;
 
+  const activeStrongTarget = String(options.activeStrongId || "").trim().toUpperCase();
   const wordCardsHtml = normalizedRows
     .map((r) => {
       const maculaFrame = classifyMaculaArgumentRole(r.c09_macula_role, r.c08_morph_code);
+      const human = formatHumanReadable14ColFields(r);
+      const isStrongSelected =
+        Boolean(activeStrongTarget) &&
+        String(r.c07_strong_id || "").trim().toUpperCase() === activeStrongTarget;
       return (
-        `<article class="leipzig-14col-card" data-ref="${escapeHtml(r.c02_ref)}" data-osis="${escapeHtml(r.c02_ref)}" data-word-pos="${escapeHtml(r.c04_word_pos)}" data-strong-id="${escapeHtml(r.c07_strong_id)}" data-macula-frame="${escapeHtml(maculaFrame)}" style="padding:0.65rem;border-radius:10px;border:1px solid var(--card-border);background:var(--card-bg);display:flex;flex-direction:column;gap:0.25rem;min-width:160px;">` +
+        `<article class="leipzig-14col-card${isStrongSelected ? " is-active-strong" : ""}" tabindex="0" aria-selected="${isStrongSelected ? "true" : "false"}" data-ref="${escapeHtml(r.c02_ref)}" data-osis="${escapeHtml(r.c02_ref)}" data-word-pos="${escapeHtml(r.c04_word_pos)}" data-strong-id="${escapeHtml(r.c07_strong_id)}" data-macula-frame="${escapeHtml(maculaFrame)}" style="padding:0.65rem;border-radius:10px;border:1px solid ${isStrongSelected ? "var(--accent-amber, #d97706)" : "var(--card-border)"};background:var(--card-bg);display:flex;flex-direction:column;gap:0.25rem;min-width:160px;">` +
         `<header style="display:flex;justify-content:space-between;font-size:0.74rem;color:var(--text-secondary);">` +
         `<span data-col="c01_c02">${escapeHtml(r.c02_ref)} #${escapeHtml(r.c04_word_pos)} (ord ${escapeHtml(r.c01_ordinal_31102)})</span>` +
         `<span data-col="c03_source_corpus">${escapeHtml(r.c03_source_corpus)} · ${escapeHtml(maculaFrame)}</span>` +
@@ -215,13 +254,14 @@ export function renderStudy14ColDrawerHtml(matrixShard, options = {}) {
         `<code data-col="c08_morph_code">${escapeHtml(r.c08_morph_code)}</code>` +
         `</div>` +
         `<div style="font-size:0.76rem;color:var(--text-secondary);">` +
-        `<span data-col="c09_macula_role">Rol: ${escapeHtml(r.c09_macula_role)}</span> · ` +
-        `<span data-col="c10_clause_id">Cláusula: ${escapeHtml(r.c10_clause_id)}</span> · ` +
-        `<span data-col="c11_semantic_domain">Dom: ${escapeHtml(r.c11_semantic_domain)}</span>` +
+        `<span data-col="c09_macula_role" data-raw-role="${escapeHtml(r.c09_macula_role)}">Función: ${escapeHtml(human.roleHuman)}</span> · ` +
+        `<span data-col="c10_clause_id">Cláusula: ${escapeHtml(human.clauseHuman)}</span> · ` +
+        `<span data-col="c11_semantic_domain">Dominio: ${escapeHtml(human.domainHuman)}</span>` +
         `</div>` +
         `<div data-col="c12_gloss_es" style="font-size:0.86rem;font-weight:600;">${escapeHtml(r.c12_gloss_es)}</div>` +
-        `<div data-col="c13_nsm_65" style="font-size:0.76rem;color:var(--accent-amber);">NSM-65: ${escapeHtml(r.c13_nsm_65)}</div>` +
+        `<div data-col="c13_nsm_65" style="font-size:0.76rem;color:var(--accent-amber);">NSM-65: ${escapeHtml(human.nsmHuman)}</div>` +
         `<div data-col="c14_target_gloss" style="font-size:0.84rem;color:var(--accent-emerald);">Meta: ${escapeHtml(r.c14_target_gloss)}</div>` +
+        `<button type="button" class="uls-chip btn-propose-strong-root" data-propose-strong-id="${escapeHtml(r.c07_strong_id)}" data-osis-ref="${escapeHtml(r.c02_ref)}" style="min-height:48px;padding:0.25rem 0.55rem;font-size:0.74rem;margin-top:0.2rem;align-self:flex-start;">✍️ Mejorar raíz (${escapeHtml(r.c07_strong_id)})</button>` +
         `</article>`
       );
     })
@@ -242,7 +282,7 @@ export function renderStudy14ColDrawerHtml(matrixShard, options = {}) {
       nsmEntries
         .map(
           (n) =>
-            `<li data-nsm-strong="${escapeHtml(n.strong_id)}"><code>${escapeHtml(n.strong_id)}</code> <strong>${escapeHtml(n.lemma)}</strong> (${escapeHtml(n.gloss)}): ${escapeHtml(n.nsm_explication)}</li>`,
+            `<li data-nsm-strong="${escapeHtml(n.strong_id)}"><code>${escapeHtml(n.strong_id)}</code> <strong>${escapeHtml(n.lemma)}</strong> (${escapeHtml(n.gloss)}): ${escapeHtml(formatHumanReadable14ColFields({ c13_nsm_65: n.nsm_explication }).nsmHuman)}</li>`,
         )
         .join("") +
       `</ul></div>`
@@ -257,7 +297,7 @@ export function renderStudy14ColDrawerHtml(matrixShard, options = {}) {
         .map((re) => {
           const rId = re.id || re.term_id || re.title || re.surface_es || "realia";
           const rTitle = re.title || `${re.surface_es || ""} (${re.lemma_original || re.strong_code || ""})`.trim();
-          const rExp = re.explanation || re.footnote_gloss_es || re.nsm_65_decomposition || "";
+          const rExp = formatHumanReadable14ColFields({ c13_nsm_65: re.explanation || re.footnote_gloss_es || re.nsm_65_decomposition || "" }).nsmHuman;
           return `<li data-realia-id="${escapeHtml(rId)}"><strong>${escapeHtml(rTitle)}:</strong> ${escapeHtml(rExp)}</li>`;
         })
         .join("") +
@@ -275,6 +315,7 @@ export function renderStudy14ColDrawerHtml(matrixShard, options = {}) {
       ? `${shard.attribution} · Clear Bible Macula Hebrew/Greek (CC BY 4.0)`
       : shard?.attribution || DEFAULT_ATTRIBUTION;
 
+  const includeInlineStrata = options.includeInlineStrata !== false;
   const activeOsisRef = `${book}.${chapter}.${activeVerseNum}`;
   const rosettaSummaryHtml = renderPhilologyRosettaInspectorHtml(normalizedRows, {
     book,
@@ -284,6 +325,7 @@ export function renderStudy14ColDrawerHtml(matrixShard, options = {}) {
     rosettaIndex: options.rosettaIndex || shard?.rosettaIndex || null,
     rosettaQuery: options.rosettaQuery || "",
     rosettaCategory: options.rosettaCategory || "all",
+    includeExplorer: options.includeExplorer !== false,
   });
 
   const gmisSectionHtml = isGmisScope
@@ -296,7 +338,6 @@ export function renderStudy14ColDrawerHtml(matrixShard, options = {}) {
     })
     : "";
 
-  const includeInlineStrata = options.includeInlineStrata !== false;
   return (
     `<section class="study-14col-drawer" data-book="${escapeHtml(book)}" data-chapter="${chapter}" data-verse="${activeVerseNum}" data-scope="${effectiveScopeAttr}" data-rows-rendered="${normalizedRows.length}">` +
     scopeBarHtml +
@@ -871,7 +912,7 @@ function renderPhilologyRosettaInspectorHtml(activeRows, options = {}) {
 
   const residualClassesLine =
     `<li data-residual-classes-5="true" data-residuals-total="${totalResiduals}">` +
-    `<strong>5 Clases Reales de Residuos (<code>alignment_residuals.tsv</code> · ${totalResiduals.toLocaleString("en-US")} casos):</strong> ` +
+    `<strong>Variantes y notas de transmisión (${totalResiduals.toLocaleString("en-US")} casos) <span class="hig-tech-meta" style="font-size:0.72rem;color:var(--text-secondary);font-weight:400;">(<code>alignment_residuals.tsv</code>)</span>:</strong> ` +
     `<span class="uls-badge" data-residual-kind="KETIV_QERE">KETIV_QERE (${kqCount})</span> · ` +
     `<span class="uls-badge" data-residual-kind="VERSIFICATION">VERSIFICATION (${versCount})</span> · ` +
     `<span class="uls-badge" data-residual-kind="TR_SUPPLEMENT">TR_SUPPLEMENT (${trCount})</span> · ` +
@@ -883,14 +924,22 @@ function renderPhilologyRosettaInspectorHtml(activeRows, options = {}) {
     rosettaIndex?.annotation_index_report ||
     PHILOLOGY_ROSETTA_DEFAULT_INDEX.annotation_index_report || {
       total_tokens_indexed: 444363,
+      hebrew_at_tokens: 306753,
+      greek_nt_tokens: 137610,
+      strong_entries: 14296,
+      morph_tags: 1148,
       oov_rate: 0.0,
     };
   const totalTokens = Number(annotReport.total_tokens_indexed || 444363);
+  const hebrewTokens = Number(annotReport.hebrew_at_tokens || annotReport.at_tokens || 306753);
+  const greekTokens = Number(annotReport.greek_nt_tokens || annotReport.nt_tokens || 137610);
+  const strongEntriesCount = Number(annotReport.strong_entries || annotReport.unique_strongs || 14296);
+  const morphTagsCount = Number(annotReport.morph_tags || annotReport.unique_morph_tags || 1148);
   const oovRate = Number(annotReport.oov_rate || 0.0).toFixed(2);
   const annotationLine =
-    `<li data-annotation-tokens="${totalTokens}" data-annotation-oov="${oovRate}">` +
-    `<strong>Índice de Anotación Morfológica (<code>annotation_index_report.json</code>):</strong> ` +
-    `<code>${totalTokens.toLocaleString("en-US")} tokens</code> indexados · <code>OOV = ${oovRate}%</code>` +
+    `<li data-annotation-tokens="${totalTokens}" data-annotation-hebrew="${hebrewTokens}" data-annotation-greek="${greekTokens}" data-annotation-oov="${oovRate}">` +
+    `<strong>Cobertura morfológica palabra por palabra <span class="hig-tech-meta" style="font-size:0.72rem;color:var(--text-secondary);font-weight:400;">(<code>annotation_index_report.json</code>)</span>:</strong> ` +
+    `<code>${totalTokens.toLocaleString("en-US")} tokens</code> (AT Hebreo/Arameo: <code>${hebrewTokens.toLocaleString("en-US")}</code> · NT Griego: <code>${greekTokens.toLocaleString("en-US")}</code> · <code>${strongEntriesCount.toLocaleString("en-US")} Strongs</code> · <code>${morphTagsCount.toLocaleString("en-US")} tags</code> · <code>OOV = ${oovRate}%</code>)` +
     `</li>`;
 
   const calSummary = aggregateBlindCalibration12Langs(
@@ -898,10 +947,17 @@ function renderPhilologyRosettaInspectorHtml(activeRows, options = {}) {
       PHILOLOGY_ROSETTA_DEFAULT_INDEX.blind_calibration_report,
   );
   const chrfScore = calSummary.meanChrfPlusPlus.toFixed(2);
+  const byLangPills = (calSummary.byLanguage || [])
+    .map(
+      (item) =>
+        `<span class="uls-badge" data-blind-cal-lang="${escapeHtml(item.lang)}" data-blind-cal-chrf="${escapeHtml(item.meanChrfPlusPlus.toFixed(2))}">${escapeHtml(item.lang.toUpperCase())}: ${escapeHtml(item.meanChrfPlusPlus.toFixed(1))} chrF++ (${item.passCount}/${item.rowsCount})</span>`,
+    )
+    .join(" ");
   const blindCalibrationLine =
     `<li data-blind-calibration-chrf="${escapeHtml(chrfScore)}" data-blind-calibration-langs="${calSummary.langsCount}" data-blind-calibration-rows="${calSummary.rowsCount}">` +
-    `<strong>Calibración Ciega Multi-Lengua (<code>blind_calibration_report.json</code>):</strong> ` +
+    `<strong>Fidelidad verificada en ${calSummary.langsCount} lenguas <span class="hig-tech-meta" style="font-size:0.72rem;color:var(--text-secondary);font-weight:400;">(<code>blind_calibration_report.json</code>)</span>:</strong> ` +
     `<code>${escapeHtml(chrfScore)} chrF++</code> · <strong>${calSummary.langsCount} lenguas</strong> (${calSummary.rowsCount} pruebas · ${calSummary.passRatePct}% aprobadas)` +
+    `<div id="rosettaBlindCalibration12Table" style="margin-top:0.25rem;display:flex;flex-wrap:wrap;gap:0.25rem;">${byLangPills}</div>` +
     `</li>`;
 
   const explorerHtml =
@@ -1167,6 +1223,11 @@ let HYDRATED_CULTURAL_GLOSSES_MAP = {
     category: "vestimenta_sacerdotal",
     nsm_gloss_es: "chaleco sagrado de lino tejido con oro y piedras preciosas que llevaba el sacerdote",
   },
+  fariseo: {
+    term: "fariseo",
+    category: "grupo_religioso",
+    nsm_gloss_es: "maestro judío muy estricto en guardar todas las reglas escritas y tradiciones de la Ley",
+  },
   filacterias: {
     term: "filacterias",
     category: "realia_liturgica",
@@ -1208,6 +1269,24 @@ export function hydrateCulturalGlossesLexicon(culturalGlossesObj) {
   }
   HYDRATED_CULTURAL_GLOSSES_MAP = next;
   return HYDRATED_CULTURAL_GLOSSES_MAP;
+}
+
+/**
+ * Detecta términos de glosas culturales NSM-65 presentes en el texto de un versículo activo (`D4-R39`)
+ * para mostrarlos como notas al pie contextuales en el lienzo de lectura (`#activeVerseCulturalGlossBanner`).
+ */
+export function detectContextualCulturalGlossesForVerse(verseText = "") {
+  const lower = String(verseText || "").toLowerCase();
+  if (!lower) return [];
+  const matches = [];
+  for (const entry of Object.values(HYDRATED_CULTURAL_GLOSSES_MAP)) {
+    if (!entry || !entry.term) continue;
+    const stem = String(entry.term).toLowerCase().replace(/[s]$/, "");
+    if (stem.length >= 3 && lower.includes(stem)) {
+      matches.push(entry);
+    }
+  }
+  return matches;
 }
 
 const CANONICAL_TSK_ECHOES = {
@@ -1283,7 +1362,7 @@ export function renderStudyStrataCards(matrixShard, options = {}) {
       nsmItems
         .map(
           (r) =>
-            `<li data-nsm-strong="${escapeHtml(r.c07_strong_id)}"><code>${escapeHtml(r.c07_strong_id)}</code> <strong>${escapeHtml(r.c05_orig_text)}</strong> (${escapeHtml(r.c12_gloss_es)}) → <span style="color:var(--accent-amber);font-weight:600;">${escapeHtml(r.c13_nsm_65)}</span></li>`
+            `<li data-nsm-strong="${escapeHtml(r.c07_strong_id)}"><code>${escapeHtml(r.c07_strong_id)}</code> <strong>${escapeHtml(r.c05_orig_text)}</strong> (${escapeHtml(r.c12_gloss_es)}) → <span style="color:var(--accent-amber);font-weight:600;">${escapeHtml(formatHumanReadable14ColFields(r).nsmHuman)}</span></li>`
         )
         .join("") +
       `</ul>`
@@ -1348,7 +1427,7 @@ export function renderStudyStrataCards(matrixShard, options = {}) {
         const rTitle =
           re.title ||
           `${re.surface_es || re.term_es || ""} (${re.lemma_original || re.original_lemma || re.strong_code || ""})`.trim();
-        const rExp = re.explanation || re.footnote_gloss_es || re.nsm_65_decomposition || re.nsm_65_explanation || "";
+        const rExp = formatHumanReadable14ColFields({ c13_nsm_65: re.explanation || re.footnote_gloss_es || re.nsm_65_decomposition || re.nsm_65_explanation || "" }).nsmHuman;
         return `<li data-realia-id="${escapeHtml(rId)}"><strong>${escapeHtml(rTitle)}:</strong> ${escapeHtml(rExp)}</li>`;
       })
       .join("") +
@@ -1443,7 +1522,7 @@ export function renderLeipzig4LineGmisHtml(matrixShard, options = {}) {
             `<code>${escapeHtml(w.c07_strong_id)}</code> · <span>${escapeHtml(w.c08_morph_code)}</span> · <span>${escapeHtml(w.c09_macula_role)}</span>` +
             `</div>` +
             `<div class="gmis-line-3" data-gmis-line="3" style="font-size:0.76rem;color:var(--accent-amber);">` +
-            `NSM-65: ${escapeHtml(w.c13_nsm_65)}` +
+            `NSM-65: ${escapeHtml(formatHumanReadable14ColFields(w).nsmHuman)}` +
             `</div>` +
             `<div class="gmis-line-4" data-gmis-line="4" style="font-size:0.8rem;display:flex;align-items:center;justify-content:space-between;gap:0.35rem;">` +
             `<span class="gmis-bridge-gloss">${escapeHtml(w.c12_gloss_es)}</span>` +
@@ -1471,3 +1550,41 @@ export function renderLeipzig4LineGmisHtml(matrixShard, options = {}) {
     `</section>`
   );
 }
+
+/**
+ * Highlights and focuses in Drawer 1 the `.leipzig-14col-card` matching `strongId` (`D1-R37`, `D2-R37`).
+ */
+export function highlightStudyCardByStrongId(containerEl, strongId) {
+  if (!containerEl || !strongId) return null;
+  const targetUpper = String(strongId).trim().toUpperCase();
+  if (!targetUpper) return null;
+  const cards =
+    typeof containerEl.querySelectorAll === "function"
+      ? Array.from(containerEl.querySelectorAll(".leipzig-14col-card[data-strong-id]"))
+      : [];
+  let matchedCard = null;
+  for (const card of cards) {
+    const cardStrong = String(
+      (typeof card.getAttribute === "function" && card.getAttribute("data-strong-id")) ||
+        card.dataset?.strongId ||
+        ""
+    )
+      .trim()
+      .toUpperCase();
+    const isHit = cardStrong === targetUpper;
+    if (card.classList && typeof card.classList.toggle === "function") {
+      card.classList.toggle("is-active-strong", isHit);
+    }
+    if (typeof card.setAttribute === "function") {
+      card.setAttribute("aria-selected", isHit ? "true" : "false");
+    }
+    if (isHit && !matchedCard) {
+      matchedCard = card;
+    }
+  }
+  if (matchedCard && typeof matchedCard.scrollIntoView === "function") {
+    matchedCard.scrollIntoView({ block: "nearest", behavior: "smooth" });
+  }
+  return matchedCard;
+}
+

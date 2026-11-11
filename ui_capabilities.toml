@@ -153,7 +153,7 @@ test_name = "register_switching_loads_es1909_and_bilingual_58_42_diptych"
 
 [capability.dose1_secondary_drawer_button]
 surface = "public-ui"
-selector = "#btnPrintAroundVerse"
+selector = "#btnDose1Sheets"
 module = "mostrador.js"
 handler = "createMostradorController"
 test_file = "mostrador/tribunal.test.mjs"

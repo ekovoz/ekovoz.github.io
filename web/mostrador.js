@@ -38,8 +38,10 @@ import {
   applyOrthographyProfile,
   deriveEpistemicSeal,
   escapeHtml,
+  lookupWordTokenStrongEntry,
   projectCrossWorkCoordinate,
   renderChapterPreviewHtml,
+  renderInteractiveVerseTokensHtml,
   toUnicodeSuperscript,
 } from "./mostrador/bridge_and_chapter.js";
 import {
@@ -60,6 +62,7 @@ import {
   hydrateDiachronicRegister,
   renderAnalyticalThermometerHtml,
   renderChapterDiachronicAuditCardHtml,
+  renderUnifiedDiachronicContextHtml,
   resolveEffectiveCorpusTarget,
   summarizeChapterDiachronicTransformations,
   syncDiachronicRegisterOrthogonality,
@@ -72,6 +75,7 @@ import {
   CANONICAL_80_BLOCKS_CATALOG,
   CANONICAL_9_TOML_PROFILES,
   POCKET_REFUGE_4_SHEETS_SPEC,
+  buildRelativePdfAssetUrl,
   computeFoliationLayout,
   computeKindlePrintBudget,
   computeMultiSignatureImposition,
@@ -88,31 +92,47 @@ import {
   planDose3,
   refOfOrdinal,
   renderBranchAndTypologyInspectorHtml,
+  renderImpositionAndLayoutPreviewHtml,
   renderMultiSignatureAndPocketRefugeHtml,
   resolveCanonicalBlockForPassage,
+  resolvePrintEditionPdfAssetUrl,
   simulateFifthGenPhotocopySauvolaBilateral,
   simulateThirdGenPhotocopySauvola,
   stealthNeutralFilenameWeb,
+  syncPrintDrawerControlsFromEditionProfile,
 } from "./mostrador/dosis.js";
 import {
   HAREL_DOSIS_SUBTABS,
   HAREL_WORKSHOP_SUBTABS,
   applyHarelSubtabSelection,
+  applyStaticChromeTranslations,
+  bindImproveFormControlsInDrawer,
   formatPhotocopySimBadgeText,
   hydrateBookNamesSourceBadge,
+  hydrateImproveDrawerPanel,
   hydrateLifeTrailsFromPericopesArtifact,
+  hydratePrintDrawerPanelsInDrawer,
+  hydrateShareAndAuditDrawerPanel,
+  hydrateStudyDrawerPanel,
   hydrateWasmManifestStatus,
+  mountCardHtmlIntoHost,
   normalizeRootNotesEntries,
   renderCrdtWalAndLockP2AuditCardHtml,
+  renderEditorialGraphicsAndPrintSpecsCard,
+  renderFieldWorkshopCensus7164Html,
   renderMasterCensus7164CardHtml,
   renderPhotocopyResilienceAndSocialCardHtml,
+  renderPrintDrawerPanelsSyncInDrawer,
   resolveAtomicBatchForPassage,
+  resolvePrimaryStrongForVerse,
   simulateKanungoSauvolaGeneration,
+  syncActiveStrongInStudyDrawer,
 } from "./mostrador/drawer_hydrators.js";
 import {
   CANONICAL_5_RESIDUAL_KINDS,
   aggregateBlindCalibration12Langs,
   classifyMaculaArgumentRole,
+  highlightStudyCardByStrongId,
   hydrateCulturalGlossesLexicon,
   hydratePhilologyRosettaIndex,
   renderLeipzig4LineGmisHtml,
@@ -142,6 +162,7 @@ import {
   createI18n,
   formatLocalizedNumeralWeb,
   isRtlLocale,
+  localizeWorkChromeLabels,
   negotiate,
 } from "./mostrador/i18n.js";
 import {
@@ -231,16 +252,22 @@ import {
   parseBiblicalCoordinateReference,
   resolveBookCodeByAliasOrName,
 } from "./mostrador/reference.js";
+import {
+  buildEvangeliosWeekOptionsHtml,
+  renderEvangeliosStageCardHtml,
+  resolveEvangeliosActiveSelection,
+  syncSisterWorksTabsDom,
+} from "./mostrador/sister_works_controller.js";
 
 export {
   ARTIFACT_PROJECTION_SCHEMA, CANONICAL_12_BRANCH_PROFILES, CANONICAL_14_PLUS_2_EDITIONS_CATALOG, CANONICAL_14_PRINT_PROFILES, CANONICAL_16_TYPOLOGY_PROFILES, CANONICAL_80_BLOCKS_CATALOG, CANONICAL_9_TOML_PROFILES, CANONICAL_ECO_PACKS_MANIFEST, CRDT_WAL_SEMILATTICE, CROSS_WORK_BRIDGE_TABLE, EVANGELIOS_MACRO_THREADS_AND_ECHOES, FELICES_12_DICHAS_COORDINATE_MAP, FELICES_28_PLATES_MAP, FELICES_PLATE_TO_BIBLE_COORDINATE, FIELD_WORKSHOP_STP_LEXICON, GEOGRAPHIC_MACRO_REGIONS,
-  HAREL_DOSIS_SUBTABS, HAREL_SHEET_MAP, HAREL_WORKSHOP_SUBTABS, IMPROVE_I18N_FALLBACKS, LIFE_TRAILS_ANCHORS, LTDecoder, LTEncoder, MASTER_CENSUS_SUMMARY, MOSTRADOR_DOM_BINDINGS, MOSTRADOR_DOM_SCOPE_CONTRACTS, MULTI_ORTHO_LANGS, OPTICAL_CADENCE_PRESETS, PATCH_JOURNAL_LOCK_P2, POCKET_REFUGE_4_SHEETS_SPEC, POETIC_BOOKS, ROOT_NOTES_STP, ROSETTA_66_BOOKS, ReverseOrthographyMap, STATUS, STORED_ECO_PACKS, STP_LEDGER_SUMMARY, applyHarelSubtabSelection, applyOrthographyProfile, applySpanish21DiachronicRegister, applySuggestedImprovement, applyToDom, buildElicitationSeedPayload, classifyMaculaArgumentRole, computeAnalyticalRegisterMetrics, computeEcoPackCrc32Hex, computeFoliationLayout, computeKindlePrintBudget, computeMultiSignatureImposition, computeNyquistSafeFpsViaWasm, computeProsodyAndSyllableAlignmentInWasm, countPdfPages, createDataLayer, formatPhotocopySimBadgeText,
-  createFetchSource, createI18n, createReferenceResolver, createRelayEncoderFromDecoded, decodeLubyTransformPeeling, deriveEpistemicSeal, dlog, doseFilename, effectiveThreatClassWeb, encodeLubyTransformDroplets, escapeHtml, exportSneakernetBundleJson, extractPdfPages, foldCrdtWalSemilattice, formatLocalizedNumeralWeb, hasDiachronicVariants, hydrateBookNamesSourceBadge, hydrateCulturalGlossesLexicon, hydrateEcoPacksManifest, hydrateLifeTrailsFromPericopesArtifact, hydrateWasmManifestStatus, importSneakernetBundleJson, indexRegionShards, isRtlLocale, listAll14PrintEditionsForLang, listCatalogEditionsForLang, listCountriesInRegion,
-  listLanguagesInCountry, listMacroRegions, listOrthographyProfilesForLang, locateVersePage, negotiate, normalizeBookAliasToken, normalizeEditionSlug, ordinalOf, parseBiblicalCoordinateReference, parseCanonicalOtEchoRef, parseInitialRouteAndLocale, planDose1,
+  HAREL_DOSIS_SUBTABS, HAREL_SHEET_MAP, HAREL_WORKSHOP_SUBTABS, IMPROVE_I18N_FALLBACKS, LIFE_TRAILS_ANCHORS, LTDecoder, LTEncoder, MASTER_CENSUS_SUMMARY, MOSTRADOR_DOM_BINDINGS, MOSTRADOR_DOM_SCOPE_CONTRACTS, MULTI_ORTHO_LANGS, OPTICAL_CADENCE_PRESETS, PATCH_JOURNAL_LOCK_P2, POCKET_REFUGE_4_SHEETS_SPEC, POETIC_BOOKS, ROOT_NOTES_STP, ROSETTA_66_BOOKS, ReverseOrthographyMap, STATUS, STORED_ECO_PACKS, STP_LEDGER_SUMMARY, applyHarelSubtabSelection, applyOrthographyProfile, applySpanish21DiachronicRegister, applyStaticChromeTranslations, applySuggestedImprovement, applyToDom, buildElicitationSeedPayload, buildEvangeliosWeekOptionsHtml, classifyMaculaArgumentRole, computeAnalyticalRegisterMetrics, computeEcoPackCrc32Hex, computeFoliationLayout, computeKindlePrintBudget, computeMultiSignatureImposition, computeNyquistSafeFpsViaWasm, computeProsodyAndSyllableAlignmentInWasm, countPdfPages, createDataLayer, formatPhotocopySimBadgeText, syncActiveStrongInStudyDrawer,
+  createFetchSource, createI18n, createReferenceResolver, createRelayEncoderFromDecoded, decodeLubyTransformPeeling, deriveEpistemicSeal, dlog, doseFilename, effectiveThreatClassWeb, encodeLubyTransformDroplets, escapeHtml, exportSneakernetBundleJson, extractPdfPages, foldCrdtWalSemilattice, formatLocalizedNumeralWeb, hasDiachronicVariants, highlightStudyCardByStrongId, hydrateBookNamesSourceBadge, hydrateCulturalGlossesLexicon, hydrateEcoPacksManifest, hydrateLifeTrailsFromPericopesArtifact, hydrateWasmManifestStatus, importSneakernetBundleJson, indexRegionShards, isRtlLocale, listAll14PrintEditionsForLang, listCatalogEditionsForLang, listCountriesInRegion,
+  listLanguagesInCountry, listMacroRegions, listOrthographyProfilesForLang, locateVersePage, lookupWordTokenStrongEntry, negotiate, normalizeBookAliasToken, normalizeEditionSlug, ordinalOf, parseBiblicalCoordinateReference, parseCanonicalOtEchoRef, parseInitialRouteAndLocale, planDose1,
   planDose2,
-  planDose3, probeEcoPackRandomAccessBounds, projectCrossWorkCoordinate, refOfOrdinal, renderAnalyticalThermometerHtml, renderBranchAndTypologyInspectorHtml, renderCascadeAndLadderHtml, renderChapterDiachronicAuditCardHtml, renderChapterPericopesRibbonHtml, renderChapterPreviewHtml, renderCrdtWalAndLockP2AuditCardHtml, renderEvangeliosPlateActionsHtml, renderFelicesSocraticWonderCardHtml, renderImproveDrawerHtml, renderLeipzig4LineGmisHtml, renderMasterCensus7164CardHtml, renderMultiSignatureAndPocketRefugeHtml, renderOfflineMeshEcoCardHtml, renderOpticalReceiverRxPanelHtml, renderPhilologyRosettaExplorerHtml, renderPhilologyRosettaResultsRowsHtml, renderPhotocopyResilienceAndSocialCardHtml, renderStpLexiconExplorerHtml, renderStpLexiconResultsRowsHtml, renderStudy14ColDrawerHtml,
-  renderStudyStrataCards, renderTallerArtifactsCatalogHtml, resolveBicanonicalDivergence, resolveBookCodeByAliasOrName, resolveCanonicalBlockForPassage, resolveCanonicalOrthoProfileId, resolveEffectiveCorpusTarget, resolveEvangeliosMacroThreadAndEcho, resolveFelicesDichaCoordinate, resolveFelicesPlate, resolveLocalizedBookMeta, resolveMasoreticPericopeBreaks, resolveOrthoFamilyKey, resolvePlateForBibleCoordinate, resolveScriptioContinuaCodeForLang, runOpticalReceiverBurstSession, searchLanguages, searchPhilologyRosettaIndex, segmentScriptioContinuaSyllables, selectTopEntropyVerseQueue, serializeMostradorRouteQuery, setPaperFormat, simulateFifthGenPhotocopySauvolaBilateral, simulateThirdGenPhotocopySauvola, solitonCdf,
-  splitmix32, stealthNeutralFilenameWeb, suggestLayer0Languages, summarizeChapterDiachronicTransformations, syncDiachronicRegisterOrthogonality, syncFelicesWithCorpusLang, syncI18nUiFromState, toUnicodeSuperscript, transduceOrthographyWeb, transduceVerseWithReverseMap, triggerOptInOfflinePackDownload, updateUI, verifyAndStoreEcoPack, verifyArtifactProjectionClosure, verifyLock8PredicativeAndNegation, verifyVplDomScopeContainment, whitenBlockXor
+  planDose3, probeEcoPackRandomAccessBounds, projectCrossWorkCoordinate, refOfOrdinal, renderAnalyticalThermometerHtml, renderBranchAndTypologyInspectorHtml, renderCascadeAndLadderHtml, renderChapterDiachronicAuditCardHtml, renderChapterPericopesRibbonHtml, renderChapterPreviewHtml, renderCrdtWalAndLockP2AuditCardHtml, renderEvangeliosPlateActionsHtml, renderEvangeliosStageCardHtml, renderFelicesSocraticWonderCardHtml, renderImpositionAndLayoutPreviewHtml, renderImproveDrawerHtml, renderInteractiveVerseTokensHtml, renderLeipzig4LineGmisHtml, renderMasterCensus7164CardHtml, renderMultiSignatureAndPocketRefugeHtml, renderOfflineMeshEcoCardHtml, renderOpticalReceiverRxPanelHtml, renderPhilologyRosettaExplorerHtml, renderPhilologyRosettaResultsRowsHtml, renderPhotocopyResilienceAndSocialCardHtml, renderStpLexiconExplorerHtml, renderStpLexiconResultsRowsHtml, renderStudy14ColDrawerHtml,
+  renderStudyStrataCards, renderTallerArtifactsCatalogHtml, renderUnifiedDiachronicContextHtml, resolveBicanonicalDivergence, resolveBookCodeByAliasOrName, resolveCanonicalBlockForPassage, resolveCanonicalOrthoProfileId, resolveEffectiveCorpusTarget, resolveEvangeliosActiveSelection, resolveEvangeliosMacroThreadAndEcho, resolveFelicesDichaCoordinate, resolveFelicesPlate, resolveLocalizedBookMeta, resolveMasoreticPericopeBreaks, resolveOrthoFamilyKey, resolvePlateForBibleCoordinate, resolvePrintEditionPdfAssetUrl, resolveScriptioContinuaCodeForLang, runOpticalReceiverBurstSession, searchLanguages, searchPhilologyRosettaIndex, segmentScriptioContinuaSyllables, selectTopEntropyVerseQueue, serializeMostradorRouteQuery, setPaperFormat, simulateFifthGenPhotocopySauvolaBilateral, simulateThirdGenPhotocopySauvola, solitonCdf,
+  splitmix32, stealthNeutralFilenameWeb, suggestLayer0Languages, summarizeChapterDiachronicTransformations, syncDiachronicRegisterOrthogonality, syncFelicesWithCorpusLang, syncI18nUiFromState, syncPrintDrawerControlsFromEditionProfile, syncSisterWorksTabsDom, toUnicodeSuperscript, transduceOrthographyWeb, transduceVerseWithReverseMap, triggerOptInOfflinePackDownload, updateUI, verifyAndStoreEcoPack, verifyArtifactProjectionClosure, verifyLock8PredicativeAndNegation, verifyVplDomScopeContainment, whitenBlockXor
 };
 
 /**
@@ -309,13 +336,21 @@ export function createMostradorController(options = {}) {
   }
 
   function updateSealDom(sealKey, targetDoc = doc) {
-    state.seal = sealKey;
+    const effectiveSealKey = sealKey || state.seal || "seal.verified";
+    state.seal = effectiveSealKey;
     const sealEl = getEl("epistemicStatusSeal", targetDoc);
     if (sealEl) {
-      sealEl.setAttribute("data-seal", sealKey);
-      sealEl.setAttribute("data-i18n", sealKey);
-      const label = i18nInstance ? i18nInstance.t(sealKey) : sealKey;
-      sealEl.textContent = label;
+      sealEl.setAttribute("data-seal", effectiveSealKey);
+      sealEl.setAttribute("data-i18n", effectiveSealKey);
+      const rawLabel = i18nInstance ? i18nInstance.t(effectiveSealKey) : effectiveSealKey;
+      const isEn = String(state.uiLocale || "en").toLowerCase().startsWith("en");
+      const fallbackHuman = isEn
+        ? "Verified text · 66 Canonical Books"
+        : "Texto verificado · 66 Libros Canónicos";
+      sealEl.textContent =
+        !rawLabel || rawLabel === effectiveSealKey || rawLabel.startsWith("seal.")
+          ? fallbackHuman
+          : rawLabel;
     }
   }
 
@@ -537,7 +572,7 @@ export function createMostradorController(options = {}) {
       `data-audio-crc16="${escapeHtml(prosody.crc16Hex)}" ` +
       `data-wasm-backed="${prosody.wasmBacked}">` +
       `<div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:0.45rem;margin-bottom:0.4rem;">` +
-      `<strong>🗣️ Pórtico Prosódico WASM (${escapeHtml(`${state.book} ${state.chapter}:${state.verse}`)} · 0 Bytes Audio · ${prosody.wpm} WPM · CRC-16=${escapeHtml(prosody.crc16Hex)})</strong>` +
+      `<strong>🗣️ Escucha Guiada (${escapeHtml(`${state.book} ${state.chapter}:${state.verse}`)}) <small class="uls-badge hig-tech-meta">Pórtico Prosódico WASM · 0 Bytes Audio · ${prosody.wpm} WPM · CRC-16=${escapeHtml(prosody.crc16Hex)}</small></strong>` +
       `<div style="display:inline-flex;flex-wrap:wrap;gap:0.4rem;align-items:center;font-size:0.78rem;">` +
       `<label for="audioCadenceWpmSelect">Cadencia: ` +
       `<select id="audioCadenceWpmSelect" style="min-height:48px;padding:0.2rem 0.4rem;">` +
@@ -552,13 +587,13 @@ export function createMostradorController(options = {}) {
       `<input id="audioElapsedRange" type="range" min="0" max="${prosody.totalMs}" step="250" value="${prosody.elapsedMs}" style="vertical-align:middle;">` +
       `</label>` +
       `</div></div>` +
-      `<div style="display:flex;flex-wrap:wrap;gap:0.35rem;margin-bottom:0.35rem;font-size:0.75rem;">` +
+      `<div class="oral-portico-secondary" style="display:flex;flex-wrap:wrap;gap:0.35rem;margin-bottom:0.35rem;font-size:0.75rem;">` +
       `<span class="uls-badge" data-prosodic-pause="comma">τ₁ Coma: ${prosody.pauseCommaMs} ms</span>` +
       `<span class="uls-badge" data-prosodic-pause="semicolon">τ₂ Punto y coma: ${prosody.pauseSemicolonMs} ms</span>` +
       `<span class="uls-badge" data-prosodic-pause="period">τ₃ Punto / Selah: ${prosody.pausePeriodSelahMs} ms</span>` +
       `<span class="uls-badge" data-prosodic-cursor="true">Sílaba #${prosody.activeSyllableIndex + 1}/${prosody.syllableCount}: «${escapeHtml(prosody.activeSyllable)}»</span>` +
       `</div>` +
-      `<div class="prosody-syllable-strip" style="display:flex;flex-wrap:wrap;gap:0.25rem;font-size:0.76rem;">${syllablesHtml}</div>` +
+      `<div class="prosody-syllable-strip oral-portico-secondary" style="display:flex;flex-wrap:wrap;gap:0.25rem;font-size:0.76rem;">${syllablesHtml}</div>` +
       `</div>`;
 
     const wpmSel = getEl("audioCadenceWpmSelect", targetDoc);
@@ -674,6 +709,24 @@ export function createMostradorController(options = {}) {
       state.evangeliosLang = state.lang;
     }
     syncI18nUiFromState(state, targetDoc);
+    const chromeLabels = localizeWorkChromeLabels(state.uiLocale || "en");
+    const tabEvEl = getEl("tabWorkEvangelios", targetDoc);
+    if (tabEvEl && chromeLabels.evangeliosTab) {
+      tabEvEl.textContent = chromeLabels.evangeliosTab;
+    }
+    const pulseBadgeEl = getEl("bibleStageRegisterPulseBadge", targetDoc);
+    if (pulseBadgeEl && chromeLabels.registerPulse) {
+      const regKey =
+        state.register === "clasica"
+          ? "clasico"
+          : state.register === "estudio"
+            ? "original"
+            : "siglo21";
+      pulseBadgeEl.textContent = chromeLabels.registerPulse[regKey] || chromeLabels.registerPulse.siglo21;
+      if (typeof pulseBadgeEl.setAttribute === "function") {
+        pulseBadgeEl.setAttribute("data-active-register", state.register || "intergeneracional");
+      }
+    }
     if (syncUrl) {
       return syncUrlFromState(targetDoc, { push: pushUrl });
     }
@@ -921,7 +974,7 @@ export function createMostradorController(options = {}) {
           });
           const linkDose2 = getEl("linkDose2BlockPdf", targetDoc);
           if (linkDose2) {
-            linkDose2.setAttribute("href", `/${d2.url}`);
+            linkDose2.setAttribute("href", buildRelativePdfAssetUrl(d2.url));
             linkDose2.setAttribute("data-edition-slug", d2.editionSlug);
             linkDose2.setAttribute(
               "download",
@@ -939,7 +992,7 @@ export function createMostradorController(options = {}) {
         const d3 = planDose3(manifest, state.lang);
         const linkDose3 = getEl("linkDose3FullBiblePdf", targetDoc);
         if (linkDose3 && d3) {
-          linkDose3.setAttribute("href", `/${d3.href}`);
+          linkDose3.setAttribute("href", buildRelativePdfAssetUrl(d3.href || d3.path));
           linkDose3.setAttribute(
             "download",
             doseFilename({
@@ -1010,960 +1063,65 @@ export function createMostradorController(options = {}) {
     };
   }
 
-  async function hydrateStudyDrawer(targetDoc = doc) {
-    if (!studyModulePromise) {
-      studyModulePromise = Promise.resolve(loadStudyModule());
-    }
-    const mod = await studyModulePromise;
-    state.studyLoaded = true;
-    const matrixChapter = await dataLayer.loadMatrixChapter(state.book, state.chapter);
-    const nsmLexicon =
-      typeof dataLayer.loadNsmRealiaLexicon === "function"
-        ? await dataLayer.loadNsmRealiaLexicon()
-        : null;
-    const rosettaIndex =
-      typeof dataLayer.loadPhilologyRosettaIndex === "function"
-        ? await dataLayer.loadPhilologyRosettaIndex()
-        : null;
-    if (rosettaIndex) {
-      hydratePhilologyRosettaIndex(rosettaIndex);
-      state.rosettaProvenanceCounts = {
-        versificationEngOrg: Array.isArray(rosettaIndex.versification_eng_org)
-          ? rosettaIndex.versification_eng_org.length
-          : 0,
-        ketivQereResiduals: Array.isArray(rosettaIndex.ketiv_qere_residuals)
-          ? rosettaIndex.ketiv_qere_residuals.length
-          : 0,
-      };
-    }
-    if (!state.pericopesAndGlossesLoaded && typeof dataLayer.loadPericopesAndGlosses === "function") {
-      state.pericopesAndGlossesLoaded = true;
-      try {
-        const pgData = await dataLayer.loadPericopesAndGlosses();
-        if (pgData) {
-          hydratePericopesAndGlosses(pgData);
-          hydrateCulturalGlossesLexicon(pgData.cultural_glosses || pgData);
+  function buildDrawerHydratorContext(targetDoc = doc) {
+    return {
+      state,
+      dataLayer,
+      targetDoc,
+      getEl,
+      withPreservedInputFocus,
+      getI18n: () => i18nInstance,
+      loadStudyModule: () => {
+        if (!studyModulePromise) {
+          studyModulePromise = Promise.resolve(loadStudyModule());
         }
-      } catch {
-        // Non-fatal
-      }
-    }
-    const tFn = i18nInstance ? (k, p) => i18nInstance.t(k, p) : undefined;
-    const studyOpts = {
-      book: state.book,
-      chapter: state.chapter,
-      verse: state.verse,
-      lang: state.lang,
-      scope: state.studyScope || "verse",
-      nsmLexicon,
-      rosettaIndex,
-      rosettaQuery: state.rosettaQuery || "",
-      rosettaCategory: state.rosettaCategory || "all",
-      includeInlineStrata: false,
-      i18n: i18nInstance,
-      t: tFn,
+        return studyModulePromise;
+      },
+      loadImproveModule: () => {
+        if (!improveModulePromise) {
+          improveModulePromise = Promise.resolve(loadImproveModule());
+        }
+        return improveModulePromise;
+      },
+      navigate,
+      hydrateBookAndChapterSelectors,
+      transitionSheet,
+      hydratePrintDrawerPanels,
+      hydrateShareAndAuditDrawer,
     };
-    const html = mod.renderStudy14ColDrawerHtml(matrixChapter, studyOpts);
-    const container =
-      getEl("leipzig14ColStratumAction", targetDoc) ||
-      getEl("bibleEasyDrawerPanel", targetDoc);
-    if (container) {
-      withPreservedInputFocus(targetDoc, () => {
-        container.innerHTML = html;
-      });
-      const catSel = getEl("rosettaFilterCategorySelect", targetDoc);
-      if (catSel && typeof catSel.addEventListener === "function") {
-        catSel.addEventListener("change", async (e) => {
-          state.rosettaCategory = String(e?.target?.value || catSel.value || "all");
-          const rowsEl = getEl("rosettaExplorerResultsRows", targetDoc);
-          if (rowsEl) {
-            const renderRowsFn =
-              typeof mod.renderPhilologyRosettaResultsRowsHtml === "function"
-                ? mod.renderPhilologyRosettaResultsRowsHtml
-                : renderPhilologyRosettaResultsRowsHtml;
-            rowsEl.innerHTML = renderRowsFn({
-              query: state.rosettaQuery || "",
-              category: state.rosettaCategory,
-              rosettaIndex,
-            });
-            const listEl = getEl("rosettaExplorerResultsList", targetDoc);
-            if (listEl) {
-              const items = searchPhilologyRosettaIndex(
-                state.rosettaQuery || "",
-                state.rosettaCategory,
-                12,
-                rosettaIndex,
-              );
-              listEl.setAttribute("data-results-count", String(items.length));
-            }
-          } else {
-            await hydrateStudyDrawer(targetDoc);
-          }
-        });
-      }
-      const searchInp = getEl("rosettaSearchInput", targetDoc);
-      if (searchInp && typeof searchInp.addEventListener === "function") {
-        const onRosettaSearch = async (e) => {
-          state.rosettaQuery = String(e?.target?.value ?? searchInp.value ?? "");
-          const rowsEl = getEl("rosettaExplorerResultsRows", targetDoc);
-          if (rowsEl) {
-            const renderRowsFn =
-              typeof mod.renderPhilologyRosettaResultsRowsHtml === "function"
-                ? mod.renderPhilologyRosettaResultsRowsHtml
-                : renderPhilologyRosettaResultsRowsHtml;
-            rowsEl.innerHTML = renderRowsFn({
-              query: state.rosettaQuery,
-              category: state.rosettaCategory || "all",
-              rosettaIndex,
-            });
-            const listEl = getEl("rosettaExplorerResultsList", targetDoc);
-            if (listEl) {
-              const items = searchPhilologyRosettaIndex(
-                state.rosettaQuery,
-                state.rosettaCategory || "all",
-                12,
-                rosettaIndex,
-              );
-              listEl.setAttribute("data-results-count", String(items.length));
-            }
-          } else {
-            await hydrateStudyDrawer(targetDoc);
-          }
-        };
-        searchInp.addEventListener("change", onRosettaSearch);
-        searchInp.addEventListener("input", onRosettaSearch);
-      }
-      if (typeof container.addEventListener === "function" && !container._scopeListenerBound) {
-        container._scopeListenerBound = true;
-        container.addEventListener("click", async (e) => {
-          const rosettaBtn = e?.target?.closest
-            ? e.target.closest("[data-rosetta-ref]")
-            : e?.target?.getAttribute?.("data-rosetta-ref")
-              ? e.target
-              : null;
-          const rosettaRef = rosettaBtn?.getAttribute?.("data-rosetta-ref");
-          if (rosettaRef) {
-            const rosettaStrong = rosettaBtn?.getAttribute?.("data-rosetta-strong");
-            if (rosettaStrong) state.activeStrongId = String(rosettaStrong).toUpperCase();
-            const parsedRosetta = parseBiblicalCoordinateReference(rosettaRef);
-            if (parsedRosetta && parsedRosetta.bookCode) {
-              await navigate(
-                {
-                  book: parsedRosetta.bookCode,
-                  chapter: parsedRosetta.chapter || 1,
-                  verse: parsedRosetta.verse || 1,
-                },
-                targetDoc,
-              );
-              hydrateBookAndChapterSelectors(targetDoc);
-            }
-            return;
-          }
-          const slotBtn = e?.target?.closest
-            ? e.target.closest("[data-elicitation-slot]")
-            : e?.target?.getAttribute?.("data-elicitation-slot")
-              ? e.target
-              : null;
-          if (slotBtn) {
-            const slotStrong = slotBtn.getAttribute?.("data-strong");
-            const slotVerse = Number(slotBtn.getAttribute?.("data-verse")) || state.verse;
-            if (slotStrong && slotStrong !== "∅") {
-              state.activeStrongId = String(slotStrong).toUpperCase();
-            }
-            state.verse = slotVerse;
-            await transitionSheet("field", targetDoc);
-            return;
-          }
-          const btn = e?.target?.closest
-            ? e.target.closest("[data-study-scope]")
-            : e?.target?.getAttribute?.("data-study-scope")
-              ? e.target
-              : null;
-          const nextScope = btn?.getAttribute?.("data-study-scope");
-          if (nextScope === "verse" || nextScope === "chapter" || nextScope === "gmis") {
-            state.studyScope = nextScope;
-            await hydrateStudyDrawer(targetDoc);
-          }
-        });
-      }
-    }
-
-    if (typeof mod.renderStudyStrataCards === "function") {
-      const strata = mod.renderStudyStrataCards(matrixChapter, studyOpts);
-      const nsmCard = getEl("nsm65StratumCard", targetDoc);
-      if (nsmCard) nsmCard.innerHTML = strata.nsmHtml;
-      const realiaCard = getEl("realiaMetrologyStratumCard", targetDoc);
-      if (realiaCard) realiaCard.innerHTML = strata.realiaHtml;
-      const tskCard = getEl("tskCrossRefsStratumCard", targetDoc);
-      if (tskCard) tskCard.innerHTML = strata.tskHtml;
-    }
-
-    return html;
   }
 
-  async function resolvePrimaryStrongForActiveVerse() {
-    try {
-      const matrixChapter = await dataLayer.loadMatrixChapter(state.book, state.chapter);
-      const rows = Array.isArray(matrixChapter?.rows) ? matrixChapter.rows : [];
-      for (const r of rows) {
-        if (Array.isArray(r) && Number(r[1]) === Number(state.verse) && r[6] && r[6] !== "∅") {
-          return String(r[6]).toUpperCase();
-        }
-        if (r && typeof r === "object" && Number(r.verse) === Number(state.verse) && r.c07_strong_id && r.c07_strong_id !== "∅") {
-          return String(r.c07_strong_id).toUpperCase();
-        }
-      }
-    } catch {
-      // Fallback by testament
-    }
-    const isNt = /^(MAT|MRK|MAR|LUK|JHN|ACT|ROM|1CO|2CO|GAL|EPH|PHP|COL|1TH|2TH|1TI|2TI|TIT|PHM|HEB|JAS|1PE|2PE|1JN|2JN|3JN|JUD|REV)$/i.test(state.book);
-    return isNt ? "G3056" : "H0430";
+  async function hydrateStudyDrawer(targetDoc = doc) {
+    return hydrateStudyDrawerPanel(buildDrawerHydratorContext(targetDoc));
   }
 
   async function hydrateImproveDrawer(targetDoc = doc) {
-    if (!improveModulePromise) {
-      improveModulePromise = Promise.resolve(loadImproveModule());
-    }
-    const mod = await improveModulePromise;
-    state.improveLoaded = true;
-    const currentVerseText =
-      state.lastNavResult?.chapter?.verses?.[String(state.verse)] || "";
-    const osis = `${state.book}.${state.chapter}.${state.verse}`;
-    const activeStrongId = await resolvePrimaryStrongForActiveVerse();
-    state.activeStrongId = activeStrongId;
-    const ladder250 =
-      typeof dataLayer.loadElicitationLadder250 === "function"
-        ? await dataLayer.loadElicitationLadder250()
-        : [];
-    state.celfLadder250 = ladder250;
-    if (typeof dataLayer.loadFieldWorkshopData === "function") {
-      const fwData = await dataLayer.loadFieldWorkshopData(state.lang === "stp" ? "stp" : "stp");
-      if (fwData) hydrateFieldWorkshopData(fwData, ladder250);
-    }
-    const tFn = i18nInstance ? (k, p) => i18nInstance.t(k, p) : undefined;
-    const html = mod.renderImproveDrawerHtml({
-      kind: "verse",
-      lang: state.lang,
-      locale: state.uiLocale,
-      uiLocale: state.uiLocale,
-      ref: osis,
-      osis,
-      strongId: activeStrongId,
-      currentVerseText,
-      currentSurface: currentVerseText,
-      level: state.cascadeLevel || "L2",
-      i18n: i18nInstance,
-      t: tFn,
-    });
-    const container =
-      getEl("socraticElicitorContainer", targetDoc) ||
-      getEl("bibleFieldWorkshopSheet", targetDoc);
-    if (container) {
-      container.innerHTML = html;
-    }
-
-    const cascadeEl = getEl("cascadeImpactPreviewList", targetDoc);
-    if (cascadeEl && typeof mod.renderCascadeAndLadderHtml === "function") {
-      cascadeEl.innerHTML = mod.renderCascadeAndLadderHtml({
-        ladderItems: ladder250,
-        lang: state.lang,
-        currentRef: osis,
-        osis,
-        strongId: activeStrongId,
-        level: state.cascadeLevel || "L2",
-        activeRung: state.activeCelfRung || "ALL",
-        activeOtWave: state.activeOtWave || 0,
-        limit: 24,
-      });
-    }
-
-    const lexHost = getEl("stpLexiconExplorerHost", targetDoc);
-    if (lexHost) {
-      const renderLexFn =
-        typeof mod.renderStpLexiconExplorerHtml === "function"
-          ? mod.renderStpLexiconExplorerHtml
-          : renderStpLexiconExplorerHtml;
-      lexHost.innerHTML = renderLexFn({
-        query: state.stpLexiconQuery || "",
-        activeWave: state.activeOtWave || 0,
-        limit: 24,
-      });
-    }
-
-    const tallerEl = getEl("tallerArtifactsCatalog", targetDoc);
-    if (tallerEl && typeof mod.renderTallerArtifactsCatalogHtml === "function") {
-      tallerEl.innerHTML = mod.renderTallerArtifactsCatalogHtml(state.lang);
-      const snapSelect = getEl("selectWalRollbackSnapshot", targetDoc);
-      if (snapSelect && typeof snapSelect.addEventListener === "function") {
-        snapSelect.addEventListener("change", (ev) => {
-          const val = String(ev?.target?.value || "PATCH-WAL-SNAP-00");
-          state.selectedWalSnapshotId = val;
-          snapSelect.setAttribute("data-selected-snapshot", val);
-        });
-      }
-    }
-
-    for (const [btnId, tabName] of [
-      ["btnWorkshopSubtabPatch", "patch"],
-      ["btnWorkshopSubtabLadder", "ladder"],
-      ["btnWorkshopSubtabAudit", "audit"],
-    ]) {
-      const sBtn = getEl(btnId, targetDoc);
-      if (sBtn && typeof sBtn.addEventListener === "function") {
-        sBtn.addEventListener("click", () => {
-          state.activeWorkshopSubtab = tabName;
-          applyHarelSubtabSelection(targetDoc, "workshop", tabName);
-        });
-      }
-    }
-
-    bindImproveFormControls(mod, targetDoc);
-    return html;
-  }
-
-  function bindImproveFormControls(mod, targetDoc = doc) {
-    const kindSel = getEl("improveKindSelect", targetDoc);
-    const levelSel = getEl("improveLevelSelect", targetDoc);
-    const oldInput = getEl("improveOldSurfaceInput", targetDoc);
-    const newInput = getEl("improveNewSurfaceInput", targetDoc);
-    const noteInput = getEl("improveNoteInput", targetDoc);
-    const previewCode = getEl("improvePatchOutput", targetDoc);
-    const copyBtn = getEl("btnCopyPatchPayload", targetDoc);
-    const downloadBtn = getEl("btnDownloadPatchFile", targetDoc);
-    const cascadeEl = getEl("cascadeImpactPreviewList", targetDoc);
-
-    const refreshPatchPreview = () => {
-      const selectedLevel = levelSel?.value || state.cascadeLevel || "L2";
-      state.cascadeLevel = selectedLevel;
-      const osis = `${state.book}.${state.chapter}.${state.verse}`;
-      const patchBuilder = typeof mod.buildPatchPayload === "function" ? mod.buildPatchPayload : buildPatchPayload;
-      const patch = patchBuilder({
-        kind: kindSel?.value || "verse",
-        level: selectedLevel,
-        lang: state.lang,
-        locale: state.uiLocale,
-        ref: osis,
-        strongId: state.activeStrongId || "H0430",
-        oldSurface: oldInput?.value || "",
-        newSurface: newInput?.value || "",
-        note: noteInput?.value || "",
-      });
-      if (previewCode) {
-        previewCode.textContent = `${patch.payloadLine}\n\n${patch.json}`;
-        if (typeof previewCode.setAttribute === "function") {
-          previewCode.setAttribute("data-content-hash", patch.contentHash);
-          previewCode.setAttribute("data-patch-filename", patch.filename);
-        }
-      }
-      if (cascadeEl && typeof mod.renderCascadeAndLadderHtml === "function") {
-        cascadeEl.innerHTML = mod.renderCascadeAndLadderHtml({
-          ladderItems: state.celfLadder250 || [],
-          lang: state.lang,
-          currentRef: osis,
-          osis,
-          strongId: state.activeStrongId || "H0430",
-          level: selectedLevel,
-          activeRung: state.activeCelfRung || "ALL",
-          activeOtWave: state.activeOtWave || 0,
-          limit: 24,
-        });
-      }
-      const lexHostEl = getEl("stpLexiconExplorerHost", targetDoc);
-      const lexRowsEl = getEl("stpLexiconResultsRows", targetDoc);
-      if (lexRowsEl) {
-        const renderRowsFn =
-          typeof mod.renderStpLexiconResultsRowsHtml === "function"
-            ? mod.renderStpLexiconResultsRowsHtml
-            : renderStpLexiconResultsRowsHtml;
-        lexRowsEl.innerHTML = renderRowsFn({
-          query: state.stpLexiconQuery || "",
-          activeWave: state.activeOtWave || 0,
-          limit: 24,
-        });
-      } else if (lexHostEl) {
-        const renderLexFn =
-          typeof mod.renderStpLexiconExplorerHtml === "function"
-            ? mod.renderStpLexiconExplorerHtml
-            : renderStpLexiconExplorerHtml;
-        withPreservedInputFocus(targetDoc, () => {
-          lexHostEl.innerHTML = renderLexFn({
-            query: state.stpLexiconQuery || "",
-            activeWave: state.activeOtWave || 0,
-            limit: 24,
-          });
-        });
-        bindLexiconExplorerEvents(lexHostEl);
-      }
-      return patch;
-    };
-
-    const bindLexiconExplorerEvents = (lexHostEl) => {
-      if (!lexHostEl) return;
-      const searchInput = getEl("stpLexiconSearchInput", targetDoc);
-      if (searchInput && typeof searchInput.addEventListener === "function") {
-        const onLexSearch = (ev) => {
-          state.stpLexiconQuery = String(ev?.target?.value ?? searchInput.value ?? "");
-          const rowsEl = getEl("stpLexiconResultsRows", targetDoc);
-          if (rowsEl) {
-            const renderRowsFn =
-              typeof mod.renderStpLexiconResultsRowsHtml === "function"
-                ? mod.renderStpLexiconResultsRowsHtml
-                : renderStpLexiconResultsRowsHtml;
-            rowsEl.innerHTML = renderRowsFn({
-              query: state.stpLexiconQuery,
-              activeWave: state.activeOtWave || 0,
-              limit: 24,
-            });
-          } else {
-            refreshPatchPreview();
-          }
-        };
-        searchInput.addEventListener("input", onLexSearch);
-        searchInput.addEventListener("change", onLexSearch);
-      }
-      if (typeof lexHostEl.addEventListener === "function" && !lexHostEl._lexBound) {
-        lexHostEl._lexBound = true;
-        lexHostEl.addEventListener("click", (ev) => {
-          const injectBtn = ev?.target?.closest
-            ? ev.target.closest("[data-inject-surface]")
-            : ev?.target?.getAttribute?.("data-inject-surface")
-              ? ev.target
-              : null;
-          if (injectBtn) {
-            const surfaceVal = injectBtn.getAttribute?.("data-inject-surface") || "";
-            if (newInput && surfaceVal) newInput.value = surfaceVal;
-            refreshPatchPreview();
-            return;
-          }
-          const entryBtn = ev?.target?.closest
-            ? ev.target.closest("[data-lex-strong]")
-            : ev?.target?.getAttribute?.("data-lex-strong")
-              ? ev.target
-              : null;
-          if (!entryBtn) return;
-          const nextStrong = entryBtn.getAttribute?.("data-lex-strong");
-          const nextSurface = entryBtn.getAttribute?.("data-lex-surface");
-          if (nextStrong) state.activeStrongId = String(nextStrong).toUpperCase();
-          if (newInput && nextSurface) newInput.value = nextSurface;
-          refreshPatchPreview();
-        });
-      }
-    };
-    bindLexiconExplorerEvents(getEl("stpLexiconExplorerHost", targetDoc));
-
-    for (const el of [kindSel, levelSel, oldInput, newInput, noteInput]) {
-      if (el && typeof el.addEventListener === "function") {
-        el.addEventListener("change", refreshPatchPreview);
-        el.addEventListener("input", refreshPatchPreview);
-      }
-    }
-
-    if (copyBtn && typeof copyBtn.addEventListener === "function") {
-      copyBtn.addEventListener("click", () => {
-        const patch = refreshPatchPreview();
-        copyBtn.setAttribute("data-last-copied-hash", patch.contentHash);
-        if (typeof navigator !== "undefined" && navigator.clipboard && typeof navigator.clipboard.writeText === "function") {
-          navigator.clipboard.writeText(patch.json).catch(() => { });
-        }
-      });
-    }
-
-    const applyBtn = getEl("btnApplySuggestedImprovement", targetDoc);
-    const applyFn =
-      typeof mod.applySuggestedImprovement === "function"
-        ? mod.applySuggestedImprovement
-        : applySuggestedImprovement;
-    if (applyBtn && typeof applyBtn.addEventListener === "function") {
-      applyBtn.addEventListener("click", () => {
-        applyFn(targetDoc, applyBtn, refreshPatchPreview);
-      });
-    }
-
-    if (downloadBtn && typeof downloadBtn.addEventListener === "function") {
-      downloadBtn.addEventListener("click", () => {
-        const patch = refreshPatchPreview();
-        downloadBtn.setAttribute("data-last-download-filename", patch.filename);
-        if (typeof Blob !== "undefined" && typeof URL !== "undefined" && URL.createObjectURL && targetDoc?.createElement) {
-          const blob = new Blob([patch.json], { type: "application/json" });
-          const url = URL.createObjectURL(blob);
-          const a = targetDoc.createElement("a");
-          if (a) {
-            a.href = url;
-            a.download = patch.filename;
-            if (typeof a.click === "function") a.click();
-          }
-        }
-      });
-    }
-
-    if (cascadeEl && typeof cascadeEl.addEventListener === "function" && !cascadeEl._celfBound) {
-      cascadeEl._celfBound = true;
-      cascadeEl.addEventListener("click", async (e) => {
-        const waveBtn = e?.target?.closest
-          ? e.target.closest("[data-ot-wave]")
-          : e?.target?.getAttribute?.("data-ot-wave")
-            ? e.target
-            : null;
-        const waveAttr = waveBtn?.getAttribute?.("data-ot-wave");
-        if (waveAttr !== null && waveAttr !== undefined) {
-          state.activeOtWave = Number(waveAttr) || 0;
-          refreshPatchPreview();
-          return;
-        }
-        const filterBtn = e?.target?.closest
-          ? e.target.closest("[data-celf-rung-filter]")
-          : e?.target?.getAttribute?.("data-celf-rung-filter")
-            ? e.target
-            : null;
-        const filterKey = filterBtn?.getAttribute?.("data-celf-rung-filter");
-        if (filterKey) {
-          state.activeCelfRung = filterKey;
-          refreshPatchPreview();
-          return;
-        }
-        const entropyBtn = e?.target?.closest
-          ? e.target.closest("[data-next-entropy-ref]")
-          : e?.target?.getAttribute?.("data-next-entropy-ref")
-            ? e.target
-            : null;
-        const nextEntropyRef = entropyBtn?.getAttribute?.("data-next-entropy-ref");
-        if (nextEntropyRef) {
-          const parsedEnt = parseBiblicalCoordinateReference(nextEntropyRef);
-          if (parsedEnt && parsedEnt.bookCode) {
-            await navigate(
-              {
-                book: parsedEnt.bookCode,
-                chapter: parsedEnt.chapter || 1,
-                verse: parsedEnt.verse || 1,
-              },
-              targetDoc,
-            );
-            hydrateBookAndChapterSelectors(targetDoc);
-          }
-          return;
-        }
-        const jumpOsisBtn = e?.target?.closest
-          ? e.target.closest("[data-jump-osis]")
-          : e?.target?.getAttribute?.("data-jump-osis")
-            ? e.target
-            : null;
-        const jumpOsisRef = jumpOsisBtn?.getAttribute?.("data-jump-osis");
-        if (jumpOsisRef) {
-          const parsedJump = parseBiblicalCoordinateReference(jumpOsisRef);
-          if (parsedJump && parsedJump.bookCode) {
-            await navigate(
-              {
-                book: parsedJump.bookCode,
-                chapter: parsedJump.chapter || 1,
-                verse: parsedJump.verse || 1,
-              },
-              targetDoc,
-            );
-            hydrateBookAndChapterSelectors(targetDoc);
-          }
-          return;
-        }
-        const rungBtn = e?.target?.closest
-          ? e.target.closest("[data-ladder-ref]")
-          : e?.target?.getAttribute?.("data-ladder-ref")
-            ? e.target
-            : null;
-        const ladderRef = rungBtn?.getAttribute?.("data-ladder-ref");
-        if (ladderRef) {
-          const parsed = parseBiblicalCoordinateReference(ladderRef);
-          if (parsed && parsed.bookCode) {
-            await navigate(
-              {
-                book: parsed.bookCode,
-                chapter: parsed.chapter || 1,
-                verse: parsed.verse || 1,
-              },
-              targetDoc,
-            );
-            hydrateBookAndChapterSelectors(targetDoc);
-          }
-        }
-      });
-    }
+    return hydrateImproveDrawerPanel(buildDrawerHydratorContext(targetDoc));
   }
 
   function renderPrintDrawerPanelsSync(targetDoc = doc) {
-    const budget = computeKindlePrintBudget({
-      fontPt: state.fontSizePt || 9.5,
-      columns: state.columns || 2,
-      orientation: state.orientation || "landscape",
-      paper: state.paperFormat || "a4",
-    });
-    const budgetOutput = getEl("kindleBudgetOutput", targetDoc);
-    if (budgetOutput) {
-      budgetOutput.textContent = budget.summaryText;
-      if (typeof budgetOutput.setAttribute === "function") {
-        budgetOutput.setAttribute("data-cpl", String(budget.cpl));
-        budgetOutput.setAttribute("data-estimated-pages", String(budget.estimatedPages));
-        budgetOutput.setAttribute("data-effective-columns", String(budget.effectiveColumns));
-      }
-    }
-
-    const duplexPanel = getEl("duplexAssistantPanel", targetDoc);
-    if (duplexPanel) {
-      const slug = normalizeEditionSlug(state.edition, {
-        paperFormat: state.paperFormat,
-        columns: state.columns,
-      });
-      const foliation = computeFoliationLayout({
-        mode: state.foliationMode || "saddle_stitch",
-        paper: state.paperFormat || "a4",
-        pageCount: 16,
-        dir: isRtlLocale(state.lang) ? "rtl" : "ltr",
-      });
-      const resolvedBlock = resolveCanonicalBlockForPassage(state.book, state.chapter);
-      const activeBlockNum = Number(state.activeBlockNumber) || resolvedBlock.blockNumber || 1;
-      const multiSigHtml = renderMultiSignatureAndPocketRefugeHtml({
-        totalPages: 160,
-        activeBlockNumber: activeBlockNum,
-        dir: isRtlLocale(state.lang) ? "rtl" : "ltr",
-      });
-      const branchTypoHtml = renderBranchAndTypologyInspectorHtml({
-        lang: state.lang,
-        activeBranchId: state.activeBranchId || "",
-        activeTypologyId: state.activeTypologyId || "",
-      });
-      const branchPanel = getEl("bibleBranchAndTypologyPanel", targetDoc);
-      if (branchPanel) {
-        branchPanel.innerHTML = branchTypoHtml;
-      }
-      duplexPanel.innerHTML = `<div class="mostrador-duplex-assistant" data-edition="${escapeHtml(
-        slug
-      )}" data-foliation-mode="${escapeHtml(foliation.mode)}" data-binding-edge="${escapeHtml(
-        foliation.bindingEdge
-      )}"><strong>Asistente Dúplex (${state.duplex ? "2 caras · Paridad par garantizada" : "1 cara"
-        }) · ${escapeHtml(foliation.summary)}</strong><p style="margin:4px 0 0;font-size:0.84rem;">Paso 1: Imprime caras impares (anverso). Paso 2: Voltea el pliego por el borde largo e imprime caras pares (reverso) · ${escapeHtml(
-          budget.summaryText
-        )}.</p>${multiSigHtml}${branchPanel ? "" : branchTypoHtml}</div>`;
-      const blockSel = getEl("canonicalBlockSelect", targetDoc);
-      if (blockSel && typeof blockSel.addEventListener === "function") {
-        blockSel.addEventListener("change", (e) => {
-          state.activeBlockNumber = Math.max(1, Math.min(80, Number(e?.target?.value || blockSel.value) || 1));
-          hydratePrintDrawerPanels(targetDoc);
-        });
-      }
-      const branchSel = getEl("branchProfileSelect", targetDoc);
-      if (branchSel && typeof branchSel.addEventListener === "function") {
-        branchSel.addEventListener("change", (e) => {
-          state.activeBranchId = String(e?.target?.value || branchSel.value || "");
-          hydratePrintDrawerPanels(targetDoc);
-        });
-      }
-      const typoSel = getEl("typologySheetSelect", targetDoc);
-      if (typoSel && typeof typoSel.addEventListener === "function") {
-        typoSel.addEventListener("change", (e) => {
-          state.activeTypologyId = String(e?.target?.value || typoSel.value || "");
-          hydratePrintDrawerPanels(targetDoc);
-        });
-      }
-    }
-
-    const photocopyBadge = getEl("biblePhotocopySimBadge", targetDoc);
-    if (photocopyBadge) {
-      const activeGen = Number.isInteger(state.photocopyGen) ? state.photocopyGen : 3;
-      const activeSauvolaK = typeof state.sauvolaK === "number" ? state.sauvolaK : 0.25;
-      const simLive = simulateKanungoSauvolaGeneration(activeGen, activeSauvolaK, 300);
-      const sim3rd = simulateThirdGenPhotocopySauvola({
-        strokePt: (state.fontSizePt || 9.5) >= 9.0 ? 0.85 : 0.75,
-        k: simLive.sauvolaK,
-        R: 128,
-      });
-      photocopyBadge.textContent = formatPhotocopySimBadgeText(simLive);
-      photocopyBadge.setAttribute("data-euler-delta", String(simLive.eulerCharacteristicDelta));
-      photocopyBadge.setAttribute("data-survives-3rd-gen", String(Boolean(simLive.wcagPassAaa && sim3rd.survives3rdGen)));
-      photocopyBadge.setAttribute("data-photocopy-gen", String(simLive.genIndex));
-      photocopyBadge.setAttribute("data-sauvola-k", String(simLive.sauvolaK));
-      photocopyBadge.setAttribute("data-contrast-ratio", String(simLive.contrastLabel));
-      const printStepCard = getEl("biblePrintStepCard", targetDoc);
-      if (printStepCard) {
-        printStepCard.setAttribute("data-photocopy-gen", String(simLive.genIndex));
-        printStepCard.setAttribute("data-sauvola-k", String(simLive.sauvolaK));
-      }
-    }
-
-    const diachronicAuditPanel = getEl("diachronicRegisterAuditPanel", targetDoc);
-    if (diachronicAuditPanel) {
-      diachronicAuditPanel.innerHTML = renderChapterDiachronicAuditCardHtml({
-        verses: state.lastNavResult?.chapter?.verses || {},
-        bookCode: state.book,
-        chapter: state.chapter,
-      });
-    }
-
-    const graphicsHost = getEl("editorialGraphicsPhotocopyHost", targetDoc);
-    if (graphicsHost) {
-      const verseText =
-        state.lastNavResult?.chapter?.verses?.[String(state.verse)] ||
-        "En el principio creó Dios los cielos y la tierra.";
-      graphicsHost.innerHTML = renderPhotocopyResilienceAndSocialCardHtml({
-        book: state.book,
-        chapter: state.chapter,
-        verse: state.verse,
-        text: verseText,
-        lang: state.lang,
-        activeGen: state.photocopyGen ?? 5,
-        sauvolaK: state.sauvolaK ?? 0.32,
-      });
-      if (typeof graphicsHost.addEventListener === "function" && !graphicsHost._photocopyBound) {
-        graphicsHost._photocopyBound = true;
-        graphicsHost.addEventListener("click", (e) => {
-          const genBtn = e?.target?.closest
-            ? e.target.closest("[data-photocopy-gen]")
-            : e?.target?.getAttribute?.("data-photocopy-gen")
-              ? e.target
-              : null;
-          const genAttr = genBtn?.getAttribute?.("data-photocopy-gen");
-          if (genAttr !== null && genAttr !== undefined) {
-            state.photocopyGen = Number(genAttr) || 0;
-            renderPrintDrawerPanelsSync(targetDoc);
-          }
-        });
-      }
-      const sauvolaInput = getEl("inputSauvolaK", targetDoc);
-      if (sauvolaInput && typeof sauvolaInput.addEventListener === "function") {
-        const onSauvolaChange = (ev) => {
-          state.sauvolaK = Number(ev?.target?.value) || 0.32;
-          renderPrintDrawerPanelsSync(targetDoc);
-        };
-        sauvolaInput.addEventListener("input", onSauvolaChange);
-        sauvolaInput.addEventListener("change", onSauvolaChange);
-      }
-    }
-
-    const stationeryPanel = getEl("stationeryCardPanel", targetDoc);
-    if (stationeryPanel) {
-      const verseText =
-        state.lastNavResult?.chapter?.verses?.[String(state.verse)] ||
-        "Selecciona un versículo para tarjeta postal A6/Carta.";
-      stationeryPanel.innerHTML = `<div class="mostrador-stationery-card" data-osis="${escapeHtml(
-        `${state.book}.${state.chapter}.${state.verse}`
-      )}"><strong>Postal tipográfica A6 (${escapeHtml(
-        `${state.book} ${state.chapter}:${state.verse}`
-      )})</strong><blockquote style="margin:4px 0 0;font-style:italic;">"${escapeHtml(
-        verseText
-      )}"</blockquote></div>`;
-    }
-
-    const catalogGrid = getEl("bibleEditionsCatalogGrid", targetDoc);
-    if (catalogGrid) {
-      const editions = listAll14PrintEditionsForLang(state.lastManifest || state.lang, state.lang);
-      catalogGrid.setAttribute("data-editions-count", String(editions.length));
-      catalogGrid.innerHTML = editions
-        .map(
-          (ed) =>
-            `<a class="uls-chip" href="/${escapeHtml(
-              ed.url
-            )}" data-edition-slug="${escapeHtml(ed.editionSlug)}" data-edition-kind="${escapeHtml(
-              ed.kind || "edition"
-            )}" data-toml-path="${escapeHtml(ed.tomlPath || "")}" data-font-pt="${escapeHtml(
-              ed.fontPt || ""
-            )}" download>📄 ${escapeHtml(ed.label)}</a>`
-        )
-        .join("");
-    }
+    return renderPrintDrawerPanelsSyncInDrawer(buildDrawerHydratorContext(targetDoc));
   }
 
   async function hydratePrintDrawerPanels(targetDoc = doc) {
-    renderPrintDrawerPanelsSync(targetDoc);
-    if (!state.editorialProfilesLoaded && typeof dataLayer.loadEditorialProfiles === "function") {
-      state.editorialProfilesLoaded = true;
-      try {
-        const ep = await dataLayer.loadEditorialProfiles();
-        if (ep) {
-          hydrateEditorialProfiles(ep);
-          state.editorialProfilesProvenance = {
-            printCount: Array.isArray(ep.print_profiles_14) ? ep.print_profiles_14.length : 14,
-            branchCount: Array.isArray(ep.branch_profiles_12) ? ep.branch_profiles_12.length : 12,
-            blocksCount: Array.isArray(ep.canonical_80_blocks_catalog)
-              ? ep.canonical_80_blocks_catalog.length
-              : 80,
-          };
-          renderPrintDrawerPanelsSync(targetDoc);
-        }
-      } catch {
-        // Non-fatal
-      }
-    }
+    return hydratePrintDrawerPanelsInDrawer(buildDrawerHydratorContext(targetDoc));
   }
 
   function hydrateShareAndAuditDrawer(targetDoc = doc) {
-    const packLang = ["es", "en", "stp", "he", "grc"].includes(state.lang) ? state.lang : "stp";
-    const quineRelUrl = `obras/biblia/packs/${packLang === "grc" ? "he" : packLang}/lector_offline_${packLang === "grc" ? "he" : packLang}.html`;
-    const packsPanel = getEl("offlinePacksCatalogPanel", targetDoc);
-    if (packsPanel) {
-      const ecoMeshCardHtml = renderOfflineMeshEcoCardHtml({ activeLang: packLang });
-      packsPanel.innerHTML =
-        `<div class="mostrador-offline-packs" data-lang="${escapeHtml(state.lang)}" data-quine-url="${escapeHtml(quineRelUrl)}">` +
-        `<strong>Paquete Offline Soberano (${escapeHtml(state.lang.toUpperCase())})</strong>` +
-        `<p style="margin:4px 0 6px;font-size:0.84rem;">Cero telemetría · Quine HTML autónomo (<code>DecompressionStream("deflate-raw")</code>) + Verificación SHA-256 / Merkle lista para USB, Bluetooth y MicroSD.</p>` +
-        `<a class="uls-chip" href="${escapeHtml(quineRelUrl)}" download="lector_offline_${escapeHtml(packLang)}.html" data-quine-download="true" style="text-decoration:none;display:inline-flex;align-items:center;min-height:48px;padding:0.35rem 0.7rem;margin-bottom:0.5rem;">💾 Descargar Quine Offline (${escapeHtml(packLang.toUpperCase())})</a>` +
-        ecoMeshCardHtml +
-        `</div>`;
-
-      const installEcoBtn = getEl("btnInstallEcoPackOffline", targetDoc);
-      if (installEcoBtn && typeof installEcoBtn.addEventListener === "function") {
-        installEcoBtn.addEventListener("click", async () => {
-          const committed = await commitVerifiedPackToIndexedDb({ lang: packLang });
-          const rec = await verifyAndStoreEcoPack({ lang: packLang });
-          state.lastVerifiedEcoPack = { ...rec, ...committed };
-          hydrateShareAndAuditDrawer(targetDoc);
-        });
-      }
-      const exportSneakernetBtn = getEl("btnExportSneakernetBundle", targetDoc);
-      if (exportSneakernetBtn && typeof exportSneakernetBtn.addEventListener === "function") {
-        exportSneakernetBtn.addEventListener("click", () => {
-          const jsonBundle = exportSneakernetBundleJson({ lang: packLang });
-          state.lastExportedSneakernetBundle = jsonBundle;
-          exportSneakernetBtn.setAttribute("data-exported-bytes", String(jsonBundle.length));
-        });
-      }
-      const importSneakernetInput = getEl("inputImportSneakernetBundle", targetDoc);
-      if (importSneakernetInput && typeof importSneakernetInput.addEventListener === "function") {
-        importSneakernetInput.addEventListener("change", () => {
-          const bundleStr =
-            state.lastExportedSneakernetBundle ||
-            exportSneakernetBundleJson({ lang: packLang });
-          const imported = importSneakernetBundleJson(bundleStr);
-          state.lastImportedSneakernetBundle = imported;
-          importSneakernetInput.setAttribute("data-imported-valid", String(imported.valid));
-        });
-      }
-    }
-
-    for (const [btnId, tabName] of [
-      ["btnDosisSubtabMesh", "mesh"],
-      ["btnDosisSubtabPdf", "pdf"],
-      ["btnDosisSubtabGraphics", "graphics"],
-    ]) {
-      const dBtn = getEl(btnId, targetDoc);
-      if (dBtn && typeof dBtn.addEventListener === "function") {
-        dBtn.addEventListener("click", () => {
-          state.activeDosisSubtab = tabName;
-          applyHarelSubtabSelection(targetDoc, "dosis", tabName);
-        });
-      }
-    }
-
-    const qrPanel = getEl("bibleOpticalQrStreamPanel", targetDoc);
-    if (qrPanel) {
-      const verseText =
-        state.lastNavResult?.chapter?.verses?.[String(state.verse)] ||
-        `${state.book}.${state.chapter}.${state.verse}`;
-      const rawBytes = new TextEncoder().encode(
-        JSON.stringify({
-          osis: `${state.book}.${state.chapter}.${state.verse}`,
-          lang: state.lang,
-          text: verseText,
-        })
-      );
-      const encoder = new LTEncoder(rawBytes, 32);
-      const seqNum = Number(state.qrFrameSeq) || 0;
-      let droplet = encoder.nextDroplet();
-      for (let i = 0; i < seqNum; i += 1) {
-        droplet = encoder.nextDroplet();
-      }
-      const grid = encodeDropletToMatrixGrid(droplet, 29);
-      const svgMarkup = renderDropletMatrixSvgOrCanvas(grid, null);
-      const activeCadenceKey = String(state.opticalCadenceFps || "6.67") === "10" ? "10" : "6.67";
-      const cadencePreset = OPTICAL_CADENCE_PRESETS[activeCadenceKey];
-      qrPanel.innerHTML =
-        `<div class="mostrador-qrbeam-stream" data-fps="${activeCadenceKey}" data-frame-interval-ms="${cadencePreset.intervalMs}" data-total-blocks="${encoder.K}" data-seq="${grid.seq}" data-degree="${grid.degree}" data-parity="${grid.parityBit}" style="padding:0.65rem;border-radius:10px;border:1px solid var(--card-border);background:var(--bg-secondary);">` +
-        `<div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:0.4rem;margin-bottom:0.45rem;">` +
-        `<strong>📡 QRBeam Optical Stream (${activeCadenceKey} fps · ${cadencePreset.intervalMs} ms/frame · Frame #${grid.seq} · Paridad ${grid.parityBit})</strong>` +
-        `<div style="display:inline-flex;gap:0.35rem;">` +
-        `<button type="button" id="btnNextQrBeamFrame" class="uls-chip" style="min-height:48px;padding:0.35rem 0.7rem;font-size:0.78rem;">⏭ Siguiente Droplet (#${grid.seq + 1})</button>` +
-        `<a href="#bibleOpticalQrStreamPanel" class="uls-chip" style="text-decoration:none;min-height:48px;padding:0.35rem 0.7rem;font-size:0.78rem;display:inline-flex;align-items:center;">🔦 Abrir Estudio Óptico</a>` +
-        `</div></div>` +
-        `<div style="display:flex;flex-wrap:wrap;gap:0.75rem;align-items:center;">` +
-        `<div class="qrbeam-matrix-host">${svgMarkup}</div>` +
-        `<p style="margin:0;font-size:0.81rem;flex:1;min-width:180px;">Pase 1 sistemático (K=${encoder.K} bloques + blanqueo XOR <code>whitenBlockXor</code> + paridad 4.ª esquina) seguido de cola Solitón Luby Transform.</p>` +
-        `</div></div>`;
-      const nextFrameBtn = getEl("btnNextQrBeamFrame", targetDoc);
-      if (nextFrameBtn && typeof nextFrameBtn.addEventListener === "function") {
-        nextFrameBtn.addEventListener("click", () => {
-          state.qrFrameSeq = (Number(state.qrFrameSeq) || 0) + 1;
-          hydrateShareAndAuditDrawer(targetDoc);
-        });
-      }
-    }
-
-    const rxPanel = getEl("opticalReceiverRxPanel", targetDoc);
-    if (rxPanel) {
-      const verseText =
-        state.lastNavResult?.chapter?.verses?.[String(state.verse)] ||
-        `${state.book}.${state.chapter}.${state.verse}`;
-      const rxWasm =
-        typeof dataLayer.getHydratedWasmModule === "function"
-          ? dataLayer.getHydratedWasmModule("qr_stream_receiver_wasm")
-          : null;
-      const report =
-        state.lastOpticalRxReport ||
-        runOpticalReceiverBurstSession(
-          {
-            payloadText: `${state.book}.${state.chapter}.${state.verse} · ${verseText}`,
-            shutterUs: state.rxShutterUs || 8000,
-            rollingReadoutMs: state.rxRollingReadoutMs || 14,
-            simulatedDrops: [1],
-          },
-          rxWasm
-        );
-      state.lastOpticalRxReport = report;
-      rxPanel.innerHTML = renderOpticalReceiverRxPanelHtml(report);
-
-      const shutterInput = getEl("rxShutterUsInput", targetDoc);
-      const readoutInput = getEl("rxRollingReadoutMsInput", targetDoc);
-      const runRxBtn = getEl("btnRunOpticalRxSession", targetDoc);
-
-      const runRxUpdate = async () => {
-        state.rxShutterUs = Number(shutterInput?.value) || state.rxShutterUs || 8000;
-        state.rxRollingReadoutMs =
-          Number(readoutInput?.value) || state.rxRollingReadoutMs || 14;
-        let wasmMod =
-          typeof dataLayer.getHydratedWasmModule === "function"
-            ? dataLayer.getHydratedWasmModule("qr_stream_receiver_wasm")
-            : null;
-        if (!wasmMod && typeof dataLayer.loadWasmModule === "function") {
-          try {
-            const loaded = await dataLayer.loadWasmModule("qr_stream_receiver_wasm");
-            if (loaded && loaded.status === STATUS.READY) wasmMod = loaded;
-          } catch {
-            wasmMod = null;
-          }
-        }
-        state.lastOpticalRxReport = runOpticalReceiverBurstSession(
-          {
-            payloadText: `${state.book}.${state.chapter}.${state.verse} · ${verseText}`,
-            shutterUs: state.rxShutterUs,
-            rollingReadoutMs: state.rxRollingReadoutMs,
-            simulatedDrops: [1, 3],
-          },
-          wasmMod
-        );
-        hydrateShareAndAuditDrawer(targetDoc);
-      };
-
-      if (runRxBtn && typeof runRxBtn.addEventListener === "function") {
-        runRxBtn.addEventListener("click", runRxUpdate);
-      }
-      for (const inp of [shutterInput, readoutInput]) {
-        if (inp && typeof inp.addEventListener === "function") {
-          inp.addEventListener("change", runRxUpdate);
-        }
-      }
-    }
+    return hydrateShareAndAuditDrawerPanel(buildDrawerHydratorContext(targetDoc));
   }
 
   async function transitionSheet(rawSheetName, targetDoc = doc) {
     const normalized = rawSheetName === "improve" ? "field" : rawSheetName;
     const vp = getEl("bibleVerseViewport", targetDoc);
+    const hideOpticalVideoIfOutsidePdfSubtab = () => {
+      const videoEl = getEl("bibleOpticalCameraVideo", targetDoc);
+      if (videoEl) videoEl.hidden = true;
+    };
     if (!normalized || !HAREL_SHEET_MAP[normalized]) {
       state.activeSheet = null;
       if (vp) vp.setAttribute("data-inspector-open", "false");
+      hideOpticalVideoIfOutsidePdfSubtab();
       for (const cfg of Object.values(HAREL_SHEET_MAP)) {
         const panel = getEl(cfg.panelId, targetDoc);
         const btn = getEl(cfg.buttonId, targetDoc);
@@ -1982,13 +1140,18 @@ export function createMostradorController(options = {}) {
     if (vp) {
       vp.setAttribute("data-inspector-open", willOpen ? "true" : "false");
     }
+    if (!willOpen || normalized !== "share") {
+      hideOpticalVideoIfOutsidePdfSubtab();
+    }
 
+    let openedPanelEl = null;
     for (const [key, cfg] of Object.entries(HAREL_SHEET_MAP)) {
       const isOpen = willOpen && key === normalized;
       const panel = getEl(cfg.panelId, targetDoc);
       const btn = getEl(cfg.buttonId, targetDoc);
       if (panel) {
         panel.hidden = !isOpen;
+        if (isOpen) openedPanelEl = panel;
       }
       if (btn) {
         btn.setAttribute("data-open", isOpen ? "true" : "false");
@@ -2005,6 +1168,14 @@ export function createMostradorController(options = {}) {
       await hydratePrintDrawerPanels(targetDoc);
     } else if (willOpen && normalized === "share") {
       hydrateShareAndAuditDrawer(targetDoc);
+    }
+
+    if (openedPanelEl && typeof openedPanelEl.scrollIntoView === "function") {
+      try {
+        openedPanelEl.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      } catch {
+        // Non-fatal in headless DOM environments
+      }
     }
 
     syncUrlFromState(targetDoc, { push: false });
@@ -2033,9 +1204,17 @@ export function createMostradorController(options = {}) {
     });
     state.uiLocale = resolved;
     if (targetDoc) {
-      applyToDom(targetDoc, i18nInstance);
+      applyToDom(targetDoc, i18nInstance, {
+        book: state.book,
+        chapter: state.chapter,
+        verse: state.verse,
+        lang: state.lang,
+        uiLocale: resolved,
+      });
       applyAriaLabelsToDom(targetDoc, activeCatalog);
+      applyStaticChromeTranslations(targetDoc, resolved, state);
       updateSealDom(state.seal, targetDoc);
+      updateCompassTriggerDom(targetDoc);
       syncI18nUiFromState(state, targetDoc);
       syncUrlFromState(targetDoc, { push: false });
     }
@@ -2190,6 +1369,46 @@ export function createMostradorController(options = {}) {
             : null;
         if (celfTrigger) {
           await transitionSheet("field", targetDoc);
+          return;
+        }
+        const wordTokenEl = e?.target?.closest
+          ? e.target.closest(".bible-word-token[data-word-surface]")
+          : e?.target?.getAttribute?.("data-word-surface")
+            ? e.target
+            : null;
+        if (wordTokenEl) {
+          const wordSurface = wordTokenEl.getAttribute?.("data-word-surface") || "";
+          const tokenVerse = Number(wordTokenEl.getAttribute?.("data-verse")) || state.verse;
+          const tokenStrongAttr = wordTokenEl.getAttribute?.("data-strong-id") || "";
+          const lookedUp = lookupWordTokenStrongEntry(
+            wordSurface,
+            state.reverseOrthoMap,
+            state.tokenStrongPairs || [],
+          );
+          const resolvedStrong = String(tokenStrongAttr || lookedUp.strongId || "").toUpperCase();
+          state.selectedWordSurface = wordSurface;
+          state.selectedCanonicalToken = lookedUp.canonicalToken;
+          if (resolvedStrong && resolvedStrong !== "∅") {
+            state.activeStrongId = resolvedStrong;
+          }
+          if (Number.isFinite(tokenVerse) && tokenVerse >= 1 && tokenVerse !== Number(state.verse)) {
+            await selectVerse(tokenVerse, targetDoc);
+          }
+          if (e?.altKey) {
+            await transitionSheet("field", targetDoc);
+            const oldInp = getEl("improveOldValueInput", targetDoc);
+            if (oldInp && wordSurface) oldInp.value = wordSurface;
+            const strongInp = getEl("improveStrongInput", targetDoc);
+            if (strongInp && state.activeStrongId) strongInp.value = state.activeStrongId;
+          } else {
+            await transitionSheet("study", targetDoc);
+            if (state.activeStrongId) {
+              syncActiveStrongInStudyDrawer(
+                state.activeStrongId,
+                buildDrawerHydratorContext(targetDoc),
+              );
+            }
+          }
           return;
         }
         const verseEl = e?.target?.closest
@@ -2597,6 +1816,10 @@ export function createMostradorController(options = {}) {
     const executeGaveta4Action = async (shareBtnId) => {
       hydrateShareAndAuditDrawer(targetDoc);
       const statusPanel = getEl("editorialAuditStatusPanel", targetDoc);
+      if (statusPanel) {
+        statusPanel.hidden = false;
+        if (statusPanel.style) statusPanel.style.display = "";
+      }
       const packLang = ["es", "en", "stp", "he"].includes(state.lang) ? state.lang : "stp";
       const osis = `${state.book}.${state.chapter}.${state.verse}`;
 
@@ -2643,6 +1866,7 @@ export function createMostradorController(options = {}) {
             `SHA-256=<code>${escapeHtml(receipt.sampleSha256.slice(0, 16))}…</code></div>`;
         }
       } else if (shareBtnId === "btnCalculateImposition") {
+        state.activePrintPreviewMode = "imposition";
         const imp = computeSaddleStitchImpositionPlan({
           totalPages: 16,
           paperThicknessMm: 0.09,
@@ -2651,25 +1875,54 @@ export function createMostradorController(options = {}) {
         const sheetsSummary = imp.sheets
           .map((s) => `P${s.sheetIndex}[F:${s.front[0]}-${s.front[1]} / V:${s.back[0]}-${s.back[1]} · creep +${s.creepMm}mm]`)
           .join(" · ");
+        const receiptHtml =
+          `<div class="audit-receipt" data-action="calculate-imposition" data-integrity="${imp.integrityVerified}" data-rtl="${imp.rtl}">` +
+          `📐 <strong>Imposición Saddle-Stitch 4n (${imp.paddedPages} págs · ${imp.sheetCount} pliegos · ${imp.rtl ? "RTL Lomo Invertido" : "LTR"}):</strong> ` +
+          `Suma constante=${imp.folioSumConstant} · Creep máx=${imp.maxCreepMm}mm · ${escapeHtml(sheetsSummary)}</div>`;
         if (statusPanel) {
           statusPanel.setAttribute("data-audit-action", "calculate-imposition");
-          statusPanel.innerHTML =
-            `<div class="audit-receipt" data-action="calculate-imposition" data-integrity="${imp.integrityVerified}" data-rtl="${imp.rtl}">` +
-            `📐 <strong>Imposición Saddle-Stitch 4n (${imp.paddedPages} págs · ${imp.sheetCount} pliegos · ${imp.rtl ? "RTL Lomo Invertido" : "LTR"}):</strong> ` +
-            `Suma constante=${imp.folioSumConstant} · Creep máx=${imp.maxCreepMm}mm · ${escapeHtml(sheetsSummary)}</div>`;
+          statusPanel.innerHTML = receiptHtml;
+        }
+        const impHost = getEl("impositionBookletPreviewHost", targetDoc);
+        if (impHost) {
+          impHost.setAttribute("data-audit-action", "calculate-imposition");
+          impHost.innerHTML =
+            renderImpositionAndLayoutPreviewHtml({
+              mode: "imposition",
+              paper: state.paperFormat || "a4",
+              pageCount: 16,
+              columns: state.columns || 2,
+              fontPt: state.fontSizePt || 9.5,
+              dir: isRtlLocale(state.lang) ? "rtl" : "ltr",
+            }) + receiptHtml;
         }
       } else if (shareBtnId === "btnCalculateLayout") {
+        state.activePrintPreviewMode = "layout";
         const budget = computeKindlePrintBudget({
           fontPt: state.fontSizePt || 9.5,
           columns: state.columns || 2,
           orientation: state.orientation || "landscape",
           paper: state.paperFormat || "a4",
         });
+        const receiptHtml =
+          `<div class="audit-receipt" data-action="calculate-layout" data-cpl="${budget.cpl}">` +
+          `📏 <strong>Invariante Geométrico A4/Letter Verificado:</strong> ${escapeHtml(budget.summaryText)} (8 Candados Tipográficos en verde).</div>`;
         if (statusPanel) {
           statusPanel.setAttribute("data-audit-action", "calculate-layout");
-          statusPanel.innerHTML =
-            `<div class="audit-receipt" data-action="calculate-layout" data-cpl="${budget.cpl}">` +
-            `📏 <strong>Invariante Geométrico A4/Letter Verificado:</strong> ${escapeHtml(budget.summaryText)} (8 Candados Tipográficos en verde).</div>`;
+          statusPanel.innerHTML = receiptHtml;
+        }
+        const impHost = getEl("impositionBookletPreviewHost", targetDoc);
+        if (impHost) {
+          impHost.setAttribute("data-audit-action", "calculate-layout");
+          impHost.innerHTML =
+            renderImpositionAndLayoutPreviewHtml({
+              mode: "layout",
+              paper: state.paperFormat || "a4",
+              pageCount: 16,
+              columns: state.columns || 2,
+              fontPt: state.fontSizePt || 9.5,
+              dir: isRtlLocale(state.lang) ? "rtl" : "ltr",
+            }) + receiptHtml;
         }
       }
     };
@@ -2860,31 +2113,23 @@ export function createMostradorController(options = {}) {
           : null;
       if (!corpus || !Array.isArray(corpus.entries)) return null;
       state.evangeliosCorpus = corpus;
-      const matchedGlobal = weekId ? corpus.entries.find((e) => e.id === weekId) : null;
-      const effectiveQuarter = matchedGlobal?.quarter || quarterFilter || "T1";
-      state.evangeliosQuarter = effectiveQuarter;
       const evLangSel = getEl("evangeliosLangSelect", targetDoc);
-      const activeEvLang = evLangSel?.value || state.evangeliosLang || (["es", "en", "pt", "fr", "quc", "gn", "stp"].includes(state.lang) ? state.lang : "es");
+      const fallbackEvLang = evLangSel?.value || state.evangeliosLang || state.lang || "es";
+      const resolvedEv = resolveEvangeliosActiveSelection({
+        corpus,
+        quarterFilter,
+        weekId,
+        fallbackLang: fallbackEvLang,
+      });
+      if (!resolvedEv) return null;
+      const { activeEntry, pool, effectiveQuarter, activeLang: activeEvLang, coordinate } = resolvedEv;
+      state.evangeliosQuarter = effectiveQuarter;
       state.evangeliosLang = activeEvLang;
-
-      const quarterEntries = corpus.entries.filter((e) => e.quarter === effectiveQuarter);
-      const pool = quarterEntries.length > 0 ? quarterEntries : corpus.entries;
-      const activeEntry = matchedGlobal || pool.find((e) => e.id === weekId) || pool[0];
       state.evangeliosWeekId = activeEntry.id;
-      const bridgeAnchor = Object.values(CROSS_WORK_BRIDGE_TABLE.evangeliosAnchors).find(
-        (a) => a.weekId === activeEntry.id,
-      );
-      if (bridgeAnchor) {
-        state.book = bridgeAnchor.book;
-        state.chapter = bridgeAnchor.chapter;
-        state.verse = bridgeAnchor.verse;
-      } else if (activeEntry?.reference) {
-        const parsedEv = parseBiblicalCoordinateReference(activeEntry.reference);
-        if (parsedEv && parsedEv.bookCode) {
-          state.book = parsedEv.bookCode;
-          state.chapter = parsedEv.chapter || 1;
-          state.verse = parsedEv.verse || 1;
-        }
+      if (coordinate) {
+        state.book = coordinate.book;
+        state.chapter = coordinate.chapter;
+        state.verse = coordinate.verse;
       }
       hydrateBookAndChapterSelectors(targetDoc);
       updateCompassTriggerDom(targetDoc);
@@ -2893,14 +2138,7 @@ export function createMostradorController(options = {}) {
 
       const weekSelect = getEl("evangeliosWeekSelect", targetDoc);
       if (weekSelect) {
-        weekSelect.innerHTML = pool
-          .map((e) => {
-            const tObj = e.texts?.[activeEvLang] || e.texts?.es || {};
-            const sel = e.id === activeEntry.id ? " selected" : "";
-            const labelTitle = tObj.title || e.plate_id || e.id;
-            return `<option value="${escapeHtml(e.id)}"${sel}>Semana ${e.week} (${escapeHtml(e.quarter)}) · ${escapeHtml(labelTitle)} — ${escapeHtml(e.reference)}</option>`;
-          })
-          .join("");
+        weekSelect.innerHTML = buildEvangeliosWeekOptionsHtml(pool, activeEntry.id, activeEvLang);
         weekSelect.value = activeEntry.id;
       }
 
@@ -2914,27 +2152,10 @@ export function createMostradorController(options = {}) {
 
       const cardEl = getEl("evangeliosActivePlateCard", targetDoc);
       if (cardEl && activeEntry) {
-        const tObj = activeEntry.texts?.[activeEvLang] || activeEntry.texts?.es || {};
-        const bridgeObj = activeEvLang === "es" ? activeEntry.texts?.en : activeEntry.texts?.es;
-        const labelTitle = tObj.title || activeEntry.plate_id || activeEntry.id;
         cardEl.setAttribute("data-evangelios-id", activeEntry.id);
         cardEl.setAttribute("data-evangelios-quarter", activeEntry.quarter);
         cardEl.setAttribute("data-evangelios-lang", activeEvLang);
-        cardEl.innerHTML =
-          `<header style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:0.4rem;margin-bottom:0.5rem;">` +
-          `<strong>Semana ${activeEntry.week}/52 (${escapeHtml(activeEntry.quarter)}) · ${escapeHtml(labelTitle)}</strong>` +
-          `<button type="button" class="uls-chip" data-evangelios-ref="${escapeHtml(activeEntry.reference)}" style="min-height:48px;padding:0.35rem 0.75rem;font-size:0.8rem;">📖 Abrir en La Biblia: ${escapeHtml(activeEntry.reference)}</button>` +
-          `</header>` +
-          `<p style="margin:0 0 0.45rem 0;font-size:0.82rem;color:var(--accent-amber);"><strong>🕊️ Gesto Litúrgico:</strong> ${escapeHtml(activeEntry.gesture || "")}</p>` +
-          `<blockquote style="margin:0 0 0.45rem 0;font-size:0.95rem;line-height:1.5;">${escapeHtml(tObj.text || "")}</blockquote>` +
-          (bridgeObj && bridgeObj.text
-            ? `<p style="margin:0;font-size:0.8rem;color:var(--text-secondary);border-top:1px dashed var(--card-border);padding-top:0.4rem;"><em>Puente:</em> ${escapeHtml(bridgeObj.text)}</p>`
-            : "") +
-          renderEvangeliosPlateActionsHtml({
-            weekId: activeEntry.id,
-            passageRef: activeEntry.reference,
-            lang: activeEvLang,
-          });
+        cardEl.innerHTML = renderEvangeliosStageCardHtml(activeEntry, activeEvLang);
       }
       if (state.activeSheet === "study") {
         await hydrateStudyDrawer(targetDoc);
@@ -2962,45 +2183,6 @@ export function createMostradorController(options = {}) {
         const nextQ = qBtn?.getAttribute?.("data-evangelios-quarter");
         if (nextQ) {
           await hydrateEvangeliosSection(nextQ, "");
-          return;
-        }
-        const printBtn = e?.target?.closest
-          ? e.target.closest(".btn-evangelios-open-print")
-          : e?.target?.classList?.contains?.("btn-evangelios-open-print")
-            ? e.target
-            : null;
-        if (printBtn) {
-          await transitionSheet("print", targetDoc);
-          return;
-        }
-        const shareBtn = e?.target?.closest
-          ? e.target.closest(".btn-evangelios-open-share")
-          : e?.target?.classList?.contains?.("btn-evangelios-open-share")
-            ? e.target
-            : null;
-        if (shareBtn) {
-          await transitionSheet("share", targetDoc);
-          return;
-        }
-        const studyBtn = e?.target?.closest
-          ? e.target.closest(".btn-evangelios-open-study")
-          : e?.target?.classList?.contains?.("btn-evangelios-open-study")
-            ? e.target
-            : null;
-        if (studyBtn) {
-          const studyRef = studyBtn.getAttribute?.("data-evangelios-ref");
-          const parsedStudy = parseBiblicalCoordinateReference(studyRef || "JHN.1.1");
-          if (parsedStudy && parsedStudy.bookCode) {
-            await navigate(
-              {
-                book: parsedStudy.bookCode,
-                chapter: parsedStudy.chapter || 1,
-                verse: parsedStudy.verse || 1,
-              },
-              targetDoc,
-            );
-          }
-          await transitionSheet("study", targetDoc);
           return;
         }
         const echoBtn = e?.target?.closest
@@ -3091,28 +2273,7 @@ export function createMostradorController(options = {}) {
       const cleanWork = ["biblia", "felices", "evangelios"].includes(workId) ? workId : "biblia";
       const prevWork = state.activeWork || "biblia";
       state.activeWork = cleanWork;
-      const bibSec = getEl("bibleSovereignSection", docRef);
-      const felSec = getEl("felicesSovereignSection", docRef);
-      const evaSec = getEl("evangeliosSovereignSection", docRef);
-      const tabBib = getEl("tabWorkBiblia", docRef);
-      const tabFel = getEl("tabWorkFelices", docRef);
-      const tabEva = getEl("tabWorkEvangelios", docRef);
-
-      const applySec = (sec, active) => {
-        if (!sec) return;
-        sec.hidden = !active;
-        if (sec.style) sec.style.display = active ? "" : "none";
-        if (typeof sec.setAttribute === "function") {
-          sec.setAttribute("data-active-work", active ? "true" : "false");
-        }
-      };
-      applySec(bibSec, cleanWork === "biblia");
-      applySec(felSec, cleanWork === "felices");
-      applySec(evaSec, cleanWork === "evangelios");
-
-      if (tabBib) tabBib.setAttribute("aria-selected", cleanWork === "biblia" ? "true" : "false");
-      if (tabFel) tabFel.setAttribute("aria-selected", cleanWork === "felices" ? "true" : "false");
-      if (tabEva) tabEva.setAttribute("aria-selected", cleanWork === "evangelios" ? "true" : "false");
+      syncSisterWorksTabsDom(cleanWork, (id) => getEl(id, docRef));
 
       const projected = projectCrossWorkCoordinate({
         fromWork: prevWork,

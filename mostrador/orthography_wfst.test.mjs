@@ -68,3 +68,53 @@ test("D1-B+: Segmentador silábico para las 7 escrituras Scriptio Continua (Hans
   assert.equal(resolveCanonicalOrthoProfileId("bn", "bn-IN"), "bn-IN");
 });
 
+test("D1-R37 (SLICE-115): Tokenización JIT en el versículo activo (.bible-word-token) y consulta inversa O(1) a Strong ID", async () => {
+  const { renderChapterPreviewHtml, lookupWordTokenStrongEntry } = await import(
+    "./bridge_and_chapter.js"
+  );
+  const reverseMap = new ReverseOrthographyMap("stp", "tradicional");
+  reverseMap.registerTokenPair("kɨɨꞌ", "quɨɨ'", "H2896");
+  reverseMap.registerTokenPair("Xoiꞌkam", "Xoi'cam", "H0430");
+
+  const resolved = lookupWordTokenStrongEntry("quɨɨ',", 0, reverseMap, []);
+  assert.equal(resolved.surface, "quɨɨ'");
+  assert.equal(resolved.canonical, "kɨɨꞌ");
+  assert.equal(resolved.strongId, "H2896");
+
+  const html = renderChapterPreviewHtml(
+    "GEN",
+    1,
+    "stp",
+    {
+      verses: {
+        "1": "Jix kɨɨꞌ guch Xoiꞌkam",
+        "2": "Gio baꞌ jum duu",
+      },
+    },
+    null,
+    {
+      selectedVerse: 1,
+      orthographyProfile: "tradicional",
+      reverseMap,
+      tokenStrongPairs: [
+        { token: "kɨɨꞌ", strongId: "H2896" },
+        { token: "Xoiꞌkam", strongId: "H0430" },
+      ],
+    }
+  );
+
+  assert.ok(
+    html.includes('class="bible-word-token"'),
+    "El versículo activo debe tokenizarse con .bible-word-token"
+  );
+  assert.ok(
+    html.includes('data-strong-id="H2896"'),
+    "El token transducido debe conservar su Strong ID resuelto en O(1)"
+  );
+  assert.ok(
+    !html.includes('data-verse="2" data-osis="GEN.1.2" data-strong-id'),
+    "Los versículos inactivos NO deben inflar el DOM con spans por palabra"
+  );
+});
+
+

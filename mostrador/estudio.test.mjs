@@ -80,8 +80,9 @@ test("preserves_empty_marker_without_synthetic_fill", () => {
     ],
   };
   const html = renderStudy14ColDrawerHtml(shard);
-  assert.match(html, /Rol: ∅/);
-  assert.match(html, /Cláusula: ∅/);
+  assert.match(html, /data-raw-role="∅"/);
+  assert.match(html, /Función: Núcleo léxico/);
+  assert.match(html, /Cláusula: C1/);
   assert.doesNotMatch(html, /PREDICATE_CORE/);
   assert.doesNotMatch(html, /hebrew_root_/);
 });
@@ -376,6 +377,95 @@ test("D2-C+_and_D3-C+_hydrate_multi_pericope_chapters_52_weeks_28_felices_plates
   assert.equal(plate28.number, 28);
   assert.equal(plate28.title, "Felices Lámina 28");
 });
+
+test("R36_SLICE_109_leipzig_14col_propose_strong_root_handoff_and_zero_duplicate_rosetta_explorer", () => {
+  const gen1Shard = JSON.parse(
+    fs.readFileSync(path.join(WEB_DIR, "data", "matrix", "GEN", "1.json"), "utf8"),
+  );
+  const inlineExcludedHtml = renderStudy14ColDrawerHtml(gen1Shard, {
+    book: "GEN",
+    chapter: 1,
+    verse: 1,
+    scope: "verse",
+    includeInlineStrata: false,
+    includeExplorer: false,
+  });
+  assert.match(inlineExcludedHtml, /data-propose-strong-id="H7225"/);
+  assert.match(inlineExcludedHtml, /class="hig-tech-meta"/);
+  assert.equal(
+    inlineExcludedHtml.includes('id="philologyRosettaExplorerPanel"'),
+    false,
+    "When includeInlineStrata is false, renderStudy14ColDrawerHtml must not duplicate #philologyRosettaExplorerPanel",
+  );
+});
+
+test("R37_SLICE_116_highlight_study_card_by_strong_id_and_active_strong_option", async () => {
+  const { highlightStudyCardByStrongId } = await import("./estudio.js");
+  const gen1Shard = JSON.parse(
+    fs.readFileSync(path.join(WEB_DIR, "data", "matrix", "GEN", "1.json"), "utf8"),
+  );
+  const htmlWithActive = renderStudy14ColDrawerHtml(gen1Shard, {
+    book: "GEN",
+    chapter: 1,
+    verse: 1,
+    scope: "verse",
+    activeStrongId: "H1254",
+    includeInlineStrata: false,
+    includeExplorer: false,
+  });
+  assert.match(htmlWithActive, /class="leipzig-14col-card is-active-strong"[^>]*data-strong-id="H1254"/);
+
+  let scrolled = false;
+  const mockCards = [
+    {
+      dataset: { strongId: "H7225" },
+      attrs: {},
+      classes: new Set(),
+      getAttribute(k) {
+        return k === "data-strong-id" ? "H7225" : this.attrs[k];
+      },
+      setAttribute(k, v) {
+        this.attrs[k] = v;
+      },
+      classList: {
+        toggle(cls, on) {
+          if (on) mockCards[0].classes.add(cls);
+          else mockCards[0].classes.delete(cls);
+        },
+      },
+    },
+    {
+      dataset: { strongId: "H1254" },
+      attrs: {},
+      classes: new Set(),
+      getAttribute(k) {
+        return k === "data-strong-id" ? "H1254" : this.attrs[k];
+      },
+      setAttribute(k, v) {
+        this.attrs[k] = v;
+      },
+      classList: {
+        toggle(cls, on) {
+          if (on) mockCards[1].classes.add(cls);
+          else mockCards[1].classes.delete(cls);
+        },
+      },
+      scrollIntoView() {
+        scrolled = true;
+      },
+    },
+  ];
+  const hit = highlightStudyCardByStrongId(
+    { querySelectorAll: () => mockCards },
+    "h1254",
+  );
+  assert.equal(hit, mockCards[1]);
+  assert.equal(scrolled, true);
+  assert.equal(mockCards[1].attrs["aria-selected"], "true");
+  assert.equal(mockCards[0].attrs["aria-selected"], "false");
+});
+
+
 
 
 

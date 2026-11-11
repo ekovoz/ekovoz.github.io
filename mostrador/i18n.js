@@ -308,15 +308,36 @@ export function createI18n(opts = {}) {
     return new Intl.NumberFormat(locale, options).format(value);
   }
 
-  function applyToDom(root) {
+  function applyToDom(root, params = {}) {
     const doc = root && root.ownerDocument ? root.ownerDocument : root;
+    const effectiveParams = {
+      book: params.book || "JHN",
+      chapter: params.chapter ?? 1,
+      verse: params.verse ?? 1,
+      lang: params.lang || locale,
+      uiLocale: params.uiLocale || locale,
+      ...params,
+    };
     for (const el of root.querySelectorAll("[data-i18n]")) {
-      el.textContent = t(el.getAttribute("data-i18n"));
+      const key = el.getAttribute("data-i18n");
+      const hit = resolve(key);
+      if (!hit) {
+        missing.add(key);
+        continue;
+      }
+      el.textContent = formatMessage(hit.message, effectiveParams, hit.from);
     }
     for (const el of root.querySelectorAll("[data-i18n-attr]")) {
       for (const pair of el.getAttribute("data-i18n-attr").split(";")) {
         const [attr, key] = pair.split(":").map((s) => s && s.trim());
-        if (attr && key) el.setAttribute(attr, t(key));
+        if (attr && key) {
+          const hit = resolve(key);
+          if (hit) {
+            el.setAttribute(attr, formatMessage(hit.message, effectiveParams, hit.from));
+          } else {
+            missing.add(key);
+          }
+        }
       }
     }
     if (doc && doc.documentElement) {
@@ -389,9 +410,9 @@ function pseudoText(text, mode) {
   return out;
 }
 
-export function applyToDom(root, i18nInstance) {
+export function applyToDom(root, i18nInstance, params = {}) {
   if (i18nInstance && typeof i18nInstance.applyToDom === "function" && root && typeof root.querySelectorAll === "function") {
-    i18nInstance.applyToDom(root);
+    i18nInstance.applyToDom(root, params);
     return;
   }
   if (!root || !i18nInstance) return;
@@ -456,3 +477,161 @@ export function pseudoLocalizeCatalog(catalog, locale) {
     messages,
   };
 }
+
+/**
+ * Localiza de forma coherente el cromo primario de obras, el selector unificado
+ * de idioma/corpus y los selectores de Felices / Evangelios (Apple HIG R36 — Decisiones 1A y 2A).
+ */
+export function localizeWorkChromeLabels(locale = DEFAULT_LOCALE) {
+  const clean = String(locale || DEFAULT_LOCALE).trim().toLowerCase();
+  const isEs = clean.startsWith("es");
+  const isPt = clean.startsWith("pt");
+  const isFr = clean.startsWith("fr");
+
+  if (isEs) {
+    return {
+      bibliaTab: "📖 Biblia (66)",
+      felicesTab: "🎨 Dichas (8)",
+      evangeliosTab: "🌅 Los Evangelios (52)",
+      corpusPrefix: "Biblia",
+      uiLabel: "Interfaz",
+      compassBtn: "🧭 Brújula",
+      dichaLabels: [
+        "1 · Pobres en espíritu (Mt 5:3)",
+        "2 · Los que lloran (Mt 5:4)",
+        "3 · Mansos y humildes (Mt 5:5)",
+        "4 · Hambre y sed de justicia (Mt 5:6)",
+        "5 · Misericordiosos (Mt 5:7)",
+        "6 · Limpios de corazón (Mt 5:8)",
+        "7 · Pacificadores (Mt 5:9)",
+        "8 · Perseguidos por la justicia (Mt 5:10)",
+      ],
+      plateLabels: [
+        "Lámina 1 · El Umbral",
+        "Lámina 2 · La Semilla",
+        "Lámina 3 · El Renuevo",
+        "Lámina 4 · El Fruto",
+        "Lámina 5 · La Cosecha",
+        "Lámina 6 · La Plenitud",
+      ],
+      openInBible: "📖 Abrir Mateo 5 en Biblia",
+      registerPulse: {
+        siglo21: "🌡️ Contemporáneo · μ=80.6 · ΔAoA −3.1a",
+        clasico: "🏛️ Clásico · μ=64.2 · Base histórica",
+        ninos: "🌱 Niños · AoA ≤ 8.5a · Lectura guiada",
+        facil: "🤝 Lectura fácil · NSM-65 · Claridad máxima",
+        original: "📜 Matriz original · WLC / SRGNT · 14 col",
+      },
+    };
+  }
+
+  if (isPt) {
+    return {
+      bibliaTab: "📖 Bíblia (66)",
+      felicesTab: "🎨 Bem-aventuranças (8)",
+      evangeliosTab: "🌅 Os Evangelhos (52)",
+      corpusPrefix: "Bíblia",
+      uiLabel: "Interface",
+      compassBtn: "🧭 Bússola",
+      dichaLabels: [
+        "1 · Humildes de espírito (Mt 5:3)",
+        "2 · Os que choram (Mt 5:4)",
+        "3 · Mansos (Mt 5:5)",
+        "4 · Fome e sede de justiça (Mt 5:6)",
+        "5 · Misericordiosos (Mt 5:7)",
+        "6 · Limpos de coração (Mt 5:8)",
+        "7 · Pacificadores (Mt 5:9)",
+        "8 · Perseguidos pela justiça (Mt 5:10)",
+      ],
+      plateLabels: [
+        "Lâmina 1 · O Limiar",
+        "Lâmina 2 · A Semente",
+        "Lâmina 3 · O Rebento",
+        "Lâmina 4 · O Fruto",
+        "Lâmina 5 · A Colheita",
+        "Lâmina 6 · A Plenitude",
+      ],
+      openInBible: "📖 Abrir Mateus 5 na Bíblia",
+      registerPulse: {
+        siglo21: "🌡️ Contemporâneo · μ=80.6 · ΔAoA −3.1a",
+        clasico: "🏛️ Clássico · μ=64.2 · Base histórica",
+        ninos: "🌱 Crianças · AoA ≤ 8.5a · Leitura guiada",
+        facil: "🤝 Leitura fácil · NSM-65 · Clareza máxima",
+        original: "📜 Matriz original · WLC / SRGNT · 14 col",
+      },
+    };
+  }
+
+  if (isFr) {
+    return {
+      bibliaTab: "📖 Bible (66)",
+      felicesTab: "🎨 Béatitudes (8)",
+      evangeliosTab: "🌅 Les Évangiles (52)",
+      corpusPrefix: "Bible",
+      uiLabel: "Interface",
+      compassBtn: "🧭 Boussole",
+      dichaLabels: [
+        "1 · Pauvres en esprit (Mt 5:3)",
+        "2 · Ceux qui pleurent (Mt 5:4)",
+        "3 · Doux (Mt 5:5)",
+        "4 · Faim et soif de justice (Mt 5:6)",
+        "5 · Miséricordieux (Mt 5:7)",
+        "6 · Cœurs purs (Mt 5:8)",
+        "7 · Artisans de paix (Mt 5:9)",
+        "8 · Persécutés pour la justice (Mt 5:10)",
+      ],
+      plateLabels: [
+        "Planche 1 · Le Seuil",
+        "Planche 2 · La Semence",
+        "Planche 3 · Le Bourgeon",
+        "Planche 4 · Le Fruit",
+        "Planche 5 · La Moisson",
+        "Planche 6 · La Plénitude",
+      ],
+      openInBible: "📖 Ouvrir Matthieu 5 dans la Bible",
+      registerPulse: {
+        siglo21: "🌡️ Contemporain · μ=80.6 · ΔAoA −3.1a",
+        clasico: "🏛️ Classique · μ=64.2 · Base historique",
+        ninos: "🌱 Enfants · AoA ≤ 8.5a · Lecture guidée",
+        facil: "🤝 Lecture facile · NSM-65 · Clarté maximale",
+        original: "📜 Matrice originale · WLC / SRGNT · 14 col",
+      },
+    };
+  }
+
+  return {
+    bibliaTab: "📖 Bible (66)",
+    felicesTab: "🎨 Beatitudes (8)",
+    evangeliosTab: "🌅 The Gospels (52)",
+    corpusPrefix: "Bible",
+    uiLabel: "UI",
+    compassBtn: "🧭 Compass",
+    dichaLabels: [
+      "1 · Poor in spirit (Matt 5:3)",
+      "2 · Those who mourn (Matt 5:4)",
+      "3 · The meek (Matt 5:5)",
+      "4 · Hunger for righteousness (Matt 5:6)",
+      "5 · The merciful (Matt 5:7)",
+      "6 · Pure in heart (Matt 5:8)",
+      "7 · The peacemakers (Matt 5:9)",
+      "8 · Persecuted for righteousness (Matt 5:10)",
+    ],
+    plateLabels: [
+      "Plate 1 · The Threshold",
+      "Plate 2 · The Seed",
+      "Plate 3 · The Shoot",
+      "Plate 4 · The Fruit",
+      "Plate 5 · The Harvest",
+      "Plate 6 · The Fullness",
+    ],
+    openInBible: "📖 Open Matthew 5 in Bible",
+    registerPulse: {
+      siglo21: "🌡️ Contemporary · μ=80.6 · ΔAoA −3.1y",
+      clasico: "🏛️ Classic · μ=64.2 · Historical baseline",
+      ninos: "🌱 Children · AoA ≤ 8.5y · Guided reading",
+      facil: "🤝 Easy read · NSM-65 · Maximum clarity",
+      original: "📜 Original matrix · WLC / SRGNT · 14 col",
+    },
+  };
+}
+

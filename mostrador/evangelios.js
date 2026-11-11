@@ -317,10 +317,13 @@ export function renderEvangeliosPlateActionsHtml({
   weekId = "s01",
   passageRef = "JHN.1.1",
   lang = "es",
+  uiLocale = null,
 } = {}) {
   const cleanWeek = String(weekId || "s01").trim().toLowerCase();
   const cleanRef = String(passageRef || "JHN.1.1").trim().toUpperCase();
   const cleanLang = String(lang || "es").trim().toLowerCase();
+  const effectiveUi = String(uiLocale || lang || "es").trim().toLowerCase();
+  const isEnUi = effectiveUi.startsWith("en");
   const enrichment =
     EVANGELIOS_MACRO_THREADS_AND_ECHOES[cleanWeek] ||
     EVANGELIOS_MACRO_THREADS_AND_ECHOES.s01;
@@ -335,7 +338,7 @@ export function renderEvangeliosPlateActionsHtml({
         `<button type="button" class="uls-chip ot-echo-jump-chip" ` +
         `data-ot-echo="${escapeHtml(ec)}" data-ot-echo-ref="${escapeHtml(parsedEcho.refCode)}" ` +
         `style="min-height:48px;min-width:48px;padding:0.35rem 0.65rem;font-size:0.76rem;display:inline-flex;align-items:center;">` +
-        `📜 Eco AT: ${escapeHtml(ec)}</button>`
+        `📜 ${isEnUi ? "OT Echo" : "Eco AT"}: ${escapeHtml(ec)}</button>`
       );
     })
     .join(" ");
@@ -351,7 +354,7 @@ export function renderEvangeliosPlateActionsHtml({
               beforeVerse: parsedPassage.verse || 1,
               kind: "petuhah",
               marker: "פ",
-              title: enrichment.title || `Apertura de Perícopa (${bookKey})`,
+              title: enrichment.title || (isEnUi ? `Pericope Opening (${bookKey})` : `Apertura de Perícopa (${bookKey})`),
             },
           ];
 
@@ -359,7 +362,7 @@ export function renderEvangeliosPlateActionsHtml({
     .map((pb, idx) => {
       const vStart = Number(pb.beforeVerse ?? pb.startVerse ?? pb.verse ?? 1) || 1;
       const pRef = `${enrichment.book || parsedPassage.book}.${enrichment.chapter || parsedPassage.chapter}.${vStart}`;
-      const label = pb.title || pb.heading || pb.label || `Bloque ${idx + 1} (v. ${vStart})`;
+      const label = pb.title || pb.heading || pb.label || (isEnUi ? `Block ${idx + 1} (v. ${vStart})` : `Bloque ${idx + 1} (v. ${vStart})`);
       const marker = pb.marker || (pb.kind === "setumah" ? "ס" : "פ");
       return (
         `<button type="button" class="uls-chip evangelios-pericope-chip" ` +
@@ -386,15 +389,15 @@ export function renderEvangeliosPlateActionsHtml({
     .join("");
 
   return (
-    `<div class="evangelios-exegesis-enrichment" data-week="${escapeHtml(cleanWeek)}" data-lang="${escapeHtml(cleanLang)}" data-macro-thread="${escapeHtml(enrichment.macroThread)}" style="margin-top:0.55rem;padding:0.65rem;border-radius:8px;border:1px solid var(--card-border);background:var(--card-bg);font-size:0.8rem;display:flex;flex-direction:column;gap:0.45rem;">` +
+    `<div class="evangelios-exegesis-enrichment" data-week="${escapeHtml(cleanWeek)}" data-lang="${escapeHtml(cleanLang)}" data-ui-locale="${escapeHtml(effectiveUi)}" data-macro-thread="${escapeHtml(enrichment.macroThread)}" style="margin-top:0.55rem;padding:0.65rem;border-radius:8px;border:1px solid var(--card-border);background:var(--card-bg);font-size:0.8rem;display:flex;flex-direction:column;gap:0.45rem;">` +
     `<div style="font-weight:700;">🧵 ${escapeHtml(enrichment.macroThread)}</div>` +
     `<div class="evangelios-ot-echoes-bar" style="display:flex;flex-wrap:wrap;gap:0.35rem;">${echoesHtml}</div>` +
-    `<div data-realia-gloss="true" style="color:var(--text-secondary);">🏺 <strong>Glosa Cultural Realia:</strong> ${escapeHtml(enrichment.culturalRealia)}</div>` +
+    `<div data-realia-gloss="true" style="color:var(--text-secondary);">🏺 <strong>${isEnUi ? "Cultural Realia Gloss:" : "Glosa Cultural Realia:"}</strong> ${escapeHtml(enrichment.culturalRealia)}</div>` +
     `<div id="evangeliosPericopeBlocksList" data-evangelios-pericopes="true" style="display:flex;flex-wrap:wrap;gap:0.35rem;align-items:center;">` +
-    `<strong style="font-size:0.76rem;color:var(--text-secondary);">📑 Bloques de Perícopa:</strong> ${pericopesHtml}` +
+    `<strong style="font-size:0.76rem;color:var(--text-secondary);">📑 ${isEnUi ? "Pericope Blocks:" : "Bloques de Perícopa:"}</strong> ${pericopesHtml}` +
     `</div>` +
     `<div id="evangeliosQuestionsList" data-evangelios-questions="true" style="border-top:1px dashed var(--card-border);padding-top:0.4rem;">` +
-    `<strong style="font-size:0.78rem;display:block;margin-bottom:0.2rem;">🌅 Preguntas Contemplativas de Alborada:</strong>` +
+    `<strong style="font-size:0.78rem;display:block;margin-bottom:0.2rem;">🌅 ${isEnUi ? "Dawn Contemplative Questions:" : "Preguntas Contemplativas de Alborada:"}</strong>` +
     `<ol style="margin:0;padding-left:1.2rem;color:var(--text-secondary);">${questionsHtml}</ol>` +
     `</div>` +
     `</div>`

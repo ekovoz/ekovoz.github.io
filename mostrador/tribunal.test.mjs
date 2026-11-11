@@ -957,7 +957,9 @@ test("D62_to_D69_ARB_EKOVOZ_65_reactive_router_quotient_lens_focus_preservation_
 
   // 4. D67 (6B+): Sub-tree surgical update preserves #rosettaSearchInput & #stpLexiconSearchInput node identity
   await bootedCtrl.transitionSheet("study", mockDoc);
-  const rosettaContainer = mockDoc.getElementById("leipzig14ColStratumAction");
+  const rosettaContainer =
+    mockDoc.getElementById("philologyRosettaStaticHost") ||
+    mockDoc.getElementById("leipzig14ColStratumAction");
   assert.match(rosettaContainer.innerHTML, /id="rosettaExplorerResultsRows"/);
   const rosettaInputBefore = mockDoc.getElementById("rosettaSearchInput");
   rosettaInputBefore.value = "H7225";
@@ -1280,9 +1282,18 @@ test("D1_to_D12_R32_ARB_EKOVOZ_69_GOLD_648_eco_decoder_census_7164_crdt_wal_rose
     fs.readFileSync(path.join(WEB_DIR, "data", "field_workshop_stp.json"), "utf8"),
   );
   hydrateFieldWorkshopData(workshopArtifact);
-  const cascadeHtml = renderCascadeAndLadderHtml({ lang: "stp", ref: "MAT 5:3", token: "xoi'kam" });
-  assert.match(cascadeHtml, /id="masterCensus7164InspectorCard"/);
-  assert.match(cascadeHtml, /id="crdtWalAndLockP2AuditCard"/);
+  const cascadeHtmlDefault = renderCascadeAndLadderHtml({ lang: "stp", ref: "MAT 5:3", token: "xoi'kam" });
+  assert.doesNotMatch(cascadeHtmlDefault, /id="masterCensus7164InspectorCard"/);
+  assert.doesNotMatch(cascadeHtmlDefault, /id="crdtWalAndLockP2AuditCard"/);
+  const cascadeHtmlWithCards = renderCascadeAndLadderHtml({
+    lang: "stp",
+    ref: "MAT 5:3",
+    token: "xoi'kam",
+    includeWalCard: true,
+    includeCensusCard: true,
+  });
+  assert.match(cascadeHtmlWithCards, /id="masterCensus7164InspectorCard"/);
+  assert.match(cascadeHtmlWithCards, /id="crdtWalAndLockP2AuditCard"/);
 
   const walCardHtml = renderCrdtWalAndLockP2AuditCardHtml();
   assert.match(walCardHtml, /id="crdtWalAndLockP2AuditCard"/);
@@ -1361,8 +1372,13 @@ test("D1_to_D12_R32_ARB_EKOVOZ_69_GOLD_648_eco_decoder_census_7164_crdt_wal_rose
   const indexHtml = fs.readFileSync(path.join(WEB_DIR, "index.html"), "utf8");
   assert.match(
     indexHtml,
+    /#bibleVerseViewport\[data-inspector-open="true"\]\s*\{\s*min-height:\s*200px\s*!important;\s*overflow-y:\s*auto\s*!important;\s*\}/,
+    "D1-R38 / DEB-R38-01..03: index.html must preserve sacred canvas min-height:200px without collapsing #bibleChapterPericopesRibbon",
+  );
+  assert.doesNotMatch(
+    indexHtml,
     /#bibleSovereignSection:has\(#bibleVerseViewport\[data-inspector-open="true"\]\)\s*#bibleChapterPericopesRibbon/,
-    "D7-R32 / DEBRIS-R32-03: index.html must collapse #bibleChapterPericopesRibbon when inspector is open",
+    "D1-R38: index.html must not hide #bibleChapterPericopesRibbon when a drawer is open",
   );
   assert.match(
     indexHtml,
@@ -1586,15 +1602,271 @@ test("R34 D1-B+..D6-B+: Foveal fold, Dosis Harel button partition, live Kanungo-
   assert.ok(projectedLex.consonantal_root_families["ברא"]);
 });
 
+test("R36_SLICE_112_apple_hig_ergonomics_foveal_canvas_subtab_coherence_and_zero_dead_evangelios_listeners", () => {
+  const indexHtml = fs.readFileSync(path.join(WEB_DIR, "index.html"), "utf8");
+  const mostradorRaw = fs.readFileSync(path.join(WEB_DIR, "mostrador.js"), "utf8");
 
+  // 1. D3-R36 (3A) + D1-R38 (1A): #bibleVerseViewport[data-inspector-open="true"] preserves >= 200px height with overflow-y: auto
+  assert.match(indexHtml, /#bibleVerseViewport\[data-inspector-open="true"\][^}]*min-height:\s*200px/i);
+  assert.match(indexHtml, /#bibleVerseViewport\[data-inspector-open="true"\][^}]*overflow-y:\s*auto/i);
+  assert.doesNotMatch(indexHtml, /#bibleVerseViewport\[data-inspector-open="true"\][^}]*max-height:\s*48px/i);
+  assert.doesNotMatch(indexHtml, /#bibleVerseViewport\[data-inspector-open="true"\][^}]*max-height:\s*124px/i);
 
+  // 2. D9-R36 (9A) + D6-R37 (6A): Optical controls under data-dosis-subtab-panel="pdf", Crypto in Drawer 4 "graphics", Imposition/Layout in Drawer 2
+  assert.match(indexHtml, /id="bibleOpticalFpsSelect"[^>]*data-dosis-subtab-panel="pdf"/);
+  assert.match(indexHtml, /id="btnToggleOpticalCameraRx"[^>]*data-dosis-subtab-panel="pdf"/);
+  assert.match(indexHtml, /id="btnOpticalRelayTx"[^>]*data-dosis-subtab-panel="pdf"/);
+  assert.match(indexHtml, /id="btnVerifyEd25519Signature"[^>]*data-dosis-subtab-panel="graphics"/);
+  assert.match(indexHtml, /id="btnCalculateImposition"[^>]*data-print-tool="imposition"/);
+  assert.match(indexHtml, /id="btnCalculateLayout"[^>]*data-print-tool="layout"/);
 
+  // 3. D4-R36 (4A): #leipzig14ColStratumAction precedes #nsm65StratumCard in #bibleEasyDrawerPanel
+  const idxLeipzig = indexHtml.indexOf('id="leipzig14ColStratumAction"');
+  const idxNsm = indexHtml.indexOf('id="nsm65StratumCard"');
+  assert.ok(idxLeipzig > 0 && idxNsm > idxLeipzig, "14-col matrix must be the first element inside Drawer 1");
 
+  // 4. D12-R36 (12A): Zero dead .btn-evangelios-open-print/share/study listeners in mostrador.js
+  assert.doesNotMatch(mostradorRaw, /btn-evangelios-open-print/);
+  assert.doesNotMatch(mostradorRaw, /btn-evangelios-open-share/);
+  assert.doesNotMatch(mostradorRaw, /btn-evangelios-open-study/);
+});
 
+test("R37_SLICE_119_word_click_14col_highlight_static_rosetta_diachronic_stage_print_imposition_and_sister_works_seam", async () => {
+  const indexHtml = fs.readFileSync(path.join(WEB_DIR, "index.html"), "utf8");
+  const mostradorMod = await import("../mostrador.js");
 
+  // 1. D1-R37 (1A): Word-level interactive tokens and ReverseOrthographyMap O(1) lookup
+  const tokenHtml = mostradorMod.renderInteractiveVerseTokensHtml("En el principio", {
+    verseNumber: 1,
+    osisRef: "GEN.1.1",
+    reverseMap: new mostradorMod.ReverseOrthographyMap("es", "default"),
+    tokenStrongPairs: [{ surface: "principio", strongId: "H7225" }],
+  });
+  assert.match(tokenHtml, /class="bible-word-token"/);
+  assert.match(tokenHtml, /data-strong-id="H7225"/);
 
+  // 2. D2-R37 (2A): #philologyRosettaStaticHost is a static sibling outside #leipzig14ColStratumAction inside #bibleEasyDrawerPanel
+  const idxLeipzigClose = indexHtml.indexOf('<div id="leipzig14ColStratumAction" style="margin-bottom: 0.6rem;"></div>');
+  const idxRosettaStatic = indexHtml.indexOf('id="philologyRosettaStaticHost"');
+  assert.ok(idxLeipzigClose > 0 && idxRosettaStatic > idxLeipzigClose, "#philologyRosettaStaticHost must be a static sibling after #leipzig14ColStratumAction");
 
+  // 3. D3-R37 (3A) + D5-R38 (5A): #bibleAnalyticalThermometerPanel in #stage-action and #diachronicRegisterAuditPanel inside Drawer 1 (#bibleEasyDrawerPanel)
+  const idxStageAction = indexHtml.indexOf('id="stage-action"');
+  const idxThermo = indexHtml.indexOf('id="bibleAnalyticalThermometerPanel"');
+  const idxEasyDrawer = indexHtml.indexOf('id="bibleEasyDrawerPanel"');
+  const idxPrintDrawerStart = indexHtml.indexOf('id="biblePrintEditionsSheet"');
+  const idxAuditPanel = indexHtml.indexOf('id="diachronicRegisterAuditPanel"');
+  const idxCompassModal = indexHtml.indexOf('id="bibleCoordinateCompassModal"');
+  assert.ok(idxThermo > idxStageAction && idxThermo < idxCompassModal, "#bibleAnalyticalThermometerPanel must live inside #stage-action");
+  assert.ok(idxAuditPanel > idxEasyDrawer && idxAuditPanel < idxPrintDrawerStart, "#diachronicRegisterAuditPanel must live inside Drawer 1 (#bibleEasyDrawerPanel)");
 
+  // 4. D4-R37 (4A): #bibleOralPorticoBanner is not hidden by display:none !important when inspector is open
+  assert.match(indexHtml, /#bibleOralPorticoBanner:not\(\[hidden\]\)\{display:flex !important;[^}]*max-height:36px !important/);
 
+  // 5. D6-R37 (6A): #btnCalculateImposition, #btnCalculateLayout, and #impositionBookletPreviewHost live inside #biblePrintEditionsSheet
+  const idxPrintDrawer = indexHtml.indexOf('id="biblePrintEditionsSheet"');
+  const idxWorkshopDrawer = indexHtml.indexOf('id="bibleFieldWorkshopSheet"');
+  const idxImpBtn = indexHtml.indexOf('id="btnCalculateImposition"');
+  const idxImpHost = indexHtml.indexOf('id="impositionBookletPreviewHost"');
+  assert.ok(idxImpBtn > idxPrintDrawer && idxImpBtn < idxWorkshopDrawer, "#btnCalculateImposition must live in Drawer 2");
+  assert.ok(idxImpHost > idxPrintDrawer && idxImpHost < idxWorkshopDrawer, "#impositionBookletPreviewHost must live in Drawer 2");
 
+  // 6. D8-R37 (8A): sister_works_controller.js clean seam exported from mostrador.js
+  assert.equal(typeof mostradorMod.resolveEvangeliosActiveSelection, "function");
+  assert.equal(typeof mostradorMod.buildEvangeliosWeekOptionsHtml, "function");
+  assert.equal(typeof mostradorMod.renderEvangeliosStageCardHtml, "function");
+  assert.equal(typeof mostradorMod.syncSisterWorksTabsDom, "function");
+});
 
+test("R38_SLICE_126_canvas_non_mutilation_word_to_rosetta_workshop_dedup_14_editions_and_drawer_hydrators_seam", async () => {
+  const indexHtml = fs.readFileSync(path.join(WEB_DIR, "index.html"), "utf8");
+  const mostradorRaw = fs.readFileSync(path.join(WEB_DIR, "mostrador.js"), "utf8");
+  const mostradorMod = await import("../mostrador.js");
+  const hydratorsMod = await import("./drawer_hydrators.js");
+  const dosisMod = await import("./dosis.js");
+
+  // 1. D1-R38 (1A): Zero canvas self-mutilation CSS when drawers open
+  assert.doesNotMatch(indexHtml, /max-height:\s*124px\s*!important/i);
+  assert.doesNotMatch(indexHtml, /#bibleSovereignSection:has\(#bibleVerseViewport\[data-inspector-open="true"\]\)\s*#bibleMainHeading/);
+  assert.doesNotMatch(indexHtml, /#bibleSovereignSection:has\(#bibleVerseViewport\[data-inspector-open="true"\]\)\s*#epistemicStatusSeal/);
+
+  // 2. D2-R38 (2A): syncActiveStrongInStudyDrawer updates state.rosettaQuery, #rosettaSearchInput, and #rosettaExplorerResultsRows
+  const mockSearchInput = { value: "" };
+  const mockRowsEl = { innerHTML: "" };
+  const mockListEl = {
+    attrs: {},
+    setAttribute(k, v) {
+      this.attrs[k] = v;
+    },
+  };
+  const mockState = { activeStrongId: "", rosettaQuery: "", rosettaCategory: "all" };
+  const syncedStrong = hydratorsMod.syncActiveStrongInStudyDrawer("H0430", {
+    state: mockState,
+    targetDoc: {},
+    getEl(id) {
+      if (id === "rosettaSearchInput") return mockSearchInput;
+      if (id === "rosettaExplorerResultsRows") return mockRowsEl;
+      if (id === "rosettaExplorerResultsList") return mockListEl;
+      return null;
+    },
+  });
+  assert.equal(syncedStrong, "H0430");
+  assert.equal(mockState.rosettaQuery, "H0430");
+  assert.equal(mockSearchInput.value, "H0430");
+  assert.ok(mockRowsEl.innerHTML.length > 0);
+
+  // 3. D4-R38 (4A): 14 distinct PDF URLs and geometry keys across all 14 profiles
+  const editions14 = dosisMod.listAll14PrintEditionsForLang("es", "es").filter(
+    (e) => e.kind === "edition",
+  );
+  assert.equal(editions14.length, 14);
+  const uniqueUrls = new Set(editions14.map((e) => e.profileUrl));
+  assert.equal(uniqueUrls.size, 14, "All 14 print profiles must map to 14 distinct physical PDF paths");
+
+  // 4. D5-R38 (5A) & D6-R38 (6A): #mostradorDoseCards in Drawer 2 and #bibleOpticalCameraVideo in data-dosis-subtab-panel="pdf"
+  const idxPrintDrawer = indexHtml.indexOf('id="biblePrintEditionsSheet"');
+  const idxWorkshopDrawer = indexHtml.indexOf('id="bibleFieldWorkshopSheet"');
+  const idxDoseCards = indexHtml.indexOf('id="mostradorDoseCards"');
+  assert.ok(idxDoseCards > idxPrintDrawer && idxDoseCards < idxWorkshopDrawer, "#mostradorDoseCards must reside inside Drawer 2");
+  assert.match(indexHtml, /id="bibleOpticalCameraVideo"[^>]*data-dosis-subtab-panel="pdf"/);
+
+  // 5. D7-R38 (7A): Zero broken dist/en/v1/mostrador/felices-en-v1-*.pdf links in index.html
+  assert.doesNotMatch(indexHtml, /dist\/en\/v1\/mostrador\/felices-en-v1-/);
+
+  // 6. D8-R38 (8A): buildEvangeliosWeekOptionsHtml and renderEvangeliosStageCardHtml localize to English when activeEvLang="en"
+  const evEnOpts = mostradorMod.buildEvangeliosWeekOptionsHtml(
+    [{ id: "s01", week: 1, quarter: "T1", reference: "JHN 1:1", texts: { en: { title: "The Word" } } }],
+    "s01",
+    "en",
+  );
+  assert.match(evEnOpts, /Week 1 \(T1\)/);
+  const evEnCard = mostradorMod.renderEvangeliosStageCardHtml(
+    {
+      id: "s01",
+      week: 1,
+      quarter: "T1",
+      reference: "JHN 1:1",
+      gesture: "Light",
+      texts: { en: { title: "The Word", text: "In the beginning" }, es: { text: "En el principio" } },
+    },
+    "en",
+  );
+  assert.match(evEnCard, /Week 1\/52/);
+  assert.match(evEnCard, /Open in The Bible/);
+
+  // 7. D10-R38 (10A): web/mostrador.js reduced by > 900 LOC via drawer_hydrators.js seam
+  const mostradorLines = mostradorRaw.split("\n").length;
+  assert.ok(mostradorLines <= 2750, `Expected web/mostrador.js <= 2750 LOC after D10-R38 extraction, got ${mostradorLines}`);
+  assert.equal(typeof hydratorsMod.hydrateStudyDrawerPanel, "function");
+  assert.equal(typeof hydratorsMod.hydrateImproveDrawerPanel, "function");
+  assert.equal(typeof hydratorsMod.hydratePrintDrawerPanelsInDrawer, "function");
+  assert.equal(typeof hydratorsMod.hydrateShareAndAuditDrawerPanel, "function");
+});
+
+test("R39_SLICE_127_to_132_split_brain_elimination_dark_mode_contrast_and_100pct_backend_exposure", async () => {
+  const indexHtml = fs.readFileSync(path.join(WEB_DIR, "index.html"), "utf8");
+  const i18nMod = await import("./i18n.js");
+  const i18nUiMod = await import("../i18n_ui.js");
+  const diachronicMod = await import("./diachronic_register.js");
+  const wfstMod = await import("./orthography_wfst.js");
+  const estudioMod = await import("./estudio.js");
+  const evangeliosMod = await import("./evangelios.js");
+  const dosisMod = await import("./dosis.js");
+  const mejorarMod = await import("./mejorar.js");
+  const offlineMod = await import("./offline_mesh.js");
+
+  // 1. D1-R39 (1A): applyToDom interpolates {book, chapter, verse} and never overwrites with raw missing keys
+  const enCat = JSON.parse(fs.readFileSync(path.join(WEB_DIR, "i18n", "en.json"), "utf8"));
+  const esCat = JSON.parse(fs.readFileSync(path.join(WEB_DIR, "i18n", "es.json"), "utf8"));
+  assert.ok(enCat.messages["seal.verified"], "en.json must define seal.verified");
+  assert.ok(esCat.messages["seal.verified"], "es.json must define seal.verified");
+  const i18nInst = i18nMod.createI18n({ locale: "en", catalogs: { en: enCat } });
+  const mockHeading = {
+    textContent: "Genesis 1 — original words",
+    getAttribute(k) {
+      return k === "data-i18n" ? "study.title" : null;
+    },
+  };
+  const mockRoot = {
+    querySelectorAll(sel) {
+      return sel === "[data-i18n]" ? [mockHeading] : [];
+    },
+  };
+  i18nMod.applyToDom(mockRoot, i18nInst, { book: "GEN", chapter: 1, verse: 1 });
+  assert.equal(mockHeading.textContent, "GEN 1 — original words");
+
+  // 2. D1-R39 (1A): updateDownloadLinks and resolveFelicesPlateVerse never emit /dist/ or "Plate 24"
+  const dlInfo = i18nUiMod.updateDownloadLinks(
+    {
+      getElementById(id) {
+        return { href: "", setAttribute() {}, value: id === "langSelect" ? "es" : "" };
+      },
+    },
+    "es",
+  );
+  assert.ok(!dlInfo.sheetsHref.startsWith("/dist/"), "Felices sheetsHref must not point to dead /dist/ URL");
+  assert.ok(!dlInfo.bookletHref.startsWith("/dist/"), "Felices bookletHref must not point to dead /dist/ URL");
+  const v24Unloaded = i18nUiMod.resolveFelicesPlateVerse(24, "es", {});
+  assert.ok(!v24Unloaded.startsWith("Plate "), "resolveFelicesPlateVerse must never fall back to raw 'Plate 24'");
+
+  // 3. D2-R39 (2A): Dark Mode defines --bg-secondary:#1c1917 and Drawer 2/3 deduplicate buttons/headings
+  assert.match(indexHtml, /@media\s*\(prefers-color-scheme:\s*dark\)\{:root\{[^}]*--bg-secondary:#1c1917/);
+  assert.doesNotMatch(indexHtml, /id="btnPrintAroundVerse"/, "DEB-R39-04: duplicate #btnPrintAroundVerse must be removed");
+  const idxDoseCards = indexHtml.indexOf('id="mostradorDoseCards"');
+  const idxEditionsGrid = indexHtml.indexOf('id="bibleEditionsCatalogGrid"');
+  const idxKindleCfg = indexHtml.indexOf('id="bibleKindleConfigurator"');
+  assert.ok(
+    idxEditionsGrid > idxDoseCards && idxEditionsGrid < idxKindleCfg,
+    "D5-R39: #bibleEditionsCatalogGrid must appear immediately after #mostradorDoseCards and before #bibleKindleConfigurator",
+  );
+
+  // 4. D3-R39 (3A): Diachronic 156 rules catalog + WFST & Scriptio Continua inspector
+  const diaCatalog = diachronicMod.getAll156DiachronicSubstitutionsCatalog();
+  assert.ok(diaCatalog.length >= 60, "getAll156DiachronicSubstitutionsCatalog must expose all diachronic FST rules");
+  const wfstHtml = wfstMod.renderWfstAndScriptioContinuaInspectorHtml({
+    text: "En el principio Dios creó",
+    lang: "stp",
+    profileId: "inali",
+  });
+  assert.match(wfstHtml, /id="wfstOrthographyAndScriptioInspector"/);
+  assert.match(wfstHtml, /data-scriptio-continua-script="Hans"/);
+
+  // 5. D4-R39 (4A): Humanized 14-Col fields (zero NSM_65:SDBH: or Rol: ∅ leaks), 12-lang calibration table, cultural glosses
+  const humanFields = estudioMod.formatHumanReadable14ColFields({
+    c09_macula_role: "∅",
+    c10_clause_id: "∅",
+    c11_semantic_domain: "SDBH:Acción_Origen",
+    c13_nsm_65: "NSM_65:SDBH:Acción_Origen|PRIM:HACER+ALGO",
+  });
+  assert.ok(!humanFields.nsmHuman.includes("NSM_65:SDBH:"), "DEB-R39-03: NSM_65:SDBH: prefix must be stripped");
+  assert.notEqual(humanFields.roleHuman, "∅", "DEB-R39-03: empty role must not render raw ∅");
+  const glossHits = estudioMod.detectContextualCulturalGlossesForVerse("Y vinieron los fariseos con un siclo de plata");
+  assert.ok(glossHits.length >= 2, "detectContextualCulturalGlossesForVerse must detect fariseo and siclo");
+  const evEnActions = evangeliosMod.renderEvangeliosPlateActionsHtml({
+    weekId: "s01",
+    passageRef: "JHN.1.1",
+    lang: "es",
+    uiLocale: "en",
+  });
+  assert.match(evEnActions, /Cultural Realia Gloss:/);
+  assert.match(evEnActions, /Dawn Contemplative Questions:/);
+
+  // 6. D5-R39 (5A) & D6-R39 (6A): Live Branch/Typology specimen, populated 12 macro-regions, WAL rollback preview
+  const branchHtml = dosisMod.renderBranchAndTypologyInspectorHtml({ lang: "stp" });
+  assert.match(branchHtml, /id="branchTypologyLiveSpecimen"/);
+  assert.equal(mejorarMod.MASTER_CENSUS_SUMMARY.macro_regions_12.length, 12);
+  const walPreview = mejorarMod.computeWalSnapshotRollbackPreview(2);
+  assert.equal(walPreview.snapshotIndex, 2);
+  assert.ok(walPreview.previewText.includes("Snapshot #2"));
+
+  // 7. D7-R39 (7A): Real decoded verse preview in EcoDecoder (zero ECO_VERSE[ord=0..31102 leak) and single Quine CTA
+  const ecoCardHtml = offlineMod.renderOfflineMeshEcoCardHtml({
+    activeLang: "es",
+    activeVerseOrdinal: 0,
+    activeVerseRef: "GEN.1.1",
+    activeVerseText: "En el principio creó Dios los cielos y la tierra.",
+  });
+  assert.doesNotMatch(ecoCardHtml, /ECO_VERSE\[ord=0\.\.31102/);
+  assert.match(ecoCardHtml, /En el principio creó Dios los cielos y la tierra/);
+  assert.doesNotMatch(ecoCardHtml, /Quine HTML Autónomo/, "DEB-R39-09: duplicate Quine CTA inside #offlineEcoMeshCard must be removed");
+});

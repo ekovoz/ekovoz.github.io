@@ -614,3 +614,73 @@ export function segmentScriptioContinuaSyllables(text, scriptIso15924 = "Hans") 
   if (current) clusters.push(current);
   return clusters.join(ZWSP);
 }
+
+/**
+ * Renderiza el Inspector de Transducción Ortográfica WFST + Préstamos Protegidos + Mapa Inverso a Strong + 7 Escrituras Scriptio Continua (`D3-R39`).
+ */
+export function renderWfstAndScriptioContinuaInspectorHtml({
+  text = "",
+  lang = "stp",
+  profileId = "inali",
+  tokenStrongPairs = [],
+  scriptIso15924 = null,
+} = {}) {
+  const familyKey = resolveOrthoFamilyKey(lang) || "stp";
+  const resolvedProfileId = resolveCanonicalOrthoProfileId(familyKey, profileId);
+  const familyProfiles = CANONICAL_ORTHOGRAPHY_PROFILES[familyKey] || CANONICAL_ORTHOGRAPHY_PROFILES.stp || {};
+  const activeProfile = familyProfiles[resolvedProfileId] || Object.values(familyProfiles)[0] || {};
+  const whitelist = Array.isArray(activeProfile.loanwordWhitelist) ? activeProfile.loanwordWhitelist : [];
+  const transduced = transduceVerseWithReverseMap(text, familyKey, resolvedProfileId, tokenStrongPairs);
+  const activeScript = scriptIso15924 || resolveScriptioContinuaCodeForLang(lang) || "Hans";
+  const sampleScriptio = segmentScriptioContinuaSyllables(text || "太初有道，道与神同在", activeScript);
+  const zwspCount = (sampleScriptio.match(/\u200B/g) || []).length;
+
+  const reversePairs = [];
+  if (transduced.reverseMap && transduced.reverseMap.transducedToCanonical instanceof Map) {
+    for (const [surf, canon] of transduced.reverseMap.transducedToCanonical.entries()) {
+      const strongId = transduced.reverseMap.resolveStrong(surf) || "";
+      if (surf !== canon || strongId) {
+        reversePairs.push({ surface: surf, canonical: canon, strongId });
+      }
+    }
+  }
+
+  const reverseHtml = reversePairs.length > 0
+    ? reversePairs
+        .slice(0, 12)
+        .map(
+          (p) =>
+            `<span class="uls-badge" data-canonical-token="${p.canonical}" data-reverse-strong-id="${p.strongId || ""}">${p.surface} ⇄ ${p.canonical}${p.strongId ? ` (${p.strongId})` : ""}</span>`
+        )
+        .join(" ")
+    : `<span style="font-size:0.74rem;color:var(--text-secondary);">100% biyectivo hacia base canónica (${resolvedProfileId})</span>`;
+
+  const whitelistHtml = whitelist
+    .slice(0, 10)
+    .map((w) => `<span class="uls-badge" data-protected-loanword="${w}">🛡️ ${w}</span>`)
+    .join(" ");
+
+  const scriptioBadges = SCRIPTIO_CONTINUA_7_SCRIPTS.map(
+    (sc) =>
+      `<span class="uls-badge" data-scriptio-continua-script="${sc}" style="${sc === activeScript ? "border-color:var(--accent-amber);font-weight:700;" : ""}">${sc}</span>`
+  ).join(" ");
+
+  return (
+    `<div id="wfstOrthographyAndScriptioInspector" class="wfst-orthography-inspector" ` +
+    `data-ortho-family="${familyKey}" ` +
+    `data-ortho-profile="${resolvedProfileId}" ` +
+    `data-protected-loanwords-count="${whitelist.length}" ` +
+    `data-zwsp-boundaries="${zwspCount}" ` +
+    `style="margin-top:0.35rem;padding:0.45rem 0.65rem;border-radius:8px;border:1px solid var(--card-border);background:var(--bg-secondary);font-size:0.76rem;display:flex;flex-direction:column;gap:0.3rem;">` +
+    `<div style="display:flex;flex-wrap:wrap;justify-content:space-between;gap:0.35rem;align-items:center;">` +
+    `<strong>🔤 Transductor WFST (${activeProfile.label || resolvedProfileId}) · Mapa Inverso a Strong</strong>` +
+    `<span class="uls-badge">Préstamos protegidos: ${whitelist.length} · U+200B cortes: ${zwspCount}</span>` +
+    `</div>` +
+    `<div style="display:flex;flex-wrap:wrap;gap:0.25rem;align-items:center;"><strong>Mapeo inverso:</strong> ${reverseHtml}</div>` +
+    (whitelist.length > 0
+      ? `<div style="display:flex;flex-wrap:wrap;gap:0.25rem;align-items:center;"><strong>Préstamos teológicos intactos:</strong> ${whitelistHtml}</div>`
+      : "") +
+    `<div style="display:flex;flex-wrap:wrap;gap:0.25rem;align-items:center;"><strong>7 segmentadores Scriptio Continua (U+200B):</strong> ${scriptioBadges}</div>` +
+    `</div>`
+  );
+}

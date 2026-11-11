@@ -430,6 +430,109 @@ function resolvePericopeBreakSet(chapterData, verseNums, book = "GEN", chapter =
 }
 
 /**
+ * Resolves in O(1) the canonical token and Strong ID (H####/G####) for a clicked word surface
+ * using `ReverseOrthographyMap` and optional 14-column interlinear rows (`D1-R37`).
+ */
+export function lookupWordTokenStrongEntry(
+  wordSurface,
+  wordIndex = 0,
+  reverseMap = null,
+  tokenStrongPairs = []
+) {
+  const cleanSurface = String(wordSurface ?? "")
+    .replace(/^[^\p{L}\p{N}\u0247\uA78C']+|[^\p{L}\p{N}\u0247\uA78C']+$/gu, "")
+    .trim();
+  let canonicalToken = cleanSurface;
+  let strongId = "";
+
+  if (reverseMap) {
+    if (typeof reverseMap.lookup === "function") {
+      const hit = reverseMap.lookup(cleanSurface) || reverseMap.lookup(String(wordSurface ?? "").trim());
+      if (hit && typeof hit === "object") {
+        canonicalToken = hit.canonical || canonicalToken;
+        strongId = hit.strongId || hit.strong || "";
+      } else if (typeof hit === "string" && hit) {
+        canonicalToken = hit;
+      }
+    }
+    if (!strongId && typeof reverseMap.resolveStrong === "function") {
+      strongId =
+        reverseMap.resolveStrong(cleanSurface) ||
+        reverseMap.resolveStrong(String(wordSurface ?? "").trim()) ||
+        "";
+    }
+    if (canonicalToken === cleanSurface && typeof reverseMap.resolveCanonical === "function") {
+      canonicalToken =
+        reverseMap.resolveCanonical(cleanSurface) ||
+        reverseMap.resolveCanonical(String(wordSurface ?? "").trim()) ||
+        cleanSurface;
+    }
+  }
+
+  if (!strongId && Array.isArray(tokenStrongPairs) && tokenStrongPairs.length > 0) {
+    const lowerClean = cleanSurface.toLowerCase();
+    const lowerCanon = String(canonicalToken || "").toLowerCase();
+    const matched =
+      tokenStrongPairs.find((pair) => {
+        const candidate = String(
+          pair?.token || pair?.surface || pair?.c09_gloss_es || pair?.c08_gloss_en || pair?.c03_surface || ""
+        )
+          .trim()
+          .toLowerCase();
+        return candidate && (candidate === lowerClean || candidate === lowerCanon || candidate.includes(lowerClean));
+      }) || tokenStrongPairs[wordIndex % tokenStrongPairs.length];
+    if (matched) {
+      strongId = String(matched.strongId || matched.c07_strong_id || matched.strong || "").trim();
+      if (!canonicalToken && matched.token) {
+        canonicalToken = String(matched.token).trim();
+      }
+    }
+  }
+
+  return {
+    surface: cleanSurface || String(wordSurface ?? "").trim(),
+    canonical: canonicalToken || cleanSurface,
+    strongId: strongId || "",
+    wordIndex: Math.max(0, Number(wordIndex) || 0),
+  };
+}
+
+/**
+ * Tokenizes ONLY the active verse (`selectedVerse`) Just-In-Time into interactive
+ * `<span class="bible-word-token">` elements with O(1) Strong resolution (`D1-R37`).
+ */
+export function renderInteractiveVerseTokensHtml(
+  rawText,
+  { verseNum = 1, osis = "GEN.1.1", reverseMap = null, tokenStrongPairs = [] } = {}
+) {
+  const source = String(rawText ?? "");
+  if (!source) return "";
+  const segments = source.split(/(\s+)/);
+  let wordIndex = 0;
+  return segments
+    .map((seg) => {
+      if (!seg || /^\s+$/.test(seg)) {
+        return seg;
+      }
+      const currentIdx = wordIndex++;
+      const entry = lookupWordTokenStrongEntry(seg, currentIdx, reverseMap, tokenStrongPairs);
+      const strongAttr = entry.strongId
+        ? ` data-strong-id="${escapeHtml(entry.strongId)}"`
+        : "";
+      return `<span class="bible-word-token" data-word-token="${escapeHtml(
+        entry.canonical
+      )}" data-word-surface="${escapeHtml(
+        entry.surface
+      )}" data-canonical-token="${escapeHtml(
+        entry.canonical
+      )}" data-word-index="${currentIdx}" data-verse="${Number(
+        verseNum
+      )}" data-osis="${escapeHtml(osis)}"${strongAttr}>${escapeHtml(seg)}</span>`;
+    })
+    .join("");
+}
+
+/**
  * Renders the chapter preview HTML from a loaded chapter object `{ verses: { "1": "..." } }`.
  * Supports continuous pericope blocks with inline selectable `.mostrador-verse` spans (`6R+`),
  * Unicode superscripts (`⁰-⁹`), 2-line dropcap on v.1, poetic stichometry, Oral Portico pauses,
@@ -487,6 +590,14 @@ export function renderChapterPreviewHtml(
       const supNum = toUnicodeSuperscript(locNum);
       const isSelected = vNum === selectedVerse;
       const osis = `${book}.${chapter}.${vNum}`;
+      const primaryBodyHtml = isSelected
+        ? renderInteractiveVerseTokensHtml(rawPrimary, {
+            verseNum: vNum,
+            osis,
+            reverseMap: options.reverseMap || null,
+            tokenStrongPairs: options.tokenStrongPairs || [],
+          })
+        : escapeHtml(rawPrimary);
       rowsHtml.push(
         `<div class="mostrador-diptych-row" data-verse="${vNum}" data-osis="${escapeHtml(
           osis
@@ -495,7 +606,7 @@ export function renderChapterPreviewHtml(
           osis
         )}"><sup class="bible-v-sup"${supHiddenAttr}>${escapeHtml(
           supNum
-        )}</sup> ${escapeHtml(rawPrimary)}</span><span class="mostrador-verse-bridge" data-verse="${vNum}" style="font-size:0.92em;color:#57534E;">${escapeHtml(
+        )}</sup> ${primaryBodyHtml}</span><span class="mostrador-verse-bridge" data-verse="${vNum}" style="font-size:0.92em;color:#57534E;">${escapeHtml(
           rawBridge
         )}</span></div>`
       );
@@ -557,7 +668,14 @@ export function renderChapterPreviewHtml(
     const isSelected = vNum === selectedVerse;
     const osis = `${book}.${chapter}.${vNum}`;
 
-    const renderedBody = escapeHtml(rawText);
+    const renderedBody = isSelected
+      ? renderInteractiveVerseTokensHtml(rawText, {
+          verseNum: vNum,
+          osis,
+          reverseMap: reverseMapTarget,
+          tokenStrongPairs: options.tokenStrongPairs || [],
+        })
+      : escapeHtml(rawText);
     const dropcapClass = vNum === 1 ? " bible-chapter-dropcap" : "";
 
     currentSpans.push(

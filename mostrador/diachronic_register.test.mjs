@@ -4,6 +4,7 @@ import {
   modernizeVerseDiachronic,
   countSpanishSyllables,
   computeAnalyticalRegisterMetrics,
+  renderUnifiedDiachronicContextHtml,
 } from "./diachronic_register.js";
 
 test("D2-B+: Modernizador diacrónico ejecuta las 3 capas (Tier 1 léxico, Tier 2 morfología, Tier 3 inversión de enclíticos)", () => {
@@ -43,4 +44,18 @@ test("D2-B+: Termómetro analítico calcula AoA <= 11, P_prev >= 0.96, MDD <= 2.
   );
   assert.equal(afterMetrics.passesAllGates, true);
 });
+
+test("R37_SLICE_117_renderUnifiedDiachronicContextHtml_unifies_pulse_and_substitutions_in_stage_action", () => {
+  const html = renderUnifiedDiachronicContextHtml({
+    verses: ["Y díjoles Jehová: Si guardare el mancebo mi pacto, santificólo en su heredad."],
+    bookCode: "GEN",
+    chapter: 2,
+    osisRef: "GEN.2.3",
+  });
+  assert.match(html, /id="diachronicSubstitutionsDetails"/);
+  assert.match(html, /id="diachronicRegisterAuditPanel"/);
+  assert.match(html, /id="diachronicChapterAuditBadge"/);
+  assert.match(html, /Ver sustituciones 1909 → Siglo XXI en este capítulo/);
+});
+
 

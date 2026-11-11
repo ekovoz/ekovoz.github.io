@@ -4,6 +4,7 @@
 import {
   normalizeRootNotesEntries,
   renderCrdtWalAndLockP2AuditCardHtml,
+  renderFieldWorkshopCensus7164Html,
   renderMasterCensus7164CardHtml,
 } from "./drawer_hydrators.js";
 
@@ -340,8 +341,56 @@ export let MASTER_CENSUS_SUMMARY = {
   total_world_languages: 7164,
   glottolog_subclades_total: 380,
   macro_regions_12_total: 12,
-  macro_regions_12: [],
+  macro_regions_12: [
+    { id: "R01", name: "Mesoamérica, Andes y Amazonía", languages_count: 1064, anchor_lang: "stp" },
+    { id: "R02", name: "Norteamérica Indígena y Ártico", languages_count: 268, anchor_lang: "nv" },
+    { id: "R03", name: "Europa Occidental y Mediterráneo", languages_count: 142, anchor_lang: "es" },
+    { id: "R04", name: "Europa Oriental y Eurasia Eslava", languages_count: 144, anchor_lang: "ru" },
+    { id: "R05", name: "Anatolia, Cáucaso y Asia Central", languages_count: 158, anchor_lang: "tr" },
+    { id: "R06", name: "Medio Oriente y Creciente Fértil", languages_count: 112, anchor_lang: "he" },
+    { id: "R07", name: "África del Norte, Sahel y Cuerno de África", languages_count: 486, anchor_lang: "ar" },
+    { id: "R08", name: "África Subsahariana, Congo y Golfo de Guinea", languages_count: 1654, anchor_lang: "sw" },
+    { id: "R09", name: "Subcontinente Indio e Himalaya", languages_count: 682, anchor_lang: "hi" },
+    { id: "R10", name: "Asia Oriental y Meseta Altaica", languages_count: 298, anchor_lang: "zh" },
+    { id: "R11", name: "Sudeste Asiático Continental e Insular", languages_count: 842, anchor_lang: "id" },
+    { id: "R12", name: "Oceanía, Papúa Nueva Guinea y Pacífico Sur", languages_count: 1314, anchor_lang: "tpi" },
+  ],
 };
+
+/**
+ * Calcula la vista previa determinista de rollback e inspección de un snapshot SHA-256 en el diario WAL (`D6-R39`).
+ */
+export function computeWalSnapshotRollbackPreview(
+  snapshotIndex = 1,
+  walSemilattice = CRDT_WAL_SEMILATTICE,
+  lockJournal = PATCH_JOURNAL_LOCK_P2,
+) {
+  const idx = Math.max(1, Math.min(10, Number(snapshotIndex) || 1));
+  const patches = Array.isArray(walSemilattice?.canonical_patches)
+    ? walSemilattice.canonical_patches
+    : [];
+  const targetPatch = patches[(idx - 1) % Math.max(1, patches.length)] || {
+    patch_id: `PATCH-WAL-SNAP-${idx}`,
+    level: "L2",
+    ref: "GEN.1.1",
+    strong_id: "H0430",
+    status: "COMMITTED",
+  };
+  const sha256Prefix = computeDeterministicContentHashHex(
+    `${targetPatch.patch_id}|${targetPatch.ref}|${targetPatch.strong_id}|snap:${idx}`,
+  ).slice(0, 16);
+  return {
+    snapshotIndex: idx,
+    sha256Prefix,
+    patchId: String(targetPatch.patch_id || `PATCH-WAL-SNAP-${idx}`),
+    level: String(targetPatch.level || "L2"),
+    ref: String(targetPatch.ref || "GEN.1.1"),
+    strongId: String(targetPatch.strong_id || "H0430"),
+    vetoLockGuard: String(lockJournal?.veto_lock || "Lock P2 (PDA Unbalanced Nested Quotation)"),
+    restorableVersesCount: idx === 1 ? 31102 : idx * 25,
+    previewText: `Snapshot #${idx} (sha256:${sha256Prefix}…) · Parche ${targetPatch.patch_id} (${targetPatch.level} · ${targetPatch.ref} · ${targetPatch.strong_id}) · Guardia activa: ${lockJournal?.veto_lock || "Lock P2"} · Restauración atómica lista.`,
+  };
+}
 
 /**
  * Pliega un flujo de eventos JSONL de `stp.wal.jsonl` bajo un semirretículo de unión idempotente (`patch_id` LWW),
@@ -1002,6 +1051,8 @@ export function renderCascadeAndLadderHtml({
   activeRung = "ALL",
   activeOtWave = 0,
   limit = 24,
+  includeWalCard = false,
+  includeCensusCard = false,
 } = {}) {
   const cleanLang = sanitizePipeField(lang || "stp").toLowerCase();
   const resolvedRef = sanitizePipeField(currentRef || osis || "GEN.1.1").toUpperCase();
@@ -1154,15 +1205,21 @@ export function renderCascadeAndLadderHtml({
     `</div>` +
     `</div>`;
 
-  const masterCensusAndLedgerHtml = renderMasterCensus7164CardHtml(
-    MASTER_CENSUS_SUMMARY,
-    STP_LEDGER_SUMMARY,
-  );
-  const crdtWalAndLockP2Html = renderCrdtWalAndLockP2AuditCardHtml({
-    crdt_wal_semilattice: CRDT_WAL_SEMILATTICE,
-    patch_journal_lock_p2: PATCH_JOURNAL_LOCK_P2,
-    root_notes_stp: ROOT_NOTES_STP,
-  });
+  const masterCensusAndLedgerHtml =
+    includeCensusCard === true
+      ? renderFieldWorkshopCensus7164Html(
+          MASTER_CENSUS_SUMMARY,
+          STP_LEDGER_SUMMARY,
+        )
+      : "";
+  const crdtWalAndLockP2Html =
+    includeWalCard === true
+      ? renderCrdtWalAndLockP2AuditCardHtml({
+          crdt_wal_semilattice: CRDT_WAL_SEMILATTICE,
+          patch_journal_lock_p2: PATCH_JOURNAL_LOCK_P2,
+          root_notes_stp: ROOT_NOTES_STP,
+        })
+      : "";
 
   return (
     `<div class="cascade-impact-box" data-cascade-level="${cleanLevel}" data-cascade-lang="${cleanLang}" data-celf-total="${totalCount}" data-active-ot-wave="${waveNum}" style="padding:0.65rem;border-radius:10px;border:1px solid var(--card-border);background:var(--card-bg);">` +
@@ -1344,6 +1401,10 @@ export function renderTallerArtifactsCatalogHtml(langOrOpts = "es") {
     typeof langOrOpts === "object" && langOrOpts !== null
       ? langOrOpts.lang || "es"
       : langOrOpts;
+  const includeCensusCard =
+    typeof langOrOpts === "object" && langOrOpts !== null
+      ? langOrOpts.includeCensusCard !== false
+      : true;
   const cleanLang = ["es", "en", "stp", "he", "grc"].includes(String(rawLang || "").toLowerCase())
     ? String(rawLang).toLowerCase()
     : "es";
@@ -1352,7 +1413,9 @@ export function renderTallerArtifactsCatalogHtml(langOrOpts = "es") {
     patch_journal_lock_p2: PATCH_JOURNAL_LOCK_P2,
     root_notes_stp: ROOT_NOTES_STP,
   });
-  const censusHtml = renderMasterCensus7164CardHtml(MASTER_CENSUS_SUMMARY, STP_LEDGER_SUMMARY);
+  const censusHtml = includeCensusCard
+    ? renderMasterCensus7164CardHtml(MASTER_CENSUS_SUMMARY, STP_LEDGER_SUMMARY)
+    : "";
   return (
     `<div class="taller-artifacts-grid" data-taller-lang="${cleanLang}" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:0.45rem;margin-bottom:0.6rem;">` +
     TALLER_CC0_ARTIFACTS.map(
