@@ -1015,6 +1015,12 @@ test("D1_to_D10_A_plus_ARB_EKOVOZ_61_triple_provenance_closure_and_full_backend_
     path.join(WEB_DIR, "mostrador", "dosis.js"),
     path.join(WEB_DIR, "mostrador", "diachronic_register.js"),
     path.join(WEB_DIR, "mostrador", "drawer_hydrators.js"),
+    path.join(WEB_DIR, "mostrador", "drawer_study.js"),
+    path.join(WEB_DIR, "mostrador", "drawer_print.js"),
+    path.join(WEB_DIR, "mostrador", "drawer_workshop.js"),
+    path.join(WEB_DIR, "mostrador", "drawer_share.js"),
+    path.join(WEB_DIR, "mostrador", "bridge_and_chapter.js"),
+    path.join(WEB_DIR, "mostrador", "sister_works_controller.js"),
   ];
   const controllerCorpus = controllerFiles.map((f) => fs.readFileSync(f, "utf8")).join("\n");
 
@@ -1652,14 +1658,14 @@ test("R37_SLICE_119_word_click_14col_highlight_static_rosetta_diachronic_stage_p
   const idxRosettaStatic = indexHtml.indexOf('id="philologyRosettaStaticHost"');
   assert.ok(idxLeipzigClose > 0 && idxRosettaStatic > idxLeipzigClose, "#philologyRosettaStaticHost must be a static sibling after #leipzig14ColStratumAction");
 
-  // 3. D3-R37 (3A) + D5-R38 (5A): #bibleAnalyticalThermometerPanel in #stage-action and #diachronicRegisterAuditPanel inside Drawer 1 (#bibleEasyDrawerPanel)
+  // 3. D3-R37 (3A) + D5-R38 (5A) + D2-R41: #bibleAnalyticalThermometerPanel and #diachronicRegisterAuditPanel inside Drawer 1 (#bibleEasyDrawerPanel)
   const idxStageAction = indexHtml.indexOf('id="stage-action"');
   const idxThermo = indexHtml.indexOf('id="bibleAnalyticalThermometerPanel"');
   const idxEasyDrawer = indexHtml.indexOf('id="bibleEasyDrawerPanel"');
   const idxPrintDrawerStart = indexHtml.indexOf('id="biblePrintEditionsSheet"');
   const idxAuditPanel = indexHtml.indexOf('id="diachronicRegisterAuditPanel"');
   const idxCompassModal = indexHtml.indexOf('id="bibleCoordinateCompassModal"');
-  assert.ok(idxThermo > idxStageAction && idxThermo < idxCompassModal, "#bibleAnalyticalThermometerPanel must live inside #stage-action");
+  assert.ok(idxThermo > idxEasyDrawer && idxThermo < idxPrintDrawerStart, "#bibleAnalyticalThermometerPanel must live inside Drawer 1 (#bibleEasyDrawerPanel)");
   assert.ok(idxAuditPanel > idxEasyDrawer && idxAuditPanel < idxPrintDrawerStart, "#diachronicRegisterAuditPanel must live inside Drawer 1 (#bibleEasyDrawerPanel)");
 
   // 4. D4-R37 (4A): #bibleOralPorticoBanner is not hidden by display:none !important when inspector is open
@@ -1801,7 +1807,7 @@ test("R39_SLICE_127_to_132_split_brain_elimination_dark_mode_contrast_and_100pct
   const dlInfo = i18nUiMod.updateDownloadLinks(
     {
       getElementById(id) {
-        return { href: "", setAttribute() {}, value: id === "langSelect" ? "es" : "" };
+        return { href: "", setAttribute() { }, value: id === "langSelect" ? "es" : "" };
       },
     },
     "es",
@@ -2084,4 +2090,108 @@ test("R40 (D1-R40..D9-R40 / ARB-EKOVOZ-77 / DEB-R40-01..10): Full i18n template 
   assert.doesNotMatch(evMajorEs, /<em>Puente:<\/em>/, "DEB-R40-10: major language 'es' must not render redundant English bridge line");
   const evMinorQuc = renderEvangeliosStageCardHtml(sampleEvEntry, "quc", "es");
   assert.match(evMinorQuc, /<em>Puente:<\/em> En el principio era el Verbo\./, "DEB-R40-10: indigenous language 'quc' must render Spanish bridge line");
+});
+
+test("R41 (D1-R41..D10-R41 / ARB-EKOVOZ-78 / GOLD-665): Sovereign Surface & Asset Registry, 4-Drawer Harel Symmetry, 18-Locale Parity & Clean-Seam Modularity", async () => {
+  const estudioMod = await import("./estudio.js");
+  const mejorarMod = await import("./mejorar.js");
+  const dosisMod = await import("./dosis.js");
+  const hydratorsMod = await import("./drawer_hydrators.js");
+  const sisterMod = await import("./sister_works_controller.js");
+  const drawerStudyMod = await import("./drawer_study.js");
+  const drawerPrintMod = await import("./drawer_print.js");
+  const drawerWorkshopMod = await import("./drawer_workshop.js");
+  const drawerShareMod = await import("./drawer_share.js");
+
+  // 1. D1-R41 & D3-R41: Clean-seam 4-drawer modules + Study Harel 3-subtab partition without duplicate Rosetta Inspector
+  assert.deepEqual(hydratorsMod.HAREL_STUDY_SUBTABS, ["words", "rosetta", "calibrate"]);
+  assert.equal(typeof drawerStudyMod.hydrateStudyDrawerPanel, "function");
+  assert.equal(typeof drawerPrintMod.renderPrintDrawerPanelsSyncInDrawer, "function");
+  assert.equal(typeof drawerWorkshopMod.hydrateImproveDrawerPanel, "function");
+  assert.equal(typeof drawerShareMod.hydrateShareAndAuditDrawerPanel, "function");
+
+  const studyNoInlineRosetta = estudioMod.renderStudy14ColDrawerHtml(
+    { text: "En el principio", words: [{ c01_ordinal: 1, c02_surface: "בְּרֵאשִׁית", c04_strong: "H7225" }] },
+    { book: "GEN", chapter: 1, verse: 1, lang: "es", uiLocale: "es" },
+    { includeRosettaInspector: false },
+  );
+  assert.doesNotMatch(
+    studyNoInlineRosetta,
+    /id="philologyRosettaInspectorCard"/,
+    "D3-R41: Subtab 1 must not duplicate #philologyRosettaInspectorCard when #philologyRosettaStaticHost exists",
+  );
+
+  // 2. D4-R41 & D7-R41: Deduplicated #celf250SeedOutput in Gaveta 3 and full-width grid-column: 1 / -1 cards
+  const improveNoInlineSeed = mejorarMod.renderImproveDrawerHtml({
+    book: "ROM",
+    chapter: 1,
+    verse: 16,
+    lang: "stp",
+    locale: "es",
+    currentText: "Tet na tu' nii'ñ...",
+    includeInlineSeedPanel: false,
+  });
+  assert.doesNotMatch(
+    improveNoInlineSeed,
+    /id="celf250SeedOutput"/,
+    "D4-R41: Subtab 1 of Drawer 3 must not inject #celf250SeedOutput when static Subtab 2 host exists",
+  );
+  assert.match(improveNoInlineSeed, /Proponer mejora de traducción/, "D6-R41: Spanish fallback must be used when locale='es' and i18n is omitted");
+
+  const censusHtml = hydratorsMod.renderFieldWorkshopCensus7164Html({ uiLocale: "es" });
+  assert.match(censusHtml, /id="masterCensus7164InspectorCard"[^>]*grid-column:1 \/ -1;width:100%/);
+  const cascadeWithWalHtml = mejorarMod.renderCascadeAndLadderHtml({
+    book: "ROM",
+    chapter: 1,
+    verse: 16,
+    lang: "stp",
+    locale: "es",
+    includeWalCard: true,
+    includeCensusCard: false,
+  });
+  assert.match(cascadeWithWalHtml, /id="crdtWalAndLockP2AuditCard"[^>]*grid-column:1 \/ -1;width:100%/);
+
+  // 3. D5-R41: Live PDF synthesis for text-only Bibles (zero cross-language substitution to Spanish)
+  const ptEditions = dosisMod.listAll14PrintEditionsForLang("pt", "es");
+  assert.ok(ptEditions.length >= 14, "listAll14PrintEditionsForLang must return all 14+ profiles");
+  assert.equal(ptEditions[0].hasPrecompiledPdf, false, "pt is a verified text Bible without precompiled PDF blocks");
+  assert.equal(ptEditions[0].supportsLivePdfSynthesis, true, "pt must support live PDF synthesis");
+  const livePdfBytes = dosisMod.synthesizeLiveChapterDose1PdfBytes({
+    lang: "pt",
+    book: "GEN",
+    chapter: 1,
+    verse: 1,
+    paperFormat: "a4",
+    versesMap: { "1": "No princípio criou Deus os céus e a terra.", "2": "A terra, porém, estava sem forma e vazia." },
+  });
+  assert.ok(livePdfBytes instanceof Uint8Array && livePdfBytes.byteLength > 400);
+  const pdfHeader = new TextDecoder("ascii").decode(livePdfBytes.slice(0, 8));
+  assert.equal(pdfHeader, "%PDF-1.4");
+
+  // 4. D6-R41: All 18 i18n JSON catalogs have 100% key parity (>= 280 keys each)
+  const i18nDir = path.join(WEB_DIR, "i18n");
+  const enCatalog = JSON.parse(fs.readFileSync(path.join(i18nDir, "en.json"), "utf8"));
+  const enKeys = Object.keys(enCatalog.messages || enCatalog.strings || enCatalog).filter((k) => !k.startsWith("_")).sort();
+  assert.ok(enKeys.length >= 280, `Expected >= 280 i18n keys in en.json, got ${enKeys.length}`);
+  for (const code of ["ar", "bn", "bn-BD", "bn-IN", "en", "es", "fa", "fr", "hi", "id", "it", "ja", "ko", "pt", "ru", "tr", "ur", "zh-Hans"]) {
+    const cat = JSON.parse(fs.readFileSync(path.join(i18nDir, `${code}.json`), "utf8"));
+    const keys = Object.keys(cat.messages || cat.strings || cat).filter((k) => !k.startsWith("_")).sort();
+    assert.deepEqual(keys, enKeys, `D6-R41: web/i18n/${code}.json must have 100% key parity with en.json`);
+  }
+
+  // 5. D2-R41 & D9-R41: index.html sticky drawer bar, Study Harel subtabs, Felices language selector, and sister works drawer isolation
+  const indexHtml = fs.readFileSync(path.join(WEB_DIR, "index.html"), "utf8");
+  assert.match(indexHtml, /id="bibleProgressiveSheetDoors"[^>]*position:\s*sticky;\s*top:\s*0/);
+  assert.match(indexHtml, /id="studyHarelSubtabsBar"/);
+  assert.match(indexHtml, /id="felicesLangSelect"/);
+  assert.match(indexHtml, /id="bibleAnalyticalThermometerPanel"[^>]*data-study-subtab-panel="calibrate"/);
+
+  const mockEls = {
+    sovereignGlobalDrawersHost: { hidden: false, style: { display: "" } },
+    bibleProgressiveSheetDoors: { hidden: false, style: { display: "" } },
+  };
+  sisterMod.syncSisterWorksTabsDom("felices", (id) => mockEls[id] || null);
+  assert.equal(mockEls.sovereignGlobalDrawersHost.hidden, true, "D9-R41: #sovereignGlobalDrawersHost must be hidden on Felices tab");
+  sisterMod.syncSisterWorksTabsDom("biblia", (id) => mockEls[id] || null);
+  assert.equal(mockEls.sovereignGlobalDrawersHost.hidden, false, "D9-R41: #sovereignGlobalDrawersHost must be visible on Biblia tab");
 });

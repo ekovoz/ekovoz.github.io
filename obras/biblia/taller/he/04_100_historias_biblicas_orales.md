@@ -1,0 +1,10 @@
+# 100 Historias Bíblicas Orales (CC0 · Ekovoz Taller de Campo)
+
+1. **Creación y Aliento de Vida** (`GEN 1:1–2:3`)
+2. **El Pacto del Arcoíris con Noé** (`GEN 6:9–9:17`)
+3. **El Llamado de Abraham** (`GEN 12:1–9`)
+4. **Éxodo y Liberación** (`EXO 12:1–15:21`)
+5. **El Buen Pastor** (`PSA 23:1–6`)
+6. **El Siervo Sufriente** (`ISA 52:13–53:12`)
+7. **El Verbo Hecho Carne** (`JHN 1:1–18`)
+8. **Las Dichas del Monte** (`MAT 5:1–16`)

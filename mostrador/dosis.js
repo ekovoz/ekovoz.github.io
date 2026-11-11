@@ -199,7 +199,50 @@ export const CANONICAL_14_PLUS_2_EDITIONS_CATALOG = [
   { id: "16_checklist_80_bloques", editionSlug: "checklist_80_bloques", label: "16. Checklist de 80 Bloques de Campo (PDF)", label_en: "16. 80 Canonical Field Blocks Checklist (PDF)", kind: "field_pdf", url: "obras/biblia/campo/checklist_80_bloques.pdf" },
 ];
 
-/** Devuelve las ediciones tipográficas canónicas + 2 PDFs de campo enriquecidas con `downloads_manifest.json` y perfiles TOML (`D3-S21+`). */
+export const PRECOMPILED_PDF_LANGS = ["es", "en", "stp", "he", "grc"];
+export const VERIFIED_TEXT_BIBLE_LANGS = [
+  "es", "es-1909", "en", "stp", "he", "grc", "pt", "fr", "ar", "ru", "zh-Hans", "hi", "bn", "id", "ur", "fa",
+];
+
+/**
+ * D5-R41 (`5A` · `ARB-EKOVOZ-78`):
+ * Sintetiza un PDF `%PDF-1.4` minimalista válido en memoria para las 11 Biblias verificadas en texto
+ * que aún no tienen los 80 bloques PDF precompilados en disco, garantizando que `dispenseDose1` funcione en las 16 Biblias.
+ */
+export function synthesizeLiveChapterDose1PdfBytes({
+  lang = "pt",
+  book = "GEN",
+  chapter = 1,
+  verse = 1,
+  text = "",
+  versesMap = null,
+  sheets = 1,
+} = {}) {
+  const mapEntries =
+    versesMap && typeof versesMap === "object"
+      ? Object.entries(versesMap)
+          .slice(0, 12)
+          .map(([vNum, vTxt]) => `${vNum}. ${vTxt}`)
+          .join(" ")
+      : "";
+  const safeText = String(text || mapEntries || `${book} ${chapter}:${verse} (${lang})`)
+    .replace(/[()\\]/g, " ")
+    .slice(0, 240);
+  const pageCount = Math.max(2, Math.min(6, (Number(sheets) || 1) * 2));
+  const kids = Array.from({ length: pageCount }, (_, idx) => `${idx + 3} 0 R`).join(" ");
+  const contentObjId = pageCount + 3;
+  const streamText = `BT /F1 10 Tf 54 760 Td (${book} ${chapter}:${verse} [${lang}] - ${safeText}) Tj ET`;
+  let pdf = `%PDF-1.4\n1 0 obj << /Type /Catalog /Pages 2 0 R >> endobj\n2 0 obj << /Type /Pages /Count ${pageCount} /Kids [ ${kids} ] >> endobj\n`;
+  for (let i = 0; i < pageCount; i++) {
+    const objId = i + 3;
+    pdf += `${objId} 0 obj << /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Contents ${contentObjId} 0 R >> endobj\n`;
+  }
+  pdf += `${contentObjId} 0 obj << /Length ${streamText.length} >>\nstream\n${streamText}\nendstream\nendobj\n`;
+  pdf += `% Live Dose1 (${lang} ${book} ${chapter}:${verse}): ${safeText}\n%%EOF\n`;
+  return new TextEncoder().encode(pdf);
+}
+
+/** Devuelve las ediciones tipográficas canónicas + 2 PDFs de campo enriquecidas con `downloads_manifest.json` y perfiles TOML (`D3-S21+`, `D5-R41`). */
 export function listCatalogEditionsForLang(manifestOrLang, maybeLang = "es", options = {}) {
   const isFirstArgLang = typeof manifestOrLang === "string";
   const resolvedLang = String(isFirstArgLang ? manifestOrLang : maybeLang || "es").trim().toLowerCase() || "es";
@@ -274,6 +317,8 @@ export function listCatalogEditionsForLang(manifestOrLang, maybeLang = "es", opt
       columns: resolvedCols,
       paper: resolvedPaper.includes("Letter") ? "Letter" : "A4",
     });
+    const hasPrecompiledPdf = PRECOMPILED_PDF_LANGS.includes(resolvedLang);
+    const availabilityMode = hasPrecompiledPdf ? "precompiled_pdf" : "live_chapter_synthesis";
     return {
       ...item,
       label: localizedLabel,
@@ -290,6 +335,10 @@ export function listCatalogEditionsForLang(manifestOrLang, maybeLang = "es", opt
       estimatedPages: budget.estimatedPages,
       summarySpec: `${resolvedCols} col · ${resolvedFontPt}pt · ${resolvedPaper} (~${budget.estimatedPages} ${isEn ? "pages" : "págs"})`,
       lang: resolvedLang,
+      diskLang,
+      hasPrecompiledPdf,
+      supportsLivePdfSynthesis: !hasPrecompiledPdf,
+      availabilityMode,
       path: fallbackUrl,
       url: fallbackUrl,
       bytes: fullMatch?.bytes || 0,
@@ -1192,14 +1241,14 @@ export function syncPrintDrawerControlsFromEditionProfile(
     rawPaper.toLowerCase().includes("landscape") || columns === 2 ? "landscape" : "portrait";
   const rawImpMode = String(
     found.impositionMode ||
-      found.imposition_mode ||
-      found.parsed?.imposition?.mode ||
-      (cleanId.includes("refugio") ||
+    found.imposition_mode ||
+    found.parsed?.imposition?.mode ||
+    (cleanId.includes("refugio") ||
       cleanId.includes("3col") ||
       cleanId.includes("bolsillo") ||
       cleanId.includes("evangelio")
-        ? "saddle_stitch"
-        : "single_sheet_20mm"),
+      ? "saddle_stitch"
+      : "single_sheet_20mm"),
   );
   const foliationMode =
     rawImpMode === "saddle_stitch" || rawImpMode === "multi_signature_4n"
@@ -1252,7 +1301,9 @@ export function renderImpositionAndLayoutPreviewHtml({
   columns = 2,
   fontPt = 9.5,
   dir = "ltr",
+  uiLocale = "es",
 } = {}) {
+  const isEn = String(uiLocale || "es").trim().toLowerCase().startsWith("en");
   const normPaper = String(paper || "A4").toLowerCase().includes("letter") ? "Letter" : "A4";
   const foliation = computeFoliationLayout({
     mode: mode === "layout" ? "single_sheet_20mm" : "saddle_stitch",
@@ -1268,8 +1319,23 @@ export function renderImpositionAndLayoutPreviewHtml({
   const budget = computeKindlePrintBudget({ fontPt, columns, paper: normPaper });
   const firstSpread =
     foliation.spreads && foliation.spreads[0]
-      ? `Frente [${foliation.spreads[0].front.join(", ")}] · Dorso [${foliation.spreads[0].back.join(", ")}]`
-      : "Pliego [16, 1] / [2, 15]";
+      ? isEn
+        ? `Front [${foliation.spreads[0].front.join(", ")}] · Back [${foliation.spreads[0].back.join(", ")}]`
+        : `Frente [${foliation.spreads[0].front.join(", ")}] · Dorso [${foliation.spreads[0].back.join(", ")}]`
+      : isEn
+        ? "Spread [16, 1] / [2, 15]"
+        : "Pliego [16, 1] / [2, 15]";
+  const titleText =
+    mode === "layout"
+      ? isEn
+        ? "📏 A4/Letter Geometry Verified (INV-EKO-TYP-003)"
+        : "📏 Geometría A4/Carta Verificada (INV-EKO-TYP-003)"
+      : isEn
+        ? "📐 Saddle-Stitch 4n Booklet Imposition Ready to Fold"
+        : "📐 Imposición Saddle-Stitch 4n Lista para Doblar";
+  const detailText = isEn
+    ? `Paper: ${normPaper} · ${budget.summaryText} · ${firstSpread} · Spine √2=${foliation.spineGutterMm || 9.215} mm · Binder margin=${foliation.bindingMarginMm || 20.0} mm (Ø ${foliation.punchHoleDiameterMm || 4.0} mm) · Max creep=${imp.maxCreepMm} mm`
+    : `Papel: ${normPaper} · ${budget.summaryText} · ${firstSpread} · Lomo √2=${foliation.spineGutterMm || 9.215} mm · Margen perforado=${foliation.bindingMarginMm || 20.0} mm (Ø ${foliation.punchHoleDiameterMm || 4.0} mm) · Creep máx=${imp.maxCreepMm} mm`;
 
   return (
     `<div class="imposition-booklet-preview-card" ` +
@@ -1279,8 +1345,8 @@ export function renderImpositionAndLayoutPreviewHtml({
     `data-binding-margin-mm="${foliation.bindingMarginMm || 20.0}" ` +
     `data-creep-mm="${imp.maxCreepMm}" ` +
     `style="padding:0.45rem 0.65rem;border-radius:8px;border:1px solid var(--badge-border);background:var(--badge-bg);display:flex;flex-wrap:wrap;gap:0.4rem;align-items:center;justify-content:space-between;">` +
-    `<strong>${mode === "layout" ? "📏 Geometría A4/Carta Verificada (INV-EKO-TYP-003)" : "📐 Imposición Saddle-Stitch 4n Lista para Doblar"}</strong>` +
-    `<span>Papel: ${normPaper} · ${budget.summaryText} · ${firstSpread} · Lomo √2=${foliation.spineGutterMm || 9.215} mm · Margen perforado=${foliation.bindingMarginMm || 20.0} mm (Ø ${foliation.punchHoleDiameterMm || 4.0} mm) · Creep máx=${imp.maxCreepMm} mm</span>` +
+    `<strong>${titleText}</strong>` +
+    `<span>${detailText}</span>` +
     `</div>`
   );
 }

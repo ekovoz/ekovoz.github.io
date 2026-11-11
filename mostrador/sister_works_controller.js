@@ -122,6 +122,7 @@ export function syncSisterWorksTabsDom(cleanWork = "biblia", getElFn) {
   const bibSec = getElFn("bibleSovereignSection");
   const felSec = getElFn("felicesSovereignSection");
   const evaSec = getElFn("evangeliosSovereignSection");
+  const drawersHost = getElFn("sovereignGlobalDrawersHost");
   const tabBib = getElFn("tabWorkBiblia");
   const tabFel = getElFn("tabWorkFelices");
   const tabEva = getElFn("tabWorkEvangelios");
@@ -137,6 +138,7 @@ export function syncSisterWorksTabsDom(cleanWork = "biblia", getElFn) {
   applySec(bibSec, cleanWork === "biblia");
   applySec(felSec, cleanWork === "felices");
   applySec(evaSec, cleanWork === "evangelios");
+  applySec(drawersHost, cleanWork === "biblia");
 
   if (tabBib) tabBib.setAttribute("aria-selected", cleanWork === "biblia" ? "true" : "false");
   if (tabFel) tabFel.setAttribute("aria-selected", cleanWork === "felices" ? "true" : "false");

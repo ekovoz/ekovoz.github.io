@@ -878,11 +878,30 @@ export const IMPROVE_I18N_FALLBACKS = {
   "improve.download_patch": "⬇️ Download .patch.toml",
 };
 
+export const IMPROVE_I18N_FALLBACKS_ES = {
+  "improve.title": "Proponer mejora de traducción (L1–L5)",
+  "improve.subtitle": "Parche determinista en texto plano (0 Bytes Audio · CC0)",
+  "improve.kind_label": "Objetivo:",
+  "improve.kind_verse": "Versículo bíblico / Raíz Strong",
+  "improve.kind_ui": "Texto de interfaz",
+  "improve.level_label": "Nivel de cascada:",
+  "improve.level.L1": "L1 · Puntuación / Ortografía",
+  "improve.level.L2": "L2 · Glosa léxica (Raíz Strong)",
+  "improve.level.L3": "L3 · Sintaxis de cláusula (VSO/SOV/SVO)",
+  "improve.level.L4": "L4 · Cohesión discursiva y perícopa",
+  "improve.level.L5": "L5 · Propagación canónica entre las 3 obras",
+  "improve.current": "Texto actual:",
+  "improve.proposed": "Mejora propuesta:",
+  "improve.note": "Nota del anciano / revisor comunitario:",
+  "improve.copy_patch": "📋 Copiar línea de parche",
+  "improve.download_patch": "⬇️ Descargar .patch.toml",
+};
+
 export function renderImproveDrawerHtml({
   i18n = null,
   t: customT = null,
   lang = "stp",
-  locale = "en",
+  locale = "es",
   ref = "",
   osis = "",
   strongId = "",
@@ -890,11 +909,14 @@ export function renderImproveDrawerHtml({
   currentSurface = "",
   elicitationRank = 1,
   level = "L2",
+  includeInlineSeedPanel = true,
 } = {}) {
   const resolvedRef = sanitizePipeField(ref || osis || "GEN.1.1").toUpperCase();
   const resolvedVerseText = String(currentVerseText || currentSurface || "");
   const isNewTestament = /^(MAT|MRK|MAR|LUK|JHN|ACT|ROM|1CO|2CO|GAL|EPH|PHP|COL|1TH|2TH|1TI|2TI|TIT|PHM|HEB|JAS|1PE|2PE|1JN|2JN|3JN|JUD|REV)\b/i.test(resolvedRef);
   const resolvedStrong = sanitizePipeField(strongId || (isNewTestament ? "G3056" : "H0430")).toUpperCase();
+  const isEn = String(locale || "es").trim().toLowerCase().startsWith("en");
+  const fallbackDict = isEn ? IMPROVE_I18N_FALLBACKS : IMPROVE_I18N_FALLBACKS_ES;
   const t = (k, vars) => {
     const raw =
       i18n && typeof i18n.t === "function"
@@ -903,7 +925,7 @@ export function renderImproveDrawerHtml({
           ? customT(k, vars)
           : k;
     if (!raw || raw === k || String(raw).startsWith("improve.")) {
-      return IMPROVE_I18N_FALLBACKS[k] || String(raw || k);
+      return fallbackDict[k] || IMPROVE_I18N_FALLBACKS[k] || String(raw || k);
     }
     return raw;
   };
@@ -936,7 +958,6 @@ export function renderImproveDrawerHtml({
     )
     .join(" ");
 
-  const isEn = String(locale || "en").trim().toLowerCase().startsWith("en");
   return (
     `<section class="improve-drawer" data-lang="${patch.lang}" data-ref="${patch.ref}" data-strong-id="${patch.strong_id}" data-audio-bytes="0" data-lock8-status="${verifyLock8PredicativeAndNegation({ oldSurface: patch.old_surface, newSurface: patch.new_surface }).status}" data-eight-locks-status="${eightLocksReport.status}">` +
     `<header style="margin-bottom:0.65rem;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:0.4rem;">` +
@@ -978,10 +999,12 @@ export function renderImproveDrawerHtml({
     `<input id="improveNoteInput" type="text" value="" style="width:100%;min-height:48px;padding:0.4rem;">` +
     `</label>` +
     `<pre id="improvePatchOutput" style="padding:0.6rem;border-radius:8px;background:var(--bg-secondary);font-size:0.78rem;overflow-x:auto;">${patch.payloadLine}</pre>` +
-    `<div class="celf250-ladder-panel" data-celf250-ladder="true" data-celf250-rank="${seed250.rank}" style="padding:0.6rem;border-radius:8px;border:1px solid var(--card-border);">` +
-    `<strong style="font-size:0.82rem;">🧬 ${isEn ? `Active CELF-250 Ladder (#${seed250.rank}/250 · 30 Hours · 0 Bytes Audio)` : `Escalera Activa CELF-250 (#${seed250.rank}/250 · 30 Horas · 0 Bytes Audio)`}</strong>` +
-    `<pre id="celf250SeedOutput" style="margin:0.35rem 0 0 0;font-size:0.75rem;overflow-x:auto;">${seed250.payloadLine}</pre>` +
-    `</div>` +
+    (includeInlineSeedPanel
+      ? `<div class="celf250-ladder-panel" data-celf250-ladder="true" data-celf250-rank="${seed250.rank}" style="padding:0.6rem;border-radius:8px;border:1px solid var(--card-border);">` +
+        `<strong style="font-size:0.82rem;">🧬 ${isEn ? `Active CELF-250 Ladder (#${seed250.rank}/250 · 30 Hours · 0 Bytes Audio)` : `Escalera Activa CELF-250 (#${seed250.rank}/250 · 30 Horas · 0 Bytes Audio)`}</strong>` +
+        `<pre id="celf250SeedOutput" style="margin:0.35rem 0 0 0;font-size:0.75rem;overflow-x:auto;">${seed250.payloadLine}</pre>` +
+        `</div>`
+      : "") +
     `<div style="display:flex;flex-wrap:wrap;gap:0.5rem;">` +
     `<button type="button" id="btnApplySuggestedImprovement" class="uls-chip apply-improvement" data-apply-improvement="true" data-proposed-surface="${patch.new_surface.replace(/"/g, "&quot;")}" style="min-height:48px;">✅ ${isEn ? "Apply improvement to cascade" : "Aplicar mejora a la cascada"}</button>` +
     `<button type="button" id="btnCopyPatchPayload" class="uls-chip" style="min-height:48px;" data-i18n="improve.copy_patch">${t("improve.copy_patch")}</button>` +
@@ -1224,12 +1247,27 @@ export function renderCascadeAndLadderHtml({
         })
       : "";
 
+  const seed250 = buildElicitationSeedPayload({
+    lang: cleanLang,
+    rung: activeRung && activeRung !== "ALL" ? activeRung : "Rung1SwadeshAndNsm65",
+    rank: 1,
+    verseId: resolvedRef,
+    strongIds: [sanitizePipeField(strongId || "H0430").toUpperCase()],
+    responseText: "",
+  });
+  const seedPanelHtml =
+    `<div class="celf250-ladder-panel" data-celf250-ladder="true" data-celf250-rank="${seed250.rank}" style="margin-bottom:0.5rem;padding:0.55rem;border-radius:8px;border:1px solid var(--card-border);background:var(--bg-secondary);">` +
+    `<strong style="font-size:0.8rem;">🧬 ${isEn ? `Active CELF-250 Seed (#${seed250.rank}/250 · 30 Hours · 0 Bytes Audio)` : `Semilla Activa CELF-250 (#${seed250.rank}/250 · 30 Horas · 0 Bytes Audio)`}</strong>` +
+    `<pre id="celf250SeedOutput" style="margin:0.3rem 0 0 0;font-size:0.74rem;overflow-x:auto;">${seed250.payloadLine}</pre>` +
+    `</div>`;
+
   return (
     `<div class="cascade-impact-box" data-cascade-level="${cleanLevel}" data-cascade-lang="${cleanLang}" data-celf-total="${totalCount}" data-active-ot-wave="${waveNum}" style="padding:0.65rem;border-radius:10px;border:1px solid var(--card-border);background:var(--card-bg);">` +
     `<strong style="font-size:0.84rem;display:block;margin-bottom:0.3rem;">🌊 ${isEn ? `Deterministic Cascade ${cleanLevel} · CELF-250 Ladder (${totalCount} rungs · ${sanitizePipeField(strongId)} in ${resolvedRef} → Bible + Gospels + Beatitudes)` : `Cascada Determinista ${cleanLevel} · Escalera CELF-250 (${totalCount} peldaños · ${sanitizePipeField(strongId)} en ${resolvedRef} → Biblia + Evangelios + Felices)`}</strong>` +
     `<p style="margin:0 0 0.45rem 0;font-size:0.8rem;color:var(--text-secondary);">` +
     `${isEn ? `When refining this root in <code>${cleanLang}</code>, the engine propagates the improvement across all concordant occurrences with Dawid-Skene + SPRT Bayesian quarantine (0 Bytes Audio). Tap any rung to jump to the diagnostic verse:` : `Al corregir esta raíz en <code>${cleanLang}</code>, el motor propaga la mejora a todas las ocurrencias concordantes con cuarentena bayesiana Dawid-Skene + SPRT (0 Bytes Audio). Pulsa cualquier peldaño para saltar al versículo diagnóstico:`}` +
     `</p>` +
+    seedPanelHtml +
     sisterCascadeHtml +
     rungFilterHtml +
     `<div style="display:flex;flex-wrap:wrap;gap:0.4rem;">${ladderButtons}</div>` +
@@ -1398,7 +1436,7 @@ export function renderStpLexiconExplorerHtml({
   );
 }
 
-/** Renderiza el catálogo de los 6 artefactos CC0 del Taller de Campo (`web/obras/biblia/taller/<lang>/`) junto con la tarjeta CRDT WAL + Lock P2 (10 snapshots) + Censo 7,164 (`D2-B+`, `D3-B+`). */
+/** Renderiza el catálogo de los 6 artefactos CC0 del Taller de Campo (`web/obras/biblia/taller/<lang>/`) junto con la tarjeta CRDT WAL + Lock P2 (10 snapshots) + Censo 7,164 (`D2-B+`, `D3-B+`, `D7-R41`). */
 export function renderTallerArtifactsCatalogHtml(langOrOpts = "es") {
   const rawLang =
     typeof langOrOpts === "object" && langOrOpts !== null
@@ -1408,6 +1446,14 @@ export function renderTallerArtifactsCatalogHtml(langOrOpts = "es") {
     typeof langOrOpts === "object" && langOrOpts !== null
       ? langOrOpts.includeCensusCard !== false
       : true;
+  const customMasterCensus =
+    typeof langOrOpts === "object" && langOrOpts !== null && langOrOpts.masterCensusSummary
+      ? langOrOpts.masterCensusSummary
+      : MASTER_CENSUS_SUMMARY;
+  const customStpLedger =
+    typeof langOrOpts === "object" && langOrOpts !== null && langOrOpts.stpLedgerSummary
+      ? langOrOpts.stpLedgerSummary
+      : customMasterCensus?.stp_ledger_summary || STP_LEDGER_SUMMARY;
   const cleanLang = ["es", "en", "stp", "he", "grc"].includes(String(rawLang || "").toLowerCase())
     ? String(rawLang).toLowerCase()
     : "es";
@@ -1417,16 +1463,16 @@ export function renderTallerArtifactsCatalogHtml(langOrOpts = "es") {
     root_notes_stp: ROOT_NOTES_STP,
   });
   const censusHtml = includeCensusCard
-    ? renderMasterCensus7164CardHtml(MASTER_CENSUS_SUMMARY, STP_LEDGER_SUMMARY)
+    ? renderMasterCensus7164CardHtml(customMasterCensus, customStpLedger)
     : "";
   return (
-    `<div class="taller-artifacts-grid" data-taller-lang="${cleanLang}" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:0.45rem;margin-bottom:0.6rem;">` +
+    `<div class="taller-artifacts-grid" data-taller-lang="${cleanLang}" style="grid-column:1 / -1;width:100%;display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:0.45rem;margin-bottom:0.6rem;">` +
     TALLER_CC0_ARTIFACTS.map(
       (art) =>
         `<a class="uls-chip taller-artifact-link" data-taller-artifact="${art.id}" href="obras/biblia/taller/${cleanLang}/${art.file}" download style="min-height:48px;display:inline-flex;align-items:center;padding:0.4rem 0.65rem;text-decoration:none;font-size:0.8rem;">${art.label}</a>`
     ).join("") +
     `</div>` +
-    `<div style="display:grid;gap:0.55rem;">` +
+    `<div class="taller-fullwidth-audit-stack" style="grid-column:1 / -1;width:100%;display:grid;grid-template-columns:minmax(0,1fr);gap:0.55rem;">` +
     walAuditHtml +
     censusHtml +
     `</div>`

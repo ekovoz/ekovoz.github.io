@@ -1,0 +1,4 @@
+[profile]
+id = "05_interlineal_estudio"
+schema = "ekovoz.editorial_profile.v1"
+license = "CC0-1.0"

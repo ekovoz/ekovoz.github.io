@@ -331,18 +331,21 @@ export function renderStudy14ColDrawerHtml(matrixShard, options = {}) {
       : shard?.attribution || DEFAULT_ATTRIBUTION;
 
   const includeInlineStrata = options.includeInlineStrata !== false;
+  const includeRosettaInspector = options.includeRosettaInspector !== false;
   const activeOsisRef = `${book}.${chapter}.${activeVerseNum}`;
-  const rosettaSummaryHtml = renderPhilologyRosettaInspectorHtml(normalizedRows, {
-    book,
-    chapter,
-    verse: activeVerseNum,
-    activeOsis: activeOsisRef,
-    rosettaIndex: options.rosettaIndex || shard?.rosettaIndex || null,
-    rosettaQuery: options.rosettaQuery || "",
-    rosettaCategory: options.rosettaCategory || "all",
-    includeExplorer: options.includeExplorer !== false,
-    uiLocale,
-  });
+  const rosettaSummaryHtml = includeRosettaInspector
+    ? renderPhilologyRosettaInspectorHtml(normalizedRows, {
+      book,
+      chapter,
+      verse: activeVerseNum,
+      activeOsis: activeOsisRef,
+      rosettaIndex: options.rosettaIndex || shard?.rosettaIndex || null,
+      rosettaQuery: options.rosettaQuery || "",
+      rosettaCategory: options.rosettaCategory || "all",
+      includeExplorer: options.includeExplorer !== false,
+      uiLocale,
+    })
+    : "";
 
   const gmisSectionHtml = isGmisScope
     ? renderLeipzig4LineGmisHtml(matrixShard, {
@@ -843,7 +846,7 @@ export function resolveParatextEngOrgMapping(book, chapter, verse, rosettaIndex 
   };
 }
 
-function renderPhilologyRosettaInspectorHtml(activeRows, options = {}) {
+export function renderPhilologyRosettaInspectorHtml(activeRows = [], options = {}) {
   const uiLocale = String(options.uiLocale || options.locale || "es").trim().toLowerCase();
   const isEn = uiLocale.startsWith("en");
   const book = String(options.book || "GEN").toUpperCase();

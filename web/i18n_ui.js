@@ -50,11 +50,12 @@ return { distLang: d, sheetsHref: sH, bookletHref: bH, paperFormat: pFmt };
 }
 export function setPaperFormat(f, d = D()) { pFmt = f === "letter" ? "letter" : "a4"; if (!d) return pFmt; for (const [id, on] of [["toggleA4", pFmt === "a4"], ["toggleCarta", pFmt !== "a4"]]) { const b = $(d, id), s = String(on); b?.classList?.toggle?.("active", on); b?.setAttribute?.("aria-checked", s); b?.setAttribute?.("aria-pressed", s); } updateDownloadLinks(d); return pFmt; }
 export function updateFocalPlate(d = D(), lO = "", n = true, uO = "") {
-if (!d) return;const l=gL(d,lO),uL=uO||l,lb=`${resolveFelicesStrings(uL).plateLabel||"Plate"} ${pIdx} / ${N}`,u=getPlateUrl(pIdx).slice(1),tx=resolveFelicesPlateVerse(pIdx,l),c=FC[pIdx]||FC[24],os=`${c.book}.${c.chapter}.${c.verse}`,dI=clp((c.beatitudeIndex||0)+1,12);
+if (!d) return;const l=gL(d,lO),uL=uO||l,isEn=S(uL).toLowerCase().startsWith("en"),pW=resolveFelicesStrings(uL).plateLabel||(isEn?"Plate":"Lámina"),lb=`${pW} ${pIdx} / ${N}`,u=getPlateUrl(pIdx).slice(1),tx=resolveFelicesPlateVerse(pIdx,l),c=FC[pIdx]||FC[24],os=`${c.book}.${c.chapter}.${c.verse}`,dI=clp((c.beatitudeIndex||0)+1,12);
 const im=$(d,"focalPlateImg"),id=$(d,"plateIndexText"),vE=$(d,"focalPlateVerse"),cI=$(d,"carouselImg"),cC=$(d,"carouselCaption"),wC=$(d,"felicesSocraticWonderCard");
 if(im){im.src=u;im.alt=lb;}if(id){id.textContent=lb;id.setAttribute("data-osis-ref",os);}if(vE)vE.textContent=tx;if(cI)cI.src=u;if(cC)cC.textContent=tx;if(wC)wC.innerHTML=renderFelicesSocraticWonderCardHtml(pIdx,uL);
 sIdx=pIdx<=11?0:pIdx<=23?1:2;for(let j=0;j<3;j++)$(d,`termPill_${j+1}`)?.classList?.toggle("active",j===sIdx);
-for(const [k,v] of [["felicesPlateSelect",`${pIdx}`],["felicesDichaSelect",`${dI}`]]){const e=$(d,k);if(e&&e.value!==v)e.value=v;}
+for(const [k,v] of [["felicesPlateSelect",`${pIdx}`],["felicesDichaSelect",`${dI}`],["felicesLangSelect",l]]){const e=$(d,k);if(e&&e.value!==v)e.value=v;}
+for(const opt of $(d,"felicesPlateSelect")?.options||[]){const t=S(opt.textContent);opt.textContent=isEn?t.replace(/^Lámina\b/,"Plate").replace(/\(Sal\b/,"(Ps"):t.replace(/^Plate\b/,"Lámina").replace(/\(Ps\b/,"(Sal");}
 $(d,"btnFelicesOpenInBible")?.setAttribute("data-felices-osis",os);if(n)onC?.({plateIndex:pIdx,dichaIndex:dI,book:c.book,chapter:c.chapter,verse:c.verse});
 }
 export function syncI18nUiFromState(st={},d=D()){if(st.activePlateIndex!==undefined||st.plate!==undefined)pIdx=clp(st.activePlateIndex??st.plate,N,24);if(st.paperFormat||st.format)setPaperFormat(L(st.paperFormat||st.format),d);const l=gL(d,st.lang||st.uiLocale),u=st.uiLocale||l;updateDownloadLinks(d,l);updateFocalPlate(d,l,false,u);if(d)ensureLocaleLoaded(l).then(()=>updateFocalPlate(d,l,false,u)).catch(()=>{});return{plateIndex:pIdx,paperFormat:pFmt};}

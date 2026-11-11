@@ -1,0 +1,4 @@
+[profile]
+id = "G_11_syllabics_tifinagh_nko"
+schema = "ekovoz.editorial_profile.v1"
+license = "CC0-1.0"

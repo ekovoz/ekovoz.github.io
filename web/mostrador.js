@@ -26,6 +26,8 @@ import {
   shareResource,
   syncFelicesWithCorpusLang,
   syncI18nUiFromState,
+  updateDownloadLinks,
+  updateFocalPlate,
   updateUI
 } from "./i18n_ui.js";
 import {
@@ -75,6 +77,8 @@ import {
   CANONICAL_80_BLOCKS_CATALOG,
   CANONICAL_9_TOML_PROFILES,
   POCKET_REFUGE_4_SHEETS_SPEC,
+  PRECOMPILED_PDF_LANGS,
+  VERIFIED_TEXT_BIBLE_LANGS,
   buildRelativePdfAssetUrl,
   computeFoliationLayout,
   computeKindlePrintBudget,
@@ -99,10 +103,13 @@ import {
   simulateFifthGenPhotocopySauvolaBilateral,
   simulateThirdGenPhotocopySauvola,
   stealthNeutralFilenameWeb,
-  syncPrintDrawerControlsFromEditionProfile,
+   syncPrintDrawerControlsFromEditionProfile,
+  synthesizeLiveChapterDose1PdfBytes,
 } from "./mostrador/dosis.js";
 import {
   HAREL_DOSIS_SUBTABS,
+  HAREL_PRINT_SUBTABS,
+  HAREL_STUDY_SUBTABS,
   HAREL_WORKSHOP_SUBTABS,
   applyHarelSubtabSelection,
   applyStaticChromeTranslations,
@@ -137,6 +144,7 @@ import {
   hydratePhilologyRosettaIndex,
   renderLeipzig4LineGmisHtml,
   renderPhilologyRosettaExplorerHtml,
+  renderPhilologyRosettaInspectorHtml,
   renderPhilologyRosettaResultsRowsHtml,
   renderStudy14ColDrawerHtml,
   renderStudyStrataCards,
@@ -178,6 +186,7 @@ import {
   CRDT_WAL_SEMILATTICE,
   FIELD_WORKSHOP_STP_LEXICON,
   IMPROVE_I18N_FALLBACKS,
+  IMPROVE_I18N_FALLBACKS_ES,
   MASTER_CENSUS_SUMMARY,
   PATCH_JOURNAL_LOCK_P2,
   ROOT_NOTES_STP,
@@ -262,13 +271,13 @@ import {
 
 export {
   ARTIFACT_PROJECTION_SCHEMA, CANONICAL_12_BRANCH_PROFILES, CANONICAL_14_PLUS_2_EDITIONS_CATALOG, CANONICAL_14_PRINT_PROFILES, CANONICAL_16_TYPOLOGY_PROFILES, CANONICAL_80_BLOCKS_CATALOG, CANONICAL_9_TOML_PROFILES, CANONICAL_ECO_PACKS_MANIFEST, CRDT_WAL_SEMILATTICE, CROSS_WORK_BRIDGE_TABLE, EVANGELIOS_MACRO_THREADS_AND_ECHOES, FELICES_12_DICHAS_COORDINATE_MAP, FELICES_28_PLATES_MAP, FELICES_PLATE_TO_BIBLE_COORDINATE, FIELD_WORKSHOP_STP_LEXICON, GEOGRAPHIC_MACRO_REGIONS,
-  HAREL_DOSIS_SUBTABS, HAREL_SHEET_MAP, HAREL_WORKSHOP_SUBTABS, IMPROVE_I18N_FALLBACKS, LIFE_TRAILS_ANCHORS, LTDecoder, LTEncoder, MASTER_CENSUS_SUMMARY, MOSTRADOR_DOM_BINDINGS, MOSTRADOR_DOM_SCOPE_CONTRACTS, MULTI_ORTHO_LANGS, OPTICAL_CADENCE_PRESETS, PATCH_JOURNAL_LOCK_P2, POCKET_REFUGE_4_SHEETS_SPEC, POETIC_BOOKS, ROOT_NOTES_STP, ROSETTA_66_BOOKS, ReverseOrthographyMap, STATUS, STORED_ECO_PACKS, STP_LEDGER_SUMMARY, applyHarelSubtabSelection, applyOrthographyProfile, applySpanish21DiachronicRegister, applyStaticChromeTranslations, applySuggestedImprovement, applyToDom, buildElicitationSeedPayload, buildEvangeliosWeekOptionsHtml, classifyMaculaArgumentRole, computeAnalyticalRegisterMetrics, computeEcoPackCrc32Hex, computeFoliationLayout, computeKindlePrintBudget, computeMultiSignatureImposition, computeNyquistSafeFpsViaWasm, computeProsodyAndSyllableAlignmentInWasm, countPdfPages, createDataLayer, formatPhotocopySimBadgeText, syncActiveStrongInStudyDrawer,
+  HAREL_DOSIS_SUBTABS, HAREL_PRINT_SUBTABS, HAREL_SHEET_MAP, HAREL_STUDY_SUBTABS, HAREL_WORKSHOP_SUBTABS, IMPROVE_I18N_FALLBACKS, IMPROVE_I18N_FALLBACKS_ES, LIFE_TRAILS_ANCHORS, LTDecoder, LTEncoder, MASTER_CENSUS_SUMMARY, MOSTRADOR_DOM_BINDINGS, MOSTRADOR_DOM_SCOPE_CONTRACTS, MULTI_ORTHO_LANGS, OPTICAL_CADENCE_PRESETS, PATCH_JOURNAL_LOCK_P2, POCKET_REFUGE_4_SHEETS_SPEC, POETIC_BOOKS, PRECOMPILED_PDF_LANGS, ROOT_NOTES_STP, ROSETTA_66_BOOKS, ReverseOrthographyMap, STATUS, STORED_ECO_PACKS, STP_LEDGER_SUMMARY, VERIFIED_TEXT_BIBLE_LANGS, applyHarelSubtabSelection, applyOrthographyProfile, applySpanish21DiachronicRegister, applyStaticChromeTranslations, applySuggestedImprovement, applyToDom, buildElicitationSeedPayload, buildEvangeliosWeekOptionsHtml, classifyMaculaArgumentRole, computeAnalyticalRegisterMetrics, computeEcoPackCrc32Hex, computeFoliationLayout, computeKindlePrintBudget, computeMultiSignatureImposition, computeNyquistSafeFpsViaWasm, computeProsodyAndSyllableAlignmentInWasm, countPdfPages, createDataLayer, formatPhotocopySimBadgeText, syncActiveStrongInStudyDrawer,
   createFetchSource, createI18n, createReferenceResolver, createRelayEncoderFromDecoded, decodeLubyTransformPeeling, deriveEpistemicSeal, dlog, doseFilename, effectiveThreatClassWeb, encodeLubyTransformDroplets, escapeHtml, exportSneakernetBundleJson, extractPdfPages, foldCrdtWalSemilattice, formatLocalizedNumeralWeb, hasDiachronicVariants, highlightStudyCardByStrongId, hydrateBookNamesSourceBadge, hydrateCulturalGlossesLexicon, hydrateEcoPacksManifest, hydrateLifeTrailsFromPericopesArtifact, hydrateWasmManifestStatus, importSneakernetBundleJson, indexRegionShards, isRtlLocale, listAll14PrintEditionsForLang, listCatalogEditionsForLang, listCountriesInRegion,
   listLanguagesInCountry, listMacroRegions, listOrthographyProfilesForLang, locateVersePage, lookupWordTokenStrongEntry, negotiate, normalizeBookAliasToken, normalizeEditionSlug, ordinalOf, parseBiblicalCoordinateReference, parseCanonicalOtEchoRef, parseInitialRouteAndLocale, planDose1,
   planDose2,
-  planDose3, probeEcoPackRandomAccessBounds, projectCrossWorkCoordinate, refOfOrdinal, renderAnalyticalThermometerHtml, renderBranchAndTypologyInspectorHtml, renderCascadeAndLadderHtml, renderChapterDiachronicAuditCardHtml, renderChapterPericopesRibbonHtml, renderChapterPreviewHtml, renderCrdtWalAndLockP2AuditCardHtml, renderEvangeliosPlateActionsHtml, renderEvangeliosStageCardHtml, renderFelicesSocraticWonderCardHtml, renderImpositionAndLayoutPreviewHtml, renderImproveDrawerHtml, renderInteractiveVerseTokensHtml, renderLeipzig4LineGmisHtml, renderMasterCensus7164CardHtml, renderMultiSignatureAndPocketRefugeHtml, renderOfflineMeshEcoCardHtml, renderOpticalReceiverRxPanelHtml, renderPhilologyRosettaExplorerHtml, renderPhilologyRosettaResultsRowsHtml, renderPhotocopyResilienceAndSocialCardHtml, renderStpLexiconExplorerHtml, renderStpLexiconResultsRowsHtml, renderStudy14ColDrawerHtml,
+  planDose3, probeEcoPackRandomAccessBounds, projectCrossWorkCoordinate, refOfOrdinal, renderAnalyticalThermometerHtml, renderBranchAndTypologyInspectorHtml, renderCascadeAndLadderHtml, renderChapterDiachronicAuditCardHtml, renderChapterPericopesRibbonHtml, renderChapterPreviewHtml, renderCrdtWalAndLockP2AuditCardHtml, renderEvangeliosPlateActionsHtml, renderEvangeliosStageCardHtml, renderFelicesSocraticWonderCardHtml, renderImpositionAndLayoutPreviewHtml, renderImproveDrawerHtml, renderInteractiveVerseTokensHtml, renderLeipzig4LineGmisHtml, renderMasterCensus7164CardHtml, renderMultiSignatureAndPocketRefugeHtml, renderOfflineMeshEcoCardHtml, renderOpticalReceiverRxPanelHtml, renderPhilologyRosettaExplorerHtml, renderPhilologyRosettaInspectorHtml, renderPhilologyRosettaResultsRowsHtml, renderPhotocopyResilienceAndSocialCardHtml, renderStpLexiconExplorerHtml, renderStpLexiconResultsRowsHtml, renderStudy14ColDrawerHtml,
   renderStudyStrataCards, renderTallerArtifactsCatalogHtml, renderUnifiedDiachronicContextHtml, resolveBicanonicalDivergence, resolveBookCodeByAliasOrName, resolveCanonicalBlockForPassage, resolveCanonicalOrthoProfileId, resolveEffectiveCorpusTarget, resolveEvangeliosActiveSelection, resolveEvangeliosMacroThreadAndEcho, resolveFelicesDichaCoordinate, resolveFelicesPlate, resolveLocalizedBookMeta, resolveMasoreticPericopeBreaks, resolveOrthoFamilyKey, resolvePlateForBibleCoordinate, resolvePrintEditionPdfAssetUrl, resolveScriptioContinuaCodeForLang, runOpticalReceiverBurstSession, searchLanguages, searchPhilologyRosettaIndex, segmentScriptioContinuaSyllables, selectTopEntropyVerseQueue, serializeMostradorRouteQuery, setPaperFormat, simulateFifthGenPhotocopySauvolaBilateral, simulateThirdGenPhotocopySauvola, solitonCdf,
-  splitmix32, stealthNeutralFilenameWeb, suggestLayer0Languages, summarizeChapterDiachronicTransformations, syncDiachronicRegisterOrthogonality, syncFelicesWithCorpusLang, syncI18nUiFromState, syncPrintDrawerControlsFromEditionProfile, syncSisterWorksTabsDom, toUnicodeSuperscript, transduceOrthographyWeb, transduceVerseWithReverseMap, triggerOptInOfflinePackDownload, updateUI, verifyAndStoreEcoPack, verifyArtifactProjectionClosure, verifyLock8PredicativeAndNegation, verifyVplDomScopeContainment, whitenBlockXor
+  splitmix32, stealthNeutralFilenameWeb, suggestLayer0Languages, summarizeChapterDiachronicTransformations, syncDiachronicRegisterOrthogonality, syncFelicesWithCorpusLang, syncI18nUiFromState, syncPrintDrawerControlsFromEditionProfile, syncSisterWorksTabsDom, synthesizeLiveChapterDose1PdfBytes, toUnicodeSuperscript, transduceOrthographyWeb, transduceVerseWithReverseMap, triggerOptInOfflinePackDownload, updateUI, verifyAndStoreEcoPack, verifyArtifactProjectionClosure, verifyLock8PredicativeAndNegation, verifyVplDomScopeContainment, whitenBlockXor
 };
 
 /**
@@ -1037,6 +1046,39 @@ export function createMostradorController(options = {}) {
     }
     const pageIndex = await dataLayer.loadPageIndex(state.lang, edition);
     if (!pageIndex) {
+      if (VERIFIED_TEXT_BIBLE_LANGS.includes(state.lang)) {
+        const chapterVerses = state.lastNavResult?.chapter?.verses || {};
+        const synthBytes = synthesizeLiveChapterDose1PdfBytes({
+          lang: state.lang,
+          book: state.book,
+          chapter: state.chapter,
+          verse: state.verse,
+          verses: chapterVerses,
+          sheets,
+          duplex,
+        });
+        const threatClass = effectiveThreatClassWeb(state.countryIso2, state.lang);
+        const filename = doseFilename({
+          dose: 1,
+          lang: state.lang,
+          book: state.book,
+          chapter: state.chapter,
+          verse: state.verse,
+          blockId: "live-chapter-dose1",
+          countryIso2: state.countryIso2,
+          ordinal: 1,
+        });
+        return {
+          bytes: synthBytes,
+          filename,
+          threatClass,
+          blockId: "live-chapter-dose1",
+          pages: [1],
+          sheetCount: sheets,
+          pageCount: countPdfPages(synthBytes),
+          availabilityMode: "live_chapter_synthesis",
+        };
+      }
       throw new Error(`Page index unavailable for ${state.lang}/${edition}`);
     }
 
@@ -1132,6 +1174,7 @@ export function createMostradorController(options = {}) {
   async function transitionSheet(rawSheetName, targetDoc = doc) {
     const normalized = rawSheetName === "improve" ? "field" : rawSheetName;
     const vp = getEl("bibleVerseViewport", targetDoc);
+    const drawersHost = getEl("sovereignGlobalDrawersHost", targetDoc);
     const hideOpticalVideoIfOutsidePdfSubtab = () => {
       const videoEl = getEl("bibleOpticalCameraVideo", targetDoc);
       if (videoEl) videoEl.hidden = true;
@@ -1150,11 +1193,24 @@ export function createMostradorController(options = {}) {
           btn.setAttribute("aria-pressed", "false");
         }
       }
+      if (drawersHost && state.activeWork && state.activeWork !== "biblia") {
+        drawersHost.hidden = true;
+        if (drawersHost.style) drawersHost.style.display = "none";
+      }
       return null;
     }
 
     const willOpen = state.activeSheet !== normalized;
     state.activeSheet = willOpen ? normalized : null;
+    if (drawersHost) {
+      if (willOpen || !state.activeWork || state.activeWork === "biblia") {
+        drawersHost.hidden = false;
+        if (drawersHost.style) drawersHost.style.display = "";
+      } else {
+        drawersHost.hidden = true;
+        if (drawersHost.style) drawersHost.style.display = "none";
+      }
+    }
     if (vp) {
       vp.setAttribute("data-inspector-open", willOpen ? "true" : "false");
     }
@@ -1617,23 +1673,15 @@ export function createMostradorController(options = {}) {
     }
 
     for (const [orthoBtnId, profile, altProfile] of [
-      ["btnOrthoInali", "inali", null],
-      ["btnOrthoTradicional", "tradicional", null],
-      ["btnOrthoFonetica", "fonetica", null],
-      ["btnOrthoBnBd", "bn-BD", null],
-      ["btnOrthoBnIn", "bn-IN", null],
-      ["btnOrthoArbTashkeel", "TASHKEEL_STRIPPED", "VOWELIZED"],
-      ["btnOrthoUznCyrl", "CYRL", "LATN"],
-      ["btnOrthoTzmTfng", "TFNG", "LATN"],
+      ["btnOrthoInali", "inali", null], ["btnOrthoTradicional", "tradicional", null],
+      ["btnOrthoFonetica", "fonetica", null], ["btnOrthoBnBd", "bn-BD", null],
+      ["btnOrthoBnIn", "bn-IN", null], ["btnOrthoArbTashkeel", "TASHKEEL_STRIPPED", "VOWELIZED"],
+      ["btnOrthoUznCyrl", "CYRL", "LATN"], ["btnOrthoTzmTfng", "TFNG", "LATN"],
     ]) {
       const oBtn = getEl(orthoBtnId, targetDoc);
       if (oBtn && typeof oBtn.addEventListener === "function") {
         oBtn.addEventListener("click", () => {
-          if (altProfile && state.orthographyProfile === profile) {
-            state.orthographyProfile = altProfile;
-          } else {
-            state.orthographyProfile = profile;
-          }
+          state.orthographyProfile = altProfile && state.orthographyProfile === profile ? altProfile : profile;
           syncOrthographyPillsVisibility(targetDoc);
           renderViewportFromState(targetDoc);
           syncUrlFromState(targetDoc, { push: false });
@@ -1645,10 +1693,7 @@ export function createMostradorController(options = {}) {
       const tBtn = getEl(trailBtnId, targetDoc);
       if (tBtn && typeof tBtn.addEventListener === "function") {
         tBtn.addEventListener("click", async () => {
-          await navigate(
-            { book: anchor.book, chapter: anchor.chapter, verse: anchor.verse },
-            targetDoc
-          );
+          await navigate({ book: anchor.book, chapter: anchor.chapter, verse: anchor.verse }, targetDoc);
           hydrateBookAndChapterSelectors(targetDoc);
         });
       }
@@ -1661,12 +1706,9 @@ export function createMostradorController(options = {}) {
         const nextUi = e?.target?.value || uiLangSelect.value || "en";
         await setUiLocale(nextUi, targetDoc);
         uiLangSelect.hidden = true;
-        if (ulsTrigger) {
-          ulsTrigger.setAttribute("aria-expanded", "false");
-        }
+        if (ulsTrigger) ulsTrigger.setAttribute("aria-expanded", "false");
       });
     }
-
     if (ulsTrigger && typeof ulsTrigger.addEventListener === "function") {
       ulsTrigger.addEventListener("click", () => {
         if (uiLangSelect) {
@@ -1692,9 +1734,7 @@ export function createMostradorController(options = {}) {
       evGlobalBadge.addEventListener("click", () => {
         if (corpusDrawer) {
           corpusDrawer.open = !corpusDrawer.open;
-          if (corpusLangBtn) {
-            corpusLangBtn.setAttribute("aria-expanded", corpusDrawer.open ? "true" : "false");
-          }
+          if (corpusLangBtn) corpusLangBtn.setAttribute("aria-expanded", corpusDrawer.open ? "true" : "false");
         }
       });
     }
@@ -1703,21 +1743,13 @@ export function createMostradorController(options = {}) {
     const refBtn = getEl("btnGoReference", targetDoc);
     if (refBtn && typeof refBtn.addEventListener === "function") {
       refBtn.addEventListener("click", async () => {
-        const raw = refInput ? refInput.value : "";
-        const parsed = parseBiblicalCoordinateReference(raw);
+        const parsed = parseBiblicalCoordinateReference(refInput ? refInput.value : "");
         if (parsed && parsed.bookCode) {
           if (compassModal) {
             compassModal.hidden = true;
             if (compassModal.style) compassModal.style.display = "none";
           }
-          await navigate(
-            {
-              book: parsed.bookCode,
-              chapter: parsed.chapter || 1,
-              verse: parsed.verse || 1,
-            },
-            targetDoc
-          );
+          await navigate({ book: parsed.bookCode, chapter: parsed.chapter || 1, verse: parsed.verse || 1 }, targetDoc);
           hydrateBookAndChapterSelectors(targetDoc);
         }
       });
@@ -1726,9 +1758,7 @@ export function createMostradorController(options = {}) {
     for (const [sheetKey, cfg] of Object.entries(HAREL_SHEET_MAP)) {
       const btn = getEl(cfg.buttonId, targetDoc);
       if (btn && typeof btn.addEventListener === "function") {
-        btn.addEventListener("click", () => {
-          transitionSheet(sheetKey, targetDoc);
-        });
+        btn.addEventListener("click", () => transitionSheet(sheetKey, targetDoc));
       }
     }
 
@@ -1768,14 +1798,8 @@ export function createMostradorController(options = {}) {
       if (paperSel?.value) state.paperFormat = String(paperSel.value).toLowerCase();
       if (orientSel?.value) state.orientation = String(orientSel.value).toLowerCase();
       if (foliationSel?.value) state.foliationMode = String(foliationSel.value);
-      if (duplexToggle && typeof duplexToggle.checked === "boolean") {
-        state.duplex = duplexToggle.checked;
-      }
-      state.edition = normalizeEditionSlug(state.edition, {
-        paperFormat: state.paperFormat,
-        columns: state.columns,
-        largePrint: state.fontSizePt >= 13,
-      });
+      if (duplexToggle && typeof duplexToggle.checked === "boolean") state.duplex = duplexToggle.checked;
+      state.edition = normalizeEditionSlug(state.edition, { paperFormat: state.paperFormat, columns: state.columns, largePrint: state.fontSizePt >= 13 });
       syncI18nUiFromState(state, targetDoc);
       syncUrlFromState(targetDoc, { push: false });
       hydratePrintDrawerPanels(targetDoc);
@@ -1789,19 +1813,13 @@ export function createMostradorController(options = {}) {
       }
     }
 
-    const toggleA4Btn = getEl("toggleA4", targetDoc);
-    const toggleCartaBtn = getEl("toggleCarta", targetDoc);
     const bindPaperFormatBtn = (btnEl, fmt) => {
       if (btnEl && typeof btnEl.addEventListener === "function") {
         btnEl.addEventListener("click", async () => {
           state.paperFormat = fmt;
           if (paperSel) paperSel.value = fmt;
           setPaperFormat(fmt, targetDoc);
-          state.edition = normalizeEditionSlug(state.edition, {
-            paperFormat: state.paperFormat,
-            columns: state.columns,
-            largePrint: state.fontSizePt >= 13,
-          });
+          state.edition = normalizeEditionSlug(state.edition, { paperFormat: state.paperFormat, columns: state.columns, largePrint: state.fontSizePt >= 13 });
           syncI18nUiFromState(state, targetDoc);
           syncUrlFromState(targetDoc, { push: false });
           hydratePrintDrawerPanels(targetDoc);
@@ -1809,15 +1827,14 @@ export function createMostradorController(options = {}) {
         });
       }
     };
-    bindPaperFormatBtn(toggleA4Btn, "a4");
-    bindPaperFormatBtn(toggleCartaBtn, "letter");
+    bindPaperFormatBtn(getEl("toggleA4", targetDoc), "a4");
+    bindPaperFormatBtn(getEl("toggleCarta", targetDoc), "letter");
 
     if (btnSimPhotocopy && typeof btnSimPhotocopy.addEventListener === "function") {
       btnSimPhotocopy.addEventListener("click", () => {
         const cycleOrder = [1, 2, 3, 5, 0];
         const currentGen = Number.isInteger(state.photocopyGen) ? state.photocopyGen : 3;
-        const curIdx = cycleOrder.indexOf(currentGen);
-        const nextGen = cycleOrder[(curIdx + 1) % cycleOrder.length];
+        const nextGen = cycleOrder[(cycleOrder.indexOf(currentGen) + 1) % cycleOrder.length];
         state.photocopyGen = nextGen;
         state.sauvolaK = Number((0.2 + nextGen * 0.024).toFixed(2));
         renderPrintDrawerPanelsSync(targetDoc);
@@ -1827,25 +1844,12 @@ export function createMostradorController(options = {}) {
     const tskCard = getEl("tskCrossRefsStratumCard", targetDoc);
     if (tskCard && typeof tskCard.addEventListener === "function") {
       tskCard.addEventListener("click", async (e) => {
-        const pill = e?.target?.closest
-          ? e.target.closest("[data-tsk-ref]")
-          : e?.target?.getAttribute?.("data-tsk-ref")
-            ? e.target
-            : null;
-        const ref = pill?.getAttribute
-          ? pill.getAttribute("data-tsk-ref")
-          : pill?.dataset?.tskRef;
+        const pill = e?.target?.closest ? e.target.closest("[data-tsk-ref]") : e?.target?.getAttribute?.("data-tsk-ref") ? e.target : null;
+        const ref = pill?.getAttribute ? pill.getAttribute("data-tsk-ref") : pill?.dataset?.tskRef;
         if (ref) {
           const parsed = parseBiblicalCoordinateReference(ref);
           if (parsed && parsed.bookCode) {
-            await navigate(
-              {
-                book: parsed.bookCode,
-                chapter: parsed.chapter || 1,
-                verse: parsed.verse || 1,
-              },
-              targetDoc
-            );
+            await navigate({ book: parsed.bookCode, chapter: parsed.chapter || 1, verse: parsed.verse || 1 }, targetDoc);
             hydrateBookAndChapterSelectors(targetDoc);
           }
         }
@@ -2334,6 +2338,9 @@ export function createMostradorController(options = {}) {
       const cleanWork = ["biblia", "felices", "evangelios"].includes(workId) ? workId : "biblia";
       const prevWork = state.activeWork || "biblia";
       state.activeWork = cleanWork;
+      if (cleanWork !== "biblia" && state.activeSheet) {
+        await transitionSheet(null, docRef);
+      }
       syncSisterWorksTabsDom(cleanWork, (id) => getEl(id, docRef));
 
       const projected = projectCrossWorkCoordinate({
@@ -2451,6 +2458,16 @@ export function createMostradorController(options = {}) {
     const footContact = getEl("footerContactBtn", targetDoc);
     if (footContact && typeof footContact.addEventListener === "function") {
       footContact.addEventListener("click", () => transitionSheet("field", targetDoc));
+    }
+    const felLangSel = getEl("felicesLangSelect", targetDoc);
+    if (felLangSel && typeof felLangSel.addEventListener === "function") {
+      felLangSel.addEventListener("change", (e) => {
+        const nextFelLang = String(e?.target?.value || felLangSel.value || "es");
+        state.lang = nextFelLang;
+        syncFelicesWithCorpusLang(nextFelLang, targetDoc);
+        updateFocalPlate(state.activePlateIndex ?? getActivePlateIndex(), nextFelLang, targetDoc);
+        updateDownloadLinks(targetDoc, nextFelLang);
+      });
     }
     const felPlateSel = getEl("felicesPlateSelect", targetDoc);
     if (felPlateSel && typeof felPlateSel.addEventListener === "function") {
@@ -2579,7 +2596,7 @@ export async function bootBrowserMostrador(
 ) {
   if (!win || !win.document) return null;
   try {
-    const EPOCH = "ekovoz-r40";
+    const EPOCH = "ekovoz-r41";
     if (win.localStorage && win.localStorage.getItem("ekovoz_cache_epoch") !== EPOCH) {
       win.localStorage.setItem("ekovoz_cache_epoch", EPOCH);
       if (win.caches && typeof win.caches.keys === "function") {
