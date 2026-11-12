@@ -48,9 +48,15 @@ function build52WeeksDefaultMap() {
     if (w <= 13) {
       weeks[key] = {
         weekId: key,
-        macroThread: "Hilo 1 · La Nueva Creación, el Reino Inaugurado y el Tabernáculo de la Palabra",
-        otEchoes: ["GEN.1.1 (En el principio)", "EXO.25.8 (Habitaré entre ellos)", "ISA.9.1 (Luz en Galilea)"],
-        culturalRealia: "Habitar entre nosotros (ἐσκήνωσεν / skēnoō): plantar tienda de campaña nómada como el Tabernáculo del Éxodo.",
+        weekNumber: w,
+        plateSlug: w === 1 ? "mc-01-redes" : "",
+        anchorOsis: w === 1 ? "MRK.1.16" : "MRK.1.1",
+        book: "MRK",
+        chapter: 1,
+        title: w === 1 ? "Vengan conmigo y síganme." : `Semana ${w}`,
+        macroThread: "Hilo 1 · Del Principio Creador al Verbo Encarnado y el Llamado junto al Mar",
+        otEchoes: ["GEN.1.1 (En el principio)", "EXO.33.18 (Muéstrame tu gloria)", "PRO.8.22 (Sabiduría creadora)"],
+        culturalRealia: "Redes de pesca en Galilea (ἀμφίβληστρον / amphiblēstron): atarraya circular lanzada desde la orilla antes del llamado apostólico.",
       };
     } else if (w <= 26) {
       weeks[key] = {
@@ -150,19 +156,28 @@ export function hydratePericopesAndGlosses(artifact) {
           : String(entry.macroThread)
         : existing?.macroThread || "";
       const citaMatch = /^([1-3]?[A-Z]{2,3})\s+(\d+):(\d+)/.exec(String(entry.cita || entry.ref || "").trim().toUpperCase());
+      const parsedEchoParts = entry.otEcho
+        ? String(entry.otEcho)
+            .split("↔")[0]
+            .split("·")
+            .map((s) => s.trim())
+            .filter(Boolean)
+        : [];
       EVANGELIOS_MACRO_THREADS_AND_ECHOES[wKey] = {
         weekId: wKey,
         weekNumber: wNum,
+        plateSlug: String(entry.plateId || entry.plate_id || entry.plateSlug || existing?.plateSlug || ""),
         title: entry.title || existing?.title || `Semana ${wNum}`,
         cita: entry.cita || entry.ref || "",
-        anchorOsis: entry.anchorOsis || (citaMatch ? `${citaMatch[1]}.${citaMatch[2]}.${citaMatch[3]}` : "JHN.1.1"),
-        book: entry.book || (citaMatch ? citaMatch[1] : "JHN"),
+        gesture: entry.gesture || existing?.gesture || "",
+        anchorOsis: entry.anchorOsis || (citaMatch ? `${citaMatch[1]}.${citaMatch[2]}.${citaMatch[3]}` : "MRK.1.16"),
+        book: entry.book || (citaMatch ? citaMatch[1] : "MRK"),
         chapter: Number(entry.chapter) || (citaMatch ? Number(citaMatch[2]) : 1),
         macroThread: enrichedMacro,
         otEchoes: Array.isArray(entry.otEchoes) && entry.otEchoes.length > 0
           ? entry.otEchoes
-          : entry.otEcho
-            ? [String(entry.otEcho), ...(existing?.otEchoes || []).slice(1)]
+          : parsedEchoParts.length > 0
+            ? parsedEchoParts
             : existing?.otEchoes || [],
         culturalRealia: entry.culturalRealia || entry.liturgicalDawnNote || existing?.culturalRealia || "",
         questions: Array.isArray(entry.questions) ? entry.questions : [],
@@ -241,11 +256,73 @@ export function resolvePericopeHeaderForVerse(book, chapter, verse, artifact = n
   return list.find((item) => Number(item.beforeVerse ?? item.startVerse) === v) || null;
 }
 
-export function resolveEvangeliosMacroThreadAndEcho(weekId = "s01", artifact = null) {
+export function resolveEvangeliosMacroThreadAndEcho(weekOrQuery = "s01", artifact = null) {
   if (artifact) hydratePericopesAndGlosses(artifact);
-  const raw = String(weekId || "s01").trim().toLowerCase();
-  const cleanWeek = /^\d+$/.test(raw) ? `s${raw.padStart(2, "0")}` : raw;
-  return EVANGELIOS_MACRO_THREADS_AND_ECHOES[cleanWeek] || EVANGELIOS_MACRO_THREADS_AND_ECHOES.s01;
+  const allEntries = Object.values(EVANGELIOS_MACRO_THREADS_AND_ECHOES);
+  if (weekOrQuery && typeof weekOrQuery === "object") {
+    const slug = String(weekOrQuery.plateSlug || weekOrQuery.plate_id || "").trim().toLowerCase();
+    const wRaw = String(weekOrQuery.weekId || "").trim().toLowerCase();
+    const osis = String(weekOrQuery.anchorOsis || "").trim().toUpperCase();
+    if (slug) {
+      const bySlug = allEntries.find((item) => String(item?.plateSlug || "").toLowerCase() === slug);
+      if (bySlug) return bySlug;
+    }
+    if (wRaw) {
+      const cleanW = /^\d+$/.test(wRaw) ? `s${wRaw.padStart(2, "0")}` : wRaw;
+      if (EVANGELIOS_MACRO_THREADS_AND_ECHOES[cleanW]) {
+        return EVANGELIOS_MACRO_THREADS_AND_ECHOES[cleanW];
+      }
+    }
+    if (osis) {
+      const parsed = parseCanonicalOtEchoRef(osis);
+      const normOsis = `${parsed.book}.${parsed.chapter}.${parsed.verse}`;
+      const byOsis = allEntries.find((item) => String(item?.anchorOsis || "").toUpperCase() === normOsis);
+      if (byOsis) return byOsis;
+    }
+    return EVANGELIOS_MACRO_THREADS_AND_ECHOES.s01;
+  }
+  const raw = String(weekOrQuery || "s01").trim();
+  const lower = raw.toLowerCase();
+  const cleanWeek = /^\d+$/.test(lower) ? `s${lower.padStart(2, "0")}` : lower;
+  if (EVANGELIOS_MACRO_THREADS_AND_ECHOES[cleanWeek]) {
+    return EVANGELIOS_MACRO_THREADS_AND_ECHOES[cleanWeek];
+  }
+  const bySlug = allEntries.find((item) => String(item?.plateSlug || "").toLowerCase() === lower);
+  if (bySlug) return bySlug;
+  const parsed = parseCanonicalOtEchoRef(raw);
+  const normOsis = `${parsed.book}.${parsed.chapter}.${parsed.verse}`;
+  const byOsis = allEntries.find((item) => String(item?.anchorOsis || "").toUpperCase() === normOsis);
+  return byOsis || EVANGELIOS_MACRO_THREADS_AND_ECHOES.s01;
+}
+
+export function formatHumanEvangeliosPlateTitle(
+  entry = {},
+  activeEvLang = "es",
+  uiLocale = activeEvLang,
+) {
+  if (!entry || typeof entry !== "object") return "";
+  const langKey = String(activeEvLang || "es").trim();
+  const uiKey = String(uiLocale || langKey || "es").trim().toLowerCase();
+  const tObj = entry.texts?.[langKey] || (uiKey.startsWith("en") ? entry.texts?.en : null) || entry.texts?.es || {};
+  if (tObj.title && !/^[a-z]{2}-\d{2}-[a-z0-9-]+$/i.test(String(tObj.title).trim())) {
+    return String(tObj.title).trim();
+  }
+  const rawText = String(tObj.text || "").trim();
+  if (rawText) {
+    const afterDash = rawText.includes("—") ? rawText.split("—").slice(1).join("—").trim() : rawText;
+    const firstClause = afterDash.split(/(?<=[.!?¡¿])\s+/)[0]?.trim() || afterDash;
+    if (firstClause.length <= 68) return firstClause;
+    const cut = firstClause.slice(0, 65).replace(/\s+\S*$/, "").trim();
+    return `${cut || firstClause.slice(0, 64)}…`;
+  }
+  const macroMeta = resolveEvangeliosMacroThreadAndEcho({
+    plateSlug: entry.plate_id || entry.plateSlug || "",
+    weekId: entry.id || "",
+    anchorOsis: entry.reference || "",
+  });
+  if (macroMeta?.title) return String(macroMeta.title).trim();
+  if (entry.gesture) return String(entry.gesture).trim();
+  return uiKey.startsWith("en") ? `Plate ${Number(entry.week) || 1}` : `Lámina ${Number(entry.week) || 1}`;
 }
 
 export function resolveFelicesDichaCoordinate(dichaIndex = 1, artifact = null) {
@@ -321,16 +398,21 @@ export function parseCanonicalOtEchoRef(echoStr = "") {
 
 export function renderEvangeliosPlateActionsHtml({
   weekId = "s01",
-  passageRef = "JHN.1.1",
+  plateSlug = "",
+  passageRef = "MRK.1.16",
   lang = "es",
   uiLocale = null,
 } = {}) {
   const cleanWeek = String(weekId || "s01").trim().toLowerCase();
-  const cleanRef = String(passageRef || "JHN.1.1").trim().toUpperCase();
+  const cleanRef = String(passageRef || "MRK.1.16").trim().toUpperCase();
   const cleanLang = String(lang || "es").trim().toLowerCase();
   const effectiveUi = String(uiLocale || lang || "es").trim().toLowerCase();
   const isEnUi = effectiveUi.startsWith("en");
-  const enrichment = resolveEvangeliosMacroThreadAndEcho(cleanWeek);
+  const enrichment = resolveEvangeliosMacroThreadAndEcho({
+    plateSlug,
+    weekId: cleanWeek,
+    anchorOsis: cleanRef,
+  });
 
   const parsedPassage = parseCanonicalOtEchoRef(enrichment.anchorOsis || cleanRef);
   const bookKey = `${enrichment.book || parsedPassage.book}.${enrichment.chapter || parsedPassage.chapter}`;
@@ -374,6 +456,18 @@ export function renderEvangeliosPlateActionsHtml({
 
   const pericopesHtml = rawPericopes
     .map((pb, idx) => {
+      if (typeof pb === "string") {
+        const cleanStr = pb.replace(/^\d+\.\s*/, "").trim();
+        const vMatch = /:(\d+)/.exec(cleanStr);
+        const vStart = vMatch ? Number(vMatch[1]) || 1 : (parsedPassage.verse || 1);
+        const pRef = `${enrichment.book || parsedPassage.book}.${enrichment.chapter || parsedPassage.chapter}.${vStart}`;
+        return (
+          `<button type="button" class="uls-chip evangelios-pericope-chip" ` +
+          `data-pericope-block="${idx + 1}" data-pericope-verse="${vStart}" data-pericope-ref="${escapeHtml(pRef)}" ` +
+          `style="min-height:48px;min-width:48px;padding:0.3rem 0.65rem;font-size:0.76rem;display:inline-flex;align-items:center;">` +
+          `פ v.${vStart} · ${escapeHtml(cleanStr)}</button>`
+        );
+      }
       const vStart = Number(pb.beforeVerse ?? pb.startVerse ?? pb.verse ?? 1) || 1;
       const pRef = `${enrichment.book || parsedPassage.book}.${enrichment.chapter || parsedPassage.chapter}.${vStart}`;
       const label = pb.title || pb.heading || pb.label || (isEnUi ? `Block ${idx + 1} (v. ${vStart})` : `Bloque ${idx + 1} (v. ${vStart})`);

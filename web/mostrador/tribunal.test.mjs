@@ -1035,7 +1035,7 @@ test("D1_to_D10_A_plus_ARB_EKOVOZ_61_triple_provenance_closure_and_full_backend_
     true,
     `Triple Provenance Closure failed: missingDomIds=${JSON.stringify(closure.missingDomIds)}, unprojectedKeys=${JSON.stringify(closure.unprojectedKeys)}, scopeViolations=${JSON.stringify(closure.scopeViolations)}`,
   );
-  assert.equal(ARTIFACT_PROJECTION_SCHEMA.length, 8);
+  assert.equal(ARTIFACT_PROJECTION_SCHEMA.length, 10);
 
   // 2. D2-A+ (D72) & D8-A+ (D78): Restored #toggleA4, #toggleCarta, #evangeliosLangSelect (7 langs), and zero .slice(0, 140)
   for (const id of ["toggleA4", "toggleCarta", "nameCarta", "subCarta", "nameA4", "subA4", "evangeliosLangSelect", "bibleChapterPericopesRibbon", "felicesSocraticWonderCard"]) {
@@ -1211,7 +1211,7 @@ test("D1_to_D9_B_plus_plus_GOLD_647_vpl_dom_scope_containment_and_8_artifact_exa
   const wasmStatus = hydrateWasmManifestStatus(wasmManifest);
   assert.equal(wasmStatus.hasPlayerWasm, true);
   assert.equal(wasmStatus.hasReceiverWasm, true);
-  assert.equal(ARTIFACT_PROJECTION_SCHEMA.length, 8);
+  assert.equal(ARTIFACT_PROJECTION_SCHEMA.length, 10);
 });
 
 test("D1_to_D12_R32_ARB_EKOVOZ_69_GOLD_648_eco_decoder_census_7164_crdt_wal_rosetta_5_classes_sauvola_and_zero_duplicate_strata", async () => {
@@ -2066,9 +2066,9 @@ test("R40 (D1-R40..D9-R40 / ARB-EKOVOZ-77 / DEB-R40-01..10): Full i18n template 
   assert.ok(regionalDefaults.recommendedEdition && regionalDefaults.recommendedEdition.slug);
   assert.deepEqual(hydratorsMod.HAREL_PRINT_SUBTABS, ["doses", "imposition", "stationery"]);
 
-  // 6. D6-R40, D7-R40 & DEB-R40-10: 16 verified Bible corpora in index.html, dark-mode --focal-frame-bg, and conditional Evangelios bridge
+  // 6. D6-R40, D7-R40, D9-R45 & DEB-R40-10: 16 verified Bible corpora in index.html, AAA dark-mode --focal-frame-bg, and conditional Evangelios bridge
   const indexHtml = fs.readFileSync(path.join(WEB_DIR, "index.html"), "utf8");
-  assert.match(indexHtml, /--focal-frame-bg:#faf7f0/);
+  assert.match(indexHtml, /--focal-frame-bg:#141210/);
   assert.match(indexHtml, /id="wfstAndScriptioContinuaHost"/);
   assert.match(indexHtml, /id="printDosisHarelSubtabsBar"/);
   for (const code of ["es", "es-1909", "en", "pt", "fr", "stp", "he", "grc", "ar", "fa", "ur", "hi", "bn", "id", "ru", "zh-Hans"]) {
@@ -2168,11 +2168,11 @@ test("R41 (D1-R41..D10-R41 / ARB-EKOVOZ-78 / GOLD-665): Sovereign Surface & Asse
   const pdfHeader = new TextDecoder("ascii").decode(livePdfBytes.slice(0, 8));
   assert.equal(pdfHeader, "%PDF-1.4");
 
-  // 4. D6-R41: All 18 i18n JSON catalogs have 100% key parity (>= 280 keys each)
+  // 4. D6-R41 & D3-R45 (SLICE-175): All 18 i18n JSON catalogs have 100% key parity (>= 220 live keys each, 0 dead keys)
   const i18nDir = path.join(WEB_DIR, "i18n");
   const enCatalog = JSON.parse(fs.readFileSync(path.join(i18nDir, "en.json"), "utf8"));
   const enKeys = Object.keys(enCatalog.messages || enCatalog.strings || enCatalog).filter((k) => !k.startsWith("_")).sort();
-  assert.ok(enKeys.length >= 280, `Expected >= 280 i18n keys in en.json, got ${enKeys.length}`);
+  assert.ok(enKeys.length >= 220, `Expected >= 220 live i18n keys in en.json, got ${enKeys.length}`);
   for (const code of ["ar", "bn", "bn-BD", "bn-IN", "en", "es", "fa", "fr", "hi", "id", "it", "ja", "ko", "pt", "ru", "tr", "ur", "zh-Hans"]) {
     const cat = JSON.parse(fs.readFileSync(path.join(i18nDir, `${code}.json`), "utf8"));
     const keys = Object.keys(cat.messages || cat.strings || cat).filter((k) => !k.startsWith("_")).sort();
@@ -2375,4 +2375,183 @@ test("D1_R44_sticky_drawer_header_hidden_without_active_sheet_and_tracks_passage
   const html = fs.readFileSync(path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "index.html"), "utf8");
   assert.match(html, /<div id="stickyDrawerContextHeader" hidden/);
   assert.match(html, /#stickyDrawerContextHeader\[hidden\][^{]*\{display:none !important;\}/);
+});
+
+test("R45_SLICE_174_stage_action_preserved_on_mobile_dark_form_controls_and_editorial_audit_panel_wired", async () => {
+  const html = fs.readFileSync(path.join(WEB_DIR, "index.html"), "utf8");
+  const i18nUiRaw = fs.readFileSync(path.join(WEB_DIR, "i18n_ui.js"), "utf8");
+  const i18nUiMod = await import("../i18n_ui.js");
+
+  assert.doesNotMatch(
+    html,
+    /body:has\(#bibleVerseViewport\[data-inspector-open="true"\]\)\s*#stage-action/,
+    "DEB-R45-11 / INV-ERG-18: #stage-action must never be hidden via display:none !important when inspector is open",
+  );
+  assert.match(html, /#stage-action:not\(\[hidden\]\)\{[^}]*min-height:44px/);
+  assert.match(html, /color-scheme:light dark/);
+  assert.match(html, /background-color:#1c1917 !important;color:#f5f0e6 !important/);
+  assert.match(html, /id="editorialAuditStatusPanel"\s+data-dosis-subtab-panel="graphics"\s+hidden/);
+  assert.match(html, /id="btnStudySubtabRosetta"[\s\S]*?data-i18n="study.subtab.diachronic"/);
+  assert.equal(
+    "ensureLocaleLoaded" in i18nUiMod,
+    false,
+    "DEB-R45-01: ensureLocaleLoaded must be private to i18n_ui.js",
+  );
+  assert.equal(
+    i18nUiRaw.includes('.replaceAll(a,b)'),
+    false,
+    "DEB-R45-01: runtime bn-BD lexical .replaceAll patch must be removed once bn-BD.json is materialized on disk",
+  );
+});
+
+test("R45_SLICE_180_single_eight_locks_attestation_receipt_with_ed25519_and_master_census", async () => {
+  const { EcoDecoderMirror, verifyEd25519ManifestSignature } = await import("./offline_mesh.js");
+  const { hydrateShareAndAuditDrawerPanel } = await import("./drawer_share.js");
+
+  const mirror = new EcoDecoderMirror(new Uint8Array([1, 2, 3, 4]), "he");
+  const preview = mirror.decode_verse_preview(0, "En el principio");
+  assert.match(preview, /rebase=0x0590/);
+  assert.doesNotMatch(preview, /Rebase 0x0590 \(rebase=/, "DEB-R45-06: zero duplicate Rebase stutter");
+  assert.equal(verifyEd25519ManifestSignature("payload", "corrupt"), false);
+
+  const mcJson = JSON.parse(fs.readFileSync(path.join(WEB_DIR, "data", "master_census_summary.json"), "utf8"));
+  const epJson = JSON.parse(fs.readFileSync(path.join(WEB_DIR, "data", "editorial_profiles.json"), "utf8"));
+
+  const statusEl = {
+    id: "editorialAuditStatusPanel",
+    innerHTML: "",
+    attrs: {},
+    setAttribute(k, v) { this.attrs[k] = String(v); },
+    getAttribute(k) { return this.attrs[k] ?? null; },
+  };
+  const targetDoc = { getElementById: (id) => (id === "editorialAuditStatusPanel" ? statusEl : null) };
+  const state = {
+    lang: "es",
+    uiLocale: "en",
+    book: "GEN",
+    chapter: 1,
+    verse: 1,
+    masterCensusSummary: mcJson,
+    editorialProfiles: epJson,
+    lastNavResult: { chapter: { verses: { "1": "In the beginning God created the heavens and the earth." } } },
+  };
+  hydrateShareAndAuditDrawerPanel({
+    state,
+    dataLayer: {},
+    targetDoc,
+    getEl: (id, d = targetDoc) => d.getElementById(id),
+    hydrateShareAndAuditDrawer: () => {},
+  });
+
+  assert.equal(statusEl.getAttribute("data-ed25519-verified"), "true");
+  assert.equal((statusEl.innerHTML.match(/class="eight-locks-pda-bar"/g) || []).length, 1);
+  assert.match(statusEl.innerHTML, /data-master-census-7keys="true"/);
+  assert.match(statusEl.innerHTML, /data-living-languages="7164"/);
+  assert.match(statusEl.innerHTML, /data-rust-surface-score="10181"/);
+  for (const key of [
+    "living_languages",
+    "canonical_canon",
+    "crdt_wal",
+    "formulaic_entropy",
+    "sovereign_tiers_4",
+    "stp_ledger_progress",
+    "verified_disk_corpora",
+  ]) {
+    assert.match(statusEl.innerHTML, new RegExp(`data-census-key="${key}"`));
+  }
+});
+
+test("R45_SLICE_186_sticky_drawer_header_reacts_on_navigate_selectVerse_and_hides_when_closed", async () => {
+  const { createMostradorController } = await import("../mostrador.js");
+  const makeNode = (id, hidden = false) => ({
+    id,
+    hidden,
+    innerHTML: "",
+    textContent: "",
+    style: {},
+    attrs: {},
+    setAttribute(k, v) { this.attrs[k] = String(v); },
+    getAttribute(k) { return this.attrs[k] ?? null; },
+    addEventListener() {},
+    querySelectorAll() { return []; },
+  });
+  const nodes = {
+    stickyDrawerContextHeader: makeNode("stickyDrawerContextHeader", true),
+    stickyActiveVersePill: makeNode("stickyActiveVersePill"),
+    stickyActiveLangBtn: makeNode("stickyActiveLangBtn"),
+    btnStickyJumpToCanvas: makeNode("btnStickyJumpToCanvas"),
+    bibleEasyDrawerPanel: makeNode("bibleEasyDrawerPanel", true),
+    biblePrintSheet: makeNode("biblePrintSheet", true),
+    bibleFieldWorkshopSheet: makeNode("bibleFieldWorkshopSheet", true),
+    bibleShareAndAuditSheet: makeNode("bibleShareAndAuditSheet", true),
+    bibleVerseViewport: makeNode("bibleVerseViewport"),
+  };
+  const mockDoc = {
+    documentElement: makeNode("html"),
+    getElementById: (id) => nodes[id] || null,
+    querySelectorAll: () => [],
+  };
+  const mockDataLayer = {
+    navigate: async ({ book, chapter }) => ({
+      status: "READY",
+      stale: false,
+      chapter: { book, chapter, verses: { "1": "Texto v1", "28": "Texto v28", "31": "Texto v31" } },
+    }),
+    loadCatalog: async () => ({ languages: [{ code: "es", has_text: true }], verse_counts: {} }),
+    loadMatrixChapter: async () => ({ rows: [] }),
+    loadI18nIndex: async () => ({ locales: ["en", "es"] }),
+    loadUiCatalog: async (loc) => ({ messages: { "mostrador.title": loc === "es" ? "Mostrador" : "Counter" } }),
+  };
+
+  const ctrl = createMostradorController({
+    doc: mockDoc,
+    dataLayer: mockDataLayer,
+    lang: "es",
+    uiLocale: "en",
+    book: "GEN",
+    chapter: 1,
+    verse: 1,
+  });
+
+  // Initially 0 sheets open -> sticky header must remain hidden
+  ctrl.syncActiveChromeProjection(mockDoc);
+  assert.equal(nodes.stickyDrawerContextHeader.hidden, true);
+
+  // Open study drawer -> sticky header becomes visible with GEN 1:1
+  await ctrl.transitionSheet("study", mockDoc);
+  assert.equal(nodes.stickyDrawerContextHeader.hidden, false);
+  assert.equal(nodes.stickyActiveVersePill.textContent, "📖 GEN 1:1");
+
+  // Navigate to ROM 8:28 while drawer open -> sticky header updates live
+  await ctrl.navigate({ book: "ROM", chapter: 8, verse: 28 }, mockDoc);
+  assert.equal(nodes.stickyActiveVersePill.textContent, "📖 ROM 8:28");
+
+  // Select verse 31 -> sticky header updates live
+  await ctrl.selectVerse(31, mockDoc);
+  assert.equal(nodes.stickyActiveVersePill.textContent, "📖 ROM 8:31");
+
+  // Switch UI locale to es -> sticky jump button updates live
+  await ctrl.setUiLocale("es", mockDoc);
+  assert.equal(nodes.btnStickyJumpToCanvas.textContent, "↑ Lienzo");
+
+  // Close drawer -> countVisibleSheets() === 0 -> sticky header hides immediately
+  await ctrl.transitionSheet(null, mockDoc);
+  assert.equal(ctrl.countVisibleSheets(mockDoc), 0);
+  assert.equal(nodes.stickyDrawerContextHeader.hidden, true);
+});
+
+test("R45_SLICE_186_mostrador_below_1400_loc_with_zero_broken_reexports", async () => {
+  const mostradorPath = path.join(WEB_DIR, "mostrador.js");
+  const mostradorSrc = fs.readFileSync(mostradorPath, "utf8");
+  const loc = mostradorSrc.split(/\r?\n/).length;
+  assert.ok(loc < 1400, `R45 SLICE-186: expected web/mostrador.js < 1,400 LOC, got ${loc}`);
+  assert.ok(fs.existsSync(path.join(WEB_DIR, "mostrador", "oral_portico_wasm.js")));
+  assert.ok(fs.existsSync(path.join(WEB_DIR, "mostrador", "stage_dom_bindings.js")));
+
+  const mostradorNs = await import("../mostrador.js");
+  assert.equal(typeof mostradorNs.createMostradorController, "function");
+  assert.equal(typeof mostradorNs.bootBrowserMostrador, "function");
+  for (const [k, v] of Object.entries(mostradorNs)) {
+    assert.notEqual(v, undefined, `Broken re-export on web/mostrador.js: ${k}`);
+  }
 });

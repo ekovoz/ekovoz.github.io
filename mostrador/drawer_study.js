@@ -3,14 +3,15 @@
 // Decisiones D1-R41, D2-R41, D3-R41, D8-R41 · Costura Limpia ∂(C)=0
 // ============================================================================
 
+import { BIBLE_CONSTANTS } from "./data_layer.js";
 import {
   getAll156DiachronicSubstitutionsCatalog,
   hydrateDiachronicRegister,
   renderChapterDiachronicAuditCardHtml,
-  renderChapterDiachronicWitnessesHtml,
   renderUnifiedDiachronicContextHtml,
 } from "./diachronic_register.js";
 import {
+  decodeSdbhHierarchicalCode,
   highlightStudyCardByStrongId,
   hydrateCulturalGlossesLexicon,
   hydratePhilologyRosettaIndex,
@@ -18,6 +19,7 @@ import {
   renderPhilologyRosettaInspectorHtml,
   renderPhilologyRosettaResultsRowsHtml,
   searchPhilologyRosettaIndex,
+  translateNsm65PrimePhrase,
 } from "./estudio.js";
 import { hydratePericopesAndGlosses } from "./evangelios.js";
 import {
@@ -34,6 +36,142 @@ function escHtml(val) {
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;");
+}
+
+function renderAnnotationAndBlindCalibrationCardHtml({
+  annotationReport = null,
+  blindCalibrationRows = null,
+  sampleRow = null,
+  activeLang = "es",
+  activeBook = "GEN",
+  uiLocale = "es",
+} = {}) {
+  const isEn = String(uiLocale || "es").trim().toLowerCase().startsWith("en");
+  const canonicalVerses = Number(BIBLE_CONSTANTS?.CANONICAL_VERSES_COUNT || 31102);
+  const canonicalCols = Number(BIBLE_CONSTANTS?.MATRIX_COLUMNS_COUNT || 14);
+  const sampleSdbh = sampleRow?.c11_semantic_domain
+    ? decodeSdbhHierarchicalCode(sampleRow.c11_semantic_domain, uiLocale).label
+    : "";
+  const sampleNsm = sampleRow?.c13_nsm_65
+    ? translateNsm65PrimePhrase(sampleRow.c13_nsm_65, uiLocale)
+    : "";
+
+  const parts = [];
+  if (annotationReport && typeof annotationReport === "object") {
+    const totals = annotationReport.totals || {};
+    const ratios = annotationReport.ratios || {};
+    const thresholds = annotationReport.thresholds || {};
+    const residualsByKind = annotationReport.residuals_by_kind || {};
+    const sources = Array.isArray(annotationReport.sources) ? annotationReport.sources : [];
+    const indexSha = String(annotationReport.index_sha256 || "");
+    const residualsSha = String(annotationReport.residuals_sha256 || "");
+    const otTokens = Number(totals.ot_tokens || 0);
+    const ntTokens = Number(totals.nt_tokens || 0);
+    const totalTokens = otTokens + ntTokens;
+    const residualEntries = Object.entries(residualsByKind);
+    const totalResiduals = residualEntries.reduce((acc, [, v]) => acc + (Number(v) || 0), 0);
+    const residualBadges = residualEntries
+      .map(
+        ([kind, count]) =>
+          `<span class="uls-badge" data-residual-kind="${escHtml(kind)}">${escHtml(kind)}: <strong>${Number(count) || 0}</strong></span>`,
+      )
+      .join(" ");
+    const sourceBadges = sources
+      .map(
+        (src) =>
+          `<span class="uls-badge" data-open-source-id="${escHtml(src.id)}" title="SHA-256: ${escHtml(src.sha256)}">${escHtml(src.id)} (${escHtml(src.license)} · <code>${escHtml(String(src.sha256 || "").slice(0, 8))}</code>)</span>`,
+      )
+      .join(" ");
+    const gatePass = Boolean(thresholds.pass);
+    const ntSpanRatio = ((Number(ratios.nt_tagnt_spanish) || 0) * 100).toFixed(2);
+    const minNtSpan = ((Number(thresholds.min_nt_tagnt_spanish) || 0.95) * 100).toFixed(0);
+    const otUnannRatio = ((Number(ratios.ot_unannotated) || 0) * 100).toFixed(3);
+    const maxOtUnann = ((Number(thresholds.max_ot_unannotated) || 0.01) * 100).toFixed(1);
+    const ntUnannRatio = ((Number(ratios.nt_unannotated) || 0) * 100).toFixed(3);
+    const maxNtUnann = ((Number(thresholds.max_nt_unannotated) || 0.005) * 100).toFixed(1);
+    const otKetivRatio = ((Number(ratios.ot_ketiv) || 0) * 100).toFixed(3);
+    const maxOtKetiv = ((Number(thresholds.max_ot_ketiv) || 0.005) * 100).toFixed(1);
+
+    parts.push(
+      `<section class="calibration-mass-conservation-card" data-annotation-mass-conservation="true" data-total-tokens="${totalTokens}" data-total-residuals="${totalResiduals}" data-canonical-verses="${canonicalVerses}" data-matrix-columns="${canonicalCols}" data-index-sha256="${escHtml(indexSha.slice(0, 16))}" data-residuals-sha256="${escHtml(residualsSha.slice(0, 16))}" style="margin-top:0.5rem;padding:0.55rem 0.7rem;border-radius:8px;border:1px solid var(--card-border);background:var(--card-bg);font-size:0.76rem;">` +
+        `<div style="display:flex;flex-wrap:wrap;gap:0.4rem;align-items:center;justify-content:space-between;margin-bottom:0.35rem;">` +
+        `<strong>⚖️ ${isEn ? "Lexical Mass Conservation" : "Conservación de Masa Léxica"} (${otTokens.toLocaleString("en-US")} ${isEn ? "OT" : "AT"} + ${ntTokens.toLocaleString("en-US")} NT = ${totalTokens.toLocaleString("en-US")} tokens · ${canonicalVerses.toLocaleString("en-US")} vv. · ${canonicalCols} col.)</strong>` +
+        `<span class="uls-badge" data-thresholds-pass="${gatePass}">${gatePass ? (isEn ? "✅ Gates OK" : "✅ Umbrales OK") : "⚠️"} · TAGNT-ES ${ntSpanRatio}% (≥${minNtSpan}%) · OT-Unann ${otUnannRatio}% (≤${maxOtUnann}%) · NT-Unann ${ntUnannRatio}% (≤${maxNtUnann}%) · Ketiv ${otKetivRatio}% (≤${maxOtKetiv}%)</span>` +
+        `</div>` +
+        (sampleSdbh || sampleNsm
+          ? `<div class="hig-tech-meta" style="margin-bottom:0.3rem;color:var(--text-secondary);">${sampleSdbh ? `<span>SDBH: ${escHtml(sampleSdbh)}</span>` : ""}${sampleSdbh && sampleNsm ? " · " : ""}${sampleNsm ? `<span>NSM-65: ${escHtml(sampleNsm)}</span>` : ""}</div>`
+          : "") +
+        `<div style="display:flex;flex-wrap:wrap;gap:0.25rem;margin-bottom:0.35rem;">` +
+        `<span style="font-weight:600;">${isEn ? `5 Residual Classes (${totalResiduals.toLocaleString("en-US")}):` : `5 Clases Residuales (${totalResiduals.toLocaleString("en-US")}):`}</span> ${residualBadges}` +
+        `</div>` +
+        `<div style="display:flex;flex-wrap:wrap;gap:0.25rem;color:var(--text-secondary);">` +
+        `<span style="font-weight:600;">${isEn ? `${sources.length} Open Sources:` : `${sources.length} Fuentes Abiertas:`}</span> ${sourceBadges}` +
+        `</div>` +
+      `</section>`,
+    );
+  }
+
+  if (Array.isArray(blindCalibrationRows) && blindCalibrationRows.length > 0) {
+    const booksOrder = ["GEN", "PSA", "ISA", "JON"];
+    const byLang = new Map();
+    for (const row of blindCalibrationRows) {
+      const lc = String(row.lang_code || "").trim();
+      if (!lc) continue;
+      if (!byLang.has(lc)) {
+        byLang.set(lc, {
+          langCode: lc,
+          macroFamily: String(row.macro_family || ""),
+          cells: new Map(),
+        });
+      }
+      byLang.get(lc).cells.set(String(row.book_usfm || "").toUpperCase(), row);
+    }
+    const normLang = String(activeLang || "es").split("-")[0].toLowerCase();
+    const normBook = String(activeBook || "GEN").toUpperCase();
+    const headerCells = booksOrder
+      .map((bk) => {
+        const isActiveCol = bk === normBook;
+        return `<th data-book-col="${bk}" data-active-book-col="${isActiveCol}" style="padding:0.25rem 0.4rem;text-align:right;border-bottom:1px solid var(--card-border);${isActiveCol ? "font-weight:800;text-decoration:underline;" : ""}">${bk}</th>`;
+      })
+      .join("");
+    const bodyRows = Array.from(byLang.values())
+      .map((entry) => {
+        const isActiveRow = entry.langCode.toLowerCase() === normLang;
+        const tds = booksOrder
+          .map((bk) => {
+            const cell = entry.cells.get(bk);
+            const isActiveCol = bk === normBook;
+            if (!cell) return `<td style="padding:0.2rem 0.4rem;text-align:right;">—</td>`;
+            const chrf = Number(cell.chrf_plus_plus || 0).toFixed(1);
+            const charF2 = Number(cell.char_f2 || 0).toFixed(1);
+            const wordF2 = Number(cell.word_f2 || 0).toFixed(1);
+            const lr = Number(cell.length_ratio_gale_church || 1).toFixed(2);
+            const mattr = Number(cell.mattr_50 || 1).toFixed(2);
+            const passGate = Boolean(cell.passes_release_gate);
+            return `<td data-calib-cell="${escHtml(entry.langCode)}:${bk}" data-passes-gate="${passGate}" data-active-cell="${isActiveRow && isActiveCol}" title="charF2=${charF2} · wordF2=${wordF2} · Gale-Church=${lr} · MATTR50=${mattr}" style="padding:0.2rem 0.4rem;text-align:right;font-variant-numeric:tabular-nums;${isActiveRow && isActiveCol ? "font-weight:800;" : ""}">${chrf}${passGate ? "" : "⚠"}</td>`;
+          })
+          .join("");
+        return (
+          `<tr data-calib-lang="${escHtml(entry.langCode)}" data-active-lang-row="${isActiveRow}" style="${isActiveRow ? "background:var(--bg-secondary);font-weight:700;" : ""}">` +
+          `<td style="padding:0.2rem 0.4rem;"><code>${escHtml(entry.langCode)}</code> <span style="opacity:0.75;">(${escHtml(entry.macroFamily)})</span></td>` +
+          tds +
+          `</tr>`
+        );
+      })
+      .join("");
+
+    parts.push(
+      `<section class="blind-calibration-chrf-card" data-blind-calibration-matrix="true" data-langs-count="${byLang.size}" data-books-count="${booksOrder.length}" style="margin-top:0.5rem;padding:0.55rem 0.7rem;border-radius:8px;border:1px solid var(--card-border);background:var(--card-bg);font-size:0.75rem;overflow-x:auto;">` +
+        `<strong style="display:block;margin-bottom:0.3rem;">🎯 ${isEn ? `Blind Calibration Matrix chrF++ (${byLang.size} Languages × 4 Passages)` : `Matriz de Calibración Ciega chrF++ (${byLang.size} Lenguas × 4 Pasajes)`}</strong>` +
+        `<table style="width:100%;border-collapse:collapse;">` +
+        `<thead><tr><th style="padding:0.25rem 0.4rem;text-align:left;border-bottom:1px solid var(--card-border);">${isEn ? "Lang / Family" : "Lengua / Familia"}</th>${headerCells}</tr></thead>` +
+        `<tbody>${bodyRows}</tbody>` +
+        `</table>` +
+      `</section>`,
+    );
+  }
+
+  return parts.join("");
 }
 
 /**
@@ -281,6 +419,20 @@ export async function hydrateStudyDrawerPanel(ctx = {}) {
     try {
       const drData = await dataLayer.loadDiachronicRegisterAudit();
       if (drData) hydrateDiachronicRegister(drData);
+    } catch {
+      // Non-fatal
+    }
+  }
+  if (!state.annotationIndexReport && typeof dataLayer.loadAnnotationIndexReport === "function") {
+    try {
+      state.annotationIndexReport = await dataLayer.loadAnnotationIndexReport();
+    } catch {
+      // Non-fatal
+    }
+  }
+  if (!state.blindCalibrationReport && typeof dataLayer.loadBlindCalibrationReport === "function") {
+    try {
+      state.blindCalibrationReport = await dataLayer.loadBlindCalibrationReport();
     } catch {
       // Non-fatal
     }
@@ -575,18 +727,31 @@ export async function hydrateStudyDrawerPanel(ctx = {}) {
     if (tskCard) tskCard.innerHTML = strata.tskHtml;
   }
 
-  // D3-R40: Hidrata el Inspector WFST Multi-Ortográfico + Scriptio Continua en #wfstAndScriptioContinuaHost.
+  // D3-R40 + D3-R45: Hidrata el Inspector WFST Multi-Ortográfico + Scriptio Continua + Conservación de Masa Léxica y Matriz chrF++ en #wfstAndScriptioContinuaHost.
   const wfstHost = getEl("wfstAndScriptioContinuaHost", targetDoc);
   if (wfstHost) {
     const profilesForLang = listOrthographyProfilesForLang(state.lang);
     const activeVerseText =
       state.lastNavResult?.chapter?.verses?.[String(state.verse)] || "";
-    wfstHost.innerHTML = renderWfstAndScriptioContinuaInspectorHtml({
-      lang: state.lang,
-      profileId: state.orthographyProfile || profilesForLang[0]?.id || "INALI_PRACTICAL",
-      sampleText: activeVerseText || undefined,
+    const firstRowObj =
+      Array.isArray(matrixChapter?.rows) && matrixChapter.rows.length > 0 && !Array.isArray(matrixChapter.rows[0])
+        ? matrixChapter.rows[0]
+        : null;
+    const calibrationCardsHtml = renderAnnotationAndBlindCalibrationCardHtml({
+      annotationReport: state.annotationIndexReport || dataLayer?.getHydratedAnnotationIndexReport?.() || null,
+      blindCalibrationRows: state.blindCalibrationReport || dataLayer?.getHydratedBlindCalibrationReport?.() || null,
+      sampleRow: firstRowObj,
+      activeLang: state.lang,
+      activeBook: state.book,
       uiLocale: state.uiLocale || "es",
     });
+    wfstHost.innerHTML =
+      renderWfstAndScriptioContinuaInspectorHtml({
+        lang: state.lang,
+        profileId: state.orthographyProfile || profilesForLang[0]?.id || "INALI_PRACTICAL",
+        sampleText: activeVerseText || undefined,
+        uiLocale: state.uiLocale || "es",
+      }) + calibrationCardsHtml;
     const wfstSel = getEl("wfstInspectorProfileSelect", targetDoc);
     if (wfstSel && typeof wfstSel.addEventListener === "function" && !wfstSel._wfstBound) {
       wfstSel._wfstBound = true;
@@ -600,17 +765,10 @@ export async function hydrateStudyDrawerPanel(ctx = {}) {
     }
   }
 
-  // D5-R38 / D9-R39 / D8-R41: Hidrata las Sustituciones Diacrónicas + Testigos del Capítulo y enlaza el buscador/filtro por Tier 1/2/3 de las 156 reglas.
+  // D5-R38 / D9-R39 / D8-R41 / D3-R45: Hidrata las Sustituciones Diacrónicas + Testigos del Capítulo sin IDs duplicados (INV-ERG-23).
   const diachronicAuditPanel = getEl("diachronicRegisterAuditPanel", targetDoc);
   if (diachronicAuditPanel) {
     const chapterVerses = state.lastNavResult?.chapter?.verses || {};
-    const witnessesHtml = renderChapterDiachronicWitnessesHtml(
-      chapterVerses,
-      state.book,
-      state.chapter,
-    );
-    // D2-R44 / DEB-R44-05: el termómetro del pasaje se proyecta sin su `<details>` interno, porque Gaveta 1 ya
-    // monta `#diachronicSubstitutionsDetails` + `#diachronicRegisterAuditPanel` estáticos (evita IDs anidados).
     const unifiedCtxHtml = renderUnifiedDiachronicContextHtml({
       verses: chapterVerses,
       bookCode: state.book,
@@ -626,10 +784,8 @@ export async function hydrateStudyDrawerPanel(ctx = {}) {
       activeTier: state.diachronicTier || 0,
       uiLocale: state.uiLocale || "es",
     });
-    // D2-R44 / DEB-R44-05: la tarjeta trae su propio `id="diachronicRegisterAuditPanel"`; se monta una sola vez
-    // desenvolviendo el contenedor (sin anidar el mismo id) y después se anexan testigos + contexto unificado.
     mountCardHtmlIntoHost(diachronicAuditPanel, auditCardHtml);
-    diachronicAuditPanel.innerHTML = `${diachronicAuditPanel.innerHTML || ""}${witnessesHtml}${unifiedCtxHtml}`;
+    diachronicAuditPanel.innerHTML = `${diachronicAuditPanel.innerHTML || ""}${unifiedCtxHtml}`;
     const diaSearchInp = getEl("diachronicSubstitutionsSearchInput", targetDoc);
     const diaTierSel = getEl("diachronicTierFilterSelect", targetDoc);
     const refreshDiachronicRulesList = () => {

@@ -69,3 +69,64 @@ test("D4_R44_all_52_weeks_resolve_real_macro_threads_from_keyed_object_artifact"
   assert.ok(html.includes('id="evangeliosPericopeBlocksList"'));
   assert.ok(!html.includes("Camino mesiánico y cumplimiento"));
 });
+
+test("R45_SLICE_178_all_52_evangelios_plates_bijective_and_zero_raw_slugs", async () => {
+  const { resolveEvangeliosMacroThreadAndEcho, formatHumanEvangeliosPlateTitle } = await import("./evangelios.js");
+  const {
+    resolveEvangeliosActiveSelection,
+    buildEvangeliosWeekOptionsHtml,
+    renderEvangeliosStageCardHtml,
+  } = await import("./sister_works_controller.js");
+  const { createDataLayer } = await import("./data_layer.js");
+
+  const webDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+  const pgJson = JSON.parse(fs.readFileSync(path.join(webDir, "data", "pericopes_and_glosses.json"), "utf8"));
+  hydratePericopesAndGlosses(pgJson);
+
+  const layer = createDataLayer({
+    source: {
+      async getJson(rel) {
+        return JSON.parse(fs.readFileSync(path.join(webDir, rel), "utf8"));
+      },
+      async getBytes(rel) {
+        return new Uint8Array(fs.readFileSync(path.join(webDir, rel)));
+      },
+    },
+  });
+  const corpus = await layer.loadEvangeliosCorpus();
+  assert.equal(corpus.total_plates, 52);
+  assert.equal(corpus.canonical_gospel_verses_count, 3779);
+  assert.equal(corpus.entries.length, 52);
+
+  // Verify s01 (mc-01-redes, Mc 1:16-20) resolves to MRK 1:16, NOT JHN 1:1 / JHN 1:14
+  const selS01 = resolveEvangeliosActiveSelection({ corpus, quarterFilter: "T1", weekId: "s01", fallbackLang: "es" });
+  assert.deepEqual(selS01.coordinate, { book: "MRK", chapter: 1, verse: 16 });
+  assert.equal(selS01.totalPlates, 52);
+  assert.equal(selS01.canonicalGospelVersesCount, 3779);
+
+  // Verify bijection across all 52 plates and zero raw slugs in visible text
+  const seenAnchors = new Set();
+  const optsHtml = buildEvangeliosWeekOptionsHtml(corpus.entries, "s01", "es", "en");
+  const visibleOptionText = optsHtml.replace(/<[^>]+>/g, " ");
+  assert.doesNotMatch(visibleOptionText, /\b(mc|mt|lc|jn)-\d{2}-[a-z0-9-]+\b/i);
+
+  for (const entry of corpus.entries) {
+    const bySlug = resolveEvangeliosMacroThreadAndEcho({ plateSlug: entry.plate_id, weekId: entry.id });
+    assert.equal(bySlug.plateSlug, entry.plate_id);
+    seenAnchors.add(`${entry.plate_id}:${bySlug.anchorOsis}`);
+    const humanTitle = formatHumanEvangeliosPlateTitle(entry, "es", "en");
+    assert.ok(humanTitle.length > 3);
+    assert.doesNotMatch(humanTitle, /\b(mc|mt|lc|jn)-\d{2}-[a-z0-9-]+\b/i);
+  }
+  assert.equal(seenAnchors.size, 52);
+
+  const cardHtml = renderEvangeliosStageCardHtml(corpus.entries[0], "es", "en", {
+    totalPlates: corpus.total_plates,
+    canonicalGospelVersesCount: corpus.canonical_gospel_verses_count,
+  });
+  const visibleCardText = cardHtml.replace(/<[^>]+>/g, " ");
+  assert.doesNotMatch(visibleCardText, /\bmc-01-redes\b/i);
+  assert.doesNotMatch(visibleCardText, /Habitar entre nosotros|EXO\.25\.8/);
+  assert.match(cardHtml, /data-total-plates="52"/);
+  assert.match(cardHtml, /data-canonical-gospel-verses="3779"/);
+});

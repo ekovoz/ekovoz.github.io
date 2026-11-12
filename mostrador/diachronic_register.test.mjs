@@ -58,4 +58,23 @@ test("R37_SLICE_117_renderUnifiedDiachronicContextHtml_unifies_pulse_and_substit
   assert.match(html, /Ver sustituciones 1909 → Siglo XXI en este capítulo/);
 });
 
+test("R45_SLICE_182_diachronic_internal_tables_demoted_and_public_contracts_preserved", async () => {
+  const ns = await import("./diachronic_register.js");
+  for (const sym of [
+    "TIER_1_ARCHAIC_LEXICON",
+    "TIER_2_MORPHOLOGICAL_RULES",
+    "TIER_3_POSTVERBAL_ENCLITICS",
+    "REGISTER_AUDIT_ES_BASELINE",
+    "INTERGENERATIONAL_CORE_RULES",
+    "CORPUS_SUMMARY",
+    "TOTAL_VERSES_AUDITED",
+    "CORE_SUBSTITUTIONS",
+    "DIACHRONIC_SUPPORTED_LANGS",
+  ]) {
+    assert.equal(ns[sym], undefined, `DEB-R45-08: ${sym} must be module-private`);
+  }
+  assert.equal(typeof ns.syncDiachronicRegisterOrthogonality, "function");
+  assert.equal(typeof ns.resolveEffectiveCorpusTarget, "function");
+});
+
 

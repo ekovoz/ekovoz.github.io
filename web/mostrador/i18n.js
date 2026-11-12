@@ -52,7 +52,7 @@ const CLDR_PARENT_LOCALES = {
 };
 
 /** Descompone una etiqueta BCP 47 en idioma, escritura y región (sin validar el registro IANA). */
-export function parseTag(tag) {
+function parseTag(tag) {
   const parts = String(tag || "")
     .trim()
     .replace(/_/g, "-")
@@ -72,7 +72,7 @@ export function parseTag(tag) {
 }
 
 /** Normaliza una etiqueta a la forma canónica `idioma[-Escritura][-REGIÓN]`. */
-export function canonicalTag(tag) {
+function canonicalTag(tag) {
   const { language, script, region } = parseTag(tag);
   return [language, script, region].filter(Boolean).join("-");
 }

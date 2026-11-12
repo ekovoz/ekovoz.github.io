@@ -36,9 +36,9 @@ return o;
 export function resolveFelicesPlateVerse(i,loc,byL={}){
 const gV=l=>{const x=l&&(byL[l]||fC.get(l));return x?.plate_verses||x?.plateVerses||{};},k=String(i),c=FC[clp(i,N,24)]||FC[24];
 const fb=`${S(loc).startsWith("es")?"«Bienaventurados»":"“Blessed”"} (${c.book} ${c.chapter}:${c.verse})`,r=gV(loc)[k]||gV(pLc(loc))[k]||gV("en")[k]||fb;
-return loc==="bn-BD"?[["প্রভু যীশুর আনন্দময় মানুষ","ঈসা মসীহের মোবারক মানুষ"],["প্রভু যীশু","ঈসা মসীহ"],["স্বর্গরাজ্য","আসমানের রাজ্য"],["মথি","মতী"]].reduce((s,[a,b])=>s.replaceAll(a,b),r):r;
+return r;
 }
-export async function ensureLocaleLoaded(loc,fn=typeof fetch==="function"?fetch:null){
+async function ensureLocaleLoaded(loc,fn=typeof fetch==="function"?fetch:null){
 if(!fn)return;for(const l of new Set(["en",loc,pLc(loc)]))if(l)for(const[m,p]of[[uC,`i18n/${l}.json`],[fC,`data/felices/${l}.json`]])if(!m.has(l))try{const r=await fn(p);if(r?.ok)m.set(l,await r.json());}catch{}
 }
 const D16=["es","en","fr","pt","it","id","tr","ru","zh-Hans","ja","ko","hi","bn","ar","ur","fa"];

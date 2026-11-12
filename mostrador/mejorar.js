@@ -8,7 +8,7 @@ import {
   renderMasterCensus7164CardHtml,
 } from "./drawer_hydrators.js";
 
-export const CASCADE_LEVELS = ["L1", "L2", "L3", "L4", "L5"];
+const CASCADE_LEVELS = ["L1", "L2", "L3", "L4", "L5"];
 
 const NEGATION_MARKERS_REGEX =
   /\b(no|ni|nunca|jam[aá]s|not|never|neither|nor|non|ne|pas|cham|ma'|mana|לא|אל|אין|οὐ|οὐκ|οὐχ|μή|لا|لم|لن)\b/i;
@@ -242,7 +242,7 @@ export const CANONICAL_5_OT_TRANSLATION_WAVES = [
 ];
 
 export const FIELD_WORKSHOP_STP_LEXICON = [];
-export const STRONG_CONCORDANCE_COUNTS = {
+const STRONG_CONCORDANCE_COUNTS = {
   H0430: { biblia_occurrences: 2602, evangelios_occurrences: 18, felices_occurrences: 6, sample_refs: ["GEN.1.1", "GEN.1.2", "PSA.23.1", "ISA.40.1"] },
   H3068: { biblia_occurrences: 6828, evangelios_occurrences: 24, felices_occurrences: 8, sample_refs: ["GEN.2.4", "PSA.23.1", "ISA.53.1", "MAL.3.6"] },
   H7225: { biblia_occurrences: 51, evangelios_occurrences: 4, felices_occurrences: 1, sample_refs: ["GEN.1.1", "PRO.1.7", "JER.26.1"] },
@@ -253,7 +253,7 @@ export const STRONG_CONCORDANCE_COUNTS = {
   G1411: { biblia_occurrences: 120, evangelios_occurrences: 15, felices_occurrences: 2, sample_refs: ["ROM.1.16", "LUK.4.14", "ACT.1.8", "1CO.1.18"] },
   G3107: { biblia_occurrences: 50, evangelios_occurrences: 14, felices_occurrences: 12, sample_refs: ["MAT.5.3", "MAT.5.4", "LUK.11.28", "REV.22.14"] },
 };
-export let SISTER_WORKS_CASCADE_SYNC = {
+let SISTER_WORKS_CASCADE_SYNC = {
   evangelios: { total_cascaded_verses: 52, entries: [] },
   felices: { total_cascaded_verses: 28, entries: [] },
 };
@@ -296,7 +296,7 @@ export const TIER3A_CONTINUUMS = [
   { donor_lang: "es", target_lang: "pt", asjp_ldnd: 0.3446, sample_projected_cognates: "eu tu nos um", sovereign_tier: "Tier3BMdlAtomicBatchAssisted" },
   { donor_lang: "id", target_lang: "ms", asjp_ldnd: 0.01, sample_projected_cognates: "saya kamu kami satu", sovereign_tier: "Tier3ADialectalWfstProjection" },
 ];
-export let FLOOR_1_SENTENCE_SPEC = {
+let FLOOR_1_SENTENCE_SPEC = {
   single_sentence_unlocked_floor: 291,
   floor_1_sentence_spec: "GEN.3.1 · 69.53 bits marginal gain · 291 lenguas desbloqueadas con 1 oración",
   estimated_native_speaker_hours: 30,
@@ -320,14 +320,7 @@ export let PATCH_JOURNAL_LOCK_P2 = {
   veto_lock: "Lock P2 (PDA Unbalanced Nested Quotation)",
   snapshots_count: 7,
 };
-export let ROOT_NOTES_STP = [
-  {
-    patch_id: "PATCH-WAL-COMMIT-R16",
-    ref: "GEN.1.1",
-    strong_id: "H0430",
-    note: "Raíz verificada en cascada con 7 snapshots SHA-256.",
-  },
-];
+export let ROOT_NOTES_STP = normalizeRootNotesEntries(null);
 export let STP_LEDGER_SUMMARY = {
   lang: "stp",
   total_verses_in_canon: 31102,
@@ -648,7 +641,7 @@ function sanitizePipeField(value) {
     .trim();
 }
 
-export function computeDeterministicContentHashHex(input) {
+function computeDeterministicContentHashHex(input) {
   const str = String(input ?? "");
   const lanes = [
     0x811c9dc5, 0x9e3779b9, 0x85ebca6b, 0xc2b2ae35,
@@ -974,14 +967,14 @@ export function renderImproveDrawerHtml({
     `<div style="display:grid;gap:0.55rem;">` +
     `<label style="font-size:0.84rem;">` +
     `<span data-i18n="improve.kind_label">${t("improve.kind_label")}</span> ` +
-    `<select id="improveKindSelect" style="min-height:48px;padding:0.4rem;">` +
+    `<select id="improveKindSelect" style="width:100%;box-sizing:border-box;min-height:48px;padding:0.4rem;">` +
     `<option value="verse" data-i18n="improve.kind_verse">${t("improve.kind_verse")} (${patch.ref} · ${patch.strong_id})</option>` +
     `<option value="ui-string" data-i18n="improve.kind_ui">${t("improve.kind_ui")} (${locale})</option>` +
     `</select>` +
     `</label>` +
     `<label style="font-size:0.84rem;">` +
     `<span data-i18n="improve.level_label">${t("improve.level_label")}</span> ` +
-    `<select id="improveLevelSelect" style="min-height:48px;padding:0.4rem;">` +
+    `<select id="improveLevelSelect" style="width:100%;box-sizing:border-box;min-height:48px;padding:0.4rem;">` +
     `<option value="L1">${t("improve.level.L1")}</option>` +
     `<option value="L2" selected>${t("improve.level.L2")}</option>` +
     `<option value="L3">${t("improve.level.L3")}</option>` +
@@ -1051,7 +1044,7 @@ export function applySuggestedImprovement(targetDoc, buttonEl = null, onRefresh 
   };
 }
 
-export const TALLER_CC0_ARTIFACTS = [
+const TALLER_CC0_ARTIFACTS = [
   { id: "01_diccionario", file: "01_diccionario_strong_es_glosa.tsv", label: "📘 1. Diccionario Strong ↔ Glosa Puente (TSV)" },
   { id: "02_concordancia", file: "02_concordancia_exhaustiva.tsv", label: "🔍 2. Concordancia Exhaustiva por Raíz (TSV)" },
   { id: "03_plantilla", file: "03_plantilla_correcciones_campo.toml", label: "📝 3. Plantilla de Correcciones de Campo L1–L5 (TOML)" },
@@ -1060,7 +1053,7 @@ export const TALLER_CC0_ARTIFACTS = [
   { id: "06_escalera250", file: "06_escalera_elicitacion_250_versiculos.tsv", label: "🪜 6. Escalera Submodular CELF de 250 Versículos (TSV)" },
 ];
 
-export const CELF_RUNG_LABELS = {
+const CELF_RUNG_LABELS = {
   ALL: "Todos (250)",
   Rung1SwadeshAndNsm65: "Rung 1 · Swadesh & NSM-65",
   Rung2MorphosyntaxAndTamValence: "Rung 2 · Morfosintaxis & TAM",
@@ -1341,6 +1334,13 @@ export function renderStpLexiconResultsRowsHtml({
       .replace(/>/g, "&gt;")
       .replace(/"/g, "&quot;");
 
+  const rootNoteByStrong = new Map();
+  for (const rn of Array.isArray(ROOT_NOTES_STP) ? ROOT_NOTES_STP : []) {
+    if (rn && rn.strong_id) {
+      rootNoteByStrong.set(String(rn.strong_id).toUpperCase(), rn);
+    }
+  }
+
   return shown
     .map((entry) => {
       const strongCode = String(entry.strong || entry.strong_id || "H0430").toUpperCase();
@@ -1349,6 +1349,16 @@ export function renderStpLexiconResultsRowsHtml({
       const vsoPhrase = String(entry.stp_vso_classifier_phrase || stpSurf);
       const typoRule = String(entry.typology_rule || entry.willett_1991_head_initial_rule || "VSO_HEAD_INITIAL_GB130_1_GB070_1");
       const occ = Number(entry.occurrences || STRONG_CONCORDANCE_COUNTS[strongCode]?.biblia_occurrences || 12);
+      const matchedRootNote = rootNoteByStrong.get(strongCode) || null;
+      const tierCategory = String(entry.tier_category || "ASJP_SWADESH_110");
+      const inlineRootNote = String(
+        matchedRootNote?.note ||
+          matchedRootNote?.note_pure_text ||
+          entry.note ||
+          entry.cultural_note ||
+          entry.semantic_note ||
+          `Morfología VSO cabeza-inicial (Willett 1991 · ${tierCategory})`,
+      );
       return (
         `<button type="button" class="uls-chip stp-lexicon-entry-btn" ` +
         `data-lex-strong="${esc(strongCode)}" ` +
@@ -1356,8 +1366,9 @@ export function renderStpLexiconResultsRowsHtml({
         `data-lex-gloss="${esc(glossEs)}" ` +
         `data-vso-phrase="${esc(vsoPhrase)}" ` +
         `data-typology-rule="${esc(typoRule)}" ` +
-        `style="min-height:48px;padding:0.3rem 0.6rem;font-size:0.76rem;text-align:left;">` +
-        `<strong>${esc(strongCode)}</strong> · ${esc(stpSurf)} <small style="opacity:0.82;">(${esc(glossEs)} · VSO: ${esc(vsoPhrase)} · ${occ} vv.)</small>` +
+        `style="min-height:48px;padding:0.35rem 0.65rem;font-size:0.76rem;text-align:left;display:inline-flex;flex-direction:column;align-items:flex-start;gap:0.12rem;">` +
+        `<span><strong>${esc(strongCode)}</strong> · ${esc(stpSurf)} <small style="opacity:0.82;">(${esc(glossEs)} · VSO: ${esc(vsoPhrase)} · ${occ} vv.)</small></span>` +
+        `<span class="stp-inline-root-note" data-root-note="true" data-root-note-source="${matchedRootNote ? "ledger" : "typology"}" style="font-size:0.71rem;color:var(--text-secondary);">📒 ${esc(inlineRootNote)}</span>` +
         `</button>`
       );
     })
@@ -1453,6 +1464,10 @@ export function renderTallerArtifactsCatalogHtml(langOrOpts = "es") {
     typeof langOrOpts === "object" && langOrOpts !== null
       ? langOrOpts.includeCensusCard !== false
       : true;
+  const includeEightLocksBar =
+    typeof langOrOpts === "object" && langOrOpts !== null
+      ? langOrOpts.includeEightLocksBar !== false
+      : true;
   const customMasterCensus =
     typeof langOrOpts === "object" && langOrOpts !== null && langOrOpts.masterCensusSummary
       ? langOrOpts.masterCensusSummary
@@ -1483,7 +1498,9 @@ export function renderTallerArtifactsCatalogHtml(langOrOpts = "es") {
     )
     .join(" ");
   return (
-    `<div class="eight-locks-pda-bar" data-eight-locks-bar="true" style="grid-column:1 / -1;width:100%;display:flex;flex-wrap:wrap;gap:0.3rem;margin-bottom:0.55rem;">${eightLocksPillsHtml}</div>` +
+    (includeEightLocksBar
+      ? `<div class="eight-locks-pda-bar" data-eight-locks-bar="true" style="grid-column:1 / -1;width:100%;display:flex;flex-wrap:wrap;gap:0.3rem;margin-bottom:0.55rem;">${eightLocksPillsHtml}</div>`
+      : "") +
     `<div class="taller-artifacts-grid" data-taller-lang="${cleanLang}" style="grid-column:1 / -1;width:100%;display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:0.45rem;margin-bottom:0.6rem;">` +
     TALLER_CC0_ARTIFACTS.map(
       (art) =>

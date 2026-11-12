@@ -8,6 +8,9 @@
 // cada bloque, el primer ordinal canónico visible (GEN 1:1 = 1 … REV 22:21 = 31,102). Una página
 // que solo continúa un versículo repite el ordinal del versículo que continúa.
 
+import { BIBLE_CONSTANTS } from "../bible_constants.js";
+import { canonicalOrdinalOf } from "./canonical_versification.js";
+
 const prefixCache = new WeakMap();
 
 function prefixTable(catalogOrVerseCounts) {
@@ -177,7 +180,7 @@ export function planDose2(locatedOrBlockId, lang = "es", edition = "2col-a4") {
   };
 }
 
-export const CANONICAL_9_PLUS_2_EDITIONS_CATALOG = [
+export const CANONICAL_14_PLUS_2_EDITIONS_CATALOG = [
   { id: "01_1col_lectura", editionSlug: "01_1col_lectura", label: "1. Lectura Continua (1 col · 10.5pt)", label_en: "1. Continuous Reading (1 col · 10.5pt)", kind: "edition", columns: 1, fontPt: 10.5 },
   { id: "02_2col_pastoral", editionSlug: "02_2col_pastoral", label: "2. Pastoral Clásica (2 col · 9.5pt)", label_en: "2. Classic Pastoral (2 col · 9.5pt)", kind: "edition", columns: 2, fontPt: 9.5 },
   { id: "03_3col_compacta", editionSlug: "03_3col_compacta", label: "3. Compacta de Bolsillo (3 col · 8.0pt)", label_en: "3. Pocket Compact (3 col · 8.0pt)", kind: "edition", columns: 3, fontPt: 8.0 },
@@ -187,20 +190,19 @@ export const CANONICAL_9_PLUS_2_EDITIONS_CATALOG = [
   { id: "07_cuaderno_5lineas_apaisado", editionSlug: "07_cuaderno_5lineas_apaisado", label: "7. Cuaderno de Campo 5 Líneas (Landscape)", label_en: "7. 5-Line Field Notebook (Landscape)", kind: "edition", columns: 1, fontPt: 10.0 },
   { id: "08_bolsillo_misionero", editionSlug: "08_bolsillo_misionero", label: "8. Pliego Saddle-Stitch 4n (Imposición)", label_en: "8. Saddle-Stitch 4n Booklet (Imposition)", kind: "edition", columns: 2, fontPt: 8.5 },
   { id: "09_atril_liturgico", editionSlug: "09_atril_liturgico", label: "9. Edición de Atril y Asamblea (Folio)", label_en: "9. Pulpit & Assembly Folio Edition", kind: "edition", columns: 2, fontPt: 12.0 },
-  { id: "10_refugio_4_hojas", editionSlug: "refugio_4_hojas", label: "10. Refugio de Emergencia (4 Hojas · PDF)", label_en: "10. Emergency Pocket Refuge (4 Sheets · PDF)", kind: "field_pdf", url: "obras/biblia/campo/refugio_4_hojas.pdf" },
-  { id: "11_checklist_80_bloques", editionSlug: "checklist_80_bloques", label: "11. Checklist de 80 Bloques de Campo (PDF)", label_en: "11. 80 Canonical Field Blocks Checklist (PDF)", kind: "field_pdf", url: "obras/biblia/campo/checklist_80_bloques.pdf" },
-];
-
-export const CANONICAL_14_PLUS_2_EDITIONS_CATALOG = [
-  ...CANONICAL_9_PLUS_2_EDITIONS_CATALOG.slice(0, 9),
   { id: "10_evangelio_14_pericopas", editionSlug: "10_evangelio_14_pericopas", label: "10. Evangelio 14 Perícopas (2 col · 10.0pt)", label_en: "10. Gospel 14 Pericopes (2 col · 10.0pt)", kind: "edition", columns: 2, fontPt: 10.0 },
   { id: "11_braille_nemeth_b70", editionSlug: "11_braille_nemeth_b70", label: "11. Braille Táctil BEB B70 (1 col · 16.0pt)", label_en: "11. Tactile Braille BEB B70 (1 col · 16.0pt)", kind: "edition", columns: 1, fontPt: 16.0 },
   { id: "12_dislexia_espaciado_amplio", editionSlug: "12_dislexia_espaciado_amplio", label: "12. Dislexia Espaciado Amplio (1 col · 12.5pt)", label_en: "12. Dyslexia Wide Spacing (1 col · 12.5pt)", kind: "edition", columns: 1, fontPt: 12.5 },
   { id: "13_contraste_extremo_baja_vision", editionSlug: "13_contraste_extremo_baja_vision", label: "13. Baja Visión Contraste Extremo (1 col · 15.0pt)", label_en: "13. Low Vision High Contrast (1 col · 15.0pt)", kind: "edition", columns: 1, fontPt: 15.0 },
   { id: "14_pliego_mural_comunitario", editionSlug: "14_pliego_mural_comunitario", label: "14. Pliego Mural Comunitario A3 (3 col · 11.0pt)", label_en: "14. Community Mural Sheet A3 (3 col · 11.0pt)", kind: "edition", columns: 3, fontPt: 11.0 },
-  { id: "15_refugio_4_hojas", editionSlug: "refugio_4_hojas", label: "15. Refugio de Emergencia (4 Hojas · PDF)", label_en: "15. Emergency Pocket Refuge (4 Sheets · PDF)", kind: "field_pdf", url: "obras/biblia/campo/refugio_4_hojas.pdf" },
-  { id: "16_checklist_80_bloques", editionSlug: "checklist_80_bloques", label: "16. Checklist de 80 Bloques de Campo (PDF)", label_en: "16. 80 Canonical Field Blocks Checklist (PDF)", kind: "field_pdf", url: "obras/biblia/campo/checklist_80_bloques.pdf" },
+  { id: "15_refugio_4_hojas", editionSlug: "refugio_4_hojas", label: "15. Refugio de Emergencia (4 Hojas · PDF)", label_en: "15. Emergency Pocket Refuge (4 Sheets · PDF)", kind: "field_pdf", url: "obras/biblia/campo/refugio_4_hojas.pdf", bytes: 54295 },
+  { id: "16_checklist_80_bloques", editionSlug: "checklist_80_bloques", label: "16. Checklist de 80 Bloques de Campo (PDF)", label_en: "16. 80 Canonical Field Blocks Checklist (PDF)", kind: "field_pdf", url: "obras/biblia/campo/checklist_80_bloques.pdf", bytes: 12437 },
 ];
+
+const FIELD_PDFS_REGISTRY = {
+  refugio_4_hojas: { bytes: 54295, path: "obras/biblia/campo/refugio_4_hojas.pdf" },
+  checklist_80_bloques: { bytes: 12437, path: "obras/biblia/campo/checklist_80_bloques.pdf" },
+};
 
 export const PRECOMPILED_PDF_LANGS = ["es", "en", "stp", "he", "grc"];
 export const VERIFIED_TEXT_BIBLE_LANGS = [
@@ -281,23 +283,28 @@ export function syncDose2AndDose3LinksForActiveLang({
     state.edition || "2col-a4",
     lang === "es" ? "letter" : "a4",
   );
-  const resolvedBlock = resolveCanonicalBlockForPassage(book, chapter);
+  const resolvedBlock = resolveCanonicalBlockCode(book, chapter, verse);
   const blockNum = Number(state.activeBlockNumber) || resolvedBlock.blockNumber || 1;
-  const padded = String(Math.max(1, Math.min(80, blockNum))).padStart(2, "0");
+  const padded = String(Math.max(1, Math.min(BIBLE_CONSTANTS.CANONICAL_BLOCKS_COUNT, blockNum))).padStart(2, "0");
+  const blockCode = `B${padded}`;
   const hasPrecompiled = PRECOMPILED_PDF_LANGS.includes(lang);
 
   const linkDose2 = resolveEl("linkDose2BlockPdf");
   const linkDose3 = resolveEl("linkDose3FullBiblePdf");
 
   if (hasPrecompiled) {
-    const d2Href = `data/blocks/${lang}/${edition}/B${padded}.pdf`;
+    const d2Href = `data/blocks/${lang}/${edition}/${blockCode}.pdf`;
     const d3Href = `data/full/${lang}/${edition}.pdf`;
     if (linkDose2) {
       linkDose2.href = d2Href;
       linkDose2.setAttribute?.("href", d2Href);
-      linkDose2.setAttribute?.("download", `ekovoz_${lang}_B${padded}_${edition}.pdf`);
+      linkDose2.setAttribute?.("download", `ekovoz_${lang}_${blockCode}_${edition}.pdf`);
       linkDose2.setAttribute?.("data-dose-mode", "precompiled");
+      linkDose2.setAttribute?.("data-block-code", blockCode);
       linkDose2.setAttribute?.("data-lang", lang);
+      linkDose2.textContent = isEn
+        ? `📘 Block PDF (${blockCode} · ${book} ${chapter})`
+        : `📘 Cuadernillo PDF (${blockCode} · ${book} ${chapter})`;
     }
     if (linkDose3) {
       linkDose3.href = d3Href;
@@ -306,7 +313,7 @@ export function syncDose2AndDose3LinksForActiveLang({
       linkDose3.setAttribute?.("data-dose-mode", "precompiled");
       linkDose3.setAttribute?.("data-lang", lang);
     }
-    return { mode: "precompiled", lang, dose2Href: d2Href, dose3Href: d3Href };
+    return { mode: "precompiled", lang, blockCode, dose2Href: d2Href, dose3Href: d3Href };
   }
 
   const versesMap = state.lastNavResult?.chapter?.verses || null;
@@ -325,12 +332,13 @@ export function syncDose2AndDose3LinksForActiveLang({
   if (linkDose2) {
     linkDose2.href = dataUri;
     linkDose2.setAttribute?.("href", dataUri);
-    linkDose2.setAttribute?.("download", `ekovoz-${lang}-${book.toLowerCase()}-${chapter}-B${padded}-live.pdf`);
+    linkDose2.setAttribute?.("download", `ekovoz-${lang}-${book.toLowerCase()}-${chapter}-${blockCode}-live.pdf`);
     linkDose2.setAttribute?.("data-dose-mode", "live-synthesis");
+    linkDose2.setAttribute?.("data-block-code", blockCode);
     linkDose2.setAttribute?.("data-lang", lang);
     linkDose2.textContent = isEn
-      ? `📚 2. Download Live Booklet PDF (${lang.toUpperCase()} · ${book} ${chapter})`
-      : `📚 2. Descargar Cuadernillo PDF en Vivo (${lang.toUpperCase()} · ${book} ${chapter})`;
+      ? `📚 2. Download Live Booklet PDF (${lang.toUpperCase()} · ${blockCode} · ${book} ${chapter})`
+      : `📚 2. Descargar Cuadernillo PDF en Vivo (${lang.toUpperCase()} · ${blockCode} · ${book} ${chapter})`;
   }
   if (linkDose3) {
     linkDose3.href = dataUri;
@@ -380,7 +388,15 @@ export function listCatalogEditionsForLang(manifestOrLang, maybeLang = "es", opt
   const baseCatalog =
     options && options.includeAll14Profiles === true
       ? CANONICAL_14_PLUS_2_EDITIONS_CATALOG
-      : CANONICAL_9_PLUS_2_EDITIONS_CATALOG;
+      : [
+          ...CANONICAL_14_PLUS_2_EDITIONS_CATALOG.slice(0, 9),
+          ...CANONICAL_14_PLUS_2_EDITIONS_CATALOG.slice(14, 16).map((fp, fpIdx) => ({
+            ...fp,
+            id: fpIdx === 0 ? "10_refugio_4_hojas" : "11_checklist_80_bloques",
+            label: fp.label.replace(/^1[56]\./, fpIdx === 0 ? "10." : "11."),
+            label_en: fp.label_en.replace(/^1[56]\./, fpIdx === 0 ? "10." : "11."),
+          })),
+        ];
 
   const tomlLookup = new Map(
     (CANONICAL_14_PRINT_PROFILES || []).map((p, idx) => [p.id, { ...p, index: idx }])
@@ -393,7 +409,11 @@ export function listCatalogEditionsForLang(manifestOrLang, maybeLang = "es", opt
       {};
     const localizedLabel = isEn && item.label_en ? item.label_en : item.label;
     if (item.kind === "field_pdf") {
-      const cleanFieldUrl = buildRelativePdfAssetUrl(item.url || "obras/biblia/campo/refugio_4_hojas.pdf");
+      const regEntry = FIELD_PDFS_REGISTRY[item.editionSlug] || {};
+      const cleanFieldUrl = buildRelativePdfAssetUrl(
+        regEntry.path || item.url || "obras/biblia/campo/refugio_4_hojas.pdf",
+      );
+      const fieldBytes = Number(regEntry.bytes ?? item.bytes ?? 0);
       return {
         ...item,
         label: localizedLabel,
@@ -402,6 +422,7 @@ export function listCatalogEditionsForLang(manifestOrLang, maybeLang = "es", opt
         lang: resolvedLang,
         path: cleanFieldUrl,
         url: cleanFieldUrl,
+        bytes: fieldBytes,
       };
     }
     const resolvedCols = tomlMeta.columns || item.columns || 2;
@@ -967,6 +988,35 @@ export function resolveCanonicalBlockForPassage(book = "GEN", chapter = 1) {
 }
 
 /**
+ * D5-R45: Calcula determinísticamente el código de bloque vivo `B01..B80` para `(book, chapter, verse)`
+ * empleando `BIBLE_CONSTANTS` (`CANONICAL_BLOCKS_COUNT = 80`, `CANONICAL_VERSES_COUNT = 31,102`) y el catálogo de 80 bloques.
+ */
+export function resolveCanonicalBlockCode(book = "GEN", chapter = 1, verse = 1) {
+  const totalBlocks = Number(BIBLE_CONSTANTS?.CANONICAL_BLOCKS_COUNT) || 80;
+  const totalVerses = Number(BIBLE_CONSTANTS?.CANONICAL_VERSES_COUNT) || 31102;
+  const cleanBook = String(book || "GEN").trim().toUpperCase();
+  const cleanChap = Math.max(1, Number(chapter) || 1);
+  const cleanVerse = Math.max(1, Number(verse) || 1);
+  const blk = resolveCanonicalBlockForPassage(cleanBook, cleanChap);
+  let blockNumber = Number(blk?.blockNumber);
+  if (!Number.isFinite(blockNumber) || blockNumber < 1 || blockNumber > totalBlocks) {
+    const ord = canonicalOrdinalOf(cleanBook, cleanChap, cleanVerse) || 1;
+    blockNumber = Math.min(
+      totalBlocks,
+      Math.max(1, Math.ceil((ord / totalVerses) * totalBlocks)),
+    );
+  }
+  const padded = String(blockNumber).padStart(2, "0");
+  return {
+    blockCode: `B${padded}`,
+    blockNumber,
+    blockId: blk?.blockId || `BLK-${String(blockNumber).padStart(3, "0")}`,
+    startRef: blk?.startRef || `${cleanBook}.${cleanChap}`,
+    endRef: blk?.endRef || `${cleanBook}.${cleanChap}`,
+  };
+}
+
+/**
  * Hidrata los 14 perfiles de impresión, los 12 perfiles de rama `G_01..G_12`, las 16 hojas tipológicas y los 80 bloques canónicos
  * desde el artefacto compilado por Rust (`web/data/editorial_profiles.json`, `D5-C+`, `D3-S21+`, `D4-S21+`).
  */
@@ -1008,6 +1058,16 @@ export function hydrateEditorialProfiles(artifact) {
   }
   if (artifact.pocket_refuge_4_sheets_spec && typeof artifact.pocket_refuge_4_sheets_spec === "object") {
     Object.assign(POCKET_REFUGE_4_SHEETS_SPEC, artifact.pocket_refuge_4_sheets_spec);
+  }
+  if (artifact.field_pdfs && typeof artifact.field_pdfs === "object") {
+    for (const [fKey, fVal] of Object.entries(artifact.field_pdfs)) {
+      if (fVal && typeof fVal === "object") {
+        FIELD_PDFS_REGISTRY[fKey] = {
+          bytes: Number(fVal.bytes) || FIELD_PDFS_REGISTRY[fKey]?.bytes || 0,
+          path: String(fVal.path || FIELD_PDFS_REGISTRY[fKey]?.path || ""),
+        };
+      }
+    }
   }
   const rawBranches = Array.isArray(artifact.branch_profiles_12) && artifact.branch_profiles_12.length > 0
     ? artifact.branch_profiles_12

@@ -155,3 +155,21 @@ test("resolves_region_slugs_lists_subregions_and_searches_7164_languages", () =>
   const stpHits = searchLanguages(idx, "tepehuano", { limit: 10 });
   assert.ok(stpHits.some((h) => h.iso639_3 === "stp" && h.sovereignSeal === "TIER_2_FIELD_DRAFT"));
 });
+
+test("R45_SLICE_182_lang_funnel_internal_helpers_demoted", async () => {
+  const ns = await import("./lang_funnel.js");
+  for (const sym of [
+    "ISO1_TO_ISO3",
+    "ISO3_TO_ISO1",
+    "MACRO_REGION_IDS",
+    "REGION_SLUG_TO_ID",
+    "normalizeLangSearchToken",
+    "formatBilingualLangLabel",
+    "enrichLanguageTuple",
+    "enrichRegionShard",
+  ]) {
+    assert.equal(ns[sym], undefined, `DEB-R45-08: ${sym} must be module-private`);
+  }
+  assert.equal(typeof ns.indexRegionShards, "function");
+  assert.equal(typeof ns.searchLanguages, "function");
+});

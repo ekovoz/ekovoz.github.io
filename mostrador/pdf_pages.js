@@ -20,14 +20,14 @@ export class PdfRef {
   }
 }
 
-export class PdfName {
+class PdfName {
   constructor(name) {
     this.name = name;
   }
 }
 
 /** Cadena PDF ya escapada tal como aparece en el archivo (se reescribe sin modificar). */
-export class PdfRawString {
+class PdfRawString {
   constructor(raw) {
     this.raw = raw;
   }

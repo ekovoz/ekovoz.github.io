@@ -508,3 +508,46 @@ test("D7_R44_patch_receipt_is_collapsed_and_root_notes_show_full_exegesis", asyn
   assert.ok(card.includes("Raíz divina en plural mayestático"), "nota exegética completa visible");
   assert.ok(card.includes("Jich Xoi&#39;kam") || card.includes("Jich Xoi'kam"), "superficie stp visible");
 });
+
+test("R45_SLICE_181_inline_stp_root_notes_visible_and_full_width_selects", async () => {
+  const mejorarNs = await import("./mejorar.js");
+  for (const demoted of [
+    "CASCADE_LEVELS",
+    "STRONG_CONCORDANCE_COUNTS",
+    "SISTER_WORKS_CASCADE_SYNC",
+    "FLOOR_1_SENTENCE_SPEC",
+    "computeDeterministicContentHashHex",
+    "TALLER_CC0_ARTIFACTS",
+    "CELF_RUNG_LABELS",
+  ]) {
+    assert.equal(mejorarNs[demoted], undefined, `DEB-R45-07: ${demoted} must be private to mejorar.js`);
+  }
+
+  const explorerHtml = mejorarNs.renderStpLexiconExplorerHtml({ query: "", limit: 8 });
+  assert.match(explorerHtml, /id="stpLexiconResultsRows"/);
+  assert.match(explorerHtml, /class="stp-inline-root-note"[^>]*data-root-note="true"/);
+  assert.match(explorerHtml, /Morfología VSO cabeza-inicial/);
+
+  const h0430Html = mejorarNs.renderStpLexiconExplorerHtml({ query: "H0430", limit: 8 });
+  assert.match(h0430Html, /class="stp-inline-root-note"[^>]*data-root-note-source="ledger"/);
+  assert.match(h0430Html, /Elohim · Creador soberano/);
+
+  const patchFormHtml = renderImproveDrawerHtml({ lang: "stp", osis: "GEN.1.1" });
+  assert.match(patchFormHtml, /id="improveKindSelect"[^>]*width:100%;box-sizing:border-box;/);
+  assert.match(patchFormHtml, /id="improveLevelSelect"[^>]*width:100%;box-sizing:border-box;/);
+
+  const { renderCrdtWalAndLockP2AuditCardHtml } = await import("./drawer_workshop.js");
+  const walCardHtml = renderCrdtWalAndLockP2AuditCardHtml({});
+  assert.match(walCardHtml, /id="selectWalRollbackSnapshot"[^>]*width:100%;box-sizing:border-box;/);
+
+  const liveGaveta3AuditHtml = renderTallerArtifactsCatalogHtml({
+    lang: "stp",
+    includeCensusCard: true,
+    includeEightLocksBar: false,
+  });
+  assert.doesNotMatch(
+    liveGaveta3AuditHtml,
+    /class="eight-locks-pda-bar"/,
+    "DEB-R45-05: Gaveta 3 live hydration omits duplicate .eight-locks-pda-bar",
+  );
+});

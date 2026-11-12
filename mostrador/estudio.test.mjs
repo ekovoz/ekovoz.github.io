@@ -551,3 +551,115 @@ test("D2_R44_diachronic_audit_panel_mounts_without_nested_duplicate_id", async (
     "INV-ERG-23: el panel no debe anidar otro nodo con su mismo id",
   );
 });
+
+test("R45_SLICE_176_sdbh_12digit_decoder_and_strong_badge_split", async () => {
+  const estudioMod = await import("./estudio.js");
+  assert.equal("normalizeMatrixRowObject" in estudioMod, false, "DEB-R45-03: normalizeMatrixRowObject must be private");
+  assert.equal("SEMANTIC_TAG_GLOSSARY" in estudioMod, false, "DEB-R45-03: SEMANTIC_TAG_GLOSSARY must be private");
+
+  const rawSdbh =
+    "NSM_65:SDBH:002003003004+SDBH:002002002005+SDBH:001001001|PRIM:TIEMPO CUANDO HAY LUZ Y LAS PERSONAS HACEN COSAS[H7225+H1254+H0430] | CLICS3:THING~PLACE~PEOPLE";
+  const decEs = estudioMod.decodeSdbhHierarchicalCode(rawSdbh, "es");
+  const decEn = estudioMod.decodeSdbhHierarchicalCode(rawSdbh, "en");
+  assert.equal(decEs.label, "Acción · Hacer / Producir · Creación · Hacer existir · Ser Supremo · Dios");
+  assert.equal(decEn.label, "Action · Make / Produce · Creation · Bring into existence · Supreme Being · God");
+  assert.deepEqual(decEs.strongBadges, ["H7225", "H1254", "H0430"]);
+
+  const fieldsEn = estudioMod.formatHumanReadable14ColFields(
+    { c11_semantic_domain: "NSM_65:SDBH:002003003004+SDBH:002002002005[H7225]", c13_nsm_65: rawSdbh },
+    "en",
+  );
+  assert.ok(!/\d{6,}/.test(fieldsEn.domainHuman), `No raw SDBH digits in domainHuman: ${fieldsEn.domainHuman}`);
+  assert.ok(!/\[H7225/.test(fieldsEn.nsmHuman), `Strong badge split out of nsmHuman: ${fieldsEn.nsmHuman}`);
+  assert.deepEqual(fieldsEn.strongBadges, ["H7225", "H1254", "H0430"]);
+});
+
+test("R45_SLICE_176_nsm65_compositional_english_prime_translation", async () => {
+  const { translateNsm65PrimePhrase, renderStudy14ColDrawerHtml } = await import("./estudio.js");
+  const formula =
+    "NSM_65:SDBH:002003003004|PRIM:TIEMPO CUANDO HAY LUZ Y LAS PERSONAS HACEN COSAS + HACER QUE ALGO EXISTA + ALGUIEN SOBRE TODOS[H7225+H1254+H0430]";
+  const enOut = translateNsm65PrimePhrase(formula, "en");
+  assert.equal(
+    enOut,
+    "TIME WHEN THERE IS LIGHT AND PEOPLE DO THINGS · MAKE SOMETHING EXIST · SOMEONE ABOVE ALL",
+  );
+  const esOut = translateNsm65PrimePhrase(formula, "es");
+  assert.equal(
+    esOut,
+    "TIEMPO CUANDO HAY LUZ Y LAS PERSONAS HACEN COSAS · HACER QUE ALGO EXISTA · ALGUIEN SOBRE TODOS",
+  );
+
+  const gen1Shard = JSON.parse(fs.readFileSync(path.join(WEB_DIR, "data", "matrix", "GEN", "1.json"), "utf8"));
+  const htmlEn = renderStudy14ColDrawerHtml(gen1Shard, { uiLocale: "en", verse: 1 });
+  assert.doesNotMatch(htmlEn, /002003003004|\+sdbh:/i);
+  assert.doesNotMatch(htmlEn, /TIEMPO CUANDO HAY LUZ/);
+});
+
+test("R45_SLICE_177_drawer_study_hydrates_annotation_and_blind_calibration_with_zero_duplicate_ids", async () => {
+  const { hydrateStudyDrawerPanel } = await import("./drawer_study.js");
+  const annReport = JSON.parse(fs.readFileSync(path.join(WEB_DIR, "data", "annotation_index_report.json"), "utf8"));
+  const blindReport = JSON.parse(fs.readFileSync(path.join(WEB_DIR, "data", "blind_calibration_report.json"), "utf8"));
+  const els = new Map();
+  const mkEl = (id) => {
+    const el = {
+      id,
+      innerHTML: "",
+      value: "",
+      attrs: {},
+      getAttribute(k) { return k === "id" ? id : this.attrs[k] ?? null; },
+      setAttribute(k, v) { this.attrs[k] = String(v); },
+      addEventListener() {},
+    };
+    els.set(id, el);
+    return el;
+  };
+  for (const id of ["leipzig14ColStratumAction", "diachronicRegisterAuditPanel", "wfstAndScriptioContinuaHost"]) mkEl(id);
+  const targetDoc = { getElementById: (id) => els.get(id) || null };
+  const state = {
+    book: "ISA",
+    chapter: 53,
+    verse: 1,
+    lang: "es",
+    uiLocale: "en",
+    lastNavResult: { chapter: { verses: { "1": "¿Quién ha creído a nuestro anuncio?" } } },
+  };
+  const studyMod = await import("./estudio.js");
+  await hydrateStudyDrawerPanel({
+    state,
+    targetDoc,
+    getEl: (id, d = targetDoc) => d.getElementById(id),
+    getI18n: () => null,
+    dataLayer: {
+      loadMatrixChapter: async () => ({ book: "ISA", chapter: 53, rows: [] }),
+      loadAnnotationIndexReport: async () => annReport,
+      loadBlindCalibrationReport: async () => blindReport,
+    },
+    loadStudyModule: async () => studyMod,
+    withPreservedInputFocus: (_d, fn) => fn(),
+    navigate: async () => {},
+    transitionSheet: async () => {},
+    hydrateBookAndChapterSelectors: () => {},
+  });
+  const wfstHtml = els.get("wfstAndScriptioContinuaHost").innerHTML;
+  assert.match(wfstHtml, /data-annotation-mass-conservation="true"/);
+  assert.match(wfstHtml, /data-total-tokens="444363"/);
+  assert.match(wfstHtml, /data-total-residuals="4036"/);
+  assert.match(wfstHtml, /data-blind-calibration-matrix="true"/);
+  assert.match(wfstHtml, /data-langs-count="12"/);
+  assert.match(wfstHtml, /data-calib-lang="es" data-active-lang-row="true"/);
+  assert.match(wfstHtml, /data-book-col="ISA" data-active-book-col="true"/);
+
+  const combinedHtml = [
+    els.get("leipzig14ColStratumAction").innerHTML,
+    els.get("wfstAndScriptioContinuaHost").innerHTML,
+    els.get("diachronicRegisterAuditPanel").innerHTML,
+  ].join("\n");
+  const allIds = [...combinedHtml.matchAll(/\bid="([^"]+)"/g)].map((m) => m[1]);
+  const seen = new Set();
+  const dups = [];
+  for (const id of allIds) {
+    if (seen.has(id)) dups.push(id);
+    seen.add(id);
+  }
+  assert.deepEqual(dups, [], `INV-ERG-23: zero duplicate IDs in Gaveta 1 dynamic HTML, found: ${dups.join(", ")}`);
+});

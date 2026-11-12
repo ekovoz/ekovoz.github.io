@@ -16,6 +16,7 @@ import {
   renderBranchAndTypologyInspectorHtml,
   renderImpositionAndLayoutPreviewHtml,
   renderMultiSignatureAndPocketRefugeHtml,
+  resolveCanonicalBlockCode,
   resolveCanonicalBlockForPassage,
   resolveRegionalPrintDefaults,
   simulateFifthGenPhotocopySauvolaBilateral,
@@ -185,6 +186,12 @@ export function renderPhotocopyResilienceAndSocialCardHtml(opts = {}) {
  */
 export function renderPrintDrawerPanelsSyncInDrawer(ctx = {}) {
   const { state, targetDoc, getEl, hydratePrintDrawerPanels } = ctx;
+  const liveBlock = resolveCanonicalBlockCode(state.book, state.chapter, state.verse);
+  const passageKey = `${state.book}.${state.chapter}`;
+  if (state.activeBlockPassageKey !== passageKey) {
+    state.activeBlockPassageKey = passageKey;
+    state.activeBlockNumber = liveBlock.blockNumber || 1;
+  }
   syncDose2AndDose3LinksForActiveLang({ state, targetDoc, getEl });
   const isEn = String(state.uiLocale || "es").trim().toLowerCase().startsWith("en");
   const regionalDefaults = resolveRegionalPrintDefaults(state.region || "MX", {
@@ -400,28 +407,45 @@ export function renderPrintDrawerPanelsSyncInDrawer(ctx = {}) {
 
   const catalogGrid = getEl("bibleEditionsCatalogGrid", targetDoc);
   if (catalogGrid) {
+    const activeProfileId = state.activePrintProfileId || "02_2col_pastoral";
+    const activeBlockCode = `B${String(
+      Math.max(1, Math.min(80, Number(state.activeBlockNumber) || liveBlock.blockNumber || 1)),
+    ).padStart(2, "0")}`;
     const editions = listAll14PrintEditionsForLang(
       state.lastManifest || state.lang,
       state.lang,
       { uiLocale: state.uiLocale || "es" },
     );
     catalogGrid.setAttribute("data-editions-count", String(editions.length));
+    catalogGrid.setAttribute("data-active-block-code", activeBlockCode);
     catalogGrid.innerHTML = editions
       .map((ed) => {
-        // D6-R44: tarjeta Apple HIG sin subrayado con la ficha tipográfica viva de `editorial_profiles.json`.
-        const specParts = [
-          ed.columns ? `${ed.columns} col` : "",
-          ed.fontPt ? `${ed.fontPt} pt` : "",
-          ed.paperSize ? String(ed.paperSize).toUpperCase() : "",
-        ].filter(Boolean);
+        const cardId = ed.profileId || ed.id;
+        const isSelected = ed.kind !== "field_pdf" && cardId === activeProfileId;
+        const specParts =
+          ed.kind === "field_pdf"
+            ? [
+                isEn ? "Field PDF" : "PDF de Campo",
+                ed.bytes ? `${(Number(ed.bytes) / 1024).toFixed(1)} KB` : "",
+              ].filter(Boolean)
+            : [
+                ed.columns ? `${ed.columns} col` : "",
+                ed.fontPt ? `${ed.fontPt} pt` : "",
+                ed.paperSize ? String(ed.paperSize).toUpperCase() : "",
+                activeBlockCode,
+              ].filter(Boolean);
         const specBadge = specParts.length
           ? `<span class="edition-spec-badge">${escapeHtml(specParts.join(" · "))}</span>`
           : "";
         return (
-          `<a class="uls-chip print-edition-card" style="text-decoration:none;" href="${escapeHtml(
+          `<a class="uls-chip print-edition-card${isSelected ? " is-selected" : ""}" aria-pressed="${
+            isSelected ? "true" : "false"
+          }" style="text-decoration:none;" href="${escapeHtml(
             buildRelativePdfAssetUrl(ed.profileUrl || ed.url),
-          )}" data-profile-id="${escapeHtml(ed.profileId || ed.id)}" data-edition-slug="${escapeHtml(
+          )}" data-profile-id="${escapeHtml(cardId)}" data-edition-slug="${escapeHtml(
             ed.editionSlug,
+          )}" data-active-block="${escapeHtml(activeBlockCode)}" data-field-pdf-bytes="${escapeHtml(
+            ed.bytes || "",
           )}" data-geometry-key="${escapeHtml(ed.geometryKey || "")}" data-edition-kind="${escapeHtml(
             ed.kind || "edition",
           )}" data-toml-path="${escapeHtml(ed.tomlPath || "")}" data-font-pt="${escapeHtml(

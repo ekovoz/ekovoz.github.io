@@ -287,5 +287,10 @@ test("d6_b_plus_eco1_ecom_binary_protocol_nyquist_bounds_corner_toggle_and_qr_st
   assert.deepEqual(session.finalizeStream(), payload);
 });
 
+test("R45_SLICE_184_sampleDegree_demoted_to_private", async () => {
+  const ns = await import("./optical_lt.js");
+  assert.equal(ns.sampleDegree, undefined, "DEB-R45-10: sampleDegree must be module-private");
+});
+
 
 

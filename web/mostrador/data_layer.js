@@ -8,6 +8,10 @@
 // Regla de honestidad: si un capítulo no existe en el idioma pedido, el estado es `unavailable`.
 // Nunca se muestra otro capítulo en su lugar.
 
+import { BIBLE_CONSTANTS } from "../bible_constants.js";
+
+export { BIBLE_CONSTANTS };
+
 export const STATUS = Object.freeze({ LOADING: "loading", READY: "ready", UNAVAILABLE: "unavailable" });
 
 export const MATRIX_ROW_COLUMNS = Object.freeze([
@@ -555,6 +559,8 @@ export function createDataLayer({ source, cacheLimit = 32 } = {}) {
   let hydratedFieldWorkshopData = null;
   let hydratedMasterCensusSummary = null;
   let hydratedOfflinePacksCatalog = null;
+  let hydratedAnnotationIndexReport = null;
+  let hydratedBlindCalibrationReport = null;
   const hydratedWasmModules = new Map();
 
   /**
@@ -626,6 +632,24 @@ export function createDataLayer({ source, cacheLimit = 32 } = {}) {
     };
     hydratedOfflinePacksCatalog = unified;
     return unified;
+  }
+
+  /**
+   * D3-R45: Carga el reporte determinista de conservación de masa léxica y alineación bicanónica (`web/data/annotation_index_report.json`).
+   */
+  async function loadAnnotationIndexReport() {
+    const val = await getJson("data/annotation_index_report.json");
+    if (val) hydratedAnnotationIndexReport = val;
+    return val;
+  }
+
+  /**
+   * D3-R45: Carga la matriz de calibración ciega chrF++ (12 lenguas × 4 libros canónicos) (`web/data/blind_calibration_report.json`).
+   */
+  async function loadBlindCalibrationReport() {
+    const val = await getJson("data/blind_calibration_report.json");
+    if (val) hydratedBlindCalibrationReport = val;
+    return val;
   }
 
   /**
@@ -750,7 +774,10 @@ export function createDataLayer({ source, cacheLimit = 32 } = {}) {
     loadFieldWorkshopData,
     loadMasterCensusSummary,
     loadOfflinePacksCatalog,
+    loadAnnotationIndexReport,
+    loadBlindCalibrationReport,
     loadWasmModule,
+    bibleConstants: BIBLE_CONSTANTS,
     getHydratedRosettaIndex: () => hydratedRosettaIndex,
     getHydratedPericopesAndGlosses: () => hydratedPericopesAndGlosses,
     getHydratedDiachronicAudit: () => hydratedDiachronicAudit,
@@ -758,6 +785,8 @@ export function createDataLayer({ source, cacheLimit = 32 } = {}) {
     getHydratedFieldWorkshopData: () => hydratedFieldWorkshopData,
     getHydratedMasterCensusSummary: () => hydratedMasterCensusSummary,
     getHydratedOfflinePacksCatalog: () => hydratedOfflinePacksCatalog,
+    getHydratedAnnotationIndexReport: () => hydratedAnnotationIndexReport,
+    getHydratedBlindCalibrationReport: () => hydratedBlindCalibrationReport,
     getHydratedWasmModule: (name) => hydratedWasmModules.get(name) || null,
     decodeFrameInWasmLinearMemory,
     verifyRaptorQBlockInWasmLinearMemory,
@@ -905,6 +934,36 @@ export const ARTIFACT_PROJECTION_SCHEMA = [
     requiredKeys: ["modules"],
     targetSelectors: ["#editorialAuditStatusPanel", "#bibleOpticalQrStreamPanel"],
     domSlots: ["#editorialAuditStatusPanel", "#bibleOpticalQrStreamPanel"],
+  },
+  {
+    artifact: "web/data/annotation_index_report.json",
+    requiredKeys: [
+      "index_sha256",
+      "ratios",
+      "residuals_by_kind",
+      "residuals_sha256",
+      "sources",
+      "thresholds",
+      "totals",
+    ],
+    targetSelectors: ["#bibleAnalyticalThermometerPanel", "#wfstAndScriptioContinuaHost"],
+    domSlots: ["#bibleAnalyticalThermometerPanel", "#wfstAndScriptioContinuaHost"],
+  },
+  {
+    artifact: "web/data/blind_calibration_report.json",
+    requiredKeys: [
+      "book_usfm",
+      "char_f2",
+      "chrf_plus_plus",
+      "lang_code",
+      "length_ratio_gale_church",
+      "macro_family",
+      "mattr_50",
+      "passes_release_gate",
+      "word_f2",
+    ],
+    targetSelectors: ["#bibleAnalyticalThermometerPanel", "#wfstAndScriptioContinuaHost"],
+    domSlots: ["#bibleAnalyticalThermometerPanel", "#wfstAndScriptioContinuaHost"],
   },
 ];
 

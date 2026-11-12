@@ -91,17 +91,25 @@ export function normalizeRootNotesEntries(rootNotesRaw) {
     }
     if (entries.length > 0) return entries;
   }
+  const commitNoteSuffix =
+    rootNotesRaw && typeof rootNotesRaw === "object" && rootNotesRaw.note_pure_text
+      ? ` · ${String(rootNotesRaw.note_pure_text)}`
+      : "";
+  const commitSurface =
+    rootNotesRaw && typeof rootNotesRaw === "object" && rootNotesRaw.new_surface
+      ? String(rootNotesRaw.new_surface)
+      : "Jawatan Dios";
   return [
-    { strong_id: "H0430", patch_id: "PATCH-WAL-COMMIT-R16", ref: "GEN.1.1", note: "Elohim · Creador soberano" },
-    { strong_id: "H3068", patch_id: "PATCH-WAL-COMMIT-R16", ref: "PSA.23.1", note: "YHWH · Nombre del Pacto" },
-    { strong_id: "H7307", patch_id: "PATCH-STP-L3-001", ref: "GEN.1.2", note: "Ruach · Aliento / Espíritu" },
-    { strong_id: "G0026", patch_id: "PATCH-WAL-COMMIT-R16", ref: "1CO.13.4", note: "Agape · Amor leal" },
-    { strong_id: "G1411", patch_id: "PATCH-WAL-COMMIT-R16", ref: "ACT.1.8", note: "Dynamis · Poder" },
-    { strong_id: "G1515", patch_id: "PATCH-WAL-COMMIT-R16", ref: "JHN.14.27", note: "Eirene · Paz" },
-    { strong_id: "G1656", patch_id: "PATCH-WAL-COMMIT-R16", ref: "MAT.5.7", note: "Eleos · Misericordia" },
-    { strong_id: "G2641", patch_id: "PATCH-WAL-COMMIT-R16", ref: "ROM.11.5", note: "Kataleimma · Remanente" },
-    { strong_id: "G4102", patch_id: "PATCH-WAL-COMMIT-R16", ref: "ROM.1.17", note: "Pistis · Fe / Fidelidad" },
-    { strong_id: "G5485", patch_id: "PATCH-WAL-COMMIT-R16", ref: "EPH.2.8", note: "Charis · Gracia" },
+    { strong_id: "H0430", patch_id: "PATCH-WAL-COMMIT-R16", ref: "GEN.1.1", surface_stp: commitSurface, note: `Elohim · Creador soberano${commitNoteSuffix}` },
+    { strong_id: "H3068", patch_id: "PATCH-WAL-COMMIT-R16", ref: "PSA.23.1", surface_stp: "Jawatan", note: "YHWH · Nombre del Pacto" },
+    { strong_id: "H7307", patch_id: "PATCH-STP-L3-001", ref: "GEN.1.2", surface_stp: "Espíritu", note: "Ruach · Aliento / Espíritu" },
+    { strong_id: "G0026", patch_id: "PATCH-WAL-COMMIT-R16", ref: "1CO.13.4", surface_stp: "xoi'kam", note: "Agape · Amor leal" },
+    { strong_id: "G1411", patch_id: "PATCH-WAL-COMMIT-R16", ref: "ACT.1.8", surface_stp: "gɨ'kora'", note: "Dynamis · Poder" },
+    { strong_id: "G1515", patch_id: "PATCH-WAL-COMMIT-R16", ref: "JHN.14.27", surface_stp: "bhai'x i'ii'ñ", note: "Eirene · Paz" },
+    { strong_id: "G1656", patch_id: "PATCH-WAL-COMMIT-R16", ref: "MAT.5.7", surface_stp: "xoi'kam", note: "Eleos · Misericordia" },
+    { strong_id: "G2641", patch_id: "PATCH-WAL-COMMIT-R16", ref: "ROM.11.5", surface_stp: "ja'tkam", note: "Kataleimma · Remanente" },
+    { strong_id: "G4102", patch_id: "PATCH-WAL-COMMIT-R16", ref: "ROM.1.17", surface_stp: "jix maat", note: "Pistis · Fe / Fidelidad" },
+    { strong_id: "G5485", patch_id: "PATCH-WAL-COMMIT-R16", ref: "EPH.2.8", surface_stp: "bhai'x maa", note: "Charis · Gracia" },
   ];
 }
 
@@ -295,8 +303,8 @@ export function renderCrdtWalAndLockP2AuditCardHtml(workshopArtifact = null) {
   const rootNotesPillsHtml = rootNotes
     .map(
       (rn) =>
-        `<span class="uls-badge" data-root-note-strong="${escHtml(rn.strong_id)}" data-root-note="${escHtml(rn.note || "")}" title="${escHtml(rn.note || "")}" style="font-size:0.71rem;padding:0.15rem 0.4rem;">` +
-        `<strong>${escHtml(rn.strong_id)}</strong> ${escHtml(rn.surface_stp || "")} (${escHtml(rn.ref || "GEN.1.1")})` +
+        `<span class="uls-badge" data-root-note-strong="${escHtml(rn.strong_id)}" data-root-note="${escHtml(rn.note || "")}" style="font-size:0.71rem;padding:0.15rem 0.45rem;">` +
+        `<strong>${escHtml(rn.strong_id)}</strong> ${escHtml(rn.surface_stp || "")} (${escHtml(rn.ref || "GEN.1.1")}) — ${escHtml(rn.note || "")}` +
         `</span>`,
     )
     .join(" ");
@@ -331,10 +339,10 @@ export function renderCrdtWalAndLockP2AuditCardHtml(workshopArtifact = null) {
     `<span class="uls-badge" data-lock-p2-veto-badge="true">🛑 Rollback Atómico Candado P2: ${escHtml(rollbackId)} (${escHtml(rollbackStatus)} · Comilla Desbalanceada)</span>` +
     `</div>` +
     `<div style="display:flex;flex-wrap:wrap;gap:0.35rem;margin-bottom:0.4rem;">${patchesPills}</div>` +
-    `<div style="display:flex;flex-wrap:wrap;align-items:center;gap:0.45rem;margin-bottom:0.4rem;">` +
+    `<div style="display:grid;gap:0.4rem;margin-bottom:0.4rem;">` +
     `<label for="selectWalRollbackSnapshot" style="font-size:0.75rem;font-weight:600;">⏱️ Punto de Restauración WAL (10 Snapshots SHA-256):</label>` +
-    `<select id="selectWalRollbackSnapshot" data-wal-snapshots-count="${snapshots10.length}" style="min-height:48px;min-width:48px;padding:8px 12px;box-sizing:border-box;font-size:0.75rem;border-radius:6px;">${snapshotOptionsHtml}</select>` +
-    `<button type="button" id="btnRestoreWalSnapshot" class="uls-chip" data-action="restore-wal-snapshot" style="min-height:48px;padding:0.35rem 0.7rem;font-size:0.75rem;">🔄 Previsualizar / Restaurar Snapshot</button>` +
+    `<select id="selectWalRollbackSnapshot" data-wal-snapshots-count="${snapshots10.length}" style="width:100%;box-sizing:border-box;min-height:48px;min-width:48px;padding:8px 12px;font-size:0.75rem;border-radius:6px;">${snapshotOptionsHtml}</select>` +
+    `<button type="button" id="btnRestoreWalSnapshot" class="uls-chip" data-action="restore-wal-snapshot" style="min-height:48px;padding:0.35rem 0.7rem;font-size:0.75rem;justify-self:start;">🔄 Previsualizar / Restaurar Snapshot</button>` +
     `</div>` +
     `<div id="walSnapshotRollbackPreviewBox" data-wal-preview-active="true" style="margin-bottom:0.4rem;padding:0.35rem 0.55rem;border-radius:6px;border:1px dashed var(--card-border);background:var(--bg-secondary);font-size:0.74rem;color:var(--text-secondary);">` +
     `Snapshot activo: <code>${escHtml(snapshots10[0]?.patch_id || "PATCH-STP-L2-0001")}</code> (${escHtml(snapshots10[0]?.target_ref || "GEN.1.1")}) · Guardia P2 lista para restauración atómica.` +
@@ -443,6 +451,7 @@ export async function hydrateImproveDrawerPanel(ctx = {}) {
     tallerEl.innerHTML = mod.renderTallerArtifactsCatalogHtml({
       lang: state.lang,
       includeCensusCard: true,
+      includeEightLocksBar: false,
       masterCensusSummary: state.masterCensusSummary || null,
       uiLocale: state.uiLocale || "es",
     });

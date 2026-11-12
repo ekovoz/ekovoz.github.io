@@ -333,3 +333,23 @@ test("d1_a_plus_artifact_projection_schema_and_localized_book_meta_nsm_subtitle"
   assert.ok(closureFail.missingDomIds.includes("#toggleGhostA4"));
   assert.ok(closureFail.unprojectedKeys.some((k) => k.includes("stp_vso_classifier_phrase")));
 });
+
+test("R45_SLICE_177_bible_constants_and_annotation_blind_calibration_reports", async () => {
+  const mod = await import("./data_layer.js");
+  assert.ok(mod.BIBLE_CONSTANTS, "ORPHAN-R45-01: BIBLE_CONSTANTS must be re-exported from data_layer.js");
+  assert.equal(mod.BIBLE_CONSTANTS.CANONICAL_VERSES_COUNT, 31102);
+  assert.equal(mod.BIBLE_CONSTANTS.CANONICAL_BLOCKS_COUNT, 80);
+  assert.equal(mod.BIBLE_CONSTANTS.MATRIX_COLUMNS_COUNT, 14);
+
+  const layer = createDataLayer({ source: diskSource() });
+  assert.equal(layer.bibleConstants, mod.BIBLE_CONSTANTS);
+  const annReport = await layer.loadAnnotationIndexReport();
+  assert.ok(annReport && annReport.totals);
+  assert.equal(annReport.totals.ot_tokens + annReport.totals.nt_tokens, 444363);
+  assert.equal(annReport.sources.length, 10);
+  assert.equal(Object.keys(annReport.residuals_by_kind).length, 5);
+
+  const blindRows = await layer.loadBlindCalibrationReport();
+  assert.ok(Array.isArray(blindRows) && blindRows.length === 48, "12 languages x 4 books = 48 rows");
+  assert.equal(ARTIFACT_PROJECTION_SCHEMA.length, 10);
+});

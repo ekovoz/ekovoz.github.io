@@ -122,3 +122,37 @@ test("R38_SLICE_124_monolingual_pastoral_i18n_catalog_parity_and_zero_jargon_lea
   }
 });
 
+test("R45_SLICE_175_zero_dead_i18n_keys_and_accurate_diachronic_subtab_label", () => {
+  const webRoot = path.resolve(i18nDir, "..");
+  const prodFiles = [];
+  const walk = (dir) => {
+    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+      if (["node_modules", "i18n", "dist", ".git"].includes(entry.name)) continue;
+      const full = path.join(dir, entry.name);
+      if (entry.isDirectory()) walk(full);
+      else if (!/\.(test|spec)\.(js|mjs|ts)$/.test(entry.name) && /\.(html|js|mjs)$/.test(entry.name)) {
+        prodFiles.push(full);
+      }
+    }
+  };
+  walk(webRoot);
+  const prodCorpus = prodFiles.map((f) => fs.readFileSync(f, "utf8")).join("\n");
+  const dynamicPrefixes = new Set();
+  for (const m of prodCorpus.matchAll(/startsWith\(\s*["'`]([A-Za-z0-9_.-]+\.)["'`]\s*\)/g)) {
+    dynamicPrefixes.add(m[1]);
+  }
+  for (const m of prodCorpus.matchAll(/`([A-Za-z0-9_.-]+\.)\$\{/g)) {
+    dynamicPrefixes.add(m[1]);
+  }
+
+  const deadKeys = enKeys.filter(
+    (k) => ![...dynamicPrefixes].some((p) => k.startsWith(p)) && !prodCorpus.includes(k),
+  );
+  assert.deepEqual(deadKeys, [], `DEB-R45-02: expected 0 dead i18n keys in en.json, found ${deadKeys.join(", ")}`);
+
+  const es = read("es");
+  assert.equal(en.messages["study.subtab.diachronic"], "🏛️ 2. Strata & Glosses");
+  assert.equal(es.messages["study.subtab.diachronic"], "🏛️ 2. Estratos y Glosas");
+  assert.equal("study.subtab.rosetta" in en.messages, false);
+});
+

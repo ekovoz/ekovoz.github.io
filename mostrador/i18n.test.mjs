@@ -160,3 +160,12 @@ test("D1_R44_data_i18n_bijection_detects_orphan_keys_and_es_ui_has_no_english_bu
   const t = typeof i18n.t === "function" ? i18n.t("share.btn.copyLink") : es.messages["share.btn.copyLink"];
   assert.equal(t, "🔗 Copiar enlace directo a este pasaje");
 });
+
+test("R45_SLICE_183_internal_versification_and_bcp47_helpers_demoted", async () => {
+  const i18nNs = await import("./i18n.js");
+  assert.equal(i18nNs.parseTag, undefined, "DEB-R45-09: parseTag must be module-private");
+  assert.equal(i18nNs.canonicalTag, undefined, "DEB-R45-09: canonicalTag must be module-private");
+  const cvNs = await import("./canonical_versification.js");
+  assert.equal(cvNs.CANONICAL_VERSE_COUNTS, undefined, "DEB-R45-09: CANONICAL_VERSE_COUNTS must be module-private");
+  assert.equal(cvNs.canonicalOrdinalOf("REV", 22, 21), 31102);
+});

@@ -14,7 +14,7 @@ function escapeHtml(str) {
     .replace(/"/g, "&quot;");
 }
 
-export function normalizeMatrixRowObject(row, book = "GEN", chapter = 1) {
+function normalizeMatrixRowObject(row, book = "GEN", chapter = 1) {
   if (!row) return null;
   if (Array.isArray(row)) {
     if (row.length === 13) {
@@ -159,7 +159,7 @@ export function classifyMaculaArgumentRole(roleRaw, morphRaw = "") {
  * Glosario bilingüe de etiquetas semánticas compiladas en la Matriz 14-Col (`D2-R44` / `DEB-R44-04`):
  * roles MACULA, evidencialidad, voz/foco y dominios léxicos SDBH, para que la UI nunca muestre jerga cruda.
  */
-export const SEMANTIC_TAG_GLOSSARY = {
+const SEMANTIC_TAG_GLOSSARY = {
   "MACULA:PREDICATE_CORE": ["Núcleo predicativo", "Predicate core"],
   "MACULA:A0_AGENT": ["Agente (quien actúa)", "Agent (who acts)"],
   "MACULA:A1_PATIENT": ["Paciente (quien recibe la acción)", "Patient (receives the action)"],
@@ -181,43 +181,324 @@ export const SEMANTIC_TAG_GLOSSARY = {
   "SDBH:KNOW": ["Conocimiento", "Knowing"],
 };
 
+const SDBH_HIERARCHICAL_PREFIXES = [
+  ["002003003004", "Acción · Hacer / Producir", "Action · Make / Produce"],
+  ["002002002005", "Creación · Hacer existir", "Creation · Bring into existence"],
+  ["002002002006", "Transformación cósmica", "Cosmic transformation"],
+  ["002002002010", "Transcurso del día y la noche", "Course of day & night"],
+  ["002004001009", "Habla y declaración veraz", "Speech & truthful utterance"],
+  ["002004001005", "Percepción visual · Ver y discernir", "Visual perception · See & discern"],
+  ["002004002010", "Nombrar y proclamar", "Name & proclaim"],
+  ["002001001049", "Luz, resplandor y claridad", "Light, radiance & clarity"],
+  ["002001001042", "Ciclo temporal y duración", "Temporal cycle & duration"],
+  ["002001001018", "Oscuridad y ausencia de luz", "Darkness & absence of light"],
+  ["002001001057", "Brotar y crecimiento vital", "Sprouting & vital growth"],
+  ["002003002003", "Portar, tomar y sostener", "Carry, take & hold"],
+  ["002003002004", "Bendición y favor", "Blessing & favor"],
+  ["002003002008", "Gobierno y cuidado rector", "Rule & guiding care"],
+  ["002003002014", "Reunir y congregar", "Gather & assemble"],
+  ["001005002001", "Cielos y alturas cósmicas", "Heavens & cosmic heights"],
+  ["001005002002", "Tierra habitable, montes y mares", "Habitable earth, mountains & seas"],
+  ["001005002003", "Abismo y aguas profundas", "Deep waters & abyss"],
+  ["001001002003", "Personas · Humanidad y familia", "People · Humanity & kinship"],
+  ["001001002001", "Criaturas vivientes · Fauna", "Living creatures · Fauna"],
+  ["001004001017", "Obra formada y orden", "Formed work & order"],
+  ["001004003002", "Alimentos y sustento", "Food & sustenance"],
+  ["001001001", "Ser Supremo · Dios", "Supreme Being · God"],
+  ["001001002", "Seres vivos y personas", "Living beings & persons"],
+  ["001003001", "Hierba y vegetación", "Herbs & vegetation"],
+  ["001003002", "Árboles y frutos", "Trees & fruit"],
+  ["001006007", "Aguas y corrientes", "Waters & streams"],
+  ["002001001", "Estado físico y cualidad", "Physical state & quality"],
+  ["002001002", "Estado interior y afecto", "Inner state & emotion"],
+  ["002001003", "Plenitud y estado relacional", "Fullness & relational state"],
+  ["002002001", "Movimiento espacial", "Spatial movement"],
+  ["002002002", "Acontecimiento y devenir", "Happening & becoming"],
+  ["002002003", "Proceso y consumación", "Process & completion"],
+  ["002003001", "Acción física directa", "Direct physical action"],
+  ["002003002", "Acción relacional", "Relational action"],
+  ["002003003", "Acción causal y realización", "Causal action & accomplishment"],
+  ["002004001", "Percepción y cognición", "Perception & cognition"],
+  ["002004002", "Comunicación y llamado", "Communication & calling"],
+  ["001001", "Seres animados y divinidad", "Animate beings & deity"],
+  ["001002", "Cuerpo y organismo", "Body & organism"],
+  ["001003", "Flora y semillas", "Flora & seeds"],
+  ["001004", "Artefactos y sustento", "Artifacts & sustenance"],
+  ["001005", "Cosmos y geografía", "Cosmos & geography"],
+  ["001006", "Sustancias y elementos", "Substances & elements"],
+  ["002001", "Estados y cualidades", "States & qualities"],
+  ["002002", "Eventos y procesos", "Events & processes"],
+  ["002003", "Acciones y agencia", "Actions & agency"],
+  ["002004", "Cognición y habla", "Cognition & speech"],
+  ["003001", "Cantidad, totalidad y orden", "Quantity, totality & order"],
+  ["003002", "Relación espacial y temporal", "Spatial & temporal relation"],
+  ["004003", "Relación y propósito", "Relation & purpose"],
+  ["001", "Objetos, seres y cosmos", "Objects, beings & cosmos"],
+  ["002", "Eventos, estados y acciones", "Events, states & actions"],
+  ["003", "Atributos y relaciones", "Attributes & relations"],
+  ["004", "Marcadores relacionales", "Relational markers"],
+];
+
+const NSM_ES_TO_EN_PHRASES = [
+  ["TIEMPO CUANDO HAY LUZ Y LAS PERSONAS HACEN COSAS", "TIME WHEN THERE IS LIGHT AND PEOPLE DO THINGS"],
+  ["HACER QUE ALGO EXISTA", "MAKE SOMETHING EXIST"],
+  ["ANTES NO HABÍA", "BEFORE THERE WAS NOT"],
+  ["ALGUIEN SOBRE TODOS", "SOMEONE ABOVE ALL"],
+  ["ANTES DE TODO", "BEFORE EVERYTHING"],
+  ["DECIR PALABRAS VERDADERAS A ALGUIEN", "SAY TRUE WORDS TO SOMEONE"],
+  ["VER CLARAMENTE EN ESTE LUGAR", "SEE CLEARLY IN THIS PLACE"],
+  ["LUZ BUENA", "GOOD LIGHT"],
+  ["LUGAR MUY ARRIBA SOBRE LA TIERRA", "PLACE FAR ABOVE EARTH"],
+  ["LUGAR ABAJO DONDE VIVEN LAS PERSONAS", "PLACE BELOW WHERE PEOPLE LIVE"],
+  ["NO PODER VER EN ESTE LUGAR", "CANNOT SEE IN THIS PLACE"],
+  ["TIEMPO DE NOCHE", "NIGHT TIME"],
+  ["AGUA VIVA QUE SE MUEVE EN UN LUGAR", "LIVING WATER MOVING IN A PLACE"],
+  ["TENER ALIENTO DE VIDA", "HAVE BREATH OF LIFE"],
+  ["VER ALGO CON LOS OJOS", "SEE SOMETHING WITH EYES"],
+  ["SABER QUE ES BUENO", "KNOW THAT IT IS GOOD"],
+  ["MOVERSE POR UN CAMINO HACIA UN LUGAR", "MOVE ALONG A PATH TOWARD A PLACE"],
+  ["DAR O TOMAR ALGO CON LAS MANOS", "GIVE OR TAKE SOMETHING WITH HANDS"],
+  ["SENTIR GRAN BIEN PORQUE DIOS ESTÁ CERCA", "FEEL VERY GOOD BECAUSE GOD IS NEAR"],
+  ["PERSONA QUE VIVE Y PIENSA EN LA TIERRA", "PERSON WHO LIVES AND THINKS ON EARTH"],
+  ["LUGAR DONDE LAS PERSONAS VIVEN JUNTAS CON DIOS", "PLACE WHERE PEOPLE LIVE TOGETHER WITH GOD"],
+  ["PERSONA DE LA MISMA FAMILIA", "PERSON OF THE SAME FAMILY"],
+  ["ALGUIEN DE LA MISMA FAMILIA", "SOMEONE OF THE SAME FAMILY"],
+  ["VIVIR JUNTOS", "LIVE TOGETHER"],
+  ["GUIAR Y CUIDAR AL PUEBLO CON AUTORIDAD", "GUIDE AND CARE FOR PEOPLE WITH AUTHORITY"],
+  ["ALGO VIVO QUE CRECE DE LA TIERRA Y DA SEMILLA", "LIVING THING GROWING FROM EARTH GIVING SEED"],
+  ["SACAR DE ALGO MALO", "BRING OUT OF SOMETHING BAD"],
+  ["PAGAR PARA LIBERAR", "PAY TO SET FREE"],
+  ["NACER PRIMERO", "BE BORN FIRST"],
+  ["CUIDAR A LOS HERMANOS", "CARE FOR SIBLINGS"],
+  ["RECIBIR LA PARTE DEL PADRE", "RECEIVE THE FATHER'S SHARE"],
+  ["MUCHO METAL DE GRAN VALOR", "MUCH METAL OF GREAT VALUE"],
+  ["PESADO COMO UNA CARGA GRANDE", "HEAVY LIKE A LARGE LOAD"],
+  ["LAS PERSONAS", "PEOPLE"],
+  ["TAL VEZ", "MAYBE"],
+  ["ALGUIEN", "SOMEONE"],
+  ["PERSONAS", "PEOPLE"],
+  ["PERSONA", "PERSON"],
+  ["PALABRAS", "WORDS"],
+  ["VERDADERAS", "TRUE"],
+  ["VERDADERO", "TRUE"],
+  ["VERDAD", "TRUTH"],
+  ["CUANDO", "WHEN"],
+  ["TIEMPO", "TIME"],
+  ["AHORA", "NOW"],
+  ["ANTES", "BEFORE"],
+  ["DESPUÉS", "AFTER"],
+  ["LUGAR", "PLACE"],
+  ["DÓNDE", "WHERE"],
+  ["AQUÍ", "HERE"],
+  ["ARRIBA", "ABOVE"],
+  ["ABAJO", "BELOW"],
+  ["CERCA", "NEAR"],
+  ["LEJOS", "FAR"],
+  ["DENTRO", "INSIDE"],
+  ["SOBRE", "ABOVE"],
+  ["TIERRA", "EARTH"],
+  ["ALGUNOS", "SOME"],
+  ["MUCHOS", "MANY"],
+  ["MUCHO", "MUCH"],
+  ["TODOS", "ALL"],
+  ["TODO", "ALL"],
+  ["COSAS", "THINGS"],
+  ["COSA", "THING"],
+  ["ALGO", "SOMETHING"],
+  ["CUERPO", "BODY"],
+  ["BUENO", "GOOD"],
+  ["MALO", "BAD"],
+  ["GRANDE", "BIG"],
+  ["PEQUEÑO", "SMALL"],
+  ["PENSAR", "THINK"],
+  ["PIENSA", "THINKS"],
+  ["SABER", "KNOW"],
+  ["QUERER", "WANT"],
+  ["SENTIR", "FEEL"],
+  ["DECIR", "SAY"],
+  ["HACER", "DO"],
+  ["HACEN", "DO"],
+  ["PASAR", "HAPPEN"],
+  ["MOVERSE", "MOVE"],
+  ["MUEVE", "MOVES"],
+  ["TOCAR", "TOUCH"],
+  ["VIVIR", "LIVE"],
+  ["VIVEN", "LIVE"],
+  ["VIVE", "LIVES"],
+  ["MORIR", "DIE"],
+  ["PODER", "CAN"],
+  ["PORQUE", "BECAUSE"],
+  ["MISMO", "SAME"],
+  ["OTRO", "OTHER"],
+  ["DIOS", "GOD"],
+  ["LUZ", "LIGHT"],
+  ["AGUA", "WATER"],
+  ["VIDA", "LIFE"],
+  ["VER", "SEE"],
+  ["OÍR", "HEAR"],
+  ["HAY", "THERE IS"],
+  ["TENER", "HAVE"],
+  ["MUY", "VERY"],
+  ["MÁS", "MORE"],
+  ["COMO", "LIKE"],
+  ["UNO", "ONE"],
+  ["DOS", "TWO"],
+  ["NO", "NOT"],
+  ["SI", "IF"],
+  ["Y", "AND"],
+];
+
+/**
+ * Decodifica códigos jerárquicos `SDBH` de 9–15 dígitos de Reinier de Blois (`001..004`)
+ * mediante coincidencia de prefijo más largo (`DISCARD-016/017`), separando sufijos `[H7225+H1254]`
+ * o `[G3056]` en un arreglo limpio `strongBadges` (`D2-R45`).
+ */
+export function decodeSdbhHierarchicalCode(rawTag, uiLocale = "es") {
+  const isEn = !String(uiLocale || "es").trim().toLowerCase().startsWith("es");
+  const raw = String(rawTag || "").trim();
+  const strongBadges = [];
+  for (const m of raw.matchAll(/\[([HG]\d{3,5}(?:\+[HG]\d{3,5})*)\]/gi)) {
+    for (const code of m[1].split("+")) {
+      const norm = code.trim().toUpperCase();
+      if (norm && !strongBadges.includes(norm)) strongBadges.push(norm);
+    }
+  }
+  const withoutStrong = raw
+    .replace(/\[[HG]\d{3,5}(?:\+[HG]\d{3,5})*\]/gi, "")
+    .replace(/\|\s*CLICS3:[^|]+/gi, "")
+    .trim();
+
+  const digitTokens = [];
+  for (const m of withoutStrong.matchAll(/(?:SDBH:)?(\d{6,15})/gi)) {
+    digitTokens.push(m[1]);
+  }
+  const labels = [];
+  for (const digits of digitTokens) {
+    const matched = SDBH_HIERARCHICAL_PREFIXES.find(([prefix]) => digits.startsWith(prefix));
+    const resolved = matched
+      ? isEn
+        ? matched[2]
+        : matched[1]
+      : isEn
+        ? "SDBH lexical domain"
+        : "Dominio léxico SDBH";
+    if (!labels.includes(resolved)) labels.push(resolved);
+  }
+  return {
+    label: labels.slice(0, 3).join(" · "),
+    strongBadges,
+  };
+}
+
+/**
+ * Traduce composicionalmente fórmulas de los 65 primitivos semánticos universales de Wierzbicka (`NSM-65`)
+ * de español a inglés cuando `uiLocale !== "es"`, limpiando códigos `SDBH` y sufijos `[Hxxxx]` (`D2-R45`).
+ */
+export function translateNsm65PrimePhrase(spanishFormula, uiLocale = "es") {
+  const isEs = String(uiLocale || "es").trim().toLowerCase().startsWith("es");
+  let cleaned = String(spanishFormula || "")
+    .replace(/\[[HG]\d{3,5}(?:\+[HG]\d{3,5})*\]/gi, "")
+    .replace(/\|\s*CLICS3:[^|]+/gi, "")
+    .replace(/^(?:NSM_65:)?(?:SDBH:[\d,+]+(?:\+SDBH:[\d,+]+)*\|?)?/i, "")
+    .replace(/\|?PRIM:/gi, " | ")
+    .replace(/(?:NSM_65:)?SDBH:[\d,+]+/gi, "")
+    .trim();
+
+  const segments = cleaned
+    .split(/[|+]+/)
+    .map((s) => s.trim())
+    .filter((s) => s && !SEMANTIC_TAG_SILENT.has(s.toUpperCase()));
+  if (segments.length === 0) return "";
+
+  const normalizedEs = [...new Set(segments)].join(" · ");
+  if (isEs) return normalizedEs;
+
+  let translated = normalizedEs.toUpperCase();
+  for (const [esPhrase, enPhrase] of NSM_ES_TO_EN_PHRASES) {
+    const escaped = esPhrase.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    translated = translated.replace(new RegExp(`(^|[^A-ZÁÉÍÓÚÜÑ])${escaped}(?=$|[^A-ZÁÉÍÓÚÜÑ])`, "g"), `$1${enPhrase}`);
+  }
+  return translated.replace(/\s+/g, " ").trim();
+}
+
 const SEMANTIC_TAG_SILENT = new Set(["VOICE:∅", "UNIVERSAL_TRANSPARENT:NONE", "∅", "MACULA:∅", "EVID:∅"]);
 
 /**
- * Traduce una etiqueta compuesta (`MACULA:A1_PATIENT|EVID:DIRECT_SENSORY`) a lenguaje humano en `uiLocale`.
+ * Traduce una etiqueta compuesta (`MACULA:A1_PATIENT|EVID:DIRECT_SENSORY` o `NSM_65:SDBH:002003003004...`)
+ * a lenguaje humano en `uiLocale`, sin filtrar códigos numéricos crudos ni sufijos `[Hxxxx]`.
  */
 export function humanizeSemanticTagChain(rawTag, uiLocale = "es") {
-  const isEn = String(uiLocale || "es").trim().toLowerCase().startsWith("en");
-  const parts = String(rawTag || "")
+  const isEn = !String(uiLocale || "es").trim().toLowerCase().startsWith("es");
+  const cleanedRaw = String(rawTag || "")
+    .replace(/\[[HG]\d{3,5}(?:\+[HG]\d{3,5})*\]/gi, "")
+    .replace(/\|\s*CLICS3:[^|]+/gi, "");
+  const parts = cleanedRaw
     .split("|")
     .map((p) => p.trim())
     .filter((p) => p && !SEMANTIC_TAG_SILENT.has(p.toUpperCase()));
-  const human = parts.map((p) => {
+  const human = [];
+  for (const p of parts) {
+    if (/^PRIM:/i.test(p)) {
+      const primeText = translateNsm65PrimePhrase(p, uiLocale);
+      if (primeText) human.push(primeText);
+      continue;
+    }
+    if (/(?:^|:|\+)SDBH:\d{6,15}/i.test(p) || /^\d{6,15}$/.test(p)) {
+      const decoded = decodeSdbhHierarchicalCode(p, uiLocale);
+      if (decoded.label) human.push(decoded.label);
+      continue;
+    }
     const key = p.toUpperCase().replace(/\s+/g, "_").replace(/^NSM_65:/, "");
     const hit = SEMANTIC_TAG_GLOSSARY[key];
-    if (hit) return isEn ? hit[1] : hit[0];
-    const bare = p.replace(/^(?:NSM_65:)?(?:SDBH|LN|MACULA|EVID|VOICE|PRIM):/i, "").replace(/_/g, " ").trim().toLowerCase();
-    return bare ? bare.charAt(0).toUpperCase() + bare.slice(1) : "";
-  });
+    if (hit) {
+      human.push(isEn ? hit[1] : hit[0]);
+      continue;
+    }
+    if (!isEn === false && /[ÁÉÍÓÚÑ]|\b(?:ALGUIEN|ALGO|PERSONAS|LUGAR|TIEMPO|HACER|DECIR|VIVIR)\b/.test(p)) {
+      const primeEn = translateNsm65PrimePhrase(p, uiLocale);
+      if (primeEn) {
+        human.push(primeEn);
+        continue;
+      }
+    }
+    const bare = p
+      .replace(/^(?:NSM_65:)?(?:SDBH|LN|MACULA|EVID|VOICE|PRIM):/i, "")
+      .replace(/_/g, " ")
+      .trim()
+      .toLowerCase();
+    if (bare) human.push(bare.charAt(0).toUpperCase() + bare.slice(1));
+  }
   return [...new Set(human.filter(Boolean))].join(" · ");
 }
 
 /**
- * Humaniza las columnas técnicas de la Matriz de 14 Columnas (`D4-R39` / `DEB-R39-03`),
- * limpiando prefijos internos (`NSM_65:SDBH:`, `|PRIM:`) y evitando mostrar `Rol: ∅`.
+ * Humaniza las columnas técnicas de la Matriz de 14 Columnas (`D4-R39` / `D2-R45`),
+ * decodificando taxonomías `SDBH` de 12 dígitos, separando insignias `[Hxxxx]` y traduciendo `NSM-65`.
  */
 export function formatHumanReadable14ColFields(row = {}, uiLocale = "es") {
-  const isEn = String(uiLocale || "es").trim().toLowerCase().startsWith("en");
+  const isEn = !String(uiLocale || "es").trim().toLowerCase().startsWith("es");
   const rawRole = String(row.c09_macula_role || "").trim();
   const rawClause = String(row.c10_clause_id || "").trim();
   const rawDomain = String(row.c11_semantic_domain || "").trim();
   const rawNsm = String(row.c13_nsm_65 || "").trim();
 
+  const decodedDomain = decodeSdbhHierarchicalCode(rawDomain, uiLocale);
+  const decodedNsm = decodeSdbhHierarchicalCode(rawNsm, uiLocale);
+  const strongBadges = [...new Set([...decodedDomain.strongBadges, ...decodedNsm.strongBadges])];
+
   const roleHuman = !rawRole || rawRole === "∅" ? (isEn ? "Lexical core" : "Núcleo léxico") : rawRole;
   const clauseHuman = !rawClause || rawClause === "∅" ? "C1" : rawClause;
-  const domainHuman = humanizeSemanticTagChain(rawDomain, uiLocale) || "General";
+  const domainHuman = humanizeSemanticTagChain(rawDomain, uiLocale) || decodedDomain.label || "General";
+
+  let nsmCandidate = "";
+  if (/PRIM:/i.test(rawNsm)) {
+    const primSlice = rawNsm.slice(rawNsm.search(/PRIM:/i));
+    nsmCandidate = translateNsm65PrimePhrase(primSlice, uiLocale);
+  } else {
+    nsmCandidate = humanizeSemanticTagChain(rawNsm, uiLocale);
+  }
   const nsmHuman =
-    humanizeSemanticTagChain(rawNsm.replace(/\|PRIM:/gi, "|"), uiLocale) ||
+    nsmCandidate ||
     (isEn ? "GOD · SAY · DO" : "DIOS · DECIR · HACER");
 
   return {
@@ -225,6 +506,7 @@ export function formatHumanReadable14ColFields(row = {}, uiLocale = "es") {
     clauseHuman,
     domainHuman,
     nsmHuman,
+    strongBadges,
   };
 }
 
@@ -305,6 +587,9 @@ export function renderStudy14ColDrawerHtml(matrixShard, options = {}) {
         `<div style="font-size:0.78rem;display:flex;flex-wrap:wrap;gap:0.35rem;">` +
         `<code data-col="c07_strong_id">${escapeHtml(r.c07_strong_id)}</code>` +
         `<code data-col="c08_morph_code">${escapeHtml(r.c08_morph_code)}</code>` +
+        (human.strongBadges && human.strongBadges.length > 0
+          ? `<span class="sdbh-strong-badges" data-sdbh-strongs="${escapeHtml(human.strongBadges.join("+"))}" style="font-size:0.72rem;color:var(--text-secondary);">[${escapeHtml(human.strongBadges.slice(0, 3).join(" · "))}]</span>`
+          : "") +
         `</div>` +
         `<div style="font-size:0.76rem;color:var(--text-secondary);">` +
         `<span data-col="c09_macula_role" data-raw-role="${escapeHtml(r.c09_macula_role)}">${isEn ? "Role" : "Función"}: ${escapeHtml(human.roleHuman)}</span> · ` +

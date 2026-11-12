@@ -107,7 +107,7 @@ export function solitonCdf(K, c = 0.1, delta = 0.05) {
   return cdf;
 }
 
-export function sampleDegree(cdf, rng) {
+function sampleDegree(cdf, rng) {
   const K = cdf.length - 1;
   if (K <= 1) return 1;
   const u = rng();

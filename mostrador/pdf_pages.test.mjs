@@ -120,3 +120,9 @@ test("rejects_pages_out_of_range", () => {
   assert.throws(() => extractPdfPages(src, []), /Sin páginas/);
 });
 
+test("R45_SLICE_184_pdf_internal_token_classes_demoted", async () => {
+  const ns = await import("./pdf_pages.js");
+  assert.equal(ns.PdfName, undefined, "DEB-R45-10: PdfName must be module-private");
+  assert.equal(ns.PdfRawString, undefined, "DEB-R45-10: PdfRawString must be module-private");
+});
+

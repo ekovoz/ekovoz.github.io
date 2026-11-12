@@ -2,7 +2,7 @@
 // Embudo soberano de 7,164 idiomas (Glottolog 4.8 / ISO 639-3) — Ekovoz Mostrador Ronda 20.
 // Cero dependencias de Node.js. Opera en navegador sobre shards/region_01..12.json y data/catalog.json.
 
-export const ISO1_TO_ISO3 = Object.freeze({
+const ISO1_TO_ISO3 = Object.freeze({
   es: "spa",
   en: "eng",
   stp: "stp",
@@ -25,13 +25,13 @@ export const ISO1_TO_ISO3 = Object.freeze({
   sw: "swh",
 });
 
-export const ISO3_TO_ISO1 = Object.freeze(
+const ISO3_TO_ISO1 = Object.freeze(
   Object.fromEntries(Object.entries(ISO1_TO_ISO3).map(([k, v]) => [v, k])),
 );
 
-export const MACRO_REGION_IDS = Object.freeze([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]);
+const MACRO_REGION_IDS = Object.freeze([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]);
 
-export const REGION_SLUG_TO_ID = Object.freeze({
+const REGION_SLUG_TO_ID = Object.freeze({
   "americas-mesoamerica": 1,
   "americas-south": 2,
   "americas-north": 3,
@@ -57,7 +57,7 @@ export function resolveMacroRegionId(regionCodeOrId) {
   return 1;
 }
 
-export function normalizeLangSearchToken(input) {
+function normalizeLangSearchToken(input) {
   if (typeof input !== "string") {
     return "";
   }
@@ -97,7 +97,7 @@ function buildCatalogLookup(catalog) {
   return { byIso3, byCode };
 }
 
-export function formatBilingualLangLabel(record) {
+function formatBilingualLangLabel(record) {
   const iso = record.iso639_3;
   const cleanAutonym = String(record.autonym || "")
     .replace(new RegExp(`\\s*\\(${iso}\\)\\s*$`, "i"), "")
@@ -113,7 +113,7 @@ export function formatBilingualLangLabel(record) {
   return `${primary} (${iso})`;
 }
 
-export function enrichLanguageTuple(tuple, macroRegionId, catalogLookup) {
+function enrichLanguageTuple(tuple, macroRegionId, catalogLookup) {
   if (!Array.isArray(tuple) || tuple.length < 3) {
     return null;
   }
@@ -167,7 +167,7 @@ export function enrichLanguageTuple(tuple, macroRegionId, catalogLookup) {
   return record;
 }
 
-export function enrichRegionShard(shard, catalog) {
+function enrichRegionShard(shard, catalog) {
   const lookup = buildCatalogLookup(catalog);
   const macroRegionId = Number(shard?.macro_region_id) || 1;
   const tuples = Array.isArray(shard?.featured_languages) ? shard.featured_languages : [];

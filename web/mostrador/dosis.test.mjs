@@ -433,3 +433,71 @@ test("D8_R44_eco_preview_truncates_at_word_boundary", async () => {
   });
   assert.ok(!html.includes("llenad la tie»"), "la vista previa no debe cortar «tierra»");
 });
+
+test("R45_SLICE_179_live_canonical_block_B01_B80_is_selected_and_field_pdfs_exposed", async () => {
+  const dosisMod = await import("./dosis.js");
+  const { renderPrintDrawerPanelsSyncInDrawer } = await import("./drawer_print.js");
+
+  assert.equal(
+    "CANONICAL_9_PLUS_2_EDITIONS_CATALOG" in dosisMod,
+    false,
+    "DEB-R45-04: CANONICAL_9_PLUS_2_EDITIONS_CATALOG must be deleted/unexported",
+  );
+
+  const epJson = readJson("data/editorial_profiles.json");
+  dosisMod.hydrateEditorialProfiles(epJson);
+
+  const blkGen = dosisMod.resolveCanonicalBlockCode("GEN", 1, 1);
+  const blkPsa = dosisMod.resolveCanonicalBlockCode("PSA", 23, 1);
+  const blkRev = dosisMod.resolveCanonicalBlockCode("REV", 22, 21);
+  assert.equal(blkGen.blockCode, "B01");
+  assert.ok(blkPsa.blockNumber > 1 && blkPsa.blockNumber < 80, `PSA 23 block=${blkPsa.blockCode}`);
+  assert.equal(blkRev.blockCode, "B80");
+
+  const els = new Map();
+  const mkEl = (id) => {
+    const el = {
+      id,
+      innerHTML: "",
+      textContent: "",
+      href: "",
+      value: "",
+      attrs: {},
+      setAttribute(k, v) { this.attrs[k] = String(v); },
+      getAttribute(k) { return this.attrs[k] ?? null; },
+      addEventListener() {},
+    };
+    els.set(id, el);
+    return el;
+  };
+  for (const id of ["linkDose2BlockPdf", "linkDose3FullBiblePdf", "bibleEditionsCatalogGrid", "kindleBudgetOutput"]) {
+    mkEl(id);
+  }
+  const targetDoc = { getElementById: (id) => els.get(id) || null };
+  const state = {
+    lang: "es",
+    uiLocale: "en",
+    book: "REV",
+    chapter: 22,
+    verse: 21,
+    activePrintProfileId: "04_1col_letra_grande",
+  };
+  renderPrintDrawerPanelsSyncInDrawer({
+    state,
+    targetDoc,
+    getEl: (id, d = targetDoc) => d.getElementById(id),
+    hydratePrintDrawerPanels: () => {},
+  });
+
+  assert.equal(els.get("linkDose2BlockPdf").getAttribute("data-block-code"), "B80");
+  assert.match(els.get("linkDose2BlockPdf").href, /B80\.pdf$/);
+
+  const gridHtml = els.get("bibleEditionsCatalogGrid").innerHTML;
+  assert.match(
+    gridHtml,
+    /class="uls-chip print-edition-card is-selected"\s+aria-pressed="true"[^>]*data-profile-id="04_1col_letra_grande"/,
+  );
+  assert.match(gridHtml, /obras\/biblia\/campo\/refugio_4_hojas\.pdf"[^>]*data-field-pdf-bytes="54295"/);
+  assert.match(gridHtml, /obras\/biblia\/campo\/checklist_80_bloques\.pdf"[^>]*data-field-pdf-bytes="12437"/);
+  assert.match(gridHtml, /B80/);
+});

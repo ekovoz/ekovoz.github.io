@@ -13,6 +13,7 @@ import { hydrateDiachronicRegister } from "./diachronic_register.js";
 import { hydrateCulturalGlossesLexicon } from "./estudio.js";
 import {
   formatEvangeliosBridgeLine,
+  formatHumanEvangeliosPlateTitle,
   hydratePericopesAndGlosses,
   renderEvangeliosPlateActionsHtml,
   resolveEvangeliosMacroThreadAndEcho,
@@ -29,26 +30,44 @@ export function resolveEvangeliosActiveSelection({
   corpus = null,
   quarterFilter = "T1",
   weekId = "",
+  plateSlug = "",
   fallbackLang = "es",
 } = {}) {
   const entries = Array.isArray(corpus?.entries) ? corpus.entries : [];
   if (entries.length === 0) return null;
-  const matchedGlobal = weekId ? entries.find((e) => e.id === weekId) : null;
+  const cleanSlug = String(plateSlug || "").trim().toLowerCase();
+  const cleanWeek = String(weekId || "").trim().toLowerCase();
+  const matchedGlobal =
+    (cleanSlug ? entries.find((e) => String(e.plate_id || "").toLowerCase() === cleanSlug) : null) ||
+    (cleanWeek
+      ? entries.find(
+          (e) =>
+            String(e.id || "").toLowerCase() === cleanWeek ||
+            String(e.plate_id || "").toLowerCase() === cleanWeek,
+        )
+      : null);
   const effectiveQuarter = matchedGlobal?.quarter || quarterFilter || "T1";
   const quarterEntries = entries.filter((e) => e.quarter === effectiveQuarter);
   const pool = quarterEntries.length > 0 ? quarterEntries : entries;
-  const activeEntry = matchedGlobal || pool.find((e) => e.id === weekId) || pool[0];
-  const bridgeAnchor = Object.values(CROSS_WORK_BRIDGE_TABLE.evangeliosAnchors || {}).find(
-    (a) => a.weekId === activeEntry.id,
-  );
+  const activeEntry =
+    matchedGlobal ||
+    pool.find((e) => String(e.id || "").toLowerCase() === cleanWeek) ||
+    pool[0];
   let coordinate = null;
+  const bridgeAnchor =
+    activeEntry?.id === "s01" && activeEntry?.reference
+      ? null
+      : Object.values(CROSS_WORK_BRIDGE_TABLE.evangeliosAnchors || {}).find(
+          (a) => a.weekId === activeEntry?.id,
+        );
   if (bridgeAnchor) {
     coordinate = {
       book: bridgeAnchor.book,
       chapter: bridgeAnchor.chapter,
       verse: bridgeAnchor.verse,
     };
-  } else if (activeEntry?.reference) {
+  }
+  if (!coordinate && activeEntry?.reference) {
     const parsedEv = parseBiblicalCoordinateReference(activeEntry.reference);
     if (parsedEv && parsedEv.bookCode) {
       coordinate = {
@@ -58,10 +77,28 @@ export function resolveEvangeliosActiveSelection({
       };
     }
   }
+  if (!coordinate) {
+    const macroMeta = resolveEvangeliosMacroThreadAndEcho({
+      plateSlug: activeEntry?.plate_id || "",
+      weekId: activeEntry?.id || "",
+    });
+    if (macroMeta?.anchorOsis) {
+      const parsedOsis = parseBiblicalCoordinateReference(macroMeta.anchorOsis);
+      if (parsedOsis?.bookCode) {
+        coordinate = {
+          book: parsedOsis.bookCode,
+          chapter: parsedOsis.chapter || 1,
+          verse: parsedOsis.verse || 1,
+        };
+      }
+    }
+  }
   return {
     activeEntry,
     pool,
     effectiveQuarter,
+    totalPlates: Number(corpus?.total_plates) || entries.length || 52,
+    canonicalGospelVersesCount: Number(corpus?.canonical_gospel_verses_count) || 3779,
     activeLang: ["es", "en", "pt", "fr", "quc", "gn", "stp"].includes(fallbackLang)
       ? fallbackLang
       : "es",
@@ -70,7 +107,7 @@ export function resolveEvangeliosActiveSelection({
 }
 
 /**
- * Construye las opciones HTML del selector semanal `#evangeliosWeekSelect` (`D8-R37` / `D8-R38`).
+ * Construye las opciones HTML del selector semanal `#evangeliosWeekSelect` (`D8-R37` / `D8-R38` / `D4-R45`).
  */
 export function buildEvangeliosWeekOptionsHtml(
   pool = [],
@@ -82,21 +119,21 @@ export function buildEvangeliosWeekOptionsHtml(
   const weekWord = isEn ? "Week" : "Semana";
   return (Array.isArray(pool) ? pool : [])
     .map((e) => {
-      const tObj = e.texts?.[activeEvLang] || e.texts?.es || {};
       const sel = e.id === activeEntryId ? " selected" : "";
-      const labelTitle = tObj.title || e.plate_id || e.id;
-      return `<option value="${escapeHtml(e.id)}"${sel}>${weekWord} ${e.week} (${escapeHtml(e.quarter)}) · ${escapeHtml(labelTitle)} — ${escapeHtml(e.reference)}</option>`;
+      const labelTitle = formatHumanEvangeliosPlateTitle(e, activeEvLang, uiLocale);
+      return `<option value="${escapeHtml(e.id)}" data-plate-slug="${escapeHtml(e.plate_id || "")}"${sel}>${weekWord} ${e.week} (${escapeHtml(e.quarter)}) · ${escapeHtml(labelTitle)} — ${escapeHtml(e.reference)}</option>`;
     })
     .join("");
 }
 
 /**
- * Renderiza la tarjeta principal de *1 Evangelio* (`#evangeliosActivePlateCard`) con perícopas y ecos AT (`D8-R37` / `D8-R38`).
+ * Renderiza la tarjeta principal de *1 Evangelio* (`#evangeliosActivePlateCard`) con perícopas y ecos AT (`D8-R37` / `D8-R38` / `D4-R45`).
  */
 export function renderEvangeliosStageCardHtml(
   activeEntry,
   activeEvLang = "es",
   uiLocale = activeEvLang,
+  corpusMeta = null,
 ) {
   if (!activeEntry) return "";
   const isEn = String(uiLocale || activeEvLang || "es").toLowerCase().startsWith("en");
@@ -104,11 +141,18 @@ export function renderEvangeliosStageCardHtml(
   const openBibleLabel = isEn ? "Open in The Bible" : "Abrir en La Biblia";
   const gestureLabel = isEn ? "Liturgical Gesture" : "Gesto Litúrgico";
   const bridgeLabel = isEn ? "Bridge" : "Puente";
+  const totalPlates = Number(corpusMeta?.totalPlates ?? corpusMeta?.total_plates) || 52;
+  const gospelVersesCount =
+    Number(corpusMeta?.canonicalGospelVersesCount ?? corpusMeta?.canonical_gospel_verses_count) || 3779;
   const tObj = activeEntry.texts?.[activeEvLang] || activeEntry.texts?.es || {};
   const bridgeObj = activeEvLang === "es" ? activeEntry.texts?.en : activeEntry.texts?.es;
-  const labelTitle = tObj.title || activeEntry.plate_id || activeEntry.id;
-  const macroMeta = resolveEvangeliosMacroThreadAndEcho(activeEntry.id || "s01");
-  const parsedRef = parseBiblicalCoordinateReference(activeEntry.reference || macroMeta?.anchorOsis || "JHN.1.1");
+  const labelTitle = formatHumanEvangeliosPlateTitle(activeEntry, activeEvLang, uiLocale);
+  const macroMeta = resolveEvangeliosMacroThreadAndEcho({
+    plateSlug: activeEntry.plate_id || "",
+    weekId: activeEntry.id || "s01",
+    anchorOsis: activeEntry.reference || "",
+  });
+  const parsedRef = parseBiblicalCoordinateReference(activeEntry.reference || macroMeta?.anchorOsis || "MRK.1.16");
   const pericopeHdr = parsedRef
     ? resolvePericopeHeaderForVerse(parsedRef.bookCode, parsedRef.chapter || 1, parsedRef.verse || 1)
     : null;
@@ -116,8 +160,9 @@ export function renderEvangeliosStageCardHtml(
     ? formatEvangeliosBridgeLine(bridgeObj.text, activeEvLang, uiLocale)
     : "";
   return (
-    `<header data-pericope-header="${escapeHtml(pericopeHdr?.title || "")}" style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:0.4rem;margin-bottom:0.5rem;">` +
-    `<strong>${weekWord} ${activeEntry.week}/52 (${escapeHtml(activeEntry.quarter)}) · ${escapeHtml(labelTitle)}</strong>` +
+    `<header data-pericope-header="${escapeHtml(pericopeHdr?.title || "")}" data-plate-slug="${escapeHtml(activeEntry.plate_id || "")}" data-total-plates="${totalPlates}" data-canonical-gospel-verses="${gospelVersesCount}" style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:0.4rem;margin-bottom:0.5rem;">` +
+    `<div><strong>${weekWord} ${activeEntry.week}/${totalPlates} (${escapeHtml(activeEntry.quarter)}) · ${escapeHtml(labelTitle)} — ${escapeHtml(activeEntry.reference || "")}</strong> ` +
+    `<span class="uls-badge" data-evangelios-corpus-counts="true" style="font-size:0.72rem;">${totalPlates} ${isEn ? "plates" : "láminas"} · ${gospelVersesCount.toLocaleString("en-US")} vv.</span></div>` +
     `<button type="button" class="uls-chip" data-evangelios-ref="${escapeHtml(activeEntry.reference)}" style="min-height:48px;padding:0.35rem 0.75rem;font-size:0.8rem;">📖 ${openBibleLabel}: ${escapeHtml(activeEntry.reference)}</button>` +
     `</header>` +
     `<p style="margin:0 0 0.45rem 0;font-size:0.82rem;color:var(--accent-amber);"><strong>🕊️ ${gestureLabel}:</strong> ${escapeHtml(activeEntry.gesture || "")}</p>` +
@@ -127,6 +172,7 @@ export function renderEvangeliosStageCardHtml(
       : "") +
     renderEvangeliosPlateActionsHtml({
       weekId: activeEntry.id,
+      plateSlug: activeEntry.plate_id || "",
       passageRef: activeEntry.reference,
       lang: activeEvLang,
       uiLocale,
@@ -290,10 +336,19 @@ export function bindSisterWorksStageEvents(ctx = {}) {
       fallbackLang: fallbackEvLang,
     });
     if (!resolvedEv) return null;
-    const { activeEntry, pool, effectiveQuarter, activeLang: activeEvLang, coordinate } = resolvedEv;
+    const {
+      activeEntry,
+      pool,
+      effectiveQuarter,
+      totalPlates,
+      canonicalGospelVersesCount,
+      activeLang: activeEvLang,
+      coordinate,
+    } = resolvedEv;
     state.evangeliosQuarter = effectiveQuarter;
     state.evangeliosLang = activeEvLang;
     state.evangeliosWeekId = activeEntry.id;
+    state.evangeliosPlateSlug = activeEntry.plate_id || "";
     if (coordinate) {
       state.book = coordinate.book;
       state.chapter = coordinate.chapter;
@@ -309,8 +364,8 @@ export function bindSisterWorksStageEvents(ctx = {}) {
     const evHeadingEl = getEl("evangeliosMainHeading", targetDoc);
     if (evHeadingEl) {
       evHeadingEl.textContent = isUiEn
-        ? "🌅 The Gospels · 52 Plates"
-        : "🌅 Los Evangelios · 52 Láminas";
+        ? `🌅 The Gospels · ${totalPlates} Plates (${canonicalGospelVersesCount.toLocaleString("en-US")} vv.)`
+        : `🌅 Los Evangelios · ${totalPlates} Láminas (${canonicalGospelVersesCount.toLocaleString("en-US")} vv.)`;
     }
     const evWeekLblEl = getEl("evangeliosWeekSelectLabel", targetDoc);
     if (evWeekLblEl) {
@@ -340,7 +395,10 @@ export function bindSisterWorksStageEvents(ctx = {}) {
       cardEl.setAttribute("data-evangelios-id", activeEntry.id);
       cardEl.setAttribute("data-evangelios-quarter", activeEntry.quarter);
       cardEl.setAttribute("data-evangelios-lang", activeEvLang);
-      cardEl.innerHTML = renderEvangeliosStageCardHtml(activeEntry, activeEvLang, activeUiLocale);
+      cardEl.innerHTML = renderEvangeliosStageCardHtml(activeEntry, activeEvLang, activeUiLocale, {
+        totalPlates,
+        canonicalGospelVersesCount,
+      });
     }
     if (state.activeSheet === "study") {
       await hydrateStudyDrawer(targetDoc);

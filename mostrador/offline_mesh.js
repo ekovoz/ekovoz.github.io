@@ -223,7 +223,7 @@ export class EcoDecoderMirror {
       (this.langHint === "en"
         ? "In the beginning God created the heaven and the earth."
         : "En el principio creó Dios los cielos y la tierra.");
-    return `Verso #${ordHuman}/31,102 [${start}..${end} B · Rebase ${rebaseHex} (rebase=${rebaseHex})]: «${snippet}»`;
+    return `Verso #${ordHuman}/31,102 [${start}..${end} B · rebase=${rebaseHex}]: «${snippet}»`;
   }
 }
 

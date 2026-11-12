@@ -3,7 +3,7 @@
 // Paridad 1:1 con crates/editorial-core/src/modernizer.rs y obras/biblia/register_audit_es.tsv
 // (coastalcph/histnorm + loyd/readability.rs + alejandromunozes/legibilidad).
 
-export const TIER_1_ARCHAIC_LEXICON = [
+const TIER_1_ARCHAIC_LEXICON = [
   ["Jehová", "el Señor"],
   ["holocausto", "ofrenda quemada"],
   ["holocaustos", "ofrendas quemadas"],
@@ -36,7 +36,7 @@ export const TIER_1_ARCHAIC_LEXICON = [
   ["aproche", "acerque"],
 ];
 
-export const TIER_2_MORPHOLOGICAL_RULES = [
+const TIER_2_MORPHOLOGICAL_RULES = [
   [/\bhabéis dicho\b/gi, "dijeron"],
   [/\bhabéis visto\b/gi, "vieron"],
   [/\bhabéis oído\b/gi, "oyeron"],
@@ -68,7 +68,7 @@ export const TIER_2_MORPHOLOGICAL_RULES = [
   [/\bpidiere\b/gi, "pide"],
 ];
 
-export const TIER_3_POSTVERBAL_ENCLITICS = [
+const TIER_3_POSTVERBAL_ENCLITICS = [
   ["díjoles", "les dijo"],
   ["díjole", "le dijo"],
   ["santificólo", "lo santificó"],
@@ -99,7 +99,7 @@ export const TIER_3_POSTVERBAL_ENCLITICS = [
 /**
  * Muestras calibradas de obras/biblia/register_audit_es.tsv hidratadas desde `web/data/diachronic_register_es.json` (`D3-R+`).
  */
-export const REGISTER_AUDIT_ES_BASELINE = {
+const REGISTER_AUDIT_ES_BASELINE = {
   "GEN.1.1": { aoa_years: 6.4, lexical_prevalence: 0.992, mdd: 1.85, eipen_l: 85.4 },
   "GEN.2.3": { aoa_years: 7.2, lexical_prevalence: 0.985, mdd: 2.1, eipen_l: 83.8 },
   "PSA.23.1": { aoa_years: 6.1, lexical_prevalence: 0.994, mdd: 1.72, eipen_l: 86.9 },
@@ -116,19 +116,19 @@ export const BOOK_VECTORS_66 = {
   ROM: { mean_aoa_years: 7.4, lexical_prevalence: 0.984, mean_mdd: 2.18, eipen_l: 82.6 },
   REV: { mean_aoa_years: 7.1, lexical_prevalence: 0.986, mean_mdd: 2.05, eipen_l: 83.4 },
 };
-export let INTERGENERATIONAL_CORE_RULES = {
+let INTERGENERATIONAL_CORE_RULES = {
   max_aoa_years: 11.0,
   min_lexical_prevalence: 0.96,
   max_mdd: 2.6,
   min_eipen_l: 78.0,
 };
-export let CORPUS_SUMMARY = {
+let CORPUS_SUMMARY = {
   total_books: 66,
   total_chapters: 1189,
   total_verses_audited: 31102,
 };
-export let TOTAL_VERSES_AUDITED = 31102;
-export const CORE_SUBSTITUTIONS = [];
+let TOTAL_VERSES_AUDITED = 31102;
+const CORE_SUBSTITUTIONS = [];
 
 /**
  * Humaniza el `source` de una regla RegExp para la UI (`D3-R44` / `DEB-R44-05`):
@@ -467,7 +467,7 @@ export function computeAnalyticalRegisterMetrics(text, osisRef = null) {
 /**
  * Idiomas que cuentan con estratos diacrónicos verificados (Siglo XXI vs Clásica 1909, `D3-E+` · `ARB-EKOVOZ-61`).
  */
-export const DIACHRONIC_SUPPORTED_LANGS = ["es"];
+const DIACHRONIC_SUPPORTED_LANGS = ["es"];
 
 /**
  * Determina si un idioma de lectura posee variantes diacrónicas documentadas (`D3-E+`).

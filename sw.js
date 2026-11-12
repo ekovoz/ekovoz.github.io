@@ -1,12 +1,13 @@
-// Ekovoz Service Worker (v20.0.0 — Ronda 20 Mostrador Opt-In Offline)
+// Ekovoz Service Worker (v45.0.0 — Linaje unificado ekovoz-mostrador-v20 -> ekovoz-mostrador-v45)
 // Cero precarga invasiva sin consentimiento del usuario (protección de cuota en celulares de gama baja).
 // Jamás intercepta ni almacena en caché PDFs de Biblia completa o cuadernos completos.
 
-export const CACHE_NAME = "ekovoz-mostrador-v44";
+export const CACHE_NAME = "ekovoz-mostrador-v45";
 
 export const SHELL_CORE_ASSETS = [
   "/",
   "/index.html",
+  "/bible_constants.js",
   "/mostrador.js",
   "/i18n_ui.js",
   "/mostrador/bridge_and_chapter.js",
@@ -26,11 +27,13 @@ export const SHELL_CORE_ASSETS = [
   "/mostrador/reference.js",
   "/mostrador/lang_funnel.js",
   "/mostrador/optical_lt.js",
+  "/mostrador/oral_portico_wasm.js",
   "/mostrador/estudio.js",
   "/mostrador/mejorar.js",
   "/mostrador/offline_mesh.js",
   "/mostrador/projection_contract.js",
   "/mostrador/sister_works_controller.js",
+  "/mostrador/stage_dom_bindings.js",
   "/i18n/index.json",
   "/i18n/en.json",
   "/i18n/es.json",
