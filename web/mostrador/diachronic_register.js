@@ -129,6 +129,8 @@ let CORPUS_SUMMARY = {
 };
 let TOTAL_VERSES_AUDITED = 31102;
 const CORE_SUBSTITUTIONS = [];
+let PERICOPE_RECEIPTS_COMPACT = [];
+let LEDGER_BLAKE3_ROOT = "";
 
 /**
  * Humaniza el `source` de una regla RegExp para la UI (`D3-R44` / `DEB-R44-05`):
@@ -260,7 +262,88 @@ export function hydrateDiachronicRegister(artifact) {
   if (typeof artifact.total_verses_audited === "number" && artifact.total_verses_audited > 0) {
     TOTAL_VERSES_AUDITED = artifact.total_verses_audited;
   }
+  if (Array.isArray(artifact.pericope_receipts_compact)) {
+    PERICOPE_RECEIPTS_COMPACT = artifact.pericope_receipts_compact.slice();
+  } else if (Array.isArray(artifact.pericope_provenance)) {
+    PERICOPE_RECEIPTS_COMPACT = artifact.pericope_provenance.map((p) => [
+      String(p.pericope_ref || ""),
+      String(p.batch_id || ""),
+      Math.round(Number(p.mattr_50 || 0.68) * 1000),
+      String(p.output_sha256 || "").slice(0, 12),
+    ]);
+  }
+  if (typeof artifact.ledger_blake3_root === "string" && artifact.ledger_blake3_root.trim()) {
+    LEDGER_BLAKE3_ROOT = artifact.ledger_blake3_root.trim();
+  }
   return REGISTER_AUDIT_ES_BASELINE;
+}
+
+function parseOsisTriple(refStr) {
+  const parts = String(refStr || "").trim().split(".");
+  if (parts.length < 3) return null;
+  const ch = Number(parts[1]);
+  const v = Number(parts[2]);
+  if (!Number.isFinite(ch) || !Number.isFinite(v)) return null;
+  return { book: parts[0].toUpperCase(), chapter: ch, verse: v };
+}
+
+/**
+ * Busca el recibo constructivo verificable (`[pericope_ref, batch_id, mattr_x1000, sha256_hex12]`)
+ * para un versículo `(book, chapter, verse)` desde el índice compacto proyectado (`D5-V2E / 5B+`).
+ */
+export function lookupPericopeConstructiveReceipt(
+  artifactOrBook = "GEN",
+  maybeBookOrChapter = 1,
+  maybeChapterOrVerse = 1,
+  maybeVerse = undefined,
+) {
+  let rows = PERICOPE_RECEIPTS_COMPACT;
+  let rootHash = LEDGER_BLAKE3_ROOT;
+  let book = artifactOrBook;
+  let chapter = maybeBookOrChapter;
+  let verse = maybeChapterOrVerse;
+  if (artifactOrBook && typeof artifactOrBook === "object") {
+    if (Array.isArray(artifactOrBook.pericope_receipts_compact)) {
+      rows = artifactOrBook.pericope_receipts_compact;
+    }
+    if (typeof artifactOrBook.ledger_blake3_root === "string") {
+      rootHash = artifactOrBook.ledger_blake3_root;
+    }
+    book = maybeBookOrChapter || "GEN";
+    chapter = maybeChapterOrVerse || 1;
+    verse = maybeVerse || 1;
+  } else if (artifactOrBook === null || artifactOrBook === undefined) {
+    book = maybeBookOrChapter || "GEN";
+    chapter = maybeChapterOrVerse || 1;
+    verse = maybeVerse || 1;
+  }
+  const cleanBook = String(book || "GEN").trim().toUpperCase();
+  const targetCh = Number(chapter) || 1;
+  const targetV = Number(verse) || 1;
+  for (const row of rows) {
+    if (!Array.isArray(row) || row.length < 4) continue;
+    const [rangeStr, batchId, mattrX1000, shaHex12] = row;
+    const [startRaw, endRaw] = String(rangeStr || "").split("-");
+    const s = parseOsisTriple(startRaw);
+    const e = parseOsisTriple(endRaw || startRaw);
+    if (!s || !e || s.book !== cleanBook) continue;
+    const afterStart = targetCh > s.chapter || (targetCh === s.chapter && targetV >= s.verse);
+    const beforeEnd = targetCh < e.chapter || (targetCh === e.chapter && targetV <= e.verse);
+    if (afterStart && beforeEnd) {
+      const mattr50 = Number((Number(mattrX1000 || 680) / 1000).toFixed(3));
+      const outputSha256Hex12 = String(shaHex12 || "");
+      return {
+        pericopeRef: String(rangeStr),
+        batchId: String(batchId),
+        mattr50,
+        mattr: mattr50,
+        outputSha256Hex12,
+        sha256Prefix: outputSha256Hex12,
+        ledgerBlake3Root: rootHash,
+      };
+    }
+  }
+  return null;
 }
 
 function matchCapitalization(sourceWord, replacement) {
@@ -295,6 +378,42 @@ export function modernizeVerseDiachronic(
   let encliticInversionsCount = 0;
   let lexicalReplacementsCount = 0;
   let morphologicalRewritesCount = 0;
+
+  // Etapa 0 (D2-V2E / 2B+): Apertura en doble mayúscula 1909, ortografía RAE-1959 y giros hase / de con
+  const preNormalized = out
+    .replace(/(?<![\p{L}\p{N}])Y HE AQUÍ que(?![\p{L}\p{N}])/gu, "Y miren que")
+    .replace(/(?<![\p{L}\p{N}])Y HE AQUÍ(?![\p{L}\p{N}])/gu, "Y miren,")
+    .replace(/(?<![\p{L}\p{N}])Y HE aquí que(?![\p{L}\p{N}])/gu, "Y miren que")
+    .replace(/(?<![\p{L}\p{N}])Y HE aquí(?![\p{L}\p{N}])/gu, "Y miren,")
+    .replace(/(?<![\p{L}\p{N}])HE AQUÍ que(?![\p{L}\p{N}])/gu, "Miren que")
+    .replace(/(?<![\p{L}\p{N}])HE AQUÍ(?![\p{L}\p{N}])/gu, "Miren,")
+    .replace(/(?<![\p{L}\p{N}])HE aquí que(?![\p{L}\p{N}])/gu, "Miren que")
+    .replace(/(?<![\p{L}\p{N}])HE aquí(?![\p{L}\p{N}])/gu, "Miren,")
+    .replace(/(?<![\p{L}\p{N}])Y FUÉ(?![\p{L}\p{N}])/gu, "Y fue")
+    .replace(/(?<![\p{L}\p{N}])Y FUÍ(?![\p{L}\p{N}])/gu, "Y fui")
+    .replace(/(?<![\p{L}\p{N}])FUÉ(?![\p{L}\p{N}])/gu, "Fue")
+    .replace(/(?<![\p{L}\p{N}])FUÍ(?![\p{L}\p{N}])/gu, "Fui")
+    .replace(/(?<![\p{L}\p{N}])fué(?![\p{L}\p{N}])/gu, "fue")
+    .replace(/(?<![\p{L}\p{N}])Fué(?![\p{L}\p{N}])/gu, "Fue")
+    .replace(/(?<![\p{L}\p{N}])fuí(?![\p{L}\p{N}])/gu, "fui")
+    .replace(/(?<![\p{L}\p{N}])Fuí(?![\p{L}\p{N}])/gu, "Fui")
+    .replace(/(?<![\p{L}\p{N}])vió(?![\p{L}\p{N}])/gu, "vio")
+    .replace(/(?<![\p{L}\p{N}])Vió(?![\p{L}\p{N}])/gu, "Vio")
+    .replace(/(?<![\p{L}\p{N}])dió(?![\p{L}\p{N}])/gu, "dio")
+    .replace(/(?<![\p{L}\p{N}])Dió(?![\p{L}\p{N}])/gu, "Dio")
+    .replace(/(?<![\p{L}\p{N}])oir(?![\p{L}\p{N}])/gu, "oír")
+    .replace(/(?<![\p{L}\p{N}])Oir(?![\p{L}\p{N}])/gu, "Oír")
+    .replace(/(?<![\p{L}\p{N}])aqueste(?![\p{L}\p{N}])/giu, (m) => (m[0] === m[0].toUpperCase() ? "Este" : "este"))
+    .replace(/(?<![\p{L}\p{N}])aquesta(?![\p{L}\p{N}])/giu, (m) => (m[0] === m[0].toUpperCase() ? "Esta" : "esta"))
+    .replace(/(?<![\p{L}\p{N}])aquestos(?![\p{L}\p{N}])/giu, (m) => (m[0] === m[0].toUpperCase() ? "Estos" : "estos"))
+    .replace(/(?<![\p{L}\p{N}])aquestas(?![\p{L}\p{N}])/giu, (m) => (m[0] === m[0].toUpperCase() ? "Estas" : "estas"))
+    .replace(/(?<![\p{L}\p{N}])(?:hase|háse)(?![\p{L}\p{N}])/giu, (m) => (m[0] === m[0].toUpperCase() ? "Se ha" : "se ha"))
+    .replace(/(?<![\p{L}\p{N}])habíase(?![\p{L}\p{N}])/giu, (m) => (m[0] === m[0].toUpperCase() ? "Se había" : "se había"))
+    .replace(/(?<![\p{L}\p{N}])de con\s+/gu, "del lado de ");
+  if (preNormalized !== out) {
+    morphologicalRewritesCount += 1;
+    out = preNormalized;
+  }
 
   // Tier 3: Inversión de enclíticos postverbales ("santificólo" -> "lo santificó", "díjoles" -> "les dijo")
   for (const [archaicEnclitic, modernProclitic] of TIER_3_POSTVERBAL_ENCLITICS) {
@@ -641,7 +760,7 @@ export function summarizeChapterDiachronicTransformations(
 }
 
 /**
- * Renderiza la lista de testigos diacrónicos por versículo (`1909 ↔ 2026`, $\Delta\text{AoA}$, $\Delta\text{MDD}$) del capítulo activo (`D7-B+` / `SLICE-96`).
+ * Renderiza la lista de testigos diacrónicos por versículo (`1909 ↔ 2026`, `Delta AoA`, `Delta MDD`) del capítulo activo (`D7-B+` / `SLICE-96`).
  */
 export function renderChapterDiachronicWitnessesHtml({
   verses = [],

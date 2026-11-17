@@ -7,6 +7,7 @@ export const CACHE_NAME = "ekovoz-mostrador-v45";
 export const SHELL_CORE_ASSETS = [
   "/",
   "/index.html",
+  "/mostrador.css",
   "/bible_constants.js",
   "/mostrador.js",
   "/i18n_ui.js",
@@ -19,8 +20,10 @@ export const SHELL_CORE_ASSETS = [
   "/mostrador/drawer_share.js",
   "/mostrador/i18n.js",
   "/mostrador/data_layer.js",
+  "/mostrador/dom_projection_contracts.js",
   "/mostrador/pdf_pages.js",
   "/mostrador/dosis.js",
+  "/mostrador/dosis_editions_catalog.js",
   "/mostrador/evangelios.js",
   "/mostrador/orthography_wfst.js",
   "/mostrador/diachronic_register.js",
@@ -30,13 +33,20 @@ export const SHELL_CORE_ASSETS = [
   "/mostrador/oral_portico_wasm.js",
   "/mostrador/estudio.js",
   "/mostrador/mejorar.js",
+  "/mostrador/mostrador_viewport_dose1.js",
   "/mostrador/offline_mesh.js",
   "/mostrador/projection_contract.js",
+  "/mostrador/sauvola_canvas_oracle.js",
   "/mostrador/sister_works_controller.js",
   "/mostrador/stage_dom_bindings.js",
+  "/mostrador/estudio_schemas.js",
+  "/mostrador/cascade_l1_l5.js",
+  "/mostrador/tanda_print_worker.js",
+  "/mostrador/bimodal_tanda_print.js",
   "/i18n/index.json",
   "/i18n/en.json",
   "/i18n/es.json",
+  "/assets/fonts/CharisSIL-Bold-Subset.ttf",
   "/data/catalog.json",
   "/manifest.webmanifest",
 ];
@@ -94,6 +104,7 @@ export function classifyRequestRoute(rawUrl, options = {}) {
     path === "/" ||
     path.endsWith("/index.html") ||
     path.endsWith(".js") ||
+    path.endsWith(".css") ||
     path.includes("/i18n/") ||
     /^\/[a-z]{2,3}(?:-[a-z0-9]+)?\/$/i.test(path)
   ) {

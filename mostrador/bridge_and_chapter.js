@@ -312,6 +312,47 @@ export const LIFE_TRAILS_ANCHORS = {
 
 export const POETIC_BOOKS = new Set(["PSA", "PRO", "JOB", "SNG", "LAM"]);
 export const MULTI_ORTHO_LANGS = new Set(["stp", "aud", "quc", "nah", "bn", "bn-bd", "bn-in", "tzj", "cak", "mam", "ar", "arb", "uzn", "uz", "tzm", "kk", "ber"]);
+
+export function syncOrthographyPillsVisibilityInDom({ state, targetDoc, getEl }) {
+  const orthoContainer = getEl("bibleOrthographyPills", targetDoc);
+  if (!orthoContainer) return;
+  const familyKey = resolveOrthoFamilyKey(state.lang);
+  const isMultiOrtho = Boolean(familyKey) || MULTI_ORTHO_LANGS.has(String(state.lang || "").toLowerCase());
+  orthoContainer.hidden = !isMultiOrtho;
+  if (orthoContainer.style) orthoContainer.style.display = isMultiOrtho ? "flex" : "none";
+  orthoContainer.setAttribute("data-ortho-visible", isMultiOrtho ? "true" : "false");
+  orthoContainer.setAttribute("data-ortho-family", familyKey || "none");
+
+  const activeCanonProfile = resolveCanonicalOrthoProfileId(
+    familyKey || state.lang,
+    state.orthographyProfile,
+  );
+  const pillSpecs = [
+    { id: "btnOrthoInali", family: "stp", profile: "INALI_2018" },
+    { id: "btnOrthoTradicional", family: "stp", profile: "ILV_1950" },
+    { id: "btnOrthoFonetica", family: "stp", profile: "FONETICA_IPA" },
+    { id: "btnOrthoBnBd", family: "bn", profile: "bn-BD" },
+    { id: "btnOrthoBnIn", family: "bn", profile: "bn-IN" },
+    { id: "btnOrthoArbTashkeel", family: "arb", profile: "TASHKEEL_STRIPPED", altProfile: "VOWELIZED" },
+    { id: "btnOrthoUznCyrl", family: "uzn", profile: "CYRL", altProfile: "LATN" },
+    { id: "btnOrthoTzmTfng", family: "tzm", profile: "TFNG", altProfile: "LATN" },
+  ];
+  for (const spec of pillSpecs) {
+    const btn = getEl(spec.id, targetDoc);
+    if (!btn) continue;
+    const matchesFamily = Boolean(familyKey) && spec.family === familyKey;
+    btn.hidden = !matchesFamily;
+    if (btn.style) btn.style.display = matchesFamily ? "" : "none";
+    const isPressed =
+      matchesFamily &&
+      (activeCanonProfile === spec.profile ||
+        (spec.altProfile && activeCanonProfile === spec.altProfile));
+    if (typeof btn.setAttribute === "function") {
+      btn.setAttribute("aria-pressed", isPressed ? "true" : "false");
+      btn.setAttribute("data-active-ortho-profile", activeCanonProfile);
+    }
+  }
+}
 const SUPERSCRIPT_DIGITS = {
   "0": "⁰",
   "1": "¹",
@@ -539,6 +580,133 @@ export function renderInteractiveVerseTokensHtml(
  * Unicode superscripts (`⁰-⁹`), 2-line dropcap on v.1, poetic stichometry, Oral Portico pauses,
  * and asymmetric 58%/42% bilingual diptych (`5R+`).
  */
+
+/**
+ * Mapa determinista de las 10 Lenguas Puente Regionales Siglo XXI (`D7-V2`, `@req[BIB-V2-21]`):
+ * `es, en, fr, pt, sw, ar, hi, id, ru, zh`.
+ */
+export const REGIONAL_BRIDGE_LANGUAGES_10 = {
+  1: { code: "es", label: "Español Siglo XXI (Núcleo Vivo)" },
+  2: { code: "en", label: "English 21st Century (Contemporary Bridge)" },
+  3: { code: "fr", label: "Français Contemporain" },
+  4: { code: "ru", label: "Русский Современный Мост" },
+  5: { code: "ru", label: "Русский / Евразийский Мост" },
+  6: { code: "ar", label: "العربية المعاصرة" },
+  7: { code: "fr", label: "Français / Sahel Bridge" },
+  8: { code: "sw", label: "Kiswahili Sanifu cha Karne ya 21" },
+  9: { code: "hi", label: "आधुनिक हिंदी सेतु" },
+  10: { code: "zh", label: "现代中文桥接本" },
+  11: { code: "id", label: "Bahasa Indonesia Abad ke-21" },
+  12: { code: "en", label: "English Pacific Bridge" },
+};
+
+export function resolveRegionalBridgeLanguage21({ macroRegion = 1, bridgeLang = "" } = {}) {
+  const validCodes = new Set(["es", "en", "fr", "pt", "sw", "ar", "hi", "id", "ru", "zh"]);
+  const cleanOverride = String(bridgeLang || "").trim().toLowerCase();
+  if (validCodes.has(cleanOverride)) {
+    const found = Object.values(REGIONAL_BRIDGE_LANGUAGES_10).find((x) => x.code === cleanOverride);
+    return found || { code: cleanOverride, label: `Bridge (${cleanOverride.toUpperCase()})` };
+  }
+  return REGIONAL_BRIDGE_LANGUAGES_10[Number(macroRegion) || 1] || REGIONAL_BRIDGE_LANGUAGES_10[1];
+}
+
+/**
+ * Renderiza el Puente Paralelo Diglósico Honesto para `Tiers 2–4` (`D7-V2`, `@req[BIB-V2-21]`):
+ * - Columna Materna: porción humana verificada (`Tier 2` NT / `Tier 3` porción) o andamiaje
+ *   explícito `GMIS` de 4 líneas + escalera `CELF-250` (`Tier 2` AT / `Tier 4`), con `0%` texto
+ *   sintético disfrazado de Biblia humana.
+ * - Columna Puente: Lengua Puente Regional Siglo XXI (`es, en, fr, pt, sw, ar, hi, id, ru, zh`).
+ */
+export function renderDiglossicParallelBridge({
+  lang = "stp",
+  book = "GEN",
+  chapter = 1,
+  sovereignTier = "TIER_2_NT_PLUS_OT_SYNTH",
+  macroRegion = 1,
+  bridgeLang = "",
+  maternalVerses = {},
+  bridgeVerses = {},
+  gmisRows = [],
+  celfPrompt = "",
+} = {}) {
+  const cleanBook = String(book || "GEN").trim().toUpperCase();
+  const cleanChap = Number(chapter) || 1;
+  const ntBooks = new Set([
+    "MAT","MRK","LUK","JHN","ACT","ROM","1CO","2CO","GAL","EPH","PHP","COL",
+    "1TH","2TH","1TI","2TI","TIT","PHM","HEB","JAS","1PE","2PE","1JN","2JN","3JN","JUD","REV",
+  ]);
+  const isNt = ntBooks.has(cleanBook);
+  const bridgeSpec = resolveRegionalBridgeLanguage21({ macroRegion, bridgeLang });
+  const verseNums = Array.from(
+    new Set([...Object.keys(maternalVerses || {}), ...Object.keys(bridgeVerses || {})]),
+  )
+    .map((k) => Number(k))
+    .filter((n) => Number.isFinite(n) && n > 0)
+    .sort((a, b) => a - b);
+  if (verseNums.length === 0) verseNums.push(1);
+
+  const gmisByVerse = new Map();
+  for (const r of Array.isArray(gmisRows) ? gmisRows : []) {
+    const vn = Number(r.verse) || 1;
+    if (!gmisByVerse.has(vn)) gmisByVerse.set(vn, []);
+    gmisByVerse.get(vn).push(r);
+  }
+
+  const isHumanMaternalPortion =
+    (sovereignTier === "TIER_2_NT_PLUS_OT_SYNTH" && isNt) ||
+    (sovereignTier === "TIER_3_PORTION_LADDER" && Object.keys(maternalVerses || {}).length > 0);
+
+  const sealCode = isHumanMaternalPortion
+    ? "VERIFIED_MATERNAL_PORTION_PLUS_BRIDGE_21"
+    : sovereignTier === "TIER_4_GMIS_CELF250"
+      ? "GMIS_4LINE_CELF250_SCAFFOLD_PLUS_BRIDGE_21"
+      : "OT_INTERLINEAR_SCAFFOLD_PLUS_BRIDGE_21";
+
+  const rowsHtml = verseNums
+    .map((vNum) => {
+      const osis = `${cleanBook}.${cleanChap}.${vNum}`;
+      const matTxt = String((maternalVerses || {})[String(vNum)] || "").trim();
+      const brTxt = String((bridgeVerses || {})[String(vNum)] || "").trim();
+      let leftCellHtml = "";
+      if (isHumanMaternalPortion && matTxt) {
+        leftCellHtml = `<div class="diglossic-maternal-human" data-maternal-stratum="HUMAN_VERIFIED"><sup>${vNum}</sup> ${escapeHtml(matTxt)}</div>`;
+      } else {
+        const vRows = gmisByVerse.get(vNum) || [];
+        const l1 = vRows.map((x) => escapeHtml(x.c05_orig_text || x.morph || "—")).join(" · ") || escapeHtml(matTxt || `[Andamiaje ${osis}]`);
+        const l2 = vRows.map((x) => escapeHtml(x.c08_morph_code || x.leipzig || "GLOSA")).join(" · ") || "Morfología Leipzig";
+        const l3 = vRows.map((x) => escapeHtml(x.c13_nsm_65 || "ALGUIEN / DECIR")).join(" · ");
+        leftCellHtml =
+          `<div class="diglossic-gmis-4line" data-maternal-stratum="GMIS_SCAFFOLD" data-gmis-lines="4">` +
+          `<div data-gmis-line="1"><strong>L1 Original/Morfemas:</strong> ${l1}</div>` +
+          `<div data-gmis-line="2"><strong>L2 Glosa Leipzig:</strong> ${l2}</div>` +
+          `<div data-gmis-line="3"><strong>L3 NSM-65:</strong> ${l3}</div>` +
+          `<div data-gmis-line="4"><strong>L4 CELF-250 (${escapeHtml(lang)}):</strong> ${escapeHtml(celfPrompt || `Semilla submodular para ${osis}`)}</div>` +
+          `</div>`;
+      }
+      const rightCellHtml =
+        `<div class="diglossic-bridge-21" data-bridge-lang="${escapeHtml(bridgeSpec.code)}">` +
+        `<sup>${vNum}</sup> ${escapeHtml(brTxt || `[Puente ${bridgeSpec.code.toUpperCase()} ${osis}]`)}` +
+        `</div>`;
+      return (
+        `<div class="diglossic-parallel-row" data-osis="${escapeHtml(osis)}" style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:0.75rem;padding:0.45rem 0;border-bottom:1px solid var(--card-border);">` +
+        leftCellHtml +
+        rightCellHtml +
+        `</div>`
+      );
+    })
+    .join("\n");
+
+  return (
+    `<section class="diglossic-parallel-bridge" data-diglossic-bridge="true" data-lang="${escapeHtml(lang)}" data-bridge-lang="${escapeHtml(bridgeSpec.code)}" data-sovereign-tier="${escapeHtml(sovereignTier)}" data-epistemic-seal="${sealCode}" data-epistemic-honesty="ZERO_SYNTHETIC_BIBLE">` +
+    `<header class="diglossic-bridge-header" style="display:flex;justify-content:space-between;gap:0.5rem;padding:0.4rem 0.6rem;border-radius:8px;background:var(--bg-secondary);font-size:0.78rem;margin-bottom:0.5rem;">` +
+    `<span><strong>Columna Materna (<code>${escapeHtml(lang)}</code>):</strong> ${isHumanMaternalPortion ? "Porción Humana Verificada" : "Andamiaje Interlineal Honesto GMIS + CELF-250 (0% Falsa Biblia)"}</span>` +
+    `<span><strong>Lengua Puente Siglo XXI (<code>${escapeHtml(bridgeSpec.code)}</code>):</strong> ${escapeHtml(bridgeSpec.label)}</span>` +
+    `</header>` +
+    rowsHtml +
+    `</section>`
+  );
+}
+
 export function renderChapterPreviewHtml(
   book,
   chapter,
@@ -612,13 +780,14 @@ export function renderChapterPreviewHtml(
         )}</span></div>`
       );
     }
+    const diglossicHtml = options.diglossicBridge ? renderDiglossicParallelBridge({ lang, book, chapter, ...(typeof options.diglossicBridge === "object" ? options.diglossicBridge : {}) }) : "";
     return `<article class="bible-trimodal-chapter mostrador-bilingue-diptych" data-book="${escapeHtml(
       book
     )}" data-chapter="${Number(chapter)}" data-lang="${escapeHtml(
       lang
     )}" data-register="bilingue" data-roll-mode="${rollMode}" dir="${dir}">${rowsHtml.join(
       "\n"
-    )}</article>`;
+    )}${diglossicHtml}</article>`;
   }
 
   const breakMap = resolvePericopeBreakSet(chapterData, verseNums, book, chapter);
@@ -720,6 +889,14 @@ export function renderChapterPreviewHtml(
           .join(" · ") +
         `</aside>`
       : "";
+  const diglossicHtml = options.diglossicBridge
+    ? renderDiglossicParallelBridge({
+        lang,
+        book,
+        chapter,
+        ...(typeof options.diglossicBridge === "object" ? options.diglossicBridge : {}),
+      })
+    : "";
 
   return `<article class="bible-trimodal-chapter${isPoetic ? " mostrador-poetic-stichometry" : ""
     }" data-book="${escapeHtml(book)}" data-chapter="${Number(
@@ -732,6 +909,6 @@ export function renderChapterPreviewHtml(
       scriptioCode || "none"
     )}" data-reverse-ortho-size="${reverseMapTarget.size}" data-aoa="${regMetrics.meanAoa}" data-mdd="${regMetrics.meanDependencyDistance}" data-eipen-l="${regMetrics.eipenReadabilityL}" dir="${dir}">${blocks.join(
       "\n"
-    )}${contextualGlossBannerHtml}</article>`;
+    )}${contextualGlossBannerHtml}${diglossicHtml}</article>`;
 }
 

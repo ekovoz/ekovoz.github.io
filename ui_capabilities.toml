@@ -388,7 +388,7 @@ surface = "public-ui"
 selector = "#btnOpenPreviewCarousel"
 module = "i18n_ui.js"
 handler = "openModal"
-test_file = "mostrador/tribunal.test.mjs"
+test_file = "mostrador/tribunal_packs_crypto.test.mjs"
 test_name = "D62_to_D69_ARB_EKOVOZ_65_reactive_router_quotient_lens_focus_preservation_and_zero_404"
 
 [capability.paper_format_toggle_carta_a4]
@@ -396,7 +396,7 @@ surface = "public-ui"
 selector = "#toggleA4"
 module = "i18n_ui.js"
 handler = "setPaper"
-test_file = "mostrador/tribunal.test.mjs"
+test_file = "mostrador/tribunal_packs_crypto.test.mjs"
 test_name = "D1_to_D10_A_plus_ARB_EKOVOZ_61_triple_provenance_closure_and_full_backend_ui_parity"
 
 [capability.evangelios_polyglot_7_lang_selector]
@@ -404,7 +404,7 @@ surface = "public-ui"
 selector = "#evangeliosLangSelect"
 module = "mostrador.js"
 handler = "hydrateEvangeliosSection"
-test_file = "mostrador/tribunal.test.mjs"
+test_file = "mostrador/tribunal_packs_crypto.test.mjs"
 test_name = "D1_to_D10_A_plus_ARB_EKOVOZ_61_triple_provenance_closure_and_full_backend_ui_parity"
 
 [capability.bible_chapter_pericopes_ribbon]
@@ -412,7 +412,7 @@ surface = "public-ui"
 selector = "#bibleChapterPericopesRibbon"
 module = "mostrador/evangelios.js"
 handler = "renderChapterPericopesRibbonHtml"
-test_file = "mostrador/tribunal.test.mjs"
+test_file = "mostrador/tribunal_packs_crypto.test.mjs"
 test_name = "D1_to_D10_A_plus_ARB_EKOVOZ_61_triple_provenance_closure_and_full_backend_ui_parity"
 
 [capability.felices_socratic_wonder_card]
@@ -420,7 +420,7 @@ surface = "public-ui"
 selector = "#felicesSocraticWonderCard"
 module = "mostrador/evangelios.js"
 handler = "renderFelicesSocraticWonderCardHtml"
-test_file = "mostrador/tribunal.test.mjs"
+test_file = "mostrador/tribunal_packs_crypto.test.mjs"
 test_name = "D1_to_D10_A_plus_ARB_EKOVOZ_61_triple_provenance_closure_and_full_backend_ui_parity"
 
 

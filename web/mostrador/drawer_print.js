@@ -5,27 +5,45 @@
 
 import { escapeHtml } from "./bridge_and_chapter.js";
 import {
+  CANONICAL_16_MACRO_TANDAS,
+  CANONICAL_80_BLOCKS_CATALOG,
   buildRelativePdfAssetUrl,
   chooseEdition,
   computeFoliationLayout,
   computeKindlePrintBudget,
+  dispatchTandaWorkerJob,
+  encodePdfBytesToDataUri,
+  getCachedFederationReachability,
   hydrateEditorialProfiles,
   listAll14PrintEditionsForLang,
   normalizeEditionSlug,
   paperForRegion,
+  planSequential16MacroTandasGeneration,
+  probeFederationShardReachabilityOnce,
   renderBranchAndTypologyInspectorHtml,
+  renderCanonical16MacroTandasSelectorHtml,
   renderImpositionAndLayoutPreviewHtml,
   renderMultiSignatureAndPocketRefugeHtml,
+  requiresLiveGeometrySynthesis,
   resolveCanonicalBlockCode,
   resolveCanonicalBlockForPassage,
+  resolveFederatedAssetUrl,
+  resolveMacroTandaForBlock,
+  resolvePrecompiledDiskLang,
   resolveRegionalPrintDefaults,
   simulateFifthGenPhotocopySauvolaBilateral,
   simulateThirdGenPhotocopySauvola,
   syncDose2AndDose3LinksForActiveLang,
   syncPrintDrawerControlsFromEditionProfile,
+  typesetTandaPdfBytes,
 } from "./dosis.js";
 import { applyHarelSubtabSelection } from "./drawer_study.js";
 import { isRtlLocale } from "./i18n.js";
+import {
+  evaluateOpticalSauvolaPhotocopyOracle,
+  filterEphemeralSubpixelIslands1px,
+} from "./sauvola_canvas_oracle.js";
+export { runWorkerTandaJob } from "./tanda_print_worker.js";
 
 export const HAREL_PRINT_SUBTABS = ["doses", "imposition", "stationery"];
 
@@ -38,32 +56,27 @@ function escHtml(val) {
 }
 
 /**
- * Simulador determinista de degradación física de fotocopia Kanungo + Filtro Bilateral + Binarización Adaptativa de Sauvola (`D8-B+` / `SLICE-97`).
- * Garantiza derivada jacobiana no nula ($\partial\text{contraste}/\partial k \ne 0$, $\partial\text{contraste}/\partial\text{gen} \ne 0$) y conservación topológica de Euler ($\Delta\chi = 0$).
+ * Oráculo óptico real Kanungo + Filtro Bilateral + Binarización Adaptativa Shafait-Sauvola (`Float64Array` `O(1)`/px)
+ * + Bit-Quads `2×2` de Gray (`SLICE-V2C-14`, `DEB-V2C-09` purgado: `0` fórmulas lineales sintéticas).
  */
-export function simulateKanungoSauvolaGeneration(genIndex = 5, sauvolaK = 0.32, dpi = 300) {
-  const gen = Math.max(0, Math.min(5, Number(genIndex) || 0));
-  const k = Math.max(0.1, Math.min(0.5, Number(sauvolaK) || 0.25));
-  const safeDpi = Math.max(150, Number(dpi) || 300);
-  const baseContrast = 14.8 - gen * 1.38 + (k - 0.2) * 3.5 + (safeDpi - 300) * 0.004;
-  const clampedContrast = Number(Math.max(7.1, Math.min(18.5, baseContrast)).toFixed(2));
-  const stages5 = [
-    "1_GRAYSCALE_LUMINANCE",
-    "2_BILATERAL_EDGE_FILTER",
-    "3_INTEGRAL_IMAGE_MOMENTS",
-    "4_SAUVOLA_LOCAL_THRESHOLD",
-    "5_EULER_TOPOLOGY_GUARD",
-  ];
-  return {
-    genIndex: gen,
-    sauvolaK: Number(k.toFixed(2)),
-    dpi: safeDpi,
-    contrastRatio: clampedContrast,
-    contrastLabel: `${clampedContrast}:1`,
-    eulerCharacteristicDelta: 0,
-    wcagPassAaa: clampedContrast >= 7.0,
-    stages5,
-  };
+export function simulateKanungoSauvolaGeneration(genIndex = 5, sauvolaK = 0.32, dpi = 300, extraOpts = {}) {
+  const report = evaluateOpticalSauvolaPhotocopyOracle({
+    genIndex,
+    sauvolaK,
+    dpi,
+    strokePt: extraOpts?.strokePt ?? 0.85,
+    lang: extraOpts?.lang || "es",
+    text: extraOpts?.text || "",
+    useBrowserCanvasIfAvailable: extraOpts?.useBrowserCanvasIfAvailable ?? true,
+  });
+  if (extraOpts?.rawBinaryMask instanceof Uint8Array) {
+    report.filteredMask = filterEphemeralSubpixelIslands1px(
+      extraOpts.rawBinaryMask,
+      report.width,
+      report.height,
+    );
+  }
+  return report;
 }
 
 /**
@@ -92,7 +105,7 @@ export function renderEditorialGraphicsAndPrintSpecsCard({
   const isEn = String(uiLocale || "es").trim().toLowerCase().startsWith("en");
   const refLabel = `${String(book || "GEN").toUpperCase()} ${Number(chapter) || 1}:${Number(verse) || 1}`;
   const cleanText = String(text || "En el principio creó Dios los cielos y la tierra.").slice(0, 140);
-  const activeSim = simulateKanungoSauvolaGeneration(activeGen, sauvolaK, 300);
+  const activeSim = simulateKanungoSauvolaGeneration(activeGen, sauvolaK, 300, { lang, text: cleanText });
   const fifthGenBilateral = simulateFifthGenPhotocopySauvolaBilateral({
     strokePt: 0.85,
     k: activeSim.sauvolaK,
@@ -145,7 +158,7 @@ export function renderEditorialGraphicsAndPrintSpecsCard({
     `<rect x="48" y="48" width="1104" height="534" rx="24" fill="#181e29" stroke="#d4a359" stroke-width="3"/>` +
     `<text x="96" y="150" fill="#d4a359" font-family="serif" font-size="38" font-weight="bold">EKOVOZ · ${escHtml(refLabel)} (${escHtml(String(lang).toUpperCase())})</text>` +
     `<text x="96" y="280" fill="#f8fafc" font-family="serif" font-size="42">${escHtml(cleanText)}</text>` +
-    `<text x="96" y="520" fill="#94a3b8" font-family="sans-serif" font-size="26">editorial-graphics · Gen ${activeSim.genIndex} (Sauvola k=${activeSim.sauvolaK.toFixed(2)}) · Contraste ${activeSim.contrastLabel} ≥ 7.0:1 AAA · Δχ=0</text>` +
+    `<text x="96" y="520" fill="#94a3b8" font-family="sans-serif" font-size="26">editorial-graphics · Gen ${activeSim.genIndex} (Sauvola k=${activeSim.sauvolaK.toFixed(2)}) · Contraste ${activeSim.contrastLabel} ≥ 7.0:1 AAA · Δχ=${activeSim.eulerCharacteristicDelta}</text>` +
     `</svg>`;
   const svgDataUrl = `data:image/svg+xml;utf8,${encodeURIComponent(svgMarkup)}`;
 
@@ -225,7 +238,6 @@ export function renderPrintDrawerPanelsSyncInDrawer(ctx = {}) {
     if (pBtn && typeof pBtn.addEventListener === "function" && !pBtn._printSubtabBound) {
       pBtn._printSubtabBound = true;
       pBtn.addEventListener("click", () => {
-        state.activePrintSubtab = tabName;
         applyHarelSubtabSelection(targetDoc, "print", tabName);
       });
     }
@@ -252,10 +264,21 @@ export function renderPrintDrawerPanelsSyncInDrawer(ctx = {}) {
       state.activeBlockNumber = resolvedBlock.blockNumber || 1;
     }
     const activeBlockNum = Number(state.activeBlockNumber) || resolvedBlock.blockNumber || 1;
+    const activeMacroTanda =
+      CANONICAL_16_MACRO_TANDAS[
+      Math.max(1, Math.min(16, Number(state.activeMacroTandaNumber) || resolveMacroTandaForBlock(activeBlockNum).macroTandaNumber)) - 1
+      ] || resolveMacroTandaForBlock(activeBlockNum);
     const multiSigHtml = renderMultiSignatureAndPocketRefugeHtml({
       totalPages: 160,
       activeBlockNumber: activeBlockNum,
       dir: isRtlLocale(state.lang) ? "rtl" : "ltr",
+      uiLocale: state.uiLocale || "es",
+    });
+    const macroTandas16Html = renderCanonical16MacroTandasSelectorHtml({
+      activeMacroTandaNumber: activeMacroTanda.macroTandaNumber,
+      lang: state.effectiveCorpusLang || state.lang || "es",
+      columns: state.columns || 2,
+      fontPt: state.fontSizePt || 9.5,
       uiLocale: state.uiLocale || "es",
     });
     const branchTypoHtml = renderBranchAndTypologyInspectorHtml({
@@ -278,7 +301,33 @@ export function renderPrintDrawerPanelsSyncInDrawer(ctx = {}) {
       slug,
     )}" data-foliation-mode="${escapeHtml(foliation.mode)}" data-binding-edge="${escapeHtml(
       foliation.bindingEdge,
-    )}"><strong>${duplexHeader}</strong><p style="margin:4px 0 0;font-size:0.84rem;">${duplexBody}</p>${multiSigHtml}${branchPanel ? "" : branchTypoHtml}</div>`;
+    )}"><strong>${duplexHeader}</strong><p style="margin:4px 0 0;font-size:0.84rem;">${duplexBody}</p>${multiSigHtml}${macroTandas16Html}${branchPanel ? "" : branchTypoHtml}</div>`;
+    const macroSel = getEl("macroTanda16Select", targetDoc);
+    if (macroSel && typeof macroSel.addEventListener === "function" && !macroSel._macroSelBound) {
+      macroSel._macroSelBound = true;
+      macroSel.addEventListener("change", (e) => {
+        const chosenMt = Math.max(1, Math.min(16, Number(e?.target?.value || macroSel.value) || 1));
+        state.activeMacroTandaNumber = chosenMt;
+        state.activeBlockNumber = (chosenMt - 1) * 5 + 1;
+        state.forceMacroTandaWorker = true;
+        hydratePrintDrawerPanels(targetDoc);
+      });
+    }
+    const btnGenAll16 = getEl("btnGenerateAll16MacroTandas", targetDoc);
+    if (btnGenAll16 && typeof btnGenAll16.addEventListener === "function" && !btnGenAll16._gen16Bound) {
+      btnGenAll16._gen16Bound = true;
+      btnGenAll16.addEventListener("click", () => {
+        planSequential16MacroTandasGeneration({
+          lang: state.effectiveCorpusLang || state.lang || "es",
+          columns: state.columns || 2,
+          fontPt: state.fontSizePt || 9.5,
+          paper: effectivePaper || "a4",
+          dir: isRtlLocale(state.lang) ? "rtl" : "ltr",
+        });
+        state.forceMacroTandaWorker = true;
+        hydratePrintDrawerPanels(targetDoc);
+      });
+    }
     const blockSel = getEl("canonicalBlockSelect", targetDoc);
     if (blockSel && String(blockSel.value) !== String(activeBlockNum)) {
       blockSel.value = String(activeBlockNum);
@@ -408,12 +457,13 @@ export function renderPrintDrawerPanelsSyncInDrawer(ctx = {}) {
   const catalogGrid = getEl("bibleEditionsCatalogGrid", targetDoc);
   if (catalogGrid) {
     const activeProfileId = state.activePrintProfileId || "02_2col_pastoral";
+    const effectiveLang = String(state.effectiveCorpusLang || state.lang || "es").trim() || "es";
     const activeBlockCode = `B${String(
       Math.max(1, Math.min(80, Number(state.activeBlockNumber) || liveBlock.blockNumber || 1)),
     ).padStart(2, "0")}`;
     const editions = listAll14PrintEditionsForLang(
-      state.lastManifest || state.lang,
-      state.lang,
+      state.lastManifest || effectiveLang,
+      effectiveLang,
       { uiLocale: state.uiLocale || "es" },
     );
     catalogGrid.setAttribute("data-editions-count", String(editions.length));
@@ -422,26 +472,60 @@ export function renderPrintDrawerPanelsSyncInDrawer(ctx = {}) {
       .map((ed) => {
         const cardId = ed.profileId || ed.id;
         const isSelected = ed.kind !== "field_pdf" && cardId === activeProfileId;
+        const fedOfflineOrStandalone =
+          state.federationReachable === false || getCachedFederationReachability() === false;
+        const useLiveTandaHref =
+          ed.kind !== "field_pdf" &&
+          (fedOfflineOrStandalone ||
+            !ed.hasPrecompiledPdf ||
+            Boolean(ed.requiresLiveWorkerSynthesis) ||
+            effectiveLang === "es-1909");
+        const staticRawUrl = ed.profileUrl || ed.url || "";
+        const resolvedStaticHref = staticRawUrl.startsWith("editions-01/")
+          ? resolveFederatedAssetUrl(
+            "editions-01",
+            staticRawUrl.slice("editions-01/".length),
+            targetDoc,
+          )
+          : buildRelativePdfAssetUrl(staticRawUrl);
+        const resolvedHref = useLiveTandaHref
+          ? state.editionObjectUrls?.[cardId] ||
+          encodePdfBytesToDataUri(
+            typesetTandaPdfBytes({
+              tandaId: cardId.toUpperCase(),
+              lang: effectiveLang,
+              book: state.book || "GEN",
+              chapter: state.chapter || 1,
+              verse: state.verse || 1,
+              verses: Array.isArray(state.fullBookVerses) ? state.fullBookVerses : null,
+              versesMap: !Array.isArray(state.fullBookVerses) ? state.lastNavResult?.chapter?.verses || null : null,
+              columns: ed.columns || 2,
+              fontPt: ed.fontPt || 9.5,
+              paper: ed.paperSize || effectivePaper || "a4",
+              dir: isRtlLocale(effectiveLang) ? "rtl" : "ltr",
+              maxPages: 50,
+            }),
+          )
+          : resolvedStaticHref;
         const specParts =
           ed.kind === "field_pdf"
             ? [
-                isEn ? "Field PDF" : "PDF de Campo",
-                ed.bytes ? `${(Number(ed.bytes) / 1024).toFixed(1)} KB` : "",
-              ].filter(Boolean)
+              isEn ? "Field PDF" : "PDF de Campo",
+              ed.bytes ? `${(Number(ed.bytes) / 1024).toFixed(1)} KB` : "",
+            ].filter(Boolean)
             : [
-                ed.columns ? `${ed.columns} col` : "",
-                ed.fontPt ? `${ed.fontPt} pt` : "",
-                ed.paperSize ? String(ed.paperSize).toUpperCase() : "",
-                activeBlockCode,
-              ].filter(Boolean);
+              ed.columns ? `${ed.columns} col` : "",
+              ed.fontPt ? `${ed.fontPt} pt` : "",
+              ed.paperSize ? String(ed.paperSize).toUpperCase() : "",
+              activeBlockCode,
+            ].filter(Boolean);
         const specBadge = specParts.length
           ? `<span class="edition-spec-badge">${escapeHtml(specParts.join(" · "))}</span>`
           : "";
         return (
-          `<a class="uls-chip print-edition-card${isSelected ? " is-selected" : ""}" aria-pressed="${
-            isSelected ? "true" : "false"
+          `<a class="uls-chip print-edition-card${isSelected ? " is-selected" : ""}" aria-pressed="${isSelected ? "true" : "false"
           }" style="text-decoration:none;" href="${escapeHtml(
-            buildRelativePdfAssetUrl(ed.profileUrl || ed.url),
+            resolvedHref,
           )}" data-profile-id="${escapeHtml(cardId)}" data-edition-slug="${escapeHtml(
             ed.editionSlug,
           )}" data-active-block="${escapeHtml(activeBlockCode)}" data-field-pdf-bytes="${escapeHtml(
@@ -452,9 +536,9 @@ export function renderPrintDrawerPanelsSyncInDrawer(ctx = {}) {
             ed.fontPt || "",
           )}" data-columns="${escapeHtml(ed.columns || "")}" data-paper-size="${escapeHtml(
             ed.paperSize || "",
-          )}" data-has-precompiled-pdf="${Boolean(ed.hasPrecompiledPdf)}" data-availability-mode="${escapeHtml(
-            ed.availabilityMode || "precompiled_pdf",
-          )}" download>📄 ${escapeHtml(ed.label)}${specBadge}</a>`
+          )}" data-has-precompiled-pdf="${Boolean(!useLiveTandaHref)}" data-availability-mode="${escapeHtml(
+            useLiveTandaHref ? "bimodal_client_print" : ed.availabilityMode || "precompiled_pdf",
+          )}" data-bimodal-lane="${useLiveTandaHref ? "lane_b_worker_tanda" : "lane_a_precompiled"}" download>📄 ${escapeHtml(ed.label)}${specBadge}</a>`
         );
       })
       .join("");
@@ -482,26 +566,189 @@ export function renderPrintDrawerPanelsSyncInDrawer(ctx = {}) {
   }
 }
 
+function flattenLoadedBookChapters(bookCode, chaptersObj) {
+  if (!chaptersObj || typeof chaptersObj !== "object") return [];
+  const entries = [];
+  const isChapArray = Array.isArray(chaptersObj);
+  const chapNums = Object.keys(chaptersObj).sort((a, b) => (Number(a) || 0) - (Number(b) || 0));
+  for (const chKey of chapNums) {
+    const chDisplay = isChapArray ? Number(chKey) + 1 : chKey;
+    const chVal = chaptersObj[chKey];
+    if (Array.isArray(chVal)) {
+      for (const v of chVal) {
+        if (Array.isArray(v) && v.length >= 3 && v[2]) {
+          entries.push({ ref: `${bookCode} ${chDisplay}:${v[0] ?? 1}`, text: String(v[2]) });
+        } else if (v && v.text) {
+          entries.push({ ref: `${bookCode} ${chDisplay}:${v.start ?? v.verse ?? 1}`, text: String(v.text) });
+        }
+      }
+    } else if (chVal && typeof chVal === "object") {
+      const versesMap = chVal.verses && typeof chVal.verses === "object" ? chVal.verses : chVal;
+      const vNums = Object.keys(versesMap).sort((a, b) => (Number(a) || 0) - (Number(b) || 0));
+      for (const vKey of vNums) {
+        if (typeof versesMap[vKey] === "string") {
+          entries.push({ ref: `${bookCode} ${chDisplay}:${vKey}`, text: versesMap[vKey] });
+        }
+      }
+    }
+  }
+  return entries;
+}
+
+function toDownloadablePdfHref(pdfBytes) {
+  if (
+    typeof globalThis.window !== "undefined" &&
+    typeof globalThis.Blob === "function" &&
+    typeof globalThis.URL?.createObjectURL === "function"
+  ) {
+    return globalThis.URL.createObjectURL(new globalThis.Blob([pdfBytes], { type: "application/pdf" }));
+  }
+  return encodePdfBytesToDataUri(pdfBytes);
+}
+
 export async function hydratePrintDrawerPanelsInDrawer(ctx = {}) {
-  const { state, dataLayer } = ctx;
+  const { state, dataLayer, targetDoc, getEl } = ctx;
   renderPrintDrawerPanelsSyncInDrawer(ctx);
-  if (!state.editorialProfilesLoaded && typeof dataLayer.loadEditorialProfiles === "function") {
+  if (!state.editorialProfilesLoaded && typeof dataLayer?.loadEditorialProfiles === "function") {
     state.editorialProfilesLoaded = true;
     try {
       const ep = await dataLayer.loadEditorialProfiles();
       if (ep) {
         hydrateEditorialProfiles(ep);
-        state.editorialProfilesProvenance = {
-          printCount: Array.isArray(ep.print_profiles_14) ? ep.print_profiles_14.length : 14,
-          branchCount: Array.isArray(ep.branch_profiles_12) ? ep.branch_profiles_12.length : 12,
-          blocksCount: Array.isArray(ep.canonical_80_blocks_catalog)
-            ? ep.canonical_80_blocks_catalog.length
-            : 80,
-        };
         renderPrintDrawerPanelsSyncInDrawer(ctx);
       }
     } catch {
       // Non-fatal
+    }
+  }
+
+  if (
+    state.federationReachable === undefined &&
+    typeof globalThis.fetch === "function" &&
+    typeof globalThis.window !== "undefined"
+  ) {
+    const probed = await probeFederationShardReachabilityOnce({ doc: targetDoc });
+    state.federationReachable = probed;
+    if (probed === false) {
+      syncDose2AndDose3LinksForActiveLang({ state, targetDoc, getEl });
+      renderPrintDrawerPanelsSyncInDrawer(ctx);
+    }
+  }
+
+  const effectiveLang = String(state.effectiveCorpusLang || state.lang || "es").trim() || "es";
+  const activeCols = Number(state.columns) || 2;
+  const activeFontPt = Number(state.fontSizePt) || 9.5;
+  const liveGeomActive =
+    (state.columns !== undefined || state.fontSizePt !== undefined) &&
+    requiresLiveGeometrySynthesis({ columns: activeCols, fontPt: activeFontPt });
+  const needsLiveWorkerTanda =
+    state.federationReachable === false ||
+    getCachedFederationReachability() === false ||
+    !resolvePrecompiledDiskLang(effectiveLang) ||
+    effectiveLang === "es-1909" ||
+    liveGeomActive ||
+    Boolean(state.forceMacroTandaWorker);
+  const resolvedBlock = resolveCanonicalBlockCode(state.book, state.chapter, state.verse);
+  const activeBlockNum = Number(state.activeBlockNumber) || resolvedBlock.blockNumber || 1;
+  const activeMacroTanda =
+    CANONICAL_16_MACRO_TANDAS[
+    Math.max(1, Math.min(16, Number(state.activeMacroTandaNumber) || resolveMacroTandaForBlock(activeBlockNum).macroTandaNumber)) - 1
+    ] || resolveMacroTandaForBlock(activeBlockNum);
+  const workerCacheKey = `${effectiveLang}:${state.book || "GEN"}:MT${activeMacroTanda.macroTandaNumber}:${activeCols}:${activeFontPt}:${state.paperFormat || "a4"}`;
+  if (
+    needsLiveWorkerTanda &&
+    state.lastHydratedWorkerTandaKey !== workerCacheKey &&
+    typeof dataLayer?.loadBookFromEkpackRange === "function"
+  ) {
+    state.lastHydratedWorkerTandaKey = workerCacheKey;
+    try {
+      const activeBook = String(state.book || "GEN").toUpperCase();
+      const bookRes = await dataLayer.loadBookFromEkpackRange(effectiveLang, activeBook);
+      const fullBookVerses = String(bookRes?.status || "").toLowerCase() === "ready"
+        ? flattenLoadedBookChapters(activeBook, bookRes.data?.chapters)
+        : [];
+      if (fullBookVerses.length > 0) {
+        state.fullBookVerses = fullBookVerses;
+        const tandaVerses = [];
+        const seenBooks = new Set();
+        const macroBooks =
+          Array.isArray(activeMacroTanda.booksIncluded) && activeMacroTanda.booksIncluded.length > 0
+            ? activeMacroTanda.booksIncluded
+            : [activeBook];
+        const booksForMacroTanda = macroBooks.includes(activeBook)
+          ? macroBooks
+          : [activeBook, ...macroBooks];
+        for (const targetBook of booksForMacroTanda) {
+          if (seenBooks.has(targetBook)) continue;
+          seenBooks.add(targetBook);
+          if (targetBook === activeBook) {
+            for (const item of fullBookVerses) tandaVerses.push(item);
+          } else {
+            const nextRes = await dataLayer.loadBookFromEkpackRange(effectiveLang, targetBook);
+            if (String(nextRes?.status || "").toLowerCase() === "ready") {
+              const extra = flattenLoadedBookChapters(targetBook, nextRes.data?.chapters);
+              for (const item of extra) tandaVerses.push(item);
+            }
+          }
+        }
+        if (tandaVerses.length <= fullBookVerses.length) {
+          const fromBlocks = CANONICAL_80_BLOCKS_CATALOG
+            .map((b) => String(b?.startBook || b?.start_book || b?.book_code || "").toUpperCase())
+            .filter(Boolean);
+          const orderedBooks = [...new Set(fromBlocks.length > 0 ? fromBlocks : ["GEN", "EXO", "RUT", "1SA", "MAT", "JHN"])];
+          const nextIdx = (Math.max(0, orderedBooks.indexOf(activeBook)) + 1) % orderedBooks.length;
+          const neighborBook = orderedBooks[nextIdx];
+          if (neighborBook && !seenBooks.has(neighborBook)) {
+            const nextRes = await dataLayer.loadBookFromEkpackRange(effectiveLang, neighborBook);
+            if (String(nextRes?.status || "").toLowerCase() === "ready") {
+              for (const item of flattenLoadedBookChapters(neighborBook, nextRes.data?.chapters)) {
+                tandaVerses.push(item);
+              }
+            }
+          }
+        }
+        state.bibleTandaVerses = tandaVerses;
+
+        const dir = isRtlLocale(effectiveLang) ? "rtl" : "ltr";
+        const [dose2Res, dose3Res] = await Promise.all([
+          dispatchTandaWorkerJob({
+            lang: effectiveLang,
+            book: activeBook,
+            chapter: 1,
+            verses: fullBookVerses,
+            columns: activeCols,
+            fontPt: activeFontPt,
+            paper: state.paperFormat || "a4",
+            dir,
+            booklet4n: state.foliationMode === "saddle_stitch",
+            maxPagesPerTanda: 50,
+          }),
+          dispatchTandaWorkerJob({
+            lang: effectiveLang,
+            book: activeMacroTanda.startBook || activeBook,
+            chapter: activeMacroTanda.startChapter || 1,
+            verses: tandaVerses,
+            columns: activeCols,
+            fontPt: activeFontPt,
+            paper: state.paperFormat || "a4",
+            dir,
+            booklet4n: true,
+            maxPagesPerTanda: activeMacroTanda.logicalPagesCount || 80,
+          }),
+        ]);
+        if (dose2Res?.pdfBytes?.byteLength > 0) {
+          state.dose2WorkerPdfBytes = dose2Res.pdfBytes;
+          state.dose2ObjectUrl = toDownloadablePdfHref(dose2Res.pdfBytes);
+        }
+        if (dose3Res?.pdfBytes?.byteLength > 0) {
+          state.dose3WorkerPdfBytes = dose3Res.pdfBytes;
+          state.dose3ObjectUrl = toDownloadablePdfHref(dose3Res.pdfBytes);
+        }
+        syncDose2AndDose3LinksForActiveLang({ state, targetDoc, getEl });
+        renderPrintDrawerPanelsSyncInDrawer(ctx);
+      }
+    } catch {
+      // Non-fatal fallback to synchronous seed tanda
     }
   }
 }

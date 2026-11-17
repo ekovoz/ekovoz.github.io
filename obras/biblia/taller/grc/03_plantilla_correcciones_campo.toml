@@ -1,13 +1,13 @@
 # Plantilla Soberana de Corrección de Campo L1-L5 (CC0-1.0)
 lang_code = "stp"
-merkle_base_sha256 = "b6be95c815f758ea91788c2f7ca20094fa7df8b375d9e523ddc65d9de2711894"
+merkle_base_sha256 = "39d6d3ebba3851b3f7e41fdcb841201d3357f7f997ce970af0ed01c43168f1e2"
 audio_bytes_allowed = 0
 jpg_bytes_allowed = 0
 
 [[patches]]
 patch_id = "PATCH-STP-L1-001"
 cascade_level = "L1"
-target_ref_or_lemma = "ACT.5.8"
+target_ref_or_lemma = "JDG.7.13"
 old_surface = ""
 new_surface = ""
 note_pure_text = "Revisión comunitaria en texto puro (0 Bytes Audio)"

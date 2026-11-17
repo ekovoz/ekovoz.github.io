@@ -4,12 +4,14 @@
 // ============================================================================
 
 import {
-  closeModal, getActivePlateIndex, nextPlate, nextSlide, openActivePlateZoom, openModal, prevPlate, prevSlide,
+  closeModal,
+  nextPlate, nextSlide, openActivePlateZoom, openModal, prevPlate, prevSlide,
   printActivePlate, registerPlateCoordinateListener, resolvePlateForBibleCoordinate, setActivePlateIndex, setSlide,
-  shareResource, syncFelicesWithCorpusLang, updateDownloadLinks, updateFocalPlate,
+  shareResource, syncFelicesWithCorpusLang, updateDownloadLinks, updateFocalPlate, updateUI
 } from "../i18n_ui.js";
-import { escapeHtml, CROSS_WORK_BRIDGE_TABLE } from "./bridge_and_chapter.js";
+import { CROSS_WORK_BRIDGE_TABLE, escapeHtml } from "./bridge_and_chapter.js";
 import { hydrateDiachronicRegister } from "./diachronic_register.js";
+import { resolveOverlayEntryForOsis, resolveVerseWithOverlay } from "./drawer_workshop.js";
 import { hydrateCulturalGlossesLexicon } from "./estudio.js";
 import {
   formatEvangeliosBridgeLine,
@@ -22,6 +24,56 @@ import {
   shouldShowEvangeliosBridgeLine,
 } from "./evangelios.js";
 import { parseBiblicalCoordinateReference } from "./reference.js";
+
+/**
+ * Expande una referencia bíblica puntual o rango de versículos (ej. `"MAT 5:1-16"`, `"MAT.5.1-12"`, `"MAT.5.3"`)
+ * en las coordenadas OSIS cubiertas y proyecta cualquier overlay CRDT activo en tiempo de lectura (`SLICE-V2C-20`).
+ */
+function projectEvangeliosPassageWithOverlays(state, lang = "es", referenceStr = "", baseText = "", fallbackOsis = "") {
+  const rawBase = String(baseText || "");
+  if (!state || !state.verifiedOverlaysByOsis || (!referenceStr && !fallbackOsis)) {
+    return { text: rawBase, matchedOverlays: [] };
+  }
+  const anchorStr = String(referenceStr)
+    .replace(/^Mt\b/i, "MAT")
+    .replace(/^Mc\b/i, "MRK")
+    .replace(/^Lc\b/i, "LUK")
+    .replace(/^Jn\b/i, "JHN")
+    .replace(/\s*[-–—]\s*\d+(?:[:.]\d+)?\s*$/, "")
+    .trim();
+  const parsed =
+    parseBiblicalCoordinateReference(anchorStr) ||
+    parseBiblicalCoordinateReference(fallbackOsis) ||
+    parseBiblicalCoordinateReference(referenceStr);
+  if (!parsed || !parsed.bookCode) {
+    return { text: rawBase, matchedOverlays: [] };
+  }
+  const book = String(parsed.bookCode).toUpperCase();
+  const ch = Number(parsed.chapter) || 1;
+  const startV = Number(parsed.verse) || 1;
+  const rangeMatch = String(referenceStr).match(/[:.]\s*(\d+)\s*[-–—]\s*(\d+)/);
+  const vFrom = rangeMatch ? Math.max(1, Number(rangeMatch[1]) || startV) : startV;
+  const vTo = rangeMatch ? Math.max(vFrom, Math.min(vFrom + 60, Number(rangeMatch[2]) || vFrom)) : vFrom;
+
+  let projected = rawBase;
+  const matchedOverlays = [];
+  for (let v = vFrom; v <= vTo; v += 1) {
+    const osis = `${book}.${ch}.${v}`;
+    const ov = resolveOverlayEntryForOsis(state, lang, osis);
+    if (!ov) continue;
+    matchedOverlays.push(ov);
+    const nextSurf = resolveVerseWithOverlay(state, lang, osis, "");
+    if (!nextSurf) continue;
+    if (vFrom === vTo) {
+      projected = nextSurf;
+    } else if (ov.old_surface && projected.includes(ov.old_surface)) {
+      projected = projected.replace(ov.old_surface, nextSurf);
+    } else if (!projected.includes(nextSurf)) {
+      projected = projected ? `${projected} — [${osis}] ${nextSurf}` : nextSurf;
+    }
+  }
+  return { text: projected, matchedOverlays };
+}
 
 /**
  * Resuelve la entrada semanal activa de *1 Evangelio* y su ancla bíblica en `CROSS_WORK_BRIDGE_TABLE` (`D8-R37`).
@@ -41,10 +93,10 @@ export function resolveEvangeliosActiveSelection({
     (cleanSlug ? entries.find((e) => String(e.plate_id || "").toLowerCase() === cleanSlug) : null) ||
     (cleanWeek
       ? entries.find(
-          (e) =>
-            String(e.id || "").toLowerCase() === cleanWeek ||
-            String(e.plate_id || "").toLowerCase() === cleanWeek,
-        )
+        (e) =>
+          String(e.id || "").toLowerCase() === cleanWeek ||
+          String(e.plate_id || "").toLowerCase() === cleanWeek,
+      )
       : null);
   const effectiveQuarter = matchedGlobal?.quarter || quarterFilter || "T1";
   const quarterEntries = entries.filter((e) => e.quarter === effectiveQuarter);
@@ -58,8 +110,8 @@ export function resolveEvangeliosActiveSelection({
     activeEntry?.id === "s01" && activeEntry?.reference
       ? null
       : Object.values(CROSS_WORK_BRIDGE_TABLE.evangeliosAnchors || {}).find(
-          (a) => a.weekId === activeEntry?.id,
-        );
+        (a) => a.weekId === activeEntry?.id,
+      );
   if (bridgeAnchor) {
     coordinate = {
       book: bridgeAnchor.book,
@@ -134,6 +186,7 @@ export function renderEvangeliosStageCardHtml(
   activeEvLang = "es",
   uiLocale = activeEvLang,
   corpusMeta = null,
+  state = null,
 ) {
   if (!activeEntry) return "";
   const isEn = String(uiLocale || activeEvLang || "es").toLowerCase().startsWith("en");
@@ -152,21 +205,39 @@ export function renderEvangeliosStageCardHtml(
     weekId: activeEntry.id || "s01",
     anchorOsis: activeEntry.reference || "",
   });
-  const parsedRef = parseBiblicalCoordinateReference(activeEntry.reference || macroMeta?.anchorOsis || "MRK.1.16");
+  const effectiveRef = activeEntry.reference || macroMeta?.anchorOsis || "MRK.1.16";
+  const parsedRef = parseBiblicalCoordinateReference(effectiveRef);
   const pericopeHdr = parsedRef
     ? resolvePericopeHeaderForVerse(parsedRef.bookCode, parsedRef.chapter || 1, parsedRef.verse || 1)
     : null;
   const formattedBridge = bridgeObj?.text
     ? formatEvangeliosBridgeLine(bridgeObj.text, activeEvLang, uiLocale)
     : "";
+  const overlayProj = projectEvangeliosPassageWithOverlays(
+    state,
+    activeEvLang,
+    effectiveRef,
+    tObj.text || "",
+    macroMeta?.anchorOsis || "",
+  );
+  const overlayBadgesHtml = overlayProj.matchedOverlays
+    .map(
+      (ov) =>
+        `<span class="uls-badge evangelios-overlay-badge" data-overlay-authority="${escapeHtml(
+          ov.authorityTier || "LOCAL_WORKSHOP_SELF_SIGNED",
+        )}" data-overlay-osis="${escapeHtml(ov.target_ref || "")}" style="font-size:0.72rem;margin-left:0.3rem;">🔐 ${escapeHtml(
+          ov.target_ref || "",
+        )} · ${escapeHtml(ov.authorityTier || "LOCAL_WORKSHOP_SELF_SIGNED")}</span>`,
+    )
+    .join("");
   return (
     `<header data-pericope-header="${escapeHtml(pericopeHdr?.title || "")}" data-plate-slug="${escapeHtml(activeEntry.plate_id || "")}" data-total-plates="${totalPlates}" data-canonical-gospel-verses="${gospelVersesCount}" style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:0.4rem;margin-bottom:0.5rem;">` +
     `<div><strong>${weekWord} ${activeEntry.week}/${totalPlates} (${escapeHtml(activeEntry.quarter)}) · ${escapeHtml(labelTitle)} — ${escapeHtml(activeEntry.reference || "")}</strong> ` +
-    `<span class="uls-badge" data-evangelios-corpus-counts="true" style="font-size:0.72rem;">${totalPlates} ${isEn ? "plates" : "láminas"} · ${gospelVersesCount.toLocaleString("en-US")} vv.</span></div>` +
+    `<span class="uls-badge" data-evangelios-corpus-counts="true" style="font-size:0.72rem;">${totalPlates} ${isEn ? "plates" : "láminas"} · ${gospelVersesCount.toLocaleString("en-US")} vv.</span>${overlayBadgesHtml}</div>` +
     `<button type="button" class="uls-chip" data-evangelios-ref="${escapeHtml(activeEntry.reference)}" style="min-height:48px;padding:0.35rem 0.75rem;font-size:0.8rem;">📖 ${openBibleLabel}: ${escapeHtml(activeEntry.reference)}</button>` +
     `</header>` +
     `<p style="margin:0 0 0.45rem 0;font-size:0.82rem;color:var(--accent-amber);"><strong>🕊️ ${gestureLabel}:</strong> ${escapeHtml(activeEntry.gesture || "")}</p>` +
-    `<blockquote style="margin:0 0 0.45rem 0;font-size:0.95rem;line-height:1.5;">${escapeHtml(tObj.text || "")}</blockquote>` +
+    `<blockquote style="margin:0 0 0.45rem 0;font-size:0.95rem;line-height:1.5;">${escapeHtml(overlayProj.text)}</blockquote>` +
     (shouldShowEvangeliosBridgeLine(activeEvLang) && bridgeObj && bridgeObj.text
       ? `<p data-formatted-bridge="${escapeHtml(formattedBridge)}" style="margin:0;font-size:0.8rem;color:var(--text-secondary);border-top:1px dashed var(--card-border);padding-top:0.4rem;"><em>${bridgeLabel}:</em> ${escapeHtml(bridgeObj.text)}</p>`
       : "") +
@@ -348,7 +419,6 @@ export function bindSisterWorksStageEvents(ctx = {}) {
     state.evangeliosQuarter = effectiveQuarter;
     state.evangeliosLang = activeEvLang;
     state.evangeliosWeekId = activeEntry.id;
-    state.evangeliosPlateSlug = activeEntry.plate_id || "";
     if (coordinate) {
       state.book = coordinate.book;
       state.chapter = coordinate.chapter;
@@ -395,10 +465,16 @@ export function bindSisterWorksStageEvents(ctx = {}) {
       cardEl.setAttribute("data-evangelios-id", activeEntry.id);
       cardEl.setAttribute("data-evangelios-quarter", activeEntry.quarter);
       cardEl.setAttribute("data-evangelios-lang", activeEvLang);
-      cardEl.innerHTML = renderEvangeliosStageCardHtml(activeEntry, activeEvLang, activeUiLocale, {
-        totalPlates,
-        canonicalGospelVersesCount,
-      });
+      cardEl.innerHTML = renderEvangeliosStageCardHtml(
+        activeEntry,
+        activeEvLang,
+        activeUiLocale,
+        {
+          totalPlates,
+          canonicalGospelVersesCount,
+        },
+        state,
+      );
     }
     if (state.activeSheet === "study") {
       await hydrateStudyDrawer(targetDoc);
@@ -602,6 +678,7 @@ export function bindFelicesStageEvents(ctx = {}) {
       syncFelicesWithCorpusLang(nextFelLang, targetDoc);
       updateFocalPlate(targetDoc, nextFelLang);
       updateDownloadLinks(targetDoc, nextFelLang);
+      updateUI(targetDoc);
     });
   }
   const felPlateSel = getEl("felicesPlateSelect", targetDoc);

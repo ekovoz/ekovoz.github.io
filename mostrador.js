@@ -10,12 +10,14 @@ import {
 } from "./i18n_ui.js";
 import {
   CROSS_WORK_BRIDGE_TABLE, HAREL_SHEET_MAP, LIFE_TRAILS_ANCHORS, MOSTRADOR_DOM_BINDINGS, MULTI_ORTHO_LANGS, POETIC_BOOKS,
-  applyOrthographyProfile, deriveEpistemicSeal, escapeHtml, lookupWordTokenStrongEntry, projectCrossWorkCoordinate,
-  renderChapterPreviewHtml, renderInteractiveVerseTokensHtml, toUnicodeSuperscript,
+  REGIONAL_BRIDGE_LANGUAGES_10, applyOrthographyProfile, deriveEpistemicSeal, escapeHtml, lookupWordTokenStrongEntry,
+  projectCrossWorkCoordinate, renderChapterPreviewHtml, renderDiglossicParallelBridge, renderInteractiveVerseTokensHtml,
+  resolveRegionalBridgeLanguage21, syncOrthographyPillsVisibilityInDom, toUnicodeSuperscript,
 } from "./mostrador/bridge_and_chapter.js";
 import {
   ARTIFACT_PROJECTION_SCHEMA, MOSTRADOR_DOM_SCOPE_CONTRACTS, STATUS, computeProsodyAndSyllableAlignmentInWasm, createDataLayer,
-  createFetchSource, resolveLocalizedBookMeta, verifyArtifactProjectionClosure, verifyVplDomScopeContainment,
+  createFetchSource, loadNsmRealiaLexicon, projectNsmRealiaLexicon3NF, resolveLocalizedBookMeta,
+  verifyArtifactProjectionClosure, verifyVplDomScopeContainment,
 } from "./mostrador/data_layer.js";
 import {
   applySpanish21DiachronicRegister, computeAnalyticalRegisterMetrics, hasDiachronicVariants, hydrateDiachronicRegister,
@@ -25,12 +27,13 @@ import {
 import {
   CANONICAL_12_BRANCH_PROFILES, CANONICAL_14_PLUS_2_EDITIONS_CATALOG, CANONICAL_14_PRINT_PROFILES, CANONICAL_16_TYPOLOGY_PROFILES,
   CANONICAL_80_BLOCKS_CATALOG, CANONICAL_9_TOML_PROFILES, POCKET_REFUGE_4_SHEETS_SPEC, PRECOMPILED_PDF_LANGS, VERIFIED_TEXT_BIBLE_LANGS,
-  buildRelativePdfAssetUrl, computeFoliationLayout, computeKindlePrintBudget, computeMultiSignatureImposition, doseFilename,
+  buildCssPagedMediaPrintHtml, computeFoliationLayout, computeKindlePrintBudget, computeMultiSignatureImposition, doseFilename,
   effectiveThreatClassWeb, listAll14PrintEditionsForLang, listCatalogEditionsForLang, locateVersePage, normalizeEditionSlug, ordinalOf,
+  planBimodalClientPrint,
   planDose1, planDose2, planDose3, refOfOrdinal, renderBranchAndTypologyInspectorHtml, renderImpositionAndLayoutPreviewHtml,
   renderMultiSignatureAndPocketRefugeHtml, resolveCanonicalBlockForPassage, resolvePrintEditionPdfAssetUrl,
   simulateFifthGenPhotocopySauvolaBilateral, simulateThirdGenPhotocopySauvola, stealthNeutralFilenameWeb,
-  syncDose2AndDose3LinksForActiveLang, syncPrintDrawerControlsFromEditionProfile, synthesizeLiveChapterDose1PdfBytes,
+  syncPrintDrawerControlsFromEditionProfile, typesetTandaPdfBytes,
 } from "./mostrador/dosis.js";
 import {
   HAREL_DOSIS_SUBTABS, HAREL_PRINT_SUBTABS, HAREL_STUDY_SUBTABS, HAREL_WORKSHOP_SUBTABS, applyHarelSubtabSelection,
@@ -39,6 +42,14 @@ import {
   hydrateWasmManifestStatus, renderCrdtWalAndLockP2AuditCardHtml, renderMasterCensus7164CardHtml,
   renderPhotocopyResilienceAndSocialCardHtml, renderPrintDrawerPanelsSyncInDrawer, syncActiveStrongInStudyDrawer,
 } from "./mostrador/drawer_hydrators.js";
+import {
+  bindShareDrawerActionEvents,
+} from "./mostrador/drawer_share.js";
+import {
+  ensureStateOverlaysHydrated,
+  resolveOverlayEntryForOsis,
+  resolveVerseWithOverlay
+} from "./mostrador/drawer_workshop.js";
 import {
   classifyMaculaArgumentRole, highlightStudyCardByStrongId, hydrateCulturalGlossesLexicon, renderLeipzig4LineGmisHtml,
   renderPhilologyRosettaExplorerHtml, renderPhilologyRosettaInspectorHtml, renderPhilologyRosettaResultsRowsHtml,
@@ -59,9 +70,16 @@ import {
 import {
   CRDT_WAL_SEMILATTICE, FIELD_WORKSHOP_STP_LEXICON, IMPROVE_I18N_FALLBACKS, IMPROVE_I18N_FALLBACKS_ES, MASTER_CENSUS_SUMMARY,
   PATCH_JOURNAL_LOCK_P2, ROOT_NOTES_STP, STP_LEDGER_SUMMARY, applySuggestedImprovement, buildElicitationSeedPayload,
-  foldCrdtWalSemilattice, renderCascadeAndLadderHtml, renderImproveDrawerHtml, renderStpLexiconExplorerHtml,
+  foldCrdtWalSemilattice,
+  propagateCascadeL1ToL5,
+  renderCascadeAndLadderHtml, renderImproveDrawerHtml, renderStpLexiconExplorerHtml,
   renderStpLexiconResultsRowsHtml, renderTallerArtifactsCatalogHtml, selectTopEntropyVerseQueue, verifyLock8PredicativeAndNegation,
 } from "./mostrador/mejorar.js";
+import {
+  dispenseMostradorDose1,
+  renderMostradorViewportFromState,
+  updateMostradorDoseLinks,
+} from "./mostrador/mostrador_viewport_dose1.js";
 import {
   CANONICAL_ECO_PACKS_MANIFEST, STORED_ECO_PACKS, computeEcoPackCrc32Hex, exportSneakernetBundleJson, hydrateEcoPacksManifest,
   importSneakernetBundleJson, probeEcoPackRandomAccessBounds, renderOfflineMeshEcoCardHtml, triggerOptInOfflinePackDownload,
@@ -73,12 +91,18 @@ import {
   whitenBlockXor,
 } from "./mostrador/optical_lt.js";
 import {
+  bindOralPorticoToggleEvent,
+} from "./mostrador/oral_portico_wasm.js";
+import {
   ReverseOrthographyMap, listOrthographyProfilesForLang, resolveCanonicalOrthoProfileId, resolveOrthoFamilyKey,
   resolveScriptioContinuaCodeForLang, segmentScriptioContinuaSyllables, transduceOrthographyWeb, transduceVerseWithReverseMap,
 } from "./mostrador/orthography_wfst.js";
 import {
   countPdfPages, extractPdfPages,
 } from "./mostrador/pdf_pages.js";
+import {
+  syncStickyDrawerContextHeader,
+} from "./mostrador/projection_contract.js";
 import {
   ROSETTA_66_BOOKS, createReferenceResolver, normalizeBookAliasToken, parseBiblicalCoordinateReference, resolveBookCodeByAliasOrName,
 } from "./mostrador/reference.js";
@@ -87,28 +111,17 @@ import {
   resolveEvangeliosActiveSelection, syncSisterWorksTabsDom,
 } from "./mostrador/sister_works_controller.js";
 import {
-  bindShareDrawerActionEvents,
-} from "./mostrador/drawer_share.js";
-import {
-  syncStickyDrawerContextHeader,
-} from "./mostrador/projection_contract.js";
-import {
-  bindOralPorticoToggleEvent,
-  renderOralPorticoWasmConsole,
-} from "./mostrador/oral_portico_wasm.js";
-import {
   bindStageDomEvents,
 } from "./mostrador/stage_dom_bindings.js";
 
 export {
   ARTIFACT_PROJECTION_SCHEMA, CANONICAL_12_BRANCH_PROFILES, CANONICAL_14_PLUS_2_EDITIONS_CATALOG, CANONICAL_14_PRINT_PROFILES, CANONICAL_16_TYPOLOGY_PROFILES, CANONICAL_80_BLOCKS_CATALOG, CANONICAL_9_TOML_PROFILES, CANONICAL_ECO_PACKS_MANIFEST, CRDT_WAL_SEMILATTICE, CROSS_WORK_BRIDGE_TABLE, EVANGELIOS_MACRO_THREADS_AND_ECHOES, FELICES_12_DICHAS_COORDINATE_MAP, FELICES_28_PLATES_MAP, FELICES_PLATE_TO_BIBLE_COORDINATE, FIELD_WORKSHOP_STP_LEXICON, GEOGRAPHIC_MACRO_REGIONS,
-  HAREL_DOSIS_SUBTABS, HAREL_PRINT_SUBTABS, HAREL_SHEET_MAP, HAREL_STUDY_SUBTABS, HAREL_WORKSHOP_SUBTABS, IMPROVE_I18N_FALLBACKS, IMPROVE_I18N_FALLBACKS_ES, LIFE_TRAILS_ANCHORS, LTDecoder, LTEncoder, MASTER_CENSUS_SUMMARY, MOSTRADOR_DOM_BINDINGS, MOSTRADOR_DOM_SCOPE_CONTRACTS, MULTI_ORTHO_LANGS, OPTICAL_CADENCE_PRESETS, PATCH_JOURNAL_LOCK_P2, POCKET_REFUGE_4_SHEETS_SPEC, POETIC_BOOKS, PRECOMPILED_PDF_LANGS, ROOT_NOTES_STP, ROSETTA_66_BOOKS, ReverseOrthographyMap, STATUS, STORED_ECO_PACKS, STP_LEDGER_SUMMARY, VERIFIED_TEXT_BIBLE_LANGS, applyHarelSubtabSelection, applyOrthographyProfile, applySpanish21DiachronicRegister, applyStaticChromeTranslations, applySuggestedImprovement, applyToDom, buildElicitationSeedPayload, buildEvangeliosWeekOptionsHtml, classifyMaculaArgumentRole, computeAnalyticalRegisterMetrics, computeEcoPackCrc32Hex, computeFoliationLayout, computeKindlePrintBudget, computeMultiSignatureImposition, computeNyquistSafeFpsViaWasm, computeProsodyAndSyllableAlignmentInWasm, countPdfPages, createDataLayer, formatPhotocopySimBadgeText, syncActiveStrongInStudyDrawer,
-  createFetchSource, createI18n, createReferenceResolver, createRelayEncoderFromDecoded, decodeLubyTransformPeeling, deriveEpistemicSeal, dlog, doseFilename, effectiveThreatClassWeb, encodeLubyTransformDroplets, escapeHtml, exportSneakernetBundleJson, extractPdfPages, foldCrdtWalSemilattice, formatLocalizedNumeralWeb, hasDiachronicVariants, highlightStudyCardByStrongId, hydrateBookNamesSourceBadge, hydrateCulturalGlossesLexicon, hydrateEcoPacksManifest, hydrateLifeTrailsFromPericopesArtifact, hydrateWasmManifestStatus, importSneakernetBundleJson, indexRegionShards, isRtlLocale, listAll14PrintEditionsForLang, listCatalogEditionsForLang, listCountriesInRegion,
-  listLanguagesInCountry, listMacroRegions, listOrthographyProfilesForLang, locateVersePage, lookupWordTokenStrongEntry, negotiate, normalizeBookAliasToken, normalizeEditionSlug, ordinalOf, parseBiblicalCoordinateReference, parseCanonicalOtEchoRef, parseInitialRouteAndLocale, planDose1,
+  HAREL_DOSIS_SUBTABS, HAREL_PRINT_SUBTABS, HAREL_SHEET_MAP, HAREL_STUDY_SUBTABS, HAREL_WORKSHOP_SUBTABS, IMPROVE_I18N_FALLBACKS, IMPROVE_I18N_FALLBACKS_ES, LIFE_TRAILS_ANCHORS, LTDecoder, LTEncoder, MASTER_CENSUS_SUMMARY, MOSTRADOR_DOM_BINDINGS, MOSTRADOR_DOM_SCOPE_CONTRACTS, MULTI_ORTHO_LANGS, OPTICAL_CADENCE_PRESETS, PATCH_JOURNAL_LOCK_P2, POCKET_REFUGE_4_SHEETS_SPEC, POETIC_BOOKS, PRECOMPILED_PDF_LANGS, ROOT_NOTES_STP, ROSETTA_66_BOOKS, ReverseOrthographyMap, STATUS, STORED_ECO_PACKS, STP_LEDGER_SUMMARY, VERIFIED_TEXT_BIBLE_LANGS, applyHarelSubtabSelection, applyOrthographyProfile, applySpanish21DiachronicRegister, applyStaticChromeTranslations, applySuggestedImprovement, applyToDom, buildCssPagedMediaPrintHtml, buildElicitationSeedPayload, buildEvangeliosWeekOptionsHtml, classifyMaculaArgumentRole, computeAnalyticalRegisterMetrics, computeEcoPackCrc32Hex, computeFoliationLayout, computeKindlePrintBudget, computeMultiSignatureImposition, computeNyquistSafeFpsViaWasm, computeProsodyAndSyllableAlignmentInWasm, countPdfPages, createDataLayer, createFetchSource, createI18n, createReferenceResolver, createRelayEncoderFromDecoded, decodeLubyTransformPeeling, deriveEpistemicSeal, dlog, doseFilename, effectiveThreatClassWeb, encodeLubyTransformDroplets, escapeHtml, exportSneakernetBundleJson, extractPdfPages, foldCrdtWalSemilattice, formatLocalizedNumeralWeb, formatPhotocopySimBadgeText, hasDiachronicVariants, highlightStudyCardByStrongId, hydrateBookNamesSourceBadge, hydrateCulturalGlossesLexicon, hydrateEcoPacksManifest, hydrateLifeTrailsFromPericopesArtifact, hydrateWasmManifestStatus, importSneakernetBundleJson, indexRegionShards, isRtlLocale, listAll14PrintEditionsForLang, listCatalogEditionsForLang, listCountriesInRegion,
+  listLanguagesInCountry, listMacroRegions, listOrthographyProfilesForLang, locateVersePage, lookupWordTokenStrongEntry, negotiate, normalizeBookAliasToken, normalizeEditionSlug, ordinalOf, parseBiblicalCoordinateReference, parseCanonicalOtEchoRef, parseInitialRouteAndLocale, planBimodalClientPrint, planDose1,
   planDose2,
-  planDose3, probeEcoPackRandomAccessBounds, projectCrossWorkCoordinate, refOfOrdinal, renderAnalyticalThermometerHtml, renderBranchAndTypologyInspectorHtml, renderCascadeAndLadderHtml, renderChapterDiachronicAuditCardHtml, renderChapterPericopesRibbonHtml, renderChapterPreviewHtml, renderCrdtWalAndLockP2AuditCardHtml, renderEvangeliosPlateActionsHtml, renderEvangeliosStageCardHtml, renderFelicesSocraticWonderCardHtml, renderImpositionAndLayoutPreviewHtml, renderImproveDrawerHtml, renderInteractiveVerseTokensHtml, renderLeipzig4LineGmisHtml, renderMasterCensus7164CardHtml, renderMultiSignatureAndPocketRefugeHtml, renderOfflineMeshEcoCardHtml, renderOpticalReceiverRxPanelHtml, renderPhilologyRosettaExplorerHtml, renderPhilologyRosettaInspectorHtml, renderPhilologyRosettaResultsRowsHtml, renderPhotocopyResilienceAndSocialCardHtml, renderStpLexiconExplorerHtml, renderStpLexiconResultsRowsHtml, renderStudy14ColDrawerHtml,
-  renderStudyStrataCards, renderTallerArtifactsCatalogHtml, renderUnifiedDiachronicContextHtml, resolveBicanonicalDivergence, resolveBookCodeByAliasOrName, resolveCanonicalBlockForPassage, resolveCanonicalOrthoProfileId, resolveEffectiveCorpusTarget, resolveEvangeliosActiveSelection, resolveEvangeliosMacroThreadAndEcho, resolveFelicesDichaCoordinate, resolveFelicesPlate, resolveLocalizedBookMeta, resolveMasoreticPericopeBreaks, resolveOrthoFamilyKey, resolvePlateForBibleCoordinate, resolvePrintEditionPdfAssetUrl, resolveScriptioContinuaCodeForLang, runOpticalReceiverBurstSession, searchLanguages, searchPhilologyRosettaIndex, segmentScriptioContinuaSyllables, selectTopEntropyVerseQueue, serializeMostradorRouteQuery, setPaperFormat, simulateFifthGenPhotocopySauvolaBilateral, simulateThirdGenPhotocopySauvola, solitonCdf,
-  splitmix32, stealthNeutralFilenameWeb, suggestLayer0Languages, summarizeChapterDiachronicTransformations, syncDiachronicRegisterOrthogonality, syncFelicesWithCorpusLang, syncI18nUiFromState, syncPrintDrawerControlsFromEditionProfile, syncSisterWorksTabsDom, synthesizeLiveChapterDose1PdfBytes, toUnicodeSuperscript, transduceOrthographyWeb, transduceVerseWithReverseMap, triggerOptInOfflinePackDownload, updateUI, verifyAndStoreEcoPack, verifyArtifactProjectionClosure, verifyLock8PredicativeAndNegation, verifyVplDomScopeContainment, whitenBlockXor
+  planDose3, probeEcoPackRandomAccessBounds, projectCrossWorkCoordinate, propagateCascadeL1ToL5, refOfOrdinal, renderAnalyticalThermometerHtml, renderBranchAndTypologyInspectorHtml, renderCascadeAndLadderHtml, renderChapterDiachronicAuditCardHtml, renderChapterPericopesRibbonHtml, renderChapterPreviewHtml, renderCrdtWalAndLockP2AuditCardHtml, renderDiglossicParallelBridge, renderEvangeliosPlateActionsHtml, renderEvangeliosStageCardHtml, renderFelicesSocraticWonderCardHtml, renderImpositionAndLayoutPreviewHtml, renderImproveDrawerHtml, renderInteractiveVerseTokensHtml, renderLeipzig4LineGmisHtml, renderMasterCensus7164CardHtml, renderMultiSignatureAndPocketRefugeHtml, renderOfflineMeshEcoCardHtml, renderOpticalReceiverRxPanelHtml, renderPhilologyRosettaExplorerHtml, renderPhilologyRosettaInspectorHtml, renderPhilologyRosettaResultsRowsHtml, renderPhotocopyResilienceAndSocialCardHtml, renderStpLexiconExplorerHtml, renderStpLexiconResultsRowsHtml, renderStudy14ColDrawerHtml,
+  renderStudyStrataCards, renderTallerArtifactsCatalogHtml, renderUnifiedDiachronicContextHtml, resolveBicanonicalDivergence, resolveBookCodeByAliasOrName, resolveCanonicalBlockForPassage, resolveCanonicalOrthoProfileId, resolveEffectiveCorpusTarget, resolveEvangeliosActiveSelection, resolveEvangeliosMacroThreadAndEcho, resolveFelicesDichaCoordinate, resolveFelicesPlate, resolveLocalizedBookMeta, resolveMasoreticPericopeBreaks, resolveOrthoFamilyKey, resolveOverlayEntryForOsis, resolvePlateForBibleCoordinate, resolvePrintEditionPdfAssetUrl, resolveRegionalBridgeLanguage21, resolveScriptioContinuaCodeForLang, resolveVerseWithOverlay, runOpticalReceiverBurstSession, searchLanguages, searchPhilologyRosettaIndex, segmentScriptioContinuaSyllables, selectTopEntropyVerseQueue, serializeMostradorRouteQuery, setPaperFormat, simulateFifthGenPhotocopySauvolaBilateral, simulateThirdGenPhotocopySauvola, solitonCdf,
+  splitmix32, stealthNeutralFilenameWeb, suggestLayer0Languages, summarizeChapterDiachronicTransformations, syncActiveStrongInStudyDrawer, syncDiachronicRegisterOrthogonality, syncFelicesWithCorpusLang, syncI18nUiFromState, syncPrintDrawerControlsFromEditionProfile, syncSisterWorksTabsDom, toUnicodeSuperscript, transduceOrthographyWeb, transduceVerseWithReverseMap, triggerOptInOfflinePackDownload, typesetTandaPdfBytes, updateUI, verifyAndStoreEcoPack, verifyArtifactProjectionClosure, verifyLock8PredicativeAndNegation, verifyVplDomScopeContainment, whitenBlockXor
 };
 
 /**
@@ -177,7 +190,7 @@ export function createMostradorController(options = {}) {
   }
 
   function updateSealDom(sealKey, targetDoc = doc) {
-    const effectiveSealKey = sealKey || state.seal || "seal.verified";
+    const effectiveSealKey = sealKey || state.seal || "seal.unavailable";
     state.seal = effectiveSealKey;
     const sealEl = getEl("epistemicStatusSeal", targetDoc);
     if (sealEl) {
@@ -185,9 +198,18 @@ export function createMostradorController(options = {}) {
       sealEl.setAttribute("data-i18n", effectiveSealKey);
       const rawLabel = i18nInstance ? i18nInstance.t(effectiveSealKey) : effectiveSealKey;
       const isEn = String(state.uiLocale || "en").toLowerCase().startsWith("en");
-      const fallbackHuman = isEn
-        ? "Verified text · 66 Canonical Books"
-        : "Texto verificado · 66 Libros Canónicos";
+      const fallbackHuman =
+        effectiveSealKey === "seal.verified"
+          ? isEn
+            ? "Verified text · 66 Canonical Books"
+            : "Texto verificado · 66 Libros Canónicos"
+          : effectiveSealKey === "seal.draft_review"
+            ? isEn
+              ? "Workshop draft & verified portion · Tiers 2–4 (L1–L5 review)"
+              : "Borrador de taller y porción verificada · Tiers 2–4 (revisión L1–L5)"
+            : isEn
+              ? "GMIS 4-line interlinear scaffold + 21st-Century Bridge"
+              : "Andamiaje interlineal GMIS 4 líneas + Puente Siglo XXI";
       sealEl.textContent =
         !rawLabel || rawLabel === effectiveSealKey || rawLabel.startsWith("seal.")
           ? fallbackHuman
@@ -196,48 +218,7 @@ export function createMostradorController(options = {}) {
   }
 
   function syncOrthographyPillsVisibility(targetDoc = doc) {
-    const orthoContainer = getEl("bibleOrthographyPills", targetDoc);
-    if (!orthoContainer) return;
-    const familyKey = resolveOrthoFamilyKey(state.lang);
-    const isMultiOrtho = Boolean(familyKey) || MULTI_ORTHO_LANGS.has(String(state.lang || "").toLowerCase());
-    orthoContainer.hidden = !isMultiOrtho;
-    if (orthoContainer.style) {
-      orthoContainer.style.display = isMultiOrtho ? "flex" : "none";
-    }
-    orthoContainer.setAttribute("data-ortho-visible", isMultiOrtho ? "true" : "false");
-    orthoContainer.setAttribute("data-ortho-family", familyKey || "none");
-
-    const activeCanonProfile = resolveCanonicalOrthoProfileId(
-      familyKey || state.lang,
-      state.orthographyProfile
-    );
-    const pillSpecs = [
-      { id: "btnOrthoInali", family: "stp", profile: "INALI_2018" },
-      { id: "btnOrthoTradicional", family: "stp", profile: "ILV_1950" },
-      { id: "btnOrthoFonetica", family: "stp", profile: "FONETICA_IPA" },
-      { id: "btnOrthoBnBd", family: "bn", profile: "bn-BD" },
-      { id: "btnOrthoBnIn", family: "bn", profile: "bn-IN" },
-      { id: "btnOrthoArbTashkeel", family: "arb", profile: "TASHKEEL_STRIPPED", altProfile: "VOWELIZED" },
-      { id: "btnOrthoUznCyrl", family: "uzn", profile: "CYRL", altProfile: "LATN" },
-      { id: "btnOrthoTzmTfng", family: "tzm", profile: "TFNG", altProfile: "LATN" },
-    ];
-    for (const spec of pillSpecs) {
-      const btn = getEl(spec.id, targetDoc);
-      if (!btn) continue;
-      const matchesFamily = Boolean(familyKey) && spec.family === familyKey;
-      btn.hidden = !matchesFamily;
-      if (btn.style) {
-        btn.style.display = matchesFamily ? "" : "none";
-      }
-      const isPressed =
-        matchesFamily &&
-        (activeCanonProfile === spec.profile ||
-          (spec.altProfile && activeCanonProfile === spec.altProfile));
-      if (typeof btn.setAttribute === "function") {
-        btn.setAttribute("aria-pressed", isPressed ? "true" : "false");
-        btn.setAttribute("data-active-ortho-profile", activeCanonProfile);
-      }
-    }
+    syncOrthographyPillsVisibilityInDom({ state, targetDoc, getEl });
   }
 
   function updateCompassTriggerDom(targetDoc = doc) {
@@ -314,82 +295,13 @@ export function createMostradorController(options = {}) {
   }
 
   function renderViewportFromState(targetDoc = doc) {
-    const viewport = getEl("bibleVerseViewport", targetDoc);
-    if (!viewport || !state.lastNavResult) return;
-    const res = state.lastNavResult;
-    const effectiveLang = state.effectiveCorpusLang || state.lang;
-    viewport.setAttribute("data-status", res.status);
-    viewport.setAttribute("data-current-ref", `${state.book}.${state.chapter}`);
-    viewport.setAttribute("data-selected-verse", String(state.verse));
-    viewport.setAttribute("data-lang", effectiveLang);
-    viewport.setAttribute("data-canonical-lang", state.lang);
-    viewport.setAttribute("data-register", state.register);
-    viewport.setAttribute("data-roll-mode", state.rollMode);
-
-    const pericopesRibbon = getEl("bibleChapterPericopesRibbon", targetDoc);
-    if (pericopesRibbon) {
-      const ribbonHtml = renderChapterPericopesRibbonHtml(
-        state.book,
-        state.chapter,
-        state.uiLocale || state.lang || "es",
-      );
-      pericopesRibbon.innerHTML = ribbonHtml;
-      pericopesRibbon.hidden = !String(ribbonHtml || "").trim();
-    }
-
-    const reverseMap = new ReverseOrthographyMap(state.lang, state.orthographyProfile);
-    let baseHtml = renderChapterPreviewHtml(
-      state.book,
-      state.chapter,
-      effectiveLang,
-      res.status === STATUS.READY ? res.chapter : null,
+    return renderMostradorViewportFromState({
+      state,
+      dataLayer,
       i18nInstance,
-      {
-        selectedVerse: state.verse,
-        rollMode: state.rollMode,
-        oralPorticoActive: state.oralPorticoActive,
-        pausePeriodSelahMs: state.lastProsodyAlignment?.pausePeriodSelahMs || 650,
-        register: state.register,
-        bridgeChapterData: state.lastBridgeChapter,
-        orthographyProfile: state.orthographyProfile,
-        reverseMap,
-        tokenStrongPairs: state.tokenStrongPairs || [],
-      }
-    );
-    state.reverseOrthoMap = reverseMap;
-    if (res.status === STATUS.UNAVAILABLE && state.lastMatrixFallbackHtml) {
-      baseHtml += state.lastMatrixFallbackHtml;
-    }
-    viewport.innerHTML = baseHtml;
-    if (typeof viewport.querySelector === "function") {
-      const selectedEl = viewport.querySelector(".mostrador-verse.is-selected");
-      if (selectedEl) {
-        if (typeof selectedEl.offsetTop === "number" && typeof viewport.offsetTop === "number") {
-          const relTop = Math.max(0, selectedEl.offsetTop - viewport.offsetTop - 48);
-          viewport.scrollTop = relTop;
-        } else if (typeof selectedEl.scrollIntoView === "function") {
-          try {
-            selectedEl.scrollIntoView({ block: "nearest", inline: "nearest" });
-          } catch {
-            selectedEl.scrollIntoView();
-          }
-        }
-      }
-    }
-
-    const thermoPanel = getEl("bibleAnalyticalThermometerPanel", targetDoc);
-    if (thermoPanel) {
-      thermoPanel.innerHTML = renderAnalyticalThermometerHtml({
-        verses: res.status === STATUS.READY ? res.chapter?.verses || {} : {},
-        bookCode: state.book,
-        osisRef: `${state.book}.${state.chapter}.${state.verse}`,
-        includeInlineSubstitutionsDetails: false,
-        uiLocale: state.uiLocale || state.lang || "es",
-      });
-    }
-    if (state.oralPorticoActive) {
-      renderOralPorticoWasmConsole({ state, dataLayer, getEl, targetDoc });
-    }
+      getEl,
+      targetDoc,
+    });
   }
 
   function syncLifeTrailsActiveState(targetDoc = doc) {
@@ -500,9 +412,9 @@ export function createMostradorController(options = {}) {
     syncI18nUiFromState(state, targetDoc);
     syncActiveChromeProjection(targetDoc);
     if (!state.macroRegionsCatalog) {
-      state.macroRegionsCatalog = listMacroRegions();
+      state.macroRegionsCatalog = listMacroRegions(state.i18n);
     }
-    state.suggestedLayer0Langs = suggestLayer0Languages({
+    suggestLayer0Languages({
       regionIso2: state.region || "MX",
       navigatorLanguages: [state.uiLocale || "es", state.lang || "es"],
     });
@@ -523,6 +435,9 @@ export function createMostradorController(options = {}) {
       if (typeof pulseBadgeEl.setAttribute === "function") {
         pulseBadgeEl.setAttribute("data-active-register", state.register || "intergeneracional");
       }
+    }
+    if (state.lastNavResult && state.lastNavResult.status === STATUS.READY) {
+      renderViewportFromState(targetDoc);
     }
     if (syncUrl) {
       return syncUrlFromState(targetDoc, { push: pushUrl });
@@ -640,8 +555,13 @@ export function createMostradorController(options = {}) {
 
     state.status = res.status;
     state.lastNavResult = res;
+    await ensureStateOverlaysHydrated(state, state.lang);
     state.lastBridgeChapter = null;
     state.lastMatrixFallbackHtml = "";
+    state.lastDiglossicBridgeHtml = "";
+
+    const normCorpusLang = String(effectiveCorpusLang || state.lang || "").toLowerCase();
+    const isTier0Or1 = ["es", "es-1909", "en", "he", "grc"].includes(normCorpusLang);
 
     if (state.register === "bilingue" && res.status === STATUS.READY) {
       const bridgeLang = state.lang === "es" ? "en" : "es";
@@ -681,19 +601,85 @@ export function createMostradorController(options = {}) {
     const sealKey = deriveEpistemicSeal(res, catalogEntry);
     updateSealDom(sealKey, targetDoc);
 
-    if (res.status === STATUS.UNAVAILABLE) {
+    if (!isTier0Or1 || sealKey !== "seal.verified") {
+      const macroRegion = Number(
+        catalogEntry?.macro_region ||
+        catalogEntry?.macroRegion ||
+        (normCorpusLang === "kgv" ? 11 : normCorpusLang === "sw" ? 8 : 1),
+      );
+      const regionalSlot = REGIONAL_BRIDGE_LANGUAGES_10[macroRegion] || REGIONAL_BRIDGE_LANGUAGES_10[1];
+      const bridgeSpec = resolveRegionalBridgeLanguage21({
+        macroRegion,
+        bridgeLang: catalogEntry?.bridge_lang || regionalSlot?.code || "",
+      });
+      let bridgeVerses = {};
       try {
-        const matrixShard = await dataLayer.loadMatrixChapter(state.book, state.chapter);
-        if (matrixShard && Array.isArray(matrixShard.rows) && matrixShard.rows.length > 0) {
-          state.lastMatrixFallbackHtml = renderLeipzig4LineGmisHtml(matrixShard, {
-            lang: state.lang,
+        let brRes = await dataLayer.loadChapter({
+          lang: bridgeSpec.code,
+          book: state.book,
+          chapter: state.chapter,
+        });
+        if (!brRes || !brRes.verses || Object.keys(brRes.verses).length === 0) {
+          brRes = await dataLayer.loadChapter({
+            lang: "es",
             book: state.book,
             chapter: state.chapter,
-            verse: state.verse,
           });
         }
+        if (brRes && Array.isArray(brRes.verses)) {
+          for (const v of brRes.verses) {
+            if (v && v.start !== undefined) bridgeVerses[String(v.start)] = v.text;
+          }
+        } else if (brRes && brRes.verses && typeof brRes.verses === "object") {
+          bridgeVerses = brRes.verses;
+        }
       } catch {
-        state.lastMatrixFallbackHtml = "";
+        bridgeVerses = {};
+      }
+
+      let matrixShard = null;
+      try {
+        matrixShard = await dataLayer.loadMatrixChapter(state.book, state.chapter);
+      } catch {
+        matrixShard = null;
+      }
+      const rawMatrixRows = Array.isArray(matrixShard?.rows) ? matrixShard.rows : [];
+      const gmisRows = rawMatrixRows.slice(0, 64).map((r) =>
+        Array.isArray(r)
+          ? {
+            verse: Number(r[0]) || 1,
+            c05_orig_text: r[1] ?? "∅",
+            c08_morph_code: r[4] ?? "∅",
+            c13_nsm_65: r[11] ?? "∅",
+          }
+          : r,
+      );
+      const sovereignTier =
+        res.status === STATUS.UNAVAILABLE
+          ? "TIER_4_GMIS_CELF250"
+          : normCorpusLang === "stp"
+            ? "TIER_2_NT_PLUS_OT_SYNTH"
+            : String(catalogEntry?.sovereign_tier || "TIER_3_PORTION_LADDER");
+
+      state.lastDiglossicBridgeHtml = renderDiglossicParallelBridge({
+        lang: state.lang,
+        book: state.book,
+        chapter: state.chapter,
+        sovereignTier,
+        macroRegion,
+        bridgeLang: bridgeSpec.code,
+        maternalVerses: res.status === STATUS.READY ? res.chapter?.verses || {} : {},
+        bridgeVerses,
+        gmisRows,
+      });
+
+      if (res.status === STATUS.UNAVAILABLE && rawMatrixRows.length > 0) {
+        state.lastMatrixFallbackHtml = renderLeipzig4LineGmisHtml(matrixShard, {
+          lang: state.lang,
+          book: state.book,
+          chapter: state.chapter,
+          verse: state.verse,
+        });
       }
     }
 
@@ -704,7 +690,10 @@ export function createMostradorController(options = {}) {
         if (pgData) {
           hydratePericopesAndGlosses(pgData);
           hydrateCulturalGlossesLexicon(pgData.cultural_glosses || pgData);
-          state.lifeTrailsHydrated = hydrateLifeTrailsFromPericopesArtifact(pgData);
+          hydrateLifeTrailsFromPericopesArtifact(pgData);
+          projectNsmRealiaLexicon3NF(pgData, {});
+        } else if (options.source) {
+          await loadNsmRealiaLexicon({ source: options.source });
         }
       } catch {
         // Non-fatal
@@ -716,7 +705,7 @@ export function createMostradorController(options = {}) {
         if (bnDoc && Array.isArray(bnDoc.books)) {
           state.localizedBookNames = bnDoc;
           state.localizedBookNamesLang = state.lang;
-          state.bookNamesSourceMeta = hydrateBookNamesSourceBadge(bnDoc);
+          hydrateBookNamesSourceBadge(bnDoc);
           hydrateBookAndChapterSelectors(targetDoc);
         }
       } catch {
@@ -756,153 +745,11 @@ export function createMostradorController(options = {}) {
   }
 
   async function updateDoseLinks(targetDoc = doc) {
-    try {
-      const syncedLive = syncDose2AndDose3LinksForActiveLang({
-        state,
-        targetDoc,
-        getEl,
-      });
-      if (syncedLive && syncedLive.mode === "live-synthesis") {
-        return;
-      }
-      const catalog = await dataLayer.loadCatalog();
-      const pageIndex = await dataLayer.loadPageIndex(state.lang, state.edition);
-      const manifest = await dataLayer.loadManifest();
-      if (catalog && pageIndex) {
-        const ordinal = ordinalOf(
-          state.book,
-          state.chapter,
-          state.verse,
-          catalog.verse_counts
-        );
-        const loc = locateVersePage(pageIndex, ordinal);
-        if (loc) {
-          const d2 = planDose2(loc.blockId, state.lang, state.edition, {
-            paperFormat: state.paperFormat,
-            columns: state.columns,
-          });
-          const linkDose2 = getEl("linkDose2BlockPdf", targetDoc);
-          if (linkDose2) {
-            linkDose2.setAttribute("href", buildRelativePdfAssetUrl(d2.url));
-            linkDose2.setAttribute("data-edition-slug", d2.editionSlug);
-            linkDose2.setAttribute(
-              "download",
-              doseFilename({
-                dose: 2,
-                lang: state.lang,
-                blockId: loc.blockId,
-                countryIso2: state.countryIso2,
-              })
-            );
-          }
-        }
-      }
-      if (manifest) {
-        const d3 = planDose3(manifest, state.lang);
-        const linkDose3 = getEl("linkDose3FullBiblePdf", targetDoc);
-        if (linkDose3 && d3) {
-          linkDose3.setAttribute("href", buildRelativePdfAssetUrl(d3.href || d3.path));
-          linkDose3.setAttribute(
-            "download",
-            doseFilename({
-              dose: 3,
-              lang: state.lang,
-              countryIso2: state.countryIso2,
-            })
-          );
-        }
-      }
-    } catch {
-      // Non-fatal if page index or manifest is unavailable for an uncompiled language
-    }
+    return updateMostradorDoseLinks({ state, dataLayer, getEl, targetDoc });
   }
 
   async function dispenseDose1(opts = {}) {
-    const sheets = Math.max(1, Math.min(3, Number(opts.sheets ?? state.sheets) || 1));
-    const duplex = opts.duplex !== undefined ? Boolean(opts.duplex) : state.duplex;
-    const edition = opts.edition || state.edition;
-
-    const catalog = await dataLayer.loadCatalog();
-    if (!catalog || !catalog.verse_counts) {
-      throw new Error("Catalog verse_counts unavailable");
-    }
-    const pageIndex = await dataLayer.loadPageIndex(state.lang, edition);
-    if (!pageIndex) {
-      if (VERIFIED_TEXT_BIBLE_LANGS.includes(state.lang)) {
-        const chapterVerses = state.lastNavResult?.chapter?.verses || {};
-        const synthBytes = synthesizeLiveChapterDose1PdfBytes({
-          lang: state.lang,
-          book: state.book,
-          chapter: state.chapter,
-          verse: state.verse,
-          verses: chapterVerses,
-          sheets,
-          duplex,
-        });
-        const threatClass = effectiveThreatClassWeb(state.countryIso2, state.lang);
-        const filename = doseFilename({
-          dose: 1,
-          lang: state.lang,
-          book: state.book,
-          chapter: state.chapter,
-          verse: state.verse,
-          blockId: "live-chapter-dose1",
-          countryIso2: state.countryIso2,
-          ordinal: 1,
-        });
-        return {
-          bytes: synthBytes,
-          filename,
-          threatClass,
-          blockId: "live-chapter-dose1",
-          pages: [1],
-          sheetCount: sheets,
-          pageCount: countPdfPages(synthBytes),
-          availabilityMode: "live_chapter_synthesis",
-        };
-      }
-      throw new Error(`Page index unavailable for ${state.lang}/${edition}`);
-    }
-
-    const ordinal = ordinalOf(
-      state.book,
-      state.chapter,
-      state.verse,
-      catalog.verse_counts
-    );
-    const loc = locateVersePage(pageIndex, ordinal);
-    if (!loc) {
-      throw new Error(`Could not locate ordinal ${ordinal} in page index`);
-    }
-
-    const plan = planDose1(loc.pageInBlock, sheets, duplex, loc.pageCountInBlock);
-    const blockBytes = await dataLayer.loadBlockPdf(state.lang, edition, loc.blockId);
-    if (!blockBytes) {
-      throw new Error(`Block PDF unavailable: ${state.lang}/${edition}/${loc.blockId}`);
-    }
-
-    const extractedBytes = extractPdfPages(blockBytes, plan.pages);
-    const threatClass = effectiveThreatClassWeb(state.countryIso2, state.lang);
-    const filename = doseFilename({
-      dose: 1,
-      lang: state.lang,
-      book: state.book,
-      chapter: state.chapter,
-      verse: state.verse,
-      blockId: loc.blockId,
-      countryIso2: state.countryIso2,
-      ordinal: loc.blockIndex,
-    });
-
-    return {
-      bytes: extractedBytes,
-      filename,
-      threatClass,
-      blockId: loc.blockId,
-      pages: plan.pages,
-      sheetCount: plan.sheetCount,
-      pageCount: countPdfPages(extractedBytes),
-    };
+    return dispenseMostradorDose1({ opts, state, dataLayer });
   }
 
   function buildDrawerHydratorContext(targetDoc = doc) {
@@ -926,6 +773,8 @@ export function createMostradorController(options = {}) {
         return improveModulePromise;
       },
       navigate,
+      renderViewportFromState,
+      renderStateToDom,
       hydrateBookAndChapterSelectors,
       transitionSheet,
       hydratePrintDrawerPanels,
@@ -1076,8 +925,8 @@ export function createMostradorController(options = {}) {
         ulsCurr.textContent = resolved.startsWith("en")
           ? "English"
           : resolved.startsWith("es")
-          ? "Español"
-          : resolved.toUpperCase();
+            ? "Español"
+            : resolved.toUpperCase();
       }
       const ulsSel = getEl("langSelect", targetDoc);
       if (ulsSel) ulsSel.value = resolved;
@@ -1184,7 +1033,7 @@ export async function bootBrowserMostrador(
     if (win.localStorage && win.localStorage.getItem("ekovoz_cache_epoch") !== EPOCH) {
       win.localStorage.setItem("ekovoz_cache_epoch", EPOCH);
       if (win.caches && typeof win.caches.keys === "function") {
-        win.caches.keys().then((ks) => ks.forEach((k) => win.caches.delete(k))).catch(() => {});
+        win.caches.keys().then((ks) => ks.forEach((k) => win.caches.delete(k))).catch(() => { });
       }
     }
   } catch {
@@ -1255,6 +1104,8 @@ export async function bootBrowserMostrador(
   };
 
   controller.bindDomEvents(doc);
+  const ovTask = ensureStateOverlaysHydrated(controller.state, route.lang).then(() => { if (controller.state.liveCascadeOverlays?.length && controller.state.lastNavResult) controller.renderStateToDom(doc, { syncUrl: false }); }).catch(() => { });
+  await Promise.race([ovTask, new Promise((r) => setTimeout(r, 60))]);
   await controller.setUiLocale(route.ui, doc);
   await controller.navigate(
     {

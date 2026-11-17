@@ -140,19 +140,45 @@ export function bindStageDomEvents(ctx = {}) {
   const compassModal = getEl("bibleCoordinateCompassModal", targetDoc);
   const closeCompassBtn = getEl("btnCloseCompassModal", targetDoc);
   const compassGrid = getEl("bibleCoordinateCompassGrid", targetDoc);
+  let compassPriorFocusEl = null;
+
+  const closeCompassModalDialog = () => {
+    if (!compassModal) return;
+    if (typeof compassModal.close === "function") {
+      try {
+        compassModal.close();
+      } catch {
+        compassModal.open = false;
+      }
+    } else {
+      compassModal.open = false;
+    }
+    compassModal.removeAttribute?.("open");
+    if (compassPriorFocusEl && typeof compassPriorFocusEl.focus === "function") {
+      compassPriorFocusEl.focus();
+      compassPriorFocusEl = null;
+    }
+  };
 
   if (compassBtn && typeof compassBtn.addEventListener === "function") {
     compassBtn.addEventListener("click", () => {
       hydrateCompassGrid(targetDoc);
       if (compassModal) {
-        const isOpen =
-          !compassModal.hidden &&
-          (Boolean(compassModal.open) || compassModal.style?.display === "block");
-        const nextHidden = isOpen;
-        compassModal.hidden = nextHidden;
-        compassModal.open = !nextHidden;
-        if (compassModal.style) {
-          compassModal.style.display = nextHidden ? "none" : "block";
+        const isOpen = Boolean(compassModal.open);
+        if (isOpen) {
+          closeCompassModalDialog();
+        } else {
+          compassPriorFocusEl = targetDoc?.activeElement || compassBtn;
+          if (typeof compassModal.showModal === "function") {
+            try {
+              compassModal.showModal();
+            } catch {
+              compassModal.open = true;
+            }
+          } else {
+            compassModal.open = true;
+            compassModal.setAttribute?.("open", "");
+          }
         }
       }
     });
@@ -160,11 +186,7 @@ export function bindStageDomEvents(ctx = {}) {
 
   if (closeCompassBtn && typeof closeCompassBtn.addEventListener === "function") {
     closeCompassBtn.addEventListener("click", () => {
-      if (compassModal) {
-        compassModal.hidden = true;
-        compassModal.open = false;
-        if (compassModal.style) compassModal.style.display = "none";
-      }
+      closeCompassModalDialog();
     });
   }
 
@@ -175,11 +197,7 @@ export function bindStageDomEvents(ctx = {}) {
         ? target.getAttribute("data-compass-book")
         : target?.dataset?.compassBook;
       if (bookCode) {
-        if (compassModal) {
-          compassModal.hidden = true;
-          compassModal.open = false;
-          if (compassModal.style) compassModal.style.display = "none";
-        }
+        closeCompassModalDialog();
         await navigate({ book: bookCode, chapter: 1, verse: 1 }, targetDoc);
         hydrateBookAndChapterSelectors(targetDoc);
       }
@@ -213,8 +231,6 @@ export function bindStageDomEvents(ctx = {}) {
           state.tokenStrongPairs || [],
         );
         const resolvedStrong = String(tokenStrongAttr || lookedUp.strongId || "").toUpperCase();
-        state.selectedWordSurface = wordSurface;
-        state.selectedCanonicalToken = lookedUp.canonicalToken;
         if (resolvedStrong && resolvedStrong !== "∅") {
           state.activeStrongId = resolvedStrong;
         }
@@ -627,7 +643,6 @@ export function bindStageDomEvents(ctx = {}) {
       );
     } else if (cleanWork === "felices") {
       setActivePlateIndex(state.activePlateIndex ?? 24, docRef);
-      state.felicesLoaded = true;
     } else if (cleanWork === "biblia") {
       await navigate(
         {

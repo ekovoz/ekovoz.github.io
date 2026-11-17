@@ -5,6 +5,7 @@
 
 import { serializeMostradorRouteQuery } from "../i18n_ui.js";
 import { escapeHtml } from "./bridge_and_chapter.js";
+import { canonicalOrdinalOf } from "./canonical_versification.js";
 import {
   STATUS,
   decodeFrameInWasmLinearMemory,
@@ -12,15 +13,16 @@ import {
   verifyAudioPcmCrc16InWasmLinearMemory,
   verifyRaptorQBlockInWasmLinearMemory,
 } from "./data_layer.js";
-import { canonicalOrdinalOf } from "./canonical_versification.js";
-import { computeKindlePrintBudget, renderImpositionAndLayoutPreviewHtml } from "./dosis.js";
+import { lookupPericopeConstructiveReceipt } from "./diachronic_register.js";
+import { computeKindlePrintBudget, renderImpositionAndLayoutPreviewHtml } from "./dosis_editions_catalog.js";
 import { applyHarelSubtabSelection } from "./drawer_study.js";
 import { isRtlLocale } from "./i18n.js";
 import { validateAllEightLocksPda } from "./mejorar.js";
 import {
+  CANONICAL_ECO_PACKS_MANIFEST,
+  SOVEREIGN_ED25519_PUBLIC_KEY_HEX,
   buildQuineHtml,
   commitVerifiedPackToIndexedDb,
-  computeEcoPackCrc32Hex,
   exportBundleAsFile,
   hydrateEcoPacksManifest,
   importBundleFromFile,
@@ -31,6 +33,7 @@ import {
   triggerOptInOfflinePackDownload,
   verifyAndStoreEcoPack,
   verifyEd25519ManifestSignature,
+  verifyEd25519ManifestSignatureWebCrypto
 } from "./offline_mesh.js";
 import {
   LTEncoder,
@@ -50,11 +53,14 @@ import {
 
 export const HAREL_DOSIS_SUBTABS = ["pdf", "mesh", "graphics"];
 
-const SOVEREIGN_PUBKEY_ID = "ed25519-ekovoz-sovereign-pub-v1";
-
-function buildDeterministicEd25519Tag(payloadStr, pubKey = SOVEREIGN_PUBKEY_ID) {
-  const crc = computeEcoPackCrc32Hex(new TextEncoder().encode(`${String(payloadStr ?? "")}:${pubKey}`));
-  return `ed25519:${crc}`;
+function resolveSignedPackReceipt(langCode = "es") {
+  const clean = String(langCode || "es").toLowerCase();
+  const base = clean.split("-")[0];
+  return (
+    CANONICAL_ECO_PACKS_MANIFEST.find((p) => p.lang === clean) ||
+    CANONICAL_ECO_PACKS_MANIFEST.find((p) => p.lang === base) ||
+    CANONICAL_ECO_PACKS_MANIFEST[0]
+  );
 }
 
 function renderEditorialAuditAttestationHtml({
@@ -62,6 +68,8 @@ function renderEditorialAuditAttestationHtml({
   ed25519Verified = true,
   masterCensus = null,
   rustTelemetry = null,
+  pericopeReceipt = null,
+  ledgerBlake3Root = "",
   uiLocale = "es",
 } = {}) {
   const isEn = String(uiLocale || "es").trim().toLowerCase().startsWith("en");
@@ -125,6 +133,11 @@ function renderEditorialAuditAttestationHtml({
     `<div data-rust-engines-telemetry="true" style="color:var(--text-secondary);font-size:0.73rem;">` +
     `🦀 Rust Engines: CoreScore=${surfaceScore} · Fonts28=${fonts28Ok ? "OK" : "WARN"} · WFST=${wfstLen} · Bilateral=${escapeHtml(bilateralDims)} · OpticalABI=${nyquistMs}ms` +
     `</div>` +
+    (pericopeReceipt
+      ? `<div data-pericope-constructive-receipt="true" style="color:var(--text-secondary);font-size:0.73rem;">` +
+      `🧾 ${isEn ? "Constructive Pericope Receipt" : "Recibo Constructivo de Perícopa"}: <code>${escapeHtml(String(pericopeReceipt.batchId || ""))}</code> · MATTR=${Number(pericopeReceipt.mattr || 0).toFixed(3)} · SHA-256=<code>${escapeHtml(String(pericopeReceipt.sha256Prefix || ""))}</code>${ledgerBlake3Root ? ` · BLAKE3=<code>${escapeHtml(String(ledgerBlake3Root).slice(0, 12))}</code>` : ""}` +
+      `</div>`
+      : "") +
     `</div>`
   );
 }
@@ -144,10 +157,10 @@ export function hydrateShareAndAuditDrawerPanel(ctx = {}) {
   const quineRelUrl = hasPrecompiledPack
     ? `obras/biblia/packs/${activeLang}/lector_offline_${activeLang}.html`
     : `data:text/html;charset=utf-8,${encodeURIComponent(
-        `<!doctype html><html lang="${escapeHtml(activeLang)}"><head><meta charset="utf-8"><title>Ekovoz Quine (${escapeHtml(activeLang.toUpperCase())})</title></head><body><h1>${escapeHtml(state.book || "GEN")} ${Number(state.chapter) || 1}:${Number(state.verse) || 1} (${escapeHtml(activeLang.toUpperCase())})</h1><p>${escapeHtml(activeVerseTextForQuine)}</p></body></html>`,
-      )}`;
+      `<!doctype html><html lang="${escapeHtml(activeLang)}"><head><meta charset="utf-8"><title>Ekovoz Quine (${escapeHtml(activeLang.toUpperCase())})</title></head><body><h1>${escapeHtml(state.book || "GEN")} ${Number(state.chapter) || 1}:${Number(state.verse) || 1} (${escapeHtml(activeLang.toUpperCase())})</h1><p>${escapeHtml(activeVerseTextForQuine)}</p></body></html>`,
+    )}`;
   const packMode = hasPrecompiledPack ? "precompiled" : "live-synthesis";
-  state.lastArtifactProjectionClosure = verifyArtifactProjectionClosure({
+  verifyArtifactProjectionClosure({
     htmlSource: "",
     domBindings: [],
     controllerCorpus: "",
@@ -163,10 +176,9 @@ export function hydrateShareAndAuditDrawerPanel(ctx = {}) {
       .then((cat) => {
         if (cat) {
           hydrateEcoPacksManifest(cat);
-          state.offlinePacksCatalog = cat;
         }
       })
-      .catch(() => {});
+      .catch(() => { });
   }
 
   const packsPanel = getEl("offlinePacksCatalogPanel", targetDoc);
@@ -200,9 +212,8 @@ export function hydrateShareAndAuditDrawerPanel(ctx = {}) {
     if (installEcoBtn && typeof installEcoBtn.addEventListener === "function" && !installEcoBtn._ecoInstallBound) {
       installEcoBtn._ecoInstallBound = true;
       installEcoBtn.addEventListener("click", async () => {
-        const committed = await commitVerifiedPackToIndexedDb({ lang: packLang });
-        const rec = await verifyAndStoreEcoPack({ lang: packLang });
-        state.lastVerifiedEcoPack = { ...rec, ...committed };
+        await commitVerifiedPackToIndexedDb({ lang: packLang });
+        await verifyAndStoreEcoPack({ lang: packLang });
         hydrateShareAndAuditDrawer(targetDoc);
       });
     }
@@ -217,8 +228,6 @@ export function hydrateShareAndAuditDrawerPanel(ctx = {}) {
         });
         const saved = await savePackToIndexedDb(packLang, { lang: packLang });
         const allPacks = listPacksFromIndexedDb();
-        state.lastOptInSwResult = swRes;
-        state.lastSavedIndexedDbPack = saved;
         const vaultEl = getEl("offlineIndexedDbVaultStatus", targetDoc);
         if (vaultEl) {
           vaultEl.setAttribute("data-vault-packs-count", String(allPacks.length));
@@ -240,7 +249,6 @@ export function hydrateShareAndAuditDrawerPanel(ctx = {}) {
           loaded = await savePackToIndexedDb(packLang, { lang: packLang });
         }
         const allPacks = listPacksFromIndexedDb();
-        state.lastLoadedIndexedDbPack = loaded;
         const vaultEl = getEl("offlineIndexedDbVaultStatus", targetDoc);
         if (vaultEl) {
           vaultEl.setAttribute("data-vault-packs-count", String(allPacks.length));
@@ -270,7 +278,6 @@ export function hydrateShareAndAuditDrawerPanel(ctx = {}) {
           state.lastExportedSneakernetBundle ||
           exportBundleAsFile({ lang: packLang });
         const imported = importBundleFromFile(bundleStr);
-        state.lastImportedSneakernetBundle = imported;
         importSneakernetInput.setAttribute("data-imported-valid", String(imported.valid));
       });
     }
@@ -285,7 +292,6 @@ export function hydrateShareAndAuditDrawerPanel(ctx = {}) {
     if (dBtn && typeof dBtn.addEventListener === "function" && !dBtn._subtabBound) {
       dBtn._subtabBound = true;
       dBtn.addEventListener("click", () => {
-        state.activeDosisSubtab = tabName;
         applyHarelSubtabSelection(targetDoc, "dosis", tabName);
         if (tabName !== "pdf") {
           const videoEl = getEl("bibleOpticalCameraVideo", targetDoc);
@@ -307,7 +313,8 @@ export function hydrateShareAndAuditDrawerPanel(ctx = {}) {
         text: verseText,
       }),
     );
-    const encoder = new LTEncoder(rawBytes, 32);
+    const safeBlockSize = Math.max(32, Math.ceil(Math.max(1, rawBytes.byteLength) / 50));
+    const encoder = new LTEncoder(rawBytes, safeBlockSize);
     const seqNum = Number(state.qrFrameSeq) || 0;
     let droplet = encoder.nextDroplet();
     for (let i = 0; i < seqNum; i += 1) {
@@ -318,18 +325,25 @@ export function hydrateShareAndAuditDrawerPanel(ctx = {}) {
     const activeCadenceKey = String(state.opticalCadenceFps || "6.67") === "10" ? "10" : "6.67";
     const cadencePreset = OPTICAL_CADENCE_PRESETS[activeCadenceKey];
     const nyquistCheck = validateNyquistOpticalFps(Number(activeCadenceKey) || 6.67, 30);
-    const ltEncoded = encodeLubyTransformDroplets(rawBytes, {
-      blockSize: 32,
-      dropletCount: Math.max(4, encoder.K + 4),
+    const kBound = Math.max(1, Math.min(50, rawBytes.byteLength));
+    const ltEncoded = encodeLubyTransformDroplets(rawBytes.subarray(0, kBound), {
+      maxBlocks: 50,
+      blockSize: safeBlockSize,
+      dropletCount: Math.max(4, kBound * 2 + 4),
     });
-    const ltDecoded = decodeLubyTransformPeeling(
-      ltEncoded.droplets,
-      ltEncoded.K,
-      ltEncoded.blockSize,
-      ltEncoded.byteLength,
-    );
-    state.lastNyquistValidation = nyquistCheck;
-    state.lastLtPeelingAudit = ltDecoded;
+    const dropletArray = Array.isArray(ltEncoded) ? ltEncoded : ltEncoded?.droplets || [];
+    const kLt = Math.max(1, Math.min(50, Number(ltEncoded?.K) || kBound));
+    const ltRecoveredBytes = decodeLubyTransformPeeling(dropletArray, kLt);
+    const ltComplete =
+      Array.isArray(ltRecoveredBytes) &&
+      ltRecoveredBytes.length === kLt &&
+      ltRecoveredBytes.every((val, idx) => val !== null && val === rawBytes[idx]);
+    const ltDecoded = {
+      complete: ltComplete,
+      K: kLt,
+      dropletsCount: dropletArray.length,
+      recovered: ltRecoveredBytes,
+    };
     qrPanel.innerHTML =
       `<div class="mostrador-qrbeam-stream" data-fps="${activeCadenceKey}" data-nyquist-safe="${Boolean(nyquistCheck?.nyquistSafe)}" data-lt-peeling-decoded="${Boolean(ltDecoded?.complete)}" data-frame-interval-ms="${cadencePreset.intervalMs}" data-total-blocks="${encoder.K}" data-seq="${grid.seq}" data-degree="${grid.degree}" data-parity="${grid.parityBit}" style="padding:0.65rem;border-radius:10px;border:1px solid var(--card-border);background:var(--bg-secondary);">` +
       `<div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:0.4rem;margin-bottom:0.45rem;">` +
@@ -395,11 +409,9 @@ export function hydrateShareAndAuditDrawerPanel(ctx = {}) {
         }
       }
       const probeBytes = new TextEncoder().encode(`${state.book}.${state.chapter}.${state.verse}`);
-      state.lastWasmLinearProbes = {
-        frameDecode: decodeFrameInWasmLinearMemory(wasmMod, probeBytes),
-        raptorQBlock: verifyRaptorQBlockInWasmLinearMemory(wasmMod, probeBytes, 0),
-        audioCrc16: verifyAudioPcmCrc16InWasmLinearMemory(wasmMod, probeBytes),
-      };
+      decodeFrameInWasmLinearMemory(wasmMod, probeBytes);
+      verifyRaptorQBlockInWasmLinearMemory(wasmMod, probeBytes, 0);
+      verifyAudioPcmCrc16InWasmLinearMemory(wasmMod, probeBytes);
       state.lastOpticalRxReport = runOpticalReceiverBurstSession(
         {
           payloadText: `${state.book}.${state.chapter}.${state.verse} · ${verseText}`,
@@ -428,10 +440,21 @@ export function hydrateShareAndAuditDrawerPanel(ctx = {}) {
   const auditStatusPanel = getEl("editorialAuditStatusPanel", targetDoc);
   const renderAuditStatusIntoPanel = () => {
     if (!auditStatusPanel) return;
-    const manifestPayload = `${activeLang}:${state.book || "GEN"}.${state.chapter || 1}.${state.verse || 1}`;
-    const expectedSig = buildDeterministicEd25519Tag(manifestPayload);
-    const ed25519Ok = verifyEd25519ManifestSignature(manifestPayload, expectedSig, SOVEREIGN_PUBKEY_ID);
-    state.lastEd25519Verified = ed25519Ok;
+    const signedPack = resolveSignedPackReceipt(activeLang);
+    const ed25519Ok = verifyEd25519ManifestSignature(
+      signedPack.signingMessage,
+      signedPack.ed25519SignatureHex,
+      signedPack.ed25519PublicKeyHex || SOVEREIGN_ED25519_PUBLIC_KEY_HEX,
+      dataLayer?.getHydratedWasmModule?.("ekovoz_player_wasm") || null,
+    );
+    const diachronicAudit =
+      state.diachronicAuditPayload || dataLayer?.getHydratedDiachronicAudit?.() || null;
+    const pericopeReceipt = lookupPericopeConstructiveReceipt(
+      diachronicAudit,
+      state.book || "GEN",
+      state.chapter || 1,
+      state.verse || 1,
+    );
     auditStatusPanel.setAttribute?.("data-ed25519-verified", String(ed25519Ok));
     auditStatusPanel.innerHTML = renderEditorialAuditAttestationHtml({
       verseSurface: activeVerseTextForQuine,
@@ -441,10 +464,27 @@ export function hydrateShareAndAuditDrawerPanel(ctx = {}) {
         state.editorialProfiles?.rust_domain_engines_telemetry ||
         dataLayer?.getHydratedEditorialProfiles?.()?.rust_domain_engines_telemetry ||
         null,
+      pericopeReceipt,
+      ledgerBlake3Root: String(diachronicAudit?.ledger_blake3_root || ""),
       uiLocale: state.uiLocale || "es",
     });
   };
   renderAuditStatusIntoPanel();
+
+  if (
+    !state.diachronicAuditPayload &&
+    dataLayer &&
+    typeof dataLayer.loadDiachronicRegisterAudit === "function"
+  ) {
+    Promise.resolve(dataLayer.loadDiachronicRegisterAudit())
+      .then((da) => {
+        if (da) {
+          state.diachronicAuditPayload = da;
+          renderAuditStatusIntoPanel();
+        }
+      })
+      .catch(() => { });
+  }
 
   if (!state.masterCensusSummary && dataLayer && typeof dataLayer.loadMasterCensusSummary === "function") {
     Promise.resolve(dataLayer.loadMasterCensusSummary())
@@ -454,7 +494,7 @@ export function hydrateShareAndAuditDrawerPanel(ctx = {}) {
           renderAuditStatusIntoPanel();
         }
       })
-      .catch(() => {});
+      .catch(() => { });
   }
   if (!state.editorialProfiles && dataLayer && typeof dataLayer.loadEditorialProfiles === "function") {
     Promise.resolve(dataLayer.loadEditorialProfiles())
@@ -464,7 +504,7 @@ export function hydrateShareAndAuditDrawerPanel(ctx = {}) {
           renderAuditStatusIntoPanel();
         }
       })
-      .catch(() => {});
+      .catch(() => { });
   }
 }
 
@@ -645,9 +685,13 @@ export function bindShareDrawerActionEvents(ctx = {}) {
         book: state.book,
         chapter: state.chapter,
       });
-      const sigPayload = `${receipt.merkleRootHex || ""}:${receipt.sampleSha256 || ""}`;
-      const sigHex = buildDeterministicEd25519Tag(sigPayload);
-      const ed25519Ok = verifyEd25519ManifestSignature(sigPayload, sigHex, SOVEREIGN_PUBKEY_ID);
+      const signedPack = resolveSignedPackReceipt(state.lang);
+      const ed25519Ok = await verifyEd25519ManifestSignatureWebCrypto(
+        signedPack.signingMessage,
+        signedPack.ed25519SignatureHex,
+        signedPack.ed25519PublicKeyHex || SOVEREIGN_ED25519_PUBLIC_KEY_HEX,
+        dataLayer?.getHydratedWasmModule?.("ekovoz_player_wasm") || null,
+      );
       if (statusPanel) {
         statusPanel.setAttribute("data-audit-action", "verify-signature");
         statusPanel.setAttribute("data-verified", String(receipt.verified && ed25519Ok));
@@ -815,7 +859,6 @@ export function bindShareDrawerActionEvents(ctx = {}) {
       const relayEncoder = createRelayEncoderFromDecoded(relayDecoderSource, 32);
       const relayDroplet = relayEncoder.nextDroplet();
       state.lastRelayEncoder = relayEncoder;
-      state.lastRelayDroplet = relayDroplet;
       const statusPanel = getEl("editorialAuditStatusPanel", targetDoc);
       if (statusPanel) {
         statusPanel.hidden = false;

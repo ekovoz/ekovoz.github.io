@@ -4,6 +4,12 @@
 // ============================================================================
 
 import {
+  CANONICAL_BOOK_ORDER,
+  CANONICAL_TOTAL_VERSES,
+  canonicalOrdinalOf,
+  canonicalRefOfOrdinal,
+} from "./canonical_versification.js";
+import {
   applyHarelSubtabSelection,
   resolvePrimaryStrongForVerse,
 } from "./drawer_study.js";
@@ -13,16 +19,12 @@ import {
   computeWalSnapshotRollbackPreview,
   foldCrdtWalSemilattice,
   hydrateFieldWorkshopData,
+  renderStpDraftCheckHtml,
   renderStpLexiconExplorerHtml,
   renderStpLexiconResultsRowsHtml,
 } from "./mejorar.js";
+import { computeEcoPackCrc32Hex } from "./offline_mesh.js";
 import { parseBiblicalCoordinateReference } from "./reference.js";
-import {
-  CANONICAL_BOOK_ORDER,
-  CANONICAL_TOTAL_VERSES,
-  canonicalOrdinalOf,
-  canonicalRefOfOrdinal,
-} from "./canonical_versification.js";
 
 export const HAREL_WORKSHOP_SUBTABS = ["patch", "ladder", "audit"];
 
@@ -159,11 +161,11 @@ export function renderFieldWorkshopCensus7164Html(
     Array.isArray(census.sovereign_tiers_4) && census.sovereign_tiers_4.length === 4
       ? census.sovereign_tiers_4
       : [
-          { tier: "T0", count: 1020, label: "Tier 0 · Biblia Completa" },
-          { tier: "T1", count: 1550, label: "Tier 1 · Nuevo Testamento" },
-          { tier: "T2", count: 1420, label: "Tier 2 · Porciones / Dichas" },
-          { tier: "T3", count: 3174, label: "Tier 3 · Oral / Cero Escritura" },
-        ];
+        { tier: "T0", count: 1020, label: "Tier 0 · Biblia Completa" },
+        { tier: "T1", count: 1550, label: "Tier 1 · Nuevo Testamento" },
+        { tier: "T2", count: 1420, label: "Tier 2 · Porciones / Dichas" },
+        { tier: "T3", count: 3174, label: "Tier 3 · Oral / Cero Escritura" },
+      ];
 
   const batchInfo = resolveAtomicBatchForPassage(
     activePassage?.book || "GEN",
@@ -245,12 +247,12 @@ export function renderCrdtWalAndLockP2AuditCardHtml(workshopArtifact = null) {
     Array.isArray(crdt.canonical_patches) && crdt.canonical_patches.length > 0
       ? crdt.canonical_patches
       : [
-          { patch_id: "PATCH-STP-L2-0001", level: "L2", ref: "GEN.1.1", strong_id: "H0430", status: "COMMITTED" },
-          { patch_id: "PATCH-STP-L3-001", level: "L3", ref: "GEN.1.2", strong_id: "H7307", status: "COMMITTED" },
-          { patch_id: "PATCH-STP-L2-TEST-9D", level: "L2", ref: "PSA.23.1", strong_id: "H3068", status: "COMMITTED" },
-          { patch_id: "PATCH-STP-L4-BEATITUDE-CLI", level: "L4", ref: "MAT.5.3", strong_id: "G3107", status: "COMMITTED" },
-          { patch_id: "PATCH-WAL-COMMIT-R16", level: "L2", ref: "GEN.1.1", strong_id: "H0430", status: "COMMITTED" },
-        ];
+        { patch_id: "PATCH-STP-L2-0001", level: "L2", ref: "GEN.1.1", strong_id: "H0430", status: "COMMITTED" },
+        { patch_id: "PATCH-STP-L3-001", level: "L3", ref: "GEN.1.2", strong_id: "H7307", status: "COMMITTED" },
+        { patch_id: "PATCH-STP-L2-TEST-9D", level: "L2", ref: "PSA.23.1", strong_id: "H3068", status: "COMMITTED" },
+        { patch_id: "PATCH-STP-L4-BEATITUDE-CLI", level: "L4", ref: "MAT.5.3", strong_id: "G3107", status: "COMMITTED" },
+        { patch_id: "PATCH-WAL-COMMIT-R16", level: "L2", ref: "GEN.1.1", strong_id: "H0430", status: "COMMITTED" },
+      ];
   const foldedWal = foldCrdtWalSemilattice(patches);
   const canonicalCount =
     Number(crdt.folded_canonical_count ?? crdt.canonical_patches_count) ||
@@ -311,15 +313,15 @@ export function renderCrdtWalAndLockP2AuditCardHtml(workshopArtifact = null) {
   // D7-R44: notas exegéticas completas de las raíces verificadas (`surface_stp` + `note`), plegadas bajo un toque.
   const rootNotesDetailsHtml = rootNotes.length
     ? `<details id="rootNotesStpFullNotes" class="hig-tech-receipt-details" style="width:100%;margin-top:0.3rem;">` +
-      `<summary>📖 Notas exegéticas de las ${rootNotes.length} raíces</summary>` +
-      `<ul style="margin:0.3rem 0 0;padding-left:1.1rem;">` +
-      rootNotes
-        .map(
-          (rn) =>
-            `<li data-root-note-strong="${escHtml(rn.strong_id)}"><strong>${escHtml(rn.strong_id)} · ${escHtml(rn.surface_stp || "")}</strong> — ${escHtml(rn.note || "")}</li>`,
-        )
-        .join("") +
-      `</ul></details>`
+    `<summary>📖 Notas exegéticas de las ${rootNotes.length} raíces</summary>` +
+    `<ul style="margin:0.3rem 0 0;padding-left:1.1rem;">` +
+    rootNotes
+      .map(
+        (rn) =>
+          `<li data-root-note-strong="${escHtml(rn.strong_id)}"><strong>${escHtml(rn.strong_id)} · ${escHtml(rn.surface_stp || "")}</strong> — ${escHtml(rn.note || "")}</li>`,
+      )
+      .join("") +
+    `</ul></details>`
     : "";
 
   const rollbackId = lockP2.patch_id || lockP2.last_rollback_patch_id || "PATCH-WAL-ROLLBACK-R16";
@@ -355,6 +357,444 @@ export function renderCrdtWalAndLockP2AuditCardHtml(workshopArtifact = null) {
   );
 }
 
+function hexToBytesWorkshop(hex) {
+  const clean = String(hex || "").trim();
+  if (!clean || clean.length % 2 !== 0 || !/^[0-9a-fA-F]+$/.test(clean)) return null;
+  const out = new Uint8Array(clean.length / 2);
+  for (let i = 0; i < out.length; i++) out[i] = parseInt(clean.slice(i * 2, i * 2 + 2), 16);
+  return out;
+}
+
+function bytesToHexWorkshop(bytes) {
+  let out = "";
+  for (let i = 0; i < bytes.length; i++) out += bytes[i].toString(16).padStart(2, "0");
+  return out;
+}
+
+let cachedLocalWorkshopKeyPairPromise = null;
+// Llave pública raíz canónica Ed25519 de mantenedores Ekovoz (derivada de `EKPACK_DOMAIN_SEED_CONTEXT`)
+const CANONICAL_MAINTAINER_ED25519_PUBKEY_HEX =
+  "eb08398e334092817873f33e922316b4024f5eb1c0fa7d7fb3fcbfdb33ea27f7";
+
+export const OVERLAY_AUTHORITY_LOCAL_SELF_SIGNED = "LOCAL_WORKSHOP_SELF_SIGNED";
+export const OVERLAY_AUTHORITY_MAINTAINER_ED25519 = "VERIFIED_MAINTAINER_ED25519";
+
+function classifyOverlayAuthorityTier(publicKeyHex, isLocalKey = false, maintainerPubHex = "") {
+  const cleanPub = String(publicKeyHex || "").trim().toLowerCase();
+  const rootMaintainer = String(
+    maintainerPubHex || CANONICAL_MAINTAINER_ED25519_PUBKEY_HEX,
+  )
+    .trim()
+    .toLowerCase();
+  if (!isLocalKey && cleanPub && cleanPub === rootMaintainer) {
+    return OVERLAY_AUTHORITY_MAINTAINER_ED25519;
+  }
+  return OVERLAY_AUTHORITY_LOCAL_SELF_SIGNED;
+}
+
+async function getOrCreateLocalWorkshopEd25519KeyPair(subtle) {
+  if (!cachedLocalWorkshopKeyPairPromise) {
+    cachedLocalWorkshopKeyPairPromise = (async () => {
+      const kp = await subtle.generateKey({ name: "Ed25519" }, true, ["sign", "verify"]);
+      const rawPub = new Uint8Array(await subtle.exportKey("raw", kp.publicKey));
+      return { privateKey: kp.privateKey, publicKey: kp.publicKey, publicKeyHex: bytesToHexWorkshop(rawPub) };
+    })();
+  }
+  return cachedLocalWorkshopKeyPairPromise;
+}
+
+function openCascadeOverlayIdb(idbFactory) {
+  return new Promise((resolve, reject) => {
+    let settled = false;
+    const timer = setTimeout(() => {
+      if (!settled) {
+        settled = true;
+        reject(new Error("IDB open timeout"));
+      }
+    }, 120);
+    const req = idbFactory.open("ekovoz_cascade_overlays_v2", 1);
+    req.onupgradeneeded = () => {
+      const db = req.result;
+      if (db && (!db.objectStoreNames || !db.objectStoreNames.contains("signed_overlays"))) {
+        db.createObjectStore("signed_overlays", { keyPath: "overlayKey" });
+      }
+    };
+    req.onsuccess = () => {
+      if (!settled) {
+        settled = true;
+        clearTimeout(timer);
+        resolve(req.result);
+      }
+    };
+    req.onerror = () => {
+      if (!settled) {
+        settled = true;
+        clearTimeout(timer);
+        reject(req.error || new Error("IDB open failed"));
+      }
+    };
+  });
+}
+
+export async function persistSignedCascadeOverlayIdb(receipt, options = {}) {
+  const idbFactory = options.indexedDB || globalThis.indexedDB || null;
+  const subtle = options.subtle || globalThis.crypto?.subtle || null;
+  if (!receipt || !receipt.cascade || !receipt.cascade.accepted) {
+    return { persisted: false, reason: "CASCADE_NOT_ACCEPTED" };
+  }
+  const entries = Array.isArray(receipt.cascade.foldedOverlayEntries)
+    ? receipt.cascade.foldedOverlayEntries
+    : receipt.cascade.ekpackOverlayEntry
+      ? [receipt.cascade.ekpackOverlayEntry]
+      : [];
+  if (entries.length === 0) return { persisted: false, reason: "EMPTY_OVERLAY_ENTRIES" };
+
+  const primary = receipt.cascade.ekpackOverlayEntry || entries[0];
+  const canonicalPayload = JSON.stringify({
+    patch_id: primary.patch_id,
+    lang_code: primary.lang_code,
+    cascade_level: primary.cascade_level,
+    target_ref: primary.target_ref,
+    new_surface: primary.new_surface,
+    content_hash_hex: primary.content_hash_hex,
+  });
+  const payloadBytes = new TextEncoder().encode(canonicalPayload);
+  const computedCrc32Hex = computeEcoPackCrc32Hex(payloadBytes);
+  const expectedCrc = String(options.expectedCrc32Hex || receipt.expectedCrc32Hex || computedCrc32Hex).toLowerCase();
+  if (expectedCrc !== computedCrc32Hex.toLowerCase()) {
+    return { persisted: false, reason: "CRC32_MISMATCH", computedCrc32Hex };
+  }
+
+  let signatureHex = String(options.signatureHex || receipt.signatureHex || "").trim();
+  let publicKeyHex = String(options.publicKeyHex || receipt.publicKeyHex || "").trim();
+  if (!subtle) return { persisted: false, reason: "WEBCRYPTO_UNAVAILABLE" };
+
+  const signMessageBytes = new TextEncoder().encode(
+    `EKOVOZ_CASCADE_OVERLAY_V2:${computedCrc32Hex}:${canonicalPayload}`,
+  );
+  let signedWithLocalEphemeralKey = false;
+  if (!signatureHex && !publicKeyHex) {
+    const localKp = await getOrCreateLocalWorkshopEd25519KeyPair(subtle);
+    const sigBuf = await subtle.sign({ name: "Ed25519" }, localKp.privateKey, signMessageBytes);
+    signatureHex = bytesToHexWorkshop(new Uint8Array(sigBuf));
+    publicKeyHex = localKp.publicKeyHex;
+    signedWithLocalEphemeralKey = true;
+  }
+  const authorityTier = classifyOverlayAuthorityTier(
+    publicKeyHex,
+    signedWithLocalEphemeralKey,
+    options.canonicalMaintainerPublicKeyHex || receipt.canonicalMaintainerPublicKeyHex,
+  );
+  const authorityLabel =
+    authorityTier === OVERLAY_AUTHORITY_MAINTAINER_ED25519
+      ? "Edición canónica verificada"
+      : "Borrador local firmado en este dispositivo";
+  const sigBytes = hexToBytesWorkshop(signatureHex);
+  const pubBytes = hexToBytesWorkshop(publicKeyHex);
+  if (!sigBytes || sigBytes.length !== 64 || !pubBytes || pubBytes.length !== 32) {
+    return { persisted: false, reason: "ED25519_MALFORMED_KEY_OR_SIGNATURE" };
+  }
+  let ed25519Ok = false;
+  try {
+    const cryptoKey = await subtle.importKey("raw", pubBytes, { name: "Ed25519" }, false, ["verify"]);
+    ed25519Ok = Boolean(await subtle.verify({ name: "Ed25519" }, cryptoKey, sigBytes, signMessageBytes));
+  } catch {
+    ed25519Ok = false;
+  }
+  if (!ed25519Ok) {
+    return { persisted: false, reason: "ED25519_SIGNATURE_INVALID" };
+  }
+  if (!idbFactory || typeof idbFactory.open !== "function") {
+    return {
+      persisted: false,
+      reason: "INDEXEDDB_UNAVAILABLE",
+      crc32Hex: computedCrc32Hex,
+      ed25519Verified: true,
+      authorityTier,
+      authorityLabel,
+    };
+  }
+
+  const db = await openCascadeOverlayIdb(idbFactory);
+  const savedKeys = [];
+  const savedAtIso = new Date().toISOString();
+  await new Promise((resolve, reject) => {
+    const tx = db.transaction("signed_overlays", "readwrite");
+    const store = tx.objectStore("signed_overlays");
+    for (const rawEntry of entries) {
+      const entry = {
+        ...rawEntry,
+        authorityTier,
+        authorityLabel,
+        publicKeyHex,
+        savedAtIso,
+      };
+      const overlayKey = `${entry.lang_code}:${entry.target_ref}`;
+      savedKeys.push(overlayKey);
+      store.put({
+        overlayKey,
+        entry,
+        canonicalPayload,
+        crc32Hex: computedCrc32Hex,
+        signatureHex,
+        publicKeyHex,
+        authorityTier,
+        authorityLabel,
+        savedAtIso,
+      });
+    }
+    tx.oncomplete = () => resolve(true);
+    tx.onerror = () => reject(tx.error || new Error("IDB write failed"));
+  });
+  if (typeof db.close === "function") db.close();
+  return {
+    persisted: true,
+    crc32Hex: computedCrc32Hex,
+    ed25519Verified: true,
+    authorityTier,
+    authorityLabel,
+    signatureHex,
+    publicKeyHex,
+    savedKeys,
+  };
+}
+
+export async function loadLiveCascadeOverlaysIdb(lang = "stp", options = {}) {
+  const idbFactory = options.indexedDB || globalThis.indexedDB || null;
+  const subtle = options.subtle || globalThis.crypto?.subtle || null;
+  if (!idbFactory || typeof idbFactory.open !== "function") return [];
+  const db = await openCascadeOverlayIdb(idbFactory);
+  const rawRecords = await new Promise((resolve, reject) => {
+    const tx = db.transaction("signed_overlays", "readonly");
+    const store = tx.objectStore("signed_overlays");
+    const req = store.getAll();
+    req.onsuccess = () => resolve(Array.isArray(req.result) ? req.result : []);
+    req.onerror = () => reject(req.error || new Error("IDB read failed"));
+  });
+  if (typeof db.close === "function") db.close();
+  const cleanLang = String(lang || "stp").trim().toLowerCase();
+  const verified = [];
+  for (const rec of rawRecords) {
+    if (!rec || !rec.entry || String(rec.entry.lang_code || "").toLowerCase() !== cleanLang) continue;
+    const payloadStr = String(rec.canonicalPayload || "");
+    const crc = computeEcoPackCrc32Hex(new TextEncoder().encode(payloadStr));
+    if (crc.toLowerCase() !== String(rec.crc32Hex || "").toLowerCase()) continue;
+    if (subtle && rec.signatureHex && rec.publicKeyHex) {
+      const sigB = hexToBytesWorkshop(rec.signatureHex);
+      const pubB = hexToBytesWorkshop(rec.publicKeyHex);
+      if (!sigB || !pubB) continue;
+      const msgB = new TextEncoder().encode(`EKOVOZ_CASCADE_OVERLAY_V2:${rec.crc32Hex}:${payloadStr}`);
+      try {
+        const key = await subtle.importKey("raw", pubB, { name: "Ed25519" }, false, ["verify"]);
+        const ok = await subtle.verify({ name: "Ed25519" }, key, sigB, msgB);
+        if (!ok) continue;
+      } catch {
+        continue;
+      }
+    }
+    const authorityTier =
+      rec.authorityTier ||
+      rec.entry.authorityTier ||
+      classifyOverlayAuthorityTier(
+        rec.publicKeyHex,
+        false,
+        options.canonicalMaintainerPublicKeyHex,
+      );
+    const authorityLabel =
+      authorityTier === OVERLAY_AUTHORITY_MAINTAINER_ED25519
+        ? "Edición canónica verificada"
+        : "Borrador local firmado en este dispositivo";
+    verified.push({
+      ...rec.entry,
+      authorityTier,
+      authorityLabel,
+      publicKeyHex: rec.publicKeyHex || rec.entry.publicKeyHex || "",
+      savedAtIso: rec.savedAtIso || rec.entry.savedAtIso || "",
+    });
+  }
+  return verified;
+}
+
+/**
+ * Consolida los parches verificados en una única tabla CRDT Last-Writer-Wins (`state.verifiedOverlaysByOsis`)
+ * indexada por `${lang}:${OSIS}` (`DEB-V2C-08` purgado: `0` colecciones write-only huérfanas).
+ */
+export function applyOverlayEntriesToLiveState(state, entries = []) {
+  if (!state || !Array.isArray(entries) || entries.length === 0) return 0;
+  let appliedCount = 0;
+  if (!state.verifiedOverlaysByOsis || typeof state.verifiedOverlaysByOsis !== "object") {
+    state.verifiedOverlaysByOsis = {};
+  }
+  const activeBookChap = `${String(state.book || "").toUpperCase()}.${state.chapter}.`;
+  const activeLangClean = String(state.lang || "es").trim().toLowerCase();
+
+  for (const entry of entries) {
+    if (!entry || !entry.target_ref || !entry.new_surface) continue;
+    const entryLang = String(entry.lang_code || activeLangClean || "es").trim().toLowerCase();
+    const cleanOsis = String(entry.target_ref).trim().toUpperCase();
+    const mapKey = `${entryLang}:${cleanOsis}`;
+    const prev = state.verifiedOverlaysByOsis[mapKey];
+    const nextTs = Number(entry.lamport_ts || 0);
+    const prevTs = Number(prev?.lamport_ts || 0);
+    const nextIso = String(entry.savedAtIso || "");
+    const prevIso = String(prev?.savedAtIso || "");
+    const shouldReplace =
+      !prev ||
+      nextTs > prevTs ||
+      (nextTs === prevTs && nextIso >= prevIso);
+
+    if (shouldReplace) {
+      state.verifiedOverlaysByOsis[mapKey] = {
+        ...entry,
+        lang_code: entryLang,
+        target_ref: cleanOsis,
+        authorityTier: entry.authorityTier || OVERLAY_AUTHORITY_LOCAL_SELF_SIGNED,
+        authorityLabel:
+          entry.authorityLabel ||
+          (entry.authorityTier === OVERLAY_AUTHORITY_MAINTAINER_ED25519
+            ? "Edición canónica verificada"
+            : "Borrador local firmado en este dispositivo"),
+      };
+    }
+
+    if (
+      entryLang === activeLangClean &&
+      cleanOsis.startsWith(activeBookChap) &&
+      state.lastNavResult?.chapter?.verses
+    ) {
+      const vNumStr = cleanOsis.slice(activeBookChap.length);
+      const vNumInt = Number(vNumStr);
+      const newSurf = state.verifiedOverlaysByOsis[mapKey].new_surface;
+      if (Array.isArray(state.lastNavResult.chapter.verses)) {
+        for (const vObj of state.lastNavResult.chapter.verses) {
+          if (vObj && Number(vObj.start ?? vObj.verse) === vNumInt) {
+            vObj.text = newSurf;
+          }
+        }
+      } else {
+        state.lastNavResult.chapter.verses[vNumStr] = newSurf;
+      }
+      if (Array.isArray(state.lastNavResult.chapter.rawVerses)) {
+        for (const vObj of state.lastNavResult.chapter.rawVerses) {
+          if (vObj && Number(vObj.start ?? vObj.verse) === vNumInt) {
+            vObj.text = newSurf;
+          }
+        }
+      }
+      appliedCount += 1;
+    }
+  }
+  return appliedCount;
+}
+
+/**
+ * Devuelve la entrada CRDT verificada para `(lang, osis)` si existe en `state.verifiedOverlaysByOsis`.
+ */
+export function resolveOverlayEntryForOsis(state, lang = "es", osis = "") {
+  if (!state || !state.verifiedOverlaysByOsis || !osis) return null;
+  const cleanLang = String(lang || state.lang || "es").trim().toLowerCase();
+  const baseLang = cleanLang === "es-1909" ? "es-1909" : cleanLang.split("-")[0] || cleanLang;
+  const cleanOsis = String(osis).trim().toUpperCase().replace(/\s+/g, ".");
+  return (
+    state.verifiedOverlaysByOsis[`${cleanLang}:${cleanOsis}`] ||
+    state.verifiedOverlaysByOsis[`${baseLang}:${cleanOsis}`] ||
+    null
+  );
+}
+
+/**
+ * Lente reactiva pura libre de glitches (`SLICE-V2C-19` / `SLICE-V2C-20`):
+ * Proyecta en tiempo de lectura cualquier versículo citado por coordenada OSIS a través de `state.verifiedOverlaysByOsis`.
+ */
+export function resolveVerseWithOverlay(state, lang = "es", osis = "", baseText = "") {
+  const entry = resolveOverlayEntryForOsis(state, lang, osis);
+  if (entry && typeof entry.new_surface === "string" && entry.new_surface.trim().length > 0) {
+    return entry.new_surface;
+  }
+  return baseText;
+}
+
+export async function ensureStateOverlaysHydrated(state, targetLang = "") {
+  if (!state || typeof state !== "object") return;
+  const lang = String(targetLang || state.lang || "es").trim().toLowerCase();
+  if (state.hydratedOverlayLang !== lang) {
+    state.hydratedOverlayLang = lang;
+    const idbOverlays = await loadLiveCascadeOverlaysIdb(lang).catch(() => []);
+    if (idbOverlays.length > 0) {
+      state.liveCascadeOverlays = idbOverlays;
+      applyOverlayEntriesToLiveState(state, idbOverlays);
+    }
+  } else if (Array.isArray(state.liveCascadeOverlays) && state.liveCascadeOverlays.length > 0) {
+    applyOverlayEntriesToLiveState(state, state.liveCascadeOverlays);
+  }
+}
+
+export function projectChapterWithLiveOverlays(state, effectiveLang, rawChapter) {
+  if (!rawChapter || typeof rawChapter !== "object") {
+    return { chapterForRender: null, bannerHtml: "", activeAuthority: "" };
+  }
+  const rawVerses = rawChapter.verses || [];
+  const badges = [];
+  let projectedVerses;
+  if (Array.isArray(rawVerses)) {
+    projectedVerses = rawVerses.map((vItem) => {
+      if (!vItem || typeof vItem !== "object") return vItem;
+      const vKey = String(vItem.start ?? vItem.verse ?? "");
+      const osisKey = `${state.book}.${state.chapter}.${vKey}`;
+      const ovEntry = resolveOverlayEntryForOsis(state, effectiveLang, osisKey);
+      const projectedText = resolveVerseWithOverlay(state, effectiveLang, osisKey, vItem.text || "");
+      if (ovEntry) {
+        const auth = ovEntry.authorityTier || OVERLAY_AUTHORITY_LOCAL_SELF_SIGNED;
+        badges.push(
+          `<span class="uls-badge cascade-authority-badge" data-overlay-authority="${escHtml(auth)}" data-overlay-osis="${escHtml(osisKey)}" style="font-size:0.72rem;margin:0.2rem 0.25rem 0.35rem 0;display:inline-block;">🔐 ${escHtml(osisKey)} · <code>${escHtml(auth)}</code> (${escHtml(ovEntry.authorityLabel || "")})</span>`,
+        );
+      }
+      return projectedText === vItem.text ? vItem : { ...vItem, text: projectedText };
+    });
+  } else {
+    projectedVerses = {};
+    for (const [vKey, vText] of Object.entries(rawVerses)) {
+      const osisKey = `${state.book}.${state.chapter}.${vKey}`;
+      const ovEntry = resolveOverlayEntryForOsis(state, effectiveLang, osisKey);
+      projectedVerses[vKey] = resolveVerseWithOverlay(state, effectiveLang, osisKey, vText);
+      if (ovEntry) {
+        const auth = ovEntry.authorityTier || OVERLAY_AUTHORITY_LOCAL_SELF_SIGNED;
+        badges.push(
+          `<span class="uls-badge cascade-authority-badge" data-overlay-authority="${escHtml(auth)}" data-overlay-osis="${escHtml(osisKey)}" style="font-size:0.72rem;margin:0.2rem 0.25rem 0.35rem 0;display:inline-block;">🔐 ${escHtml(osisKey)} · <code>${escHtml(auth)}</code> (${escHtml(ovEntry.authorityLabel || "")})</span>`,
+        );
+      }
+    }
+  }
+  const activeAuthority =
+    badges.length === 0
+      ? ""
+      : badges[0].includes(OVERLAY_AUTHORITY_MAINTAINER_ED25519)
+        ? OVERLAY_AUTHORITY_MAINTAINER_ED25519
+        : OVERLAY_AUTHORITY_LOCAL_SELF_SIGNED;
+  const bannerHtml =
+    badges.length > 0
+      ? `<div class="chapter-live-overlays-banner" data-live-cascade-applied="true">${badges.join("")}</div>`
+      : "";
+  const projectedRawVerses = Array.isArray(rawChapter.rawVerses)
+    ? rawChapter.rawVerses.map((vItem) => {
+      if (!vItem || typeof vItem !== "object") return vItem;
+      const vKey = String(vItem.start ?? vItem.verse ?? "");
+      const osisKey = `${state.book}.${state.chapter}.${vKey}`;
+      const projectedText = resolveVerseWithOverlay(state, effectiveLang, osisKey, vItem.text || "");
+      return projectedText === vItem.text ? vItem : { ...vItem, text: projectedText };
+    })
+    : rawChapter.rawVerses;
+  return {
+    chapterForRender: {
+      ...rawChapter,
+      verses: projectedVerses,
+      ...(Array.isArray(projectedRawVerses) ? { rawVerses: projectedRawVerses } : {}),
+    },
+    bannerHtml,
+    activeAuthority,
+  };
+}
+
 /**
  * Hidrata la Gaveta 3 (Taller de Campo + Escalera CELF 250 + Auditoría CRDT/Censo) (`D4-R41` / `D3-R38` / `D10-R38`).
  */
@@ -368,7 +808,6 @@ export async function hydrateImproveDrawerPanel(ctx = {}) {
     loadImproveModule,
   } = ctx;
   const mod = await loadImproveModule();
-  state.improveLoaded = true;
   const currentVerseText =
     state.lastNavResult?.chapter?.verses?.[String(state.verse)] || "";
   const osis = `${state.book}.${state.chapter}.${state.verse}`;
@@ -381,7 +820,22 @@ export async function hydrateImproveDrawerPanel(ctx = {}) {
   state.celfLadder250 = ladder250;
   if (typeof dataLayer.loadFieldWorkshopData === "function") {
     const fwData = await dataLayer.loadFieldWorkshopData(state.lang === "stp" ? "stp" : "stp");
-    if (fwData) hydrateFieldWorkshopData(fwData, ladder250);
+    if (fwData) {
+      hydrateFieldWorkshopData(fwData, ladder250);
+      const renderDraftCheck =
+        typeof mod.renderStpDraftCheckHtml === "function"
+          ? mod.renderStpDraftCheckHtml
+          : renderStpDraftCheckHtml;
+      renderDraftCheck({
+        uncertaintyQueue: fwData.top_uncertainty_queue || [],
+        lang: state.lang || "stp",
+      });
+    }
+  }
+  const persistedOverlays = await loadLiveCascadeOverlaysIdb(state.lang).catch(() => []);
+  if (persistedOverlays.length > 0) {
+    state.liveCascadeOverlays = persistedOverlays;
+    applyOverlayEntriesToLiveState(state, persistedOverlays);
   }
   if (!state.masterCensusSummary && typeof dataLayer.loadMasterCensusSummary === "function") {
     try {
@@ -448,13 +902,18 @@ export async function hydrateImproveDrawerPanel(ctx = {}) {
 
   const tallerEl = getEl("tallerArtifactsCatalog", targetDoc);
   if (tallerEl && typeof mod.renderTallerArtifactsCatalogHtml === "function") {
-    tallerEl.innerHTML = mod.renderTallerArtifactsCatalogHtml({
-      lang: state.lang,
-      includeCensusCard: true,
-      includeEightLocksBar: false,
-      masterCensusSummary: state.masterCensusSummary || null,
-      uiLocale: state.uiLocale || "es",
-    });
+    const draftCheckHtml =
+      String(state.lang || "").toLowerCase() === "stp"
+        ? renderStpDraftCheckHtml({ lang: state.lang })
+        : "";
+    tallerEl.innerHTML =
+      mod.renderTallerArtifactsCatalogHtml({
+        lang: state.lang,
+        includeCensusCard: true,
+        includeEightLocksBar: false,
+        masterCensusSummary: state.masterCensusSummary || null,
+        uiLocale: state.uiLocale || "es",
+      }) + draftCheckHtml;
   }
 
   for (const [btnId, tabName] of [
@@ -466,7 +925,6 @@ export async function hydrateImproveDrawerPanel(ctx = {}) {
     if (sBtn && typeof sBtn.addEventListener === "function" && !sBtn._subtabBound) {
       sBtn._subtabBound = true;
       sBtn.addEventListener("click", () => {
-        state.activeWorkshopSubtab = tabName;
         applyHarelSubtabSelection(targetDoc, "workshop", tabName);
       });
     }
@@ -551,15 +1009,15 @@ export function bindImproveFormControlsInDrawer(mod, ctx = {}) {
         lexHostEl.innerHTML =
           typeof mod.renderStpLexiconExplorerHtml === "function"
             ? mod.renderStpLexiconExplorerHtml({
-                query: state.stpLexiconQuery || "",
-                activeWave: state.activeOtWave || 0,
-                limit: 24,
-              })
+              query: state.stpLexiconQuery || "",
+              activeWave: state.activeOtWave || 0,
+              limit: 24,
+            })
             : renderStpLexiconExplorerHtml({
-                query: state.stpLexiconQuery || "",
-                activeWave: state.activeOtWave || 0,
-                limit: 24,
-              });
+              query: state.stpLexiconQuery || "",
+              activeWave: state.activeOtWave || 0,
+              limit: 24,
+            });
       });
       bindLexiconExplorerEvents(lexHostEl);
     }
@@ -639,7 +1097,7 @@ export function bindImproveFormControlsInDrawer(mod, ctx = {}) {
       const patch = (state.refreshPatchPreview || refreshPatchPreview)();
       copyBtn.setAttribute("data-last-copied-hash", patch.contentHash);
       if (typeof navigator !== "undefined" && navigator.clipboard && typeof navigator.clipboard.writeText === "function") {
-        navigator.clipboard.writeText(patch.json).catch(() => {});
+        navigator.clipboard.writeText(patch.json).catch(() => { });
       }
     });
   }
@@ -647,12 +1105,54 @@ export function bindImproveFormControlsInDrawer(mod, ctx = {}) {
   const applyBtn = getEl("btnApplySuggestedImprovement", targetDoc);
   if (applyBtn && typeof applyBtn.addEventListener === "function" && !applyBtn._applySuggestedBound) {
     applyBtn._applySuggestedBound = true;
-    applyBtn.addEventListener("click", () => {
+    applyBtn.addEventListener("click", async () => {
       const refreshFn = state.refreshPatchPreview || refreshPatchPreview;
-      if (typeof mod.applySuggestedImprovement === "function") {
-        mod.applySuggestedImprovement(targetDoc, applyBtn, refreshFn);
-      } else {
-        applySuggestedImprovement(targetDoc, applyBtn, refreshFn);
+      const osis = `${state.book}.${state.chapter}.${state.verse}`;
+      const payloadArgs = {
+        lang: state.lang || "stp",
+        level: levelSel?.value || state.cascadeLevel || "L2",
+        ref: osis,
+        strongId: state.activeStrongId || "H0430",
+        oldSurface: oldInput?.value || "",
+        note: noteInput?.value || "",
+        votes: Array.isArray(state.pendingCommunityVotes) ? state.pendingCommunityVotes : [],
+        existingOverlayEntries: Array.isArray(state.liveCascadeOverlays) ? state.liveCascadeOverlays : [],
+        signature: state.pendingCascadeSignatureHex || "",
+        publicKey: state.pendingCascadePublicKeyHex || "",
+        expectedCrc32Hex: state.pendingExpectedCrc32Hex || "",
+      };
+      const receipt =
+        typeof mod?.applySuggestedImprovement === "function"
+          ? mod.applySuggestedImprovement(targetDoc, applyBtn, refreshFn, payloadArgs)
+          : applySuggestedImprovement(targetDoc, applyBtn, refreshFn, payloadArgs);
+      if (receipt?.cascade?.patchId && typeof applyBtn.setAttribute === "function") {
+        applyBtn.setAttribute("data-cascade-patch-id", receipt.cascade.patchId);
+        applyBtn.setAttribute("data-cascade-status", receipt.cascade.status || "APPLIED");
+      }
+      if (receipt?.cascade?.accepted) {
+        const idbRes = await persistSignedCascadeOverlayIdb(receipt);
+        if (idbRes.persisted || idbRes.ed25519Verified) {
+          const authorityTier = idbRes.authorityTier || OVERLAY_AUTHORITY_LOCAL_SELF_SIGNED;
+          const authorityLabel =
+            idbRes.authorityLabel || "Borrador local firmado en este dispositivo";
+          const nextOverlays = (receipt.cascade.foldedOverlayEntries || []).map((e) => ({
+            ...e,
+            authorityTier,
+            authorityLabel,
+            publicKeyHex: idbRes.publicKeyHex || "",
+          }));
+          state.liveCascadeOverlays = nextOverlays;
+          applyOverlayEntriesToLiveState(state, nextOverlays);
+          if (typeof applyBtn.setAttribute === "function") {
+            applyBtn.setAttribute("data-overlay-authority", authorityTier);
+          }
+          if (typeof ctx.renderViewportFromState === "function") {
+            ctx.renderViewportFromState(targetDoc);
+          }
+          if (typeof ctx.renderStateToDom === "function") {
+            ctx.renderStateToDom(targetDoc, { syncUrl: false });
+          }
+        }
       }
     });
   }
@@ -671,12 +1171,10 @@ export function bindImproveFormControlsInDrawer(mod, ctx = {}) {
   const updateWalSnapshotPreviewDom = () => {
     const selIdx = resolveSnapshotIndexFromSelect();
     const val = String(walSnapSel?.value || `PATCH-WAL-SNAP-${String(selIdx - 1).padStart(2, "0")}`);
-    state.selectedWalSnapshotId = val;
     if (walSnapSel && typeof walSnapSel.setAttribute === "function") {
       walSnapSel.setAttribute("data-selected-snapshot", val);
     }
     const preview = computeWalSnapshotRollbackPreview(selIdx);
-    state.lastWalRollbackPreview = preview;
     const previewBox = getEl("walSnapshotRollbackPreviewBox", targetDoc);
     if (previewBox) {
       previewBox.textContent = preview.previewText;

@@ -436,10 +436,20 @@ export class LTDecoder {
  */
 export function encodeLubyTransformDroplets(blocks, options = {}) {
   const list = Array.isArray(blocks) || blocks instanceof Uint8Array ? Array.from(blocks) : [];
-  const k = Math.max(1, Math.min(list.length, Number(options.maxBlocks) || 512));
-  if (list.length === 0) return [];
+  const k = Math.max(1, Math.min(list.length, Number(options.maxBlocks) || 50));
+  if (list.length === 0) {
+    const empty = [];
+    Object.defineProperties(empty, {
+      droplets: { value: empty },
+      K: { value: 0 },
+      blockSize: { value: Number(options.blockSize) || 1 },
+      byteLength: { value: 0 },
+    });
+    return empty;
+  }
   const cdf = solitonCdf(k, options.c ?? 0.1, options.delta ?? 0.05);
-  const totalDroplets = Number(options.count) > 0 ? Number(options.count) : Math.max(k * 2, k + 6);
+  const requested = Number(options.count || options.dropletCount) || 0;
+  const totalDroplets = requested > 0 ? requested : Math.max(k * 2, k + 6);
   const droplets = [];
 
   for (let seq = 0; seq < totalDroplets; seq++) {
@@ -469,6 +479,12 @@ export function encodeLubyTransformDroplets(blocks, options = {}) {
       nyquistIntervalMs: 150,
     });
   }
+  Object.defineProperties(droplets, {
+    droplets: { value: droplets },
+    K: { value: k },
+    blockSize: { value: Number(options.blockSize) || 1 },
+    byteLength: { value: list.length },
+  });
   return droplets;
 }
 
@@ -793,41 +809,20 @@ function computeCrc32(bytes) {
   return (crc ^ 0xffffffff) >>> 0;
 }
 
-/**
- * Empaqueta un droplet Luby Transform en el protocolo binario `ECO1` (`D6-B+`, `optical_qr_fountain.rs`):
- * `[ "ECO1" (4B) | ver=1 (1B) | corner=0xA5/0x5A (1B) | streamId (4B BE) | seq (4B BE) | totalChunks (2B BE) | degree (1B) | indices (2B*d) | payloadLen (2B BE) | payload | crc32 (4B BE) ]`
- */
 export function encodeEco1BinaryPacket({
-  streamId = 1,
-  seq = 0,
-  totalChunks = 1,
-  degree = 1,
-  indices = [0],
-  payloadBytes = new Uint8Array(0),
+  streamId = 1, seq = 0, totalChunks = 1, degree = 1, indices = [0], payloadBytes = new Uint8Array(0),
 } = {}) {
   const idxArr = Array.isArray(indices) && indices.length > 0 ? indices : [0];
   const deg = Math.max(1, Math.min(255, idxArr.length || Number(degree) || 1));
-  const payload =
-    payloadBytes instanceof Uint8Array
-      ? payloadBytes
-      : new Uint8Array(Array.isArray(payloadBytes) ? payloadBytes : []);
-  const headerLen = 4 + 1 + 1 + 4 + 4 + 2 + 1 + deg * 2 + 2;
-  const totalLen = headerLen + payload.length + 4;
+  const payload = payloadBytes instanceof Uint8Array ? payloadBytes : new Uint8Array(Array.isArray(payloadBytes) ? payloadBytes : []);
+  const totalLen = 19 + deg * 2 + payload.length + 4;
   const buf = new Uint8Array(totalLen);
   const view = new DataView(buf.buffer);
-
-  // Magic "ECO1"
-  buf[0] = 0x45;
-  buf[1] = 0x43;
-  buf[2] = 0x4f;
-  buf[3] = 0x31;
-  buf[4] = 0x01; // Version 1
-  buf[5] = encodeCornerToggleMarker(seq);
+  buf.set([0x45, 0x43, 0x4f, 0x31, 0x01, encodeCornerToggleMarker(seq)]);
   view.setUint32(6, Number(streamId) >>> 0, false);
   view.setUint32(10, Number(seq) >>> 0, false);
   view.setUint16(14, Math.max(1, Number(totalChunks) || 1) & 0xffff, false);
   buf[16] = deg;
-
   let offset = 17;
   for (let i = 0; i < deg; i += 1) {
     view.setUint16(offset, (Number(idxArr[i]) || 0) & 0xffff, false);
@@ -837,97 +832,51 @@ export function encodeEco1BinaryPacket({
   offset += 2;
   buf.set(payload, offset);
   offset += payload.length;
-
-  const crc = computeCrc32(buf.subarray(0, offset));
-  view.setUint32(offset, crc, false);
+  view.setUint32(offset, computeCrc32(buf.subarray(0, offset)), false);
   return buf;
 }
 
-/**
- * Empaqueta el cuadro de metadatos `ECOM` (`D6-B+`, `optical_qr_fountain.rs`):
- * contiene `streamId`, `totalBytes`, `totalChunks`, `blockSize`, `sha256Hex` y `filename`.
- */
 export function encodeEcomMetadataPacket({
-  streamId = 1,
-  seq = 0,
-  totalBytes = 0,
-  totalChunks = 1,
-  blockSize = 512,
-  sha256Hex = "",
-  filename = "shard.eco",
+  streamId = 1, seq = 0, totalBytes = 0, totalChunks = 1, blockSize = 512, sha256Hex = "", filename = "shard.eco",
 } = {}) {
-  const metaJson = JSON.stringify({
+  const jsonBytes = new TextEncoder().encode(JSON.stringify({
     streamId: Number(streamId) >>> 0,
     totalBytes: Number(totalBytes) || 0,
     totalChunks: Math.max(1, Number(totalChunks) || 1),
     blockSize: Math.max(1, Number(blockSize) || 512),
     sha256Hex: String(sha256Hex || "").toLowerCase(),
     filename: String(filename || "shard.eco"),
-  });
-  const encoder = new TextEncoder();
-  const jsonBytes = encoder.encode(metaJson);
-  const totalLen = 4 + 1 + 1 + 4 + 2 + jsonBytes.length + 4;
-  const buf = new Uint8Array(totalLen);
+  }));
+  const buf = new Uint8Array(16 + jsonBytes.length);
   const view = new DataView(buf.buffer);
-
-  // Magic "ECOM"
-  buf[0] = 0x45;
-  buf[1] = 0x43;
-  buf[2] = 0x4f;
-  buf[3] = 0x4d;
-  buf[4] = 0x01;
-  buf[5] = encodeCornerToggleMarker(seq);
+  buf.set([0x45, 0x43, 0x4f, 0x4d, 0x01, encodeCornerToggleMarker(seq)]);
   view.setUint32(6, Number(streamId) >>> 0, false);
   view.setUint16(10, jsonBytes.length & 0xffff, false);
   buf.set(jsonBytes, 12);
   const crcOffset = 12 + jsonBytes.length;
-  const crc = computeCrc32(buf.subarray(0, crcOffset));
-  view.setUint32(crcOffset, crc, false);
+  view.setUint32(crcOffset, computeCrc32(buf.subarray(0, crcOffset)), false);
   return buf;
 }
 
-/**
- * Decodifica y verifica un paquete binario `ECO1` o `ECOM` con comprobación CRC-32 y bit de esquina (`0xA5`/`0x5A`).
- */
-export function decodeEcoBinaryPacket(packetBytes) {
-  if (!(packetBytes instanceof Uint8Array) || packetBytes.length < 16) {
-    return { valid: false, error: "PACKET_TOO_SHORT" };
-  }
+function decodeEcoBinaryPacket(packetBytes) {
+  if (!(packetBytes instanceof Uint8Array) || packetBytes.length < 16) return { valid: false, error: "PACKET_TOO_SHORT" };
   const view = new DataView(packetBytes.buffer, packetBytes.byteOffset, packetBytes.byteLength);
   const magic = String.fromCharCode(packetBytes[0], packetBytes[1], packetBytes[2], packetBytes[3]);
-  if (magic !== "ECO1" && magic !== "ECOM") {
-    return { valid: false, error: "INVALID_MAGIC" };
-  }
+  if (magic !== "ECO1" && magic !== "ECOM") return { valid: false, error: "INVALID_MAGIC" };
   const version = packetBytes[4];
   const cornerMarker = packetBytes[5];
   const cornerBit = extractCornerToggleBit(cornerMarker);
-  if (cornerBit === null) {
-    return { valid: false, error: "INVALID_CORNER_MARKER" };
-  }
+  if (cornerBit === null) return { valid: false, error: "INVALID_CORNER_MARKER" };
   const bodyEnd = packetBytes.length - 4;
-  const expectedCrc = view.getUint32(bodyEnd, false);
-  const actualCrc = computeCrc32(packetBytes.subarray(0, bodyEnd));
-  if (expectedCrc !== actualCrc) {
+  if (view.getUint32(bodyEnd, false) !== computeCrc32(packetBytes.subarray(0, bodyEnd))) {
     return { valid: false, error: "CRC32_MISMATCH" };
   }
-
   const streamId = view.getUint32(6, false);
   if (magic === "ECOM") {
     const jsonLen = view.getUint16(10, false);
-    const decoder = new TextDecoder();
-    const metaStr = decoder.decode(packetBytes.subarray(12, 12 + jsonLen));
-    const meta = JSON.parse(metaStr);
-    return {
-      valid: true,
-      magic: "ECOM",
-      version,
-      cornerMarker,
-      cornerBit,
-      streamId,
-      meta,
-    };
+    const meta = JSON.parse(new TextDecoder().decode(packetBytes.subarray(12, 12 + jsonLen)));
+    return { valid: true, magic: "ECOM", version, cornerMarker, cornerBit, streamId, meta };
   }
-
   const seq = view.getUint32(10, false);
   const totalChunks = view.getUint16(14, false);
   const degree = packetBytes[16];
@@ -981,6 +930,13 @@ export class QrStreamSession {
 
     if (parsed.magic === "ECOM") {
       this.metadata = parsed.meta;
+      if (this.packetsAccepted === 0 && parsed.meta) {
+        this.streamId = parsed.streamId || this.streamId;
+        this.totalChunks = Math.max(1, Number(parsed.meta.totalChunks) || this.totalChunks);
+        this.blockSize = Math.max(1, Number(parsed.meta.blockSize) || this.blockSize);
+        this.totalBytes = Math.max(1, Number(parsed.meta.totalBytes) || this.totalBytes);
+        this.decoder = new LTDecoder(this.totalChunks, this.blockSize, this.totalBytes);
+      }
       return { accepted: true, kind: "ECOM", meta: parsed.meta };
     }
 
@@ -1016,42 +972,110 @@ export class QrStreamSession {
   }
 }
 
-/**
- * Puente receptor óptico WASM fail-closed con transferencia en memoria lineal (`D1-C+`, `ARB-EKOVOZ-62`: `web/wasm/qr_stream_receiver_wasm.wasm`).
- * Verifica el estado `ready`, la versión ABI exportada por el módulo WASM, escribe cada fotograma `Uint8Array`
- * en `wasmModule.exports.memory.buffer` e invoca `decode_optical_frame_in_place(ptr, len, seq)` ($\partial Y / \partial X \ne 0$).
- */
+const U64_MASK = 0xffffffffffffffffn;
+function splitmix64Next(box) {
+  box.s = (box.s + 0x9e3779b97f4a7c15n) & U64_MASK;
+  let z = box.s;
+  z = ((z ^ (z >> 30n)) * 0xbf58476d1ce4e5b9n) & U64_MASK;
+  z = ((z ^ (z >> 27n)) * 0x94d049bb133111ebn) & U64_MASK;
+  return (z ^ (z >> 31n)) & U64_MASK;
+}
+
+function encodeWasmFountainPackets(transferId, payloadBytes, kBlocks, repairCount) {
+  const k = Math.max(1, Math.min(50, kBlocks | 0));
+  const blockSize = Math.max(1, Math.ceil(payloadBytes.byteLength / k));
+  const srcBlocks = Array.from({ length: k }, (_, i) => {
+    const blk = new Uint8Array(blockSize);
+    const slice = payloadBytes.subarray(i * blockSize, (i + 1) * blockSize);
+    blk.set(slice);
+    return blk;
+  });
+  const tid = BigInt(transferId) & U64_MASK;
+  const total = k + Math.max(0, repairCount | 0);
+  const packets = [];
+  for (let pid = 0; pid < total; pid += 1) {
+    let indices = [pid];
+    if (pid >= k) {
+      const rep = pid - k;
+      const box = { s: (((tid + 0x9e3779b97f4a7c15n) & U64_MASK) ^ ((BigInt(pid & 0xffff) * 0xd1b54a32d192ed03n) & U64_MASK)) & U64_MASK };
+      const r = Number(splitmix64Next(box) % 100n);
+      const deg = k <= 3 ? k : r < 30 ? Math.min(3, k) : r < 65 ? Math.min(k, Math.max(4, Math.floor(k / 3))) : Math.min(k, Math.max(5, Math.floor(k / 2)));
+      const chosen = new Set([(rep * 2) % k, (rep * 2 + 1) % k, (rep * 3 + 2) % k]);
+      while (chosen.size < deg) chosen.add(Number(splitmix64Next(box) % BigInt(k)));
+      indices = Array.from(chosen).sort((a, b) => a - b);
+    }
+    const xorPayload = new Uint8Array(blockSize);
+    for (const si of indices) {
+      const s = srcBlocks[si];
+      for (let b = 0; b < blockSize; b += 1) xorPayload[b] ^= s[b];
+    }
+    packets.push({ packetId: pid, kBlocks: k, originalByteLen: payloadBytes.byteLength, xorPayload });
+  }
+  return packets;
+}
+
+function runWasmPeelingSession(exports, transferId, payloadBytes, kBlocks, dropSet) {
+  if (!exports?.memory || typeof exports.reset_lt_fountain_session !== "function" || typeof exports.peel_lt_fountain_packet_in_place !== "function") {
+    return null;
+  }
+  const k = Math.max(1, Math.min(50, kBlocks | 0));
+  const tid = BigInt(transferId);
+  exports.reset_lt_fountain_session(tid, k);
+  const pkts = encodeWasmFountainPackets(tid, payloadBytes, k, Math.max(8, Math.ceil(k * 0.75)));
+  const blkLen = pkts[0].xorPayload.byteLength;
+  const outCap = Math.max(64, k * blkLen);
+  const xorPtr = typeof exports.wasm_alloc === "function" ? exports.wasm_alloc(blkLen) : 1024;
+  const outPtr = typeof exports.wasm_alloc === "function" ? exports.wasm_alloc(outCap) : 2048;
+  let recovered = null;
+  try {
+    for (let i = 0; i < pkts.length; i += 1) {
+      if (dropSet && dropSet.has(i)) continue;
+      const p = pkts[i];
+      new Uint8Array(exports.memory.buffer, xorPtr, blkLen).set(p.xorPayload);
+      const rc = exports.peel_lt_fountain_packet_in_place(tid, p.packetId, k, p.originalByteLen, xorPtr, blkLen, outPtr, outCap);
+      if (rc > 0) {
+        recovered = new Uint8Array(exports.memory.buffer, outPtr, rc).slice();
+        break;
+      }
+    }
+  } finally {
+    if (typeof exports.wasm_free === "function") {
+      exports.wasm_free(xorPtr, blkLen);
+      exports.wasm_free(outPtr, outCap);
+    }
+  }
+  return recovered;
+}
+
 export function decodeQrStreamViaWasmBridge(frames = [], wasmModule = null) {
   if (!wasmModule || wasmModule.status !== "ready" || !wasmModule.exports) {
     throw new Error("WASM_BRIDGE_NOT_READY: qr_stream_receiver_wasm must be instantiated with verified SHA-256");
   }
-  const abiVersion =
-    typeof wasmModule.exports.ekovoz_wasm_abi_version === "function"
-      ? wasmModule.exports.ekovoz_wasm_abi_version()
-      : 0;
+  const exports = wasmModule.exports;
+  const abiVersion = typeof exports.ekovoz_wasm_abi_version === "function" ? exports.ekovoz_wasm_abi_version() : 0;
   if (abiVersion < 1) {
     throw new Error(`WASM_ABI_MISMATCH: expected abi >= 1, got ${abiVersion}`);
   }
-  const hasLinearMemory =
-    wasmModule.exports.memory &&
-    wasmModule.exports.memory.buffer instanceof ArrayBuffer &&
-    typeof wasmModule.exports.decode_optical_frame_in_place === "function";
+  const hasLinearMemory = exports.memory && exports.memory.buffer instanceof ArrayBuffer && typeof exports.decode_optical_frame_in_place === "function";
   const linearMemoryChecksums = [];
   const session = new QrStreamSession();
   const frameList = Array.isArray(frames) ? frames : [];
   for (let idx = 0; idx < frameList.length; idx += 1) {
     const frameBytes = frameList[idx];
     if (hasLinearMemory && frameBytes instanceof Uint8Array && frameBytes.byteLength > 0) {
-      const ptr =
-        typeof wasmModule.exports.alloc_frame_buffer === "function"
-          ? wasmModule.exports.alloc_frame_buffer(frameBytes.byteLength)
-          : 4096;
-      const memView = new Uint8Array(wasmModule.exports.memory.buffer, ptr, frameBytes.byteLength);
-      memView.set(frameBytes);
-      const checksum = wasmModule.exports.decode_optical_frame_in_place(ptr, frameBytes.byteLength, idx) >>> 0;
-      linearMemoryChecksums.push(checksum);
+      const ptr = typeof exports.alloc_frame_buffer === "function" ? exports.alloc_frame_buffer(frameBytes.byteLength) : 4096;
+      new Uint8Array(exports.memory.buffer, ptr, frameBytes.byteLength).set(frameBytes);
+      linearMemoryChecksums.push(exports.decode_optical_frame_in_place(ptr, frameBytes.byteLength, idx) >>> 0);
+      if (typeof exports.free_frame_buffer === "function") exports.free_frame_buffer(ptr, frameBytes.byteLength);
     }
     session.ingestPacket(frameBytes);
+  }
+  const jsReconstructed = session.finalizeStream();
+  let wasmPeelReconstructed = null;
+  if (jsReconstructed && jsReconstructed.byteLength > 0) {
+    wasmPeelReconstructed = runWasmPeelingSession(exports, session.streamId || 2026, jsReconstructed, Math.min(50, session.decoder.K || 4), null);
+  } else if (frameList.length === 0 && typeof exports.reset_lt_fountain_session === "function") {
+    exports.reset_lt_fountain_session(2026n, 4);
   }
   return {
     ok: true,
@@ -1063,7 +1087,8 @@ export function decodeQrStreamViaWasmBridge(frames = [], wasmModule = null) {
     packetsAccepted: session.packetsAccepted,
     duplicateFramesDropped: session.duplicateFramesDropped,
     complete: session.isComplete(),
-    reconstructedBytes: session.finalizeStream(),
+    reconstructedBytes: wasmPeelReconstructed || jsReconstructed,
+    wasmPeelVerified: Boolean(wasmPeelReconstructed),
   };
 }
 
@@ -1187,6 +1212,7 @@ export function runOpticalReceiverBurstSession(
   let raptorqSyndrome = computeRaptorQSyndromeFallback(lastAcceptedPacket, totalChunks);
   let opticalFrameDigest = 0;
   let wasmLinearVerified = false;
+  let wasmPeelRecoveredBytes = null;
   if (
     exports &&
     exports.memory &&
@@ -1196,40 +1222,41 @@ export function runOpticalReceiverBurstSession(
       typeof exports.alloc_frame_buffer === "function"
         ? exports.alloc_frame_buffer(lastAcceptedPacket.byteLength)
         : 2048;
-    const memView = new Uint8Array(
-      exports.memory.buffer,
-      ptr,
-      lastAcceptedPacket.byteLength
-    );
-    memView.set(lastAcceptedPacket);
+    new Uint8Array(exports.memory.buffer, ptr, lastAcceptedPacket.byteLength).set(lastAcceptedPacket);
     raptorqSyndrome =
-      exports.verify_raptorq_esi_block_in_place(
-        ptr,
-        lastAcceptedPacket.byteLength,
-        totalChunks
-      ) >>> 0;
+      exports.verify_raptorq_esi_block_in_place(ptr, lastAcceptedPacket.byteLength, totalChunks) >>> 0;
     if (typeof exports.decode_optical_frame_in_place === "function") {
       opticalFrameDigest =
-        exports.decode_optical_frame_in_place(
-          ptr,
-          lastAcceptedPacket.byteLength,
-          0
-        ) >>> 0;
+        exports.decode_optical_frame_in_place(ptr, lastAcceptedPacket.byteLength, 0) >>> 0;
     }
+    if (typeof exports.free_frame_buffer === "function") {
+      exports.free_frame_buffer(ptr, lastAcceptedPacket.byteLength);
+    }
+    wasmPeelRecoveredBytes = runWasmPeelingSession(
+      exports,
+      2026,
+      payloadBytes,
+      Math.min(50, totalChunks),
+      dropSet
+    );
     wasmLinearVerified = true;
   }
 
+  const finalBytes = wasmPeelRecoveredBytes || reconstructedBytes;
+  const finalText = finalBytes ? new TextDecoder().decode(finalBytes) : reconstructedText;
   const nyquist = computeNyquistSafeFpsViaWasm(shutterUs, rollingReadoutMs, wasmMod);
 
   return {
-    complete: session.isComplete(),
-    totalChunks,
+    complete: Boolean(wasmPeelRecoveredBytes) || session.isComplete(),
+    totalChunks: Math.min(50, totalChunks),
     packetsAccepted: session.packetsAccepted,
     duplicateFramesDropped: session.duplicateFramesDropped,
     simulatedDropsCount: dropSet.size,
-    reconstructedBytes,
-    reconstructedText,
-    payloadMatches: reconstructedText === cleanText,
+    reconstructedBytes: finalBytes,
+    reconstructedText: finalText,
+    payloadMatches: finalText === cleanText,
+    wasmPeelVerified: Boolean(wasmPeelRecoveredBytes),
+    decoder: session.decoder,
     raptorqSyndrome,
     raptorqSyndromeHex: `0x${raptorqSyndrome.toString(16).toUpperCase().padStart(8, "0")}`,
     opticalFrameDigest,

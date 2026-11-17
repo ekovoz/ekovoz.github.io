@@ -1,15 +1,60 @@
-// web/mostrador/dosis.js — Dosificador de impresión y difusión en 3 escalas (Ronda 20, S11, Decisión D4).
+// web/mostrador/dosis.js — Dosificador de impresión y difusión en 3 escalas (SLICE-V2R-05, D1-A+, D4-A+).
 //
 //   Dosis 1 · «Hojas arriba y abajo del verso»: 1, 2 o 3 hojas físicas del PDF de bloque real.
 //   Dosis 2 · Un bloque canónico (1 de 80) completo.
 //   Dosis 3 · La Biblia completa (PDF con /Outlines).
-//
-// El índice por página (`web/data/pages/<lang>/<edition>.pages.json`) guarda, para cada página de
-// cada bloque, el primer ordinal canónico visible (GEN 1:1 = 1 … REV 22:21 = 31,102). Una página
-// que solo continúa un versículo repite el ordinal del versículo que continúa.
 
 import { BIBLE_CONSTANTS } from "../bible_constants.js";
-import { canonicalOrdinalOf } from "./canonical_versification.js";
+import {
+  buildCssPagedMediaPrintHtml,
+  dispatchTandaWorkerJob,
+  getCachedFederationReachability,
+  planBimodalClientPrint,
+  probeFederationShardReachabilityOnce,
+  resolveFederatedAssetUrl,
+  typesetTandaPdfBytes,
+} from "./bimodal_tanda_print.js";
+import { evaluateOpticalSauvolaPhotocopyOracle } from "./sauvola_canvas_oracle.js";
+import {
+  buildRelativePdfAssetUrl,
+  CANONICAL_12_BRANCH_PROFILES,
+  CANONICAL_14_PLUS_2_EDITIONS_CATALOG,
+  CANONICAL_14_PRINT_PROFILES,
+  CANONICAL_16_TYPOLOGY_PROFILES,
+  CANONICAL_80_BLOCKS_CATALOG,
+  CANONICAL_9_TOML_PROFILES,
+  computeFoliationLayout,
+  computeKindlePrintBudget,
+  computeMultiSignatureImposition,
+  FIELD_PDFS_REGISTRY,
+  hydrateEditorialProfiles,
+  POCKET_REFUGE_4_SHEETS_SPEC,
+  PRECOMPILED_PDF_LANGS,
+  renderBranchAndTypologyInspectorHtml,
+  renderImpositionAndLayoutPreviewHtml,
+  renderMultiSignatureAndPocketRefugeHtml,
+  resolveCanonicalBlockCode,
+  resolveCanonicalBlockForPassage,
+  resolveEditionGeometrySpec,
+  resolvePrecompiledDiskLang,
+  resolvePrintEditionPdfAssetUrl,
+  VERIFIED_TEXT_BIBLE_LANGS,
+} from "./dosis_editions_catalog.js";
+
+export {
+  buildRelativePdfAssetUrl, CANONICAL_12_BRANCH_PROFILES, CANONICAL_14_PLUS_2_EDITIONS_CATALOG, CANONICAL_14_PRINT_PROFILES, CANONICAL_16_TYPOLOGY_PROFILES, CANONICAL_80_BLOCKS_CATALOG, CANONICAL_9_TOML_PROFILES, computeFoliationLayout, computeKindlePrintBudget, computeMultiSignatureImposition, FIELD_PDFS_REGISTRY, hydrateEditorialProfiles, POCKET_REFUGE_4_SHEETS_SPEC, PRECOMPILED_PDF_LANGS, renderBranchAndTypologyInspectorHtml, renderImpositionAndLayoutPreviewHtml, renderMultiSignatureAndPocketRefugeHtml, resolveCanonicalBlockCode, resolveCanonicalBlockForPassage, resolveEditionGeometrySpec, resolvePrecompiledDiskLang, resolvePrintEditionPdfAssetUrl, VERIFIED_TEXT_BIBLE_LANGS
+};
+
+// @req[BIB-V2-19]
+export {
+  buildCssPagedMediaPrintHtml,
+  dispatchTandaWorkerJob,
+  getCachedFederationReachability,
+  planBimodalClientPrint,
+  probeFederationShardReachabilityOnce,
+  resolveFederatedAssetUrl,
+  typesetTandaPdfBytes
+};
 
 const prefixCache = new WeakMap();
 
@@ -107,7 +152,6 @@ export function locateVersePage(pagesIndex, ordinal) {
 
 /**
  * Páginas (1-based dentro del bloque) para `sheets` hojas físicas alrededor de `pageInBlock`.
- * Soporta tanto firma de objeto `{ pageInBlock, pageCount, sheets, duplex }` como posicional `(pageInBlock, sheets, duplex, pageCount)`.
  */
 export function planDose1(arg1, arg2, arg3, arg4) {
   const opts =
@@ -137,32 +181,25 @@ export function normalizeEditionSlug(edition, fallbackPaper = "a4") {
   return fallbackPaper === "letter" ? "2col-letter" : "2col-a4";
 }
 
-/** Normaliza cualquier ruta de activo PDF a ruta relativa sin `/` inicial para sub-rutas GitHub Pages (Decisión 7A). */
-export function buildRelativePdfAssetUrl(rawUrl = "") {
-  const clean = String(rawUrl || "").trim();
-  if (!clean) return "";
-  return clean.replace(/^\/+(?=(?:data|obras)\/)/, "");
-}
-
-/** Dosis 2: el bloque completo que contiene el versículo. */
+/** Dosis 2: el bloque completo que contiene el versículo (`editions-01/data/blocks/...` Same-Origin). */
 export function planDose2(locatedOrBlockId, lang = "es", edition = "2col-a4") {
   if (typeof locatedOrBlockId === "string") {
-    const cleanLang = String(lang || "es").trim() || "es";
-    const diskLang =
-      cleanLang === "es-1909"
-        ? "es"
-        : ["es", "en", "stp", "he", "grc"].includes(cleanLang)
-          ? cleanLang
-          : "es";
-    const defaultPaper = diskLang === "es" ? "letter" : "a4";
+    const cleanLang = String(lang || "es").trim().toLowerCase() || "es";
+    const precompiledLang = resolvePrecompiledDiskLang(cleanLang);
+    const defaultPaper = precompiledLang === "es" ? "letter" : "a4";
     const editionSlug = normalizeEditionSlug(edition, defaultPaper);
     const digits = String(locatedOrBlockId).replace(/\D+/g, "");
     const blockNum = Math.max(1, Math.min(80, Number(digits) || 1));
     const padded = String(blockNum).padStart(2, "0");
-    const file = `data/blocks/${diskLang}/${editionSlug}/B${padded}.pdf`;
+    const file = precompiledLang
+      ? `editions-01/data/blocks/${precompiledLang}/${editionSlug}/B${padded}.pdf`
+      : `mostrador/tanda_print_worker.js?lang=${encodeURIComponent(cleanLang)}&edition=${encodeURIComponent(editionSlug)}&block=B${padded}`;
     return {
       blockId: `BLK-0${padded}`,
       blockNumber: blockNum,
+      lang: cleanLang,
+      hasPrecompiledPdf: Boolean(precompiledLang),
+      availabilityMode: precompiledLang ? "precompiled_pdf" : "bimodal_client_print",
       edition: editionSlug,
       editionSlug,
       file,
@@ -170,9 +207,10 @@ export function planDose2(locatedOrBlockId, lang = "es", edition = "2col-a4") {
     };
   }
   const block = locatedOrBlockId.block || locatedOrBlockId;
+  const relFile = buildRelativePdfAssetUrl(block.file);
   return {
-    file: block.file,
-    url: block.file,
+    file: relFile,
+    url: relFile,
     blockNumber: block.number,
     blockId: block.id,
     pageCount: block.page_count,
@@ -180,77 +218,11 @@ export function planDose2(locatedOrBlockId, lang = "es", edition = "2col-a4") {
   };
 }
 
-export const CANONICAL_14_PLUS_2_EDITIONS_CATALOG = [
-  { id: "01_1col_lectura", editionSlug: "01_1col_lectura", label: "1. Lectura Continua (1 col · 10.5pt)", label_en: "1. Continuous Reading (1 col · 10.5pt)", kind: "edition", columns: 1, fontPt: 10.5 },
-  { id: "02_2col_pastoral", editionSlug: "02_2col_pastoral", label: "2. Pastoral Clásica (2 col · 9.5pt)", label_en: "2. Classic Pastoral (2 col · 9.5pt)", kind: "edition", columns: 2, fontPt: 9.5 },
-  { id: "03_3col_compacta", editionSlug: "03_3col_compacta", label: "3. Compacta de Bolsillo (3 col · 8.0pt)", label_en: "3. Pocket Compact (3 col · 8.0pt)", kind: "edition", columns: 3, fontPt: 8.0 },
-  { id: "04_1col_letra_grande", editionSlug: "04_1col_letra_grande", label: "4. Letra Grande Abuelos (1 col · 13.5pt)", label_en: "4. Large Print Elders (1 col · 13.5pt)", kind: "edition", columns: 1, fontPt: 13.5 },
-  { id: "05_interlineal_estudio", editionSlug: "05_interlineal_estudio", label: "5. Interlineal de Estudio 14-Col (A4)", label_en: "5. 14-Col Study Interlinear (A4)", kind: "edition", columns: 1, fontPt: 9.0 },
-  { id: "06_bilingue_paralela", editionSlug: "06_bilingue_paralela", label: "6. Díptico Bilingüe 58/42 (Materna + Puente)", label_en: "6. Bilingual Diptych 58/42 (Vernacular + Bridge)", kind: "edition", columns: 2, fontPt: 9.5 },
-  { id: "07_cuaderno_5lineas_apaisado", editionSlug: "07_cuaderno_5lineas_apaisado", label: "7. Cuaderno de Campo 5 Líneas (Landscape)", label_en: "7. 5-Line Field Notebook (Landscape)", kind: "edition", columns: 1, fontPt: 10.0 },
-  { id: "08_bolsillo_misionero", editionSlug: "08_bolsillo_misionero", label: "8. Pliego Saddle-Stitch 4n (Imposición)", label_en: "8. Saddle-Stitch 4n Booklet (Imposition)", kind: "edition", columns: 2, fontPt: 8.5 },
-  { id: "09_atril_liturgico", editionSlug: "09_atril_liturgico", label: "9. Edición de Atril y Asamblea (Folio)", label_en: "9. Pulpit & Assembly Folio Edition", kind: "edition", columns: 2, fontPt: 12.0 },
-  { id: "10_evangelio_14_pericopas", editionSlug: "10_evangelio_14_pericopas", label: "10. Evangelio 14 Perícopas (2 col · 10.0pt)", label_en: "10. Gospel 14 Pericopes (2 col · 10.0pt)", kind: "edition", columns: 2, fontPt: 10.0 },
-  { id: "11_braille_nemeth_b70", editionSlug: "11_braille_nemeth_b70", label: "11. Braille Táctil BEB B70 (1 col · 16.0pt)", label_en: "11. Tactile Braille BEB B70 (1 col · 16.0pt)", kind: "edition", columns: 1, fontPt: 16.0 },
-  { id: "12_dislexia_espaciado_amplio", editionSlug: "12_dislexia_espaciado_amplio", label: "12. Dislexia Espaciado Amplio (1 col · 12.5pt)", label_en: "12. Dyslexia Wide Spacing (1 col · 12.5pt)", kind: "edition", columns: 1, fontPt: 12.5 },
-  { id: "13_contraste_extremo_baja_vision", editionSlug: "13_contraste_extremo_baja_vision", label: "13. Baja Visión Contraste Extremo (1 col · 15.0pt)", label_en: "13. Low Vision High Contrast (1 col · 15.0pt)", kind: "edition", columns: 1, fontPt: 15.0 },
-  { id: "14_pliego_mural_comunitario", editionSlug: "14_pliego_mural_comunitario", label: "14. Pliego Mural Comunitario A3 (3 col · 11.0pt)", label_en: "14. Community Mural Sheet A3 (3 col · 11.0pt)", kind: "edition", columns: 3, fontPt: 11.0 },
-  { id: "15_refugio_4_hojas", editionSlug: "refugio_4_hojas", label: "15. Refugio de Emergencia (4 Hojas · PDF)", label_en: "15. Emergency Pocket Refuge (4 Sheets · PDF)", kind: "field_pdf", url: "obras/biblia/campo/refugio_4_hojas.pdf", bytes: 54295 },
-  { id: "16_checklist_80_bloques", editionSlug: "checklist_80_bloques", label: "16. Checklist de 80 Bloques de Campo (PDF)", label_en: "16. 80 Canonical Field Blocks Checklist (PDF)", kind: "field_pdf", url: "obras/biblia/campo/checklist_80_bloques.pdf", bytes: 12437 },
-];
-
-const FIELD_PDFS_REGISTRY = {
-  refugio_4_hojas: { bytes: 54295, path: "obras/biblia/campo/refugio_4_hojas.pdf" },
-  checklist_80_bloques: { bytes: 12437, path: "obras/biblia/campo/checklist_80_bloques.pdf" },
-};
-
-export const PRECOMPILED_PDF_LANGS = ["es", "en", "stp", "he", "grc"];
-export const VERIFIED_TEXT_BIBLE_LANGS = [
-  "es", "es-1909", "en", "stp", "he", "grc", "pt", "fr", "ar", "ru", "zh-Hans", "hi", "bn", "id", "ur", "fa",
-];
-
-/**
- * D5-R41 (`5A` · `ARB-EKOVOZ-78`):
- * Sintetiza un PDF `%PDF-1.4` minimalista válido en memoria para las 11 Biblias verificadas en texto
- * que aún no tienen los 80 bloques PDF precompilados en disco, garantizando que `dispenseDose1` funcione en las 16 Biblias.
- */
-export function synthesizeLiveChapterDose1PdfBytes({
-  lang = "pt",
-  book = "GEN",
-  chapter = 1,
-  verse = 1,
-  text = "",
-  versesMap = null,
-  sheets = 1,
-} = {}) {
-  const mapEntries =
-    versesMap && typeof versesMap === "object"
-      ? Object.entries(versesMap)
-          .slice(0, 12)
-          .map(([vNum, vTxt]) => `${vNum}. ${vTxt}`)
-          .join(" ")
-      : "";
-  const safeText = String(text || mapEntries || `${book} ${chapter}:${verse} (${lang})`)
-    .replace(/[()\\]/g, " ")
-    .slice(0, 240);
-  const pageCount = Math.max(2, Math.min(6, (Number(sheets) || 1) * 2));
-  const kids = Array.from({ length: pageCount }, (_, idx) => `${idx + 3} 0 R`).join(" ");
-  const contentObjId = pageCount + 3;
-  const streamText = `BT /F1 10 Tf 54 760 Td (${book} ${chapter}:${verse} [${lang}] - ${safeText}) Tj ET`;
-  let pdf = `%PDF-1.4\n1 0 obj << /Type /Catalog /Pages 2 0 R >> endobj\n2 0 obj << /Type /Pages /Count ${pageCount} /Kids [ ${kids} ] >> endobj\n`;
-  for (let i = 0; i < pageCount; i++) {
-    const objId = i + 3;
-    pdf += `${objId} 0 obj << /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Contents ${contentObjId} 0 R >> endobj\n`;
-  }
-  pdf += `${contentObjId} 0 obj << /Length ${streamText.length} >>\nstream\n${streamText}\nendstream\nendobj\n`;
-  pdf += `% Live Dose1 (${lang} ${book} ${chapter}:${verse}): ${safeText}\n%%EOF\n`;
-  return new TextEncoder().encode(pdf);
-}
-
-function encodePdfBytesToDataUri(bytes) {
+export function encodePdfBytesToDataUri(bytes) {
   let binary = "";
-  for (let i = 0; i < bytes.byteLength; i += 1) {
-    binary += String.fromCharCode(bytes[i]);
+  const chunk = 8192;
+  for (let i = 0; i < bytes.byteLength; i += chunk) {
+    binary += String.fromCharCode(...bytes.subarray(i, Math.min(bytes.byteLength, i + chunk)));
   }
   const b64 =
     typeof globalThis.btoa === "function"
@@ -260,11 +232,204 @@ function encodePdfBytesToDataUri(bytes) {
 }
 
 /**
- * D2-R42 (`2A` · `ARB-EKOVOZ-79`):
- * Sincroniza `#linkDose2BlockPdf` y `#linkDose3FullBiblePdf` para que las 11 lenguas verificadas en texto
- * sin bloques PDF precompilados reciban un PDF `%PDF-1.4` sintetizado en vivo en su propio idioma (`state.lang`),
- * eliminando por completo la caída silenciosa a `es`.
+ * Determina si el perfil geométrico seleccionado (`1col`, `3col` o letra grande `>= 12pt`) requiere
+ * síntesis viva real en `tanda_print_worker.js` en lugar de servir el PDF estático precompilado `2col` (`DEB-V2C-11`).
  */
+export function requiresLiveGeometrySynthesis({
+  columns = 2,
+  fontPt = 9.5,
+} = {}) {
+  const cols = Number(columns) || 2;
+  const pt = Number(fontPt) || 9.5;
+  return cols !== 2 || pt >= 12.0;
+}
+
+/**
+ * Construye determinísticamente el índice de páginas de los `80` bloques canónicos sobre los `31,102` versículos
+ * sin depender del directorio legado retirado `web/data/pages/` (`SLICE-V2C-07` / `DEB-V2C-12`).
+ */
+export function buildCanonical80BlocksPagesIndex(catalog, lang = "es", edition = "2col-letter") {
+  const cleanLang = String(lang || "es").trim().toLowerCase() || "es";
+  const precompiledLang = resolvePrecompiledDiskLang(cleanLang) || "es";
+  const editionSlug = normalizeEditionSlug(edition, precompiledLang === "es" ? "letter" : "a4");
+  const { total, bookOrder } = prefixTable(catalog);
+  const totalVerses = total || 31102;
+  const verseCounts = catalog?.verse_counts || catalog || {};
+  let pageStart = 1;
+
+  const blocks = CANONICAL_80_BLOCKS_CATALOG.map((blk, idx) => {
+    const blockNum = idx + 1;
+    const padded = String(blockNum).padStart(2, "0");
+    const startOrd =
+      ordinalOf(blk.startBook, blk.startChapter, 1, catalog) ||
+      Math.floor((idx * totalVerses) / 80) + 1;
+    const endBookChapters = verseCounts[blk.endBook] || [];
+    const endChapIdx = Math.max(0, Math.min(endBookChapters.length - 1, (Number(blk.endChapter) || 1) - 1));
+    const endVerseCount = endBookChapters[endChapIdx] || 1;
+    const endOrd =
+      ordinalOf(blk.endBook || bookOrder?.[bookOrder.length - 1] || "REV", blk.endChapter || 1, endVerseCount, catalog) ||
+      Math.min(totalVerses, Math.floor(((idx + 1) * totalVerses) / 80));
+    const pageCount = Math.max(4, Number(blk.pagesCount) || 16);
+    const span = Math.max(1, endOrd - startOrd + 1);
+    const firstOrdinalPerPage = [];
+    for (let p = 0; p < pageCount; p += 1) {
+      const ord = Math.min(endOrd, startOrd + Math.floor((p * span) / pageCount));
+      firstOrdinalPerPage.push(ord);
+    }
+    const entry = {
+      id: blk.blockId || `BLK-0${padded}`,
+      number: blockNum,
+      file: `editions-01/data/blocks/${precompiledLang}/${editionSlug}/B${padded}.pdf`,
+      page_start: pageStart,
+      page_count: pageCount,
+      first_ordinal_per_page: firstOrdinalPerPage,
+    };
+    pageStart += pageCount;
+    return entry;
+  });
+
+  if (blocks.length > 0) {
+    blocks[0].first_ordinal_per_page[0] = 1;
+  }
+  for (let i = 1; i < blocks.length; i += 1) {
+    if (blocks[i].first_ordinal_per_page[0] <= blocks[i - 1].first_ordinal_per_page[0]) {
+      blocks[i].first_ordinal_per_page[0] = blocks[i - 1].first_ordinal_per_page[0] + 1;
+    }
+  }
+
+  return {
+    lang: precompiledLang,
+    edition: editionSlug,
+    total_pages: pageStart - 1,
+    catalog,
+    blocks,
+  };
+}
+
+/**
+ * Agrupa biyectivamente los `80` bloques canónicos (`BLK-001..BLK-080`, `5` bloques por Macro-Tanda = `16 × 5 = 80`)
+ * en las **16 Macro-Tandas Canónicas** cosibles ($M \le 8$ hojas por cuadernillo `4N`, `32` págs/cuadernillo, `< 14 MiB` RAM Worker).
+ */
+function buildCanonical16MacroTandasCatalog() {
+  const macroTandas = [];
+  for (let m = 0; m < 16; m += 1) {
+    const macroNumber = m + 1;
+    const padded = String(macroNumber).padStart(2, "0");
+    const slice5 = CANONICAL_80_BLOCKS_CATALOG.slice(m * 5, (m + 1) * 5);
+    const firstBlk = slice5[0];
+    const lastBlk = slice5[slice5.length - 1];
+    const totalLogicalPages = slice5.reduce((acc, b) => acc + (Number(b.pagesCount) || 16), 0);
+    const imp = computeMultiSignatureImposition({
+      totalPages: totalLogicalPages,
+      maxSheetsPerSignature: 8,
+      paperThicknessMm: 0.09,
+      paperBulkFactor: 1.15,
+      dir: "ltr",
+    });
+    const booksSet = new Set();
+    for (const blk of slice5) {
+      if (blk.startBook) booksSet.add(String(blk.startBook).toUpperCase());
+      if (blk.endBook) booksSet.add(String(blk.endBook).toUpperCase());
+    }
+    const rangeLabel = `${firstBlk.startBook} ${firstBlk.startChapter} – ${lastBlk.endBook} ${lastBlk.endChapter}`;
+    macroTandas.push({
+      macroTandaId: `MT-${padded}`,
+      macroTandaCode: `MT${padded}`,
+      macroTandaNumber: macroNumber,
+      testament: macroNumber <= 12 ? "AT" : "NT",
+      startBlockNumber: firstBlk.blockNumber,
+      endBlockNumber: lastBlk.blockNumber,
+      blockIds: slice5.map((b) => b.blockId),
+      blockCodes: slice5.map((b) => b.shortCode),
+      booksIncluded: [...booksSet],
+      startBook: firstBlk.startBook,
+      startChapter: firstBlk.startChapter,
+      endBook: lastBlk.endBook,
+      endChapter: lastBlk.endChapter,
+      rangeLabel,
+      logicalPagesCount: imp.paddedTotalPages,
+      signatureCount: imp.signatureCount,
+      maxSheetsPerSignature: 8,
+      spreads4nCount: imp.paddedTotalPages / 2,
+      maxCreepMm: imp.maxCreepMm,
+      creepWithinBound: imp.creepWithinBound,
+      workerRamSafeUnder14Mb: true,
+    });
+  }
+  return macroTandas;
+}
+
+export const CANONICAL_16_MACRO_TANDAS = buildCanonical16MacroTandasCatalog();
+
+export function resolveMacroTandaForBlock(blockNumberOrCode = 1) {
+  const num =
+    typeof blockNumberOrCode === "string"
+      ? Math.max(1, Math.min(80, Number(blockNumberOrCode.replace(/\D+/g, "")) || 1))
+      : Math.max(1, Math.min(80, Number(blockNumberOrCode) || 1));
+  const macroIdx = Math.min(15, Math.floor((num - 1) / 5));
+  return CANONICAL_16_MACRO_TANDAS[macroIdx] || CANONICAL_16_MACRO_TANDAS[0];
+}
+
+export function planSequential16MacroTandasGeneration({
+  lang = "es",
+  columns = 2,
+  fontPt = 9.5,
+  paper = "a4",
+  dir = "ltr",
+} = {}) {
+  const cleanLang = String(lang || "es").trim().toLowerCase() || "es";
+  return CANONICAL_16_MACRO_TANDAS.map((mt) => ({
+    macroTandaId: mt.macroTandaId,
+    macroTandaNumber: mt.macroTandaNumber,
+    blockIds: mt.blockIds,
+    booksIncluded: mt.booksIncluded,
+    rangeLabel: mt.rangeLabel,
+    columns: Math.max(1, Math.min(3, Number(columns) || 2)),
+    fontPt: Number(fontPt) || 9.5,
+    paper: String(paper || "a4").toLowerCase(),
+    dir: dir === "rtl" ? "rtl" : "ltr",
+    booklet4n: true,
+    maxSheetsPerSignature: 8,
+    maxCreepMm: mt.maxCreepMm,
+    spreads4nCount: mt.spreads4nCount,
+    downloadFilename: `ekovoz_${cleanLang}_${mt.macroTandaId.toLowerCase()}_${Number(columns) || 2}col.pdf`,
+  }));
+}
+
+export function renderCanonical16MacroTandasSelectorHtml({
+  activeMacroTandaNumber = 1,
+  lang = "es",
+  columns = 2,
+  fontPt = 9.5,
+  uiLocale = "es",
+} = {}) {
+  const isEn = String(uiLocale || "es").trim().toLowerCase().startsWith("en");
+  const idx = Math.max(1, Math.min(16, Number(activeMacroTandaNumber) || 1)) - 1;
+  const activeMt = CANONICAL_16_MACRO_TANDAS[idx] || CANONICAL_16_MACRO_TANDAS[0];
+  const optionsHtml = CANONICAL_16_MACRO_TANDAS.map((mt) => {
+    const sel = mt.macroTandaNumber === activeMt.macroTandaNumber ? " selected" : "";
+    return (
+      `<option value="${mt.macroTandaNumber}"${sel}>` +
+      `${mt.macroTandaId} (${mt.blockCodes[0]}–${mt.blockCodes[4]}) · ${mt.rangeLabel} · M≤${mt.maxSheetsPerSignature}h · creep ${mt.maxCreepMm}mm` +
+      `</option>`
+    );
+  }).join("");
+
+  return (
+    `<div id="macroTandas16Dose3Panel" class="macro-tandas-16-card" data-macro-tandas-count="16" data-canonical-blocks-covered="80" data-active-macro-tanda="${activeMt.macroTandaId}" data-max-sheets-signature="${activeMt.maxSheetsPerSignature}" data-creep-mm="${activeMt.maxCreepMm}" data-spreads-4n="${activeMt.spreads4nCount}" style="margin-top:0.55rem;padding:0.65rem;border-radius:10px;border:1px solid var(--card-border);background:var(--card-bg);font-size:0.8rem;">` +
+    `<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.35rem;margin-bottom:0.35rem;">` +
+    `<strong>🏛️ ${isEn ? "Dose 3 · 16 Canonical Macro-Tandas (80 Blocks, M≤8 Sewable Signatures)" : "Dosis 3 · 16 Macro-Tandas Canónicas (80 Bloques, Cuadernillos M≤8 Hojas)"}</strong>` +
+    `<span class="uls-badge" data-macro-tanda-creep="${activeMt.maxCreepMm}">4N: ${activeMt.spreads4nCount} ${isEn ? "spreads" : "pliegos"} · creep ${activeMt.maxCreepMm} mm · &lt;14 MiB Worker</span>` +
+    `</div>` +
+    `<div style="display:flex;align-items:center;flex-wrap:wrap;gap:0.45rem;">` +
+    `<label for="macroTanda16Select" style="font-weight:600;">${isEn ? "Macro-Tanda (1–16):" : "Macro-Tanda (1–16):"}</label>` +
+    `<select id="macroTanda16Select" data-action="select-macro-tanda-16" aria-label="${isEn ? "Select Canonical Macro-Tanda (1 to 16)" : "Seleccionar Macro-Tanda Canónica (1 a 16)"}" style="min-height:48px;flex:1;min-width:220px;">${optionsHtml}</select>` +
+    `<button type="button" id="btnGenerateAll16MacroTandas" class="uls-chip" data-action="generate-sequential-16-macro-tandas" data-lang="${lang}" data-cols="${Number(columns) || 2}" data-font-pt="${Number(fontPt) || 9.5}" style="min-height:48px;min-width:48px;padding:8px 12px;cursor:pointer;font-weight:600;">⚡ ${isEn ? "Synthesize All 16 Tandas (Worker)" : "Generar las 16 Tandas en Secuencia (Worker)"}</button>` +
+    `</div>` +
+    `</div>`
+  );
+}
+
 export function syncDose2AndDose3LinksForActiveLang({
   state = {},
   targetDoc = null,
@@ -274,27 +439,71 @@ export function syncDose2AndDose3LinksForActiveLang({
     typeof getEl === "function"
       ? (id) => getEl(id, targetDoc)
       : (id) => targetDoc?.getElementById?.(id) || null;
-  const lang = String(state.lang || "es").trim() || "es";
+  const rawLang = String(state.effectiveCorpusLang || state.lang || "es").trim() || "es";
+  const lang = rawLang;
+  const precompiledLang = lang === "es-1909" ? null : resolvePrecompiledDiskLang(lang);
   const isEn = String(state.uiLocale || "es").trim().toLowerCase().startsWith("en");
   const book = String(state.book || "GEN").toUpperCase();
   const chapter = Number(state.chapter) || 1;
   const verse = Number(state.verse) || 1;
+  const activeCols = Number(state.columns) || 2;
+  const activeFontPt = Number(state.fontSizePt) || 9.5;
+  const needsLiveGeom =
+    (state.columns !== undefined || state.fontSizePt !== undefined) &&
+    requiresLiveGeometrySynthesis({ columns: activeCols, fontPt: activeFontPt });
   const edition = normalizeEditionSlug(
     state.edition || "2col-a4",
-    lang === "es" ? "letter" : "a4",
+    precompiledLang === "es" ? "letter" : "a4",
   );
   const resolvedBlock = resolveCanonicalBlockCode(book, chapter, verse);
   const blockNum = Number(state.activeBlockNumber) || resolvedBlock.blockNumber || 1;
   const padded = String(Math.max(1, Math.min(BIBLE_CONSTANTS.CANONICAL_BLOCKS_COUNT, blockNum))).padStart(2, "0");
   const blockCode = `B${padded}`;
-  const hasPrecompiled = PRECOMPILED_PDF_LANGS.includes(lang);
+  const activeMacroTanda =
+    CANONICAL_16_MACRO_TANDAS[
+    Math.max(1, Math.min(16, Number(state.activeMacroTandaNumber) || resolveMacroTandaForBlock(blockNum).macroTandaNumber)) - 1
+    ] || resolveMacroTandaForBlock(blockNum);
 
   const linkDose2 = resolveEl("linkDose2BlockPdf");
   const linkDose3 = resolveEl("linkDose3FullBiblePdf");
+  const effectiveFedReachable =
+    state.federationReachable !== undefined
+      ? state.federationReachable
+      : getCachedFederationReachability();
 
-  if (hasPrecompiled) {
-    const d2Href = `data/blocks/${lang}/${edition}/${blockCode}.pdf`;
-    const d3Href = `data/full/${lang}/${edition}.pdf`;
+  if (
+    effectiveFedReachable === null &&
+    typeof globalThis.window !== "undefined" &&
+    typeof globalThis.fetch === "function" &&
+    !state._federationAutoProbeScheduled
+  ) {
+    state._federationAutoProbeScheduled = true;
+    probeFederationShardReachabilityOnce({ doc: targetDoc })
+      .then((reachable) => {
+        state.federationReachable = reachable;
+        if (reachable === false) {
+          syncDose2AndDose3LinksForActiveLang({ state, targetDoc, getEl });
+        }
+      })
+      .catch(() => { });
+  }
+
+  if (
+    precompiledLang &&
+    !needsLiveGeom &&
+    !state.forceMacroTandaWorker &&
+    effectiveFedReachable !== false
+  ) {
+    const d2Href = resolveFederatedAssetUrl(
+      "editions-01",
+      `data/blocks/${precompiledLang}/${edition}/${blockCode}.pdf`,
+      targetDoc,
+    );
+    const d3Href = resolveFederatedAssetUrl(
+      "editions-01",
+      `data/full/${precompiledLang}/${edition}.pdf`,
+      targetDoc,
+    );
     if (linkDose2) {
       linkDose2.href = d2Href;
       linkDose2.setAttribute?.("href", d2Href);
@@ -311,49 +520,104 @@ export function syncDose2AndDose3LinksForActiveLang({
       linkDose3.setAttribute?.("href", d3Href);
       linkDose3.setAttribute?.("download", `ekovoz_${lang}_biblia_${edition}.pdf`);
       linkDose3.setAttribute?.("data-dose-mode", "precompiled");
+      linkDose3.setAttribute?.("data-macro-tanda", activeMacroTanda.macroTandaId);
       linkDose3.setAttribute?.("data-lang", lang);
     }
-    return { mode: "precompiled", lang, blockCode, dose2Href: d2Href, dose3Href: d3Href };
+    return {
+      mode: "precompiled",
+      lang,
+      blockCode,
+      macroTandaId: activeMacroTanda.macroTandaId,
+      dose2Href: d2Href,
+      dose3Href: d3Href,
+    };
   }
 
-  const versesMap = state.lastNavResult?.chapter?.verses || null;
-  const verseText =
-    (versesMap && versesMap[String(verse)]) || `${book} ${chapter}:${verse} (${lang})`;
-  const liveBytes = synthesizeLiveChapterDose1PdfBytes({
+  const chapterVersesMap = state.lastNavResult?.chapter?.verses || null;
+  const dose2Verses = Array.isArray(state.fullBookVerses) && state.fullBookVerses.length > 0
+    ? state.fullBookVerses
+    : chapterVersesMap;
+  const dose3Verses = Array.isArray(state.bibleTandaVerses) && state.bibleTandaVerses.length > 0
+    ? state.bibleTandaVerses
+    : dose2Verses;
+
+  const bimodalDose2 = planBimodalClientPrint({
+    dose: 2,
     lang,
     book,
     chapter,
     verse,
-    text: verseText,
-    versesMap,
-    sheets: 3,
+    verses: Array.isArray(dose2Verses) ? dose2Verses : null,
+    versesMap: !Array.isArray(dose2Verses) ? dose2Verses : null,
+    columns: activeCols,
+    fontPt: activeFontPt,
+    paper: state.paperFormat || "a4",
   });
-  const dataUri = encodePdfBytesToDataUri(liveBytes);
+  const bimodalDose3 = planBimodalClientPrint({
+    dose: 3,
+    lang,
+    book,
+    chapter,
+    verse,
+    verses: Array.isArray(dose3Verses) ? dose3Verses : null,
+    versesMap: !Array.isArray(dose3Verses) ? dose3Verses : null,
+    columns: activeCols,
+    fontPt: activeFontPt,
+    paper: state.paperFormat || "a4",
+  });
+
+  const dose2Bytes = state.dose2WorkerPdfBytes instanceof Uint8Array && state.dose2WorkerPdfBytes.byteLength > 0
+    ? state.dose2WorkerPdfBytes
+    : bimodalDose2.pdfBytes;
+  const dose3Bytes = state.dose3WorkerPdfBytes instanceof Uint8Array && state.dose3WorkerPdfBytes.byteLength > 0
+    ? state.dose3WorkerPdfBytes
+    : bimodalDose3.pdfBytes;
+
+  const dose2Href = state.dose2ObjectUrl || encodePdfBytesToDataUri(dose2Bytes);
+  const dose3Href = state.dose3ObjectUrl || encodePdfBytesToDataUri(dose3Bytes);
+
   if (linkDose2) {
-    linkDose2.href = dataUri;
-    linkDose2.setAttribute?.("href", dataUri);
-    linkDose2.setAttribute?.("download", `ekovoz-${lang}-${book.toLowerCase()}-${chapter}-${blockCode}-live.pdf`);
-    linkDose2.setAttribute?.("data-dose-mode", "live-synthesis");
+    linkDose2.href = dose2Href;
+    linkDose2.setAttribute?.("href", dose2Href);
+    linkDose2.setAttribute?.("download", `ekovoz-${lang}-${book.toLowerCase()}-${activeCols}col-${activeFontPt}pt.pdf`);
+    linkDose2.setAttribute?.("data-dose-mode", "bimodal-tanda");
+    linkDose2.setAttribute?.("data-tanda-scope", Array.isArray(state.fullBookVerses) ? "full-book" : "chapter-seed");
+    linkDose2.setAttribute?.("data-worker-url", bimodalDose2.workerUrl);
     linkDose2.setAttribute?.("data-block-code", blockCode);
+    linkDose2.setAttribute?.("data-columns", String(activeCols));
+    linkDose2.setAttribute?.("data-font-pt", String(activeFontPt));
     linkDose2.setAttribute?.("data-lang", lang);
     linkDose2.textContent = isEn
-      ? `📚 2. Download Live Booklet PDF (${lang.toUpperCase()} · ${blockCode} · ${book} ${chapter})`
-      : `📚 2. Descargar Cuadernillo PDF en Vivo (${lang.toUpperCase()} · ${blockCode} · ${book} ${chapter})`;
+      ? `📚 2. Print/Download Book Tanda PDF (${lang.toUpperCase()} · ${book} · ${activeCols}col)`
+      : `📚 2. Imprimir/Descargar Libro en Tanda PDF (${lang.toUpperCase()} · ${book} · ${activeCols}col)`;
   }
   if (linkDose3) {
-    linkDose3.href = dataUri;
-    linkDose3.setAttribute?.("href", dataUri);
-    linkDose3.setAttribute?.("download", `ekovoz-${lang}-${book.toLowerCase()}-${chapter}-edition-live.pdf`);
-    linkDose3.setAttribute?.("data-dose-mode", "live-synthesis");
+    linkDose3.href = dose3Href;
+    linkDose3.setAttribute?.("href", dose3Href);
+    linkDose3.setAttribute?.("download", `ekovoz-${lang}-${activeMacroTanda.macroTandaId.toLowerCase()}-${activeCols}col.pdf`);
+    linkDose3.setAttribute?.("data-dose-mode", "bimodal-tanda");
+    linkDose3.setAttribute?.("data-tanda-scope", Array.isArray(state.bibleTandaVerses) ? "bible-tanda-50p" : "book-seed");
+    linkDose3.setAttribute?.("data-macro-tanda", activeMacroTanda.macroTandaId);
+    linkDose3.setAttribute?.("data-worker-url", bimodalDose3.workerUrl);
+    linkDose3.setAttribute?.("data-columns", String(activeCols));
+    linkDose3.setAttribute?.("data-font-pt", String(activeFontPt));
     linkDose3.setAttribute?.("data-lang", lang);
     linkDose3.textContent = isEn
-      ? `🏛️ 3. Download Live Chapter Edition PDF (${lang.toUpperCase()})`
-      : `🏛️ 3. Descargar Edición PDF en Vivo (${lang.toUpperCase()})`;
+      ? `🏛️ 3. Download Macro-Tanda ${activeMacroTanda.macroTandaId} (${activeMacroTanda.blockCodes[0]}–${activeMacroTanda.blockCodes[4]} · ${lang.toUpperCase()})`
+      : `🏛️ 3. Descargar Macro-Tanda ${activeMacroTanda.macroTandaId} (${activeMacroTanda.blockCodes[0]}–${activeMacroTanda.blockCodes[4]} · ${lang.toUpperCase()})`;
   }
-  return { mode: "live-synthesis", lang, dose2Href: dataUri, dose3Href: dataUri };
+  return {
+    mode: "bimodal-tanda",
+    lang,
+    blockCode,
+    macroTandaId: activeMacroTanda.macroTandaId,
+    workerUrl: bimodalDose2.workerUrl,
+    dose2Href,
+    dose3Href,
+  };
 }
 
-/** Devuelve las ediciones tipográficas canónicas + 2 PDFs de campo enriquecidas con `downloads_manifest.json` y perfiles TOML (`D3-S21+`, `D5-R41`). */
+/** Devuelve las ediciones tipográficas canónicas + 2 PDFs de campo enriquecidas con `downloads_manifest.json` y perfiles TOML. */
 export function listCatalogEditionsForLang(manifestOrLang, maybeLang = "es", options = {}) {
   const isFirstArgLang = typeof manifestOrLang === "string";
   const resolvedLang = String(isFirstArgLang ? manifestOrLang : maybeLang || "es").trim().toLowerCase() || "es";
@@ -371,32 +635,36 @@ export function listCatalogEditionsForLang(manifestOrLang, maybeLang = "es", opt
       ? manifestOrLang
       : (manifestOrLang && manifestOrLang.entries) || [];
 
-  const diskLang = ["es", "en", "stp", "he", "grc"].includes(resolvedLang)
-    ? resolvedLang
-    : resolvedLang === "es-1909"
-      ? "es"
-      : "es";
-  const defaultPaper = diskLang === "es" ? "letter" : "a4";
-  const resolvedSlug = normalizeEditionSlug("02_2col_pastoral", defaultPaper);
+  const precompiledLang = resolvePrecompiledDiskLang(resolvedLang);
+  const defaultPaper = precompiledLang === "es" ? "letter" : "a4";
 
-  const fullMatch =
-    list.find((e) => e && e.lang === diskLang && (e.kind === "full" || e.kind === "full_bible") && e.path) ||
-    list.find((e) => e && e.lang === diskLang && e.path) ||
-    list.find((e) => e && e.lang === "es" && e.path) ||
-    null;
+  const fullMatch = precompiledLang
+    ? list.find((e) => e && e.lang === precompiledLang && (e.kind === "full" || e.kind === "full_bible") && e.path) ||
+    list.find((e) => e && e.lang === precompiledLang && e.path) ||
+    null
+    : null;
+
+  const catalogSource =
+    Array.isArray(resolvedOptions?.editorialProfiles?.canonical_9_plus_2_editions) &&
+      resolvedOptions.editorialProfiles.canonical_9_plus_2_editions.length >= 16
+      ? resolvedOptions.editorialProfiles.canonical_9_plus_2_editions
+      : Array.isArray(manifestOrLang?.canonical_9_plus_2_editions) &&
+        manifestOrLang.canonical_9_plus_2_editions.length >= 16
+        ? manifestOrLang.canonical_9_plus_2_editions
+        : CANONICAL_14_PLUS_2_EDITIONS_CATALOG;
 
   const baseCatalog =
     options && options.includeAll14Profiles === true
-      ? CANONICAL_14_PLUS_2_EDITIONS_CATALOG
+      ? catalogSource
       : [
-          ...CANONICAL_14_PLUS_2_EDITIONS_CATALOG.slice(0, 9),
-          ...CANONICAL_14_PLUS_2_EDITIONS_CATALOG.slice(14, 16).map((fp, fpIdx) => ({
-            ...fp,
-            id: fpIdx === 0 ? "10_refugio_4_hojas" : "11_checklist_80_bloques",
-            label: fp.label.replace(/^1[56]\./, fpIdx === 0 ? "10." : "11."),
-            label_en: fp.label_en.replace(/^1[56]\./, fpIdx === 0 ? "10." : "11."),
-          })),
-        ];
+        ...catalogSource.slice(0, 9),
+        ...catalogSource.slice(14, 16).map((fp, fpIdx) => ({
+          ...fp,
+          id: fpIdx === 0 ? "10_refugio_4_hojas" : "11_checklist_80_bloques",
+          label: fp.label.replace(/^1[56]\./, fpIdx === 0 ? "10." : "11."),
+          label_en: fp.label_en.replace(/^1[56]\./, fpIdx === 0 ? "10." : "11."),
+        })),
+      ];
 
   const tomlLookup = new Map(
     (CANONICAL_14_PRINT_PROFILES || []).map((p, idx) => [p.id, { ...p, index: idx }])
@@ -441,13 +709,23 @@ export function listCatalogEditionsForLang(manifestOrLang, maybeLang = "es", opt
       columns: resolvedCols,
       paper: resolvedPaper.includes("Letter") ? "Letter" : "A4",
     });
-    const hasPrecompiledPdf = PRECOMPILED_PDF_LANGS.includes(resolvedLang);
-    const availabilityMode = hasPrecompiledPdf ? "precompiled_pdf" : "live_chapter_synthesis";
+    const hasStaticDiskPdf = Boolean(precompiledLang);
+    const needsLiveGeom = requiresLiveGeometrySynthesis({
+      columns: resolvedCols,
+      fontPt: resolvedFontPt,
+      profileId: item.id,
+    });
+    const requiresLiveWorkerSynthesis = !hasStaticDiskPdf || needsLiveGeom;
+    const hasPrecompiledPdf = hasStaticDiskPdf && !needsLiveGeom;
+    const availabilityMode = hasPrecompiledPdf ? "precompiled_pdf" : "bimodal_client_print";
+    const resolvedProfileUrl = requiresLiveWorkerSynthesis
+      ? `mostrador/tanda_print_worker.js?lang=${encodeURIComponent(resolvedLang)}&edition=${encodeURIComponent(item.id)}&cols=${resolvedCols}&font=${resolvedFontPt}pt&paper=${encodeURIComponent(resolvedPaper)}&mode=${encodeURIComponent(impositionMode)}`
+      : fallbackUrl;
     return {
       ...item,
       label: localizedLabel,
       profileId: item.id,
-      profileUrl: `${fallbackUrl}?profile=${item.id}&cols=${resolvedCols}&font=${resolvedFontPt}pt&paper=${encodeURIComponent(resolvedPaper)}&mode=${encodeURIComponent(impositionMode)}`,
+      profileUrl: resolvedProfileUrl,
       tomlPath: tomlMeta.tomlPath || `obras/biblia/profiles/${item.id}.toml`,
       columns: resolvedCols,
       fontPt: resolvedFontPt,
@@ -459,9 +737,10 @@ export function listCatalogEditionsForLang(manifestOrLang, maybeLang = "es", opt
       estimatedPages: budget.estimatedPages,
       summarySpec: `${resolvedCols} col · ${resolvedFontPt}pt · ${resolvedPaper} (~${budget.estimatedPages} ${isEn ? "pages" : "págs"})`,
       lang: resolvedLang,
-      diskLang,
+      diskLang: precompiledLang || resolvedLang,
       hasPrecompiledPdf,
-      supportsLivePdfSynthesis: !hasPrecompiledPdf,
+      requiresLiveWorkerSynthesis,
+      supportsLivePdfSynthesis: true,
       availabilityMode,
       path: fallbackUrl,
       url: fallbackUrl,
@@ -471,52 +750,9 @@ export function listCatalogEditionsForLang(manifestOrLang, maybeLang = "es", opt
   });
 }
 
-/** Devuelve las 16 ediciones completas (los 14 perfiles TOML `01..14` + 2 PDFs de campo, `D3-S21+`). */
+/** Devuelve las 16 ediciones completas (los 14 perfiles TOML `01..14` + 2 PDFs de campo). */
 export function listAll14PrintEditionsForLang(manifestOrLang, maybeLang = "es", options = {}) {
   return listCatalogEditionsForLang(manifestOrLang, maybeLang, { ...options, includeAll14Profiles: true });
-}
-
-/**
- * Calcula en tiempo real el presupuesto tipográfico Kindle / Impresión (Ley de Weber-Fechner + Bringhurst 45-75 cpl).
- */
-export function computeKindlePrintBudget({
-  fontPt = 9.5,
-  columns = 2,
-  orientation = "landscape",
-  paper = "A4",
-  script = "Latn",
-} = {}) {
-  const cleanPt = Math.max(7.0, Math.min(18.0, Number(fontPt) || 9.5));
-  const reqCols = Math.max(1, Math.min(3, Number(columns) || 2));
-  const cleanOrientation = String(orientation || "landscape").toLowerCase() === "portrait" ? "Portrait" : "Landscape";
-  const cleanPaper = String(paper || "A4").toUpperCase() === "LETTER" ? "Letter" : "A4";
-  const isComplexScript = /^(Tibt|Arab|Hebr|Deva)$/i.test(String(script || "Latn"));
-
-  const effectiveColumns = reqCols === 3 && (cleanPt >= 11.0 || isComplexScript) ? 2 : reqCols;
-  const pageWidthPt =
-    cleanPaper === "LETTER"
-      ? cleanOrientation === "Landscape" ? 792 : 612
-      : cleanOrientation === "Landscape" ? 842 : 595;
-  const printableWidthPt = pageWidthPt - 72 - (effectiveColumns - 1) * 18;
-  const colWidthPt = printableWidthPt / effectiveColumns;
-  const cpl = Math.max(24, Math.min(92, Math.round((colWidthPt / (cleanPt * 0.52)) * 0.42)));
-  const basePages = 1180;
-  const scaleFactor = Math.pow(cleanPt / 9.5, 1.65) * (2 / effectiveColumns);
-  const estimatedPages = Math.max(420, Math.round(basePages * scaleFactor));
-  const clampedNote = effectiveColumns !== reqCols ? ` [clamp ${reqCols}→${effectiveColumns} col]` : "";
-  const summaryText = `${cleanPt.toFixed(1).replace(/\.0$/, "")}pt · ${effectiveColumns} col · ${cleanOrientation} · ${cleanPaper} (${cpl} cpl · ~${estimatedPages} págs)${clampedNote}`;
-
-  return {
-    fontPt: cleanPt,
-    requestedColumns: reqCols,
-    effectiveColumns,
-    orientation: cleanOrientation,
-    paper: cleanPaper,
-    cpl,
-    estimatedPages,
-    clamped: effectiveColumns !== reqCols,
-    summaryText,
-  };
 }
 
 /** Dosis 3: entrada `full` del manifiesto para el idioma y la edición, si existe. */
@@ -532,7 +768,6 @@ export function planDose3(manifest, lang, edition) {
   );
 }
 
-/** Territorios con papel carta según CLDR (supplemental measurementData, paperSize US-Letter). */
 const LETTER_TERRITORIES = new Set(["BZ", "CA", "CL", "CO", "CR", "GT", "MX", "NI", "PA", "PH", "PR", "SV", "US", "VE"]);
 
 export function paperForRegion(regionIso2) {
@@ -540,17 +775,11 @@ export function paperForRegion(regionIso2) {
   return LETTER_TERRITORIES.has(clean) ? "letter" : "a4";
 }
 
-/** Elige la edición disponible del idioma que mejor coincide con el papel preferido. */
 export function chooseEdition(editions, paper) {
   const list = Array.isArray(editions) ? editions : [];
   return list.find((e) => e.endsWith(`-${paper}`)) || list[0] || null;
 }
 
-/**
- * D5-R40 (`5A` · `resolveRegionalPrintDefaults`):
- * Resuelve el papel CLDR (`letter` vs `a4`) mediante `paperForRegion(regionIso2)` y la edición recomendada
- * mediante `chooseEdition(editions, paper)`.
- */
 export function resolveRegionalPrintDefaults(
   regionIso2 = "MX",
   langOrOptions = "es",
@@ -571,10 +800,6 @@ export function resolveRegionalPrintDefaults(
   };
 }
 
-/**
- * Clase de amenaza efectiva de una persona: la más restrictiva entre país e idioma
- * (`max(país, idioma)`, Decisión 5R9-C+, GOLD-558). Movido desde bible_reader.js (S11).
- */
 export function effectiveThreatClassWeb(countryIso2 = "MX", langCode = "stp") {
   const c = String(countryIso2 || "").trim().toUpperCase().slice(0, 2);
   const l = String(langCode || "").trim().toLowerCase();
@@ -599,7 +824,6 @@ export function effectiveThreatClassWeb(countryIso2 = "MX", langCode = "stp") {
   return "CLASS_A_OPEN";
 }
 
-/** Nombre neutro (sin «Biblia» ni idioma) para archivos en Clase C. Movido desde bible_reader.js (S11). */
 export function stealthNeutralFilenameWeb(blockIdx = 1, ext = "pdf") {
   const idx = Math.max(1, Math.min(80, Number(blockIdx) || 1));
   const cleanExt = String(ext || "pdf").replace(/^\./, "").toLowerCase();
@@ -607,7 +831,6 @@ export function stealthNeutralFilenameWeb(blockIdx = 1, ext = "pdf") {
   return `${prefix}_${String(idx).padStart(2, "0")}.${cleanExt}`;
 }
 
-/** Nombre de archivo de una dosis; neutro en Clase C. */
 export function doseFilename({ dose, lang, book, chapter, verse, blockNumber, edition, threatClass }) {
   if (threatClass === "CLASS_C_STEALTH") return stealthNeutralFilenameWeb(blockNumber || 1, "pdf");
   if (dose === 1) return `ekovoz-${lang}-${book}-${chapter}-${verse}-${edition}.pdf`;
@@ -615,771 +838,86 @@ export function doseFilename({ dose, lang, book, chapter, verse, blockNumber, ed
   return `ekovoz-${lang}-biblia-${edition}.pdf`;
 }
 
-/**
- * Calcula la geometría física de foliación e imposición (9S · INV-EKO-TYP-003):
- *   - `saddle_stitch`: cuadernillo doblado a caballo con margen de lomo Lichtenberg √2 de `9.215 mm`
- *     e inversión polar RTL (`4n, 1, 2, 4n-1` invertido para `ar/he/fa/ur`).
- *   - `single_sheet_20mm`: hoja suelta sin doblar con `20 mm` de margen interior de encuadernación
- *     y marcas de perforación de 2 agujeros de `4 mm` (80 mm de separación ISO 838).
- */
-export function computeFoliationLayout({
-  mode = "saddle_stitch",
-  paper = "A4",
-  pageCount = 16,
-  dir = "ltr",
-} = {}) {
-  const cleanMode = mode === "single_sheet_20mm" ? "single_sheet_20mm" : "saddle_stitch";
-  const cleanPaper = String(paper || "A4").toUpperCase() === "LETTER" ? "Letter" : "A4";
-  const isRtl = String(dir || "ltr").toLowerCase() === "rtl";
-  const paddedPages = Math.max(4, Math.ceil((Number(pageCount) || 16) / 4) * 4);
-
-  if (cleanMode === "single_sheet_20mm") {
-    return {
-      mode: "single_sheet_20mm",
-      paper: cleanPaper,
-      dir: isRtl ? "rtl" : "ltr",
-      bindingMarginMm: 20.0,
-      outerMarginMm: 12.0,
-      bindingEdge: isRtl ? "right" : "left",
-      punchHoleDiameterMm: 4.0,
-      punchHoleSpacingIso838Mm: 80.0,
-      lichtenbergAspectRatio: Number(Math.SQRT2.toFixed(4)),
-      impositionOrder: Array.from({ length: paddedPages }, (_, i) => i + 1),
-      summary: `Hoja Suelta · Margen ${isRtl ? "derecho (RTL)" : "izquierdo"} 20.0 mm + 2 perforaciones Ø 4.0 mm (ISO 838)`,
-    };
-  }
-
-  const sheets = paddedPages / 4;
-  const spreads = [];
-  for (let s = 0; s < sheets; s += 1) {
-    const outerLeft = paddedPages - 2 * s;
-    const outerRight = 1 + 2 * s;
-    const innerLeft = 2 + 2 * s;
-    const innerRight = paddedPages - 1 - 2 * s;
-    spreads.push(
-      isRtl
-        ? { sheet: s + 1, front: [outerRight, outerLeft], back: [innerRight, innerLeft] }
-        : { sheet: s + 1, front: [outerLeft, outerRight], back: [innerLeft, innerRight] }
-    );
-  }
-
-  return {
-    mode: "saddle_stitch",
-    paper: cleanPaper,
-    dir: isRtl ? "rtl" : "ltr",
-    spineGutterMm: 9.215,
-    outerMarginMm: 10.5,
-    bindingEdge: "center_fold",
-    punchHoleDiameterMm: 0,
-    lichtenbergAspectRatio: Number(Math.SQRT2.toFixed(4)),
-    paddedPages,
-    spreads,
-    summary: `Pliego Saddle-Stitch 4n (${paddedPages} págs · Lomo Lichtenberg 9.215 mm · ${isRtl ? "Orden Polar RTL" : "Orden LTR"})`,
-  };
-}
-
-/**
- * Simulador determinista de Fotocopia de 3.ª Generación mediante umbral adaptativo de Sauvola
- * (9S · INV-EKO-GRP-001/002: T(x,y) = m(x,y) * [1 + k * (s(x,y)/R - 1)], k=0.20, R=128,
- * trazo mínimo >= 0.75 pt y conservación de característica de Euler Δχ = 0).
- */
 export function simulateThirdGenPhotocopySauvola({
   strokePt = 0.85,
   k = 0.2,
   R = 128,
-  localMean = 188,
-  localStdDev = 36,
 } = {}) {
   const cleanStroke = Number(strokePt) || 0.85;
   const cleanK = Number(k) || 0.2;
   const cleanR = Number(R) || 128;
-  const threshold = Number((localMean * (1 + cleanK * (localStdDev / cleanR - 1))).toFixed(2));
   const minStrokePt = 0.75;
-  const survives3rdGen = cleanStroke >= minStrokePt;
-  const eulerDelta = survives3rdGen ? 0 : -1;
+  const oracle = evaluateOpticalSauvolaPhotocopyOracle({
+    genIndex: 3,
+    sauvolaK: cleanK,
+    dpi: 300,
+    strokePt: cleanStroke,
+    R: cleanR,
+    useBrowserCanvasIfAvailable: false,
+  });
+  const survives3rdGen =
+    cleanStroke >= minStrokePt && oracle.eulerCharacteristicDelta === 0 && oracle.wcagPassAaa;
+  const eulerDelta = survives3rdGen ? 0 : -Math.max(1, oracle.eulerCharacteristicDelta);
 
   return {
     algorithm: "Sauvola-Integral-2000",
     k: cleanK,
     R: cleanR,
-    threshold,
+    threshold: oracle.meanThreshold,
     strokePt: cleanStroke,
     minStrokePt,
     eulerCharacteristicDelta: eulerDelta,
     survives3rdGen,
-    badgeText: `Sauvola T=${threshold} (k=${cleanK.toFixed(2)}, R=${cleanR}) · Trazo ${cleanStroke.toFixed(2)} pt ≥ 0.75 pt · Δχ=${eulerDelta}`,
+    contrastRatio: oracle.contrastRatio,
+    rasterSource: oracle.rasterSource,
+    badgeText: `Sauvola T=${oracle.meanThreshold} (k=${cleanK.toFixed(2)}, R=${cleanR}) · Trazo ${cleanStroke.toFixed(2)} pt ≥ 0.75 pt · Δχ=${eulerDelta}`,
   };
 }
 
-/**
- * 9 Perfiles Tipográficos Canónicos en TOML (`D4-B+`: `obras/biblia/profiles/01..09.toml`).
- */
-export const CANONICAL_9_TOML_PROFILES = [
-  { id: "01_1col_lectura", tomlPath: "obras/biblia/profiles/01_1col_lectura.toml", columns: 1, fontPt: 10.5, leadingRatio: 1.38, paperSize: "A4", impositionMode: "single_sheet_20mm", gutterMm: 20.0, cplTarget: 62 },
-  { id: "02_2col_pastoral", tomlPath: "obras/biblia/profiles/02_2col_pastoral.toml", columns: 2, fontPt: 9.5, leadingRatio: 1.32, paperSize: "Letter", impositionMode: "single_sheet_20mm", gutterMm: 20.0, cplTarget: 48 },
-  { id: "03_3col_compacta", tomlPath: "obras/biblia/profiles/03_3col_compacta.toml", columns: 3, fontPt: 8.0, leadingRatio: 1.24, paperSize: "A4", impositionMode: "saddle_stitch", gutterMm: 9.215, cplTarget: 36 },
-  { id: "04_1col_letra_grande", tomlPath: "obras/biblia/profiles/04_1col_letra_grande.toml", columns: 1, fontPt: 13.5, leadingRatio: 1.45, paperSize: "Letter", impositionMode: "single_sheet_20mm", gutterMm: 20.0, cplTarget: 52 },
-  { id: "05_interlineal_estudio", tomlPath: "obras/biblia/profiles/05_interlineal_estudio.toml", columns: 1, fontPt: 9.0, leadingRatio: 1.50, paperSize: "A4", impositionMode: "single_sheet_20mm", gutterMm: 20.0, cplTarget: 68 },
-  { id: "06_bilingue_paralela", tomlPath: "obras/biblia/profiles/06_bilingue_paralela.toml", columns: 2, fontPt: 9.5, leadingRatio: 1.34, paperSize: "A4", impositionMode: "single_sheet_20mm", gutterMm: 20.0, cplTarget: 58 },
-  { id: "07_cuaderno_5lineas_apaisado", tomlPath: "obras/biblia/profiles/07_cuaderno_5lineas_apaisado.toml", columns: 1, fontPt: 10.0, leadingRatio: 1.60, paperSize: "A4-Landscape", impositionMode: "single_sheet_20mm", gutterMm: 20.0, cplTarget: 70 },
-  { id: "08_bolsillo_misionero", tomlPath: "obras/biblia/profiles/08_bolsillo_misionero.toml", columns: 2, fontPt: 8.5, leadingRatio: 1.26, paperSize: "A4", impositionMode: "multi_signature_4n", gutterMm: 9.215, cplTarget: 44 },
-  { id: "09_atril_liturgico", tomlPath: "obras/biblia/profiles/09_atril_liturgico.toml", columns: 2, fontPt: 12.0, leadingRatio: 1.42, paperSize: "Folio", impositionMode: "multi_signature_4n", gutterMm: 14.0, cplTarget: 54 },
-];
-
-/**
- * 14 Perfiles de Impresión y Edición (`obras/biblia/profiles/01..14.toml`) y 12 Ramas Tipográficas (`G_01..G_12`, `D5-R+`).
- */
-export const CANONICAL_14_PRINT_PROFILES = [
-  ...CANONICAL_9_TOML_PROFILES,
-  { id: "10_evangelio_14_pericopas", tomlPath: "obras/biblia/profiles/10_evangelio_14_pericopas.toml", columns: 2, fontPt: 10.0, leadingRatio: 1.35, paperSize: "A4", impositionMode: "saddle_stitch", gutterMm: 9.215, cplTarget: 50 },
-  { id: "11_braille_nemeth_b70", tomlPath: "obras/biblia/profiles/11_braille_nemeth_b70.toml", columns: 1, fontPt: 16.0, leadingRatio: 1.65, paperSize: "B70-Braille", impositionMode: "single_sheet_20mm", gutterMm: 22.0, cplTarget: 40 },
-  { id: "12_dislexia_espaciado_amplio", tomlPath: "obras/biblia/profiles/12_dislexia_espaciado_amplio.toml", columns: 1, fontPt: 12.5, leadingRatio: 1.55, paperSize: "Letter", impositionMode: "single_sheet_20mm", gutterMm: 20.0, cplTarget: 52 },
-  { id: "13_contraste_extremo_baja_vision", tomlPath: "obras/biblia/profiles/13_contraste_extremo_baja_vision.toml", columns: 1, fontPt: 15.0, leadingRatio: 1.50, paperSize: "Letter", impositionMode: "single_sheet_20mm", gutterMm: 20.0, cplTarget: 46 },
-  { id: "14_pliego_mural_comunitario", tomlPath: "obras/biblia/profiles/14_pliego_mural_comunitario.toml", columns: 3, fontPt: 11.0, leadingRatio: 1.40, paperSize: "A3", impositionMode: "single_sheet_20mm", gutterMm: 20.0, cplTarget: 64 },
-];
-
-export const CANONICAL_12_BRANCH_PROFILES = [
-  { id: "G_01_latin_extended", tomlPath: "obras/biblia/profiles/G_01_latin_extended.toml", leadingRatio: 1.32 },
-  { id: "G_02_arabic_naskh_nastaliq", tomlPath: "obras/biblia/profiles/G_02_arabic_naskh_nastaliq.toml", leadingRatio: 1.55 },
-  { id: "G_03_indic_brahmic_aksara", tomlPath: "obras/biblia/profiles/G_03_indic_brahmic_aksara.toml", leadingRatio: 1.48 },
-  { id: "G_04_cjk_ideographic_grid", tomlPath: "obras/biblia/profiles/G_04_cjk_ideographic_grid.toml", leadingRatio: 1.60 },
-  { id: "G_05_cyrillic_eurasian", tomlPath: "obras/biblia/profiles/G_05_cyrillic_eurasian.toml", leadingRatio: 1.34 },
-  { id: "G_06_ethiopic_abugida", tomlPath: "obras/biblia/profiles/G_06_ethiopic_abugida.toml", leadingRatio: 1.42 },
-  { id: "G_07_se_asian_tall_stack", tomlPath: "obras/biblia/profiles/G_07_se_asian_tall_stack.toml", leadingRatio: 1.75 },
-  { id: "G_08_hebrew_syriac_masoretic", tomlPath: "obras/biblia/profiles/G_08_hebrew_syriac_masoretic.toml", leadingRatio: 1.46 },
-  { id: "G_09_african_tonal_ipa", tomlPath: "obras/biblia/profiles/G_09_african_tonal_ipa.toml", leadingRatio: 1.38 },
-  { id: "G_10_amerindian_polysynthetic", tomlPath: "obras/biblia/profiles/G_10_amerindian_polysynthetic.toml", leadingRatio: 1.40 },
-  { id: "G_11_syllabics_tifinagh_nko", tomlPath: "obras/biblia/profiles/G_11_syllabics_tifinagh_nko.toml", leadingRatio: 1.44 },
-  { id: "G_12_sign_tactile_oral_only", tomlPath: "obras/biblia/profiles/G_12_sign_tactile_oral_only.toml", leadingRatio: 1.50 },
-];
-
-/**
- * Imposición Multi-Pliego (Multi-Signature $4n$, `D4-B+`, paridad con `crates/ekovoz-core/src/imposition.rs`):
- *   - Divide el libro o bloque en firmas de $M \le 8$ hojas ($32$ páginas máx. por cuadernillo).
- *   - Calcula la compensación de desplazamiento de pliegue (*creep*) por hoja:
- *     $\Delta_{\text{creep}}(s) = s \cdot \pi \cdot t_{\text{papel}} \cdot \beta_{\text{bulk}} \le 2.45\text{ mm}$.
- *   - Genera marcas escalonadas de alzado en el lomo (`steppedCollationMarkYMm`) para evitar errores de encuadernación.
- */
-export function computeMultiSignatureImposition({
-  totalPages = 160,
-  maxSheetsPerSignature = 8,
-  paperThicknessMm = 0.09,
-  paperBulkFactor = 1.15,
-  dir = "ltr",
-} = {}) {
-  const cleanMaxSheets = Math.max(1, Math.min(8, Number(maxSheetsPerSignature) || 8));
-  const maxPagesPerSig = cleanMaxSheets * 4;
-  const paddedTotalPages = Math.max(4, Math.ceil((Number(totalPages) || 32) / 4) * 4);
-  const signatureCount = Math.ceil(paddedTotalPages / maxPagesPerSig);
-  const isRtl = String(dir || "ltr").toLowerCase() === "rtl";
-
-  const signatures = [];
-  let maxCreepObservedMm = 0;
-
-  for (let sigIdx = 0; sigIdx < signatureCount; sigIdx += 1) {
-    const startPage = sigIdx * maxPagesPerSig + 1;
-    const endPage = Math.min(paddedTotalPages, (sigIdx + 1) * maxPagesPerSig);
-    const sigPageCount = endPage - startPage + 1;
-    const sheetsInSig = sigPageCount / 4;
-    const sheets = [];
-
-    for (let s = 0; s < sheetsInSig; s += 1) {
-      const rawCreepMm = s * Math.PI * paperThicknessMm * paperBulkFactor;
-      const creepMm = Number(Math.min(2.45, rawCreepMm).toFixed(3));
-      if (creepMm > maxCreepObservedMm) maxCreepObservedMm = creepMm;
-
-      const outerLeft = endPage - 2 * s;
-      const outerRight = startPage + 2 * s;
-      const innerLeft = startPage + 1 + 2 * s;
-      const innerRight = endPage - 1 - 2 * s;
-      sheets.push({
-        sheetInSignature: s + 1,
-        creepOffsetMm: creepMm,
-        front: isRtl ? [outerRight, outerLeft] : [outerLeft, outerRight],
-        back: isRtl ? [innerRight, innerLeft] : [innerLeft, innerRight],
-      });
-    }
-
-    const steppedCollationMarkYMm = Number((20.0 + sigIdx * 6.5).toFixed(2));
-    signatures.push({
-      signatureIndex: sigIdx + 1,
-      signatureCode: `SIG-${String(sigIdx + 1).padStart(2, "0")}`,
-      startPage,
-      endPage,
-      sheetsCount: sheetsInSig,
-      maxCreepMm: sheets.length > 0 ? sheets[sheets.length - 1].creepOffsetMm : 0,
-      steppedCollationMarkYMm,
-      steppedCollationMarkHeightMm: 5.0,
-      sheets,
-    });
-  }
-
-  return {
-    totalPages: paddedTotalPages,
-    maxSheetsPerSignature: cleanMaxSheets,
-    signatureCount,
-    maxCreepMm: maxCreepObservedMm,
-    creepWithinBound: maxCreepObservedMm <= 2.45,
-    dir: isRtl ? "rtl" : "ltr",
-    signatures,
-    summary: `${signatureCount} cuadernillos (M≤${cleanMaxSheets} hojas = ${maxPagesPerSig} págs/firma · Creep máx ${maxCreepObservedMm.toFixed(2)} mm ≤ 2.45 mm · Marcas de alzado escalonadas)`,
-  };
-}
-
-const CANONICAL_66_BOOKS_CHAPTER_COUNTS = [
-  ["GEN", 50, "AT · Pentateuco (Torá)"], ["EXO", 40, "AT · Pentateuco (Torá)"], ["LEV", 27, "AT · Pentateuco (Torá)"],
-  ["NUM", 36, "AT · Pentateuco (Torá)"], ["DEU", 34, "AT · Pentateuco (Torá)"], ["JOS", 24, "AT · Libros Históricos"],
-  ["JDG", 21, "AT · Libros Históricos"], ["RUT", 4, "AT · Libros Históricos"], ["1SA", 31, "AT · Libros Históricos"],
-  ["2SA", 24, "AT · Libros Históricos"], ["1KI", 22, "AT · Libros Históricos"], ["2KI", 25, "AT · Libros Históricos"],
-  ["1CH", 29, "AT · Libros Históricos"], ["2CH", 36, "AT · Libros Históricos"], ["EZR", 10, "AT · Libros Históricos"],
-  ["NEH", 13, "AT · Libros Históricos"], ["EST", 10, "AT · Libros Históricos"], ["JOB", 42, "AT · Poesía y Sabiduría"],
-  ["PSA", 150, "AT · Poesía y Sabiduría"], ["PRO", 31, "AT · Poesía y Sabiduría"], ["ECC", 12, "AT · Poesía y Sabiduría"],
-  ["SNG", 8, "AT · Poesía y Sabiduría"], ["ISA", 66, "AT · Profetas Mayores"], ["JER", 52, "AT · Profetas Mayores"],
-  ["LAM", 5, "AT · Profetas Mayores"], ["EZE", 48, "AT · Profetas Mayores"], ["DAN", 12, "AT · Profetas Mayores"],
-  ["HOS", 14, "AT · Profetas Menores"], ["JOL", 3, "AT · Profetas Menores"], ["AMO", 9, "AT · Profetas Menores"],
-  ["OBA", 1, "AT · Profetas Menores"], ["JON", 4, "AT · Profetas Menores"], ["MIC", 7, "AT · Profetas Menores"],
-  ["NAM", 3, "AT · Profetas Menores"], ["HAB", 3, "AT · Profetas Menores"], ["ZEP", 3, "AT · Profetas Menores"],
-  ["HAG", 2, "AT · Profetas Menores"], ["ZEC", 14, "AT · Profetas Menores"], ["MAL", 4, "AT · Profetas Menores"],
-  ["MAT", 28, "NT · Evangelios y Hechos"], ["MRK", 16, "NT · Evangelios y Hechos"], ["LUK", 24, "NT · Evangelios y Hechos"],
-  ["JHN", 21, "NT · Evangelios y Hechos"], ["ACT", 28, "NT · Evangelios y Hechos"], ["ROM", 16, "NT · Epístolas Paulinas"],
-  ["1CO", 16, "NT · Epístolas Paulinas"], ["2CO", 13, "NT · Epístolas Paulinas"], ["GAL", 6, "NT · Epístolas Paulinas"],
-  ["EPH", 6, "NT · Epístolas Paulinas"], ["PHP", 4, "NT · Epístolas Paulinas"], ["COL", 4, "NT · Epístolas Paulinas"],
-  ["1TH", 5, "NT · Epístolas Paulinas"], ["2TH", 3, "NT · Epístolas Paulinas"], ["1TI", 6, "NT · Epístolas Pastorales"],
-  ["2TI", 4, "NT · Epístolas Pastorales"], ["TIT", 3, "NT · Epístolas Pastorales"], ["PHM", 1, "NT · Epístolas Pastorales"],
-  ["HEB", 13, "NT · Epístolas Generales y Apocalipsis"], ["JAS", 5, "NT · Epístolas Generales y Apocalipsis"],
-  ["1PE", 5, "NT · Epístolas Generales y Apocalipsis"], ["2PE", 3, "NT · Epístolas Generales y Apocalipsis"],
-  ["1JN", 5, "NT · Epístolas Generales y Apocalipsis"], ["2JN", 1, "NT · Epístolas Generales y Apocalipsis"],
-  ["3JN", 1, "NT · Epístolas Generales y Apocalipsis"], ["JUD", 1, "NT · Epístolas Generales y Apocalipsis"],
-  ["REV", 22, "NT · Epístolas Generales y Apocalipsis"],
-];
-
-function buildCanonical80BlocksCatalog() {
-  const otCh = [];
-  const ntCh = [];
-  for (let i = 0; i < CANONICAL_66_BOOKS_CHAPTER_COUNTS.length; i += 1) {
-    const [book, count, division] = CANONICAL_66_BOOKS_CHAPTER_COUNTS[i];
-    const target = i < 39 ? otCh : ntCh;
-    for (let ch = 1; ch <= count; ch += 1) {
-      target.push({ book, ch, division });
-    }
-  }
-  const catalog = [];
-  for (let b = 0; b < 60; b += 1) {
-    const startIdx = Math.floor((b * otCh.length) / 60);
-    const endIdx = Math.max(startIdx + 1, Math.floor(((b + 1) * otCh.length) / 60)) - 1;
-    const first = otCh[startIdx];
-    const last = otCh[Math.min(endIdx, otCh.length - 1)];
-    const blockNumber = b + 1;
-    const padded = String(blockNumber).padStart(2, "0");
-    const rangeLabel = first.book === last.book ? `${first.book} ${first.ch}–${last.ch}` : `${first.book} ${first.ch} – ${last.book} ${last.ch}`;
-    catalog.push({
-      blockId: `BLK-0${padded}`,
-      shortCode: `B${padded}`,
-      blockNumber,
-      testament: "AT",
-      startBook: first.book,
-      startChapter: first.ch,
-      endBook: last.book,
-      endChapter: last.ch,
-      chaptersCount: endIdx - startIdx + 1,
-      rangeLabel,
-      title: `${first.division} (${rangeLabel})`,
-      sheetsCount: 4,
-      pagesCount: 16,
-    });
-  }
-  for (let b = 0; b < 20; b += 1) {
-    const startIdx = Math.floor((b * ntCh.length) / 20);
-    const endIdx = Math.max(startIdx + 1, Math.floor(((b + 1) * ntCh.length) / 20)) - 1;
-    const first = ntCh[startIdx];
-    const last = ntCh[Math.min(endIdx, ntCh.length - 1)];
-    const blockNumber = 61 + b;
-    const padded = String(blockNumber).padStart(2, "0");
-    const rangeLabel = first.book === last.book ? `${first.book} ${first.ch}–${last.ch}` : `${first.book} ${first.ch} – ${last.book} ${last.ch}`;
-    catalog.push({
-      blockId: `BLK-0${padded}`,
-      shortCode: `B${padded}`,
-      blockNumber,
-      testament: "NT",
-      startBook: first.book,
-      startChapter: first.ch,
-      endBook: last.book,
-      endChapter: last.ch,
-      chaptersCount: endIdx - startIdx + 1,
-      rangeLabel,
-      title: `${first.division} (${rangeLabel})`,
-      sheetsCount: 4,
-      pagesCount: 16,
-    });
-  }
-  return catalog;
-}
-
-/**
- * Catálogo determinista de los 80 Bloques de Campo (`BLK-001` a `BLK-080`, `D5-C+`, `ARB-EKOVOZ-62`).
- */
-export const CANONICAL_80_BLOCKS_CATALOG = buildCanonical80BlocksCatalog();
-
-/**
- * Especificación del Refugio de Bolsillo de 4 Hojas (`pocket_refuge_card.rs`, `D5-R+`, $D_{\text{KL}} = 0$).
- */
-export const POCKET_REFUGE_4_SHEETS_SPEC = {
-  id: "refugio_4_hojas",
-  url: "obras/biblia/campo/refugio_4_hojas.pdf",
-  sheets: 4,
-  pages: 16,
-  klDivergence: 0.0,
-  folds: "Acordeón 8 paneles por hoja (resistente al agua y sudor)",
-  anchors: [
-    "Hoja 1: Creación, Caída y Promesa (Génesis 1–3 · Salmo 23 · Isaías 53)",
-    "Hoja 2: Las 12 Dichas de Jesús y el Sermón del Monte (Mateo 5–7 · Lucas 15)",
-    "Hoja 3: Cruz, Resurrección y Nueva Creación (Juan 1, 3, 19–20 · Romanos 8)",
-    "Hoja 4: Liturgia de Consuelo, Oración en Crisis y Promesas Finales (Apocalipsis 21–22)",
-  ],
-};
-
-export const CANONICAL_16_TYPOLOGY_PROFILES = [
-  { id: "ar_typology", lang_code: "ar", word_order: "Vso", family_subclade: "Classical::VSO-VerbInitial", is_head_final_postpositional: false },
-  { id: "de_typology", lang_code: "de", word_order: "Vso", family_subclade: "Classical::VSO-VerbInitial", is_head_final_postpositional: false },
-  { id: "en_typology", lang_code: "en", word_order: "Svo", family_subclade: "CLADE_008::eng", is_head_final_postpositional: false },
-  { id: "es_typology", lang_code: "es", word_order: "Vso", family_subclade: "Indo-European::Romance-Iberian", is_head_final_postpositional: false, copula_affirmative: "es", negation_preverbal: "no" },
-  { id: "fr_typology", lang_code: "fr", word_order: "Svo", family_subclade: "CLADE_001::fra", is_head_final_postpositional: false },
-  { id: "grc_typology", lang_code: "grc", word_order: "Vso", family_subclade: "Classical::VSO-VerbInitial", is_head_final_postpositional: false },
-  { id: "he_typology", lang_code: "he", word_order: "Vso", family_subclade: "Classical::VSO-VerbInitial", is_head_final_postpositional: false },
-  { id: "hi_typology", lang_code: "hi", word_order: "Sov", family_subclade: "HeadFinal::SOV-Macro", is_head_final_postpositional: true },
-  { id: "id_typology", lang_code: "id", word_order: "Svo", family_subclade: "CLADE_031::ind", is_head_final_postpositional: false },
-  { id: "nah_typology", lang_code: "nah", word_order: "Vso", family_subclade: "Uto-Aztecan::Aztecan", is_head_final_postpositional: false, copula_affirmative: "ca", negation_preverbal: "amo" },
-  { id: "pt_typology", lang_code: "pt", word_order: "Vso", family_subclade: "Classical::VSO-VerbInitial", is_head_final_postpositional: false },
-  { id: "quy_typology", lang_code: "quy", word_order: "Sov", family_subclade: "Quechuan::Southern-Quechua", is_head_final_postpositional: true, copula_affirmative: "kan", negation_preverbal: "mana" },
-  { id: "quz_typology", lang_code: "quz", word_order: "Sov", family_subclade: "Quechuan::Southern-Quechua", is_head_final_postpositional: true, copula_affirmative: "kan", negation_preverbal: "mana" },
-  { id: "stp_typology", lang_code: "stp", word_order: "Vso", family_subclade: "Uto-Aztecan::Tepiman", is_head_final_postpositional: false, copula_affirmative: "jir", negation_preverbal: "cham" },
-  { id: "sw_typology", lang_code: "sw", word_order: "Svo", family_subclade: "CLADE_021::swa", is_head_final_postpositional: false },
-  { id: "tr_typology", lang_code: "tr", word_order: "Sov", family_subclade: "HeadFinal::SOV-Macro", is_head_final_postpositional: true },
-];
-
-/**
- * Resuelve el bloque canónico exacto (`BLK-001` a `BLK-080`) que contiene el libro y capítulo dados (`D3-S21+`).
- */
-export function resolveCanonicalBlockForPassage(book = "GEN", chapter = 1) {
-  const cleanBook = String(book || "GEN").trim().toUpperCase();
-  const cleanChapter = Math.max(1, Number(chapter) || 1);
-  const bookIndexMap = new Map(
-    CANONICAL_66_BOOKS_CHAPTER_COUNTS.map(([bCode], idx) => [bCode, idx])
-  );
-  const targetBookIdx = bookIndexMap.has(cleanBook) ? bookIndexMap.get(cleanBook) : 0;
-
-  for (const blk of CANONICAL_80_BLOCKS_CATALOG) {
-    const startBook = blk.startBook || String(blk.startRef || "GEN.1").split(".")[0];
-    const startCh = Number(blk.startChapter || String(blk.startRef || "GEN.1").split(".")[1]) || 1;
-    const endBook = blk.endBook || String(blk.endRef || "GEN.15").split(".")[0];
-    const endCh = Number(blk.endChapter || String(blk.endRef || "GEN.15").split(".")[1]) || 15;
-    const sIdx = bookIndexMap.has(startBook) ? bookIndexMap.get(startBook) : 0;
-    const eIdx = bookIndexMap.has(endBook) ? bookIndexMap.get(endBook) : 0;
-
-    const afterStart =
-      targetBookIdx > sIdx || (targetBookIdx === sIdx && cleanChapter >= startCh);
-    const beforeEnd =
-      targetBookIdx < eIdx || (targetBookIdx === eIdx && cleanChapter <= endCh);
-    if (afterStart && beforeEnd) {
-      return blk;
-    }
-  }
-  return CANONICAL_80_BLOCKS_CATALOG[0];
-}
-
-/**
- * D5-R45: Calcula determinísticamente el código de bloque vivo `B01..B80` para `(book, chapter, verse)`
- * empleando `BIBLE_CONSTANTS` (`CANONICAL_BLOCKS_COUNT = 80`, `CANONICAL_VERSES_COUNT = 31,102`) y el catálogo de 80 bloques.
- */
-export function resolveCanonicalBlockCode(book = "GEN", chapter = 1, verse = 1) {
-  const totalBlocks = Number(BIBLE_CONSTANTS?.CANONICAL_BLOCKS_COUNT) || 80;
-  const totalVerses = Number(BIBLE_CONSTANTS?.CANONICAL_VERSES_COUNT) || 31102;
-  const cleanBook = String(book || "GEN").trim().toUpperCase();
-  const cleanChap = Math.max(1, Number(chapter) || 1);
-  const cleanVerse = Math.max(1, Number(verse) || 1);
-  const blk = resolveCanonicalBlockForPassage(cleanBook, cleanChap);
-  let blockNumber = Number(blk?.blockNumber);
-  if (!Number.isFinite(blockNumber) || blockNumber < 1 || blockNumber > totalBlocks) {
-    const ord = canonicalOrdinalOf(cleanBook, cleanChap, cleanVerse) || 1;
-    blockNumber = Math.min(
-      totalBlocks,
-      Math.max(1, Math.ceil((ord / totalVerses) * totalBlocks)),
-    );
-  }
-  const padded = String(blockNumber).padStart(2, "0");
-  return {
-    blockCode: `B${padded}`,
-    blockNumber,
-    blockId: blk?.blockId || `BLK-${String(blockNumber).padStart(3, "0")}`,
-    startRef: blk?.startRef || `${cleanBook}.${cleanChap}`,
-    endRef: blk?.endRef || `${cleanBook}.${cleanChap}`,
-  };
-}
-
-/**
- * Hidrata los 14 perfiles de impresión, los 12 perfiles de rama `G_01..G_12`, las 16 hojas tipológicas y los 80 bloques canónicos
- * desde el artefacto compilado por Rust (`web/data/editorial_profiles.json`, `D5-C+`, `D3-S21+`, `D4-S21+`).
- */
-export function hydrateEditorialProfiles(artifact) {
-  if (!artifact || typeof artifact !== "object") return false;
-  const rawPrint = Array.isArray(artifact.print_profiles_14) && artifact.print_profiles_14.length > 0
-    ? artifact.print_profiles_14
-    : Array.isArray(artifact.print_profiles) && artifact.print_profiles.length > 0
-      ? artifact.print_profiles
-      : null;
-  if (rawPrint) {
-    const prevById = new Map(CANONICAL_14_PRINT_PROFILES.map((item) => [item.id, item]));
-    CANONICAL_14_PRINT_PROFILES.length = 0;
-    for (const p of rawPrint) {
-      const prev = prevById.get(p.id) || {};
-      const parsedTypography = p.parsed?.typography || p.parsed?.layout || p.parsed || {};
-      CANONICAL_14_PRINT_PROFILES.push({
-        ...prev,
-        ...p,
-        tomlPath: p.tomlPath || p.toml_path || prev.tomlPath || `obras/biblia/profiles/${p.id}.toml`,
-        columns: Number(p.columns ?? parsedTypography.columns ?? parsedTypography.default_columns ?? prev.columns ?? 2),
-        fontPt: Number(p.fontPt ?? parsedTypography.font_size_pt ?? parsedTypography.default_font_size_pt ?? prev.fontPt ?? 9.5),
-        leadingRatio: Number(p.leadingRatio ?? parsedTypography.line_height_ratio ?? prev.leadingRatio ?? 1.35),
-      });
-    }
-    CANONICAL_9_TOML_PROFILES.length = 0;
-    const rawToml9 = Array.isArray(artifact.canonical_9_toml_profiles) && artifact.canonical_9_toml_profiles.length > 0
-      ? artifact.canonical_9_toml_profiles
-      : CANONICAL_14_PRINT_PROFILES.slice(0, 9);
-    for (const p of rawToml9) {
-      CANONICAL_9_TOML_PROFILES.push(p);
-    }
-  }
-  if (Array.isArray(artifact.canonical_9_plus_2_editions) && artifact.canonical_9_plus_2_editions.length >= 16) {
-    CANONICAL_14_PLUS_2_EDITIONS_CATALOG.length = 0;
-    for (const ed of artifact.canonical_9_plus_2_editions) {
-      CANONICAL_14_PLUS_2_EDITIONS_CATALOG.push(ed);
-    }
-  }
-  if (artifact.pocket_refuge_4_sheets_spec && typeof artifact.pocket_refuge_4_sheets_spec === "object") {
-    Object.assign(POCKET_REFUGE_4_SHEETS_SPEC, artifact.pocket_refuge_4_sheets_spec);
-  }
-  if (artifact.field_pdfs && typeof artifact.field_pdfs === "object") {
-    for (const [fKey, fVal] of Object.entries(artifact.field_pdfs)) {
-      if (fVal && typeof fVal === "object") {
-        FIELD_PDFS_REGISTRY[fKey] = {
-          bytes: Number(fVal.bytes) || FIELD_PDFS_REGISTRY[fKey]?.bytes || 0,
-          path: String(fVal.path || FIELD_PDFS_REGISTRY[fKey]?.path || ""),
-        };
-      }
-    }
-  }
-  const rawBranches = Array.isArray(artifact.branch_profiles_12) && artifact.branch_profiles_12.length > 0
-    ? artifact.branch_profiles_12
-    : Array.isArray(artifact.branch_profiles) && artifact.branch_profiles.length > 0
-      ? artifact.branch_profiles
-      : null;
-  if (rawBranches) {
-    const prevBrById = new Map(CANONICAL_12_BRANCH_PROFILES.map((item) => [item.id, item]));
-    CANONICAL_12_BRANCH_PROFILES.length = 0;
-    for (const bp of rawBranches) {
-      const prev = prevBrById.get(bp.id) || {};
-      CANONICAL_12_BRANCH_PROFILES.push({
-        ...prev,
-        ...bp,
-        tomlPath: bp.tomlPath || bp.toml_path || prev.tomlPath || `obras/biblia/perfiles_ramas/${bp.id}.toml`,
-      });
-    }
-  }
-  const rawTypology = Array.isArray(artifact.typology_profiles_16) && artifact.typology_profiles_16.length > 0
-    ? artifact.typology_profiles_16
-    : null;
-  if (rawTypology) {
-    CANONICAL_16_TYPOLOGY_PROFILES.length = 0;
-    for (const tp of rawTypology) {
-      const data = tp.data || tp;
-      CANONICAL_16_TYPOLOGY_PROFILES.push({
-        id: tp.id || `${data.lang_code || "es"}_typology`,
-        ...data,
-      });
-    }
-  }
-  const rawBlocks = Array.isArray(artifact.canonical_80_blocks_catalog) && artifact.canonical_80_blocks_catalog.length === 80
-    ? artifact.canonical_80_blocks_catalog
-    : Array.isArray(artifact.blocks_80) && artifact.blocks_80.length === 80
-      ? artifact.blocks_80
-      : null;
-  if (rawBlocks) {
-    CANONICAL_80_BLOCKS_CATALOG.length = 0;
-    for (const blk of rawBlocks) {
-      CANONICAL_80_BLOCKS_CATALOG.push(blk);
-    }
-  }
-  return true;
-}
-
-/**
- * Renderiza el Inspector de las 12 Ramas Tipográficas (`G_01..G_12`) y las 16 Hojas de Tipología Lingüística (`typology_16`, `D4-S21+`).
- */
-export function renderBranchAndTypologyInspectorHtml({
-  lang = "es",
-  activeBranchId = "",
-  activeTypologyId = "",
-  uiLocale = "es",
-} = {}) {
-  const isEn = String(uiLocale || "es").trim().toLowerCase().startsWith("en");
-  const cleanLang = String(lang || "es").toLowerCase().split("-")[0];
-  const branches = CANONICAL_12_BRANCH_PROFILES;
-  const typologies = CANONICAL_16_TYPOLOGY_PROFILES;
-
-  const matchedBranch =
-    branches.find((b) => b.id === activeBranchId) ||
-    branches.find((b) => Array.isArray(b.parsed?.anchor_languages) && b.parsed.anchor_languages.includes(cleanLang)) ||
-    branches[0] ||
-    { id: "G_01_latin_extended", tomlPath: "obras/biblia/profiles/G_01_latin_extended.toml" };
-
-  const matchedTypology =
-    typologies.find((t) => t.id === activeTypologyId) ||
-    typologies.find((t) => t.lang_code === cleanLang) ||
-    typologies[0] ||
-    { id: "es_typology", lang_code: "es", word_order: "Vso", family_subclade: "Indo-European::Romance-Iberian" };
-
-  const branchOptions = branches
-    .map((b, idx) => {
-      const sel = b.id === matchedBranch.id ? " selected" : "";
-      const name = b.parsed?.name_es || `${isEn ? "Branch" : "Rama"} G_${String(idx + 1).padStart(2, "0")} · ${b.id}`;
-      const order = b.parsed?.word_order || "SVO";
-      return `<option value="${b.id}"${sel}>${name} (${order})</option>`;
-    })
-    .join("");
-
-  const typologyOptions = typologies
-    .map((t) => {
-      const sel = t.id === matchedTypology.id ? " selected" : "";
-      return `<option value="${t.id}"${sel}>${t.id} (${t.lang_code} · ${t.word_order} · ${t.family_subclade})</option>`;
-    })
-    .join("");
-
-  const bParsed = matchedBranch.parsed || {};
-  const specimenOrder = matchedTypology.word_order || bParsed.word_order || "SVO";
-  const specimenCopula = matchedTypology.copula_affirmative || "es / is";
-  const specimenNeg = matchedTypology.negation_preverbal || "no / not";
-  const specimenClause =
-    String(specimenOrder).toUpperCase().startsWith("VSO")
-      ? `[V: Creó] [S: Dios] [O: los cielos y la tierra] · Cópula=${specimenCopula} · Neg=${specimenNeg}`
-      : String(specimenOrder).toUpperCase().startsWith("SOV")
-        ? `[S: Dios] [O: los cielos y la tierra] [V: creó] · Cópula=${specimenCopula} · Neg=${specimenNeg}`
-        : `[S: Dios] [V: creó] [O: los cielos y la tierra] · Cópula=${specimenCopula} · Neg=${specimenNeg}`;
-  return (
-    `<div id="bibleBranchAndTypologyInspector" class="branch-typology-inspector-card" data-branch-count="${branches.length}" data-typology-count="${typologies.length}" data-active-branch="${matchedBranch.id}" data-active-typology="${matchedTypology.id}" style="padding:0.65rem;border-radius:10px;border:1px solid var(--card-border);background:var(--card-bg);font-size:0.8rem;">` +
-    `<div style="font-weight:700;margin-bottom:0.4rem;">🌐 ${isEn ? "12 Script Branches Inspector (G_01–G_12) & 16 Typological Sheets" : "Inspector de 12 Ramas de Escritura (G_01–G_12) y 16 Hojas Tipológicas"}</div>` +
-    `<div style="display:flex;flex-wrap:wrap;gap:0.45rem;margin-bottom:0.45rem;">` +
-    `<label style="flex:1;min-width:210px;">${isEn ? "Branch (12)" : "Rama (12)"}: <select id="branchProfileSelect" aria-label="${isEn ? "Typographic Branch G_01 to G_12" : "Rama Tipográfica G_01 a G_12"}" style="width:100%;min-height:48px;">${branchOptions}</select></label>` +
-    `<label style="flex:1;min-width:210px;">${isEn ? "Typology (16)" : "Tipología (16)"}: <select id="typologySheetSelect" aria-label="${isEn ? "Linguistic Typology Sheet (16)" : "Hoja de Tipología Lingüística (16)"}" style="width:100%;min-height:48px;">${typologyOptions}</select></label>` +
-    `</div>` +
-    `<div style="display:flex;flex-wrap:wrap;gap:0.45rem;color:var(--text-secondary);">` +
-    `<span class="uls-chip" data-branch-meta="${matchedBranch.id}" style="font-size:0.75rem;padding:0.2rem 0.5rem;">${isEn ? "Branch" : "Rama"}: <strong>${bParsed.name_es || matchedBranch.id}</strong> · ${isEn ? "Order" : "Orden"}=${bParsed.word_order || "SVO"} · ${isEn ? "Morphology" : "Morfología"}=${bParsed.morphology || "FUSIONAL"} · ${isEn ? "Alignment" : "Alineamiento"}=${bParsed.alignment || "NOM_ACC"}</span>` +
-    `<span class="uls-chip" data-typology-meta="${matchedTypology.id}" style="font-size:0.75rem;padding:0.2rem 0.5rem;">${isEn ? "Typology" : "Tipología"}: <strong>${matchedTypology.lang_code}</strong> · ${isEn ? "Order" : "Orden"}=${matchedTypology.word_order} · ${isEn ? "Clade" : "Clado"}=${matchedTypology.family_subclade} · ${isEn ? "Copula" : "Cópula"}=${matchedTypology.copula_affirmative || "∅"} · ${isEn ? "Negation" : "Negación"}=${matchedTypology.negation_preverbal || "∅"}</span>` +
-    `</div>` +
-    `<div id="branchTypologyLiveSpecimen" data-live-specimen-branch="${matchedBranch.id}" data-live-specimen-typology="${matchedTypology.id}" data-live-specimen-order="${specimenOrder}" style="margin-top:0.45rem;padding:0.45rem 0.65rem;border-radius:8px;border:1px dashed var(--card-border);background:var(--bg-secondary);font-size:0.78rem;">` +
-    `<strong>🔍 ${isEn ? `Live Morphosyntactic & Typographic Specimen (${matchedBranch.id} · ${matchedTypology.id}):` : `Especimen Morfosintáctico y Tipográfico en Vivo (${matchedBranch.id} · ${matchedTypology.id}):`}</strong> ` +
-    `<code>${specimenClause}</code>` +
-    `</div>` +
-    `</div>`
-  );
-}
-
-/**
- * Renderiza el Inspector de Imposición Multi-Pliego ($M \le 8$, $\text{creep} \le 2.45\text{ mm}$),
- * los 14 Perfiles TOML, el Selector de los 80 Bloques Canónicos y el Refugio de 4 Hojas ($D_{\text{KL}} = 0$).
- */
-export function renderMultiSignatureAndPocketRefugeHtml({
-  totalPages = 160,
-  activeBlockNumber = 1,
-  dir = "ltr",
-  uiLocale = "es",
-} = {}) {
-  const isEn = String(uiLocale || "es").trim().toLowerCase().startsWith("en");
-  const multiSig = computeMultiSignatureImposition({ totalPages, dir });
-  const blkIndex = Math.max(1, Math.min(80, Number(activeBlockNumber) || 1)) - 1;
-  const blk = CANONICAL_80_BLOCKS_CATALOG[blkIndex] || CANONICAL_80_BLOCKS_CATALOG[0];
-
-  const sigRows = multiSig.signatures
-    .slice(0, 5)
-    .map(
-      (s) =>
-        `<span class="uls-chip" data-signature-code="${s.signatureCode}" style="font-size:0.74rem;padding:0.2rem 0.5rem;">${s.signatureCode} (p.${s.startPage}–${s.endPage} · creep ${s.maxCreepMm}mm · ${isEn ? "mark" : "marca"} Y=${s.steppedCollationMarkYMm}mm)</span>`,
-    )
-    .join(" ");
-
-  const blockOptionsHtml = CANONICAL_80_BLOCKS_CATALOG.map((item) => {
-    const sel = item.blockNumber === blk.blockNumber ? " selected" : "";
-    return `<option value="${item.blockNumber}"${sel}>${item.blockId} · ${item.rangeLabel} (${item.testament})</option>`;
-  }).join("");
-
-  return (
-    `<div class="multi-signature-imposition-card" data-multi-signature="true" data-signature-count="${multiSig.signatureCount}" data-max-creep-mm="${multiSig.maxCreepMm}" data-kl-divergence="${POCKET_REFUGE_4_SHEETS_SPEC.klDivergence}" style="margin-top:0.55rem;padding:0.65rem;border-radius:10px;border:1px solid var(--card-border);background:var(--card-bg);font-size:0.8rem;">` +
-    `<div style="font-weight:700;margin-bottom:0.3rem;">📐 ${isEn ? `4n Multi-Signature Imposition (${multiSig.summary})` : `Imposición Multi-Pliego 4n (${multiSig.summary})`}</div>` +
-    `<div style="display:flex;flex-wrap:wrap;gap:0.35rem;margin-bottom:0.45rem;">${sigRows}</div>` +
-    `<div style="display:flex;align-items:center;flex-wrap:wrap;gap:0.45rem;margin-bottom:0.45rem;">` +
-    `<label for="canonicalBlockSelect" style="font-weight:600;">${isEn ? "Explore 80 Canonical Blocks:" : "Explorar 80 Bloques Canónicos:"}</label>` +
-    `<select id="canonicalBlockSelect" data-action="select-canonical-block" aria-label="${isEn ? "Select Canonical Block (1 to 80)" : "Seleccionar Bloque Canónico (1 a 80)"}" style="min-height:48px;flex:1;min-width:210px;">${blockOptionsHtml}</select>` +
-    `</div>` +
-    `<div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:0.4rem;color:var(--text-secondary);">` +
-    `<span data-active-field-block="${blk.blockId}">📦 ${isEn ? "Active block" : "Bloque activo"}: <strong>${blk.blockId}</strong> (${blk.rangeLabel} · ${blk.title})</span>` +
-    `<span data-pocket-refuge="refugio_4_hojas">🛡️ ${isEn ? `4-Sheet Pocket Refuge (16 pp · D_KL = ${POCKET_REFUGE_4_SHEETS_SPEC.klDivergence.toFixed(1)})` : `Refugio 4 Hojas (16 págs · D_KL = ${POCKET_REFUGE_4_SHEETS_SPEC.klDivergence.toFixed(1)})`}</span>` +
-    `</div>` +
-    `</div>`
-  );
-}
-
-/**
- * Simula la resiliencia de fotocopia xerográfica hasta 5ª generación (Sauvola + Filtro Bilateral, `editorial-graphics`, `D6-R32` / `6B+`),
- * garantizando contraste WCAG AAA $\ge 7.0:1$ en papel rural y generando metadatos para la tarjeta OpenGraph `1200×630`.
- */
 export function simulateFifthGenPhotocopySauvolaBilateral({
   strokePt = 0.85,
   k = 0.2,
   R = 128,
 } = {}) {
-  const baseContrast = strokePt >= 0.8 ? 14.8 : 13.2;
-  const stages = [
-    { generation: 0, label: "Original 300 DPI", contrastRatio: Number(baseContrast.toFixed(1)), sauvolaK: k, passesWcagAaa: true },
-    { generation: 1, label: "Fotocopia Gen 1", contrastRatio: Number((baseContrast * 0.84).toFixed(1)), sauvolaK: Number((k + 0.02).toFixed(2)), passesWcagAaa: true },
-    { generation: 2, label: "Fotocopia Gen 2", contrastRatio: Number((baseContrast * 0.72).toFixed(1)), sauvolaK: Number((k + 0.05).toFixed(2)), passesWcagAaa: true },
-    { generation: 3, label: "Fotocopia Gen 3", contrastRatio: Number((baseContrast * 0.62).toFixed(1)), sauvolaK: Number((k + 0.08).toFixed(2)), passesWcagAaa: true },
-    { generation: 5, label: "Fotocopia Rural Gen 5", contrastRatio: Number(Math.max(7.4, baseContrast * 0.53).toFixed(1)), sauvolaK: Number((k + 0.12).toFixed(2)), passesWcagAaa: true },
+  const cleanStroke = Number(strokePt) || 0.85;
+  const cleanK = Number(k) || 0.2;
+  const cleanR = Number(R) || 128;
+  const specs = [
+    { generation: 0, label: "Original 300 DPI", kDelta: 0.0 },
+    { generation: 1, label: "Fotocopia Gen 1", kDelta: 0.02 },
+    { generation: 2, label: "Fotocopia Gen 2", kDelta: 0.05 },
+    { generation: 3, label: "Fotocopia Gen 3", kDelta: 0.08 },
+    { generation: 5, label: "Fotocopia Rural Gen 5", kDelta: 0.12 },
   ];
-  const minContrast = stages[stages.length - 1].contrastRatio;
+  const stages = specs.map((spec) => {
+    const stageK = Number((cleanK + spec.kDelta).toFixed(2));
+    const oracle = evaluateOpticalSauvolaPhotocopyOracle({
+      genIndex: spec.generation,
+      sauvolaK: stageK,
+      dpi: 300,
+      strokePt: cleanStroke,
+      R: cleanR,
+      useBrowserCanvasIfAvailable: false,
+    });
+    return {
+      generation: spec.generation,
+      label: spec.label,
+      contrastRatio: Number(oracle.contrastRatio.toFixed(1)),
+      sauvolaK: oracle.sauvolaK,
+      eulerCharacteristicDelta: oracle.eulerCharacteristicDelta,
+      passesWcagAaa: oracle.wcagPassAaa,
+    };
+  });
+  const minContrast = stages.reduce((acc, s) => Math.min(acc, s.contrastRatio), Infinity);
   return {
     stages,
-    dynamicRangeR: R,
+    dynamicRangeR: cleanR,
     minContrastRatio: minContrast,
-    passesAll5Generations: minContrast >= 7.0,
+    passesAll5Generations: stages.every((s) => s.passesWcagAaa),
     socialCardDimensions: "1200x630",
   };
 }
 
-/**
- * D4-R38 (`4A` · `resolveEditionGeometrySpec`):
- * Devuelve la especificación geométrica e imposición diferenciada para cada uno de los 14 perfiles de impresión (`01..14`).
- */
-export function resolveEditionGeometrySpec(profileId = "02_2col_pastoral", paperFormat = "a4") {
-  const cleanId = String(profileId || "02_2col_pastoral").trim();
-  const numPrefix = cleanId.match(/^(\d{2})_/)?.[1] || "";
-  const exactIdx = CANONICAL_14_PRINT_PROFILES.findIndex((p) => p && p.id === cleanId);
-  const prefixIdx = numPrefix
-    ? CANONICAL_14_PRINT_PROFILES.findIndex((p) => p && String(p.id || "").startsWith(`${numPrefix}_`))
-    : -1;
-  const fallbackIdx = numPrefix ? Math.max(0, Math.min(13, parseInt(numPrefix, 10) - 1)) : 1;
-  const resolvedIdx = exactIdx >= 0 ? exactIdx : prefixIdx >= 0 ? prefixIdx : fallbackIdx;
-  const found =
-    CANONICAL_14_PRINT_PROFILES[resolvedIdx] ||
-    CANONICAL_14_PRINT_PROFILES[1] ||
-    CANONICAL_14_PRINT_PROFILES[0];
-  const resolvedPrefix =
-    numPrefix ||
-    String(found?.id || cleanId).match(/^(\d{2})_/)?.[1] ||
-    String(resolvedIdx + 1).padStart(2, "0");
-  const paperSize =
-    resolvedPrefix === "01"
-      ? "A4"
-      : resolvedPrefix === "02"
-        ? "Letter"
-        : String(found?.paperSize || paperFormat || "A4");
-  const editionDir =
-    resolvedPrefix === "01"
-      ? "2col-a4"
-      : resolvedPrefix === "02"
-        ? "2col-letter"
-        : paperSize.toLowerCase().includes("letter")
-          ? "2col-letter"
-          : "2col-a4";
-  const prefixSampleBlockMap = {
-    "01": null,
-    "02": null,
-    "03": "B03",
-    "04": "B04",
-    "05": "B05",
-    "06": "B06",
-    "07": "B07",
-    "08": "B01",
-    "09": "B09",
-    "10": "B65",
-    "11": "B11",
-    "12": "B12",
-    "13": "B13",
-    "14": "B14",
-  };
-  const defaultColsByPrefix = {
-    "01": 1, "02": 2, "03": 3, "04": 1, "05": 1, "06": 2, "07": 1,
-    "08": 2, "09": 2, "10": 2, "11": 1, "12": 1, "13": 1, "14": 3,
-  };
-  const defaultFontByPrefix = {
-    "01": 10.5, "02": 9.5, "03": 8.0, "04": 13.5, "05": 9.0, "06": 9.5, "07": 10.0,
-    "08": 8.5, "09": 12.0, "10": 10.0, "11": 16.0, "12": 12.5, "13": 15.0, "14": 11.0,
-  };
-  const usePrefixDefaults = Boolean(numPrefix && exactIdx < 0 && prefixIdx < 0);
-  return {
-    profileId: usePrefixDefaults ? cleanId : found.id,
-    columns: usePrefixDefaults
-      ? defaultColsByPrefix[resolvedPrefix] || 2
-      : Number(found.columns) || defaultColsByPrefix[resolvedPrefix] || 2,
-    fontPt: usePrefixDefaults
-      ? defaultFontByPrefix[resolvedPrefix] || 9.5
-      : Number(found.fontPt) || defaultFontByPrefix[resolvedPrefix] || 9.5,
-    leadingRatio: Number(found.leadingRatio) || 1.35,
-    gutterMm: Number(found.gutterMm) || 20.0,
-    paperSize,
-    editionDir,
-    impositionMode: String(found.impositionMode || "single_sheet_20mm"),
-    tomlPath: String(found.tomlPath || `obras/biblia/profiles/${found.id}.toml`),
-    sampleBlockId:
-      resolvedPrefix in prefixSampleBlockMap ? prefixSampleBlockMap[resolvedPrefix] : null,
-  };
-}
-
-/**
- * D5-R37 (`5A`) + D4-R38 (`4A` · `resolvePrintEditionPdfAssetUrl`):
- * Resuelve cada uno de los 14 perfiles de impresión (`01..14`) y las 2 herramientas de campo (`refugio_4_hojas`,
- * `checklist_80_bloques`) a un archivo PDF físico real y diferenciado en disco (`0` enlaces `404` y `0` colisiones idénticas).
- */
-export function resolvePrintEditionPdfAssetUrl(
-  profileId = "02_2col_pastoral",
-  lang = "es",
-  paper = "a4",
-  blockId = null,
-  manifestFallbackPath = null,
-) {
-  const id = String(profileId || "02_2col_pastoral").trim();
-  if (id.includes("refugio_4_hojas")) {
-    return "obras/biblia/campo/refugio_4_hojas.pdf";
-  }
-  if (id.includes("checklist_80_bloques")) {
-    return "obras/biblia/campo/checklist_80_bloques.pdf";
-  }
-  const cleanLang = String(lang || "es").trim().toLowerCase();
-  const diskLang = ["es", "en", "stp", "he", "grc"].includes(cleanLang)
-    ? cleanLang
-    : cleanLang === "es-1909"
-      ? "es"
-      : "es";
-  const spec = resolveEditionGeometrySpec(id, paper);
-  const editionDir = spec.editionDir;
-
-  if (spec.sampleBlockId) {
-    const chosenBlock =
-      blockId && /^B\d{2}$/i.test(String(blockId)) && String(blockId).toUpperCase() !== "B01"
-        ? String(blockId).toUpperCase()
-        : spec.sampleBlockId;
-    return `data/blocks/${diskLang}/${editionDir}/${chosenBlock}.pdf`;
-  }
-  if (manifestFallbackPath) {
-    return buildRelativePdfAssetUrl(manifestFallbackPath);
-  }
-  return `data/full/${diskLang}/${editionDir}.pdf`;
-}
-
-/**
- * D5-R37 (`5A` · `syncPrintDrawerControlsFromEditionProfile`):
- * Sincroniza los controles del configurador de impresión en la Gaveta 2 (`#bibleKindleConfigurator`)
- * cuando el lector selecciona cualquiera de las 14 tarjetas de edición (`.print-edition-card[data-profile-id]`).
- */
 export function syncPrintDrawerControlsFromEditionProfile(
   profileId = "02_2col_pastoral",
   targetDoc = null,
@@ -1451,70 +989,3 @@ export function syncPrintDrawerControlsFromEditionProfile(
     budget,
   };
 }
-
-/**
- * D6-R37 (`6A` · `renderImpositionAndLayoutPreviewHtml`):
- * Renderiza la vista previa de imposición de cuadernillo Saddle-Stitch (`4n`) o verificación de márgenes A4/Carta
- * directamente en `#impositionBookletPreviewHost` dentro de la Gaveta 2 (`#biblePrintEditionsSheet`).
- */
-export function renderImpositionAndLayoutPreviewHtml({
-  mode = "imposition",
-  paper = "A4",
-  pageCount = 16,
-  columns = 2,
-  fontPt = 9.5,
-  dir = "ltr",
-  uiLocale = "es",
-} = {}) {
-  const isEn = String(uiLocale || "es").trim().toLowerCase().startsWith("en");
-  const normPaper = String(paper || "A4").toLowerCase().includes("letter") ? "Letter" : "A4";
-  const foliation = computeFoliationLayout({
-    mode: mode === "layout" ? "single_sheet_20mm" : "saddle_stitch",
-    paper: normPaper,
-    pageCount,
-    dir,
-  });
-  const imp = computeMultiSignatureImposition({
-    totalPages: Math.max(16, Number(pageCount) || 16),
-    maxSheetsPerSignature: 4,
-    dir,
-  });
-  const budget = computeKindlePrintBudget({ fontPt, columns, paper: normPaper });
-  const firstSpread =
-    foliation.spreads && foliation.spreads[0]
-      ? isEn
-        ? `Front [${foliation.spreads[0].front.join(", ")}] · Back [${foliation.spreads[0].back.join(", ")}]`
-        : `Frente [${foliation.spreads[0].front.join(", ")}] · Dorso [${foliation.spreads[0].back.join(", ")}]`
-      : isEn
-        ? "Spread [16, 1] / [2, 15]"
-        : "Pliego [16, 1] / [2, 15]";
-  const titleText =
-    mode === "layout"
-      ? isEn
-        ? "📏 A4/Letter Geometry Verified (INV-EKO-TYP-003)"
-        : "📏 Geometría A4/Carta Verificada (INV-EKO-TYP-003)"
-      : isEn
-        ? "📐 Saddle-Stitch 4n Booklet Imposition Ready to Fold"
-        : "📐 Imposición Saddle-Stitch 4n Lista para Doblar";
-  const detailText = isEn
-    ? `Paper: ${normPaper} · ${budget.summaryText} · ${firstSpread} · Spine √2=${foliation.spineGutterMm || 9.215} mm · Binder margin=${foliation.bindingMarginMm || 20.0} mm (Ø ${foliation.punchHoleDiameterMm || 4.0} mm) · Max creep=${imp.maxCreepMm} mm`
-    : `Papel: ${normPaper} · ${budget.summaryText} · ${firstSpread} · Lomo √2=${foliation.spineGutterMm || 9.215} mm · Margen perforado=${foliation.bindingMarginMm || 20.0} mm (Ø ${foliation.punchHoleDiameterMm || 4.0} mm) · Creep máx=${imp.maxCreepMm} mm`;
-
-  return (
-    `<div class="imposition-booklet-preview-card" ` +
-    `data-print-preview-mode="${mode}" ` +
-    `data-paper="${normPaper}" ` +
-    `data-spine-gutter-mm="${foliation.spineGutterMm || 9.215}" ` +
-    `data-binding-margin-mm="${foliation.bindingMarginMm || 20.0}" ` +
-    `data-creep-mm="${imp.maxCreepMm}" ` +
-    `style="padding:0.45rem 0.65rem;border-radius:8px;border:1px solid var(--badge-border);background:var(--badge-bg);display:flex;flex-wrap:wrap;gap:0.4rem;align-items:center;justify-content:space-between;">` +
-    `<strong>${titleText}</strong>` +
-    `<span>${detailText}</span>` +
-    `</div>`
-  );
-}
-
-
-
-
-

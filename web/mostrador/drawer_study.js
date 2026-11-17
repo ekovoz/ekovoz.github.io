@@ -380,7 +380,6 @@ export async function hydrateStudyDrawerPanel(ctx = {}) {
     transitionSheet,
   } = ctx;
   const mod = await loadStudyModule();
-  state.studyLoaded = true;
   const matrixChapter = await dataLayer.loadMatrixChapter(state.book, state.chapter);
   const nsmLexicon =
     typeof dataLayer.loadNsmRealiaLexicon === "function"
@@ -393,14 +392,6 @@ export async function hydrateStudyDrawerPanel(ctx = {}) {
   if (rosettaIndex) {
     hydratePhilologyRosettaIndex(rosettaIndex);
     state.rosettaIndex = rosettaIndex;
-    state.rosettaProvenanceCounts = {
-      versificationEngOrg: Array.isArray(rosettaIndex.versification_eng_org)
-        ? rosettaIndex.versification_eng_org.length
-        : 0,
-      ketivQereResiduals: Array.isArray(rosettaIndex.ketiv_qere_residuals)
-        ? rosettaIndex.ketiv_qere_residuals.length
-        : 0,
-    };
   }
   if (!state.pericopesAndGlossesLoaded && typeof dataLayer.loadPericopesAndGlosses === "function") {
     state.pericopesAndGlossesLoaded = true;
@@ -711,7 +702,6 @@ export async function hydrateStudyDrawerPanel(ctx = {}) {
     if (sBtn && typeof sBtn.addEventListener === "function" && !sBtn._studySubtabBound) {
       sBtn._studySubtabBound = true;
       sBtn.addEventListener("click", () => {
-        state.activeStudySubtab = tabName;
         applyHarelSubtabSelection(targetDoc, "study", tabName);
       });
     }

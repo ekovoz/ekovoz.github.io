@@ -1,7 +1,14 @@
+import { renderDiglossicParallelBridge, resolveRegionalBridgeLanguage21 } from "./bridge_and_chapter.js";
+export { renderDiglossicParallelBridge, resolveRegionalBridgeLanguage21 };
 // Gaveta bajo demanda: Estudio Palabra por Palabra de 14 Columnas (C01..C14), Realia, NSM y Atribución CC BY 4.0.
 // Ekovoz Mostrador Ronda 20 — Cero dependencias de Node.js, cero relleno sintético.
 
 import { MATRIX_ROW_COLUMNS } from "./data_layer.js";
+import {
+  SEMANTIC_TAG_GLOSSARY, SDBH_HIERARCHICAL_PREFIXES, NSM_ES_TO_EN_PHRASES, PHILOLOGY_ROSETTA_DEFAULT_INDEX,
+  CANONICAL_5_RESIDUAL_KINDS, CANONICAL_METROLOGY_FALLBACK, DEFAULT_CULTURAL_GLOSSES_MAP, CANONICAL_TSK_ECHOES, VERSE_SPECIFIC_TSK_ECHOES,
+} from "./estudio_schemas.js";
+export { PHILOLOGY_ROSETTA_DEFAULT_INDEX, CANONICAL_5_RESIDUAL_KINDS };
 
 const DEFAULT_ATTRIBUTION =
   "STEPBible TAHOT/TAGNT (Tyndale House, CC BY 4.0) · Clear Bible Macula Hebrew/Greek (CC BY 4.0) · OpenScriptures WLC / CenterBLR SRGNT · Ekovoz NSM-65";
@@ -14,54 +21,65 @@ function escapeHtml(str) {
     .replace(/"/g, "&quot;");
 }
 
-function normalizeMatrixRowObject(row, book = "GEN", chapter = 1) {
+function normalizeMatrixRowObject(row, book = "GEN", chapter = 1, fallbackWordPos = 1) {
   if (!row) return null;
   if (Array.isArray(row)) {
     if (row.length === 13) {
       const verseNum = Number(row[0]) || 1;
+      const strongRaw = String(row[3] || "∅");
       return {
         verse: verseNum,
-        c01_ordinal_31102: 1,
+        c01_ordinal_31102: verseNum,
         c02_ref: `${book}.${chapter}.${verseNum}`,
-        c03_source_corpus: String(row[3] || "").startsWith("G") ? "SRGNT" : "WLC",
-        c04_word_pos: 1,
+        c03_source_corpus: strongRaw.startsWith("G") ? "SRGNT" : "WLC",
+        c04_word_pos: Math.max(1, Number(fallbackWordPos) || 1),
+        c04_lemma: row[2] ?? "∅",
         c05_orig_text: row[1] ?? "∅",
         c06_translit: row[2] ?? "∅",
-        c07_strong_id: row[3] ?? "∅",
+        c07_strong_id: strongRaw,
         c08_morph_code: row[4] ?? "∅",
+        c08_gloss_en: row[6] ?? "∅",
         c09_macula_role: row[8] ?? "∅",
         c10_clause_id: row[9] ?? "∅",
         c11_semantic_domain: row[5] ?? "∅",
+        c11_discourse_speech_act: row[9] ?? "∅",
         c12_gloss_es: row[7] ?? "∅",
+        c12_pragmatic_focus: row[10] ?? "∅",
         c13_nsm_65: row[11] ?? "∅",
         c14_target_gloss: row[6] ?? "∅",
+        c14_realia_flag: row[12] ?? "∅",
       };
     }
     const obj = {};
-    for (let i = 0; i < MATRIX_ROW_COLUMNS.length; i++) {
-      obj[MATRIX_ROW_COLUMNS[i]] = row[i] ?? "∅";
-    }
+    for (let i = 0; i < MATRIX_ROW_COLUMNS.length; i++) obj[MATRIX_ROW_COLUMNS[i]] = row[i] ?? "∅";
     const verseNum = Number(obj.verse) || 1;
     obj.c02_ref = `${book}.${chapter}.${verseNum}`;
+    obj.c04_lemma = obj.c04_lemma ?? obj.c06_translit ?? "∅";
+    obj.c12_pragmatic_focus = obj.c12_pragmatic_focus ?? "∅";
+    obj.c14_realia_flag = obj.c14_realia_flag ?? obj.c14_target_gloss ?? "∅";
     return obj;
   }
   const verseNum = Number(row.verse) || Number(String(row.c02_ref || "").split(".")[2]) || 1;
   return {
     verse: verseNum,
-    c01_ordinal_31102: row.c01_ordinal_31102 ?? 1,
+    c01_ordinal_31102: row.c01_ordinal_31102 ?? verseNum,
     c02_ref: row.c02_ref || `${book}.${chapter}.${verseNum}`,
     c03_source_corpus: row.c03_source_corpus ?? "∅",
-    c04_word_pos: row.c04_word_pos ?? 1,
+    c04_word_pos: row.c04_word_pos ?? Math.max(1, Number(fallbackWordPos) || 1),
+    c04_lemma: row.c04_lemma ?? row.c06_translit ?? "∅",
     c05_orig_text: row.c05_orig_text ?? "∅",
-    c06_translit: row.c06_translit ?? "∅",
+    c06_translit: row.c06_translit ?? row.c04_lemma ?? "∅",
     c07_strong_id: row.c07_strong_id ?? "∅",
     c08_morph_code: row.c08_morph_code ?? "∅",
     c09_macula_role: row.c09_macula_role ?? "∅",
     c10_clause_id: row.c10_clause_id ?? "∅",
     c11_semantic_domain: row.c11_semantic_domain ?? "∅",
+    c11_discourse_speech_act: row.c11_discourse_speech_act ?? row.c10_clause_id ?? "∅",
     c12_gloss_es: row.c12_gloss_es ?? "∅",
+    c12_pragmatic_focus: row.c12_pragmatic_focus ?? "∅",
     c13_nsm_65: row.c13_nsm_65 ?? "∅",
     c14_target_gloss: row.c14_target_gloss ?? "∅",
+    c14_realia_flag: row.c14_realia_flag ?? row.c14_target_gloss ?? "∅",
   };
 }
 
@@ -136,14 +154,7 @@ export function resolveBicanonicalDivergence(book = "GEN", chapter = 1, verse = 
     };
   }
 
-  return {
-    hasDivergence: false,
-    mtRef: ref,
-    occidentalRef: ref,
-    lxxRef: ref,
-    regime: "ALIGNED_CANONICAL",
-    label: `MT = Occidental (${ref})`,
-  };
+  return { hasDivergence: false, mtRef: ref, occidentalRef: ref, lxxRef: ref, regime: "ALIGNED_CANONICAL", label: `MT = Occidental (${ref})` };
 }
 
 export function classifyMaculaArgumentRole(roleRaw, morphRaw = "") {
@@ -155,204 +166,6 @@ export function classifyMaculaArgumentRole(roleRaw, morphRaw = "") {
   return "MOD";
 }
 
-/**
- * Glosario bilingüe de etiquetas semánticas compiladas en la Matriz 14-Col (`D2-R44` / `DEB-R44-04`):
- * roles MACULA, evidencialidad, voz/foco y dominios léxicos SDBH, para que la UI nunca muestre jerga cruda.
- */
-const SEMANTIC_TAG_GLOSSARY = {
-  "MACULA:PREDICATE_CORE": ["Núcleo predicativo", "Predicate core"],
-  "MACULA:A0_AGENT": ["Agente (quien actúa)", "Agent (who acts)"],
-  "MACULA:A1_PATIENT": ["Paciente (quien recibe la acción)", "Patient (receives the action)"],
-  "MACULA:A2_INDIRECT_LOCATIVE": ["Destinatario o lugar", "Recipient or place"],
-  "EVID:DIRECT_SENSORY": ["Evidencia sensorial directa", "Direct sensory evidence"],
-  "EVID:INFERENTIAL_WISDOM": ["Inferencia sapiencial", "Inferential wisdom"],
-  "VOICE:ACTIVE_AGENT_FOCUS": ["Voz activa (foco en quien actúa)", "Active voice (agent focus)"],
-  "VOICE:PASSIVE_PATIENT_PROMOTION": ["Voz pasiva (foco en quien recibe)", "Passive voice (patient focus)"],
-  "VOICE:THEOPHANIC_DIRECT_SPEECH": ["Discurso directo de Dios", "God's direct speech"],
-  "VOICE:POETIC_PARALLELISM_AB": ["Paralelismo poético A‖B", "Poetic parallelism A‖B"],
-  "SDBH:NAMES_OF_CONSTRUCTIONS": ["Nombres de construcciones", "Names of constructions"],
-  "SDBH:HAPPEN": ["Acontecer", "Happen"],
-  "SDBH:MOVE": ["Movimiento", "Movement"],
-  "SDBH:SPACE": ["Espacio", "Space"],
-  "SDBH:TIME": ["Tiempo", "Time"],
-  "SDBH:PEOPLE": ["Personas / pueblos", "People"],
-  "SDBH:AFFIRMATION": ["Afirmación", "Affirmation"],
-  "SDBH:COMMUNICATION": ["Comunicación", "Communication"],
-  "SDBH:KNOW": ["Conocimiento", "Knowing"],
-};
-
-const SDBH_HIERARCHICAL_PREFIXES = [
-  ["002003003004", "Acción · Hacer / Producir", "Action · Make / Produce"],
-  ["002002002005", "Creación · Hacer existir", "Creation · Bring into existence"],
-  ["002002002006", "Transformación cósmica", "Cosmic transformation"],
-  ["002002002010", "Transcurso del día y la noche", "Course of day & night"],
-  ["002004001009", "Habla y declaración veraz", "Speech & truthful utterance"],
-  ["002004001005", "Percepción visual · Ver y discernir", "Visual perception · See & discern"],
-  ["002004002010", "Nombrar y proclamar", "Name & proclaim"],
-  ["002001001049", "Luz, resplandor y claridad", "Light, radiance & clarity"],
-  ["002001001042", "Ciclo temporal y duración", "Temporal cycle & duration"],
-  ["002001001018", "Oscuridad y ausencia de luz", "Darkness & absence of light"],
-  ["002001001057", "Brotar y crecimiento vital", "Sprouting & vital growth"],
-  ["002003002003", "Portar, tomar y sostener", "Carry, take & hold"],
-  ["002003002004", "Bendición y favor", "Blessing & favor"],
-  ["002003002008", "Gobierno y cuidado rector", "Rule & guiding care"],
-  ["002003002014", "Reunir y congregar", "Gather & assemble"],
-  ["001005002001", "Cielos y alturas cósmicas", "Heavens & cosmic heights"],
-  ["001005002002", "Tierra habitable, montes y mares", "Habitable earth, mountains & seas"],
-  ["001005002003", "Abismo y aguas profundas", "Deep waters & abyss"],
-  ["001001002003", "Personas · Humanidad y familia", "People · Humanity & kinship"],
-  ["001001002001", "Criaturas vivientes · Fauna", "Living creatures · Fauna"],
-  ["001004001017", "Obra formada y orden", "Formed work & order"],
-  ["001004003002", "Alimentos y sustento", "Food & sustenance"],
-  ["001001001", "Ser Supremo · Dios", "Supreme Being · God"],
-  ["001001002", "Seres vivos y personas", "Living beings & persons"],
-  ["001003001", "Hierba y vegetación", "Herbs & vegetation"],
-  ["001003002", "Árboles y frutos", "Trees & fruit"],
-  ["001006007", "Aguas y corrientes", "Waters & streams"],
-  ["002001001", "Estado físico y cualidad", "Physical state & quality"],
-  ["002001002", "Estado interior y afecto", "Inner state & emotion"],
-  ["002001003", "Plenitud y estado relacional", "Fullness & relational state"],
-  ["002002001", "Movimiento espacial", "Spatial movement"],
-  ["002002002", "Acontecimiento y devenir", "Happening & becoming"],
-  ["002002003", "Proceso y consumación", "Process & completion"],
-  ["002003001", "Acción física directa", "Direct physical action"],
-  ["002003002", "Acción relacional", "Relational action"],
-  ["002003003", "Acción causal y realización", "Causal action & accomplishment"],
-  ["002004001", "Percepción y cognición", "Perception & cognition"],
-  ["002004002", "Comunicación y llamado", "Communication & calling"],
-  ["001001", "Seres animados y divinidad", "Animate beings & deity"],
-  ["001002", "Cuerpo y organismo", "Body & organism"],
-  ["001003", "Flora y semillas", "Flora & seeds"],
-  ["001004", "Artefactos y sustento", "Artifacts & sustenance"],
-  ["001005", "Cosmos y geografía", "Cosmos & geography"],
-  ["001006", "Sustancias y elementos", "Substances & elements"],
-  ["002001", "Estados y cualidades", "States & qualities"],
-  ["002002", "Eventos y procesos", "Events & processes"],
-  ["002003", "Acciones y agencia", "Actions & agency"],
-  ["002004", "Cognición y habla", "Cognition & speech"],
-  ["003001", "Cantidad, totalidad y orden", "Quantity, totality & order"],
-  ["003002", "Relación espacial y temporal", "Spatial & temporal relation"],
-  ["004003", "Relación y propósito", "Relation & purpose"],
-  ["001", "Objetos, seres y cosmos", "Objects, beings & cosmos"],
-  ["002", "Eventos, estados y acciones", "Events, states & actions"],
-  ["003", "Atributos y relaciones", "Attributes & relations"],
-  ["004", "Marcadores relacionales", "Relational markers"],
-];
-
-const NSM_ES_TO_EN_PHRASES = [
-  ["TIEMPO CUANDO HAY LUZ Y LAS PERSONAS HACEN COSAS", "TIME WHEN THERE IS LIGHT AND PEOPLE DO THINGS"],
-  ["HACER QUE ALGO EXISTA", "MAKE SOMETHING EXIST"],
-  ["ANTES NO HABÍA", "BEFORE THERE WAS NOT"],
-  ["ALGUIEN SOBRE TODOS", "SOMEONE ABOVE ALL"],
-  ["ANTES DE TODO", "BEFORE EVERYTHING"],
-  ["DECIR PALABRAS VERDADERAS A ALGUIEN", "SAY TRUE WORDS TO SOMEONE"],
-  ["VER CLARAMENTE EN ESTE LUGAR", "SEE CLEARLY IN THIS PLACE"],
-  ["LUZ BUENA", "GOOD LIGHT"],
-  ["LUGAR MUY ARRIBA SOBRE LA TIERRA", "PLACE FAR ABOVE EARTH"],
-  ["LUGAR ABAJO DONDE VIVEN LAS PERSONAS", "PLACE BELOW WHERE PEOPLE LIVE"],
-  ["NO PODER VER EN ESTE LUGAR", "CANNOT SEE IN THIS PLACE"],
-  ["TIEMPO DE NOCHE", "NIGHT TIME"],
-  ["AGUA VIVA QUE SE MUEVE EN UN LUGAR", "LIVING WATER MOVING IN A PLACE"],
-  ["TENER ALIENTO DE VIDA", "HAVE BREATH OF LIFE"],
-  ["VER ALGO CON LOS OJOS", "SEE SOMETHING WITH EYES"],
-  ["SABER QUE ES BUENO", "KNOW THAT IT IS GOOD"],
-  ["MOVERSE POR UN CAMINO HACIA UN LUGAR", "MOVE ALONG A PATH TOWARD A PLACE"],
-  ["DAR O TOMAR ALGO CON LAS MANOS", "GIVE OR TAKE SOMETHING WITH HANDS"],
-  ["SENTIR GRAN BIEN PORQUE DIOS ESTÁ CERCA", "FEEL VERY GOOD BECAUSE GOD IS NEAR"],
-  ["PERSONA QUE VIVE Y PIENSA EN LA TIERRA", "PERSON WHO LIVES AND THINKS ON EARTH"],
-  ["LUGAR DONDE LAS PERSONAS VIVEN JUNTAS CON DIOS", "PLACE WHERE PEOPLE LIVE TOGETHER WITH GOD"],
-  ["PERSONA DE LA MISMA FAMILIA", "PERSON OF THE SAME FAMILY"],
-  ["ALGUIEN DE LA MISMA FAMILIA", "SOMEONE OF THE SAME FAMILY"],
-  ["VIVIR JUNTOS", "LIVE TOGETHER"],
-  ["GUIAR Y CUIDAR AL PUEBLO CON AUTORIDAD", "GUIDE AND CARE FOR PEOPLE WITH AUTHORITY"],
-  ["ALGO VIVO QUE CRECE DE LA TIERRA Y DA SEMILLA", "LIVING THING GROWING FROM EARTH GIVING SEED"],
-  ["SACAR DE ALGO MALO", "BRING OUT OF SOMETHING BAD"],
-  ["PAGAR PARA LIBERAR", "PAY TO SET FREE"],
-  ["NACER PRIMERO", "BE BORN FIRST"],
-  ["CUIDAR A LOS HERMANOS", "CARE FOR SIBLINGS"],
-  ["RECIBIR LA PARTE DEL PADRE", "RECEIVE THE FATHER'S SHARE"],
-  ["MUCHO METAL DE GRAN VALOR", "MUCH METAL OF GREAT VALUE"],
-  ["PESADO COMO UNA CARGA GRANDE", "HEAVY LIKE A LARGE LOAD"],
-  ["LAS PERSONAS", "PEOPLE"],
-  ["TAL VEZ", "MAYBE"],
-  ["ALGUIEN", "SOMEONE"],
-  ["PERSONAS", "PEOPLE"],
-  ["PERSONA", "PERSON"],
-  ["PALABRAS", "WORDS"],
-  ["VERDADERAS", "TRUE"],
-  ["VERDADERO", "TRUE"],
-  ["VERDAD", "TRUTH"],
-  ["CUANDO", "WHEN"],
-  ["TIEMPO", "TIME"],
-  ["AHORA", "NOW"],
-  ["ANTES", "BEFORE"],
-  ["DESPUÉS", "AFTER"],
-  ["LUGAR", "PLACE"],
-  ["DÓNDE", "WHERE"],
-  ["AQUÍ", "HERE"],
-  ["ARRIBA", "ABOVE"],
-  ["ABAJO", "BELOW"],
-  ["CERCA", "NEAR"],
-  ["LEJOS", "FAR"],
-  ["DENTRO", "INSIDE"],
-  ["SOBRE", "ABOVE"],
-  ["TIERRA", "EARTH"],
-  ["ALGUNOS", "SOME"],
-  ["MUCHOS", "MANY"],
-  ["MUCHO", "MUCH"],
-  ["TODOS", "ALL"],
-  ["TODO", "ALL"],
-  ["COSAS", "THINGS"],
-  ["COSA", "THING"],
-  ["ALGO", "SOMETHING"],
-  ["CUERPO", "BODY"],
-  ["BUENO", "GOOD"],
-  ["MALO", "BAD"],
-  ["GRANDE", "BIG"],
-  ["PEQUEÑO", "SMALL"],
-  ["PENSAR", "THINK"],
-  ["PIENSA", "THINKS"],
-  ["SABER", "KNOW"],
-  ["QUERER", "WANT"],
-  ["SENTIR", "FEEL"],
-  ["DECIR", "SAY"],
-  ["HACER", "DO"],
-  ["HACEN", "DO"],
-  ["PASAR", "HAPPEN"],
-  ["MOVERSE", "MOVE"],
-  ["MUEVE", "MOVES"],
-  ["TOCAR", "TOUCH"],
-  ["VIVIR", "LIVE"],
-  ["VIVEN", "LIVE"],
-  ["VIVE", "LIVES"],
-  ["MORIR", "DIE"],
-  ["PODER", "CAN"],
-  ["PORQUE", "BECAUSE"],
-  ["MISMO", "SAME"],
-  ["OTRO", "OTHER"],
-  ["DIOS", "GOD"],
-  ["LUZ", "LIGHT"],
-  ["AGUA", "WATER"],
-  ["VIDA", "LIFE"],
-  ["VER", "SEE"],
-  ["OÍR", "HEAR"],
-  ["HAY", "THERE IS"],
-  ["TENER", "HAVE"],
-  ["MUY", "VERY"],
-  ["MÁS", "MORE"],
-  ["COMO", "LIKE"],
-  ["UNO", "ONE"],
-  ["DOS", "TWO"],
-  ["NO", "NOT"],
-  ["SI", "IF"],
-  ["Y", "AND"],
-];
-
-/**
- * Decodifica códigos jerárquicos `SDBH` de 9–15 dígitos de Reinier de Blois (`001..004`)
- * mediante coincidencia de prefijo más largo (`DISCARD-016/017`), separando sufijos `[H7225+H1254]`
- * o `[G3056]` en un arreglo limpio `strongBadges` (`D2-R45`).
- */
 export function decodeSdbhHierarchicalCode(rawTag, uiLocale = "es") {
   const isEn = !String(uiLocale || "es").trim().toLowerCase().startsWith("es");
   const raw = String(rawTag || "").trim();
@@ -363,31 +176,15 @@ export function decodeSdbhHierarchicalCode(rawTag, uiLocale = "es") {
       if (norm && !strongBadges.includes(norm)) strongBadges.push(norm);
     }
   }
-  const withoutStrong = raw
-    .replace(/\[[HG]\d{3,5}(?:\+[HG]\d{3,5})*\]/gi, "")
-    .replace(/\|\s*CLICS3:[^|]+/gi, "")
-    .trim();
-
-  const digitTokens = [];
-  for (const m of withoutStrong.matchAll(/(?:SDBH:)?(\d{6,15})/gi)) {
-    digitTokens.push(m[1]);
-  }
+  const withoutStrong = raw.replace(/\[[HG]\d{3,5}(?:\+[HG]\d{3,5})*\]/gi, "").replace(/\|\s*CLICS3:[^|]+/gi, "").trim();
   const labels = [];
-  for (const digits of digitTokens) {
+  for (const m of withoutStrong.matchAll(/(?:SDBH:)?(\d{6,15})/gi)) {
+    const digits = m[1];
     const matched = SDBH_HIERARCHICAL_PREFIXES.find(([prefix]) => digits.startsWith(prefix));
-    const resolved = matched
-      ? isEn
-        ? matched[2]
-        : matched[1]
-      : isEn
-        ? "SDBH lexical domain"
-        : "Dominio léxico SDBH";
+    const resolved = matched ? (isEn ? matched[2] : matched[1]) : (isEn ? "SDBH lexical domain" : "Dominio léxico SDBH");
     if (!labels.includes(resolved)) labels.push(resolved);
   }
-  return {
-    label: labels.slice(0, 3).join(" · "),
-    strongBadges,
-  };
+  return { label: labels.slice(0, 3).join(" · "), strongBadges };
 }
 
 /**
@@ -492,22 +289,12 @@ export function formatHumanReadable14ColFields(row = {}, uiLocale = "es") {
 
   let nsmCandidate = "";
   if (/PRIM:/i.test(rawNsm)) {
-    const primSlice = rawNsm.slice(rawNsm.search(/PRIM:/i));
-    nsmCandidate = translateNsm65PrimePhrase(primSlice, uiLocale);
+    nsmCandidate = translateNsm65PrimePhrase(rawNsm.slice(rawNsm.search(/PRIM:/i)), uiLocale);
   } else {
     nsmCandidate = humanizeSemanticTagChain(rawNsm, uiLocale);
   }
-  const nsmHuman =
-    nsmCandidate ||
-    (isEn ? "GOD · SAY · DO" : "DIOS · DECIR · HACER");
-
-  return {
-    roleHuman,
-    clauseHuman,
-    domainHuman,
-    nsmHuman,
-    strongBadges,
-  };
+  const nsmHuman = nsmCandidate || "∅";
+  return { roleHuman, clauseHuman, domainHuman, nsmHuman, strongBadges };
 }
 
 export function renderStudy14ColDrawerHtml(matrixShard, options = {}) {
@@ -526,8 +313,12 @@ export function renderStudy14ColDrawerHtml(matrixShard, options = {}) {
 
   const rawRows = Array.isArray(shard?.rows) ? shard.rows : [];
   const normalizedRows = [];
+  const wordPosByVerse = new Map();
   for (const r of rawRows) {
-    const norm = normalizeMatrixRowObject(r, book, chapter);
+    const vHint = Array.isArray(r) ? Number(r[0]) || 1 : Number(r?.verse) || 1;
+    const nextPos = (wordPosByVerse.get(vHint) || 0) + 1;
+    wordPosByVerse.set(vHint, nextPos);
+    const norm = normalizeMatrixRowObject(r, book, chapter, nextPos);
     if (!norm) continue;
     if (filterVerse && norm.verse !== filterVerse) continue;
     if (filterStrongId && normalizeStrongKey(norm.c07_strong_id) !== normalizeStrongKey(filterStrongId)) continue;
@@ -577,7 +368,7 @@ export function renderStudy14ColDrawerHtml(matrixShard, options = {}) {
         Boolean(activeStrongTarget) &&
         String(r.c07_strong_id || "").trim().toUpperCase() === activeStrongTarget;
       return (
-        `<article class="leipzig-14col-card${isStrongSelected ? " is-active-strong" : ""}" tabindex="0" aria-selected="${isStrongSelected ? "true" : "false"}" data-ref="${escapeHtml(r.c02_ref)}" data-osis="${escapeHtml(r.c02_ref)}" data-word-pos="${escapeHtml(r.c04_word_pos)}" data-strong-id="${escapeHtml(r.c07_strong_id)}" data-macula-frame="${escapeHtml(maculaFrame)}" style="padding:0.65rem;border-radius:10px;border:1px solid ${isStrongSelected ? "var(--accent-amber, #d97706)" : "var(--card-border)"};background:var(--card-bg);display:flex;flex-direction:column;gap:0.25rem;min-width:160px;">` +
+        `<article class="leipzig-14col-card${isStrongSelected ? " is-active-strong" : ""}" tabindex="0" aria-selected="${isStrongSelected ? "true" : "false"}" data-ref="${escapeHtml(r.c02_ref)}" data-osis="${escapeHtml(r.c02_ref)}" data-word-pos="${escapeHtml(r.c04_word_pos)}" data-lemma="${escapeHtml(r.c04_lemma)}" data-strong-id="${escapeHtml(r.c07_strong_id)}" data-macula-frame="${escapeHtml(maculaFrame)}" data-pragmatic-focus="${escapeHtml(r.c12_pragmatic_focus)}" data-realia-flag="${escapeHtml(r.c14_realia_flag)}" style="padding:0.65rem;border-radius:10px;border:1px solid ${isStrongSelected ? "var(--accent-amber, #d97706)" : "var(--card-border)"};background:var(--card-bg);display:flex;flex-direction:column;gap:0.25rem;min-width:160px;">` +
         `<header style="display:flex;justify-content:space-between;font-size:0.74rem;color:var(--text-secondary);">` +
         `<span data-col="c01_c02">${escapeHtml(r.c02_ref)} #${escapeHtml(r.c04_word_pos)} (ord ${escapeHtml(r.c01_ordinal_31102)})</span>` +
         `<span data-col="c03_source_corpus">${escapeHtml(r.c03_source_corpus)} · ${escapeHtml(maculaFrame)}</span>` +
@@ -697,273 +488,9 @@ export function renderStudy14ColDrawerHtml(matrixShard, options = {}) {
   );
 }
 
-/**
- * Índice Rosetta Filológico por defecto (`D3-B+`: `web/shards/philology_rosetta_index.json`).
- * Conecta:
- *  - Familias de Raíces Consonánticas Semíticas (`ברא`, `אלה`, `ראשׁ`, `רעה`, `שׁלם`, `אמר`)
- *  - Puente Cognado Bicanónico LXX ↔ MT (`G#### <-> H####`, Delitzsch / STEPBible)
- *  - Residuos Masoréticos Ketiv/Qere (`alignment_residuals.tsv`)
- *  - Mapeo de Versificación Paratext `ENG <-> ORG` (`versification_eng_org.tsv`)
- */
-export const PHILOLOGY_ROSETTA_DEFAULT_INDEX = {
-  bicanonical_divergence_rules: [
-    {
-      book: "PSA",
-      chapter_min: 10,
-      chapter_max: 146,
-      verse_min: 1,
-      mt_chapter_delta: 0,
-      mt_verse_delta: 1,
-      lxx_chapter_delta: -1,
-      regime: "PSA_SUPERSCRIPTION_AND_LXX_NUMBERING",
-    },
-    {
-      book: "EXO",
-      chapter_min: 21,
-      chapter_max: 22,
-      verse_min: 1,
-      mt_chapter_delta: 0,
-      mt_verse_delta: -1,
-      lxx_chapter_delta: 0,
-      regime: "EXO_21_37_COVENANT_CODE_SHIFT",
-    },
-    {
-      book: "ISA",
-      chapter_min: 8,
-      chapter_max: 9,
-      verse_min: 1,
-      mt_chapter_delta: 0,
-      mt_verse_delta: -1,
-      lxx_chapter_delta: 0,
-      regime: "ISA_8_23_MESSIANIC_SHIFT",
-    },
-    {
-      book: "MAL",
-      chapter_min: 4,
-      chapter_max: 4,
-      verse_min: 1,
-      mt_chapter_delta: -1,
-      mt_verse_delta: 18,
-      lxx_chapter_delta: 0,
-      regime: "MAL_3_19_CHAPTER_4_MERGE",
-    },
-  ],
-  consonantal_root_families: {
-    "ברא": {
-      root_consonants: "ברא",
-      transliteration: "b-r-ʾ",
-      primary_gloss_es: "crear, dar forma soberana, cortar/esculpir",
-      strong_members: [
-        { strong: "H1254", lemma: "בָּרָא", pos: "Verb Qal/Niphal/Piel", gloss_es: "crear (exclusivo de actividad divina en Qal)", occurrences: 54 },
-        { strong: "H1254G", lemma: "בָּרָא", pos: "Verb Qal", gloss_es: "crear de la nada / inaugurar orden cósmico", occurrences: 38 },
-        { strong: "H1278", lemma: "בְּרִיאָה", pos: "Noun Feminine", gloss_es: "creación inédita, cosa nueva", occurrences: 1 },
-      ],
-    },
-    "אלה": {
-      root_consonants: "אלה",
-      transliteration: "ʾ-l-h",
-      primary_gloss_es: "Dios, poder supremo, pacto/juramento",
-      strong_members: [
-        { strong: "H0430", lemma: "אֱלֹהִים", pos: "Noun Masculine Plural (Majesty)", gloss_es: "Dios, Creador Soberano", occurrences: 2602 },
-        { strong: "H0433", lemma: "אֱלוֹהַּ", pos: "Noun Masculine Singular", gloss_es: "Dios (forma poética/arcaica)", occurrences: 57 },
-        { strong: "H0410", lemma: "אֵל", pos: "Noun Masculine Singular", gloss_es: "Dios fuerte, Poderoso", occurrences: 245 },
-      ],
-    },
-    "ראשׁ": {
-      root_consonants: "ראשׁ",
-      transliteration: "r-ʾ-š",
-      primary_gloss_es: "cabeza, principio, primicia, cumbre",
-      strong_members: [
-        { strong: "H7225", lemma: "רֵאשִׁית", pos: "Noun Feminine", gloss_es: "principio, primicia, punto de partida", occurrences: 51 },
-        { strong: "H7218", lemma: "רֹאשׁ", pos: "Noun Masculine", gloss_es: "cabeza, cumbre, caudillo", occurrences: 600 },
-        { strong: "H7223", lemma: "רִאשׁוֹן", pos: "Adjective", gloss_es: "primero, anterior, principal", occurrences: 182 },
-      ],
-    },
-    "רעה": {
-      root_consonants: "רעה",
-      transliteration: "r-ʿ-h",
-      primary_gloss_es: "pastorear, apacentar, cuidar el rebaño",
-      strong_members: [
-        { strong: "H7462", lemma: "רָעָה", pos: "Verb Qal Participle", gloss_es: "pastorear, guiar, alimentar", occurrences: 173 },
-        { strong: "H4829", lemma: "מִרְעֶה", pos: "Noun Masculine", gloss_es: "pasto, dehesa, lugar de apacentamiento", occurrences: 13 },
-      ],
-    },
-    "שׁלם": {
-      root_consonants: "שׁלם",
-      transliteration: "š-l-m",
-      primary_gloss_es: "estar completo, íntegro, en paz, restituir",
-      strong_members: [
-        { strong: "H7965", lemma: "שָׁלוֹם", pos: "Noun Masculine", gloss_es: "paz, plenitud, bienestar integral", occurrences: 237 },
-        { strong: "H7999", lemma: "שָׁלֵם", pos: "Verb Qal/Piel", gloss_es: "completar, restituir, cumplir voto", occurrences: 116 },
-        { strong: "H8002", lemma: "שֶׁלֶם", pos: "Noun Masculine", gloss_es: "ofrenda de paz / comunión", occurrences: 87 },
-      ],
-    },
-    "אמר": {
-      root_consonants: "אמר",
-      transliteration: "ʾ-m-r",
-      primary_gloss_es: "decir, declarar, prometer",
-      strong_members: [
-        { strong: "H0559", lemma: "אָמַר", pos: "Verb Qal", gloss_es: "decir, hablar con propósito", occurrences: 5316 },
-        { strong: "H0561", lemma: "אֵמֶר", pos: "Noun Masculine", gloss_es: "palabra, dicho poético", occurrences: 49 },
-        { strong: "H0565", lemma: "אִמְרָה", pos: "Noun Feminine", gloss_es: "promesa hablada, decreto", occurrences: 37 },
-      ],
-    },
-  },
-  lxx_mt_cognate_bridge: {
-    H7225: {
-      hebrew_strong: "H7225",
-      hebrew_lemma: "רֵאשִׁית",
-      greek_cognates: [
-        { greek_strong: "G0746", greek_lemma: "ἀρχή", lxx_ref: "GEN 1:1", nt_echo_ref: "JHN 1:1", mutual_information_pmi: 8.42, gloss_es: "principio, origen soberano" },
-        { greek_strong: "G0536", greek_lemma: "ἀπαρχή", lxx_ref: "EXO 23:19", nt_echo_ref: "1CO 15:20", mutual_information_pmi: 7.15, gloss_es: "primicias" },
-      ],
-    },
-    H1254: {
-      hebrew_strong: "H1254",
-      hebrew_lemma: "בָּרָא",
-      greek_cognates: [
-        { greek_strong: "G4160", greek_lemma: "ποιέω", lxx_ref: "GEN 1:1", nt_echo_ref: "ACT 17:24", mutual_information_pmi: 6.89, gloss_es: "hacer, producir, crear" },
-        { greek_strong: "G2936", greek_lemma: "κτίζω", lxx_ref: "PSA 51:10", nt_echo_ref: "COL 1:16", mutual_information_pmi: 8.91, gloss_es: "crear, fundar" },
-      ],
-    },
-    H0430: {
-      hebrew_strong: "H0430",
-      hebrew_lemma: "אֱלֹהִים",
-      greek_cognates: [
-        { greek_strong: "G2316", greek_lemma: "θεός", lxx_ref: "GEN 1:1", nt_echo_ref: "JHN 1:1", mutual_information_pmi: 9.64, gloss_es: "Dios" },
-      ],
-    },
-    H7462: {
-      hebrew_strong: "H7462",
-      hebrew_lemma: "רָעָה",
-      greek_cognates: [
-        { greek_strong: "G4165", greek_lemma: "ποιμαίνω", lxx_ref: "PSA 22:1 (MT 23:1)", nt_echo_ref: "JHN 10:11", mutual_information_pmi: 9.18, gloss_es: "pastorear, cuidar rebaño" },
-        { greek_strong: "G4166", greek_lemma: "ποιμήν", lxx_ref: "EZE 34:23", nt_echo_ref: "JHN 10:11", mutual_information_pmi: 9.31, gloss_es: "pastor" },
-      ],
-    },
-    H7965: {
-      hebrew_strong: "H7965",
-      hebrew_lemma: "שָׁלוֹם",
-      greek_cognates: [
-        { greek_strong: "G1515", greek_lemma: "εἰρήνη", lxx_ref: "NUM 6:26", nt_echo_ref: "JHN 14:27", mutual_information_pmi: 9.45, gloss_es: "paz integral (shalom)" },
-      ],
-    },
-    G0746: {
-      hebrew_strong: "H7225",
-      hebrew_lemma: "רֵאשִׁית",
-      greek_cognates: [
-        { greek_strong: "G0746", greek_lemma: "ἀρχή", lxx_ref: "GEN 1:1", nt_echo_ref: "JHN 1:1", mutual_information_pmi: 8.42, gloss_es: "principio, origen soberano" },
-      ],
-    },
-    G3056: {
-      hebrew_strong: "H1697",
-      hebrew_lemma: "דָּבָר",
-      greek_cognates: [
-        { greek_strong: "G3056", greek_lemma: "λόγος", lxx_ref: "PSA 33:6", nt_echo_ref: "JHN 1:1", mutual_information_pmi: 9.52, gloss_es: "Palabra, Verbo, asunto" },
-      ],
-    },
-  },
-  ketiv_qere_residuals: [
-    {
-      verse_id: "GEN 8:17",
-      token_idx: 11,
-      ketiv_written: "הוצא",
-      qere_read: "הַיְצֵא",
-      strong: "H3318",
-      masoretic_note: "Ketiv Hiphil imperativo regular; Qere forma arcaica en yod.",
-      residual_class: "KETIV_QERE",
-    },
-    {
-      verse_id: "PSA 24:4",
-      token_idx: 8,
-      ketiv_written: "נפשׁי",
-      qere_read: "נַפְשׁוֹ",
-      strong: "H5315",
-      masoretic_note: "Ketiv 'mi alma' (1s); Qere 'su alma' (3ms).",
-      residual_class: "KETIV_QERE",
-    },
-    {
-      verse_id: "PSA 100:3",
-      token_idx: 9,
-      ketiv_written: "ולא",
-      qere_read: "וְלוֹ",
-      strong: "H3808",
-      masoretic_note: "Ketiv 'y no nosotros'; Qere 'y de Él somos nosotros'.",
-      residual_class: "KETIV_QERE",
-    },
-    {
-      verse_id: "ISA 9:2",
-      token_idx: 4,
-      ketiv_written: "לא",
-      qere_read: "לוֹ",
-      strong: "H3808",
-      masoretic_note: "Ketiv negación; Qere dativo 'para él aumentaste la alegría'.",
-      residual_class: "KETIV_QERE",
-    },
-  ],
-  versification_eng_org: [
-    { eng_range: "GEN 31:55", org_range: "GEN 32:1", tradition: "BHS_MT", delta_verses: 1, note: "El cap. 32 hebreo inicia un versículo antes." },
-    { eng_range: "EXO 8:1-4", org_range: "EXO 7:26-29", tradition: "BHS_MT", delta_verses: 4, note: "Relato de las ranas inicia en Éxodo 7:26 en el Texto Masorético." },
-    { eng_range: "PSA 23:1-6", org_range: "PSA 22:1-6 (LXX) / PSA 23:1-6 (MT)", tradition: "LXX_VG_MT", delta_verses: 0, note: "Numeración de Salmos desplazada -1 en Septuaginta/Vulgata (Sal 10-147)." },
-    { eng_range: "PSA 51:1-19", org_range: "PSA 51:3-21 (MT) / PSA 50:3-21 (LXX)", tradition: "BHS_MT", delta_verses: 2, note: "El superscrito histórico ocupa los vv. 1-2 en el Texto Masorético." },
-    { eng_range: "ISA 9:1-21", org_range: "ISA 8:23-9:20", tradition: "BHS_MT", delta_verses: -1, note: "Isaías 9:1 (ENG) corresponde a Isaías 8:23 (BHS MT)." },
-    { eng_range: "JON 1:17", org_range: "JON 2:1", tradition: "BHS_MT", delta_verses: 1, note: "El gran pez pertenece a Jonás 2:1 en el Texto Masorético." },
-    { eng_range: "MAL 4:1-6", org_range: "MAL 3:19-24", tradition: "BHS_MT", delta_verses: 18, note: "Malaquías tiene 3 capítulos en el Texto Masorético; cap. 4 ENG es 3:19-24 ORG." },
-  ],
-  residual_class_counts: {
-    KETIV_QERE: 1218,
-    VERSIFICATION: 612,
-    TR_SUPPLEMENT: 844,
-    SURFACE_VARIANT: 1042,
-    UNMATCHED: 320,
-  },
-  alignment_residuals_5_classes: {
-    KETIV_QERE: [
-      { verse_id: "GEN.8.17", token_idx: 11, residual_class: "KETIV_QERE", our_token: "הוצא", source_token: "הַיְצֵא" },
-    ],
-    VERSIFICATION: [
-      { verse_id: "GEN.31.55", token_idx: 1, residual_class: "VERSIFICATION", our_token: "GEN.31.55", source_token: "GEN.32.1" },
-    ],
-    TR_SUPPLEMENT: [
-      { verse_id: "JHN.5.4", token_idx: 1, residual_class: "TR_SUPPLEMENT", our_token: "ἄγγελος", source_token: "TR_BYZ" },
-    ],
-    SURFACE_VARIANT: [
-      { verse_id: "GEN.1.14", token_idx: 4, residual_class: "SURFACE_VARIANT", our_token: "מְאֹרֹת", source_token: "מְאוֹרוֹת" },
-    ],
-    UNMATCHED: [
-      { verse_id: "PSA.145.13", token_idx: 12, residual_class: "UNMATCHED", our_token: "נֶאֱמָן", source_token: "11QPsa_LXX" },
-    ],
-  },
-  annotation_index_report: {
-    total_tokens_indexed: 444363,
-    hebrew_aramaic_tokens: 305500,
-    greek_nt_tokens: 138863,
-    oov_rate: 0.0,
-    unique_strong_roots: 14294,
-  },
-  blind_calibration_report: [
-    { language: "es", verse_id: "GEN.1.1", chrf_plus_plus: 98.4, exact_match_ratio: 1.0, passed: true },
-    { language: "en", verse_id: "GEN.1.1", chrf_plus_plus: 97.8, exact_match_ratio: 1.0, passed: true },
-    { language: "stp", verse_id: "GEN.1.1", chrf_plus_plus: 94.2, exact_match_ratio: 1.0, passed: true },
-    { language: "he", verse_id: "GEN.1.1", chrf_plus_plus: 99.1, exact_match_ratio: 1.0, passed: true },
-  ],
-};
 
-export const CANONICAL_5_RESIDUAL_KINDS = [
-  "KETIV_QERE",
-  "VERSIFICATION",
-  "TR_SUPPLEMENT",
-  "SURFACE_VARIANT",
-  "UNMATCHED",
-];
-
-/**
- * Agrega las 48 filas de `blind_calibration_report.json` en las 12 lenguas calibradas (`D5-B+` / `SLICE-95`).
- */
 export function aggregateBlindCalibration12Langs(calibrationReport = null) {
-  const raw =
-    calibrationReport ??
-    PHILOLOGY_ROSETTA_DEFAULT_INDEX.blind_calibration_report;
+  const raw = calibrationReport ?? PHILOLOGY_ROSETTA_DEFAULT_INDEX.blind_calibration_report;
   if (Array.isArray(raw) && raw.length > 0) {
     const byLangMap = new Map();
     let totalChrf = 0;
@@ -971,10 +498,7 @@ export function aggregateBlindCalibration12Langs(calibrationReport = null) {
     for (const row of raw) {
       if (!row || typeof row !== "object") continue;
       const lang = String(row.lang_code || row.language || row.lang || "es");
-      const score = Number(
-        row.chrf_plus_plus ??
-        (row.exact_match_ratio !== undefined ? Number(row.exact_match_ratio) * 100 : 96.5),
-      );
+      const score = Number(row.chrf_plus_plus ?? (row.exact_match_ratio !== undefined ? Number(row.exact_match_ratio) * 100 : 96.5));
       const passed = row.passed !== false;
       totalChrf += score;
       if (passed) passedCount += 1;
@@ -1008,18 +532,9 @@ export function aggregateBlindCalibration12Langs(calibrationReport = null) {
       byLanguage: [],
     };
   }
-  return {
-    langsCount: 12,
-    rowsCount: 48,
-    meanChrfPlusPlus: 96.5,
-    passRatePct: 100.0,
-    byLanguage: [],
-  };
+  return { langsCount: 12, rowsCount: 48, meanChrfPlusPlus: 96.5, passRatePct: 100.0, byLanguage: [] };
 }
 
-/**
- * Hidrata el índice Rosetta filológico con el artefacto compilado por Rust (`web/shards/philology_rosetta_index.json`, `D4-B+`, `D5-B+`).
- */
 export function hydratePhilologyRosettaIndex(rosettaData) {
   if (!rosettaData || typeof rosettaData !== "object") return PHILOLOGY_ROSETTA_DEFAULT_INDEX;
   if (Array.isArray(rosettaData.bicanonical_divergence_rules) && rosettaData.bicanonical_divergence_rules.length > 0) {
@@ -1046,14 +561,9 @@ export function hydratePhilologyRosettaIndex(rosettaData) {
   if (rosettaData.residual_class_counts && typeof rosettaData.residual_class_counts === "object") {
     PHILOLOGY_ROSETTA_DEFAULT_INDEX.residual_class_counts = rosettaData.residual_class_counts;
   }
-  if (
-    rosettaData.alignment_residuals_5_classes &&
-    typeof rosettaData.alignment_residuals_5_classes === "object"
-  ) {
+  if (rosettaData.alignment_residuals_5_classes && typeof rosettaData.alignment_residuals_5_classes === "object") {
     for (const [k, v] of Object.entries(rosettaData.alignment_residuals_5_classes)) {
-      if (Array.isArray(v) && v.length > 0) {
-        PHILOLOGY_ROSETTA_DEFAULT_INDEX.alignment_residuals_5_classes[k] = v;
-      }
+      if (Array.isArray(v) && v.length > 0) PHILOLOGY_ROSETTA_DEFAULT_INDEX.alignment_residuals_5_classes[k] = v;
     }
   }
   if (rosettaData.annotation_index_report && typeof rosettaData.annotation_index_report === "object") {
@@ -1065,9 +575,7 @@ export function hydratePhilologyRosettaIndex(rosettaData) {
   if (Array.isArray(rosettaData.canonical_metrology_units) && rosettaData.canonical_metrology_units.length > 0) {
     PHILOLOGY_ROSETTA_DEFAULT_INDEX.canonical_metrology_units = rosettaData.canonical_metrology_units;
     CANONICAL_METROLOGY_FALLBACK.length = 0;
-    for (const u of rosettaData.canonical_metrology_units) {
-      CANONICAL_METROLOGY_FALLBACK.push(u);
-    }
+    for (const u of rosettaData.canonical_metrology_units) CANONICAL_METROLOGY_FALLBACK.push(u);
   }
   if (rosettaData.canonical_tsk_echoes && typeof rosettaData.canonical_tsk_echoes === "object") {
     Object.assign(CANONICAL_TSK_ECHOES, rosettaData.canonical_tsk_echoes);
@@ -1081,92 +589,63 @@ export function hydratePhilologyRosettaIndex(rosettaData) {
   if (typeof rosettaData.strong_lexicon_seed_total === "number") {
     PHILOLOGY_ROSETTA_DEFAULT_INDEX.strong_lexicon_seed_total = rosettaData.strong_lexicon_seed_total;
   }
-  if (rosettaData.provenance) {
-    PHILOLOGY_ROSETTA_DEFAULT_INDEX.provenance = rosettaData.provenance;
-  }
+  if (rosettaData.provenance) PHILOLOGY_ROSETTA_DEFAULT_INDEX.provenance = rosettaData.provenance;
   return PHILOLOGY_ROSETTA_DEFAULT_INDEX;
 }
 
-/**
- * Resuelve la Familia de Raíz Consonántica Semítica (`ברא`, `אלה`, `ראשׁ`, etc.) a partir de un Strong ID o raíz.
- */
 export function resolveConsonantalRootFamily(strongOrRoot, rosettaIndex = null) {
   const idx = rosettaIndex || PHILOLOGY_ROSETTA_DEFAULT_INDEX;
   const families = idx?.consonantal_root_families || PHILOLOGY_ROSETTA_DEFAULT_INDEX.consonantal_root_families;
   const rawKey = String(strongOrRoot || "").trim();
   if (!rawKey) return null;
-  if (families[rawKey]) {
-    return families[rawKey];
-  }
-  const normStrong = normalizeStrongKey(rawKey);
-  for (const family of Object.values(families)) {
-    const members = Array.isArray(family.strong_members) ? family.strong_members : [];
-    if (
-      members.some(
-        (m) =>
-          String(m.strong).toUpperCase() === rawKey.toUpperCase() ||
-          normalizeStrongKey(m.strong) === normStrong,
-      )
-    ) {
-      return family;
+  if (families[rawKey]) return families[rawKey];
+  for (const part of rawKey.split("+")) {
+    const p = part.trim();
+    const normStrong = normalizeStrongKey(p);
+    for (const family of Object.values(families)) {
+      const members = Array.isArray(family.strong_members) ? family.strong_members : [];
+      if (members.some((m) => String(m.strong).toUpperCase() === p.toUpperCase() || normalizeStrongKey(m.strong) === normStrong)) {
+        return family;
+      }
     }
   }
   return null;
 }
 
-/**
- * Resuelve el Puente Cognado Bicanónico LXX ↔ MT (`G#### <-> H####`, Delitzsch / STEPBible) para un Strong ID.
- */
 export function resolveLxxMtCognateBridge(strongId, rosettaIndex = null) {
   const idx = rosettaIndex || PHILOLOGY_ROSETTA_DEFAULT_INDEX;
   const bridge = idx?.lxx_mt_cognate_bridge || PHILOLOGY_ROSETTA_DEFAULT_INDEX.lxx_mt_cognate_bridge;
   const rawKey = String(strongId || "").trim().toUpperCase();
   if (!rawKey) return null;
-  const normStrong = normalizeStrongKey(rawKey);
-  return bridge[rawKey] || bridge[normStrong] || null;
+  for (const part of [rawKey, ...rawKey.split("+")]) {
+    const hit = bridge[part] || bridge[normalizeStrongKey(part)];
+    if (hit) return hit;
+  }
+  return null;
 }
 
-/**
- * Resuelve los Residuos Masoréticos Ketiv/Qere (`alignment_residuals.tsv`) para un libro/capítulo/versículo o Strong.
- */
 export function resolveKetivQereResiduals(book, chapter, verse, rosettaIndex = null) {
   const idx = rosettaIndex || PHILOLOGY_ROSETTA_DEFAULT_INDEX;
-  const list = Array.isArray(idx?.ketiv_qere_residuals)
-    ? idx.ketiv_qere_residuals
-    : PHILOLOGY_ROSETTA_DEFAULT_INDEX.ketiv_qere_residuals;
+  const list = Array.isArray(idx?.ketiv_qere_residuals) ? idx.ketiv_qere_residuals : PHILOLOGY_ROSETTA_DEFAULT_INDEX.ketiv_qere_residuals;
   const b = String(book || "").toUpperCase();
   const c = Number(chapter) || 1;
   const v = Number(verse) || 1;
-  const targetRefSpace = `${b} ${c}:${v}`;
-  const targetRefDot = `${b}.${c}.${v}`;
-  const exact = list.filter(
-    (item) => item.verse_id === targetRefSpace || item.verse_id === targetRefDot,
-  );
+  const exact = list.filter((item) => item.verse_id === `${b} ${c}:${v}` || item.verse_id === `${b}.${c}.${v}`);
   if (exact.length > 0) return exact;
   const byBook = list.filter((item) => String(item.verse_id || "").startsWith(`${b} `));
   return byBook.length > 0 ? byBook : list.slice(0, 2);
 }
 
-/**
- * Resuelve el mapeo de versificación Paratext `ENG <-> ORG` (`versification_eng_org.tsv`).
- */
 export function resolveParatextEngOrgMapping(book, chapter, verse, rosettaIndex = null) {
   const idx = rosettaIndex || PHILOLOGY_ROSETTA_DEFAULT_INDEX;
-  const table = Array.isArray(idx?.versification_eng_org)
-    ? idx.versification_eng_org
-    : PHILOLOGY_ROSETTA_DEFAULT_INDEX.versification_eng_org;
+  const table = Array.isArray(idx?.versification_eng_org) ? idx.versification_eng_org : PHILOLOGY_ROSETTA_DEFAULT_INDEX.versification_eng_org;
   const b = String(book || "GEN").toUpperCase();
   const c = Number(chapter) || 1;
   const v = Number(verse) || 1;
-  const refPrefix = `${b} ${c}:`;
   const matched =
-    table.find((entry) => String(entry.eng_range || "").startsWith(refPrefix)) ||
+    table.find((entry) => String(entry.eng_range || "").startsWith(`${b} ${c}:`)) ||
     table.find((entry) => String(entry.eng_range || "").startsWith(`${b} `));
-  const bicanonical = resolveBicanonicalDivergence(b, c, v, idx);
-  return {
-    ...bicanonical,
-    paratextEntry: matched || table[0],
-  };
+  return { ...resolveBicanonicalDivergence(b, c, v, idx), paratextEntry: matched || table[0] };
 }
 
 export function renderPhilologyRosettaInspectorHtml(activeRows = [], options = {}) {
@@ -1498,9 +977,6 @@ export function renderPhilologyRosettaResultsRowsHtml({
     .join(" ");
 }
 
-/**
- * Renderiza el Explorador Interactivo del Índice Rosetta Filológico (`#philologyRosettaExplorerPanel`, `D57 / 6C+` + `D67 / 6B+`).
- */
 export function renderPhilologyRosettaExplorerHtml({
   query = "",
   category = "all",
@@ -1512,48 +988,24 @@ export function renderPhilologyRosettaExplorerHtml({
   const cleanCat = String(category || "all").trim().toLowerCase();
   const cleanQuery = String(query || "").trim();
   const results = searchPhilologyRosettaIndex(cleanQuery, cleanCat, 12, rosettaIndex);
-
-  const catOptions = (
-    isEn
-      ? [
-        ["all", "All Rosetta sub-corpora + 5 ResidualKinds"],
-        ["roots", "1. Semitic Consonantal Roots"],
-        ["cognates", "2. LXX ↔ MT Cognate Bridge (PMI)"],
-        ["ketiv_qere", "3. ResidualKind: KETIV_QERE (Masorah)"],
-        ["versification", "4. ResidualKind: VERSIFICATION (ENG ↔ ORG)"],
-        ["tr_supplement", "5. ResidualKind: TR_SUPPLEMENT (Textus Receptus)"],
-        ["surface_variant", "6. ResidualKind: SURFACE_VARIANT (Surface Variant)"],
-        ["unmatched", "7. ResidualKind: UNMATCHED (Unaligned Token)"],
-        ["divergence", "8. Bicanonical Divergence Rules"],
-      ]
-      : [
-        ["all", "Todos los sub-corpus Rosetta + 5 ResidualKind"],
-        ["roots", "1. Raíces Consonánticas Semíticas"],
-        ["cognates", "2. Puente Cognado LXX ↔ MT (PMI)"],
-        ["ketiv_qere", "3. ResidualKind: KETIV_QERE (Masora)"],
-        ["versification", "4. ResidualKind: VERSIFICATION (ENG ↔ ORG)"],
-        ["tr_supplement", "5. ResidualKind: TR_SUPPLEMENT (Textus Receptus)"],
-        ["surface_variant", "6. ResidualKind: SURFACE_VARIANT (Variante Superficial)"],
-        ["unmatched", "7. ResidualKind: UNMATCHED (Sin Alineación Directa)"],
-        ["divergence", "8. Reglas de Divergencia Bicanónica"],
-      ]
-  )
-    .map(
-      ([val, label]) =>
-        `<option value="${escapeHtml(val)}"${val === cleanCat ? " selected" : ""}>${escapeHtml(label)}</option>`,
-    )
+  const catPairs = [
+    ["all", "All Rosetta sub-corpora + 5 ResidualKinds", "Todos los sub-corpus Rosetta + 5 ResidualKind"],
+    ["roots", "1. Semitic Consonantal Roots", "1. Raíces Consonánticas Semíticas"],
+    ["cognates", "2. LXX ↔ MT Cognate Bridge (PMI)", "2. Puente Cognado LXX ↔ MT (PMI)"],
+    ["ketiv_qere", "3. ResidualKind: KETIV_QERE (Masorah)", "3. ResidualKind: KETIV_QERE (Masora)"],
+    ["versification", "4. ResidualKind: VERSIFICATION (ENG ↔ ORG)", "4. ResidualKind: VERSIFICATION (ENG ↔ ORG)"],
+    ["tr_supplement", "5. ResidualKind: TR_SUPPLEMENT (Textus Receptus)", "5. ResidualKind: TR_SUPPLEMENT (Textus Receptus)"],
+    ["surface_variant", "6. ResidualKind: SURFACE_VARIANT (Surface Variant)", "6. ResidualKind: SURFACE_VARIANT (Variante Superficial)"],
+    ["unmatched", "7. ResidualKind: UNMATCHED (Unaligned Token)", "7. ResidualKind: UNMATCHED (Sin Alineación Directa)"],
+    ["divergence", "8. Bicanonical Divergence Rules", "8. Reglas de Divergencia Bicanónica"],
+  ];
+  const catOptions = catPairs
+    .map(([val, enL, esL]) => `<option value="${escapeHtml(val)}"${val === cleanCat ? " selected" : ""}>${escapeHtml(isEn ? enL : esL)}</option>`)
     .join("");
-
-  const chipsHtml = renderPhilologyRosettaResultsRowsHtml({
-    query: cleanQuery,
-    category: cleanCat,
-    rosettaIndex,
-  });
-
+  const chipsHtml = renderPhilologyRosettaResultsRowsHtml({ query: cleanQuery, category: cleanCat, rosettaIndex });
   const idx = rosettaIndex || PHILOLOGY_ROSETTA_DEFAULT_INDEX;
   const hgPairsTotal = Number(idx?.empirical_hg_pairs_total || 31102);
   const strongSeedTotal = Number(idx?.strong_lexicon_seed_total || 14298);
-
   return (
     `<div id="philologyRosettaExplorerPanel" data-rosetta-explorer="true" data-rosetta-category="${escapeHtml(cleanCat)}" data-active-ref="${escapeHtml(activeRef)}" data-hg-pairs-total="${hgPairsTotal}" data-strong-seed-total="${strongSeedTotal}" style="margin-top:0.65rem;padding-top:0.55rem;border-top:1px dashed var(--card-border);">` +
     `<div style="display:flex;flex-wrap:wrap;gap:0.4rem;align-items:center;margin-bottom:0.45rem;">` +
@@ -1565,52 +1017,7 @@ export function renderPhilologyRosettaExplorerHtml({
   );
 }
 
-const CANONICAL_METROLOGY_FALLBACK = [
-  { biblical_name: "Codo (Ammah)", modern_equivalent: "~45 cm", local_illustration: "2 cuartas de mano adulta (del codo a la punta del dedo)" },
-  { biblical_name: "Siclo (Shekel)", modern_equivalent: "~11.4 gramos", local_illustration: "Peso de 2 monedas grandes de bolsillo" },
-  { biblical_name: "Efa / Bato", modern_equivalent: "~22 litros", local_illustration: "1 cubeta estándar llena de grano o agua" },
-  { biblical_name: "Talento (Kikkar)", modern_equivalent: "~34 kg", local_illustration: "1 costal pesado de maíz al hombro" },
-  { biblical_name: "Denario / Dracma", modern_equivalent: "1 jornal diario", local_illustration: "El pago completo de un día de trabajo en el campo" },
-  { biblical_name: "Metretes (Cántaro)", modern_equivalent: "~39 litros", local_illustration: "2 garrafones de agua de 20 L" },
-];
-
-let HYDRATED_CULTURAL_GLOSSES_MAP = {
-  denario: {
-    term: "denario",
-    category: "moneda",
-    nsm_gloss_es: "el pago completo de un día de trabajo de un trabajador del campo",
-  },
-  efod: {
-    term: "efod",
-    category: "vestimenta_sacerdotal",
-    nsm_gloss_es: "chaleco sagrado de lino tejido con oro y piedras preciosas que llevaba el sacerdote",
-  },
-  fariseo: {
-    term: "fariseo",
-    category: "grupo_religioso",
-    nsm_gloss_es: "maestro judío muy estricto en guardar todas las reglas escritas y tradiciones de la Ley",
-  },
-  filacterias: {
-    term: "filacterias",
-    category: "realia_liturgica",
-    nsm_gloss_es: "pequeñas cajas de cuero con palabras de la Ley de Dios atadas en la frente y el brazo",
-  },
-  publicano: {
-    term: "publicano",
-    category: "oficio_imperial",
-    nsm_gloss_es: "cobrador de impuestos al servicio del imperio romano",
-  },
-  siclo: {
-    term: "siclo",
-    category: "peso_moneda",
-    nsm_gloss_es: "pieza de plata que pesaba unos once gramos (como dos monedas grandes)",
-  },
-  talento: {
-    term: "talento",
-    category: "peso_moneda",
-    nsm_gloss_es: "carga pesada de unos treinta y cuatro kilos de plata u oro (el salario de veinte años)",
-  },
-};
+let HYDRATED_CULTURAL_GLOSSES_MAP = { ...DEFAULT_CULTURAL_GLOSSES_MAP };
 
 /**
  * Hidrata el diccionario de glosas culturales NSM-65 desde `pericopes_and_glosses.json` (`cultural_glosses`, `D4-A+`).
@@ -1651,24 +1058,6 @@ export function detectContextualCulturalGlossesForVerse(verseText = "") {
   return matches;
 }
 
-const CANONICAL_TSK_ECHOES = {
-  GEN: ["JHN.1.1", "PSA.33.6", "HEB.11.3", "COL.1.16"],
-  PSA: ["JHN.10.11", "ROM.8.31", "REV.7.17", "ISA.40.11"],
-  ISA: ["MAT.1.23", "LUK.4.18", "JHN.12.41", "ROM.10.15"],
-  MAT: ["ISA.7.14", "MIC.5.2", "PSA.22.1", "DEU.8.3"],
-  JHN: ["GEN.1.1", "EXO.3.14", "PSA.36.9", "1JN.1.1"],
-  ROM: ["HAB.2.4", "GEN.15.6", "PSA.32.1", "GAL.3.11"],
-  REV: ["DAN.7.13", "GEN.2.9", "ISA.65.17", "EZE.47.1"],
-};
-
-const VERSE_SPECIFIC_TSK_ECHOES = {
-  "GEN.1.1": ["JHN.1.1", "PSA.33.6", "HEB.11.3", "COL.1.16"],
-  "GEN.1.2": ["JER.4.23", "ISA.45.18", "PSA.104.30", "GEN.7.11"],
-  "GEN.1.3": ["2CO.4.6", "PSA.33.9", "JHN.1.5", "ISA.60.1"],
-  "JHN.1.1": ["GEN.1.1", "1JN.1.1", "REV.19.13", "PRO.8.22"],
-  "JHN.1.14": ["EXO.25.8", "COL.2.9", "1TI.3.16", "HEB.2.14"],
-  "ROM.1.16": ["HAB.2.4", "1CO.1.18", "MAR.8.38", "PSA.40.9"],
-};
 
 /**
  * Genera el HTML de los 3 estratos semánticos de ancho completo (`parryc/interlinear` + `GOLD-556`):
@@ -1730,7 +1119,7 @@ export function renderStudyStrataCards(matrixShard, options = {}) {
         )
         .join("") +
       `</ul>`
-      : `<p style="margin:0;font-size:0.81rem;color:var(--text-secondary);">${isEn ? "GOD · SAY · DO · GOOD · LIVE · KNOW · TRUTH (65 non-circular universal semantic primitives)." : "DIOS · DECIR · HACER · BUENO · VIVIR · SABER · VERDAD (65 primitivos universales libres de circularidad)."}</p>`) +
+      : `<p style="margin:0;font-size:0.81rem;color:var(--text-secondary);">∅ (${isEn ? "No NSM-65 primitives recorded for this verse" : "Sin primitivos NSM-65 registrados en este versículo"}).</p>`) +
     `</div>`;
 
   const rawShardRealia = Array.isArray(shard?.realia) ? shard.realia : [];
