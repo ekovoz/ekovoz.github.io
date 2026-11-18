@@ -487,7 +487,7 @@ export function createDataLayer({ source, cacheLimit = 32 } = {}) {
   async function loadChapterMatrixFromEkpackRange(book, chapter) {
     const relMatrix = "data/packs/matrix_tier0.ekpack";
     const hdrInfo = await ekpackHeaderCache.get(relMatrix, async () => {
-      const headProbe = await readEkpackSlice(relMatrix, 0, 65535);
+      const headProbe = await readEkpackSlice(relMatrix, 0, 32767);
       if (!headProbe || headProbe.byteLength < 32) return null;
       const preamble = parseEkpackPreamble32Js(headProbe);
       if (!preamble) return null;
@@ -525,20 +525,51 @@ export function createDataLayer({ source, cacheLimit = 32 } = {}) {
           decLen: Number(entry[3]) || 0,
         });
       }
+      const windowMap = new Map();
+      if (hdr.win_ranges && typeof hdr.win_ranges === "object") {
+        for (const [bkCode, wins] of Object.entries(hdr.win_ranges)) {
+          if (!Array.isArray(wins)) continue;
+          const bUpper = String(bkCode).toUpperCase();
+          const baseBook = bookMap.get(bUpper);
+          if (!baseBook) continue;
+          let runOff = baseBook.offset;
+          const perBookWins = [];
+          for (let i = 0; i < wins.length; i += 1) {
+            const w = wins[i];
+            const cFirst = Number(w[0]) || 1;
+            const cLast = Number(w[1]) || cFirst;
+            const cLen = Number(w[2]) || 0;
+            const absOff = w.length >= 4 ? Number(w[3]) : runOff;
+            perBookWins.push({
+              winIdx: i,
+              cFirst,
+              cLast,
+              offset: absOff,
+              byteLen: cLen,
+              decLen: 0,
+            });
+            runOff = absOff + cLen;
+          }
+          windowMap.set(bUpper, perBookWins);
+        }
+      }
       let dictDoc = null;
       if (Array.isArray(hdr.dict_frame) && hdr.dict_frame.length >= 2) {
         const dOff = Number(hdr.dict_frame[0]) || 0;
         const dLen = Number(hdr.dict_frame[1]) || 0;
         const dDec = Number(hdr.dict_frame[2]) || 0;
         if (dLen > 0) {
-          const dSlice = await readEkpackSlice(relMatrix, dOff, dOff + dLen - 1);
+          const dSlice =
+            dOff + dLen <= headProbe.byteLength
+              ? headProbe.subarray(dOff, dOff + dLen)
+              : await readEkpackSlice(relMatrix, dOff, dOff + dLen - 1);
           if (dSlice && dSlice.byteLength === dLen && playerWasm) {
             const dRaw = decodeZstdFrameInPlayerWasm(playerWasm, dSlice, dDec);
             dictDoc = JSON.parse(new TextDecoder("utf-8").decode(dRaw));
           }
         }
       }
-      return { preamble, hdr, bookMap, dictDoc };
+      return { preamble, hdr, bookMap, windowMap, dictDoc };
     });
 
     if (!hdrInfo) return { status: STATUS.UNAVAILABLE, reason: "missing" };
@@ -546,7 +577,12 @@ export function createDataLayer({ source, cacheLimit = 32 } = {}) {
       return { status: STATUS.UNAVAILABLE, reason: "MATRIX_EKPACK_ED25519_INVALID" };
     }
     const bKey = String(book).toUpperCase();
-    const bEntry = hdrInfo.bookMap.get(bKey);
+    const chNum = Number(chapter);
+    const winsForBook = hdrInfo.windowMap?.get(bKey);
+    const matchedWin = winsForBook
+      ? winsForBook.find((w) => chNum >= w.cFirst && chNum <= w.cLast)
+      : null;
+    const bEntry = matchedWin || hdrInfo.bookMap.get(bKey);
     if (!bEntry || bEntry.byteLen <= 0) {
       return { status: STATUS.UNAVAILABLE, reason: "chapter_missing_in_matrix_ekpack" };
     }
@@ -554,7 +590,10 @@ export function createDataLayer({ source, cacheLimit = 32 } = {}) {
     if (!playerWasm) {
       return { status: STATUS.UNAVAILABLE, reason: "player_wasm_unavailable" };
     }
-    const parsedBook = await ekpackHeaderCache.get(`matrix_v3_book:${bKey}`, async () => {
+    const cacheKey = matchedWin
+      ? `matrix_v4_off:${bEntry.offset}:${bEntry.byteLen}`
+      : `matrix_v3_book:${bKey}`;
+    const parsedBook = await ekpackHeaderCache.get(cacheKey, async () => {
       const slice = await readEkpackSlice(
         relMatrix,
         bEntry.offset,
@@ -572,6 +611,7 @@ export function createDataLayer({ source, cacheLimit = 32 } = {}) {
       chapter,
       hdrInfo.hdr,
       hdrInfo.dictDoc,
+      bKey,
     );
     if (!doc) {
       return { status: STATUS.UNAVAILABLE, reason: "chapter_missing_in_matrix_ekpack" };

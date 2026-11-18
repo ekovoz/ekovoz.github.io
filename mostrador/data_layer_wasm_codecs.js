@@ -3,21 +3,24 @@
 
 import { decodeRfc8878RawZstdFrameJs } from "./offline_mesh.js";
 
+const MATRIX_TIER0_SCHEMA_CRC32 = 0x4e14c015;
+
 export const MATRIX_ROW_COLUMNS = Object.freeze([
-  "c01_ordinal_31102",
   "verse",
-  "c03_source_corpus",
-  "c04_word_pos",
-  "c05_orig_text",
+  "c03",
+  "c04",
+  "c05",
+  "c06",
+  "c07",
+  "c08",
+  "c09",
+  "c10",
+  "c11",
+  "c12",
+  "c13",
+  "c14",
+  "c02_word_pos",
   "c06_translit",
-  "c07_strong_id",
-  "c08_morph_code",
-  "c09_macula_role",
-  "c10_clause_id",
-  "c11_semantic_domain",
-  "c12_gloss_es",
-  "c13_nsm_65",
-  "c14_target_gloss",
 ]);
 
 /**
@@ -275,18 +278,199 @@ export function parseBookTsvIntoChapters(tsvBytes) {
   return chapters;
 }
 
-export function reconstructMatrixChapterFromDictPool(parsedBook, chapter, hdr, dictDoc) {
-  const bCode = String(parsedBook[0] || "");
-  const chTuple = parsedBook[1].find((c) => Number(c[0]) === chapter);
+export function reconstructMatrixChapterFromDictPool(
+  parsedBook,
+  chapter,
+  hdr,
+  dictDoc,
+  requestedBook = null,
+) {
+  const reqUpper = requestedBook ? String(requestedBook).toUpperCase() : "";
+  const chTuple = parsedBook[1].find(
+    (c) =>
+      Number(c[0]) === chapter &&
+      (!reqUpper ||
+        typeof c[3] !== "string" ||
+        String(c[3]).toUpperCase() === reqUpper),
+  );
   if (!chTuple) return null;
+  const bCode = String(
+    (typeof chTuple[3] === "string" && chTuple[3]) ||
+      requestedBook ||
+      parsedBook[0] ||
+      "",
+  );
   const idxRows = Array.isArray(chTuple[1]) ? chTuple[1] : [];
   const strongsArr = Array.isArray(chTuple[2]) ? chTuple[2] : [];
+
+  // v4 Two-Tier Order-Preserving Dictionary (`Binnig et al. SIGMOD 2009`, `D3-V2F`):
+  // Tier 1 (`dictDoc.closed_strings` <= 24 KB) + Tier 2 (`parsedBook[2..5]` cold per-book / warm division pool < 95 KB cold HTTP 206).
+  if (Array.isArray(dictDoc?.closed_strings) && Array.isArray(parsedBook[2])) {
+    const closedPool = dictDoc.closed_strings;
+    const bookStrings = parsedBook[2];
+    const bookLexemes = Array.isArray(parsedBook[3]) ? parsedBook[3] : [];
+    const bookRealiaMap = parsedBook[4] && typeof parsedBook[4] === "object" ? parsedBook[4] : {};
+    const bookPrags = Array.isArray(parsedBook[5]) ? parsedBook[5] : null;
+    const bookNum =
+      (typeof chTuple[4] === "number" && Number(chTuple[4])) ||
+      Number(parsedBook[6]) ||
+      (Array.isArray(hdr?.books)
+        ? hdr.books.findIndex((b) => String(b[0]).toUpperCase() === bCode.toUpperCase()) + 1
+        : 1) ||
+      1;
+    const macBc = String(bookNum).padStart(2, "0") + String(chapter).padStart(3, "0");
+    const getClosed = (idx) => String(closedPool[Number(idx) || 0] ?? "");
+    const getLocal = (idx) => String(bookStrings[Number(idx) || 0] ?? "");
+
+    const isColumnarSoa = chTuple.length >= 12 && (idxRows.length === 0 || typeof idxRows[0] === "number");
+    const rows = isColumnarSoa
+      ? (() => {
+          const wDeltas = Array.isArray(chTuple[3]) ? chTuple[3] : [];
+          const lSurfs = Array.isArray(chTuple[4]) ? chTuple[4] : [];
+          const lexIds = Array.isArray(chTuple[5]) ? chTuple[5] : [];
+          const g06s = Array.isArray(chTuple[6]) ? chTuple[6] : [];
+          const l10s = Array.isArray(chTuple[7]) ? chTuple[7] : [];
+          const g11s = Array.isArray(chTuple[8]) ? chTuple[8] : [];
+          const l12s = Array.isArray(chTuple[9]) ? chTuple[9] : [];
+          const l13s = Array.isArray(chTuple[10]) ? chTuple[10] : [];
+          const l14s = Array.isArray(chTuple[11]) ? chTuple[11] : [];
+          const outRows = new Array(idxRows.length);
+          let curV = 1;
+          let curW = 1;
+          for (let i = 0; i < idxRows.length; i += 1) {
+            const vd = Number(idxRows[i]) || 0;
+            const wd = Number(wDeltas[i]) || 1;
+            if (i === 0) {
+              curV = vd;
+              curW = wd;
+            } else if (vd !== 0) {
+              curV += vd;
+              curW = wd;
+            } else {
+              curW += wd;
+            }
+            const vNum = Math.max(1, curV);
+            const wordPos = Math.max(1, curW);
+            const macBcv = macBc + String(vNum).padStart(3, "0");
+            const lt = bookLexemes[Number(lexIds[i]) || 0] || [0, 0, 0, 0, 0, 0];
+            const c07Full = getLocal(lt[3])
+              .replaceAll("~C:", "CONCEPTICON:")
+              .replaceAll("~S:", "SDBH:")
+              .replaceAll("~L:", "LN:");
+            const c10Exp = getLocal(l10s[i]).replaceAll("^", macBcv).replaceAll("%", macBc);
+            const c10Full = c10Exp.startsWith("~")
+              ? `${bCode}.${chapter}.${vNum}.${c10Exp.slice(1)}`
+              : c10Exp;
+            const c12Full = getLocal(l12s[i])
+              .replaceAll("^", macBcv)
+              .replaceAll("%", macBc)
+              .replaceAll("~E:", "EVID:")
+              .replaceAll("~F:", "REF:");
+            const c13Full = getLocal(l13s[i])
+              .replaceAll("^", macBcv)
+              .replaceAll("%", macBc)
+              .replaceAll("~P:", "PRIM:")
+              .replaceAll("~F:", "REF:");
+            const c14Full = getLocal(l14s[i])
+              .replaceAll("~U", "UNIVERSAL_TRANSPARENT:NONE")
+              .replaceAll("~R:", "REALIA_GLOSS_REQUIRED:")
+              .replaceAll("~M:", "METROLOGY_GLOSS_REQUIRED:")
+              .replaceAll("~V:", "VOICE:");
+            outRows[i] = [
+              vNum,
+              getLocal(lSurfs[i]),
+              getLocal(lt[0]),
+              getLocal(lt[2]),
+              getClosed(g06s[i]),
+              c07Full,
+              getLocal(lt[4]),
+              getLocal(lt[5]),
+              c10Full,
+              getClosed(g11s[i]),
+              c12Full,
+              c13Full,
+              c14Full,
+              wordPos,
+              getLocal(lt[1]),
+            ];
+          }
+          return outRows;
+        })()
+      : idxRows.map((r, rowIdx) => {
+          const vNum = Number(r[0]) || 1;
+          const macBcv = macBc + String(vNum).padStart(3, "0");
+          const wordPos = Number(r[1]) || rowIdx + 1;
+          const lt = bookLexemes[Number(r[3]) || 0] || [0, 0, 0, 0, 0, 0, 0];
+          const pt = bookPrags
+            ? bookPrags[Number(r[4]) || 0] || [0, 0, 0, 0, 0]
+            : [r[4], r[5], r[6], r[7], r[8]];
+          const has6Prag = pt.length >= 6;
+          const c07Full = getLocal(lt[3])
+            .replaceAll("~C:", "CONCEPTICON:")
+            .replaceAll("~S:", "SDBH:")
+            .replaceAll("~L:", "LN:");
+          const c10Exp = getLocal(pt[1]).replaceAll("^", macBcv).replaceAll("%", macBc);
+          const c10Full = c10Exp.startsWith("~")
+            ? `${bCode}.${chapter}.${vNum}.${c10Exp.slice(1)}`
+            : c10Exp;
+          const c12Full = getLocal(pt[3])
+            .replaceAll("^", macBcv)
+            .replaceAll("%", macBc)
+            .replaceAll("~E:", "EVID:")
+            .replaceAll("~F:", "REF:");
+          const raw13 = has6Prag ? getLocal(pt[4]) : getLocal(lt[6]);
+          const c13Full = raw13
+            .replaceAll("^", macBcv)
+            .replaceAll("%", macBc)
+            .replaceAll("~P:", "PRIM:")
+            .replaceAll("~F:", "REF:");
+          const raw14 = getLocal(has6Prag ? pt[5] : pt[4]);
+          const c14Full = raw14
+            .replaceAll("~U", "UNIVERSAL_TRANSPARENT:NONE")
+            .replaceAll("~R:", "REALIA_GLOSS_REQUIRED:")
+            .replaceAll("~M:", "METROLOGY_GLOSS_REQUIRED:")
+            .replaceAll("~V:", "VOICE:");
+          return [
+            vNum,
+            getLocal(r[2]),
+            getLocal(lt[0]),
+            getLocal(lt[2]),
+            getClosed(pt[0]),
+            c07Full,
+            getLocal(lt[4]),
+            getLocal(lt[5]),
+            c10Full,
+            getClosed(pt[2]),
+            c12Full,
+            c13Full,
+            c14Full,
+            wordPos,
+            getLocal(lt[1]),
+          ];
+        });
+    const realia = [];
+    for (const sc of strongsArr) {
+      const entries = bookRealiaMap[String(sc)];
+      if (Array.isArray(entries)) realia.push(...entries);
+    }
+    return {
+      book: bCode,
+      chapter,
+      schema_crc32: Number(hdr?.schema_crc32) || MATRIX_TIER0_SCHEMA_CRC32,
+      columns: hdr?.columns || MATRIX_ROW_COLUMNS,
+      col_descriptors: hdr?.col_descriptors || null,
+      rows,
+      realia,
+      attribution: hdr?.attribution || "",
+    };
+  }
+
   const pool = Array.isArray(dictDoc?.strings) ? dictDoc.strings : [];
   const lexemes = Array.isArray(dictDoc?.lexemes) ? dictDoc.lexemes : [];
   const prags = Array.isArray(dictDoc?.prag) ? dictDoc.prag : [];
   const lexMap = dictDoc?.lexicon || {};
   const getS = (idx) => String(pool[Number(idx) || 0] ?? "");
-  const rows = idxRows.map((r) => {
+  const rows = idxRows.map((r, rowIdx) => {
     const vNum = Number(r[0]) || 1;
     const lt = lexemes[Number(r[2]) || 0] || [0, 0, 0, 0, 0, 0, 0];
     const pt = prags[Number(r[5]) || 0] || [0, 0];
@@ -308,6 +492,8 @@ export function reconstructMatrixChapterFromDictPool(parsedBook, chapter, hdr, d
       getS(pt[1]),
       getS(lt[5]),
       getS(lt[6]),
+      rowIdx + 1,
+      getS(lt[0]),
     ];
   });
   const realia = [];
@@ -318,6 +504,7 @@ export function reconstructMatrixChapterFromDictPool(parsedBook, chapter, hdr, d
   return {
     book: bCode,
     chapter,
+    schema_crc32: MATRIX_TIER0_SCHEMA_CRC32,
     columns: hdr?.columns || MATRIX_ROW_COLUMNS,
     rows,
     realia,
