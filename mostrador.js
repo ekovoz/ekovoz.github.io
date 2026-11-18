@@ -25,6 +25,12 @@ import {
   summarizeChapterDiachronicTransformations, syncDiachronicRegisterOrthogonality,
 } from "./mostrador/diachronic_register.js";
 import {
+  isVerifiedCanonicalTier0Or1,
+  mapFullChapterGmisRows,
+  renderProgressiveTwoStrataDiglossicBridge,
+  resolveHonestSovereignTier,
+} from "./mostrador/diglossic_chapter_renderer.js";
+import {
   CANONICAL_12_BRANCH_PROFILES, CANONICAL_14_PLUS_2_EDITIONS_CATALOG, CANONICAL_14_PRINT_PROFILES, CANONICAL_16_TYPOLOGY_PROFILES,
   CANONICAL_80_BLOCKS_CATALOG, CANONICAL_9_TOML_PROFILES, POCKET_REFUGE_4_SHEETS_SPEC, PRECOMPILED_PDF_LANGS, VERIFIED_TEXT_BIBLE_LANGS,
   buildCssPagedMediaPrintHtml, computeFoliationLayout, computeKindlePrintBudget, computeMultiSignatureImposition, doseFilename,
@@ -80,13 +86,6 @@ import {
   renderMostradorViewportFromState,
   updateMostradorDoseLinks,
 } from "./mostrador/mostrador_viewport_dose1.js";
-import {
-  OPEN_CANONICAL_TIER1_LANGS,
-  isVerifiedCanonicalTier0Or1,
-  mapFullChapterGmisRows,
-  renderProgressiveTwoStrataDiglossicBridge,
-  resolveHonestSovereignTier,
-} from "./mostrador/diglossic_chapter_renderer.js";
 import {
   CANONICAL_ECO_PACKS_MANIFEST, STORED_ECO_PACKS, computeEcoPackCrc32Hex, exportSneakernetBundleJson, hydrateEcoPacksManifest,
   importSneakernetBundleJson, probeEcoPackRandomAccessBounds, renderOfflineMeshEcoCardHtml, triggerOptInOfflinePackDownload,
@@ -170,6 +169,11 @@ export function createMostradorController(options = {}) {
     studyLoaded: false,
     improveLoaded: false,
     felicesLoaded: false,
+    audioTotalMs: Number(options.audioTotalMs) || 0,
+    pendingCascadeSignatureHex: String(options.pendingCascadeSignatureHex || ""),
+    pendingCascadePublicKeyHex: String(options.pendingCascadePublicKeyHex || ""),
+    pendingCommunityVotes: Array.isArray(options.pendingCommunityVotes) ? options.pendingCommunityVotes : [],
+    pendingExpectedCrc32Hex: String(options.pendingExpectedCrc32Hex || ""),
   };
 
   let i18nInstance = options.i18n || null;
@@ -422,7 +426,7 @@ export function createMostradorController(options = {}) {
       state.macroRegionsCatalog = listMacroRegions(state.i18n);
     }
     suggestLayer0Languages({
-      regionIso2: state.region || "MX",
+      regionIso2: state.countryIso2 || "MX",
       navigatorLanguages: [state.uiLocale || "es", state.lang || "es"],
     });
     const chromeLabels = localizeWorkChromeLabels(state.uiLocale || "en");
@@ -566,6 +570,7 @@ export function createMostradorController(options = {}) {
     state.lastBridgeChapter = null;
     state.lastMatrixFallbackHtml = "";
     state.lastDiglossicBridgeHtml = "";
+    state.lastDiglossicContext = null;
 
     const normCorpusLang = String(effectiveCorpusLang || state.lang || "").toLowerCase();
     const isTier0Or1 = isVerifiedCanonicalTier0Or1(normCorpusLang, res);
@@ -595,10 +600,14 @@ export function createMostradorController(options = {}) {
     let catalogEntry = null;
     try {
       const cat = await dataLayer.loadCatalog();
-      if (cat && Array.isArray(cat.languages)) {
+      const allCatEntries = [
+        ...(Array.isArray(cat?.languages) ? cat.languages : []),
+        ...(Array.isArray(cat?.ekpack_languages_21) ? cat.ekpack_languages_21 : []),
+      ];
+      if (allCatEntries.length > 0) {
         catalogEntry =
-          cat.languages.find((l) => l.code === effectiveCorpusLang) ||
-          cat.languages.find((l) => l.code === state.lang) ||
+          allCatEntries.find((l) => String(l.code).toLowerCase() === normCorpusLang) ||
+          allCatEntries.find((l) => String(l.code).toLowerCase() === String(state.lang || "").toLowerCase()) ||
           null;
       }
     } catch {
@@ -609,80 +618,80 @@ export function createMostradorController(options = {}) {
     updateSealDom(sealKey, targetDoc);
 
     if (!isTier0Or1 || sealKey !== "seal.verified") {
-      const macroRegion = Number(
-        catalogEntry?.macro_region ||
-        catalogEntry?.macroRegion ||
-        (normCorpusLang === "kgv" ? 11 : normCorpusLang === "sw" ? 8 : 1),
-      );
-      const regionalSlot = REGIONAL_BRIDGE_LANGUAGES_10[macroRegion] || REGIONAL_BRIDGE_LANGUAGES_10[1];
-      const bridgeSpec = resolveRegionalBridgeLanguage21({
-        macroRegion,
-        bridgeLang: catalogEntry?.bridge_lang || regionalSlot?.code || "",
-      });
-      let bridgeVerses = {};
-      try {
-        let brRes = await dataLayer.loadChapter({
-          lang: bridgeSpec.code,
-          book: state.book,
-          chapter: state.chapter,
-        });
-        if (!brRes || !brRes.verses || Object.keys(brRes.verses).length === 0) {
-          brRes = await dataLayer.loadChapter({
-            lang: "es",
-            book: state.book,
-            chapter: state.chapter,
-          });
-        }
-        if (brRes && Array.isArray(brRes.verses)) {
-          for (const v of brRes.verses) {
-            if (v && v.start !== undefined) bridgeVerses[String(v.start)] = v.text;
-          }
-        } else if (brRes && brRes.verses && typeof brRes.verses === "object") {
-          bridgeVerses = brRes.verses;
-        }
-      } catch {
-        bridgeVerses = {};
-      }
-
-      let matrixShard = null;
-      try {
-        matrixShard = await dataLayer.loadMatrixChapter(state.book, state.chapter);
-      } catch {
-        matrixShard = null;
-      }
-      const rawMatrixRows = Array.isArray(matrixShard?.rows) ? matrixShard.rows : [];
-      const gmisRows = mapFullChapterGmisRows(rawMatrixRows);
       const sovereignTier = resolveHonestSovereignTier({
         lang: normCorpusLang,
         navStatus: res.status,
-        provenance: res.chapter?.provenance || null,
+        provenance: res.provenance || res.chapter?.provenance || null,
         catalogEntry,
       });
+      if (sovereignTier === "TIER_1_PACK_UNREACHABLE") {
+        state.lastDiglossicBridgeHtml =
+          `<section class="tier1-offline-notice" data-sovereign-tier="TIER_1_PACK_UNREACHABLE" data-epistemic-seal="TIER1_OPEN_PACK_OFFLINE_NOTICE">` +
+          `El contenedor canónico <code>${escapeHtml(state.lang)}.ekpack</code> no está accesible sin red aún; impórtelo vía Sneakernet o conéctese una vez (0% Falsa Biblia GMIS).` +
+          `</section>`;
+      } else {
+        const macroRegion = Number(
+          catalogEntry?.macro_region ||
+          catalogEntry?.macroRegion ||
+          (normCorpusLang === "kgv" ? 11 : normCorpusLang === "sw" ? 8 : 1),
+        );
+        const regionalSlot = REGIONAL_BRIDGE_LANGUAGES_10[macroRegion] || REGIONAL_BRIDGE_LANGUAGES_10[1];
+        const bridgeSpec = resolveRegionalBridgeLanguage21({
+          macroRegion,
+          bridgeLang: catalogEntry?.bridge_lang || regionalSlot?.code || "",
+        });
+        let bridgeVerses = {};
+        try {
+          let brRes = await dataLayer.loadChapter({
+            lang: bridgeSpec.code,
+            book: state.book,
+            chapter: state.chapter,
+          });
+          if (!brRes || !brRes.verses || Object.keys(brRes.verses).length === 0) {
+            brRes = await dataLayer.loadChapter({
+              lang: "es",
+              book: state.book,
+              chapter: state.chapter,
+            });
+          }
+          if (brRes && Array.isArray(brRes.verses)) {
+            for (const v of brRes.verses) {
+              if (v && v.start !== undefined) bridgeVerses[String(v.start)] = v.text;
+            }
+          } else if (brRes && brRes.verses && typeof brRes.verses === "object") {
+            bridgeVerses = brRes.verses;
+          }
+        } catch {
+          bridgeVerses = {};
+        }
 
-      state.lastDiglossicBridgeHtml = renderProgressiveTwoStrataDiglossicBridge({
-        lang: state.lang,
-        book: state.book,
-        chapter: state.chapter,
-        selectedVerse: state.verse,
-        register: state.register,
-        sovereignTier,
-        macroRegion,
-        bridgeLang: bridgeSpec.code,
-        maternalVerses: res.status === STATUS.READY ? res.chapter?.verses || {} : {},
-        bridgeVerses,
-        gmisRows,
-      });
-
-      if (
-        res.status === STATUS.UNAVAILABLE &&
-        rawMatrixRows.length > 0 &&
-        !OPEN_CANONICAL_TIER1_LANGS.has(normCorpusLang)
-      ) {
-        state.lastMatrixFallbackHtml = renderLeipzig4LineGmisHtml(matrixShard, {
+        let matrixShard = null;
+        try {
+          matrixShard = await dataLayer.loadMatrixChapter(state.book, state.chapter);
+        } catch {
+          matrixShard = null;
+        }
+        const rawMatrixRows = Array.isArray(matrixShard?.rows) ? matrixShard.rows : [];
+        const gmisRows = mapFullChapterGmisRows(rawMatrixRows);
+        state.lastDiglossicContext = {
+          sovereignTier,
+          macroRegion,
+          bridgeCode: bridgeSpec.code,
+          bridgeVerses,
+          gmisRows,
+        };
+        state.lastDiglossicBridgeHtml = renderProgressiveTwoStrataDiglossicBridge({
           lang: state.lang,
           book: state.book,
           chapter: state.chapter,
-          verse: state.verse,
+          selectedVerse: state.verse,
+          register: state.register,
+          sovereignTier,
+          macroRegion,
+          bridgeLang: bridgeSpec.code,
+          maternalVerses: res.status === STATUS.READY ? res.chapter?.verses || {} : {},
+          bridgeVerses,
+          gmisRows,
         });
       }
     }

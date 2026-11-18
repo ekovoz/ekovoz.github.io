@@ -21,13 +21,16 @@ import { validateAllEightLocksPda } from "./mejorar.js";
 import {
   CANONICAL_ECO_PACKS_MANIFEST,
   SOVEREIGN_ED25519_PUBLIC_KEY_HEX,
+  buildFullCorpusDeflateQuineHtml,
   buildQuineHtml,
   commitVerifiedPackToIndexedDb,
+  decodeRfc8878RawZstdFrameJs,
   exportBundleAsFile,
   hydrateEcoPacksManifest,
   importBundleFromFile,
   listPacksFromIndexedDb,
   loadPackFromIndexedDb,
+  parseEkpackContainerJs,
   parseEkpackPreamble32Js,
   renderOfflineMeshEcoCardHtml,
   savePackToIndexedDb,
@@ -40,6 +43,7 @@ import {
 import {
   LTEncoder,
   OPTICAL_CADENCE_PRESETS,
+  QrStreamSession,
   computeSaddleStitchImpositionPlan,
   createRelayEncoderFromDecoded,
   decodeLubyTransformPeeling,
@@ -324,6 +328,7 @@ export function hydrateShareAndAuditDrawerPanel(ctx = {}) {
         state.lastExportedSneakernetBundle = jsonBundle;
         exportSneakernetBtn.setAttribute("data-exported-bytes", String(jsonBundle.length));
         exportSneakernetBtn.setAttribute("data-airgap-channel", channel.mode);
+        let sharedViaOs = false;
         if (
           packBytes &&
           typeof navigator !== "undefined" &&
@@ -334,7 +339,25 @@ export function hydrateShareAndAuditDrawerPanel(ctx = {}) {
             type: "application/octet-stream",
           });
           if (!navigator.canShare || navigator.canShare({ files: [shareFile] })) {
+            sharedViaOs = true;
             navigator.share({ files: [shareFile], title: `Ekovoz ${packLang}.ekpack` }).catch(() => { });
+          }
+        }
+        if (
+          !sharedViaOs &&
+          typeof targetDoc?.createElement === "function" &&
+          typeof Blob === "function" &&
+          typeof URL !== "undefined" &&
+          typeof URL.createObjectURL === "function"
+        ) {
+          const dlBlob = new Blob([jsonBundle], { type: "application/json;charset=utf-8" });
+          const dlUrl = URL.createObjectURL(dlBlob);
+          const anchor = targetDoc.createElement("a");
+          anchor.href = dlUrl;
+          anchor.download = `${packLang}.sneakernet.json`;
+          if (typeof anchor.click === "function") anchor.click();
+          if (typeof URL.revokeObjectURL === "function") {
+            setTimeout(() => URL.revokeObjectURL(dlUrl), 1000);
           }
         }
       });
@@ -366,15 +389,17 @@ export function hydrateShareAndAuditDrawerPanel(ctx = {}) {
           }
           const rawText = new TextDecoder("utf-8").decode(fileBytes);
           const imported = importBundleFromFile(rawText);
-          if (imported.valid && typeof imported.payloadHex === "string" && imported.payloadHex.length >= 64) {
-            const hex = imported.payloadHex;
-            const bin = new Uint8Array(hex.length >> 1);
-            for (let i = 0; i < bin.byteLength; i += 1) {
-              bin[i] = parseInt(hex.slice(i * 2, i * 2 + 2), 16) || 0;
-            }
-            if (parseEkpackPreamble32Js(bin)) {
-              await commitVerifiedPackToIndexedDb({ lang: imported.lang || packLang, packBytes: bin });
-            }
+          const candidateBin =
+            imported.payloadBytes instanceof Uint8Array && imported.payloadBytes.byteLength >= 32
+              ? imported.payloadBytes
+              : null;
+          if (imported.valid && candidateBin && parseEkpackPreamble32Js(candidateBin)) {
+            const playerWasm = dataLayer?.getHydratedWasmModule?.("ekovoz_player_wasm") || null;
+            await commitVerifiedPackToIndexedDb(
+              { lang: imported.lang || packLang, packBytes: candidateBin },
+              SOVEREIGN_ED25519_PUBLIC_KEY_HEX,
+              playerWasm,
+            );
           }
           importSneakernetInput.setAttribute("data-imported-valid", String(imported.valid));
           if (imported.valid && typeof ctx.navigate === "function") {
@@ -553,8 +578,8 @@ export function hydrateShareAndAuditDrawerPanel(ctx = {}) {
       (Array.isArray(rawChVerses)
         ? rawChVerses.find((v) => Number(v?.start ?? v?.verse) === Number(state?.verse || 1))?.text
         : rawChVerses?.[String(state?.verse || 1)]) ||
-        state?.activeVerseText ||
-        "GEN.1.1",
+      state?.activeVerseText ||
+      "GEN.1.1",
     );
     const signedPack = resolveSignedPackReceipt(activeLang);
     const ed25519Ok = verifyEd25519ManifestSignature(
@@ -659,7 +684,7 @@ export function applyStaticChromeTranslations(targetDoc, uiLocale = "es", state 
   const felDichaSel = getEl("felicesDichaSelect");
   if (felDichaSel && felDichaSel.options) {
     const enDichaTitles = {
-      "1": "Beatitude 1 · Ps 1:1 (The Tree by the Waters)",
+      "1": "Beatitude 1 · Mt 5:1 (Jesus Goes Up on the Mountain)",
       "2": "Beatitude 2 · Mt 5:3 (Poor in Spirit)",
       "3": "Beatitude 3 · Mt 5:4 (Those Who Mourn)",
       "4": "Beatitude 4 · Mt 5:5 (The Meek)",
@@ -670,10 +695,10 @@ export function applyStaticChromeTranslations(targetDoc, uiLocale = "es", state 
       "9": "Beatitude 9 · Mt 5:10 (Persecuted for Righteousness)",
       "10": "Beatitude 10 · Lk 11:28 (Hear and Keep the Word)",
       "11": "Beatitude 11 · Mt 5:12 / Jn 20:29 (Joy of the Prophets)",
-      "12": "Beatitude 12 · Rev 22:14 / Ps 1:6 (Tree of Life)",
+      "12": "Beatitude 12 · Rev 22:14 (Tree of Life)",
     };
     const esDichaTitles = {
-      "1": "Dicha 1 · Sal 1:1 (El Árbol junto a Aguas)",
+      "1": "Dicha 1 · Mt 5:1 (Jesús sube al Monte)",
       "2": "Dicha 2 · Mt 5:3 (Pobres en Espíritu)",
       "3": "Dicha 3 · Mt 5:4 (Los que Lloran)",
       "4": "Dicha 4 · Mt 5:5 (Los Mansos)",
@@ -684,7 +709,7 @@ export function applyStaticChromeTranslations(targetDoc, uiLocale = "es", state 
       "9": "Dicha 9 · Mt 5:10 (Perseguidos por la Justicia)",
       "10": "Dicha 10 · Lc 11:28 (Oyen y Guardan la Palabra)",
       "11": "Dicha 11 · Mt 5:12 / Jn 20:29 (Gozo de los Profetas)",
-      "12": "Dicha 12 · Ap 22:14 / Sal 1:6 (Árbol de la Vida)",
+      "12": "Dicha 12 · Ap 22:14 (Árbol de la Vida)",
     };
     for (const opt of Array.from(felDichaSel.options)) {
       const k = String(opt.value || "");
@@ -769,22 +794,47 @@ export function bindShareDrawerActionEvents(ctx = {}) {
     const osis = `${state.book}.${state.chapter}.${state.verse}`;
 
     if (shareBtnId === "btnShareQuine") {
-      const quinePayload = buildQuineHtml(packLang, "Ekovoz Offline Quine", {
-        book: state.book || "GEN",
-        chapter: state.chapter || 1,
-        verses: state.lastNavResult?.chapter?.verses || {},
+      const packBytes = await resolvePackBytesForVault(packLang, dataLayer);
+      const playerWasm =
+        (dataLayer && typeof dataLayer.getHydratedWasmModule === "function"
+          ? dataLayer.getHydratedWasmModule("ekovoz_player_wasm")
+          : null) ||
+        (dataLayer && typeof dataLayer.loadWasmModule === "function"
+          ? await dataLayer.loadWasmModule("ekovoz_player_wasm")
+          : null);
+      const quinePayload = await buildFullCorpusDeflateQuineHtml(packLang, "Ekovoz Offline Quine", {
+        packBytes,
+        parseEkpackContainerJs,
+        decodeRfc8878RawZstdFrameJs,
+        playerWasm: playerWasm?.exports ? playerWasm : null,
+        liveOverlays: state.liveCascadeOverlays || null,
+        fallbackChapterDoc: {
+          book: state.book || "GEN",
+          chapter: state.chapter || 1,
+          verses: state.lastNavResult?.chapter?.verses || {},
+        },
       });
       const quineUrl =
         typeof Blob === "function" && typeof URL !== "undefined" && typeof URL.createObjectURL === "function"
           ? URL.createObjectURL(new Blob([quinePayload], { type: "text/html;charset=utf-8" }))
           : `data:text/html;charset=utf-8,${encodeURIComponent(quinePayload)}`;
+      if (
+        typeof targetDoc?.createElement === "function" &&
+        typeof quineUrl === "string" &&
+        quineUrl.startsWith("blob:")
+      ) {
+        const dlLink = targetDoc.createElement("a");
+        dlLink.href = quineUrl;
+        dlLink.download = `lector_offline_${packLang}.html`;
+        if (typeof dlLink.click === "function") dlLink.click();
+      }
       if (statusPanel) {
         statusPanel.setAttribute("data-audit-action", "share-quine");
         statusPanel.innerHTML =
           `<div class="audit-receipt" data-action="share-quine" data-quine-lang="${escapeHtml(packLang)}" data-quine-bytes="${quinePayload.length}" data-kleene-quine="true">` +
           `✅ <strong>Quine Autónomo de Kleene Listo (${escapeHtml(packLang.toUpperCase())}):</strong> ` +
           `<a href="${escapeHtml(quineUrl)}" download="lector_offline_${escapeHtml(packLang)}.html">Descargar lector_offline_${escapeHtml(packLang)}.html</a> ` +
-          `(${quinePayload.length} B · Punto Fijo de Kleene · 0 fetch · 100% offline).</div>`;
+          `(${quinePayload.length} B · Punto Fijo de Kleene · 66 Libros deflate-raw · 0 fetch · 100% offline).</div>`;
       }
     } else if (shareBtnId === "btnCopyDirectShareLink") {
       const shareUrl = serializeMostradorRouteQuery(state);
@@ -943,6 +993,13 @@ export function bindShareDrawerActionEvents(ctx = {}) {
           clearInterval(state.activeCameraIntervalId);
           state.activeCameraIntervalId = null;
         }
+        if (state.activeCameraRvfcHandle && videoEl && typeof videoEl.cancelVideoFrameCallback === "function") {
+          videoEl.cancelVideoFrameCallback(state.activeCameraRvfcHandle);
+        }
+        state.activeCameraRvfcHandle = null;
+        if (state.activeOpticalWasmSession) {
+          state.activeOpticalWasmSession = null;
+        }
         if (statusPanel) {
           statusPanel.setAttribute("data-audit-action", "optical-camera-stopped");
           statusPanel.textContent = "📷 Cámara óptica detenida y hardware liberado.";
@@ -969,6 +1026,43 @@ export function bindShareDrawerActionEvents(ctx = {}) {
           wasmStatusAttr = "unavailable";
         }
       }
+      state.activeOpticalWasmSession = new QrStreamSession();
+      state.lastSampledCameraMediaTime = -1;
+
+      const stopOpticalCameraSession = () => {
+        state.opticalCameraActive = false;
+        if (videoEl) videoEl.hidden = true;
+        if (state.activeCameraMediaStream && typeof state.activeCameraMediaStream.getTracks === "function") {
+          for (const trk of state.activeCameraMediaStream.getTracks()) {
+            if (typeof trk.stop === "function") trk.stop();
+          }
+        }
+        state.activeCameraMediaStream = null;
+        if (state.activeCameraIntervalId) {
+          clearInterval(state.activeCameraIntervalId);
+          state.activeCameraIntervalId = null;
+        }
+        if (state.activeCameraRvfcHandle && videoEl && typeof videoEl.cancelVideoFrameCallback === "function") {
+          videoEl.cancelVideoFrameCallback(state.activeCameraRvfcHandle);
+        }
+        state.activeCameraRvfcHandle = null;
+      };
+
+      const onBatchDecodedMaybeComplete = (wasmBatch) => {
+        if (!wasmBatch || !wasmBatch.complete) return false;
+        state.lastOpticalRxReport = wasmBatch;
+        stopOpticalCameraSession();
+        if (statusPanel) {
+          statusPanel.setAttribute("data-audit-action", "optical-camera-complete");
+          statusPanel.setAttribute("data-rx-complete", "true");
+          statusPanel.setAttribute("data-rx-bytes", String(wasmBatch.decodedBytes?.byteLength || 0));
+          statusPanel.innerHTML =
+            `<div class="audit-receipt" data-action="optical-camera-complete" data-rx-complete="true" data-rx-bytes="${wasmBatch.decodedBytes?.byteLength || 0}">` +
+            `✅ <strong>Recepción Óptica Completada (${wasmBatch.decodedBytes?.byteLength || 0} B):</strong> ` +
+            `Peeling LT/GF(2) convergente en sesión continua y cámara liberada.</div>`;
+        }
+        return true;
+      };
 
       const detector =
         typeof globalThis.BarcodeDetector === "function"
@@ -995,6 +1089,22 @@ export function bindShareDrawerActionEvents(ctx = {}) {
             if (typeof videoEl.play === "function") {
               Promise.resolve(videoEl.play()).catch(() => { });
             }
+            if (
+              typeof videoEl.readyState === "number" &&
+              videoEl.readyState < 2 &&
+              typeof videoEl.addEventListener === "function"
+            ) {
+              await new Promise((resolve) => {
+                let done = false;
+                const finishReady = () => {
+                  if (done) return;
+                  done = true;
+                  resolve();
+                };
+                videoEl.addEventListener("loadeddata", finishReady, { once: true });
+                setTimeout(finishReady, 80);
+              });
+            }
           }
           cameraMode = detector ? "getUserMedia+BarcodeDetector+WASM" : "getUserMedia+WASM-PGL3-RS256";
           const captureCanvas =
@@ -1003,60 +1113,100 @@ export function bindShareDrawerActionEvents(ctx = {}) {
             captureCanvas.width = 480;
             captureCanvas.height = 480;
           }
+          let samplingBusy = false;
           const sampleSingleFrame = async () => {
-            if (!state.opticalCameraActive || !videoEl) return;
-            if (detector && typeof detector.detect === "function") {
-              try {
-                const codes = await detector.detect(videoEl);
-                if (Array.isArray(codes) && codes.length > 0 && codes[0].rawValue) {
-                  state.lastScannedOpticalFrameRaw = String(codes[0].rawValue);
-                  const rawFrameBytes = new TextEncoder().encode(state.lastScannedOpticalFrameRaw);
-                  const wasmBatch = decodeQrStreamViaWasmBridge([rawFrameBytes], wasmMod);
-                  if (wasmBatch.complete) {
-                    state.lastOpticalRxReport = wasmBatch;
+            if (samplingBusy || !state.opticalCameraActive || !videoEl) return;
+            samplingBusy = true;
+            try {
+              if (detector && typeof detector.detect === "function") {
+                try {
+                  const codes = await detector.detect(videoEl);
+                  if (Array.isArray(codes) && codes.length > 0 && codes[0].rawValue) {
+                    state.lastScannedOpticalFrameRaw = String(codes[0].rawValue);
+                    const rawFrameBytes = new TextEncoder().encode(state.lastScannedOpticalFrameRaw);
+                    const wasmBatch = decodeQrStreamViaWasmBridge(
+                      [rawFrameBytes],
+                      wasmMod,
+                      state.activeOpticalWasmSession,
+                    );
+                    if (onBatchDecodedMaybeComplete(wasmBatch)) return;
+                    return;
                   }
-                  return;
+                } catch {
+                  // Fall through to 480x480 Luma8 WASM homography scanner
                 }
-              } catch {
-                // Fall through to 480x480 Luma8 WASM homography scanner
               }
-            }
-            const ctx2d =
-              captureCanvas && typeof captureCanvas.getContext === "function"
-                ? captureCanvas.getContext("2d", { willReadFrequently: true })
-                : null;
-            if (
-              ctx2d &&
-              typeof ctx2d.drawImage === "function" &&
-              typeof ctx2d.getImageData === "function" &&
-              wasmMod?.exports?.scan_luma8_homography_rs_in_place
-            ) {
-              ctx2d.drawImage(videoEl, 0, 0, 480, 480);
-              const rgba = ctx2d.getImageData(0, 0, 480, 480).data;
-              const pixCount = 480 * 480;
-              const ex = wasmMod.exports;
-              const lumaPtr = ex.wasm_alloc(pixCount);
-              const outPtr = ex.wasm_alloc(4096);
-              try {
-                const lumaView = new Uint8Array(ex.memory.buffer, lumaPtr, pixCount);
-                for (let p = 0, q = 0; p < pixCount; p += 1, q += 4) {
-                  lumaView[p] = (77 * rgba[q] + 150 * rgba[q + 1] + 29 * rgba[q + 2]) >> 8;
-                }
-                const decodedLen = ex.scan_luma8_homography_rs_in_place(lumaPtr, 480, 480, outPtr, 4096);
-                if (decodedLen > 0) {
-                  const payloadSlice = new Uint8Array(ex.memory.buffer, outPtr, decodedLen).slice();
-                  const wasmBatch = decodeQrStreamViaWasmBridge([payloadSlice], wasmMod);
-                  if (wasmBatch.complete) {
-                    state.lastOpticalRxReport = wasmBatch;
+              const ctx2d =
+                captureCanvas && typeof captureCanvas.getContext === "function"
+                  ? captureCanvas.getContext("2d", { willReadFrequently: true })
+                  : null;
+              if (
+                ctx2d &&
+                typeof ctx2d.drawImage === "function" &&
+                typeof ctx2d.getImageData === "function" &&
+                wasmMod?.exports?.scan_luma8_homography_rs_in_place
+              ) {
+                ctx2d.drawImage(videoEl, 0, 0, 480, 480);
+                const rgba = ctx2d.getImageData(0, 0, 480, 480).data;
+                const pixCount = 480 * 480;
+                const ex = wasmMod.exports;
+                const lumaPtr = ex.wasm_alloc(pixCount);
+                const outPtr = ex.wasm_alloc(4096);
+                try {
+                  const lumaView = new Uint8Array(ex.memory.buffer, lumaPtr, pixCount);
+                  for (let p = 0, q = 0; p < pixCount; p += 1, q += 4) {
+                    lumaView[p] = (77 * rgba[q] + 150 * rgba[q + 1] + 29 * rgba[q + 2]) >> 8;
                   }
+                  const decodedLen = ex.scan_luma8_homography_rs_in_place(lumaPtr, 480, 480, outPtr, 4096);
+                  if (decodedLen > 0) {
+                    const payloadSlice = new Uint8Array(ex.memory.buffer, outPtr, decodedLen).slice();
+                    const wasmBatch = decodeQrStreamViaWasmBridge(
+                      [payloadSlice],
+                      wasmMod,
+                      state.activeOpticalWasmSession,
+                    );
+                    onBatchDecodedMaybeComplete(wasmBatch);
+                  }
+                } finally {
+                  ex.wasm_free(lumaPtr, pixCount);
+                  ex.wasm_free(outPtr, 4096);
                 }
-              } finally {
-                ex.wasm_free(lumaPtr, pixCount);
-                ex.wasm_free(outPtr, 4096);
               }
+            } finally {
+              samplingBusy = false;
             }
           };
           await sampleSingleFrame();
+          if (state.opticalCameraActive && videoEl) {
+            const cadenceMs =
+              OPTICAL_CADENCE_PRESETS[String(state.opticalCadenceFps || "6.67")]?.frameDurationMs || 150;
+            if (typeof videoEl.requestVideoFrameCallback === "function") {
+              const onRvfc = (_now, metadata) => {
+                if (!state.opticalCameraActive || !videoEl) return;
+                const mediaTime = Number(metadata?.mediaTime ?? videoEl.currentTime ?? 0);
+                if (mediaTime !== state.lastSampledCameraMediaTime) {
+                  state.lastSampledCameraMediaTime = mediaTime;
+                  void sampleSingleFrame();
+                }
+                if (state.opticalCameraActive && typeof videoEl.requestVideoFrameCallback === "function") {
+                  state.activeCameraRvfcHandle = videoEl.requestVideoFrameCallback(onRvfc);
+                }
+              };
+              state.activeCameraRvfcHandle = videoEl.requestVideoFrameCallback(onRvfc);
+            } else {
+              state.activeCameraIntervalId = setInterval(() => {
+                if (!state.opticalCameraActive || !videoEl) return;
+                const curT = Number(videoEl.currentTime ?? -1);
+                if (curT < 0 || curT !== state.lastSampledCameraMediaTime) {
+                  state.lastSampledCameraMediaTime = curT;
+                  void sampleSingleFrame();
+                }
+              }, cadenceMs);
+              if (typeof state.activeCameraIntervalId?.unref === "function") {
+                state.activeCameraIntervalId.unref();
+              }
+            }
+          }
         } catch {
           cameraMode = "permission-denied-or-headless";
         }

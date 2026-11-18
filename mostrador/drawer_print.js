@@ -27,7 +27,6 @@ import {
   requiresLiveGeometrySynthesis,
   resolveCanonicalBlockCode,
   resolveCanonicalBlockForPassage,
-  resolveFederatedAssetUrl,
   resolveMacroTandaForBlock,
   resolvePrecompiledDiskLang,
   resolveRegionalPrintDefaults,
@@ -35,7 +34,6 @@ import {
   simulateThirdGenPhotocopySauvola,
   syncDose2AndDose3LinksForActiveLang,
   syncPrintDrawerControlsFromEditionProfile,
-  typesetTandaPdfBytes,
 } from "./dosis.js";
 import { applyHarelSubtabSelection } from "./drawer_study.js";
 import { isRtlLocale } from "./i18n.js";
@@ -207,11 +205,11 @@ export function renderPrintDrawerPanelsSyncInDrawer(ctx = {}) {
   }
   syncDose2AndDose3LinksForActiveLang({ state, targetDoc, getEl });
   const isEn = String(state.uiLocale || "es").trim().toLowerCase().startsWith("en");
-  const regionalDefaults = resolveRegionalPrintDefaults(state.region || "MX", {
+  const regionalDefaults = resolveRegionalPrintDefaults(state.countryIso2 || "MX", {
     lang: state.lang,
     uiLocale: state.uiLocale || "es",
   });
-  const effectivePaper = state.paperFormat || regionalDefaults.paperFormat || regionalDefaults.paper || paperForRegion(state.region || "MX");
+  const effectivePaper = state.paperFormat || regionalDefaults.paperFormat || regionalDefaults.paper || paperForRegion(state.countryIso2 || "MX");
   const effectiveEdition = state.edition || regionalDefaults.edition || chooseEdition(["2col-a4", "2col-letter"], effectivePaper);
   const budget = computeKindlePrintBudget({
     fontPt: state.fontSizePt || 9.5,
@@ -462,63 +460,51 @@ export function renderPrintDrawerPanelsSyncInDrawer(ctx = {}) {
       Math.max(1, Math.min(80, Number(state.activeBlockNumber) || liveBlock.blockNumber || 1)),
     ).padStart(2, "0")}`;
     const editions = listAll14PrintEditionsForLang(
-      state.lastManifest || effectiveLang,
+      effectiveLang,
       effectiveLang,
       { uiLocale: state.uiLocale || "es" },
     );
+    if (!state.editionObjectUrls || typeof state.editionObjectUrls !== "object") {
+      state.editionObjectUrls = {};
+    }
+    if (state._editionObjectUrlsLang && state._editionObjectUrlsLang !== effectiveLang) {
+      for (const prevUrl of Object.values(state.editionObjectUrls)) {
+        if (typeof prevUrl === "string" && prevUrl.startsWith("blob:")) {
+          try {
+            globalThis.URL?.revokeObjectURL?.(prevUrl);
+          } catch {
+            // Non-fatal
+          }
+        }
+      }
+      state.editionObjectUrls = {};
+    }
+    state._editionObjectUrlsLang = effectiveLang;
     catalogGrid.setAttribute("data-editions-count", String(editions.length));
     catalogGrid.setAttribute("data-active-block-code", activeBlockCode);
     catalogGrid.innerHTML = editions
       .map((ed) => {
         const cardId = ed.profileId || ed.id;
         const isSelected = ed.kind !== "field_pdf" && cardId === activeProfileId;
-        const fedOfflineOrStandalone =
-          state.federationReachable === false || getCachedFederationReachability() === false;
         const dynamicFieldMode =
           ed.id?.includes("refugio_4_hojas") || ed.editionSlug === "refugio_4_hojas"
-            ? 1
+            ? 15
             : ed.id?.includes("checklist_80_bloques") || ed.editionSlug === "checklist_80_bloques"
-              ? 2
+              ? 16
               : ed.id === "06_bilingue_paralela"
-                ? 1
+                ? 15
                 : ed.id === "07_cuaderno_5lineas_apaisado"
-                  ? 2
+                  ? 16
                   : 0;
-        const useLiveTandaHref =
-          ed.kind === "field_pdf"
-            ? effectiveLang !== "es" || fedOfflineOrStandalone
-            : fedOfflineOrStandalone ||
-              !ed.hasPrecompiledPdf ||
-              Boolean(ed.requiresLiveWorkerSynthesis) ||
-              effectiveLang === "es-1909";
-        const staticRawUrl = ed.profileUrl || ed.url || "";
-        const resolvedStaticHref = staticRawUrl.startsWith("editions-01/")
-          ? resolveFederatedAssetUrl(
-            "editions-01",
-            staticRawUrl.slice("editions-01/".length),
-            targetDoc,
-          )
-          : buildRelativePdfAssetUrl(staticRawUrl);
-        const resolvedHref = useLiveTandaHref
-          ? state.editionObjectUrls?.[cardId] ||
-          encodePdfBytesToDataUri(
-            typesetTandaPdfBytes({
-              tandaId: cardId.toUpperCase(),
-              lang: effectiveLang,
-              book: state.book || "GEN",
-              chapter: state.chapter || 1,
-              verse: state.verse || 1,
-              verses: Array.isArray(state.fullBookVerses) ? state.fullBookVerses : null,
-              versesMap: !Array.isArray(state.fullBookVerses) ? state.lastNavResult?.chapter?.verses || null : null,
-              editionMode: dynamicFieldMode,
-              columns: ed.columns || 2,
-              fontPt: ed.fontPt || 9.5,
-              paper: ed.paperSize || effectivePaper || "a4",
-              dir: isRtlLocale(effectiveLang) ? "rtl" : "ltr",
-              maxPages: 0,
-            }),
-          )
-          : resolvedStaticHref;
+        const cachedCardHref = state.editionObjectUrls[cardId] || "";
+        const staticFieldHref =
+          ed.kind === "field_pdf" && effectiveLang === "es"
+            ? buildRelativePdfAssetUrl(ed.profileUrl || ed.url || "")
+            : "";
+        const resolvedHref =
+          cachedCardHref ||
+          staticFieldHref ||
+          buildRelativePdfAssetUrl(ed.profileUrl || ed.url || "mostrador/tanda_print_worker.js");
         const specParts =
           ed.kind === "field_pdf"
             ? [
@@ -540,7 +526,7 @@ export function renderPrintDrawerPanelsSyncInDrawer(ctx = {}) {
             resolvedHref,
           )}" data-profile-id="${escapeHtml(cardId)}" data-edition-slug="${escapeHtml(
             ed.editionSlug,
-          )}" data-active-block="${escapeHtml(activeBlockCode)}" data-field-pdf-bytes="${escapeHtml(
+          )}" data-edition-mode="${dynamicFieldMode}" data-active-block="${escapeHtml(activeBlockCode)}" data-field-pdf-bytes="${escapeHtml(
             ed.bytes || "",
           )}" data-geometry-key="${escapeHtml(ed.geometryKey || "")}" data-edition-kind="${escapeHtml(
             ed.kind || "edition",
@@ -548,22 +534,27 @@ export function renderPrintDrawerPanelsSyncInDrawer(ctx = {}) {
             ed.fontPt || "",
           )}" data-columns="${escapeHtml(ed.columns || "")}" data-paper-size="${escapeHtml(
             ed.paperSize || "",
-          )}" data-has-precompiled-pdf="${Boolean(!useLiveTandaHref)}" data-availability-mode="${escapeHtml(
-            useLiveTandaHref ? "bimodal_client_print" : ed.availabilityMode || "precompiled_pdf",
-          )}" data-bimodal-lane="${useLiveTandaHref ? "lane_b_worker_tanda" : "lane_a_precompiled"}" download>📄 ${escapeHtml(ed.label)}${specBadge}</a>`
+          )}" data-has-precompiled-pdf="${Boolean(staticFieldHref && !cachedCardHref)}" data-availability-mode="bimodal_client_print" data-bimodal-lane="lane_b_worker_tanda" download>📄 ${escapeHtml(ed.label)}${specBadge}</a>`
         );
       })
       .join("");
     if (typeof catalogGrid.addEventListener === "function" && !catalogGrid._editionsBound) {
       catalogGrid._editionsBound = true;
-      catalogGrid.addEventListener("click", (e) => {
+      catalogGrid.addEventListener("click", async (e) => {
         const cardEl = e?.target?.closest
           ? e.target.closest("[data-profile-id]")
           : e?.target?.getAttribute?.("data-profile-id")
             ? e.target
             : null;
         const profId = cardEl?.getAttribute?.("data-profile-id");
-        if (profId && !profId.includes("refugio_4_hojas") && !profId.includes("checklist_80_bloques")) {
+        if (!profId) return;
+        const isFieldCard =
+          profId.includes("refugio_4_hojas") || profId.includes("checklist_80_bloques");
+        let cols = Number(cardEl?.getAttribute?.("data-columns")) || Number(state.columns) || 2;
+        let fontPt = Number(cardEl?.getAttribute?.("data-font-pt")) || Number(state.fontSizePt) || 9.5;
+        let paper = cardEl?.getAttribute?.("data-paper-size") || state.paperFormat || "a4";
+        let booklet4n = state.foliationMode === "saddle_stitch";
+        if (!isFieldCard) {
           const synced = syncPrintDrawerControlsFromEditionProfile(profId, targetDoc);
           state.activePrintProfileId = synced.profileId;
           state.fontSizePt = synced.fontPt;
@@ -571,6 +562,69 @@ export function renderPrintDrawerPanelsSyncInDrawer(ctx = {}) {
           state.paperFormat = synced.paper;
           state.orientation = synced.orientation;
           state.foliationMode = synced.foliationMode;
+          cols = synced.columns;
+          fontPt = synced.fontPt;
+          paper = synced.paper;
+          booklet4n = synced.foliationMode === "saddle_stitch";
+        }
+        const edMode = Number(cardEl?.getAttribute?.("data-edition-mode")) || 0;
+        const curLang = String(state.effectiveCorpusLang || state.lang || "es").trim() || "es";
+        if (!state.editionObjectUrls || typeof state.editionObjectUrls !== "object") {
+          state.editionObjectUrls = {};
+        }
+        if (!state.editionObjectUrls[profId] || !cardEl._directSynthesizedClick) {
+          e?.preventDefault?.();
+          try {
+            const versesPayload = Array.isArray(state.fullBookVerses) && state.fullBookVerses.length > 0
+              ? state.fullBookVerses
+              : state.lastNavResult?.chapter?.verses || {};
+            const res = await dispatchTandaWorkerJob({
+              lang: curLang,
+              book: state.book || "GEN",
+              chapter: state.chapter || 1,
+              verses: versesPayload,
+              editionMode: edMode,
+              columns: cols,
+              fontPt,
+              paper,
+              dir: isRtlLocale(curLang) ? "rtl" : "ltr",
+              booklet4n,
+              maxPagesPerTanda: 50,
+            });
+            if (res?.type === "tanda-offline-font-notice") {
+              const noticeEl = getEl("tanda-offline-font-notice", targetDoc);
+              if (noticeEl) {
+                noticeEl.hidden = false;
+                noticeEl.setAttribute?.("data-font-fsm-state", res.fontFsmState || "OFFLINE_CSS_FALLBACK");
+                noticeEl.textContent = res.message || "";
+              }
+            } else if (res?.pdfBytes instanceof Uint8Array && res.pdfBytes.byteLength > 0) {
+              const prevHref = state.editionObjectUrls[profId];
+              if (typeof prevHref === "string" && prevHref.startsWith("blob:")) {
+                try {
+                  globalThis.URL?.revokeObjectURL?.(prevHref);
+                } catch {
+                  // Non-fatal
+                }
+              }
+              const nextHref = toDownloadablePdfHref(res.pdfBytes);
+              state.editionObjectUrls[profId] = nextHref;
+              cardEl.href = nextHref;
+              cardEl.setAttribute?.("href", nextHref);
+              if (typeof cardEl.click === "function") {
+                cardEl._directSynthesizedClick = true;
+                try {
+                  cardEl.click();
+                } finally {
+                  cardEl._directSynthesizedClick = false;
+                }
+              }
+            }
+          } catch {
+            // Non-fatal
+          }
+        }
+        if (!isFieldCard) {
           renderPrintDrawerPanelsSyncInDrawer(ctx);
         }
       });

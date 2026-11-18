@@ -1,7 +1,7 @@
 {
   "macro_region_id": 1,
   "region_name_es": "Mesoamérica, Andes y Amazonía",
-  "total_languages": 798,
+  "total_languages": 793,
   "subclades_covered": 36,
   "featured_languages": [
     [
@@ -23,6 +23,12 @@
       "Meta,Casanare"
     ],
     [
+      "acc",
+      "Achi', Cubulco",
+      "Achi', Cubulco (acc)",
+      "Mesoamerica_Andes_Amazonia"
+    ],
+    [
       "acf",
       "Saint Lucian Creole French",
       "Saint Lucian Creole French (acf)",
@@ -33,12 +39,6 @@
       "Achi",
       "Achi (acr)",
       "Highlands,Huehuetenango,Baja_Verapaz"
-    ],
-    [
-      "acs",
-      "Acroá",
-      "Acroá (acs)",
-      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "acu",
@@ -65,12 +65,6 @@
       "Mesoamerica_Andes_Amazonia"
     ],
     [
-      "aga",
-      "Aguano",
-      "Aguano (aga)",
-      "Mesoamerica_Andes_Amazonia"
-    ],
-    [
       "agr",
       "Aguaruna",
       "Awajún",
@@ -80,12 +74,6 @@
       "agu",
       "Aguacateco",
       "Aguacateco (agu)",
-      "Mesoamerica_Andes_Amazonia"
-    ],
-    [
-      "ait",
-      "Arikem",
-      "Arikem (ait)",
       "Mesoamerica_Andes_Amazonia"
     ],
     [
@@ -104,12 +92,6 @@
       "alc",
       "Qawasqar",
       "Qawasqar (alc)",
-      "Mesoamerica_Andes_Amazonia"
-    ],
-    [
-      "ama",
-      "Amanayé",
-      "Amanayé (ama)",
       "Mesoamerica_Andes_Amazonia"
     ],
     [
@@ -137,33 +119,21 @@
       "Mesoamerica_Andes_Amazonia"
     ],
     [
-      "ana",
-      "Andaqui",
-      "Andaqui (ana)",
-      "Mesoamerica_Andes_Amazonia"
-    ],
-    [
-      "anb",
-      "Andoa",
-      "Andoa (anb)",
-      "Mesoamerica_Andes_Amazonia"
-    ],
-    [
       "ano",
       "Andoque",
       "Andoque (ano)",
       "Mesoamerica_Andes_Amazonia"
     ],
     [
-      "ans",
-      "Anserma",
-      "Anserma (ans)",
-      "Mesoamerica_Andes_Amazonia"
-    ],
-    [
       "aoc",
       "Pemon",
       "Pemon (aoc)",
+      "Mesoamerica_Andes_Amazonia"
+    ],
+    [
+      "aoh",
+      "Arma",
+      "Arma (aoh)",
       "Mesoamerica_Andes_Amazonia"
     ],
     [
@@ -191,12 +161,6 @@
       "Mesoamerica_Andes_Amazonia"
     ],
     [
-      "apv",
-      "Alapmunte",
-      "Alapmunte (apv)",
-      "Mesoamerica_Andes_Amazonia"
-    ],
-    [
       "apy",
       "Apalaí",
       "Apalaí (apy)",
@@ -218,12 +182,6 @@
       "arh",
       "Arhuaco",
       "Arhuaco (arh)",
-      "Mesoamerica_Andes_Amazonia"
-    ],
-    [
-      "arj",
-      "Arapaso",
-      "Arapaso (arj)",
       "Mesoamerica_Andes_Amazonia"
     ],
     [
@@ -257,12 +215,6 @@
       "Mesoamerica_Andes_Amazonia"
     ],
     [
-      "aru",
-      "Aruá (Amazonas State)",
-      "Aruá (Amazonas State) (aru)",
-      "Mesoamerica_Andes_Amazonia"
-    ],
-    [
       "arw",
       "Arawak",
       "Arawak (arw)",
@@ -275,12 +227,6 @@
       "Mesoamerica_Andes_Amazonia"
     ],
     [
-      "ash",
-      "Abishira",
-      "Abishira (ash)",
-      "Mesoamerica_Andes_Amazonia"
-    ],
-    [
       "asn",
       "Xingú Asuriní",
       "Xingú Asuriní (asn)",
@@ -290,12 +236,6 @@
       "asu",
       "Tocantins Asurini",
       "Tocantins Asurini (asu)",
-      "Mesoamerica_Andes_Amazonia"
-    ],
-    [
-      "atc",
-      "Atsahuaca",
-      "Atsahuaca (atc)",
       "Mesoamerica_Andes_Amazonia"
     ],
     [
@@ -323,24 +263,6 @@
       "Durango,Pueblo_Nuevo,Lajas"
     ],
     [
-      "aux",
-      "Aurá",
-      "Aurá (aux)",
-      "Mesoamerica_Andes_Amazonia"
-    ],
-    [
-      "avo",
-      "Agavotaguerra",
-      "Agavotaguerra (avo)",
-      "Mesoamerica_Andes_Amazonia"
-    ],
-    [
-      "avs",
-      "Aushiri",
-      "Aushiri (avs)",
-      "Mesoamerica_Andes_Amazonia"
-    ],
-    [
       "avv",
       "Avá-Canoeiro",
       "Avá-Canoeiro (avv)",
@@ -356,18 +278,6 @@
       "awt",
       "Araweté",
       "Araweté (awt)",
-      "Mesoamerica_Andes_Amazonia"
-    ],
-    [
-      "axb",
-      "Abipon",
-      "Abipon (axb)",
-      "Mesoamerica_Andes_Amazonia"
-    ],
-    [
-      "axg",
-      "Mato Grosso Arára",
-      "Mato Grosso Arára (axg)",
       "Mesoamerica_Andes_Amazonia"
     ],
     [
@@ -425,12 +335,6 @@
       "Mesoamerica_Andes_Amazonia"
     ],
     [
-      "bae",
-      "Baré",
-      "Baré (bae)",
-      "Mesoamerica_Andes_Amazonia"
-    ],
-    [
       "bao",
       "Waimaha",
       "Waimaha (bao)",
@@ -467,9 +371,9 @@
       "Mesoamerica_Andes_Amazonia"
     ],
     [
-      "brc",
-      "Berbice Creole Dutch",
-      "Berbice Creole Dutch (brc)",
+      "bpb",
+      "Barbacoas",
+      "Barbacoas (bpb)",
       "Mesoamerica_Andes_Amazonia"
     ],
     [
@@ -494,12 +398,6 @@
       "bvl",
       "Bolivian Sign Language",
       "Bolivian Sign Language (bvl)",
-      "Mesoamerica_Andes_Amazonia"
-    ],
-    [
-      "bvv",
-      "Baniva",
-      "Baniva (bvv)",
       "Mesoamerica_Andes_Amazonia"
     ],
     [
@@ -563,12 +461,6 @@
       "Mesoamerica_Andes_Amazonia"
     ],
     [
-      "caj",
-      "Chané",
-      "Chané (caj)",
-      "Mesoamerica_Andes_Amazonia"
-    ],
-    [
       "cak",
       "Kaqchikel",
       "Kaqchikel (cak)",
@@ -617,12 +509,6 @@
       "Mesoamerica_Andes_Amazonia"
     ],
     [
-      "caz",
-      "Canichana",
-      "Canichana (caz)",
-      "Mesoamerica_Andes_Amazonia"
-    ],
-    [
       "cbb",
       "Cabiyarí",
       "Cabiyarí (cbb)",
@@ -641,15 +527,33 @@
       "Mesoamerica_Andes_Amazonia"
     ],
     [
+      "cbe",
+      "Chipiajes",
+      "Chipiajes (cbe)",
+      "Mesoamerica_Andes_Amazonia"
+    ],
+    [
       "cbg",
       "Chimila",
       "Chimila (cbg)",
       "Mesoamerica_Andes_Amazonia"
     ],
     [
+      "cbh",
+      "Cagua",
+      "Cagua (cbh)",
+      "Mesoamerica_Andes_Amazonia"
+    ],
+    [
       "cbi",
       "Chachi",
       "Chachi (cbi)",
+      "Mesoamerica_Andes_Amazonia"
+    ],
+    [
+      "cbm",
+      "Kaqchikel, Yepocapa Southwestern",
+      "Kaqchikel, Yepocapa Southwestern (cbm)",
       "Mesoamerica_Andes_Amazonia"
     ],
     [
@@ -689,6 +593,12 @@
       "Mesoamerica_Andes_Amazonia"
     ],
     [
+      "cca",
+      "Cauca",
+      "Cauca (cca)",
+      "Mesoamerica_Andes_Amazonia"
+    ],
+    [
       "ccc",
       "Chamicuro",
       "Chamicuro (ccc)",
@@ -707,21 +617,9 @@
       "Mesoamerica_Andes_Amazonia"
     ],
     [
-      "ccr",
-      "Cacaopera",
-      "Cacaopera (ccr)",
-      "Mesoamerica_Andes_Amazonia"
-    ],
-    [
       "ceg",
       "Chamacoco",
       "Chamacoco (ceg)",
-      "Mesoamerica_Andes_Amazonia"
-    ],
-    [
-      "chb",
-      "Chibcha",
-      "Chibcha (chb)",
       "Mesoamerica_Andes_Amazonia"
     ],
     [
@@ -746,12 +644,6 @@
       "chq",
       "Quiotepec Chinantec",
       "Quiotepec Chinantec (chq)",
-      "Mesoamerica_Andes_Amazonia"
-    ],
-    [
-      "cht",
-      "Cholón",
-      "Cholón (cht)",
       "Mesoamerica_Andes_Amazonia"
     ],
     [
@@ -788,6 +680,60 @@
       "cjp",
       "Cabécar",
       "Cabécar (cjp)",
+      "Mesoamerica_Andes_Amazonia"
+    ],
+    [
+      "cjr",
+      "Chorotega",
+      "Chorotega (cjr)",
+      "Mesoamerica_Andes_Amazonia"
+    ],
+    [
+      "ckc",
+      "Kaqchikel, Northern",
+      "Kaqchikel, Northern (ckc)",
+      "Mesoamerica_Andes_Amazonia"
+    ],
+    [
+      "ckd",
+      "Kaqchikel, South Central",
+      "Kaqchikel, South Central (ckd)",
+      "Mesoamerica_Andes_Amazonia"
+    ],
+    [
+      "cke",
+      "Kaqchikel, Eastern",
+      "Kaqchikel, Eastern (cke)",
+      "Mesoamerica_Andes_Amazonia"
+    ],
+    [
+      "ckf",
+      "Kaqchikel, Southern",
+      "Kaqchikel, Southern (ckf)",
+      "Mesoamerica_Andes_Amazonia"
+    ],
+    [
+      "cki",
+      "Kaqchikel, Santa María de Jesús",
+      "Kaqchikel, Santa María de Jesús (cki)",
+      "Mesoamerica_Andes_Amazonia"
+    ],
+    [
+      "ckj",
+      "Kaqchikel, Santo Domingo Xenacoj",
+      "Kaqchikel, Santo Domingo Xenacoj (ckj)",
+      "Mesoamerica_Andes_Amazonia"
+    ],
+    [
+      "ckk",
+      "Kaqchikel, Akatenango Southwestern",
+      "Kaqchikel, Akatenango Southwestern (ckk)",
+      "Mesoamerica_Andes_Amazonia"
+    ],
+    [
+      "ckw",
+      "Kaqchikel, Western",
+      "Kaqchikel, Western (ckw)",
       "Mesoamerica_Andes_Amazonia"
     ],
     [
@@ -833,15 +779,15 @@
       "Mesoamerica_Andes_Amazonia"
     ],
     [
-      "cnt",
-      "Tepetotutla Chinantec",
-      "Tepetotutla Chinantec (cnt)",
+      "cnm",
+      "Chuj, Ixtatán",
+      "Chuj, Ixtatán (cnm)",
       "Mesoamerica_Andes_Amazonia"
     ],
     [
-      "cob",
-      "Chicomuceltec",
-      "Chicomuceltec (cob)",
+      "cnt",
+      "Tepetotutla Chinantec",
+      "Tepetotutla Chinantec (cnt)",
       "Mesoamerica_Andes_Amazonia"
     ],
     [
@@ -869,12 +815,6 @@
       "Mesoamerica_Andes_Amazonia"
     ],
     [
-      "coj",
-      "Cochimi",
-      "Cochimi (coj)",
-      "Mesoamerica_Andes_Amazonia"
-    ],
-    [
       "cok",
       "Santa Teresa Cora",
       "Santa Teresa Cora (cok)",
@@ -896,6 +836,12 @@
       "cox",
       "Nanti",
       "Nanti (cox)",
+      "Mesoamerica_Andes_Amazonia"
+    ],
+    [
+      "coy",
+      "Coyaima",
+      "Coyaima (coy)",
       "Mesoamerica_Andes_Amazonia"
     ],
     [
@@ -935,15 +881,9 @@
       "Mesoamerica_Andes_Amazonia"
     ],
     [
-      "crb",
-      "Island Carib",
-      "Island Carib (crb)",
-      "Mesoamerica_Andes_Amazonia"
-    ],
-    [
-      "crf",
-      "Caramanta",
-      "Caramanta (crf)",
+      "cqu",
+      "Chilean Quechua",
+      "Chilean Quechua (cqu)",
       "Mesoamerica_Andes_Amazonia"
     ],
     [
@@ -1013,6 +953,12 @@
       "Mesoamerica_Andes_Amazonia"
     ],
     [
+      "cti",
+      "Chol, Tila",
+      "Chol, Tila (cti)",
+      "Mesoamerica_Andes_Amazonia"
+    ],
+    [
       "ctl",
       "Tlacoatzintepec Chinantec",
       "Tlacoatzintepec Chinantec (ctl)",
@@ -1079,9 +1025,15 @@
       "Mesoamerica_Andes_Amazonia"
     ],
     [
-      "cuo",
-      "Cumanagoto",
-      "Cumanagoto (cuo)",
+      "cum",
+      "Cumeral",
+      "Cumeral (cum)",
+      "Mesoamerica_Andes_Amazonia"
+    ],
+    [
+      "cun",
+      "K'iche', Cunén",
+      "K'iche', Cunén (cun)",
       "Mesoamerica_Andes_Amazonia"
     ],
     [
@@ -1112,12 +1064,6 @@
       "cya",
       "Nopala Chatino",
       "Nopala Chatino (cya)",
-      "Mesoamerica_Andes_Amazonia"
-    ],
-    [
-      "cyb",
-      "Cayubaba",
-      "Cayubaba (cyb)",
       "Mesoamerica_Andes_Amazonia"
     ],
     [
@@ -1175,9 +1121,27 @@
       "Mesoamerica_Andes_Amazonia"
     ],
     [
+      "emm",
+      "Mamulique",
+      "Mamulique (emm)",
+      "Mesoamerica_Andes_Amazonia"
+    ],
+    [
+      "emo",
+      "Emok",
+      "Emok (emo)",
+      "Mesoamerica_Andes_Amazonia"
+    ],
+    [
       "emp",
       "Northern Emberá",
       "Northern Emberá (emp)",
+      "Mesoamerica_Andes_Amazonia"
+    ],
+    [
+      "emy",
+      "Epigraphic Mayan",
+      "Epigraphic Mayan (emy)",
       "Mesoamerica_Andes_Amazonia"
     ],
     [
@@ -1208,6 +1172,12 @@
       "esn",
       "Salvadoran Sign Language",
       "Salvadoran Sign Language (esn)",
+      "Mesoamerica_Andes_Amazonia"
+    ],
+    [
+      "eud",
+      "Eudeve",
+      "Eudeve (eud)",
       "Mesoamerica_Andes_Amazonia"
     ],
     [

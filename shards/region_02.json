@@ -1,15 +1,9 @@
 {
   "macro_region_id": 2,
   "region_name_es": "Norteamérica y Ártico",
-  "total_languages": 238,
+  "total_languages": 219,
   "subclades_covered": 32,
   "featured_languages": [
-    [
-      "aaq",
-      "Eastern Abnaki",
-      "Eastern Abnaki (aaq)",
-      "North_Plains_Subarctic"
-    ],
     [
       "abe",
       "Western Abnaki",
@@ -20,12 +14,6 @@
       "acv",
       "Achumawi",
       "Achumawi (acv)",
-      "North_Plains_Subarctic"
-    ],
-    [
-      "aes",
-      "Alsea",
-      "Alsea (aes)",
       "North_Plains_Subarctic"
     ],
     [
@@ -83,12 +71,6 @@
       "North_Plains_Subarctic"
     ],
     [
-      "aqp",
-      "Atakapa",
-      "Atakapa (aqp)",
-      "North_Plains_Subarctic"
-    ],
-    [
       "ari",
       "Arikara",
       "Arikara (ari)",
@@ -122,12 +104,6 @@
       "atw",
       "Atsugewi",
       "Atsugewi (atw)",
-      "North_Plains_Subarctic"
-    ],
-    [
-      "avk",
-      "Kotava",
-      "Kotava (avk)",
       "North_Plains_Subarctic"
     ],
     [
@@ -167,24 +143,6 @@
       "North_Plains_Subarctic"
     ],
     [
-      "bll",
-      "Biloxi",
-      "Biloxi (bll)",
-      "North_Plains_Subarctic"
-    ],
-    [
-      "boi",
-      "Barbareño",
-      "Barbareño (boi)",
-      "North_Plains_Subarctic"
-    ],
-    [
-      "bue",
-      "Beothuk",
-      "Beothuk (bue)",
-      "North_Plains_Subarctic"
-    ],
-    [
       "cad",
       "Caddo",
       "Caddo (cad)",
@@ -200,24 +158,6 @@
       "cay",
       "Cayuga",
       "Cayuga (cay)",
-      "North_Plains_Subarctic"
-    ],
-    [
-      "cea",
-      "Lower Chehalis",
-      "Lower Chehalis (cea)",
-      "North_Plains_Subarctic"
-    ],
-    [
-      "chc",
-      "Catawba",
-      "Catawba (chc)",
-      "North_Plains_Subarctic"
-    ],
-    [
-      "chh",
-      "Chinook",
-      "Chinook (chh)",
       "North_Plains_Subarctic"
     ],
     [
@@ -251,6 +191,12 @@
       "Oklahoma,North_Carolina"
     ],
     [
+      "chs",
+      "Chumash",
+      "Chumash (chs)",
+      "North_Plains_Subarctic"
+    ],
+    [
       "chy",
       "Cheyenne",
       "Cheyenne (chy)",
@@ -263,21 +209,9 @@
       "North_Plains_Subarctic"
     ],
     [
-      "cid",
-      "Chimariko",
-      "Chimariko (cid)",
-      "North_Plains_Subarctic"
-    ],
-    [
       "ciw",
       "Chippewa",
       "Chippewa (ciw)",
-      "North_Plains_Subarctic"
-    ],
-    [
-      "cjh",
-      "Upper Chehalis",
-      "Upper Chehalis (cjh)",
       "North_Plains_Subarctic"
     ],
     [
@@ -299,12 +233,6 @@
       "North_Plains_Subarctic"
     ],
     [
-      "cmm",
-      "Michigamea",
-      "Michigamea (cmm)",
-      "North_Plains_Subarctic"
-    ],
-    [
       "col",
       "Columbia-Wenatchi",
       "Columbia-Wenatchi (col)",
@@ -320,18 +248,6 @@
       "coo",
       "Comox",
       "Comox (coo)",
-      "North_Plains_Subarctic"
-    ],
-    [
-      "coq",
-      "Coquille",
-      "Coquille (coq)",
-      "North_Plains_Subarctic"
-    ],
-    [
-      "cow",
-      "Cowlitz",
-      "Cowlitz (cow)",
       "North_Plains_Subarctic"
     ],
     [
@@ -383,39 +299,15 @@
       "North_Plains_Subarctic"
     ],
     [
-      "crr",
-      "Carolina Algonquian",
-      "Carolina Algonquian (crr)",
-      "North_Plains_Subarctic"
-    ],
-    [
       "crx",
       "Carrier",
       "Carrier (crx)",
       "North_Plains_Subarctic"
     ],
     [
-      "crz",
-      "Cruzeño",
-      "Cruzeño (crz)",
-      "North_Plains_Subarctic"
-    ],
-    [
-      "csi",
-      "Coast Miwok",
-      "Coast Miwok (csi)",
-      "North_Plains_Subarctic"
-    ],
-    [
       "csm",
       "Central Sierra Miwok",
       "Central Sierra Miwok (csm)",
-      "North_Plains_Subarctic"
-    ],
-    [
-      "css",
-      "Southern Ohlone",
-      "Southern Ohlone (css)",
       "North_Plains_Subarctic"
     ],
     [
@@ -437,24 +329,6 @@
       "North_Plains_Subarctic"
     ],
     [
-      "ctc",
-      "Chetco",
-      "Chetco (ctc)",
-      "North_Plains_Subarctic"
-    ],
-    [
-      "ctm",
-      "Chitimacha",
-      "Chitimacha (ctm)",
-      "North_Plains_Subarctic"
-    ],
-    [
-      "cup",
-      "Cupeño",
-      "Cupeño (cup)",
-      "North_Plains_Subarctic"
-    ],
-    [
       "cwd",
       "Woods Cree",
       "Woods Cree (cwd)",
@@ -467,12 +341,6 @@
       "North_Plains_Subarctic"
     ],
     [
-      "dcr",
-      "Negerhollands",
-      "Negerhollands (dcr)",
-      "North_Plains_Subarctic"
-    ],
-    [
       "del",
       "Delaware",
       "Delaware (del)",
@@ -482,12 +350,6 @@
       "den",
       "Slave (Athapascan)",
       "Slave (Athapascan) (den)",
-      "North_Plains_Subarctic"
-    ],
-    [
-      "dep",
-      "Pidgin Delaware",
-      "Pidgin Delaware (dep)",
       "North_Plains_Subarctic"
     ],
     [
@@ -527,9 +389,27 @@
       "North_Plains_Subarctic"
     ],
     [
+      "esq",
+      "Esselen",
+      "Esselen (esq)",
+      "North_Plains_Subarctic"
+    ],
+    [
       "esu",
       "Central Yupik",
       "Central Yupik (esu)",
+      "North_Plains_Subarctic"
+    ],
+    [
+      "etc",
+      "Etchemin",
+      "Etchemin (etc)",
+      "North_Plains_Subarctic"
+    ],
+    [
+      "eya",
+      "Eyak",
+      "Eyak (eya)",
       "North_Plains_Subarctic"
     ],
     [
@@ -548,6 +428,12 @@
       "frc",
       "Cajun French",
       "Cajun French (frc)",
+      "North_Plains_Subarctic"
+    ],
+    [
+      "gce",
+      "Galice",
+      "Galice (gce)",
       "North_Plains_Subarctic"
     ],
     [

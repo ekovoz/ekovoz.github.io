@@ -239,11 +239,11 @@ async function ensureFontBytesLoaded(
     const candidates = fontUrlOverride
       ? [{ url: fontUrlOverride, isZst: String(fontUrlOverride).endsWith(".zst") }]
       : [
-          tier0 ? { url: tier0, isZst: false } : null,
-          { url: sameOriginZstUrl, isZst: true },
-          { url: rootPacksZstUrl, isZst: true },
-          { url: localAssetsRawUrl, isZst: false },
-        ].filter(Boolean);
+        tier0 ? { url: tier0, isZst: false } : null,
+        { url: sameOriginZstUrl, isZst: true },
+        { url: rootPacksZstUrl, isZst: true },
+        { url: localAssetsRawUrl, isZst: false },
+      ].filter(Boolean);
 
     for (const cand of candidates) {
       try {
@@ -338,12 +338,36 @@ function executeWasmTandaTypeset(
 
     const safeCols = Math.max(1, Math.min(3, Number(columns) || 2));
     const safeTenths = Math.max(75, Math.min(180, Math.round(Number(fontTenthsPt) || 95)));
-    const safePages = Math.max(1, Math.min(500, Number(maxPages) || 50));
-    const safeMode = Math.max(0, Math.min(2, Number(editionMode) || 0));
+    const safePages = Math.max(1, Math.min(255, Number(maxPages) || 50));
+    const rawMode = Number(editionMode) || 0;
+    const mappedEditionCode =
+      rawMode === 1 || rawMode === 15 ? 15 : rawMode === 2 || rawMode === 16 ? 16 : 0;
 
     const written =
-      safeMode > 0 && hasEditionMode
+      mappedEditionCode > 0 && hasEditionMode
         ? wasmExports.typeset_tanda_pdf_edition_mode_in_place(
+          f1Ptr,
+          f1Len,
+          f2Ptr,
+          f2Len,
+          0,
+          0,
+          tPtr,
+          tLen,
+          bPtr,
+          bLen,
+          safeCols,
+          isLetter ? 1 : 0,
+          isRtl ? 1 : 0,
+          booklet4n ? 1 : 0,
+          safeTenths,
+          safePages,
+          mappedEditionCode,
+          outPtr,
+          outCap,
+        )
+        : hasDual4n
+          ? wasmExports.typeset_tanda_pdf_dual_font_4n_in_place(
             f1Ptr,
             f1Len,
             f2Ptr,
@@ -352,7 +376,6 @@ function executeWasmTandaTypeset(
             tLen,
             bPtr,
             bLen,
-            safeMode,
             safeCols,
             isLetter ? 1 : 0,
             isRtl ? 1 : 0,
@@ -362,38 +385,19 @@ function executeWasmTandaTypeset(
             outPtr,
             outCap,
           )
-        : hasDual4n
-          ? wasmExports.typeset_tanda_pdf_dual_font_4n_in_place(
-              f1Ptr,
-              f1Len,
-              f2Ptr,
-              f2Len,
-              tPtr,
-              tLen,
-              bPtr,
-              bLen,
-              safeCols,
-              isLetter ? 1 : 0,
-              isRtl ? 1 : 0,
-              booklet4n ? 1 : 0,
-              safeTenths,
-              safePages,
-              outPtr,
-              outCap,
-            )
           : wasmExports.typeset_tanda_pdf_in_place(
-              f1Ptr,
-              f1Len,
-              tPtr,
-              tLen,
-              safeCols,
-              isLetter ? 1 : 0,
-              isRtl ? 1 : 0,
-              safeTenths,
-              safePages,
-              outPtr,
-              outCap,
-            );
+            f1Ptr,
+            f1Len,
+            tPtr,
+            tLen,
+            safeCols,
+            isLetter ? 1 : 0,
+            isRtl ? 1 : 0,
+            safeTenths,
+            safePages,
+            outPtr,
+            outCap,
+          );
 
     if (written > 0) {
       const pdfBytes = new Uint8Array(written);
@@ -436,18 +440,23 @@ function executeWasmStreamingPdfSession(
   }
   const f1Len = fontBytes.byteLength;
   const f2Len = bridgeFontBytes instanceof Uint8Array ? bridgeFontBytes.byteLength : 0;
-  const outCap = 4 * 1024 * 1024;
+  const outCap = 6 * 1024 * 1024;
   const f1Ptr = wasmExports.wasm_alloc(f1Len) >>> 0;
   const f2Ptr = f2Len > 0 ? wasmExports.wasm_alloc(f2Len) >>> 0 : 0;
+  const descPtr =
+    typeof wasmExports.wasm_pdf_session_finish_with_desc === "function"
+      ? wasmExports.wasm_alloc(16) >>> 0
+      : 0;
   const outPtr = wasmExports.wasm_alloc(outCap) >>> 0;
-  if (!f1Ptr || !outPtr) {
+  if (!f1Ptr || !outPtr || outPtr < 4096) {
     if (f1Ptr) wasmExports.wasm_free(f1Ptr, f1Len);
     if (f2Ptr) wasmExports.wasm_free(f2Ptr, f2Len);
+    if (descPtr) wasmExports.wasm_free(descPtr, 16);
     if (outPtr) wasmExports.wasm_free(outPtr, outCap);
     return null;
   }
 
-  let sessionHandle = 0;
+  let sessionStarted = false;
   try {
     new Uint8Array(wasmExports.memory.buffer, f1Ptr, f1Len).set(fontBytes);
     if (f2Ptr && f2Len > 0) {
@@ -456,26 +465,27 @@ function executeWasmStreamingPdfSession(
     const safeCols = Math.max(1, Math.min(3, Number(columns) || 2));
     const safeTenths = Math.max(75, Math.min(180, Math.round(Number(fontTenthsPt) || 95)));
     const safePages = Math.max(1, Math.min(200, Number(maxPagesPerTanda) || 50));
-    const safeMode = Math.max(0, Math.min(2, Number(editionMode) || 0));
+    const rawMode = Number(editionMode) || 0;
+    const mappedEditionCode =
+      rawMode === 1 || rawMode === 15 ? 15 : rawMode === 2 || rawMode === 16 ? 16 : 0;
 
-    sessionHandle = wasmExports.wasm_pdf_session_begin(
+    const beginCode = wasmExports.wasm_pdf_session_begin(
       f1Ptr,
       f1Len,
       f2Ptr,
       f2Len,
       0,
       0,
-      safeMode,
       safeCols,
       isLetter ? 1 : 0,
       isRtl ? 1 : 0,
       booklet4n ? 1 : 0,
       safeTenths,
-      safePages,
+      mappedEditionCode,
     );
-    if (sessionHandle <= 0) return null;
+    if (beginCode <= 0) return null;
+    sessionStarted = true;
 
-    const chunks = [];
     const tandas = [];
     let maxObservedRam = 65536;
 
@@ -490,28 +500,21 @@ function executeWasmStreamingPdfSession(
         if (bPtr && bLen > 0) {
           new Uint8Array(wasmExports.memory.buffer, bPtr, bLen).set(bridgeUtf8);
         }
-        const chunkLen = wasmExports.wasm_pdf_session_push_tanda(
-          sessionHandle,
+        const pagesEmitted = wasmExports.wasm_pdf_session_push_tanda(
           tPtr,
           tLen,
           bPtr,
           bLen,
-          outPtr,
-          outCap,
+          safePages,
         );
-        if (chunkLen < 0) return null;
-        const chunkCopy = new Uint8Array(chunkLen);
-        if (chunkLen > 0) {
-          chunkCopy.set(new Uint8Array(wasmExports.memory.buffer, outPtr, chunkLen));
-          chunks.push(chunkCopy);
-        }
+        if (pagesEmitted <= 0) return null;
         const linearRam = wasmExports.memory.buffer.byteLength;
         if (linearRam > maxObservedRam) maxObservedRam = linearRam;
         emitProgress({
           type: "tanda-progress",
           tandaIndex: idx + 1,
           totalTandas: tandaSlices.length,
-          bytes: chunkLen,
+          pages: pagesEmitted,
           peakRamBytes: linearRam,
           fontFile,
         });
@@ -519,7 +522,7 @@ function executeWasmStreamingPdfSession(
           tandaIndex: idx + 1,
           totalTandas: tandaSlices.length,
           fontFile,
-          pdfBytes: chunkCopy,
+          pages: pagesEmitted,
           peakRamBytes: Math.max(65536, linearRam),
         });
       } finally {
@@ -528,31 +531,40 @@ function executeWasmStreamingPdfSession(
       }
     }
 
-    const tailLen = wasmExports.wasm_pdf_session_finish(sessionHandle, outPtr, outCap);
-    sessionHandle = 0;
-    if (tailLen <= 0) return null;
-    const tailCopy = new Uint8Array(tailLen);
-    tailCopy.set(new Uint8Array(wasmExports.memory.buffer, outPtr, tailLen));
-    chunks.push(tailCopy);
-
-    const totalLen = chunks.reduce((acc, c) => acc + c.byteLength, 0);
-    const fullPdf = new Uint8Array(totalLen);
-    let cursor = 0;
-    for (const c of chunks) {
-      fullPdf.set(c, cursor);
-      cursor += c.byteLength;
+    const pdfLen =
+      descPtr >= 4096 && typeof wasmExports.wasm_pdf_session_finish_with_desc === "function"
+        ? wasmExports.wasm_pdf_session_finish_with_desc(descPtr, outPtr, outCap)
+        : wasmExports.wasm_pdf_session_finish(outPtr, outCap);
+    sessionStarted = false;
+    if (pdfLen <= 0) return null;
+    if (descPtr >= 4096 && typeof wasmExports.wasm_pdf_session_finish_with_desc === "function") {
+      const dv = new DataView(wasmExports.memory.buffer, descPtr, 16);
+      const magic = dv.getUint32(0, true);
+      if (magic !== 0x50444653) return null;
+    }
+    const fullPdf = new Uint8Array(pdfLen);
+    fullPdf.set(new Uint8Array(wasmExports.memory.buffer, outPtr, pdfLen));
+    if (
+      fullPdf.byteLength < 8 ||
+      fullPdf[0] !== 0x25 ||
+      fullPdf[1] !== 0x50 ||
+      fullPdf[2] !== 0x44 ||
+      fullPdf[3] !== 0x46
+    ) {
+      return null;
     }
     return { fullPdf, tandas, peakRamBytes: maxObservedRam };
   } finally {
-    if (sessionHandle > 0 && typeof wasmExports.wasm_pdf_session_finish === "function") {
+    if (sessionStarted && typeof wasmExports.wasm_pdf_session_finish === "function") {
       try {
-        wasmExports.wasm_pdf_session_finish(sessionHandle, outPtr, outCap);
+        wasmExports.wasm_pdf_session_finish(outPtr, outCap);
       } catch {
         // Ignore cleanup
       }
     }
     wasmExports.wasm_free(f1Ptr, f1Len);
     if (f2Ptr) wasmExports.wasm_free(f2Ptr, f2Len);
+    if (descPtr) wasmExports.wasm_free(descPtr, 16);
     wasmExports.wasm_free(outPtr, outCap);
   }
 }
@@ -604,127 +616,6 @@ export function typesetTandaWithCachedWasmSync({
   });
 }
 
-function encodeUtf16BeHexPdfString(str) {
-  let hex = "<FEFF";
-  const s = String(str || "");
-  for (let i = 0; i < s.length; i += 1) {
-    const cu = s.charCodeAt(i);
-    if (cu < 0x20 && cu !== 0x09) continue;
-    hex += cu.toString(16).toUpperCase().padStart(4, "0");
-  }
-  hex += ">";
-  return hex;
-}
-
-/**
- * Emisor vectorial sincrónico de arranque frío libre de `/WinAnsiEncoding` y sin degradación `'-'` (`0x2D`) ni tope fijo de 50 páginas:
- * preserva el 100% de los puntos de código Unicode en hexadecimal UTF-16BE con `/ToUnicode` Identity CMap mientras se hidrata el Worker WASM.
- */
-export function buildUnicodeColdSeedVectorPdf({
-  lines = ["Ekovoz Tanda"],
-  columns = 2,
-  isLetter = false,
-  isRtl = false,
-  fontPt = 9.5,
-  maxPages = 0,
-  editionMode = 0,
-} = {}) {
-  const cols = editionMode === 2 ? 1 : Math.max(1, Math.min(3, Number(columns) || 2));
-  const cleanPt = Math.max(7.5, Math.min(18.0, Number(fontPt) || 9.5));
-  const pageW = isLetter ? 612 : 595;
-  const pageH = isLetter ? 792 : 842;
-  const marginLeft = 40;
-  const marginRight = editionMode === 2 ? 127.56 : 40; // 45 mm CC0 notebook margin in Edition 16
-  const marginY = 44;
-  const gutter = 14;
-  const colW = Math.max(120, pageW - marginLeft - marginRight - gutter * (cols - 1)) / cols;
-  const lineH = Math.max(10, Math.round(cleanPt * 1.34));
-  const linesPerCol = Math.max(16, Math.floor((pageH - marginY * 2) / lineH));
-  const linesPerPage = linesPerCol * cols;
-  const rawPageCount = Math.max(1, Math.ceil(lines.length / linesPerPage));
-  const pageCount = Number(maxPages) > 0 ? Math.min(Number(maxPages), rawPageCount) : rawPageCount;
-
-  const pageStreams = [];
-  for (let p = 0; p < pageCount; p += 1) {
-    const slice = lines.slice(p * linesPerPage, (p + 1) * linesPerPage);
-    let st = "";
-    if (editionMode === 2) {
-      // Pauta xerográfica >= 0.85 pt (>= 0.75 pt) en el margen de notas CC0 de 45 mm
-      const noteX0 = (pageW - marginRight + 10).toFixed(1);
-      const noteX1 = (pageW - 18).toFixed(1);
-      st += "0.85 w ";
-      for (let r = 0; r < linesPerCol; r += 2) {
-        const gy = (pageH - marginY - r * lineH - 2).toFixed(1);
-        st += `${noteX0} ${gy} m ${noteX1} ${gy} l S `;
-      }
-      st += "\n";
-    }
-    for (let i = 0; i < slice.length; i += 1) {
-      const rawCol = Math.floor(i / linesPerCol);
-      const effCol = isRtl ? cols - 1 - rawCol : rawCol;
-      const row = i % linesPerCol;
-      const x = (marginLeft + effCol * (colW + gutter)).toFixed(1);
-      const y = (pageH - marginY - row * lineH).toFixed(1);
-      st += `BT /F1 ${cleanPt.toFixed(1)} Tf ${x} ${y} Td ${encodeUtf16BeHexPdfString(slice[i])} Tj ET\n`;
-    }
-    pageStreams.push(st);
-  }
-
-  const totalObjs = 4 + pageCount * 2;
-  const offsets = new Array(totalObjs + 1).fill(0);
-  const chunks = [];
-  let cursor = 0;
-  const enc = new TextEncoder();
-  const pushStr = (s) => {
-    const b = enc.encode(s);
-    chunks.push(b);
-    cursor += b.byteLength;
-  };
-  const writeObj = (id, body) => {
-    offsets[id] = cursor;
-    pushStr(`${id} 0 obj\n${body}\nendobj\n`);
-  };
-
-  pushStr("%PDF-1.7\n");
-  writeObj(1, "<< /Type /Catalog /Pages 2 0 R >>");
-  const kids = Array.from({ length: pageCount }, (_, i) => `${5 + i * 2} 0 R`).join(" ");
-  writeObj(2, `<< /Type /Pages /Kids [ ${kids} ] /Count ${pageCount} >>`);
-  writeObj(
-    3,
-    "<< /Type /Font /Subtype /Type0 /BaseFont /CharisSIL-Unicode /Encoding /Identity-H /DescendantFonts [ << /Type /Font /Subtype /CIDFontType2 /BaseFont /CharisSIL-Unicode /CIDSystemInfo << /Registry (Adobe) /Ordering (UCS) /Supplement 0 >> /DW 600 >> ] /ToUnicode 4 0 R >>",
-  );
-  const cmap =
-    "/CIDInit /ProcSet findresource begin 12 dict begin begincmap /CIDSystemInfo << /Registry (Adobe) /Ordering (UCS) /Supplement 0 >> def /CMapName /EkovozIdentityUTF16 def /CMapType 2 def 1 begincodespacerange <0000> <FFFF> endcodespacerange 1 beginbfrange <0020> <FFFD> <0020> endbfrange endcmap CMapName currentdict /CMap defineresource pop end end";
-  writeObj(4, `<< /Length ${enc.encode(cmap).byteLength} >>\nstream\n${cmap}\nendstream`);
-
-  for (let i = 0; i < pageCount; i += 1) {
-    const pageId = 5 + i * 2;
-    const contentId = 6 + i * 2;
-    writeObj(
-      pageId,
-      `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${pageW} ${pageH}] /Resources << /Font << /F1 3 0 R >> >> /Contents ${contentId} 0 R >>`,
-    );
-    const stLen = enc.encode(pageStreams[i]).byteLength;
-    writeObj(contentId, `<< /Length ${stLen} >>\nstream\n${pageStreams[i]}endstream`);
-  }
-
-  const xrefOff = cursor;
-  let xref = `xref\n0 ${totalObjs + 1}\n0000000000 65535 f \n`;
-  for (let id = 1; id <= totalObjs; id += 1) {
-    xref += `${String(offsets[id]).padStart(10, "0")} 00000 n \n`;
-  }
-  xref += `trailer\n<< /Size ${totalObjs + 1} /Root 1 0 R >>\nstartxref\n${xrefOff}\n%%EOF\n`;
-  pushStr(xref);
-
-  const out = new Uint8Array(cursor);
-  let pos = 0;
-  for (const c of chunks) {
-    out.set(c, pos);
-    pos += c.byteLength;
-  }
-  return out;
-}
-
 export async function runWorkerTandaJob(payload = {}, emitProgress = () => { }) {
   const {
     lang = "es",
@@ -751,10 +642,10 @@ export async function runWorkerTandaJob(payload = {}, emitProgress = () => { }) 
   const normalizeEntries = (raw) =>
     Array.isArray(raw)
       ? raw.map((item, idx) =>
-          typeof item === "string"
-            ? { ref: `${book} ${chapter}:${idx + 1}`, text: item }
-            : { ref: String(item?.ref || `${book} ${chapter}:${item?.verse || idx + 1}`), text: String(item?.text ?? "") },
-        )
+        typeof item === "string"
+          ? { ref: `${book} ${chapter}:${idx + 1}`, text: item }
+          : { ref: String(item?.ref || `${book} ${chapter}:${item?.verse || idx + 1}`), text: String(item?.text ?? "") },
+      )
       : raw && typeof raw === "object"
         ? Object.entries(raw).map(([vNum, text]) => ({ ref: `${book} ${chapter}:${vNum}`, text: String(text ?? "") }))
         : [];

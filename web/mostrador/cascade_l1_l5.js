@@ -329,12 +329,17 @@ export function foldCascadePatchV2Semilattice(entries = []) {
   return Array.from(byKey.values());
 }
 
+function escapeRegexLiteral(s) {
+  return String(s).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
 function replaceAllWholeToken(text, needle, replacement) {
   const src = String(text || "");
   const oldTok = String(needle || "").trim();
   const newTok = String(replacement || "").trim();
   if (!src || !oldTok || !newTok || oldTok === newTok) return src;
-  return src.split(oldTok).join(newTok);
+  const boundaryRe = new RegExp(`(?<!\\p{L})${escapeRegexLiteral(oldTok)}(?!\\p{L})`, "gu");
+  return src.replace(boundaryRe, newTok);
 }
 
 /**
@@ -358,20 +363,27 @@ export function projectChapterThroughCascadeSemilattice({
   );
   if (relevant.length === 0) return { ...verses };
 
-  // Build verse -> Set(strongId) and verse -> Set(c13Onomasticon) from 14-col matrixRows when available
+  // Build verse -> Set(strongId) and verse -> Set(c13Onomasticon) from 15-col Array rows (`matrix_tier0.ekpack`) or Object rows
   const strongsByVerse = new Map();
   const c13ByVerse = new Map();
   for (const row of Array.isArray(matrixRows) ? matrixRows : []) {
     if (!row) continue;
-    const vKey = String(row.verse ?? row.v ?? "");
+    const isArr = Array.isArray(row);
+    const vKey = String(isArr ? (row[0] ?? "") : (row.verse ?? row.v ?? ""));
     if (!vKey) continue;
-    const st = String(row.strong ?? row.c05_strong ?? "").trim().toUpperCase();
+    const st = String(isArr ? (row[4] ?? "") : (row.strong ?? row.c05_strong ?? ""))
+      .trim()
+      .toUpperCase();
     if (st) {
       if (!strongsByVerse.has(vKey)) strongsByVerse.set(vKey, new Set());
-      strongsByVerse.get(vKey).add(st);
+      for (const subSt of st.split(/[+,\s/]+/).filter(Boolean)) {
+        strongsByVerse.get(vKey).add(subSt);
+      }
     }
-    const c13 = String(row.onomasticon ?? row.c13_onomasticon ?? "").trim();
-    if (c13) {
+    const c13 = String(
+      isArr ? (row[12] ?? row[13] ?? "") : (row.onomasticon ?? row.c13_onomasticon ?? ""),
+    ).trim();
+    if (c13 && c13 !== "-" && c13 !== "0") {
       if (!c13ByVerse.has(vKey)) c13ByVerse.set(vKey, new Set());
       c13ByVerse.get(vKey).add(c13);
     }

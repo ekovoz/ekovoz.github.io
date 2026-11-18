@@ -15,7 +15,10 @@ import {
   resolveFederatedAssetUrl,
   typesetTandaPdfBytes,
 } from "./bimodal_tanda_print.js";
-import { evaluateOpticalSauvolaPhotocopyOracle } from "./sauvola_canvas_oracle.js";
+import {
+  evaluateOpticalSauvolaPhotocopyOracle,
+  rasterizeTrueTypeGlyphsFromSfntBytes,
+} from "./sauvola_canvas_oracle.js";
 import {
   buildRelativePdfAssetUrl,
   CANONICAL_12_BRANCH_PROFILES,
@@ -195,7 +198,7 @@ export function normalizeEditionSlug(edition, fallbackPaper = "a4") {
   return fallbackPaper === "letter" ? "2col-letter" : "2col-a4";
 }
 
-/** Dosis 2: el bloque completo que contiene el versículo (`editions-01/data/blocks/...` Same-Origin). */
+/** Dosis 2: el bloque completo que contiene el versículo (síntesis soberana en `tanda_print_worker.js`). */
 export function planDose2(locatedOrBlockId, lang = "es", edition = "2col-a4") {
   if (typeof locatedOrBlockId === "string") {
     const cleanLang = String(lang || "es").trim().toLowerCase() || "es";
@@ -205,15 +208,13 @@ export function planDose2(locatedOrBlockId, lang = "es", edition = "2col-a4") {
     const digits = String(locatedOrBlockId).replace(/\D+/g, "");
     const blockNum = Math.max(1, Math.min(80, Number(digits) || 1));
     const padded = String(blockNum).padStart(2, "0");
-    const file = precompiledLang
-      ? `editions-01/data/blocks/${precompiledLang}/${editionSlug}/B${padded}.pdf`
-      : `mostrador/tanda_print_worker.js?lang=${encodeURIComponent(cleanLang)}&edition=${encodeURIComponent(editionSlug)}&block=B${padded}`;
+    const file = `mostrador/tanda_print_worker.js?lang=${encodeURIComponent(cleanLang)}&edition=${encodeURIComponent(editionSlug)}&block=B${padded}`;
     return {
       blockId: `BLK-0${padded}`,
       blockNumber: blockNum,
       lang: cleanLang,
-      hasPrecompiledPdf: Boolean(precompiledLang),
-      availabilityMode: precompiledLang ? "precompiled_pdf" : "bimodal_client_print",
+      hasPrecompiledPdf: false,
+      availabilityMode: "bimodal_client_print",
       edition: editionSlug,
       editionSlug,
       file,
@@ -293,7 +294,7 @@ export function buildCanonical80BlocksPagesIndex(catalog, lang = "es", edition =
     const entry = {
       id: blk.blockId || `BLK-0${padded}`,
       number: blockNum,
-      file: `editions-01/data/blocks/${precompiledLang}/${editionSlug}/B${padded}.pdf`,
+      file: `mostrador/tanda_print_worker.js?lang=${encodeURIComponent(cleanLang)}&edition=${encodeURIComponent(editionSlug)}&block=B${padded}`,
       page_start: pageStart,
       page_count: pageCount,
       first_ordinal_per_page: firstOrdinalPerPage,
@@ -502,51 +503,6 @@ export function syncDose2AndDose3LinksForActiveLang({
       .catch(() => { });
   }
 
-  if (
-    precompiledLang &&
-    !needsLiveGeom &&
-    !state.forceMacroTandaWorker &&
-    effectiveFedReachable !== false
-  ) {
-    const d2Href = resolveFederatedAssetUrl(
-      "editions-01",
-      `data/blocks/${precompiledLang}/${edition}/${blockCode}.pdf`,
-      targetDoc,
-    );
-    const d3Href = resolveFederatedAssetUrl(
-      "editions-01",
-      `data/full/${precompiledLang}/${edition}.pdf`,
-      targetDoc,
-    );
-    if (linkDose2) {
-      linkDose2.href = d2Href;
-      linkDose2.setAttribute?.("href", d2Href);
-      linkDose2.setAttribute?.("download", `ekovoz_${lang}_${blockCode}_${edition}.pdf`);
-      linkDose2.setAttribute?.("data-dose-mode", "precompiled");
-      linkDose2.setAttribute?.("data-block-code", blockCode);
-      linkDose2.setAttribute?.("data-lang", lang);
-      linkDose2.textContent = isEn
-        ? `📘 Block PDF (${blockCode} · ${book} ${chapter})`
-        : `📘 Cuadernillo PDF (${blockCode} · ${book} ${chapter})`;
-    }
-    if (linkDose3) {
-      linkDose3.href = d3Href;
-      linkDose3.setAttribute?.("href", d3Href);
-      linkDose3.setAttribute?.("download", `ekovoz_${lang}_biblia_${edition}.pdf`);
-      linkDose3.setAttribute?.("data-dose-mode", "precompiled");
-      linkDose3.setAttribute?.("data-macro-tanda", activeMacroTanda.macroTandaId);
-      linkDose3.setAttribute?.("data-lang", lang);
-    }
-    return {
-      mode: "precompiled",
-      lang,
-      blockCode,
-      macroTandaId: activeMacroTanda.macroTandaId,
-      dose2Href: d2Href,
-      dose3Href: d3Href,
-    };
-  }
-
   const chapterVersesMap = state.lastNavResult?.chapter?.verses || null;
   const dose2Verses = Array.isArray(state.fullBookVerses) && state.fullBookVerses.length > 0
     ? state.fullBookVerses
@@ -667,19 +623,7 @@ export function listCatalogEditionsForLang(manifestOrLang, maybeLang = "es", opt
         ? manifestOrLang.canonical_9_plus_2_editions
         : CANONICAL_14_PLUS_2_EDITIONS_CATALOG;
 
-  const baseCatalog =
-    resolvedOptions?.includeAll14Profiles === true ||
-    Boolean(resolvedOptions?.verses || resolvedOptions?.bridgeVerses)
-      ? catalogSource
-      : [
-        ...catalogSource.slice(0, 9),
-        ...catalogSource.slice(14, 16).map((fp, fpIdx) => ({
-          ...fp,
-          id: fpIdx === 0 ? "10_refugio_4_hojas" : "11_checklist_80_bloques",
-          label: fp.label.replace(/^1[56]\./, fpIdx === 0 ? "10." : "11."),
-          label_en: fp.label_en.replace(/^1[56]\./, fpIdx === 0 ? "10." : "11."),
-        })),
-      ];
+  const baseCatalog = catalogSource;
 
   const tomlLookup = new Map(
     (CANONICAL_14_PRINT_PROFILES || []).map((p, idx) => [p.id, { ...p, index: idx }])
@@ -709,8 +653,8 @@ export function listCatalogEditionsForLang(manifestOrLang, maybeLang = "es", opt
         lang: resolvedLang,
         editionMode,
         hasPrecompiledPdf: isStaticEs,
-        requiresLiveWorkerSynthesis: !isStaticEs,
-        availabilityMode: isStaticEs ? "precompiled_pdf" : "bimodal_client_print",
+        requiresLiveWorkerSynthesis: true,
+        availabilityMode: "bimodal_client_print",
         path: cleanFieldUrl,
         url: cleanFieldUrl,
         bytes: fieldBytes,
@@ -732,18 +676,10 @@ export function listCatalogEditionsForLang(manifestOrLang, maybeLang = "es", opt
       columns: resolvedCols,
       paper: resolvedPaper.includes("Letter") ? "Letter" : "A4",
     });
-    const hasStaticDiskPdf = Boolean(precompiledLang);
-    const needsLiveGeom = requiresLiveGeometrySynthesis({
-      columns: resolvedCols,
-      fontPt: resolvedFontPt,
-      profileId: item.id,
-    });
-    const requiresLiveWorkerSynthesis = !hasStaticDiskPdf || needsLiveGeom;
-    const hasPrecompiledPdf = hasStaticDiskPdf && !needsLiveGeom;
-    const availabilityMode = hasPrecompiledPdf ? "precompiled_pdf" : "bimodal_client_print";
-    const resolvedProfileUrl = requiresLiveWorkerSynthesis
-      ? `mostrador/tanda_print_worker.js?lang=${encodeURIComponent(resolvedLang)}&edition=${encodeURIComponent(item.id)}&cols=${resolvedCols}&font=${resolvedFontPt}pt&paper=${encodeURIComponent(resolvedPaper)}&mode=${encodeURIComponent(impositionMode)}`
-      : fallbackUrl;
+    const requiresLiveWorkerSynthesis = true;
+    const hasPrecompiledPdf = false;
+    const availabilityMode = "bimodal_client_print";
+    const resolvedProfileUrl = `mostrador/tanda_print_worker.js?lang=${encodeURIComponent(resolvedLang)}&edition=${encodeURIComponent(item.id)}&cols=${resolvedCols}&font=${resolvedFontPt}pt&paper=${encodeURIComponent(resolvedPaper)}&mode=${encodeURIComponent(impositionMode)}`;
     return {
       ...item,
       label: localizedLabel,
@@ -865,18 +801,23 @@ export function simulateThirdGenPhotocopySauvola({
   strokePt = 0.85,
   k = 0.2,
   R = 128,
+  ttfBytes = null,
 } = {}) {
   const cleanStroke = Number(strokePt) || 0.85;
   const cleanK = Number(k) || 0.2;
   const cleanR = Number(R) || 128;
   const minStrokePt = 0.75;
+  const sfntProbe =
+    ttfBytes instanceof Uint8Array && ttfBytes.byteLength >= 64
+      ? rasterizeTrueTypeGlyphsFromSfntBytes(ttfBytes, "eo", { dpi: 300 })
+      : null;
   const oracle = evaluateOpticalSauvolaPhotocopyOracle({
     genIndex: 3,
     sauvolaK: cleanK,
     dpi: 300,
     strokePt: cleanStroke,
     R: cleanR,
-    useBrowserCanvasIfAvailable: false,
+    ttfBytes: sfntProbe ? ttfBytes : null,
   });
   const survives3rdGen =
     cleanStroke >= minStrokePt && oracle.eulerCharacteristicDelta === 0 && oracle.wcagPassAaa;
@@ -920,7 +861,6 @@ export function simulateFifthGenPhotocopySauvolaBilateral({
       dpi: 300,
       strokePt: cleanStroke,
       R: cleanR,
-      useBrowserCanvasIfAvailable: false,
     });
     return {
       generation: spec.generation,

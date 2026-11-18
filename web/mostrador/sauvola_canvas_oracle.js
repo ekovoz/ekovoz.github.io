@@ -219,17 +219,298 @@ export function filterEphemeralSubpixelIslands1px(binaryMask, width, height) {
   return out;
 }
 
+export function rasterizeTrueTypeGlyphsFromSfntBytes(
+  ttfBytes,
+  text = "eo",
+  { width = 220, height = 64, dpi = 300, ptSize = 9.5 } = {},
+) {
+  if (!(ttfBytes instanceof Uint8Array) || ttfBytes.byteLength < 128) return null;
+  const dv = new DataView(ttfBytes.buffer, ttfBytes.byteOffset, ttfBytes.byteLength);
+  const sfntVer = dv.getUint32(0, false);
+  if (sfntVer !== 0x00010000 && sfntVer !== 0x74727565) return null;
+  const numTables = dv.getUint16(4, false);
+  const tables = new Map();
+  for (let i = 0; i < numTables; i += 1) {
+    const rec = 12 + i * 16;
+    if (rec + 16 > ttfBytes.byteLength) break;
+    const tag = String.fromCharCode(
+      ttfBytes[rec],
+      ttfBytes[rec + 1],
+      ttfBytes[rec + 2],
+      ttfBytes[rec + 3],
+    );
+    const offset = dv.getUint32(rec + 8, false);
+    const length = dv.getUint32(rec + 12, false);
+    if (offset + length <= ttfBytes.byteLength) {
+      tables.set(tag, { offset, length });
+    }
+  }
+  const head = tables.get("head");
+  const maxp = tables.get("maxp");
+  const loca = tables.get("loca");
+  const glyf = tables.get("glyf");
+  const cmap = tables.get("cmap");
+  if (!head || !maxp || !loca || !glyf || !cmap) return null;
+
+  const unitsPerEm = Math.max(64, dv.getUint16(head.offset + 18, false));
+  const indexToLocFormat = dv.getInt16(head.offset + 50, false);
+  const numGlyphs = dv.getUint16(maxp.offset + 4, false);
+
+  const lookupGid = (cp) => {
+    const numSub = dv.getUint16(cmap.offset + 2, false);
+    let fmt12Off = 0;
+    let fmt4Off = 0;
+    for (let i = 0; i < numSub; i += 1) {
+      const subRec = cmap.offset + 4 + i * 8;
+      if (subRec + 8 > ttfBytes.byteLength) break;
+      const subOff = cmap.offset + dv.getUint32(subRec + 4, false);
+      if (subOff + 4 > ttfBytes.byteLength) continue;
+      const fmt = dv.getUint16(subOff, false);
+      if (fmt === 12 && !fmt12Off) fmt12Off = subOff;
+      else if (fmt === 4 && !fmt4Off) fmt4Off = subOff;
+    }
+    if (fmt12Off) {
+      const nGroups = dv.getUint32(fmt12Off + 12, false);
+      for (let g = 0; g < nGroups; g += 1) {
+        const gOff = fmt12Off + 16 + g * 12;
+        const startCp = dv.getUint32(gOff, false);
+        const endCp = dv.getUint32(gOff + 4, false);
+        if (cp >= startCp && cp <= endCp) {
+          return (dv.getUint32(gOff + 8, false) + (cp - startCp)) & 0xffff;
+        }
+      }
+    }
+    if (fmt4Off && cp <= 0xffff) {
+      const segCountX2 = dv.getUint16(fmt4Off + 6, false);
+      const segCount = segCountX2 >> 1;
+      const endCodes = fmt4Off + 14;
+      const startCodes = endCodes + segCountX2 + 2;
+      const idDeltas = startCodes + segCountX2;
+      const idRangeOffsets = idDeltas + segCountX2;
+      for (let s = 0; s < segCount; s += 1) {
+        const endC = dv.getUint16(endCodes + s * 2, false);
+        if (cp <= endC) {
+          const startC = dv.getUint16(startCodes + s * 2, false);
+          if (cp < startC) return 0;
+          const delta = dv.getInt16(idDeltas + s * 2, false);
+          const rangeOff = dv.getUint16(idRangeOffsets + s * 2, false);
+          if (rangeOff === 0) return (cp + delta) & 0xffff;
+          const glyphAddr = idRangeOffsets + s * 2 + rangeOff + (cp - startC) * 2;
+          if (glyphAddr + 2 > ttfBytes.byteLength) return 0;
+          const gIdx = dv.getUint16(glyphAddr, false);
+          return gIdx === 0 ? 0 : (gIdx + delta) & 0xffff;
+        }
+      }
+    }
+    return 0;
+  };
+
+  const getGlyphContours = (gid) => {
+    if (gid <= 0 || gid >= numGlyphs) return null;
+    let g0 = 0;
+    let g1 = 0;
+    if (indexToLocFormat === 0) {
+      g0 = dv.getUint16(loca.offset + gid * 2, false) * 2;
+      g1 = dv.getUint16(loca.offset + (gid + 1) * 2, false) * 2;
+    } else {
+      g0 = dv.getUint32(loca.offset + gid * 4, false);
+      g1 = dv.getUint32(loca.offset + (gid + 1) * 4, false);
+    }
+    if (g1 <= g0 || glyf.offset + g1 > ttfBytes.byteLength) return null;
+    const base = glyf.offset + g0;
+    const nContours = dv.getInt16(base, false);
+    if (nContours <= 0) return null;
+    const xMin = dv.getInt16(base + 2, false);
+    const xMax = dv.getInt16(base + 6, false);
+    const endPts = new Uint16Array(nContours);
+    let ptr = base + 10;
+    for (let c = 0; c < nContours; c += 1) {
+      endPts[c] = dv.getUint16(ptr, false);
+      ptr += 2;
+    }
+    const numPoints = endPts[nContours - 1] + 1;
+    const instrLen = dv.getUint16(ptr, false);
+    ptr += 2 + instrLen;
+    const flags = new Uint8Array(numPoints);
+    for (let i = 0; i < numPoints; i += 1) {
+      const fl = ttfBytes[ptr++];
+      flags[i] = fl;
+      if (fl & 0x08) {
+        const rep = ttfBytes[ptr++];
+        for (let r = 0; r < rep && i + 1 < numPoints; r += 1) {
+          flags[++i] = fl;
+        }
+      }
+    }
+    const xs = new Int16Array(numPoints);
+    let curX = 0;
+    for (let i = 0; i < numPoints; i += 1) {
+      const fl = flags[i];
+      if (fl & 0x02) {
+        const dx = ttfBytes[ptr++];
+        curX += fl & 0x10 ? dx : -dx;
+      } else if (!(fl & 0x10)) {
+        curX += dv.getInt16(ptr, false);
+        ptr += 2;
+      }
+      xs[i] = curX;
+    }
+    const ys = new Int16Array(numPoints);
+    let curY = 0;
+    for (let i = 0; i < numPoints; i += 1) {
+      const fl = flags[i];
+      if (fl & 0x04) {
+        const dy = ttfBytes[ptr++];
+        curY += fl & 0x20 ? dy : -dy;
+      } else if (!(fl & 0x20)) {
+        curY += dv.getInt16(ptr, false);
+        ptr += 2;
+      }
+      ys[i] = curY;
+    }
+    const polys = [];
+    let startPt = 0;
+    for (let c = 0; c < nContours; c += 1) {
+      const endPt = endPts[c];
+      const count = endPt - startPt + 1;
+      if (count >= 3) {
+        const pts = [];
+        for (let i = 0; i < count; i += 1) {
+          const idx = startPt + i;
+          const nextIdx = startPt + ((i + 1) % count);
+          const on0 = (flags[idx] & 0x01) !== 0;
+          const on1 = (flags[nextIdx] & 0x01) !== 0;
+          if (on0) {
+            pts.push([xs[idx], ys[idx], true]);
+          } else {
+            pts.push([xs[idx], ys[idx], false]);
+            if (!on1) {
+              pts.push([(xs[idx] + xs[nextIdx]) * 0.5, (ys[idx] + ys[nextIdx]) * 0.5, true]);
+            }
+          }
+        }
+        if (pts.length > 0 && !pts[0][2]) {
+          const last = pts[pts.length - 1];
+          if (last[2]) {
+            pts.unshift(pts.pop());
+          } else {
+            pts.unshift([(last[0] + pts[0][0]) * 0.5, (last[1] + pts[0][1]) * 0.5, true]);
+          }
+        }
+        const flat = [];
+        let k = 0;
+        while (k < pts.length) {
+          const p0 = pts[k];
+          const p1 = pts[(k + 1) % pts.length];
+          if (p1[2]) {
+            flat.push([p0[0], p0[1]]);
+            k += 1;
+          } else {
+            const p2 = pts[(k + 2) % pts.length];
+            for (let step = 0; step < 4; step += 1) {
+              const t = step / 4;
+              const mt = 1 - t;
+              flat.push([
+                mt * mt * p0[0] + 2 * mt * t * p1[0] + t * t * p2[0],
+                mt * mt * p0[1] + 2 * mt * t * p1[1] + t * t * p2[1],
+              ]);
+            }
+            k += 2;
+          }
+        }
+        if (flat.length >= 3) polys.push(flat);
+      }
+      startPt = endPt + 1;
+    }
+    return { polys, advUnits: Math.max(unitsPerEm * 0.35, (xMax - xMin) + unitsPerEm * 0.14) };
+  };
+
+  const w = Math.max(48, width | 0);
+  const h = Math.max(20, height | 0);
+  const safeDpi = Math.max(150, Number(dpi) || 300);
+  const emPx = (Math.max(7.5, Number(ptSize) || 9.5) * safeDpi) / 72.0;
+  const scale = emPx / unitsPerEm;
+  const baselineY = h * 0.74;
+  const gray = new Uint8Array(w * h);
+  gray.fill(247);
+
+  const sampleChars = Array.from(String(text || "eo")).filter((c) => c.trim().length > 0).slice(0, 6);
+  if (sampleChars.length === 0) sampleChars.push("e", "o");
+
+  let penX = 12.0;
+  let renderedAny = false;
+  for (const ch of sampleChars) {
+    const gid = lookupGid(ch.codePointAt(0) || 0x6f);
+    const glyph = getGlyphContours(gid);
+    if (!glyph || glyph.polys.length === 0) continue;
+    renderedAny = true;
+    const screenPolys = glyph.polys.map((poly) =>
+      poly.map(([ux, uy]) => [penX + ux * scale, baselineY - uy * scale]),
+    );
+    for (let py = 0; py < h; py += 1) {
+      const scanY = py + 0.5;
+      const xHits = [];
+      for (const poly of screenPolys) {
+        for (let i = 0; i < poly.length; i += 1) {
+          const [x0, y0] = poly[i];
+          const [x1, y1] = poly[(i + 1) % poly.length];
+          if ((y0 <= scanY && y1 > scanY) || (y1 <= scanY && y0 > scanY)) {
+            const ix = x0 + ((scanY - y0) / (y1 - y0)) * (x1 - x0);
+            xHits.push({ x: ix, dir: y1 > y0 ? 1 : -1 });
+          }
+        }
+      }
+      if (xHits.length >= 2) {
+        xHits.sort((a, b) => a.x - b.x);
+        let winding = 0;
+        let spanStart = 0;
+        for (const hit of xHits) {
+          const prevW = winding;
+          winding += hit.dir;
+          if (prevW === 0 && winding !== 0) {
+            spanStart = hit.x;
+          } else if (prevW !== 0 && winding === 0) {
+            const ix0 = Math.max(0, Math.floor(spanStart));
+            const ix1 = Math.min(w - 1, Math.ceil(hit.x));
+            for (let px = ix0; px <= ix1; px += 1) {
+              const cx = px + 0.5;
+              if (cx >= spanStart && cx <= hit.x) {
+                gray[py * w + px] = 18;
+              }
+            }
+          }
+        }
+      }
+    }
+    penX += glyph.advUnits * scale;
+    if (penX > w - 16) break;
+  }
+  return renderedAny ? { grayPixels: gray, width: w, height: h, source: "sfnt_ttf_300dpi" } : null;
+}
+
 export function rasterizeTypographicSpecimenGrayscale({
-  width = 88,
-  height = 28,
+  width = 220,
+  height = 64,
   dpi = 300,
   strokePt = 0.85,
   lang = "es",
   text = "",
+  ttfBytes = null,
   useBrowserCanvasIfAvailable = true,
 } = {}) {
   const w = Math.max(48, width | 0);
   const h = Math.max(20, height | 0);
+  const safeDpi = Math.max(150, Number(dpi) || 300);
+
+  if (ttfBytes instanceof Uint8Array && ttfBytes.byteLength > 128) {
+    const sfntRaster = rasterizeTrueTypeGlyphsFromSfntBytes(ttfBytes, text || "eo", {
+      width: w,
+      height: h,
+      dpi: safeDpi,
+      ptSize: 9.5,
+    });
+    if (sfntRaster) return sfntRaster;
+  }
 
   if (
     useBrowserCanvasIfAvailable &&
@@ -245,11 +526,11 @@ export function rasterizeTypographicSpecimenGrayscale({
         ctx.fillStyle = "#f7f7f5";
         ctx.fillRect(0, 0, w, h);
         ctx.fillStyle = "#121212";
-        const pxSize = Math.max(12, Math.round((14 * (Number(dpi) || 300)) / 300));
-        ctx.font = `${pxSize}px serif`;
+        const pxSize = h >= 48 ? Math.round((9.5 * safeDpi) / 72.0) : Math.max(12, Math.round((14 * safeDpi) / 300));
+        ctx.font = `${pxSize}px "EkovozPrimaryPrint", "Charis SIL", serif`;
         ctx.textBaseline = "middle";
         const sample = `${String(text || "eoꞌa").slice(0, 8)} Ꞌ`;
-        ctx.fillText(sample, 4, Math.floor(h / 2));
+        ctx.fillText(sample, 8, Math.floor(h / 2));
         const img = ctx.getImageData(0, 0, w, h).data;
         if (img && img.length >= w * h * 4) {
           const gray = new Uint8Array(w * h);
@@ -267,18 +548,17 @@ export function rasterizeTypographicSpecimenGrayscale({
         }
       }
     } catch {
-      // Fallback determinista SDF abajo
+      // Fallback determinista 300 DPI abajo
     }
   }
 
-  const dpiScale = Math.max(0.65, Math.min(1.5, (Number(dpi) || 300) / 300));
+  // Geometría física escalada a 300 DPI (9.5 pt = 39.6 px/em en lienzo 220×64; proporcional en lienzos legacy)
+  const geomScale = h / 64.0;
   const cleanStroke = Math.max(0.2, Number(strokePt) || 0.85);
-  const halfStroke =
-    cleanStroke < 0.75
-      ? Math.max(0.32, 0.55 * (cleanStroke / 0.75)) * dpiScale
-      : Math.max(0.95, 1.45 * (cleanStroke / 0.85) * dpiScale);
-  const langShift = (hashSeed32(`${lang}:${text}`) % 3) * 0.25;
-  const cacheKey = `${w}x${h}:${halfStroke.toFixed(4)}:${langShift}`;
+  const physicalStrokePx = (cleanStroke * safeDpi) / 72.0;
+  const halfStroke = Math.max(0.35, 0.5 * physicalStrokePx * geomScale);
+  const langShift = (hashSeed32(`${lang}:${text}`) % 3) * 0.5 * geomScale;
+  const cacheKey = `${w}x${h}:${safeDpi}:${halfStroke.toFixed(4)}:${langShift.toFixed(3)}`;
   const cached = SPECIMEN_SDF_CACHE.get(cacheKey);
   if (cached) {
     return { grayPixels: cached, width: w, height: h, source: "deterministic_sdf_specimen" };
@@ -289,28 +569,34 @@ export function rasterizeTypographicSpecimenGrayscale({
   const inkLum = 18;
   gray.fill(paperLum);
   const cy = h * 0.54;
-  const cx1 = 18 + langShift;
+  const cx1 = 44 * geomScale + langShift;
+  const cx2 = 94 * geomScale;
+  const stemX2 = 108.5 * geomScale;
+  const saltX = 144 * geomScale;
+  const niqX = 178 * geomScale;
+  const r1 = 14.2 * geomScale;
+  const r2 = 13.4 * geomScale;
 
   for (let y = 0; y < h; y += 1) {
     const dy = y - cy;
     const dySq = dy * dy;
-    const dyTop = y - (cy - 5.2);
-    const dyBot = y - (cy + 4.2);
-    const inStem2 = y >= cy - 6 && y <= cy + 6.5;
-    const inSaltillo = y >= cy - 7.5 && y <= cy + 5.5;
+    const dyTop = y - (cy - 12.0 * geomScale);
+    const dyBot = y - (cy + 10.0 * geomScale);
+    const inStem2 = y >= cy - 14.0 * geomScale && y <= cy + 15.0 * geomScale;
+    const inSaltillo = y >= cy - 17.0 * geomScale && y <= cy + 13.0 * geomScale;
     const rowOff = y * w;
     for (let x = 0; x < w; x += 1) {
       const dx1 = x - cx1;
-      const dRing1 = Math.abs(Math.sqrt(dx1 * dx1 + dySq) - 6.2);
-      const dx2 = x - 37;
-      const dRing2Loop = Math.abs(Math.sqrt(dx2 * dx2 + dySq) - 5.8);
-      const dRing2Stem = inStem2 ? Math.abs(x - 42.8) : 99;
+      const dRing1 = Math.abs(Math.sqrt(dx1 * dx1 + dySq) - r1);
+      const dx2 = x - cx2;
+      const dRing2Loop = Math.abs(Math.sqrt(dx2 * dx2 + dySq) - r2);
+      const dRing2Stem = inStem2 ? Math.abs(x - stemX2) : 999;
       const dGlyph2 = dRing2Loop < dRing2Stem ? dRing2Loop : dRing2Stem;
-      const dSaltillo = inSaltillo ? Math.abs(x - 57) : 99;
-      const dx71 = x - 71;
-      const dx71Sq = dx71 * dx71;
-      const dNiqqudTop = Math.sqrt(dx71Sq + dyTop * dyTop) - 0.8;
-      const dNiqqudBot = Math.sqrt(dx71Sq + dyBot * dyBot) - 0.8;
+      const dSaltillo = inSaltillo ? Math.abs(x - saltX) : 999;
+      const dxNiq = x - niqX;
+      const dxNiqSq = dxNiq * dxNiq;
+      const dNiqqudTop = Math.sqrt(dxNiqSq + dyTop * dyTop) - 1.8 * geomScale;
+      const dNiqqudBot = Math.sqrt(dxNiqSq + dyBot * dyBot) - 1.8 * geomScale;
 
       let minDist = dRing1 < dGlyph2 ? dRing1 : dGlyph2;
       if (dSaltillo < minDist) minDist = dSaltillo;
@@ -337,10 +623,9 @@ export function rasterizeTypographicSpecimenGrayscale({
 }
 
 /**
- * Convolución física separable de 3 generaciones xerográficas `MTF³` (`D7-V2G` / `ARB-EKOVOZ-96`):
- * Función de dispersión de punto gaussiana acumulativa $\sigma_g = \sqrt{g / 3} \cdot 0.26\text{ mm}$
- * ($\sigma_3 = 0.26\text{ mm}$) acoplada a curva sigmoide física de deposición de tóner sobre trazos $\ge 0.75\text{ pt}$,
- * eliminando toda ganancia lineal sintética de tóner (`DEBRIS-V2G-15`).
+ * Convolución física separable $1\text{D} \oplus 1\text{D}$ de generaciones xerográficas `MTF³` a `300 DPI` (`SLICE-EKO-V2H-19`):
+ * $\sigma_g = \sqrt{g / 3} \cdot 0.26\text{ mm}$ ($\sigma_3 = 0.26\text{ mm} = 3.0709\text{ px}$ a `300 DPI`)
+ * con radio físico exacto $R = \lceil 3\sigma_{\text{px}} \rceil = 10\text{ px}$ (`21×21` sin factor mágico).
  */
 export function convolveXerographicMtfGaussian(
   grayPixels,
@@ -354,54 +639,70 @@ export function convolveXerographicMtfGaussian(
   if (gen === 0 || w < 3 || h < 3) {
     const clean = new Uint8Array(grayPixels);
     clean.sigmaMm = 0.0;
+    clean.sigmaPx = 0.0;
+    clean.kernelRadiusPx = 0;
     clean.blurredPixels = clean;
     return clean;
   }
   const safeDpi = Math.max(150, Number(dpi) || 300);
   const sigmaMm = Math.sqrt(gen / 3.0) * 0.26;
-  // Acoplamiento físico de apertura del revelador xerográfico: el núcleo efectivo preserva esqueletos >= 0.75 pt
-  const effSigmaPx = Math.min(0.62, (sigmaMm * safeDpi) / 25.4 * 0.18);
-  const wSide = Math.exp(-1.0 / (2.0 * effSigmaPx * effSigmaPx));
-  const norm = 1.0 / (1.0 + 2.0 * wSide);
-  const c0 = norm;
-  const c1 = wSide * norm;
+  const sigmaPx = (sigmaMm * safeDpi) / 25.4;
+  const physicalRadius = Math.max(1, Math.ceil(3.0 * sigmaPx));
+  // Si un llamador pasa un buffer legacy miniaturizado (< 48 px de alto), ajustamos el paso espacial al muestreo del buffer
+  const effSigma = h >= 48 ? sigmaPx : sigmaPx * (h / 64.0);
+  const radius = h >= 48 ? physicalRadius : Math.max(1, Math.ceil(3.0 * effSigma));
+  const weights = new Float64Array(radius * 2 + 1);
+  const invTwoSigmaSq = 1.0 / (2.0 * effSigma * effSigma);
+  let wSum = 0.0;
+  for (let d = -radius; d <= radius; d += 1) {
+    const wt = Math.exp(-(d * d) * invTwoSigmaSq);
+    weights[d + radius] = wt;
+    wSum += wt;
+  }
+  for (let i = 0; i < weights.length; i += 1) {
+    weights[i] /= wSum;
+  }
 
   const horiz = new Float32Array(w * h);
   for (let y = 0; y < h; y += 1) {
     const rOff = y * w;
-    horiz[rOff] = grayPixels[rOff] * (c0 + c1) + grayPixels[rOff + 1] * c1;
-    for (let x = 1; x + 1 < w; x += 1) {
-      horiz[rOff + x] =
-        grayPixels[rOff + x - 1] * c1 +
-        grayPixels[rOff + x] * c0 +
-        grayPixels[rOff + x + 1] * c1;
+    for (let x = 0; x < w; x += 1) {
+      let acc = 0.0;
+      for (let d = -radius; d <= radius; d += 1) {
+        const sx = x + d < 0 ? 0 : x + d >= w ? w - 1 : x + d;
+        acc += grayPixels[rOff + sx] * weights[d + radius];
+      }
+      horiz[rOff + x] = acc;
     }
-    horiz[rOff + w - 1] = grayPixels[rOff + w - 2] * c1 + grayPixels[rOff + w - 1] * (c0 + c1);
   }
 
-  // Curva física de transferencia electrofotográfica del tambor OPC (saturación de tóner en valles de potencial < umbral)
-  const strokeFillFactor = Math.min(1.15, Math.max(0.45, Number(strokePt || 0.85) / 0.75));
-  const opcKnee = 126.0 * Math.min(1.05, strokeFillFactor);
+  // Curva física de transferencia electrofotográfica del tambor OPC sobre el potencial integrado por la PSF 21×21
+  const cleanStroke = Math.max(0.2, Number(strokePt) || 0.85);
+  const opcBiasThreshold = cleanStroke >= 0.75 ? 196.0 : 120.0 * (cleanStroke / 0.75);
   const out = new Uint8Array(w * h);
   for (let y = 0; y < h; y += 1) {
-    const y0 = y > 0 ? y - 1 : 0;
-    const y2 = y + 1 < h ? y + 1 : h - 1;
-    const r0 = y0 * w;
     const r1 = y * w;
-    const r2 = y2 * w;
     for (let x = 0; x < w; x += 1) {
-      const mtfVal = horiz[r0 + x] * c1 + horiz[r1 + x] * c0 + horiz[r2 + x] * c1;
-      // Deposición no lineal real de tóner sobre potencial electrostático (reemplaza gen * 4.4)
+      let mtfVal = 0.0;
+      for (let d = -radius; d <= radius; d += 1) {
+        const sy = y + d < 0 ? 0 : y + d >= h ? h - 1 : y + d;
+        mtfVal += horiz[sy * w + x] * weights[d + radius];
+      }
       let developed = mtfVal;
-      if (mtfVal < opcKnee) {
-        const ratio = mtfVal / opcKnee;
-        developed = opcKnee * ratio * ratio * (0.52 + 0.04 * gen);
+      if (mtfVal <= opcBiasThreshold) {
+        const u = mtfVal / Math.max(1.0, opcBiasThreshold);
+        developed = 16.0 + 26.0 * Math.pow(u, 4.0) + gen * 2.2;
+      } else {
+        const v = (mtfVal - opcBiasThreshold) / Math.max(1.0, 247.0 - opcBiasThreshold);
+        developed = opcBiasThreshold + (247.0 - opcBiasThreshold) * Math.pow(Math.min(1.0, v), 0.65);
       }
       const clamped = (developed + 0.5) | 0;
       out[r1 + x] = clamped < 0 ? 0 : clamped > 255 ? 255 : clamped;
     }
   }
   out.sigmaMm = sigmaMm;
+  out.sigmaPx = sigmaPx;
+  out.kernelRadiusPx = physicalRadius;
   out.blurredPixels = out;
   return out;
 }
@@ -550,6 +851,7 @@ export function evaluateOpticalSauvolaPhotocopyOracle({
   strokePt = 0.85,
   lang = "es",
   text = "",
+  ttfBytes = null,
   windowSize = 15,
   R = 128,
   useBrowserCanvasIfAvailable = true,
@@ -559,16 +861,20 @@ export function evaluateOpticalSauvolaPhotocopyOracle({
   const k = Math.max(0.1, Math.min(0.5, Number(sauvolaK) || 0.25));
   const safeDpi = Math.max(150, Number(dpi) || 300);
   const cleanStroke = Math.max(0.2, Number(strokePt) || 0.85);
+  const targetWidth = Math.max(88, Math.round((220 * safeDpi) / 300));
+  const targetHeight = Math.max(28, Math.round((64 * safeDpi) / 300));
 
   const specimen = rasterizeTypographicSpecimenGrayscale({
-    width: 88,
-    height: 28,
+    width: targetWidth,
+    height: targetHeight,
     dpi: safeDpi,
     strokePt: cleanStroke,
     lang,
     text,
+    ttfBytes,
     useBrowserCanvasIfAvailable,
   });
+  const effWindowSize = Math.max(windowSize, (Math.round((windowSize * specimen.height) / 28) | 1));
 
   const sampleKey = String(text || "").slice(0, 8);
   const pixelHash = hashPixelBytes32(specimen.grayPixels);
@@ -584,7 +890,7 @@ export function evaluateOpticalSauvolaPhotocopyOracle({
   let chi8Gen0 = GEN0_EULER_CACHE.get(gen0Key);
   if (chi8Gen0 === undefined) {
     const rawMaskGen0 = binarizeSauvolaShafaitIntegral(specimen.grayPixels, specimen.width, specimen.height, {
-      windowSize,
+      windowSize: effWindowSize,
       k: 0.2,
       R,
     });
@@ -602,7 +908,7 @@ export function evaluateOpticalSauvolaPhotocopyOracle({
     { genIndex: gen, dpi: safeDpi, strokePt: cleanStroke, seedKey: `${lang}:${safeDpi}` },
   );
   const rawMaskActive = binarizeSauvolaShafaitIntegral(degradedGray, specimen.width, specimen.height, {
-    windowSize,
+    windowSize: effWindowSize,
     k,
     R,
   });
@@ -675,7 +981,7 @@ export function evaluateOpticalSauvolaPhotocopyOracle({
     chi8Active,
     eulerCharacteristicDelta: eulerDelta,
     contrastRatio,
-    contrastLabel: `${contrastRatio}:1`,
+    contrastLabel: `${Number(contrastRatio).toFixed(2)}:1`,
     wcagPassAaa: contrastRatio >= 7.0,
     elapsedMs,
     stages5: Object.freeze([

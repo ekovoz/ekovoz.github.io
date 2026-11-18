@@ -1,7 +1,7 @@
 {
   "macro_region_id": 4,
   "region_name_es": "Europa Oriental y Eurasia Eslava",
-  "total_languages": 113,
+  "total_languages": 110,
   "subclades_covered": 30,
   "featured_languages": [
     [
@@ -89,12 +89,6 @@
       "East_Europe"
     ],
     [
-      "chu",
-      "Church Slavic",
-      "Church Slavic (chu)",
-      "East_Europe"
-    ],
-    [
       "chv",
       "Chuvash",
       "Chuvash (chv)",
@@ -167,21 +161,9 @@
       "East_Europe"
     ],
     [
-      "czk",
-      "Knaanic",
-      "Knaanic (czk)",
-      "East_Europe"
-    ],
-    [
       "dlg",
       "Dolgan",
       "Dolgan (dlg)",
-      "East_Europe"
-    ],
-    [
-      "dlm",
-      "Dalmatian",
-      "Dalmatian (dlm)",
       "East_Europe"
     ],
     [

@@ -15,7 +15,7 @@ import { STATUS } from "./data_layer.js";
 
 const TIER0_AUTOGRAPH_LANGS = new Set(["he", "hbo", "heb", "grc", "el"]);
 
-export const OPEN_CANONICAL_TIER1_LANGS = new Set([
+const OPEN_CANONICAL_TIER1_LANGS = new Set([
   "es",
   "es-1909",
   "en",
@@ -205,9 +205,10 @@ export function renderProgressiveTwoStrataDiglossicBridge({
     const brTxt = String(brMap[String(vNum)] || "").trim();
     const isExpanded = expandAllLeipzig || vNum === selV;
 
+    const isSelected = vNum === selV;
     let leftCellHtml = "";
     if (isHumanMaternalPortion && matTxt) {
-      leftCellHtml = `<div class="diglossic-maternal-human" data-maternal-stratum="HUMAN_VERIFIED" data-stratum="1-foveal"><sup>${vNum}</sup> ${escapeHtml(matTxt)}</div>`;
+      leftCellHtml = `<div class="mostrador-verse bible-verse-line${isSelected ? " is-selected" : ""} diglossic-maternal-human" data-verse="${vNum}" data-osis="${escapeHtml(osis)}" data-maternal-stratum="HUMAN_VERIFIED" data-stratum="1-foveal"><sup>${vNum}</sup> ${escapeHtml(matTxt)}</div>`;
     } else {
       const vRows = gmisByVerse.get(vNum) || [];
       const l1 =
@@ -220,7 +221,7 @@ export function renderProgressiveTwoStrataDiglossicBridge({
       const openAttr = isExpanded ? " open" : "";
       leftCellHtml =
         `<details class="diglossic-gmis-4line" data-maternal-stratum="GMIS_SCAFFOLD" data-gmis-lines="4" data-stratum="2-leipzig"${openAttr}>` +
-        `<summary class="diglossic-foveal-summary" data-stratum="1-foveal"><sup>${vNum}</sup> ${escapeHtml(matTxt || l3 || `[Semilla ${osis}]`)}</summary>` +
+        `<summary class="mostrador-verse bible-verse-line${isSelected ? " is-selected" : ""} diglossic-foveal-summary" data-verse="${vNum}" data-osis="${escapeHtml(osis)}" data-stratum="1-foveal"><sup>${vNum}</sup> ${escapeHtml(matTxt || l3 || `[Semilla ${osis}]`)}</summary>` +
         `<div data-gmis-line="1"><strong>L1 Original/Morfemas:</strong> ${l1}</div>` +
         `<div data-gmis-line="2"><strong>L2 Glosa Leipzig:</strong> ${l2}</div>` +
         `<div data-gmis-line="3"><strong>L3 NSM-65:</strong> ${l3}</div>` +
@@ -240,8 +241,9 @@ export function renderProgressiveTwoStrataDiglossicBridge({
       `</div>`;
   }
 
+  const gmisScaffoldAttr = sovereignTier === "TIER_4_GMIS_CELF250" ? ' data-gmis-scaffold="true"' : "";
   return (
-    `<section class="diglossic-parallel-bridge" data-diglossic-bridge="true" data-progressive-strata="2" data-total-verses="${verseNums.length}" data-lang="${escapeHtml(lang)}" data-bridge-lang="${escapeHtml(bridgeSpec.code)}" data-sovereign-tier="${escapeHtml(sovereignTier)}" data-epistemic-seal="${sealCode}" data-epistemic-honesty="ZERO_SYNTHETIC_BIBLE">` +
+    `<section class="diglossic-parallel-bridge" data-diglossic-bridge="true"${gmisScaffoldAttr} data-progressive-strata="2" data-total-verses="${verseNums.length}" data-lang="${escapeHtml(lang)}" data-bridge-lang="${escapeHtml(bridgeSpec.code)}" data-sovereign-tier="${escapeHtml(sovereignTier)}" data-epistemic-seal="${sealCode}" data-epistemic-honesty="ZERO_SYNTHETIC_BIBLE">` +
     `<header class="diglossic-bridge-header" style="display:flex;justify-content:space-between;gap:0.5rem;padding:0.4rem 0.6rem;border-radius:8px;background:var(--bg-secondary);font-size:0.78rem;margin-bottom:0.5rem;">` +
     `<span><strong>Columna Materna (<code>${escapeHtml(lang)}</code>):</strong> ${isHumanMaternalPortion ? "Porción Humana Verificada" : "Andamiaje Interlineal Honesto GMIS + CELF-250 (0% Falsa Biblia)"}</span>` +
     `<span><strong>Lengua Puente Siglo XXI (<code>${escapeHtml(bridgeSpec.code)}</code>):</strong> ${escapeHtml(bridgeSpec.label)}</span>` +
@@ -257,6 +259,10 @@ export function renderProgressiveTwoStrataDiglossicBridge({
 export function computeViewportRenderSignature(state, effectiveLang) {
   const res = state?.lastNavResult;
   const overlayLen = Array.isArray(state?.liveCascadeOverlays) ? state.liveCascadeOverlays.length : 0;
+  const verifiedOverlayCount =
+    state?.verifiedOverlaysByOsis && typeof state.verifiedOverlaysByOsis === "object"
+      ? Object.keys(state.verifiedOverlaysByOsis).length
+      : 0;
   const overlayTopRev =
     overlayLen > 0
       ? String(state.liveCascadeOverlays[overlayLen - 1]?.patchId || state.liveCascadeOverlays[overlayLen - 1]?.hlc || overlayLen)
@@ -273,10 +279,12 @@ export function computeViewportRenderSignature(state, effectiveLang) {
     state?.oralPorticoActive ? "1" : "0",
     state?.uiLocale || "",
     res?.status || "",
-    res?.chapter?.corpusRev || "",
+    res?.corpusRev || res?.chapter?.corpusRev || "",
     (state?.lastDiglossicBridgeHtml || "").length,
     (state?.lastMatrixFallbackHtml || "").length,
     overlayLen,
+    verifiedOverlayCount,
+    state?.overlayRevision || 0,
     overlayTopRev,
   ].join("|");
 }

@@ -253,13 +253,13 @@
     },
     {
       "file": "NotoSansTC-Regular.ttf",
-      "rawBytes": 948840,
-      "rawSha256": "e38fbb230e19c9f9ee5db51368b6d3794f3aa1cb0fa260be3597ac0748e51c4f",
+      "rawBytes": 1102416,
+      "rawSha256": "f3ac088a53abd12c93710f463b4803492061a1b6dfba6c240f5189f986088261",
       "subsettedBiblical": true,
       "url": "packs/fonts/NotoSansTC-Regular.ttf.zst",
-      "zstBytes": 514584,
+      "zstBytes": 586938,
       "zstFile": "NotoSansTC-Regular.ttf.zst",
-      "zstSha256": "fde8e5870d028c209a6ba1a5cb322035e666c74ac02882efca765693141c6c94"
+      "zstSha256": "8f793ba9fe54ec59de67ccfa41bd605ffbf4a9fe458656415a3b1029c4f11552"
     },
     {
       "file": "NotoSansTamil-Regular.ttf",
@@ -346,6 +346,6 @@
   "schema": "ekovoz.same_origin_fonts_zst.v1",
   "tier0_offline_bundle_bytes": 825864,
   "total_fonts": 34,
-  "total_raw_bytes": 12021588,
-  "total_zst_bytes": 5470451
+  "total_raw_bytes": 12175164,
+  "total_zst_bytes": 5542805
 }

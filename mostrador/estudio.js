@@ -269,7 +269,12 @@ export function renderStudy14ColDrawerHtml(matrixShard, options = {}) {
   const scope = String(options.scope || matrixShard?.scope || "verse").toLowerCase();
   const rawVerse = Number(options.verse ?? matrixShard?.verse);
   const filterVerse = scope === "chapter" ? null : rawVerse > 0 ? rawVerse : null;
-  const maxRows = Number(options.maxRows) > 0 ? Number(options.maxRows) : 240;
+  const maxRows =
+    Number(options.maxRows) > 0
+      ? Number(options.maxRows)
+      : scope === "chapter" || scope === "gmis"
+        ? Number.POSITIVE_INFINITY
+        : 240;
 
   const rawRows = Array.isArray(shard?.rows) ? shard.rows : [];
   const normalizedRows = [];
@@ -328,7 +333,7 @@ export function renderStudy14ColDrawerHtml(matrixShard, options = {}) {
         Boolean(activeStrongTarget) &&
         String(r.c07_strong_id || "").trim().toUpperCase() === activeStrongTarget;
       return (
-        `<article class="leipzig-14col-card${isStrongSelected ? " is-active-strong" : ""}" tabindex="0" aria-selected="${isStrongSelected ? "true" : "false"}" data-ref="${escapeHtml(r.c02_ref)}" data-osis="${escapeHtml(r.c02_ref)}" data-word-pos="${escapeHtml(r.c04_word_pos)}" data-lemma="${escapeHtml(r.c04_lemma)}" data-strong-id="${escapeHtml(r.c07_strong_id)}" data-macula-frame="${escapeHtml(maculaFrame)}" data-pragmatic-focus="${escapeHtml(r.c12_pragmatic_focus)}" data-realia-flag="${escapeHtml(r.c14_realia_flag)}" style="padding:0.65rem;border-radius:10px;border:1px solid ${isStrongSelected ? "var(--accent-amber, #d97706)" : "var(--card-border)"};background:var(--card-bg);display:flex;flex-direction:column;gap:0.25rem;min-width:160px;">` +
+        `<article class="leipzig-14col-card${isStrongSelected ? " is-active-strong" : ""}" tabindex="0" aria-selected="${isStrongSelected ? "true" : "false"}" data-ref="${escapeHtml(r.c02_ref)}" data-osis="${escapeHtml(r.c02_ref)}" data-word-pos="${escapeHtml(r.c04_word_pos)}" data-lemma="${escapeHtml(r.c04_lemma)}" data-strong-id="${escapeHtml(r.c07_strong_id)}" data-macula-frame="${escapeHtml(maculaFrame)}" data-pragmatic-focus="${escapeHtml(r.c12_pragmatic_focus)}" data-realia-flag="${escapeHtml(r.c14_realia_flag)}" style="content-visibility:auto;contain-intrinsic-size:0 64px;padding:0.65rem;border-radius:10px;border:1px solid ${isStrongSelected ? "var(--accent-amber, #d97706)" : "var(--card-border)"};background:var(--card-bg);display:flex;flex-direction:column;gap:0.25rem;min-width:160px;">` +
         `<header style="display:flex;justify-content:space-between;font-size:0.74rem;color:var(--text-secondary);">` +
         `<span data-col="c01_c02">${escapeHtml(r.c02_ref)} #${escapeHtml(r.c04_word_pos)} (ord ${escapeHtml(r.c01_ordinal_31102)})</span>` +
         `<span data-col="c03_source_corpus">${escapeHtml(r.c03_source_corpus)} · ${escapeHtml(maculaFrame)}</span>` +
@@ -639,7 +644,12 @@ export function renderLeipzig4LineGmisHtml(matrixShard, options = {}) {
   const chapter = Number(shard?.chapter || matrixShard?.chapter || options.chapter) || 1;
   const filterVerse = Number(options.verse) > 0 ? Number(options.verse) : null;
   const wordOrder = String(options.wordOrder || "SVO").toUpperCase();
-  const maxVerses = Number(options.maxVerses) > 0 ? Number(options.maxVerses) : 25;
+  const maxVerses =
+    Number(options.maxVerses) > 0
+      ? Number(options.maxVerses)
+      : filterVerse
+        ? 25
+        : Number.POSITIVE_INFINITY;
 
   const rawRows = Array.isArray(shard?.rows) ? shard.rows : [];
   const versesMap = new Map();

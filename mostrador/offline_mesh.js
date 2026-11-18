@@ -16,9 +16,16 @@ import {
   verifyEd25519ManifestSignatureAsync,
   verifyEd25519ManifestSignatureWebCrypto,
 } from "./ed25519_field_math.js";
+import {
+  buildFullCorpusDeflateQuineHtml,
+  buildQuineHtml,
+  createSneakernetCodecs,
+} from "./quine_and_sneakernet.js";
 
 export {
   SOVEREIGN_ED25519_PUBLIC_KEY_HEX,
+  buildFullCorpusDeflateQuineHtml,
+  buildQuineHtml,
   verifyEd25519ManifestSignature,
   verifyEd25519ManifestSignatureAsync,
   verifyEd25519ManifestSignatureWebCrypto,
@@ -557,37 +564,74 @@ export function probeEcoPackRandomAccessBounds(
 function requestPersistentStorageOnce() {
   try {
     if (globalThis?.navigator?.storage && typeof globalThis.navigator.storage.persist === "function") {
-      globalThis.navigator.storage.persist().catch(() => {});
+      globalThis.navigator.storage.persist().catch(() => { });
     }
   } catch {
     // Entornos sin StorageManager (Node/WebViews antiguos)
   }
 }
 
-let _stalledIdbRef = null;
+let _cachedVaultDb = null;
+let _cachedVaultDbRef = null;
+let _pendingVaultOpenPromise = null;
 
 function openSovereignIndexedDb() {
   const idb = globalThis?.indexedDB;
-  if (!idb || typeof idb.open !== "function" || idb === _stalledIdbRef) {
+  if (!idb || typeof idb.open !== "function") {
     return Promise.resolve(null);
   }
-  return new Promise((resolve) => {
+  if (_cachedVaultDb && _cachedVaultDbRef === idb) {
+    return Promise.resolve(_cachedVaultDb);
+  }
+  if (_cachedVaultDb && _cachedVaultDbRef !== idb) {
+    try {
+      _cachedVaultDb.close?.();
+    } catch {
+      // Ignore stale ref close
+    }
+    _cachedVaultDb = null;
+    _cachedVaultDbRef = null;
+  }
+  if (_pendingVaultOpenPromise) {
+    return _pendingVaultOpenPromise;
+  }
+  const isHeadlessWebdriver = Boolean(
+    typeof navigator !== "undefined" && navigator && navigator.webdriver,
+  );
+  const openTimeoutMs = isHeadlessWebdriver ? 110 : 1800;
+
+  _pendingVaultOpenPromise = new Promise((resolve) => {
     let settled = false;
-    const finish = (val, timedOut = false) => {
+    const finish = (dbHandle) => {
       if (!settled) {
         settled = true;
         clearTimeout(guardTimer);
-        if (timedOut) _stalledIdbRef = idb;
-        resolve(val);
-      } else if (val && typeof val.close === "function") {
+        _pendingVaultOpenPromise = null;
+        if (dbHandle) {
+          _cachedVaultDb = dbHandle;
+          _cachedVaultDbRef = idb;
+          dbHandle.onversionchange = () => {
+            try {
+              dbHandle.close?.();
+            } catch {
+              // Ignore versionchange close
+            }
+            if (_cachedVaultDb === dbHandle) {
+              _cachedVaultDb = null;
+              _cachedVaultDbRef = null;
+            }
+          };
+        }
+        resolve(dbHandle || null);
+      } else if (dbHandle && typeof dbHandle.close === "function") {
         try {
-          val.close();
+          dbHandle.close();
         } catch {
           // Ignore late handle close
         }
       }
     };
-    const guardTimer = setTimeout(() => finish(null, true), 90);
+    const guardTimer = setTimeout(() => finish(null), openTimeoutMs);
     try {
       const req = idb.open(IDB_DB_NAME, 2);
       req.onupgradeneeded = () => {
@@ -608,6 +652,7 @@ function openSovereignIndexedDb() {
       finish(null);
     }
   });
+  return _pendingVaultOpenPromise;
 }
 
 async function writeRecordToIndexedDb(storeName, record) {
@@ -615,29 +660,14 @@ async function writeRecordToIndexedDb(storeName, record) {
   if (!db || typeof db.transaction !== "function") return false;
   requestPersistentStorageOnce();
   return new Promise((resolve) => {
-    const closeDb = () => {
-      if (typeof db.close === "function") {
-        try {
-          db.close();
-        } catch {
-          // Non-fatal
-        }
-      }
-    };
     try {
       const tx = db.transaction([storeName], "readwrite");
       const store = tx.objectStore(storeName);
       const putReq = store.put(record);
-      putReq.onsuccess = () => {
-        closeDb();
-        resolve(true);
-      };
-      putReq.onerror = () => {
-        closeDb();
-        resolve(false);
-      };
+      putReq.onsuccess = () => resolve(true);
+      putReq.onerror = () => resolve(false);
     } catch {
-      closeDb();
+      _cachedVaultDb = null;
       resolve(false);
     }
   });
@@ -647,30 +677,14 @@ async function readRecordFromIndexedDb(storeName, key) {
   const db = await openSovereignIndexedDb();
   if (!db || typeof db.transaction !== "function") return null;
   return new Promise((resolve) => {
-    const closeDb = () => {
-      if (typeof db.close === "function") {
-        try {
-          db.close();
-        } catch {
-          // Non-fatal
-        }
-      }
-    };
     try {
       const tx = db.transaction([storeName], "readonly");
       const store = tx.objectStore(storeName);
       const getReq = store.get(key);
-      getReq.onsuccess = () => {
-        const res = getReq.result || null;
-        closeDb();
-        resolve(res);
-      };
-      getReq.onerror = () => {
-        closeDb();
-        resolve(null);
-      };
+      getReq.onsuccess = () => resolve(getReq.result || null);
+      getReq.onerror = () => resolve(null);
     } catch {
-      closeDb();
+      _cachedVaultDb = null;
       resolve(null);
     }
   });
@@ -789,7 +803,6 @@ export async function commitVerifiedPackToIndexedDb(
     versePreview: probe.versePreview,
     randomAccessUs: probe.randomAccessUs,
     packBlob,
-    packBytes: bytes,
     persistedInIdb: false,
     committedAt: "2026-11-18T00:00:00Z",
   };
@@ -804,14 +817,14 @@ export async function commitVerifiedPackToIndexedDb(
 
 /**
  * Sirve una rebanada `HTTP 206` virtual zero-copy (`blob.slice(s, e + 1)`) desde `ekovoz_vault_v2`
- * en `< 64 KB` RAM sin tocar la red (`D3-V2G = 3B+`). Retorna `null` si el idioma no está en la bóveda.
+ * en `< 64 KB` RAM sin tocar la red (`D3-V2H = 3B+`). Retorna `null` si el idioma no está en la bóveda.
  */
 export async function sliceVaultEkpackRange(relPathOrLang, startByte, endByteInclusive) {
   const raw = String(relPathOrLang || "").trim();
   if (!raw || raw.includes("matrix_tier0")) return null;
   const m = raw.match(/([a-z0-9-]+)\.ekpack$/i);
   const lang = (m ? m[1] : raw).toLowerCase();
-  const rec = await loadPackFromIndexedDb(lang);
+  const rec = STORED_ECO_PACKS.get(lang) || (await loadPackFromIndexedDb(lang));
   if (!rec || !rec.isBinaryEkpack) return null;
   const s = Math.max(0, Number(startByte) || 0);
   const totalLen = Number(rec.byteLen) || 0;
@@ -821,9 +834,6 @@ export async function sliceVaultEkpackRange(relPathOrLang, startByte, endByteInc
   if (rec.packBlob && typeof rec.packBlob.slice === "function") {
     const ab = await rec.packBlob.slice(s, endExcl).arrayBuffer();
     return new Uint8Array(ab);
-  }
-  if (rec.packBytes instanceof Uint8Array && endExcl <= rec.packBytes.byteLength) {
-    return rec.packBytes.subarray(s, endExcl);
   }
   return null;
 }
@@ -919,59 +929,28 @@ export function inspectDeltaZstPatch(rlzFrameBytes, basePackMeta = {}) {
   };
 }
 
+const _sneakernetCodecs = createSneakernetCodecs({
+  manifestList: CANONICAL_ECO_PACKS_MANIFEST,
+  defaultPubKeyHex: SOVEREIGN_ED25519_PUBLIC_KEY_HEX,
+  computeCrc32HexFn: computeEcoPackCrc32Hex,
+  verifyEd25519SyncFn: verifyEd25519ManifestSignature,
+  probeBoundsFn: probeEcoPackRandomAccessBounds,
+});
+
+export function exportSneakernetBundleJson(opts = {}) {
+  return _sneakernetCodecs.exportSneakernetBundleJson(opts);
+}
+
+export function importSneakernetBundleJson(bundleJsonString) {
+  return _sneakernetCodecs.importSneakernetBundleJson(bundleJsonString);
+}
+
 export function exportBundleAsFile(opts = {}) {
   return exportSneakernetBundleJson(opts);
 }
 
 export function importBundleFromFile(bundleJsonString) {
   return importSneakernetBundleJson(bundleJsonString);
-}
-
-export function buildQuineHtml(lang = "es", title = "Ekovoz Offline Quine", options = {}) {
-  const cleanLang = String(lang || "es").toLowerCase().replace(/[^a-z0-9-]/g, "");
-  const safeTitle = String(title || "Ekovoz Offline Quine")
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;");
-  const book = String(options.book || "GEN").replace(/[^A-Z0-9]/gi, "").toUpperCase();
-  const chapter = Math.max(1, Number(options.chapter) || 1);
-  const versesObj = options.verses && typeof options.verses === "object" ? options.verses : {};
-  const verseEntries = Object.entries(versesObj)
-    .map(([v, txt]) => [Number(v) || 1, String(txt || "")])
-    .sort((a, b) => a[0] - b[0]);
-  const seedPayloadJson = JSON.stringify({
-    schema: "ekovoz.kleene_quine.v2",
-    lang: cleanLang,
-    title: safeTitle,
-    book,
-    chapter,
-    verses:
-      verseEntries.length > 0
-        ? verseEntries
-        : [[1, "Ekovoz Quine Autónomo · 31,102 versículos · 0 red"]],
-  }).replace(/<\//g, "<\\/");
-  const bodyVersesHtml =
-    verseEntries.length > 0
-      ? verseEntries
-          .map(
-            ([vn, tx]) =>
-              `<p data-verse="${vn}"><sup>${vn}</sup> ${tx.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")}</p>`,
-          )
-          .join("")
-      : `<p>Ekovoz Quine Autónomo (${cleanLang.toUpperCase()}) · 31,102 versículos</p>`;
-
-  return (
-    `<!DOCTYPE html><html lang="${cleanLang}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">` +
-    `<title>${safeTitle} (${cleanLang.toUpperCase()})</title>` +
-    `<style>body{font-family:Georgia,serif;max-width:44rem;margin:2rem auto;padding:0 1rem;line-height:1.65;background:#faf8f5;color:#1c1917}button{padding:.5rem .9rem;border-radius:8px;border:1px solid #78716c;background:#fff;cursor:pointer}</style>` +
-    `</head><body data-quine-lang="${cleanLang}" data-kleene-quine="true">` +
-    `<header><h1>${safeTitle} (${cleanLang.toUpperCase()}) · ${book} ${chapter}</h1>` +
-    `<button type="button" id="btnReplicateKleeneQuine" onclick="window.__replicateKleeneQuine()">🔁 Clonar Quine Offline (Punto Fijo de Kleene · 0 red)</button></header>` +
-    `<main id="quineOfflineReader">${bodyVersesHtml}</main>` +
-    `<script id="quineSeedData" type="application/json">${seedPayloadJson}</script>` +
-    `<script id="quineKleeneBootstrap">(function(){window.__buildCanonicalKleeneQuineHtml=function(){return '<!DOCTYPE html>'+document.documentElement.outerHTML;};window.__replicateKleeneQuine=function(){var html=window.__buildCanonicalKleeneQuineHtml();var blob=new Blob([html],{type:'text/html;charset=utf-8'});var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='lector_offline_${cleanLang}.html';a.click();};})();</script>` +
-    `</body></html>`
-  );
 }
 
 export async function verifyAndStoreEcoPack({
@@ -1032,7 +1011,6 @@ export async function verifyAndStoreEcoPack({
     verseCount: probe.verseCount,
     randomAccessUs: probe.randomAccessUs,
     packBlob,
-    packBytes: hasRealPackBytes ? effectiveBytes : null,
     storedInCache: false,
     persistedInIdb: false,
   };
@@ -1059,70 +1037,6 @@ export async function verifyAndStoreEcoPack({
   return record;
 }
 
-export function exportSneakernetBundleJson({
-  lang = "es",
-  packBytes = null,
-  sha256 = "",
-} = {}) {
-  const cleanLang = String(lang || "es").trim().toLowerCase();
-  const manifestEntry =
-    CANONICAL_ECO_PACKS_MANIFEST.find((p) => p.lang === cleanLang) ||
-    CANONICAL_ECO_PACKS_MANIFEST[0];
-  const bytes =
-    packBytes instanceof Uint8Array
-      ? packBytes
-      : new TextEncoder().encode(manifestEntry.signingMessage);
-  const hexPayload = Array.from(bytes)
-    .map((b) => b.toString(16).padStart(2, "0"))
-    .join("");
-  const crc32Hex = computeEcoPackCrc32Hex(bytes);
-  return JSON.stringify(
-    {
-      schema: "ekovoz.sneakernet.ekpack.v2",
-      lang: cleanLang,
-      file: manifestEntry.file,
-      bytes: bytes.byteLength,
-      crc32Hex,
-      sha256: sha256 || manifestEntry.sha256,
-      ed25519PublicKeyHex: manifestEntry.ed25519PublicKeyHex || SOVEREIGN_ED25519_PUBLIC_KEY_HEX,
-      signingMessage: manifestEntry.signingMessage,
-      ed25519SignatureHex: manifestEntry.ed25519SignatureHex,
-      payloadHex: hexPayload,
-    },
-    null,
-    2,
-  );
-}
-
-export function importSneakernetBundleJson(bundleJsonString) {
-  const parsed = JSON.parse(String(bundleJsonString || "{}"));
-  const rawHex = String(parsed.payloadHex || "").trim();
-  const bytePairs = rawHex.match(/[0-9a-fA-F]{2}/g) || [];
-  const bytes = new Uint8Array(bytePairs.map((b) => parseInt(b, 16)));
-  const computedCrc = computeEcoPackCrc32Hex(bytes);
-  const crcMatch = !parsed.crc32Hex || computedCrc === String(parsed.crc32Hex).toLowerCase();
-  const sigTarget = parsed.signingMessage ? parsed.signingMessage : bytes;
-  const edOk = parsed.ed25519SignatureHex
-    ? verifyEd25519ManifestSignature(
-      sigTarget,
-      parsed.ed25519SignatureHex,
-      parsed.ed25519PublicKeyHex || SOVEREIGN_ED25519_PUBLIC_KEY_HEX,
-    )
-    : true;
-  const probe = probeEcoPackRandomAccessBounds(bytes, 0, parsed.lang || "es");
-  const isValid = Boolean(crcMatch && edOk && bytes.byteLength > 0);
-  return {
-    valid: isValid,
-    verified: isValid,
-    ed25519Verified: edOk,
-    lang: String(parsed.lang || "es"),
-    bytes: bytes.byteLength,
-    crc32Hex: computedCrc,
-    sha256: String(parsed.sha256 || ""),
-    randomAccessUs: probe.randomAccessUs,
-  };
-}
-
 export function renderOfflineMeshEcoCardHtml({
   activeLang = "es",
   packsManifest = null,
@@ -1133,9 +1047,13 @@ export function renderOfflineMeshEcoCardHtml({
 } = {}) {
   if (packsManifest) hydrateEcoPacksManifest(packsManifest);
   const isEn = String(uiLocale || "es").trim().toLowerCase().startsWith("en");
-  const cleanLang = String(activeLang || "es").toLowerCase().split("-")[0];
+  const fullCleanLang = String(activeLang || "es").trim().toLowerCase();
+  const baseCleanLang = fullCleanLang.split("-")[0];
   const packs = CANONICAL_ECO_PACKS_MANIFEST;
-  const activePack = packs.find((p) => p.lang === cleanLang) || packs[0];
+  const activePack =
+    packs.find((p) => p.lang === fullCleanLang) ||
+    packs.find((p) => p.lang === baseCleanLang) ||
+    packs[0];
   const storedRecord = STORED_ECO_PACKS.get(activePack.lang) || null;
   const vaultPacks = listPacksFromIndexedDb();
   const safeOrdinal = Math.max(0, Number(activeVerseOrdinal) || 0);
@@ -1195,7 +1113,7 @@ export function renderOfflineMeshEcoCardHtml({
     `<button type="button" id="btnOfflineListIndexedDbPacks" class="uls-chip" data-action="list-indexeddb-packs" data-eco-lang="${activePack.lang}" style="min-height:48px;min-width:48px;box-sizing:border-box;padding:8px 12px;font-size:0.78rem;">🗄️ ${isEn ? `IndexedDB Vault (${vaultPacks.length} packs)` : `Bóveda IndexedDB (${vaultPacks.length} paquetes)`}</button>` +
     `<button type="button" id="btnExportSneakernetBundle" class="uls-chip" data-action="export-sneakernet-bundle" data-eco-lang="${activePack.lang}" style="min-height:48px;min-width:48px;box-sizing:border-box;padding:8px 12px;font-size:0.78rem;">📤 ${isEn ? "Export Sneakernet Bundle (.sneakernet.json)" : "Exportar Bundle Sneakernet (.sneakernet.json)"}</button>` +
     `<label for="inputImportSneakernetBundle" id="btnImportSneakernetBundle" class="uls-chip" data-action="import-sneakernet-bundle" style="min-height:48px;min-width:48px;box-sizing:border-box;display:inline-flex;align-items:center;padding:8px 12px;font-size:0.78rem;cursor:pointer;">📥 ${isEn ? "Import Sneakernet Bundle" : "Importar Bundle Sneakernet"}</label>` +
-    `<input type="file" id="inputImportSneakernetBundle" accept=".json,.sneakernet.json" style="display:none;" />` +
+    `<input type="file" id="inputImportSneakernetBundle" accept=".ekpack,.json,.sneakernet.json" style="display:none;" />` +
     `</div>` +
     `<div id="offlineIndexedDbVaultStatus" data-vault-packs-count="${vaultPacks.length}" style="margin-top:0.4rem;font-size:0.74rem;color:var(--text-secondary);">` +
     `🗄️ ${isEn ? "IndexedDB Vault:" : "Bóveda IndexedDB:"} <strong>${vaultPacks.length}</strong> ${isEn ? "verified packs" : "paquetes verificados"}${vaultPacks.length > 0 ? ` (${vaultPacks.map((vp) => vp.lang).join(", ")})` : ""}` +

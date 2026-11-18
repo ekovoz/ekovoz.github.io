@@ -253,8 +253,8 @@ export function createDataLayer({ source, cacheLimit = 32 } = {}) {
     }
     const mounts = Array.isArray(packCat?.pack_mounts)
       ? packCat.pack_mounts
-          .map((m) => String(m?.base_url || "").replace(/^\/+|\/+$/g, ""))
-          .filter((p) => p === "packs" || p === "data/packs")
+        .map((m) => String(m?.base_url || "").replace(/^\/+|\/+$/g, ""))
+        .filter((p) => p === "packs" || p === "data/packs")
       : [];
     const orderedBases = mounts.length > 0 ? mounts : ["packs", "data/packs"];
     const out = [];
@@ -431,6 +431,16 @@ export function createDataLayer({ source, cacheLimit = 32 } = {}) {
           : reqLang === "stp" && bookOrdinal < 39
             ? 2
             : 1;
+    let packHasTier2Scaffold = reqLang === "stp";
+    if (tierVec && tierVec.length >= 17) {
+      for (let bIdx = 0; bIdx < 66; bIdx += 1) {
+        const tb = ((Number(tierVec[bIdx >> 2]) || 0) >> ((bIdx & 3) * 2)) & 0b11;
+        if (tb === 2) {
+          packHasTier2Scaffold = true;
+          break;
+        }
+      }
+    }
     const bookEpistemicTier =
       bookTierBits === 0
         ? "tier0_autograph_witness"
@@ -439,19 +449,17 @@ export function createDataLayer({ source, cacheLimit = 32 } = {}) {
           : bookTierBits === 3
             ? "tier4_gmis_scaffold"
             : "tier1_canonical_human_66";
-    const sovereignTier =
-      reqLang === "stp"
-        ? "tier2_nt_human_ot_synthesized"
-        : bookTierBits === 3
-          ? "tier4_gmis_scaffold"
-          : "tier1_canonical_human_66";
+    const sovereignTier = packHasTier2Scaffold
+      ? "tier2_nt_human_ot_synthesized"
+      : bookTierBits === 3
+        ? "tier4_gmis_scaffold"
+        : "tier1_canonical_human_66";
     const provenance = {
-      tier:
-        bookTierBits === 2
-          ? "nt_human_ot_scaffold"
-          : bookTierBits === 0
-            ? "autograph_witness_tier0"
-            : "canonical_human_complete",
+      tier: packHasTier2Scaffold
+        ? "nt_human_ot_scaffold"
+        : bookTierBits === 0
+          ? "autograph_witness_tier0"
+          : "canonical_human_complete",
       sovereign_tier: sovereignTier,
       book_epistemic_tier: bookEpistemicTier,
       book_epistemic_tier_bits: bookTierBits,
@@ -479,9 +487,17 @@ export function createDataLayer({ source, cacheLimit = 32 } = {}) {
    * Salto directo $\mathcal{O}(1)$ (`CachelineEf` + `decode_ekpack_verse_in_place`) sobre el `.ekpack` de una lengua.
    */
   async function loadVerseFromEkpackO1(lang, verseOrdinal = 0) {
-    const cleanLang = String(lang || "es").toLowerCase();
-    const baseLang = cleanLang === "es-1909" ? "es" : cleanLang;
-    const packBytes = await loadBytes(`data/packs/${baseLang}.ekpack`);
+    const rawLang = String(lang || "es").trim() || "es";
+    const baseLang = rawLang.toLowerCase() === "es-1909" ? "es" : rawLang;
+    const candidatePaths = await resolvePackCandidatePaths(baseLang);
+    let packBytes = null;
+    for (const relPack of candidatePaths) {
+      packBytes = await loadBytes(relPack);
+      if (packBytes && packBytes.byteLength >= 32) break;
+    }
+    if (!packBytes) {
+      packBytes = await loadBytes(`data/packs/${baseLang}.ekpack`);
+    }
     const playerWasm = await ensurePlayerWasmLoaded();
     if (!packBytes || !playerWasm) {
       return { status: STATUS.UNAVAILABLE, reason: "missing" };
@@ -733,8 +749,10 @@ export function createDataLayer({ source, cacheLimit = 32 } = {}) {
   async function loadPages(lang, edition) {
     const ed = normalizeEditionSlug(edition);
     if (!LANG_RE.test(String(lang)) || !EDITION_RE.test(ed)) return null;
-    const federatedPages = await getJson(`editions-01/data/pages/${lang}/${ed}.pages.json`);
-    if (federatedPages) return federatedPages;
+    if (!source?.isFetchNetworkSource) {
+      const localPages = await getJson(`data/pages/${lang}/${ed}.pages.json`);
+      if (localPages) return localPages;
+    }
     const cat = await loadCatalog();
     return buildCanonical80BlocksPagesIndex(cat, lang, ed);
   }
@@ -745,9 +763,7 @@ export function createDataLayer({ source, cacheLimit = 32 } = {}) {
       .trim()
       .replace(/^BLK-0?(\d{2})$/i, "B$1");
     if (!LANG_RE.test(String(lang)) || !EDITION_RE.test(ed) || !/^B\d{2}$/.test(normBlock)) return null;
-    const federated = await loadBytes(`editions-01/data/blocks/${lang}/${ed}/${normBlock}.pdf`);
-    if (federated) return federated;
-    return loadBytes(`data/blocks/${lang}/${ed}/${normBlock}.pdf`);
+    return null;
   }
 
   async function loadI18nIndex() {
@@ -977,10 +993,17 @@ export function createDataLayer({ source, cacheLimit = 32 } = {}) {
               verses: versesMap,
               rawVerses: chapterRes.verses,
               pericopeBreaks: chapterRes.pericopeBreaks,
+              provenance: chapterRes.provenance || null,
+              corpusRev: chapterRes.corpusRev || null,
             }
             : null,
         meta: {
-          draft_status: chapterRes.provenance?.status || "",
+          draft_status:
+            chapterRes.provenance?.status ||
+            chapterRes.provenance?.sovereign_tier ||
+            "",
+          provenance: chapterRes.provenance || null,
+          corpusRev: chapterRes.corpusRev || null,
         },
       };
     });

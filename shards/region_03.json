@@ -1,7 +1,7 @@
 {
   "macro_region_id": 3,
   "region_name_es": "Europa Occidental y Mediterráneo",
-  "total_languages": 165,
+  "total_languages": 163,
   "subclades_covered": 33,
   "featured_languages": [
     [
@@ -44,12 +44,6 @@
       "als",
       "Tosk Albanian",
       "Tosk Albanian (als)",
-      "Regional_EU"
-    ],
-    [
-      "ang",
-      "Old English (ca. 450-1100)",
-      "Old English (ca. 450-1100) (ang)",
       "Regional_EU"
     ],
     [
@@ -107,12 +101,6 @@
       "Regional_EU"
     ],
     [
-      "cms",
-      "Messapic",
-      "Messapic (cms)",
-      "Regional_EU"
-    ],
-    [
       "cor",
       "Cornish",
       "Cornish (cor)",
@@ -122,12 +110,6 @@
       "cos",
       "Corsican",
       "Corsican (cos)",
-      "Regional_EU"
-    ],
-    [
-      "cpg",
-      "Cappadocian Greek",
-      "Cappadocian Greek (cpg)",
       "Regional_EU"
     ],
     [
@@ -179,30 +161,6 @@
       "Regional_EU"
     ],
     [
-      "dum",
-      "Middle Dutch (ca. 1050-1350)",
-      "Middle Dutch (ca. 1050-1350) (dum)",
-      "Regional_EU"
-    ],
-    [
-      "dws",
-      "Dutton World Speedwords",
-      "Dutton World Speedwords (dws)",
-      "Regional_EU"
-    ],
-    [
-      "ecr",
-      "Eteocretan",
-      "Eteocretan (ecr)",
-      "Regional_EU"
-    ],
-    [
-      "ecy",
-      "Eteocypriot",
-      "Eteocypriot (ecy)",
-      "Regional_EU"
-    ],
-    [
       "egl",
       "Emilian",
       "Emilian (egl)",
@@ -215,9 +173,27 @@
       "Attica,Thessaloniki"
     ],
     [
+      "eml",
+      "Emiliano-Romagnolo",
+      "Emiliano-Romagnolo (eml)",
+      "Regional_EU"
+    ],
+    [
       "emx",
       "Erromintxela",
       "Erromintxela (emx)",
+      "Regional_EU"
+    ],
+    [
+      "enm",
+      "Middle English",
+      "Middle English (enm)",
+      "Regional_EU"
+    ],
+    [
+      "ett",
+      "Etruscan",
+      "Etruscan (ett)",
       "Regional_EU"
     ],
     [
@@ -261,6 +237,18 @@
       "Francés",
       "Français",
       "Kinshasa,Katanga,Kivu"
+    ],
+    [
+      "frk",
+      "Old Frankish",
+      "Old Frankish (frk)",
+      "Regional_EU"
+    ],
+    [
+      "fro",
+      "Old French (842-ca. 1400)",
+      "Old French (842-ca. 1400) (fro)",
+      "Regional_EU"
     ],
     [
       "frp",

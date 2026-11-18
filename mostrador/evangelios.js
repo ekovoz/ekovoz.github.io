@@ -87,7 +87,7 @@ function build52WeeksDefaultMap() {
 export const EVANGELIOS_MACRO_THREADS_AND_ECHOES = build52WeeksDefaultMap();
 
 export const FELICES_12_DICHAS_COORDINATE_MAP = {
-  1: { book: "PSA", chapter: 1, verse: 1, title: "Dicha 1 · El Árbol junto a Corrientes de Aguas" },
+  1: { book: "MAT", chapter: 5, verse: 1, title: "Dicha 1 · Jesús sube al Monte con sus Discípulos (Mt 5:1)" },
   2: { book: "MAT", chapter: 5, verse: 3, title: "Dicha 2 · Los Pobres en Espíritu" },
   3: { book: "MAT", chapter: 5, verse: 4, title: "Dicha 3 · Los que Lloran (Consuelo)" },
   4: { book: "MAT", chapter: 5, verse: 5, title: "Dicha 4 · Los Mansos (Herencia de la Tierra)" },
@@ -204,8 +204,10 @@ export function hydratePericopesAndGlosses(artifact) {
     }
   }
   if (Array.isArray(artifact.felices_28_plates)) {
-    artifact.felices_28_plates.forEach((plate, idx) => {
-      const pNum = Number(plate.number ?? plate.plateNumber) || (idx + 1);
+    for (const k of Object.keys(FELICES_28_PLATES_MAP)) delete FELICES_28_PLATES_MAP[k];
+    artifact.felices_28_plates.slice(0, 27).forEach((plate, idx) => {
+      const pNum = Number(plate.number ?? plate.plateNumber ?? plate.id) || (idx + 1);
+      if (pNum > 27) return;
       const dichaIdx = pNum >= 25 ? 1 : Math.max(1, Math.min(12, Math.floor((pNum + 1) / 2)));
       const dichaMeta = FELICES_12_DICHAS_COORDINATE_MAP[dichaIdx] || FELICES_12_DICHAS_COORDINATE_MAP[1];
       const fallbackRef = `${dichaMeta.book}.${dichaMeta.chapter}.${dichaMeta.verse}`;
@@ -213,7 +215,7 @@ export function hydratePericopesAndGlosses(artifact) {
         ...plate,
         number: pNum,
         type: String(plate.type || "condicion"),
-        title_es: String(plate.title_es || plate.title || `${dichaMeta.title} (Lámina ${pNum}/28)`),
+        title_es: String(plate.title_es || plate.title || `${dichaMeta.title} (Lámina ${pNum}/27)`),
         cita_es: String(plate.cita_es || plate.ref || fallbackRef),
         preguntas_es:
           Array.isArray(plate.preguntas_es) && plate.preguntas_es.length > 0
@@ -230,7 +232,7 @@ export function hydratePericopesAndGlosses(artifact) {
 
 export function resolveFelicesPlate(plateNumber = 1, artifact = null) {
   if (artifact) hydratePericopesAndGlosses(artifact);
-  const idx = Math.max(1, Math.min(28, Number(plateNumber) || 1));
+  const idx = Math.max(1, Math.min(27, Number(plateNumber) || 1));
   if (FELICES_28_PLATES_MAP[idx]) return FELICES_28_PLATES_MAP[idx];
   const dichaIdx = idx >= 25 ? 1 : Math.max(1, Math.min(12, Math.floor((idx + 1) / 2)));
   const dichaMeta = FELICES_12_DICHAS_COORDINATE_MAP[dichaIdx] || FELICES_12_DICHAS_COORDINATE_MAP[1];
@@ -238,7 +240,7 @@ export function resolveFelicesPlate(plateNumber = 1, artifact = null) {
   return {
     number: idx,
     type: idx % 2 === 0 ? "condicion" : "promesa",
-    title_es: `${dichaMeta.title} (Lámina ${idx}/28)`,
+    title_es: `${dichaMeta.title} (Lámina ${idx}/27)`,
     cita_es: fallbackRef,
     preguntas_es: [
       `¿Dónde has experimentado hoy la necesidad o la promesa de «${dichaMeta.title}» (${fallbackRef})?`,
@@ -581,9 +583,9 @@ export function formatEvangeliosBridgeLine(bridgeText = "", corpusLang = "es", u
 export function renderFelicesSocraticWonderCardHtml(plateIndex = 1, uiLang = "es") {
   const isEn = String(uiLang || "es").trim().toLowerCase().startsWith("en");
   const plate = resolveFelicesPlate(plateIndex);
-  const pNum = Number(plate.number) || Math.max(1, Math.min(28, Number(plateIndex) || 1));
+  const pNum = Number(plate.number) || Math.max(1, Math.min(27, Number(plateIndex) || 1));
   const titleStr = String(
-    (isEn && plate.title_en) || plate.title_es || (isEn ? `Plate ${pNum} / 28` : `Lámina ${pNum} / 28`),
+    (isEn && plate.title_en) || plate.title_es || (isEn ? `Plate ${pNum} / 27` : `Lámina ${pNum} / 27`),
   );
   const citaStr = String(plate.cita_es || "MAT.5.3");
   const typeStr = String(plate.type || "condicion");
@@ -618,5 +620,119 @@ export function renderFelicesSocraticWonderCardHtml(plateIndex = 1, uiLang = "es
     `<ol style="margin:0;padding-left:1.25rem;font-size:0.79rem;color:var(--text-secondary);">${questionsHtml}</ol>` +
     `</div>`
   );
+}
+
+const FELICES_N = 27;
+const FELICES_WK = ["biblia", "felices", "evangelios"];
+const clampFelicesNum = (v, h, d = 1) => Math.max(1, Math.min(h, Number(v) || d));
+const trimFelicesStr = (v, d = "") => String(v || d).trim();
+const parseWeekSlug27 = (s) => {
+  const m = trimFelicesStr(s).toLowerCase().match(/^s?0*(\d{1,2})$/);
+  return m ? `s${String(clampFelicesNum(m[1], 52)).padStart(2, "0")}` : null;
+};
+
+export const FELICES_PLATE_TO_BIBLE_COORDINATE = Object.fromEntries(
+  Array.from({ length: FELICES_N }, (_, i) => [
+    i + 1,
+    i < 24
+      ? {
+          book: "MAT",
+          chapter: 5,
+          verse: i < 4 ? 3 : Math.min(12, (i >> 1) + 2),
+          beatitudeIndex: Math.min(10, i >> 1),
+        }
+      : i < 26
+        ? { book: "MAT", chapter: 5, verse: 1, beatitudeIndex: 0 }
+        : { book: "MAT", chapter: 5, verse: 12, beatitudeIndex: 11 },
+  ]),
+);
+
+export function resolveFelicesPlateCoord(b = "MAT", ch = 5, v = 3, cur = 24) {
+  const B = trimFelicesStr(b, "MAT").toUpperCase();
+  const C = Number(ch) || 1;
+  const V = Number(v) || 1;
+  const k = clampFelicesNum(cur, FELICES_N, 24);
+  const x = FELICES_PLATE_TO_BIBLE_COORDINATE[k];
+  if (x && x.book === B && x.chapter === C && x.verse === V) return k;
+  if (B === "MAT" && C === 5 && V === 1) return k === 26 ? 26 : 25;
+  if (B === "MAT" && C === 5) {
+    for (const [p, y] of Object.entries(FELICES_PLATE_TO_BIBLE_COORDINATE)) {
+      if (y.book === B && y.chapter === 5 && y.verse === V) return Number(p);
+    }
+  }
+  return k;
+}
+
+export function parseInitialRouteAndLocale({
+  search = "",
+  pathname = "",
+  defaultUi = "en",
+  defaultLang = "es",
+} = {}) {
+  const q = new URLSearchParams(trimFelicesStr(search).replace(/^\?/, ""));
+  const pL = trimFelicesStr(pathname).toLowerCase();
+  const g = (k) => trimFelicesStr(q.get(k));
+  const b = (k, h) => {
+    const n = Number(q.get(k));
+    return n >= 1 ? clampFelicesNum(Math.round(n), h) : null;
+  };
+  const plate = b("plate", FELICES_N);
+  const dicha = b("dicha", 12);
+  const week = parseWeekSlug27(g("week"));
+  const rW = g("work").toLowerCase();
+  const work = FELICES_WK.includes(rW)
+    ? rW
+    : plate || dicha
+      ? "felices"
+      : week
+        ? "evangelios"
+        : FELICES_WK.find((w) => pL.includes(w)) || "biblia";
+  const dP = dicha ? (dicha === 1 ? 25 : dicha === 12 ? 27 : clampFelicesNum(dicha * 2 - 1, 24)) : null;
+  const pC = work === "felices" && (plate || dP) ? FELICES_PLATE_TO_BIBLE_COORDINATE[plate || dP] : null;
+  const rR = g("ref");
+  return {
+    work,
+    ui: g("ui") || defaultUi || "en",
+    lang: g("lang") || defaultLang || "es",
+    ref: rR || (pC ? `${pC.book}.${pC.chapter}.${pC.verse}` : "JHN.1.1"),
+    refExplicit: !!rR,
+    plate,
+    dicha,
+    week,
+    reg: g("reg").toLowerCase() || g("register").toLowerCase() || null,
+    ortho: g("ortho") || null,
+    sheet: g("sheet").toLowerCase() || null,
+    format: g("format").toLowerCase() === "letter" ? "letter" : "a4",
+  };
+}
+
+export function serializeMostradorRouteQuery(st = {}, fallbackPlate = 24) {
+  const rW = trimFelicesStr(st.work || st.activeWork || "biblia").toLowerCase();
+  const work = FELICES_WK.includes(rW) ? rW : "biblia";
+  const q = new URLSearchParams({
+    work,
+    ui: trimFelicesStr(st.ui || st.uiLocale, "en"),
+    lang: trimFelicesStr(st.lang, "es"),
+    ref: trimFelicesStr(
+      st.ref,
+      `${trimFelicesStr(st.book, "JHN").toUpperCase()}.${clampFelicesNum(st.chapter, 999)}.${clampFelicesNum(st.verse, 999)}`,
+    ),
+  });
+  if (work === "felices") {
+    q.set("plate", String(clampFelicesNum(st.plate ?? st.activePlateIndex ?? fallbackPlate, FELICES_N, 24)));
+    const d = Number(st.dicha ?? st.activeDichaIndex ?? st.felicesDicha);
+    if (d >= 1 && d <= 12) q.set("dicha", String(Math.round(d)));
+  } else if (work === "evangelios") {
+    q.set("week", parseWeekSlug27(st.week || st.evangeliosWeekId) || "s01");
+  }
+  for (const [k, v] of [
+    ["reg", trimFelicesStr(st.reg || st.register).toLowerCase()],
+    ["ortho", trimFelicesStr(st.ortho || st.orthographyProfile)],
+    ["sheet", trimFelicesStr(st.sheet || st.activeSheet).toLowerCase()],
+    ["format", trimFelicesStr(st.format || st.paperFormat).toLowerCase()],
+  ]) {
+    if (v && v !== "intergeneracional" && v !== "a4") q.set(k, v);
+  }
+  return `?${q}`;
 }
 

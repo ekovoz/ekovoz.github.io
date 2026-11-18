@@ -65,6 +65,12 @@
       "Sahel_Horn"
     ],
     [
+      "ajs",
+      "Ghardaia Sign Language",
+      "Ghardaia Sign Language (ajs)",
+      "Sahel_Horn"
+    ],
+    [
       "alw",
       "Alaba-K’abeena",
       "Alaba-K’abeena (alw)",
@@ -158,6 +164,12 @@
       "ayl",
       "Libyan Arabic",
       "Libyan Arabic (ayl)",
+      "Sahel_Horn"
+    ],
+    [
+      "bbz",
+      "Babalia Creole Arabic",
+      "Babalia Creole Arabic (bbz)",
       "Sahel_Horn"
     ],
     [
@@ -269,12 +281,6 @@
       "Sahel_Horn"
     ],
     [
-      "brk",
-      "Birked",
-      "Birked (brk)",
-      "Sahel_Horn"
-    ],
-    [
       "bso",
       "Buso",
       "Buso (bso)",
@@ -359,21 +365,9 @@
       "Sahel_Horn"
     ],
     [
-      "byg",
-      "Baygo",
-      "Baygo (byg)",
-      "Sahel_Horn"
-    ],
-    [
       "byn",
       "Bilin",
       "Bilin (byn)",
-      "Sahel_Horn"
-    ],
-    [
-      "byt",
-      "Berti",
-      "Berti (byt)",
       "Sahel_Horn"
     ],
     [
@@ -404,12 +398,6 @@
       "cnu",
       "Chenoua",
       "Chenoua (cnu)",
-      "Sahel_Horn"
-    ],
-    [
-      "cop",
-      "Coptic",
-      "Coptic (cop)",
       "Sahel_Horn"
     ],
     [
@@ -563,6 +551,12 @@
       "Sahel_Horn"
     ],
     [
+      "dkl",
+      "Kolum So Dogon",
+      "Kolum So Dogon (dkl)",
+      "Sahel_Horn"
+    ],
+    [
       "dks",
       "Southeastern Dinka",
       "Southeastern Dinka (dks)",
@@ -671,6 +665,12 @@
       "Sahel_Horn"
     ],
     [
+      "dwl",
+      "Walo Kumbe Dogon",
+      "Walo Kumbe Dogon (dwl)",
+      "Sahel_Horn"
+    ],
+    [
       "dwr",
       "Dawro",
       "Dawro (dwr)",
@@ -689,15 +689,15 @@
       "Sahel_Horn"
     ],
     [
-      "egy",
-      "Egyptian (Ancient)",
-      "Egyptian (Ancient) (egy)",
-      "Sahel_Horn"
-    ],
-    [
       "elh",
       "El Hugeirat",
       "El Hugeirat (elh)",
+      "Sahel_Horn"
+    ],
+    [
+      "eli",
+      "Nding",
+      "Nding (eli)",
       "Sahel_Horn"
     ],
     [

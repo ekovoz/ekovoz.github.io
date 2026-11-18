@@ -18,6 +18,7 @@ export const SHELL_CORE_ASSETS = [
   "/mostrador/drawer_study.js",
   "/mostrador/drawer_print.js",
   "/mostrador/drawer_workshop.js",
+  "/mostrador/workshop_overlay_store.js",
   "/mostrador/drawer_share.js",
   "/mostrador/i18n.js",
   "/mostrador/data_layer.js",
@@ -33,6 +34,8 @@ export const SHELL_CORE_ASSETS = [
   "/mostrador/reference.js",
   "/mostrador/lang_funnel.js",
   "/mostrador/optical_lt.js",
+  "/mostrador/optical_grid_codec.js",
+  "/mostrador/optical_wasm_bridge.js",
   "/mostrador/oral_portico_wasm.js",
   "/mostrador/estudio.js",
   "/mostrador/estudio_rosetta_and_realia.js",
@@ -41,6 +44,7 @@ export const SHELL_CORE_ASSETS = [
   "/mostrador/mejorar_renderers.js",
   "/mostrador/mostrador_viewport_dose1.js",
   "/mostrador/offline_mesh.js",
+  "/mostrador/quine_and_sneakernet.js",
   "/mostrador/projection_contract.js",
   "/mostrador/sauvola_canvas_oracle.js",
   "/mostrador/sister_works_controller.js",
@@ -62,6 +66,26 @@ export const SHELL_CORE_ASSETS = [
 ];
 
 const SUPPORTED_BOOK_NAMES_LANGS = new Set(["es", "en", "stp", "he", "grc"]);
+export const KNOWN_I18N_CATALOG_FILES = Object.freeze({
+  ar: "ar.json",
+  bn: "bn.json",
+  "bn-bd": "bn-BD.json",
+  "bn-in": "bn-IN.json",
+  en: "en.json",
+  es: "es.json",
+  fa: "fa.json",
+  fr: "fr.json",
+  hi: "hi.json",
+  id: "id.json",
+  it: "it.json",
+  ja: "ja.json",
+  ko: "ko.json",
+  pt: "pt.json",
+  ru: "ru.json",
+  tr: "tr.json",
+  ur: "ur.json",
+  "zh-hans": "zh-Hans.json",
+});
 let _offlineOptInEnabled = false;
 
 export function setOfflineOptInState(enabled) {
@@ -146,8 +170,9 @@ export function buildOptInAssetList({
 } = {}) {
   const urls = new Set(SHELL_CORE_ASSETS);
   const cleanUi = String(uiLocale || "en").trim().toLowerCase();
-  if (cleanUi && cleanUi !== "en" && /^[a-z]{2,3}(-[a-z0-9]+)?$/i.test(cleanUi)) {
-    urls.add(`/i18n/${cleanUi}.json`);
+  const exactI18nFile = KNOWN_I18N_CATALOG_FILES[cleanUi];
+  if (exactI18nFile && exactI18nFile !== "en.json") {
+    urls.add(`/i18n/${exactI18nFile}`);
   }
   const cleanLang = String(lang || "es").trim().toLowerCase();
   if (SUPPORTED_BOOK_NAMES_LANGS.has(cleanLang)) {

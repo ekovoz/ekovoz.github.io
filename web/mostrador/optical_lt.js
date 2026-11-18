@@ -526,227 +526,49 @@ export function decodeLubyTransformPeeling(droplets, kBlocks) {
   return recovered;
 }
 
-/**
- * Codifica un droplet Luby Transform en una matriz óptica 2D determinista de tamaño `gridSize x gridSize`
- * con 3 patrones Finder de 7x7, blanqueo XOR (`whitenBlockXor`) y bit de paridad en la 4.ª esquina (`seq & 1`).
- */
-export function encodeDropletToMatrixGrid(droplet = {}, gridSize = 29) {
-  const size = Math.max(21, Math.min(49, Number(gridSize) || 29));
-  const cells = new Uint8Array(size * size);
-  const reserved = new Uint8Array(size * size);
-  const seq = Number(droplet.seq) || 0;
-  const degree = Number(droplet.degree) || 1;
-  const seed = (Number(droplet.seed) || ((seq + 1) * 0x9e3779b1)) >>> 0;
-  const parityBit = seq & 1;
+import {
+  OPTICAL_CADENCE_PRESETS,
+  computeSaddleStitchImpositionPlan,
+  crc16Ccitt,
+  encodeDropletToMatrixGrid,
+  rasterizeMatrixGridToLuma8,
+  renderDropletMatrixSvgOrCanvas,
+  rsGf256ComputeParity4,
+  verifyManifestAndMerkleAudit,
+} from "./optical_grid_codec.js";
+import {
+  NYQUIST_DEFAULT_FPS,
+  NYQUIST_MAX_FPS,
+  NYQUIST_MIN_FPS,
+  computeNyquistSafeFpsViaWasm,
+  computeRaptorQSyndromeFallback,
+  decodeEcoBinaryPacket,
+  encodeCornerToggleMarker,
+  encodeEco1BinaryPacket,
+  encodeEcomMetadataPacket,
+  extractCornerToggleBit,
+  runWasmPeelingSession,
+  validateNyquistOpticalFps,
+} from "./optical_wasm_bridge.js";
 
-  const paintFinder7x7 = (row0, col0) => {
-    for (let r = 0; r < 7; r += 1) {
-      for (let c = 0; c < 7; c += 1) {
-        const rr = row0 + r;
-        const cc = col0 + c;
-        if (rr < 0 || rr >= size || cc < 0 || cc >= size) continue;
-        const idx = rr * size + cc;
-        reserved[idx] = 1;
-        const isBorder = r === 0 || r === 6 || c === 0 || c === 6;
-        const isCenter = r >= 2 && r <= 4 && c >= 2 && c <= 4;
-        cells[idx] = isBorder || isCenter ? 1 : 0;
-      }
-    }
-  };
-
-  paintFinder7x7(0, 0);
-  paintFinder7x7(0, size - 7);
-  paintFinder7x7(size - 7, 0);
-
-  // 4.ª esquina (inferior-derecha 3x3): bit de paridad de secuencia para detección rolling-shutter a 6.67 fps
-  for (let r = size - 3; r < size; r += 1) {
-    for (let c = size - 3; c < size; c += 1) {
-      const idx = r * size + c;
-      reserved[idx] = 1;
-      cells[idx] = parityBit;
-    }
-  }
-
-  const rawPayload =
-    droplet.payload instanceof Uint8Array
-      ? droplet.payload
-      : new Uint8Array([
-          seq & 0xff,
-          (seq >>> 8) & 0xff,
-          degree & 0xff,
-          Number(droplet.payload) & 0xff,
-          (seed >>> 16) & 0xff,
-          seed & 0xff,
-        ]);
-  const whitened = whitenBlockXor(rawPayload, seed);
-
-  let bitCursor = 0;
-  const totalBits = whitened.length * 8;
-  for (let i = 0; i < cells.length; i += 1) {
-    if (reserved[i]) continue;
-    const byteIdx = Math.floor((bitCursor % totalBits) / 8);
-    const bitOffset = bitCursor % 8;
-    const bitVal = (whitened[byteIdx] >>> bitOffset) & 1;
-    cells[i] = (bitVal ^ ((bitCursor + seq) & 1)) & 1;
-    bitCursor += 1;
-  }
-
-  return {
-    gridSize: size,
-    cells,
-    seq,
-    degree,
-    seed,
-    parityBit,
-    nyquistIntervalMs: 150,
-    cadenceFps: 6.67,
-  };
-}
-
-/**
- * Renderiza la matriz óptica de un droplet sobre un `<canvas>` (si existe contexto 2D) y devuelve
- * simultáneamente el `<svg>` determinista de alto contraste para SSR / pruebas sin navegador.
- */
-export function renderDropletMatrixSvgOrCanvas(matrixGrid, canvasEl = null) {
-  const grid =
-    matrixGrid && matrixGrid.cells instanceof Uint8Array
-      ? matrixGrid
-      : encodeDropletToMatrixGrid(matrixGrid || {}, 29);
-  const size = grid.gridSize;
-  const cellPx = 8;
-  const quietPx = 12;
-  const totalPx = size * cellPx + quietPx * 2;
-
-  if (canvasEl && typeof canvasEl.getContext === "function") {
-    const ctx = canvasEl.getContext("2d");
-    if (ctx) {
-      canvasEl.width = totalPx;
-      canvasEl.height = totalPx;
-      ctx.fillStyle = "#ffffff";
-      ctx.fillRect(0, 0, totalPx, totalPx);
-      ctx.fillStyle = "#0b132b";
-      for (let r = 0; r < size; r += 1) {
-        for (let c = 0; c < size; c += 1) {
-          if (grid.cells[r * size + c] === 1) {
-            ctx.fillRect(quietPx + c * cellPx, quietPx + r * cellPx, cellPx, cellPx);
-          }
-        }
-      }
-    }
-  }
-
-  const rects = [];
-  for (let r = 0; r < size; r += 1) {
-    for (let c = 0; c < size; c += 1) {
-      if (grid.cells[r * size + c] === 1) {
-        rects.push(`<rect x="${quietPx + c * cellPx}" y="${quietPx + r * cellPx}" width="${cellPx}" height="${cellPx}" fill="#0b132b"/>`);
-      }
-    }
-  }
-
-  return (
-    `<svg class="qrbeam-matrix-svg" data-qrbeam-seq="${grid.seq}" data-qrbeam-degree="${grid.degree}" data-qrbeam-parity="${grid.parityBit}" data-qrbeam-fps="6.67" width="${totalPx}" height="${totalPx}" viewBox="0 0 ${totalPx} ${totalPx}" role="img" aria-label="QRBeam frame #${grid.seq} (grado ${grid.degree}, paridad ${grid.parityBit})">` +
-    `<rect width="${totalPx}" height="${totalPx}" fill="#ffffff" rx="8"/>` +
-    rects.join("") +
-    `</svg>`
-  );
-}
-
-/**
- * Calculadora determinista de imposición Saddle-Stitch 4n con compensación telescópica de creep
- * (`\Delta_creep(s) = s * 2 * t_papel`) e inversión de lomo para escrituras RTL (`he`, `ar`, `fa`, `ur`).
- */
-export function computeSaddleStitchImpositionPlan({
-  totalPages = 16,
-  paperThicknessMm = 0.09,
-  rtl = false,
-} = {}) {
-  const rawPages = Math.max(4, Number(totalPages) || 16);
-  const paddedPages = Math.ceil(rawPages / 4) * 4;
-  const blankPagesAdded = paddedPages - rawPages;
-  const sheetCount = paddedPages / 4;
-  const isRtl = Boolean(rtl);
-  const sheets = [];
-  const seenPages = new Set();
-  let sumInvariantPassed = true;
-
-  for (let s = 0; s < sheetCount; s += 1) {
-    const pLowFront = 2 * s + 1;
-    const pHighFront = paddedPages - 2 * s;
-    const pLowBack = 2 * s + 2;
-    const pHighBack = paddedPages - (2 * s + 1);
-
-    const frontPair = isRtl ? [pLowFront, pHighFront] : [pHighFront, pLowFront];
-    const backPair = isRtl ? [pHighBack, pLowBack] : [pLowBack, pHighBack];
-    const creepMm = Number((s * 2 * Number(paperThicknessMm || 0.09)).toFixed(3));
-
-    if (frontPair[0] + frontPair[1] !== paddedPages + 1 || backPair[0] + backPair[1] !== paddedPages + 1) {
-      sumInvariantPassed = false;
-    }
-    for (const p of [...frontPair, ...backPair]) {
-      seenPages.add(p);
-    }
-
-    sheets.push({
-      sheetIndex: s + 1,
-      front: frontPair,
-      back: backPair,
-      creepMm,
-    });
-  }
-
-  const bijectionPassed = seenPages.size === paddedPages;
-  return {
-    requestedPages: rawPages,
-    paddedPages,
-    blankPagesAdded,
-    sheetCount,
-    rtl: isRtl,
-    paperThicknessMm: Number(paperThicknessMm) || 0.09,
-    maxCreepMm: sheets.length > 0 ? sheets[sheets.length - 1].creepMm : 0,
-    integrityVerified: sumInvariantPassed && bijectionPassed,
-    folioSumConstant: paddedPages + 1,
-    sheets,
-  };
-}
-
-/**
- * Verifica el manifiesto de descargas (`downloads_manifest.json`) y la raíz de Merkle (`merkle_root.txt`).
- */
-export function verifyManifestAndMerkleAudit({
-  manifest = null,
-  merkleRootHex = "",
-  lang = "es",
-  book = "GEN",
-  chapter = 1,
-} = {}) {
-  const entries = Array.isArray(manifest) ? manifest : (manifest && manifest.entries) || [];
-  const cleanLang = String(lang || "es").toLowerCase();
-  const langEntries = entries.filter((e) => e && e.lang === cleanLang);
-  const pool = langEntries.length > 0 ? langEntries : entries;
-  const validShaEntries = pool.filter((e) => e && typeof e.sha256 === "string" && /^[0-9a-f]{64}$/i.test(e.sha256));
-  const cleanMerkle = String(merkleRootHex || "").trim().toLowerCase();
-  const merkleValid = /^[0-9a-f]{64}$/.test(cleanMerkle);
-  const sampleSha256 =
-    validShaEntries[0]?.sha256 ||
-    cleanMerkle ||
-    "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
-
-  return {
-    verified: validShaEntries.length > 0 || merkleValid,
-    lang: cleanLang,
-    ref: `${String(book || "GEN").toUpperCase()}.${Number(chapter) || 1}`,
-    artifactsChecked: pool.length,
-    validShaCount: validShaEntries.length,
-    merkleRootHex: merkleValid ? cleanMerkle : sampleSha256,
-    sampleSha256,
-    algorithm: "SHA-256 + Merkle-Tree + Ed25519-Manifest",
-  };
-}
-
-export const OPTICAL_CADENCE_PRESETS = {
-  "6.67": { fps: 6.67, intervalMs: 150, channelCapacityFactor: 0.42, mode: "ROBUST_LOW_LIGHT" },
-  "10": { fps: 10.0, intervalMs: 100, channelCapacityFactor: 0.583, mode: "HIGH_SPEED_PERLI_2010" },
+export {
+  NYQUIST_DEFAULT_FPS,
+  NYQUIST_MAX_FPS,
+  NYQUIST_MIN_FPS,
+  OPTICAL_CADENCE_PRESETS,
+  computeNyquistSafeFpsViaWasm,
+  computeSaddleStitchImpositionPlan,
+  crc16Ccitt,
+  encodeCornerToggleMarker,
+  encodeDropletToMatrixGrid,
+  encodeEco1BinaryPacket,
+  encodeEcomMetadataPacket,
+  extractCornerToggleBit,
+  rasterizeMatrixGridToLuma8,
+  renderDropletMatrixSvgOrCanvas,
+  rsGf256ComputeParity4,
+  validateNyquistOpticalFps,
+  verifyManifestAndMerkleAudit
 };
 
 /**
@@ -760,156 +582,6 @@ export function createRelayEncoderFromDecoded(decoder, blockSize = 512) {
   return new LTEncoder(bytes, blockSize || decoder.blockSize || 512);
 }
 
-/**
- * Constantes de cadencia física Nyquist para cámaras rolling-shutter a 15–30 fps (`D6-B+`: `optical_qr_fountain.rs`).
- */
-export const NYQUIST_MIN_FPS = 6.0;
-export const NYQUIST_MAX_FPS = 7.5;
-export const NYQUIST_DEFAULT_FPS = 6.67;
-
-export function validateNyquistOpticalFps(fps = NYQUIST_DEFAULT_FPS) {
-  const num = Number(fps);
-  const valid = Number.isFinite(num) && num >= NYQUIST_MIN_FPS && num <= NYQUIST_MAX_FPS;
-  const clampedFps = Number.isFinite(num)
-    ? Math.max(NYQUIST_MIN_FPS, Math.min(NYQUIST_MAX_FPS, num))
-    : NYQUIST_DEFAULT_FPS;
-  const frameDurationMs = Math.round(1000.0 / clampedFps);
-  return {
-    requestedFps: num,
-    valid,
-    clampedFps: Number(clampedFps.toFixed(2)),
-    frameDurationMs,
-  };
-}
-
-/**
- * Marcador de alternancia de esquina (`0xA5` par / `0x5A` impar) para descartar cuadros duplicados
- * por desgarro de obturador rodante (rolling-shutter tear, `D6-B+` / `optical_qr_fountain.rs`).
- */
-export function encodeCornerToggleMarker(frameSeq = 0) {
-  return (Number(frameSeq) & 1) === 0 ? 0xa5 : 0x5a;
-}
-
-export function extractCornerToggleBit(markerByte) {
-  const b = Number(markerByte) & 0xff;
-  if (b === 0xa5) return 0;
-  if (b === 0x5a) return 1;
-  return null;
-}
-
-function computeCrc32(bytes) {
-  let crc = 0xffffffff;
-  for (let i = 0; i < bytes.length; i += 1) {
-    crc ^= bytes[i];
-    for (let bit = 0; bit < 8; bit += 1) {
-      const mask = -(crc & 1);
-      crc = (crc >>> 1) ^ (0xedb88320 & mask);
-    }
-  }
-  return (crc ^ 0xffffffff) >>> 0;
-}
-
-export function encodeEco1BinaryPacket({
-  streamId = 1, seq = 0, totalChunks = 1, degree = 1, indices = [0], payloadBytes = new Uint8Array(0),
-} = {}) {
-  const idxArr = Array.isArray(indices) && indices.length > 0 ? indices : [0];
-  const deg = Math.max(1, Math.min(255, idxArr.length || Number(degree) || 1));
-  const payload = payloadBytes instanceof Uint8Array ? payloadBytes : new Uint8Array(Array.isArray(payloadBytes) ? payloadBytes : []);
-  const totalLen = 19 + deg * 2 + payload.length + 4;
-  const buf = new Uint8Array(totalLen);
-  const view = new DataView(buf.buffer);
-  buf.set([0x45, 0x43, 0x4f, 0x31, 0x01, encodeCornerToggleMarker(seq)]);
-  view.setUint32(6, Number(streamId) >>> 0, false);
-  view.setUint32(10, Number(seq) >>> 0, false);
-  view.setUint16(14, Math.max(1, Number(totalChunks) || 1) & 0xffff, false);
-  buf[16] = deg;
-  let offset = 17;
-  for (let i = 0; i < deg; i += 1) {
-    view.setUint16(offset, (Number(idxArr[i]) || 0) & 0xffff, false);
-    offset += 2;
-  }
-  view.setUint16(offset, payload.length & 0xffff, false);
-  offset += 2;
-  buf.set(payload, offset);
-  offset += payload.length;
-  view.setUint32(offset, computeCrc32(buf.subarray(0, offset)), false);
-  return buf;
-}
-
-export function encodeEcomMetadataPacket({
-  streamId = 1, seq = 0, totalBytes = 0, totalChunks = 1, blockSize = 512, sha256Hex = "", filename = "shard.eco",
-} = {}) {
-  const jsonBytes = new TextEncoder().encode(JSON.stringify({
-    streamId: Number(streamId) >>> 0,
-    totalBytes: Number(totalBytes) || 0,
-    totalChunks: Math.max(1, Number(totalChunks) || 1),
-    blockSize: Math.max(1, Number(blockSize) || 512),
-    sha256Hex: String(sha256Hex || "").toLowerCase(),
-    filename: String(filename || "shard.eco"),
-  }));
-  const buf = new Uint8Array(16 + jsonBytes.length);
-  const view = new DataView(buf.buffer);
-  buf.set([0x45, 0x43, 0x4f, 0x4d, 0x01, encodeCornerToggleMarker(seq)]);
-  view.setUint32(6, Number(streamId) >>> 0, false);
-  view.setUint16(10, jsonBytes.length & 0xffff, false);
-  buf.set(jsonBytes, 12);
-  const crcOffset = 12 + jsonBytes.length;
-  view.setUint32(crcOffset, computeCrc32(buf.subarray(0, crcOffset)), false);
-  return buf;
-}
-
-function decodeEcoBinaryPacket(packetBytes) {
-  if (!(packetBytes instanceof Uint8Array) || packetBytes.length < 16) return { valid: false, error: "PACKET_TOO_SHORT" };
-  const view = new DataView(packetBytes.buffer, packetBytes.byteOffset, packetBytes.byteLength);
-  const magic = String.fromCharCode(packetBytes[0], packetBytes[1], packetBytes[2], packetBytes[3]);
-  if (magic !== "ECO1" && magic !== "ECOM") return { valid: false, error: "INVALID_MAGIC" };
-  const version = packetBytes[4];
-  const cornerMarker = packetBytes[5];
-  const cornerBit = extractCornerToggleBit(cornerMarker);
-  if (cornerBit === null) return { valid: false, error: "INVALID_CORNER_MARKER" };
-  const bodyEnd = packetBytes.length - 4;
-  if (view.getUint32(bodyEnd, false) !== computeCrc32(packetBytes.subarray(0, bodyEnd))) {
-    return { valid: false, error: "CRC32_MISMATCH" };
-  }
-  const streamId = view.getUint32(6, false);
-  if (magic === "ECOM") {
-    const jsonLen = view.getUint16(10, false);
-    const meta = JSON.parse(new TextDecoder().decode(packetBytes.subarray(12, 12 + jsonLen)));
-    return { valid: true, magic: "ECOM", version, cornerMarker, cornerBit, streamId, meta };
-  }
-  const seq = view.getUint32(10, false);
-  const totalChunks = view.getUint16(14, false);
-  const degree = packetBytes[16];
-  let offset = 17;
-  const indices = [];
-  for (let i = 0; i < degree; i += 1) {
-    indices.push(view.getUint16(offset, false));
-    offset += 2;
-  }
-  const payloadLen = view.getUint16(offset, false);
-  offset += 2;
-  const payloadBytes = packetBytes.slice(offset, offset + payloadLen);
-
-  return {
-    valid: true,
-    magic: "ECO1",
-    version,
-    cornerMarker,
-    cornerBit,
-    streamId,
-    seq,
-    totalChunks,
-    degree,
-    indices,
-    payloadBytes,
-  };
-}
-
-/**
- * Sesión receptora de flujo óptico multi-cuadro (`QrStreamSession`, `D6-B+` / `optical_qr_fountain.rs`):
- * deduplica cuadros consecutivos con igual bit de esquina (`0xA5`/`0x5A`), alimenta `LTDecoder` y
- * ensambla el archivo final al completar los $K$ bloques.
- */
 export class QrStreamSession {
   constructor({ streamId = 1, totalChunks = 8, blockSize = 512, totalBytes = 4096 } = {}) {
     this.streamId = streamId;
@@ -940,7 +612,11 @@ export class QrStreamSession {
       return { accepted: true, kind: "ECOM", meta: parsed.meta };
     }
 
-    if (this.lastSeq !== null && parsed.seq === this.lastSeq && parsed.cornerBit === this.lastCornerBit) {
+    if (
+      this.lastSeq !== null &&
+      parsed.seq === this.lastSeq &&
+      parsed.cornerBit === this.lastCornerBit
+    ) {
       this.duplicateFramesDropped += 1;
       return { accepted: false, reason: "DUPLICATE_ROLLING_SHUTTER_FRAME" };
     }
@@ -972,108 +648,52 @@ export class QrStreamSession {
   }
 }
 
-const U64_MASK = 0xffffffffffffffffn;
-function splitmix64Next(box) {
-  box.s = (box.s + 0x9e3779b97f4a7c15n) & U64_MASK;
-  let z = box.s;
-  z = ((z ^ (z >> 30n)) * 0xbf58476d1ce4e5b9n) & U64_MASK;
-  z = ((z ^ (z >> 27n)) * 0x94d049bb133111ebn) & U64_MASK;
-  return (z ^ (z >> 31n)) & U64_MASK;
-}
-
-function encodeWasmFountainPackets(transferId, payloadBytes, kBlocks, repairCount) {
-  const k = Math.max(1, Math.min(50, kBlocks | 0));
-  const blockSize = Math.max(1, Math.ceil(payloadBytes.byteLength / k));
-  const srcBlocks = Array.from({ length: k }, (_, i) => {
-    const blk = new Uint8Array(blockSize);
-    const slice = payloadBytes.subarray(i * blockSize, (i + 1) * blockSize);
-    blk.set(slice);
-    return blk;
-  });
-  const tid = BigInt(transferId) & U64_MASK;
-  const total = k + Math.max(0, repairCount | 0);
-  const packets = [];
-  for (let pid = 0; pid < total; pid += 1) {
-    let indices = [pid];
-    if (pid >= k) {
-      const rep = pid - k;
-      const box = { s: (((tid + 0x9e3779b97f4a7c15n) & U64_MASK) ^ ((BigInt(pid & 0xffff) * 0xd1b54a32d192ed03n) & U64_MASK)) & U64_MASK };
-      const r = Number(splitmix64Next(box) % 100n);
-      const deg = k <= 3 ? k : r < 30 ? Math.min(3, k) : r < 65 ? Math.min(k, Math.max(4, Math.floor(k / 3))) : Math.min(k, Math.max(5, Math.floor(k / 2)));
-      const chosen = new Set([(rep * 2) % k, (rep * 2 + 1) % k, (rep * 3 + 2) % k]);
-      while (chosen.size < deg) chosen.add(Number(splitmix64Next(box) % BigInt(k)));
-      indices = Array.from(chosen).sort((a, b) => a - b);
-    }
-    const xorPayload = new Uint8Array(blockSize);
-    for (const si of indices) {
-      const s = srcBlocks[si];
-      for (let b = 0; b < blockSize; b += 1) xorPayload[b] ^= s[b];
-    }
-    packets.push({ packetId: pid, kBlocks: k, originalByteLen: payloadBytes.byteLength, xorPayload });
-  }
-  return packets;
-}
-
-function runWasmPeelingSession(exports, transferId, payloadBytes, kBlocks, dropSet) {
-  if (!exports?.memory || typeof exports.reset_lt_fountain_session !== "function" || typeof exports.peel_lt_fountain_packet_in_place !== "function") {
-    return null;
-  }
-  const k = Math.max(1, Math.min(50, kBlocks | 0));
-  const tid = BigInt(transferId);
-  exports.reset_lt_fountain_session(tid, k);
-  const pkts = encodeWasmFountainPackets(tid, payloadBytes, k, Math.max(8, Math.ceil(k * 0.75)));
-  const blkLen = pkts[0].xorPayload.byteLength;
-  const outCap = Math.max(64, k * blkLen);
-  const xorPtr = typeof exports.wasm_alloc === "function" ? exports.wasm_alloc(blkLen) : 1024;
-  const outPtr = typeof exports.wasm_alloc === "function" ? exports.wasm_alloc(outCap) : 2048;
-  let recovered = null;
-  try {
-    for (let i = 0; i < pkts.length; i += 1) {
-      if (dropSet && dropSet.has(i)) continue;
-      const p = pkts[i];
-      new Uint8Array(exports.memory.buffer, xorPtr, blkLen).set(p.xorPayload);
-      const rc = exports.peel_lt_fountain_packet_in_place(tid, p.packetId, k, p.originalByteLen, xorPtr, blkLen, outPtr, outCap);
-      if (rc > 0) {
-        recovered = new Uint8Array(exports.memory.buffer, outPtr, rc).slice();
-        break;
-      }
-    }
-  } finally {
-    if (typeof exports.wasm_free === "function") {
-      exports.wasm_free(xorPtr, blkLen);
-      exports.wasm_free(outPtr, outCap);
-    }
-  }
-  return recovered;
-}
-
-export function decodeQrStreamViaWasmBridge(frames = [], wasmModule = null) {
+export function decodeQrStreamViaWasmBridge(frames = [], wasmModule = null, existingSession = null) {
   if (!wasmModule || wasmModule.status !== "ready" || !wasmModule.exports) {
-    throw new Error("WASM_BRIDGE_NOT_READY: qr_stream_receiver_wasm must be instantiated with verified SHA-256");
+    throw new Error(
+      "WASM_BRIDGE_NOT_READY: qr_stream_receiver_wasm must be instantiated with verified SHA-256",
+    );
   }
   const exports = wasmModule.exports;
-  const abiVersion = typeof exports.ekovoz_wasm_abi_version === "function" ? exports.ekovoz_wasm_abi_version() : 0;
+  const abiVersion =
+    typeof exports.ekovoz_wasm_abi_version === "function" ? exports.ekovoz_wasm_abi_version() : 0;
   if (abiVersion < 1) {
     throw new Error(`WASM_ABI_MISMATCH: expected abi >= 1, got ${abiVersion}`);
   }
-  const hasLinearMemory = exports.memory && exports.memory.buffer instanceof ArrayBuffer && typeof exports.decode_optical_frame_in_place === "function";
+  const hasLinearMemory =
+    exports.memory &&
+    exports.memory.buffer instanceof ArrayBuffer &&
+    typeof exports.decode_optical_frame_in_place === "function";
   const linearMemoryChecksums = [];
-  const session = new QrStreamSession();
+  const session = existingSession instanceof QrStreamSession ? existingSession : new QrStreamSession();
   const frameList = Array.isArray(frames) ? frames : [];
   for (let idx = 0; idx < frameList.length; idx += 1) {
     const frameBytes = frameList[idx];
     if (hasLinearMemory && frameBytes instanceof Uint8Array && frameBytes.byteLength > 0) {
-      const ptr = typeof exports.alloc_frame_buffer === "function" ? exports.alloc_frame_buffer(frameBytes.byteLength) : 4096;
+      const ptr =
+        typeof exports.alloc_frame_buffer === "function"
+          ? exports.alloc_frame_buffer(frameBytes.byteLength)
+          : 4096;
       new Uint8Array(exports.memory.buffer, ptr, frameBytes.byteLength).set(frameBytes);
-      linearMemoryChecksums.push(exports.decode_optical_frame_in_place(ptr, frameBytes.byteLength, idx) >>> 0);
-      if (typeof exports.free_frame_buffer === "function") exports.free_frame_buffer(ptr, frameBytes.byteLength);
+      linearMemoryChecksums.push(
+        exports.decode_optical_frame_in_place(ptr, frameBytes.byteLength, idx) >>> 0,
+      );
+      if (typeof exports.free_frame_buffer === "function") {
+        exports.free_frame_buffer(ptr, frameBytes.byteLength);
+      }
     }
     session.ingestPacket(frameBytes);
   }
   const jsReconstructed = session.finalizeStream();
   let wasmPeelReconstructed = null;
   if (jsReconstructed && jsReconstructed.byteLength > 0) {
-    wasmPeelReconstructed = runWasmPeelingSession(exports, session.streamId || 2026, jsReconstructed, Math.min(50, session.decoder.K || 4), null);
+    wasmPeelReconstructed = runWasmPeelingSession(
+      exports,
+      session.streamId || 2026,
+      jsReconstructed,
+      Math.min(50, session.decoder.K || 4),
+      null,
+    );
   } else if (frameList.length === 0 && typeof exports.reset_lt_fountain_session === "function") {
     exports.reset_lt_fountain_session(2026n, 4);
   }
@@ -1089,60 +709,11 @@ export function decodeQrStreamViaWasmBridge(frames = [], wasmModule = null) {
     complete: session.isComplete(),
     reconstructedBytes: wasmPeelReconstructed || jsReconstructed,
     wasmPeelVerified: Boolean(wasmPeelReconstructed),
+    session,
+    decoder: session.decoder,
   };
 }
 
-/**
- * D6-S21+ (`ARB-EKOVOZ-63`, `qr_stream_receiver_wasm`):
- * Calcula la cadencia máxima segura en FPS bajo muestreo Nyquist anti-rolling-shutter (`Decisión 51C`)
- * invocando `compute_nyquist_safe_fps(shutter_us, rolling_readout_ms)` en WASM o su fórmula idéntica.
- */
-export function computeNyquistSafeFpsViaWasm(
-  shutterUs = 8000,
-  rollingReadoutMs = 14,
-  wasmMod = null
-) {
-  const exports = wasmMod?.exports || wasmMod || null;
-  const cleanShutterUs = Math.max(100, Number(shutterUs) || 8000);
-  const cleanReadoutMs = Math.max(4, Number(rollingReadoutMs) || 14);
-  const hasWasmFn = Boolean(exports && typeof exports.compute_nyquist_safe_fps === "function");
-  const rawFps = hasWasmFn
-    ? Number(exports.compute_nyquist_safe_fps(cleanShutterUs, cleanReadoutMs))
-    : (() => {
-        const exposureMs = cleanShutterUs / 1000.0;
-        const totalWindowMs = Math.max(1.0, exposureMs + cleanReadoutMs * 2.0);
-        const nyquist = 1000.0 / (2.0 * totalWindowMs);
-        return Math.max(NYQUIST_MIN_FPS, Math.min(NYQUIST_MAX_FPS, nyquist));
-      })();
-  const safeFps = Number(rawFps.toFixed(2));
-  const frameIntervalMs = Math.round(1000.0 / safeFps);
-  return {
-    shutterUs: cleanShutterUs,
-    rollingReadoutMs: cleanReadoutMs,
-    safeFps,
-    frameIntervalMs,
-    nyquistBandValid: safeFps >= NYQUIST_MIN_FPS && safeFps <= NYQUIST_MAX_FPS,
-    wasmBacked: hasWasmFn,
-  };
-}
-
-function computeRaptorQSyndromeFallback(bytes, expectedK = 4) {
-  let syndrome = (Math.max(1, expectedK >>> 0) * 257) >>> 0;
-  for (let idx = 0; idx < bytes.byteLength; idx += 1) {
-    const b = bytes[idx] & 0xff;
-    syndrome =
-      ((syndrome + Math.imul(b, (idx + 1) >>> 0)) ^ ((b << (idx % 17)) >>> 0)) >>> 0;
-  }
-  return Math.max(2, syndrome & 0x7ffffffe);
-}
-
-/**
- * D6-S21+ (`ARB-EKOVOZ-63`, `QrStreamSession` + `qr_stream_receiver_wasm`):
- * Ejecuta una sesión receptora óptica Air-Gapped completa:
- * codifica `ECOM` + paquetes `ECO1` Fountain (sistemáticos + cola Solitón), inyecta un cuadro duplicado
- * de rolling-shutter (`0xA5`/`0x5A`), simula pérdida de fotogramas (`simulatedDrops`), verifica síndrome
- * RaptorQ (`verify_raptorq_esi_block_in_place`) y reconstruye el payload mediante Peeling + GF(2).
- */
 export function runOpticalReceiverBurstSession(
   {
     payloadText = "GEN.1.1 · En el principio creó Dios los cielos y la tierra.",
@@ -1151,10 +722,10 @@ export function runOpticalReceiverBurstSession(
     blockSize = 16,
     simulatedDrops = [1],
   } = {},
-  wasmMod = null
+  wasmMod = null,
 ) {
   const cleanText = String(
-    payloadText || "GEN.1.1 · En el principio creó Dios los cielos y la tierra."
+    payloadText || "GEN.1.1 · En el principio creó Dios los cielos y la tierra.",
   );
   const payloadBytes = new TextEncoder().encode(cleanText);
   const cleanBlockSize = Math.max(8, Math.min(256, Number(blockSize) || 16));
@@ -1204,9 +775,13 @@ export function runOpticalReceiverBurstSession(
   }
 
   const reconstructedBytes = session.finalizeStream();
-  const reconstructedText = reconstructedBytes
-    ? new TextDecoder().decode(reconstructedBytes)
-    : "";
+  const reconstructedText = reconstructedBytes ? new TextDecoder().decode(reconstructedBytes) : "";
+  const whitenedProbe = whitenBlockXor(lastAcceptedPacket.subarray(0, Math.min(16, lastAcceptedPacket.byteLength)), 2026);
+  const sampleLumaPreview = rasterizeMatrixGridToLuma8(
+    encodeDropletToMatrixGrid({ data: whitenedProbe }, 29),
+    96,
+    96,
+  );
 
   const exports = wasmMod?.exports || wasmMod || null;
   let raptorqSyndrome = computeRaptorQSyndromeFallback(lastAcceptedPacket, totalChunks);
@@ -1222,9 +797,12 @@ export function runOpticalReceiverBurstSession(
       typeof exports.alloc_frame_buffer === "function"
         ? exports.alloc_frame_buffer(lastAcceptedPacket.byteLength)
         : 2048;
-    new Uint8Array(exports.memory.buffer, ptr, lastAcceptedPacket.byteLength).set(lastAcceptedPacket);
+    new Uint8Array(exports.memory.buffer, ptr, lastAcceptedPacket.byteLength).set(
+      lastAcceptedPacket,
+    );
     raptorqSyndrome =
-      exports.verify_raptorq_esi_block_in_place(ptr, lastAcceptedPacket.byteLength, totalChunks) >>> 0;
+      exports.verify_raptorq_esi_block_in_place(ptr, lastAcceptedPacket.byteLength, totalChunks) >>>
+      0;
     if (typeof exports.decode_optical_frame_in_place === "function") {
       opticalFrameDigest =
         exports.decode_optical_frame_in_place(ptr, lastAcceptedPacket.byteLength, 0) >>> 0;
@@ -1237,7 +815,7 @@ export function runOpticalReceiverBurstSession(
       2026,
       payloadBytes,
       Math.min(50, totalChunks),
-      dropSet
+      dropSet,
     );
     wasmLinearVerified = true;
   }
@@ -1260,20 +838,15 @@ export function runOpticalReceiverBurstSession(
     raptorqSyndrome,
     raptorqSyndromeHex: `0x${raptorqSyndrome.toString(16).toUpperCase().padStart(8, "0")}`,
     opticalFrameDigest,
+    lumaPreviewBytes: sampleLumaPreview.byteLength,
     wasmLinearVerified,
     nyquist,
   };
 }
 
-/**
- * D6-S21+ (`ARB-EKOVOZ-63`):
- * Renderiza el panel interactivo del Receptor Óptico Air-Gapped (`QrStreamSession` + Nyquist CMOS + RaptorQ) en Gaveta 4.
- */
 export function renderOpticalReceiverRxPanelHtml(report = null) {
   const activeReport =
-    report && typeof report === "object"
-      ? report
-      : runOpticalReceiverBurstSession({});
+    report && typeof report === "object" ? report : runOpticalReceiverBurstSession({});
   const nyq = activeReport.nyquist || computeNyquistSafeFpsViaWasm(8000, 14, null);
   const esc = (s) =>
     String(s ?? "")
@@ -1305,7 +878,7 @@ export function renderOpticalReceiverRxPanelHtml(report = null) {
     `<div style="font-size:0.78rem;color:var(--text-secondary);">` +
     `<span>Síndrome RaptorQ ESI: <code>${esc(activeReport.raptorqSyndromeHex)}</code></span> · ` +
     `<span>Ventana Nyquist: <code>${nyq.frameIntervalMs} ms/frame (${nyq.safeFps} fps)</code></span> · ` +
-    `<span data-rx-reconstructed-text="${esc(activeReport.reconstructedText)}">Payload reconstruido: <code>${esc(activeReport.reconstructedText.slice(0, 96))}</code></span>` +
+    `<span data-rx-reconstructed-text="${esc(activeReport.reconstructedText)}" data-rx-luma-preview="${Number(activeReport.lumaPreviewBytes) || 0}">Payload reconstruido: <code>${esc(activeReport.reconstructedText.slice(0, 96))}</code></span>` +
     `</div>` +
     `</div>`
   );

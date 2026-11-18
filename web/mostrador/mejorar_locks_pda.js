@@ -288,11 +288,11 @@ export let CRDT_WAL_SEMILATTICE = {
   raw_wal_lines_count: 60,
   canonical_patches_count: 5,
   canonical_patches: [
-    { patch_id: "PATCH-STP-L2-0001", level: "L2", ref: "GEN.1.1", strong_id: "H0430", surface_stp: "Na t'ek'at jix b'et Dios jix b'o'on sat k'ul yetoj lum lu'um.", status: "COMMITTED" },
-    { patch_id: "PATCH-STP-L3-001", level: "L3", ref: "GEN.1.2", strong_id: "H7307", surface_stp: "Ja' naj Yespíritu Dios xec' yib'an ja'.", status: "COMMITTED" },
-    { patch_id: "PATCH-STP-L2-TEST-9D", level: "L2", ref: "PSA.23.1", strong_id: "H3068", surface_stp: "Ja' naj Jehová quintanab'il, c'am tzet chi paltayi.", status: "COMMITTED" },
-    { patch_id: "PATCH-STP-L4-BEATITUDE-CLI", level: "L4", ref: "MAT.5.3", strong_id: "G3107", surface_stp: "Jix b'hai' sc'ul eb' na'an yu Dios tol meb'a' yul yatut sc'ul.", status: "COMMITTED" },
-    { patch_id: "PATCH-WAL-COMMIT-R16", level: "L2", ref: "GEN.1.1", strong_id: "H0430", surface_stp: "Na t'ek'at jix b'et Dios jix b'o'on smasanil.", status: "COMMITTED" },
+    { patch_id: "PATCH-STP-L2-0001", level: "L2", ref: "GEN.1.1", strong_id: "H0430", surface_stp: "Tu'xich jumai jixdha' Jawatan Dios gu mɨk gio gu oidha'.", status: "COMMITTED" },
+    { patch_id: "PATCH-STP-L3-001", level: "L3", ref: "GEN.1.2", strong_id: "H7307", surface_stp: "Gu Jich Xoi'kam Dios jum tulhiiñchudha' parhii'ñ suudai'.", status: "COMMITTED" },
+    { patch_id: "PATCH-STP-L2-TEST-9D", level: "L2", ref: "PSA.23.1", strong_id: "H3068", surface_stp: "Jawatan Dios dhi' jiñ bhuiyabdam, cham tu' jiñ bhɨɨma'.", status: "COMMITTED" },
+    { patch_id: "PATCH-STP-L4-BEATITUDE-CLI", level: "L4", ref: "MAT.5.3", strong_id: "G3107", surface_stp: "Jix bhai' ji'k jix chu'm jum aa' na pim tɨjɨɨ'ñdham bɨɨx jum a'ga.", status: "COMMITTED" },
+    { patch_id: "PATCH-WAL-COMMIT-R16", level: "L2", ref: "GEN.1.1", strong_id: "H0430", surface_stp: "Tu'xich jumai Jawatan Dios jix chu b'o' bɨɨx na jax chu'm.", status: "COMMITTED" },
   ],
 };
 export let PATCH_JOURNAL_LOCK_P2 = {
@@ -384,9 +384,9 @@ export function computeWalSnapshotRollbackPreview(
   const resolvedStrong = String(targetPatch.strong_id || targetPatch.strong || "H0430");
   const resolvedSurfaceStp = String(
     targetPatch.surface_stp ||
-      targetPatch.new_surface ||
-      targetPatch.surfaceStp ||
-      `[${targetPatch.ref || "GEN.1.1"} · ${resolvedStrong}]`,
+    targetPatch.new_surface ||
+    targetPatch.surfaceStp ||
+    `[${targetPatch.ref || "GEN.1.1"} · ${resolvedStrong}]`,
   );
   const sha256Prefix = computeDeterministicContentHashHex(
     `${targetPatch.patch_id}|${targetPatch.ref}|${resolvedStrong}|${resolvedSurfaceStp}|snap:${idx}`,
@@ -476,7 +476,7 @@ export function hydrateFieldWorkshopData(artifact, ladderArtifact = null) {
       single_sentence_unlocked_floor: unlockedFloor,
       floor_1_sentence_spec: String(
         ladderSrc.floor_1_sentence_spec ||
-          `GEN.3.1 · 69.53 bits marginal gain · ${unlockedFloor} lenguas desbloqueadas con 1 oración`,
+        `GEN.3.1 · 69.53 bits marginal gain · ${unlockedFloor} lenguas desbloqueadas con 1 oración`,
       ),
       estimated_native_speaker_hours: Number(ladderSrc.estimated_native_speaker_hours) || 30,
       reference_tier1: String(ladderSrc.reference_tier1 || "spa_rv1909"),
@@ -546,7 +546,7 @@ export function computeSisterWorksCascade({
   const felicesTargets =
     felicesEntries.length > 0
       ? felicesEntries.slice(0, 3).map((e) => `${e.verse_id || "MAT.5.3"} (${e.work || "felices"})`)
-      : ["Dicha 01 (PSA.1.1)", "Dicha 03 (MAT.5.3)", "Dicha 09 (MAT.5.9)"];
+      : ["Dicha 01 (MAT.5.1)", "Dicha 03 (MAT.5.4)", "Dicha 08 (MAT.5.9)"];
   const evangeliosTargets =
     evangeliosEntries.length > 0
       ? evangeliosEntries.slice(0, 3).map((e) => `${e.verse_id || "JHN.1.1"} (${e.work || "evangelios"})`)
@@ -585,12 +585,12 @@ export function selectTopEntropyVerseQueue(ladderItems = [], currentRef = "GEN.1
     : Array.isArray(ladderItems?.items)
       ? ladderItems.items
       : [
-          { rank: 1, verse_id: "GEN.1.1", rung: "Rung1SwadeshAndNsm65", marginal_gain_bits: 48.2 },
-          { rank: 2, verse_id: "JHN.1.1", rung: "Rung1SwadeshAndNsm65", marginal_gain_bits: 44.5 },
-          { rank: 3, verse_id: "PSA.23.1", rung: "Rung2MorphosyntaxAndTamValence", marginal_gain_bits: 41.0 },
-          { rank: 4, verse_id: "ROM.1.16", rung: "Rung3TheologicalKinshipAndNarratives", marginal_gain_bits: 38.7 },
-          { rank: 5, verse_id: "GEN.3.1", rung: "Rung2MorphosyntaxAndTamValence", marginal_gain_bits: 37.9 },
-        ];
+        { rank: 1, verse_id: "GEN.1.1", rung: "Rung1SwadeshAndNsm65", marginal_gain_bits: 48.2 },
+        { rank: 2, verse_id: "JHN.1.1", rung: "Rung1SwadeshAndNsm65", marginal_gain_bits: 44.5 },
+        { rank: 3, verse_id: "PSA.23.1", rung: "Rung2MorphosyntaxAndTamValence", marginal_gain_bits: 41.0 },
+        { rank: 4, verse_id: "ROM.1.16", rung: "Rung3TheologicalKinshipAndNarratives", marginal_gain_bits: 38.7 },
+        { rank: 5, verse_id: "GEN.3.1", rung: "Rung2MorphosyntaxAndTamValence", marginal_gain_bits: 37.9 },
+      ];
   const cleanCurrent = String(currentRef || "GEN.1.1").toUpperCase();
   const scored = raw
     .map((it, idx) => {

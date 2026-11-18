@@ -1,7 +1,7 @@
 {
   "macro_region_id": 12,
   "region_name_es": "Oceanía, Papúa y Pacífico Sur",
-  "total_languages": 1310,
+  "total_languages": 1325,
   "subclades_covered": 30,
   "featured_languages": [
     [
@@ -101,12 +101,6 @@
       "Sepik_Highlands_Pacific"
     ],
     [
-      "aea",
-      "Areba",
-      "Areba (aea)",
-      "Sepik_Highlands_Pacific"
-    ],
-    [
       "aek",
       "Haeke",
       "Haeke (aek)",
@@ -122,6 +116,12 @@
       "aew",
       "Ambakich",
       "Ambakich (aew)",
+      "Sepik_Highlands_Pacific"
+    ],
+    [
+      "aex",
+      "Amerax",
+      "Amerax (aex)",
       "Sepik_Highlands_Pacific"
     ],
     [
@@ -209,6 +209,12 @@
       "Sepik_Highlands_Pacific"
     ],
     [
+      "ahe",
+      "Ahe",
+      "Ahe (ahe)",
+      "Sepik_Highlands_Pacific"
+    ],
+    [
       "aia",
       "Arosi",
       "Arosi (aia)",
@@ -218,12 +224,6 @@
       "aic",
       "Ainbai",
       "Ainbai (aic)",
-      "Sepik_Highlands_Pacific"
-    ],
-    [
-      "aid",
-      "Alngith",
-      "Alngith (aid)",
       "Sepik_Highlands_Pacific"
     ],
     [
@@ -272,6 +272,12 @@
       "aki",
       "Aiome",
       "Aiome (aki)",
+      "Sepik_Highlands_Pacific"
+    ],
+    [
+      "akn",
+      "Amikoana",
+      "Amikoana (akn)",
       "Sepik_Highlands_Pacific"
     ],
     [
@@ -329,6 +335,12 @@
       "Sepik_Highlands_Pacific"
     ],
     [
+      "amd",
+      "Amapá Creole",
+      "Amapá Creole (amd)",
+      "Sepik_Highlands_Pacific"
+    ],
+    [
       "amg",
       "Amurdak",
       "Amurdak (amg)",
@@ -362,12 +374,6 @@
       "amy",
       "Ami",
       "Ami (amy)",
-      "Sepik_Highlands_Pacific"
-    ],
-    [
-      "amz",
-      "Atampaya",
-      "Atampaya (amz)",
       "Sepik_Highlands_Pacific"
     ],
     [
@@ -467,12 +473,6 @@
       "Sepik_Highlands_Pacific"
     ],
     [
-      "aor",
-      "Aore",
-      "Aore (aor)",
-      "Sepik_Highlands_Pacific"
-    ],
-    [
       "apb",
       "Sa'a",
       "Sa'a (apb)",
@@ -521,15 +521,21 @@
       "Sepik_Highlands_Pacific"
     ],
     [
-      "ard",
-      "Arabana",
-      "Arabana (ard)",
-      "Sepik_Highlands_Pacific"
-    ],
-    [
       "are",
       "Western Arrarnta",
       "Western Arrarnta (are)",
+      "Sepik_Highlands_Pacific"
+    ],
+    [
+      "arf",
+      "Arafundi",
+      "Arafundi (arf)",
+      "Sepik_Highlands_Pacific"
+    ],
+    [
+      "asd",
+      "Asas",
+      "Asas (asd)",
       "Sepik_Highlands_Pacific"
     ],
     [
@@ -572,6 +578,12 @@
       "ate",
       "Atemble",
       "Atemble (ate)",
+      "Sepik_Highlands_Pacific"
+    ],
+    [
+      "atf",
+      "Atuence",
+      "Atuence (atf)",
       "Sepik_Highlands_Pacific"
     ],
     [
@@ -629,6 +641,12 @@
       "Sepik_Highlands_Pacific"
     ],
     [
+      "auv",
+      "Auvergnat",
+      "Auvergnat (auv)",
+      "Sepik_Highlands_Pacific"
+    ],
+    [
       "auy",
       "Awiyaana",
       "Awiyaana (auy)",
@@ -638,12 +656,6 @@
       "avb",
       "Avau",
       "Avau (avb)",
-      "Sepik_Highlands_Pacific"
-    ],
-    [
-      "avm",
-      "Angkamuthi",
-      "Angkamuthi (avm)",
       "Sepik_Highlands_Pacific"
     ],
     [
@@ -659,21 +671,9 @@
       "Sepik_Highlands_Pacific"
     ],
     [
-      "awg",
-      "Anguthimri",
-      "Anguthimri (awg)",
-      "Sepik_Highlands_Pacific"
-    ],
-    [
       "awi",
       "Aekyom",
       "Aekyom (awi)",
-      "Sepik_Highlands_Pacific"
-    ],
-    [
-      "awk",
-      "Awabakal",
-      "Awabakal (awk)",
       "Sepik_Highlands_Pacific"
     ],
     [
@@ -695,18 +695,6 @@
       "Sepik_Highlands_Pacific"
     ],
     [
-      "axe",
-      "Ayerrerenge",
-      "Ayerrerenge (axe)",
-      "Sepik_Highlands_Pacific"
-    ],
-    [
-      "axl",
-      "Lower Southern Aranda",
-      "Lower Southern Aranda (axl)",
-      "Sepik_Highlands_Pacific"
-    ],
-    [
       "axx",
       "Xârâgurè",
       "Xârâgurè (axx)",
@@ -719,15 +707,15 @@
       "Sepik_Highlands_Pacific"
     ],
     [
-      "ayd",
-      "Ayabadhu",
-      "Ayabadhu (ayd)",
-      "Sepik_Highlands_Pacific"
-    ],
-    [
       "ayq",
       "Ayi (Papua New Guinea)",
       "Ayi (Papua New Guinea) (ayq)",
+      "Sepik_Highlands_Pacific"
+    ],
+    [
+      "azr",
+      "Adzera (Retired)",
+      "Adzera (Retired) (azr)",
       "Sepik_Highlands_Pacific"
     ],
     [
@@ -812,6 +800,12 @@
       "bcu",
       "Awad Bing",
       "Awad Bing (bcu)",
+      "Sepik_Highlands_Pacific"
+    ],
+    [
+      "bcx",
+      "Pamona (Retired)",
+      "Pamona (Retired) (bcx)",
       "Sepik_Highlands_Pacific"
     ],
     [
@@ -911,6 +905,12 @@
       "Sepik_Highlands_Pacific"
     ],
     [
+      "bii",
+      "Bisu (Retired)",
+      "Bisu (Retired) (bii)",
+      "Sepik_Highlands_Pacific"
+    ],
+    [
       "bio",
       "Nai",
       "Nai (bio)",
@@ -941,15 +941,15 @@
       "Sepik_Highlands_Pacific"
     ],
     [
-      "bjb",
-      "Banggarla",
-      "Banggarla (bjb)",
-      "Sepik_Highlands_Pacific"
-    ],
-    [
       "bjc",
       "Bariji",
       "Bariji (bjc)",
+      "Sepik_Highlands_Pacific"
+    ],
+    [
+      "bjd",
+      "Bandjigali",
+      "Bandjigali (bjd)",
       "Sepik_Highlands_Pacific"
     ],
     [
@@ -983,15 +983,15 @@
       "Sepik_Highlands_Pacific"
     ],
     [
-      "bjy",
-      "Bayali",
-      "Bayali (bjy)",
-      "Sepik_Highlands_Pacific"
-    ],
-    [
       "bjz",
       "Baruga",
       "Baruga (bjz)",
+      "Sepik_Highlands_Pacific"
+    ],
+    [
+      "bke",
+      "Bengkulu",
+      "Bengkulu (bke)",
       "Sepik_Highlands_Pacific"
     ],
     [
@@ -1019,6 +1019,12 @@
       "Sepik_Highlands_Pacific"
     ],
     [
+      "blu",
+      "Hmong Njua (Retired)",
+      "Hmong Njua (Retired) (blu)",
+      "Sepik_Highlands_Pacific"
+    ],
+    [
       "bmc",
       "Biem",
       "Biem (bmc)",
@@ -1034,12 +1040,6 @@
       "bmk",
       "Ghayavi",
       "Ghayavi (bmk)",
-      "Sepik_Highlands_Pacific"
-    ],
-    [
-      "bmn",
-      "Bina (Papua New Guinea)",
-      "Bina (Papua New Guinea) (bmn)",
       "Sepik_Highlands_Pacific"
     ],
     [
@@ -1067,6 +1067,12 @@
       "Sepik_Highlands_Pacific"
     ],
     [
+      "bnh",
+      "Banawá",
+      "Banawá (bnh)",
+      "Sepik_Highlands_Pacific"
+    ],
+    [
       "bnk",
       "Bierebo",
       "Bierebo (bnk)",
@@ -1088,6 +1094,12 @@
       "bnw",
       "Bisis",
       "Bisis (bnw)",
+      "Sepik_Highlands_Pacific"
+    ],
+    [
+      "boc",
+      "Bakung Kenyah",
+      "Bakung Kenyah (boc)",
       "Sepik_Highlands_Pacific"
     ],
     [
@@ -1115,15 +1127,15 @@
       "Sepik_Highlands_Pacific"
     ],
     [
-      "bow",
-      "Rema",
-      "Rema (bow)",
-      "Sepik_Highlands_Pacific"
-    ],
-    [
       "bpa",
       "Daakaka",
       "Daakaka (bpa)",
+      "Sepik_Highlands_Pacific"
+    ],
+    [
+      "bpe",
+      "Bauni",
+      "Bauni (bpe)",
       "Sepik_Highlands_Pacific"
     ],
     [
@@ -1151,12 +1163,6 @@
       "Sepik_Highlands_Pacific"
     ],
     [
-      "bpt",
-      "Barrow Point",
-      "Barrow Point (bpt)",
-      "Sepik_Highlands_Pacific"
-    ],
-    [
       "bpu",
       "Bongu",
       "Bongu (bpu)",
@@ -1166,6 +1172,12 @@
       "bpw",
       "Bo (Papua New Guinea)",
       "Bo (Papua New Guinea) (bpw)",
+      "Sepik_Highlands_Pacific"
+    ],
+    [
+      "bqe",
+      "Navarro-Labourdin Basque",
+      "Navarro-Labourdin Basque (bqe)",
       "Sepik_Highlands_Pacific"
     ],
     [
@@ -1208,6 +1220,18 @@
       "brz",
       "Bilbil",
       "Bilbil (brz)",
+      "Sepik_Highlands_Pacific"
+    ],
+    [
+      "bsd",
+      "Sarawak Bisaya",
+      "Sarawak Bisaya (bsd)",
+      "Sepik_Highlands_Pacific"
+    ],
+    [
+      "bsz",
+      "Souletin Basque",
+      "Souletin Basque (bsz)",
       "Sepik_Highlands_Pacific"
     ],
     [
@@ -1277,6 +1301,12 @@
       "Sepik_Highlands_Pacific"
     ],
     [
+      "bvs",
+      "Belgian Sign Language",
+      "Belgian Sign Language (bvs)",
+      "Sepik_Highlands_Pacific"
+    ],
+    [
       "bwa",
       "Bwatoo",
       "Bwatoo (bwa)",
@@ -1313,6 +1343,12 @@
       "Sepik_Highlands_Pacific"
     ],
     [
+      "bwv",
+      "Bahau River Kenyah",
+      "Bahau River Kenyah (bwv)",
+      "Sepik_Highlands_Pacific"
+    ],
+    [
       "bxa",
       "Tairaha",
       "Tairaha (bxa)",
@@ -1331,12 +1367,6 @@
       "Sepik_Highlands_Pacific"
     ],
     [
-      "bxi",
-      "Pirlatapa",
-      "Pirlatapa (bxi)",
-      "Sepik_Highlands_Pacific"
-    ],
-    [
       "bxj",
       "Bayungu",
       "Bayungu (bxj)",
@@ -1346,6 +1376,12 @@
       "bxn",
       "Burduna",
       "Burduna (bxn)",
+      "Sepik_Highlands_Pacific"
+    ],
+    [
+      "bxt",
+      "Buxinhua",
+      "Buxinhua (bxt)",
       "Sepik_Highlands_Pacific"
     ],
     [
@@ -1373,6 +1409,12 @@
       "Sepik_Highlands_Pacific"
     ],
     [
+      "byu",
+      "Buyang",
+      "Buyang (byu)",
+      "Sepik_Highlands_Pacific"
+    ],
+    [
       "byx",
       "Qaqet",
       "Qaqet (byx)",
@@ -1397,18 +1439,6 @@
       "Sepik_Highlands_Pacific"
     ],
     [
-      "bzr",
-      "Biri",
-      "Biri (bzr)",
-      "Sepik_Highlands_Pacific"
-    ],
-    [
-      "bzt",
-      "Brithenig",
-      "Brithenig (bzt)",
-      "Sepik_Highlands_Pacific"
-    ],
-    [
       "cal",
       "Carolinian",
       "Carolinian (cal)",
@@ -1424,6 +1454,18 @@
       "can",
       "Chambri",
       "Chambri (can)",
+      "Sepik_Highlands_Pacific"
+    ],
+    [
+      "ccx",
+      "Northern Zhuang",
+      "Northern Zhuang (ccx)",
+      "Sepik_Highlands_Pacific"
+    ],
+    [
+      "ccy",
+      "Southern Zhuang",
+      "Southern Zhuang (ccy)",
       "Sepik_Highlands_Pacific"
     ],
     [
@@ -1451,6 +1493,12 @@
       "Sepik_Highlands_Pacific"
     ],
     [
+      "cit",
+      "Chittagonian (Retired)",
+      "Chittagonian (Retired) (cit)",
+      "Sepik_Highlands_Pacific"
+    ],
+    [
       "cjn",
       "Chenapian",
       "Chenapian (cjn)",
@@ -1475,6 +1523,12 @@
       "Sepik_Highlands_Pacific"
     ],
     [
+      "cls",
+      "Classical Sanskrit",
+      "Classical Sanskrit (cls)",
+      "Sepik_Highlands_Pacific"
+    ],
+    [
       "coa",
       "Cocos Islands Malay",
       "Cocos Islands Malay (coa)",
@@ -1484,6 +1538,12 @@
       "crc",
       "Lonwolwol",
       "Lonwolwol (crc)",
+      "Sepik_Highlands_Pacific"
+    ],
+    [
+      "cru",
+      "Carútana",
+      "Carútana (cru)",
       "Sepik_Highlands_Pacific"
     ],
     [
@@ -1505,6 +1565,12 @@
       "Sepik_Highlands_Pacific"
     ],
     [
+      "dat",
+      "Darang Deng",
+      "Darang Deng (dat)",
+      "Sepik_Highlands_Pacific"
+    ],
+    [
       "dax",
       "Dayi",
       "Dayi (dax)",
@@ -1523,12 +1589,6 @@
       "Sepik_Highlands_Pacific"
     ],
     [
-      "dda",
-      "Dadi Dadi",
-      "Dadi Dadi (dda)",
-      "Sepik_Highlands_Pacific"
-    ],
-    [
       "ddi",
       "West Goodenough",
       "West Goodenough (ddi)",
@@ -1538,12 +1598,6 @@
       "ddj",
       "Jaru",
       "Jaru (ddj)",
-      "Sepik_Highlands_Pacific"
-    ],
-    [
-      "ddr",
-      "Dhudhuroa",
-      "Dhudhuroa (ddr)",
       "Sepik_Highlands_Pacific"
     ],
     [
@@ -1568,24 +1622,6 @@
       "dgg",
       "Doga",
       "Doga (dgg)",
-      "Sepik_Highlands_Pacific"
-    ],
-    [
-      "dgn",
-      "Dagoman",
-      "Dagoman (dgn)",
-      "Sepik_Highlands_Pacific"
-    ],
-    [
-      "dgt",
-      "Ndra'ngith",
-      "Ndra'ngith (dgt)",
-      "Sepik_Highlands_Pacific"
-    ],
-    [
-      "dgw",
-      "Daungwurrung",
-      "Daungwurrung (dgw)",
       "Sepik_Highlands_Pacific"
     ],
     [
@@ -1619,12 +1655,6 @@
       "Sepik_Highlands_Pacific"
     ],
     [
-      "dhu",
-      "Dhurga",
-      "Dhurga (dhu)",
-      "Sepik_Highlands_Pacific"
-    ],
-    [
       "dhv",
       "Dehu",
       "Dehu (dhv)",
@@ -1643,9 +1673,9 @@
       "Sepik_Highlands_Pacific"
     ],
     [
-      "dif",
-      "Dieri",
-      "Dieri (dif)",
+      "dit",
+      "Dirari",
+      "Dirari (dit)",
       "Sepik_Highlands_Pacific"
     ],
     [
@@ -1667,12 +1697,6 @@
       "Sepik_Highlands_Pacific"
     ],
     [
-      "djf",
-      "Djangun",
-      "Djangun (djf)",
-      "Sepik_Highlands_Pacific"
-    ],
-    [
       "dji",
       "Djinang",
       "Djinang (dji)",
@@ -1682,6 +1706,12 @@
       "djj",
       "Djeebbana",
       "Djeebbana (djj)",
+      "Sepik_Highlands_Pacific"
+    ],
+    [
+      "djl",
+      "Djiwarli-Thiin",
+      "Djiwarli-Thiin (djl)",
       "Sepik_Highlands_Pacific"
     ],
     [
@@ -1703,21 +1733,9 @@
       "Sepik_Highlands_Pacific"
     ],
     [
-      "djw",
-      "Djawi",
-      "Djawi (djw)",
-      "Sepik_Highlands_Pacific"
-    ],
-    [
       "dmc",
       "Gavak",
       "Gavak (dmc)",
-      "Sepik_Highlands_Pacific"
-    ],
-    [
-      "dmd",
-      "Madhi Madhi",
-      "Madhi Madhi (dmd)",
       "Sepik_Highlands_Pacific"
     ],
     [
@@ -1781,6 +1799,12 @@
       "Sepik_Highlands_Pacific"
     ],
     [
+      "drr",
+      "Dororo",
+      "Dororo (drr)",
+      "Sepik_Highlands_Pacific"
+    ],
+    [
       "duc",
       "Duna",
       "Duna (duc)",
@@ -1796,6 +1820,12 @@
       "dui",
       "Dumun",
       "Dumun (dui)",
+      "Sepik_Highlands_Pacific"
+    ],
+    [
+      "duj",
+      "Dhuwal",
+      "Dhuwal (duj)",
       "Sepik_Highlands_Pacific"
     ],
     [
@@ -1829,15 +1859,9 @@
       "Sepik_Highlands_Pacific"
     ],
     [
-      "dyb",
-      "Dyaberdyaber",
-      "Dyaberdyaber (dyb)",
-      "Sepik_Highlands_Pacific"
-    ],
-    [
-      "dyd",
-      "Dyugun",
-      "Dyugun (dyd)",
+      "dyk",
+      "Land Dayak (Retired)",
+      "Land Dayak (Retired) (dyk)",
       "Sepik_Highlands_Pacific"
     ],
     [
@@ -1850,12 +1874,6 @@
       "dyy",
       "Djabugay",
       "Djabugay (dyy)",
-      "Sepik_Highlands_Pacific"
-    ],
-    [
-      "dze",
-      "Djiwarli",
-      "Djiwarli (dze)",
       "Sepik_Highlands_Pacific"
     ],
     [
@@ -1901,6 +1919,12 @@
       "Sepik_Highlands_Pacific"
     ],
     [
+      "eni",
+      "Enim",
+      "Enim (eni)",
+      "Sepik_Highlands_Pacific"
+    ],
+    [
       "enq",
       "Enga",
       "Enga (enq)",
@@ -1925,6 +1949,12 @@
       "Sepik_Highlands_Pacific"
     ],
     [
+      "err",
+      "Erre",
+      "Erre (err)",
+      "Sepik_Highlands_Pacific"
+    ],
+    [
       "etn",
       "Eton (Vanuatu)",
       "Eton (Vanuatu) (etn)",
@@ -1934,6 +1964,12 @@
       "etr",
       "Edolo",
       "Edolo (etr)",
+      "Sepik_Highlands_Pacific"
+    ],
+    [
+      "eur",
+      "Europanto",
+      "Europanto (eur)",
       "Sepik_Highlands_Pacific"
     ],
     [
@@ -1991,6 +2027,24 @@
       "Sepik_Highlands_Pacific"
     ],
     [
+      "fiz",
+      "Izere (Retired)",
+      "Izere (Retired) (fiz)",
+      "Sepik_Highlands_Pacific"
+    ],
+    [
+      "flm",
+      "Falam Chin (Retired)",
+      "Falam Chin (Retired) (flm)",
+      "Sepik_Highlands_Pacific"
+    ],
+    [
+      "fln",
+      "Flinders Island",
+      "Flinders Island (fln)",
+      "Sepik_Highlands_Pacific"
+    ],
+    [
       "fnb",
       "Fanbak",
       "Fanbak (fnb)",
@@ -2012,6 +2066,18 @@
       "fqs",
       "Fas",
       "Fas (fqs)",
+      "Sepik_Highlands_Pacific"
+    ],
+    [
+      "fri",
+      "Western Frisian (Retired)",
+      "Western Frisian (Retired) (fri)",
+      "Sepik_Highlands_Pacific"
+    ],
+    [
+      "frm",
+      "Middle French",
+      "Middle French (frm)",
       "Sepik_Highlands_Pacific"
     ],
     [
@@ -2105,6 +2171,12 @@
       "Sepik_Highlands_Pacific"
     ],
     [
+      "gav",
+      "Gabutamon",
+      "Gabutamon (gav)",
+      "Sepik_Highlands_Pacific"
+    ],
+    [
       "gaw",
       "Nobonob",
       "Nobonob (gaw)",
@@ -2114,6 +2186,12 @@
       "gbb",
       "Kaytetye",
       "Kaytetye (gbb)",
+      "Sepik_Highlands_Pacific"
+    ],
+    [
+      "gbc",
+      "Garrwan",
+      "Garrwan (gbc)",
       "Sepik_Highlands_Pacific"
     ],
     [
@@ -2153,9 +2231,21 @@
       "Sepik_Highlands_Pacific"
     ],
     [
+      "gcd",
+      "Ganggalida",
+      "Ganggalida (gcd)",
+      "Sepik_Highlands_Pacific"
+    ],
+    [
       "gcn",
       "Gaina",
       "Gaina (gcn)",
+      "Sepik_Highlands_Pacific"
+    ],
+    [
+      "gdc",
+      "Gugu Badhun",
+      "Gugu Badhun (gdc)",
       "Sepik_Highlands_Pacific"
     ],
     [

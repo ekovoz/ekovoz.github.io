@@ -1,7 +1,7 @@
 {
   "macro_region_id": 11,
   "region_name_es": "Sudeste Asiático Continental e Insular",
-  "total_languages": 1216,
+  "total_languages": 1219,
   "subclades_covered": 33,
   "featured_languages": [
     [
@@ -116,6 +116,12 @@
       "agn",
       "Agutaynen",
       "Agutaynen (agn)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "agp",
+      "Paranan-Pahanan",
+      "Paranan-Pahanan (agp)",
       "Nusantara_Mekong"
     ],
     [
@@ -437,6 +443,12 @@
       "Nusantara_Mekong"
     ],
     [
+      "ayy",
+      "Tayabas Ayta near Lucena City in Western Quezon",
+      "Tayabas Ayta near Lucena City in Western Quezon (ayy)",
+      "Nusantara_Mekong"
+    ],
+    [
       "ayz",
       "Mai Brat",
       "Mai Brat (ayz)",
@@ -647,6 +659,12 @@
       "Nusantara_Mekong"
     ],
     [
+      "bhk",
+      "Inland-Buhi-Daraga Bikol",
+      "Inland-Buhi-Daraga Bikol (bhk)",
+      "Nusantara_Mekong"
+    ],
+    [
       "bhp",
       "Bima",
       "Bima (bhp)",
@@ -692,6 +710,12 @@
       "bjx",
       "Banao Itneg",
       "Banao Itneg (bjx)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "bkb",
+      "Eastern-Southern Bontok",
+      "Eastern-Southern Bontok (bkb)",
       "Nusantara_Mekong"
     ],
     [
@@ -1229,6 +1253,12 @@
       "Nusantara_Mekong"
     ],
     [
+      "ccq",
+      "Chaungtha",
+      "Chaungtha (ccq)",
+      "Nusantara_Mekong"
+    ],
+    [
       "ceb",
       "Cebuano",
       "Cebuano (ceb)",
@@ -1274,6 +1304,12 @@
       "cjm",
       "Eastern Cham",
       "Eastern Cham (cjm)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "cka",
+      "Khumi Awa Chin",
+      "Khumi Awa Chin (cka)",
       "Nusantara_Mekong"
     ],
     [
@@ -1388,6 +1424,12 @@
       "csv",
       "Sumtu Chin",
       "Sumtu Chin (csv)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "csx",
+      "Cambodian Sign Language",
+      "Cambodian Sign Language (csx)",
       "Nusantara_Mekong"
     ],
     [
@@ -1643,12 +1685,6 @@
       "Nusantara_Mekong"
     ],
     [
-      "dsn",
-      "Dusner",
-      "Dusner (dsn)",
-      "Nusantara_Mekong"
-    ],
-    [
       "dtb",
       "Labuk-Kinabatangan Kadazan",
       "Labuk-Kinabatangan Kadazan (dtb)",
@@ -1715,24 +1751,6 @@
       "Nusantara_Mekong"
     ],
     [
-      "duy",
-      "Dicamay Agta",
-      "Dicamay Agta (duy)",
-      "Nusantara_Mekong"
-    ],
-    [
-      "dyg",
-      "Villa Viciosa Agta",
-      "Villa Viciosa Agta (dyg)",
-      "Nusantara_Mekong"
-    ],
-    [
-      "eaa",
-      "Karenggapa",
-      "Karenggapa (eaa)",
-      "Nusantara_Mekong"
-    ],
-    [
       "ebc",
       "Beginci",
       "Beginci (ebc)",
@@ -1760,6 +1778,12 @@
       "eky",
       "Eastern Kayah",
       "Eastern Kayah (eky)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "elp",
+      "Elpaputih",
+      "Elpaputih (elp)",
       "Nusantara_Mekong"
     ],
     [
@@ -1802,12 +1826,6 @@
       "erw",
       "Erokwanas",
       "Erokwanas (erw)",
-      "Nusantara_Mekong"
-    ],
-    [
-      "esy",
-      "Eskayan",
-      "Eskayan (esy)",
       "Nusantara_Mekong"
     ],
     [

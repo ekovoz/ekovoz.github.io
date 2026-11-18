@@ -1,7 +1,7 @@
 {
   "macro_region_id": 9,
   "region_name_es": "Subcontinente Indio e Himalaya",
-  "total_languages": 624,
+  "total_languages": 621,
   "subclades_covered": 32,
   "featured_languages": [
     [
@@ -11,27 +11,9 @@
       "Kerala,Nilgiris"
     ],
     [
-      "abj",
-      "Aka-Bea",
-      "Aka-Bea (abj)",
-      "Indo_Gangetic_Himalaya"
-    ],
-    [
-      "aci",
-      "Aka-Cari",
-      "Aka-Cari (aci)",
-      "Indo_Gangetic_Himalaya"
-    ],
-    [
-      "ack",
-      "Aka-Kora",
-      "Aka-Kora (ack)",
-      "Indo_Gangetic_Himalaya"
-    ],
-    [
-      "acl",
-      "Akar-Bale",
-      "Akar-Bale (acl)",
+      "aay",
+      "Aariya",
+      "Aariya (aay)",
       "Indo_Gangetic_Himalaya"
     ],
     [
@@ -44,6 +26,12 @@
       "adl",
       "Galo",
       "Galo (adl)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "adp",
+      "Adap",
+      "Adap (adp)",
       "Indo_Gangetic_Himalaya"
     ],
     [
@@ -68,12 +56,6 @@
       "agi",
       "Agariya",
       "Agariya (agi)",
-      "Indo_Gangetic_Himalaya"
-    ],
-    [
-      "aho",
-      "Ahom",
-      "Ahom (aho)",
       "Indo_Gangetic_Himalaya"
     ],
     [
@@ -104,30 +86,6 @@
       "ajz",
       "Amri Karbi",
       "Amri Karbi (ajz)",
-      "Indo_Gangetic_Himalaya"
-    ],
-    [
-      "akj",
-      "Aka-Jeru",
-      "Aka-Jeru (akj)",
-      "Indo_Gangetic_Himalaya"
-    ],
-    [
-      "akm",
-      "Aka-Bo",
-      "Aka-Bo (akm)",
-      "Indo_Gangetic_Himalaya"
-    ],
-    [
-      "akx",
-      "Aka-Kede",
-      "Aka-Kede (akx)",
-      "Indo_Gangetic_Himalaya"
-    ],
-    [
-      "aky",
-      "Aka-Kol",
-      "Aka-Kol (aky)",
       "Indo_Gangetic_Himalaya"
     ],
     [
@@ -509,6 +467,12 @@
       "Indo_Gangetic_Himalaya"
     ],
     [
+      "btl",
+      "Bhatola",
+      "Bhatola (btl)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
       "btv",
       "Bateri",
       "Bateri (btv)",
@@ -548,6 +512,12 @@
       "cdf",
       "Chiru",
       "Chiru (cdf)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "cdg",
+      "Chamari",
+      "Chamari (cdg)",
       "Indo_Gangetic_Himalaya"
     ],
     [
@@ -683,6 +653,12 @@
       "Indo_Gangetic_Himalaya"
     ],
     [
+      "cty",
+      "Maundadan Chetti",
+      "Maundadan Chetti (cty)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
       "cur",
       "Chhulung",
       "Chhulung (cur)",
@@ -698,6 +674,12 @@
       "cvg",
       "Chug",
       "Chug (cvg)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "dap",
+      "Dafla",
+      "Dafla (dap)",
       "Indo_Gangetic_Himalaya"
     ],
     [
@@ -728,6 +710,18 @@
       "dgo",
       "Dogri (individual language)",
       "Dogri (individual language) (dgo)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "dgu",
+      "Degaru",
+      "Degaru (dgu)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "dha",
+      "Dhanwar (India)",
+      "Dhanwar (India) (dha)",
       "Indo_Gangetic_Himalaya"
     ],
     [
@@ -767,12 +761,6 @@
       "Indo_Gangetic_Himalaya"
     ],
     [
-      "dja",
-      "Djadjawurrung",
-      "Djadjawurrung (dja)",
-      "Indo_Gangetic_Himalaya"
-    ],
-    [
       "dka",
       "Dakpakha",
       "Dakpakha (dka)",
@@ -809,9 +797,9 @@
       "Indo_Gangetic_Himalaya"
     ],
     [
-      "drq",
-      "Dura",
-      "Dura (drq)",
+      "drw",
+      "Darwazi",
+      "Darwazi (drw)",
       "Indo_Gangetic_Himalaya"
     ],
     [
@@ -824,12 +812,6 @@
       "dso",
       "Desiya",
       "Desiya (dso)",
-      "Indo_Gangetic_Himalaya"
-    ],
-    [
-      "dth",
-      "Adithinngithigh",
-      "Adithinngithigh (dth)",
       "Indo_Gangetic_Himalaya"
     ],
     [

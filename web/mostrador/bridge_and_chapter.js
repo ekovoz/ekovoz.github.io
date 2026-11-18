@@ -79,7 +79,7 @@ export const CROSS_WORK_BRIDGE_TABLE = {
     { beatitudeIndex: 8, plateIndex: 17, book: "MAT", chapter: 5, verse: 10, evangeliosWeek: "s08", evangeliosQuarter: "T1" },
     { beatitudeIndex: 9, plateIndex: 19, book: "MAT", chapter: 5, verse: 11, evangeliosWeek: "s08", evangeliosQuarter: "T1" },
     { beatitudeIndex: 10, plateIndex: 24, book: "MAT", chapter: 5, verse: 12, evangeliosWeek: "s08", evangeliosQuarter: "T1" },
-    { beatitudeIndex: 11, plateIndex: 25, book: "PSA", chapter: 1, verse: 1, evangeliosWeek: "s01", evangeliosQuarter: "T1" },
+    { beatitudeIndex: 11, plateIndex: 25, book: "MAT", chapter: 5, verse: 1, evangeliosWeek: "s08", evangeliosQuarter: "T1" },
   ],
   evangeliosAnchors: {
     "JHN.1": { weekId: "s01", quarter: "T1", book: "JHN", chapter: 1, verse: 1 },
@@ -435,8 +435,35 @@ export function applyOrthographyProfile(text, profile = "inali", lang = "stp", o
   return res.transducedText;
 }
 
+const VERIFIED_EKPACK_HUMAN_20 = new Set([
+  "es",
+  "es-1909",
+  "en",
+  "he",
+  "hbo",
+  "heb",
+  "grc",
+  "ar",
+  "bn",
+  "de",
+  "fa",
+  "fr",
+  "hi",
+  "id",
+  "it",
+  "ja",
+  "ko",
+  "pt",
+  "ru",
+  "sw",
+  "tr",
+  "ur",
+  "zh-hans",
+  "zh",
+]);
+
 /**
- * Derives the Epistemic Seal key strictly from the loaded data provenance.
+ * Derives the Epistemic Seal key strictly from Frame 0 provenance and loaded chapter status.
  * Never hardcoded in HTML.
  */
 export function deriveEpistemicSeal(navResult, catalogEntry = null) {
@@ -446,6 +473,23 @@ export function deriveEpistemicSeal(navResult, catalogEntry = null) {
   const verses = navResult.chapter.verses;
   if (!verses || typeof verses !== "object" || Object.keys(verses).length === 0) {
     return "seal.unavailable";
+  }
+  const provTier = String(
+    navResult.provenance?.sovereign_tier ||
+      navResult.chapter?.provenance?.sovereign_tier ||
+      catalogEntry?.sovereign_tier ||
+      "",
+  ).toLowerCase();
+  if (
+    provTier === "tier0_autograph_witness" ||
+    provTier === "tier1_canonical_human_66" ||
+    provTier === "tier_0_autograph_witness" ||
+    provTier === "tier_1_open_canonical_66"
+  ) {
+    return "seal.verified";
+  }
+  if (provTier === "tier2_nt_human_ot_synthesized" || provTier === "tier_2_nt_plus_ot_synth") {
+    return "seal.draft_review";
   }
   const draftStatus = String(
     navResult.meta?.draft_status || catalogEntry?.draft_status || ""
@@ -461,7 +505,7 @@ export function deriveEpistemicSeal(navResult, catalogEntry = null) {
     return "seal.draft_review";
   }
   const lang = String(navResult.lang || "").toLowerCase();
-  if (lang === "es" || lang === "es-1909" || lang === "en" || lang === "he" || lang === "grc") {
+  if (VERIFIED_EKPACK_HUMAN_20.has(lang)) {
     return "seal.verified";
   }
   return "seal.draft_review";

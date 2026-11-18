@@ -15,7 +15,7 @@ export const FIELD_PDFS_REGISTRY = {
   checklist_80_bloques: { bytes: 12437, path: "obras/biblia/campo/checklist_80_bloques.pdf" },
 };
 
-/** Resuelve si un código de idioma cuenta con PDFs precompilados en la federación Same-Origin `editions-01`. */
+/** Resuelve si un código de idioma pertenece a las 5 lenguas de núcleo (`es, en, stp, he, grc`). */
 export function resolvePrecompiledDiskLang(rawLang = "es") {
   const clean = String(rawLang || "").trim().toLowerCase();
   if (clean === "es" || clean === "en" || clean === "stp" || clean === "he" || clean === "grc") return clean;
@@ -28,7 +28,7 @@ export function buildRelativePdfAssetUrl(rawUrl = "") {
   if (!clean) return "";
   return clean
     .replace(/^dist_federation\//, "")
-    .replace(/^\/+(?=(?:data|obras|editions-01|packs-0[1-7])\/)/, "");
+    .replace(/^\/+/, "");
 }
 
 export const CANONICAL_14_PLUS_2_EDITIONS_CATALOG = [
@@ -330,26 +330,37 @@ export function resolveCanonicalBlockCode(book = "GEN", chapter = 1, verse = 1) 
 }
 
 const EDITORIAL_PROFILE_PRIMARY_KEY_ALIASES = Object.freeze({
+  "one-column-reading": "01_1col_lectura",
   "1col-reading": "01_1col_lectura",
   "1col-a4": "01_1col_lectura",
   "1col-letter": "01_1col_lectura",
+  "two-column-bible": "02_2col_pastoral",
   "2col-pastoral": "02_2col_pastoral",
   "2col-letter": "02_2col_pastoral",
   "2col-a4": "02_2col_pastoral",
+  "three-column-compact": "03_3col_compacta",
   "3col-compact": "03_3col_compacta",
   "3col-a4": "03_3col_compacta",
   "3col-letter": "03_3col_compacta",
-  "1col-large-print": "04_1col_letra_grande",
   "large-print": "04_1col_letra_grande",
+  "1col-large-print": "04_1col_letra_grande",
+  "intergenerational-parallel": "05_interlineal_estudio",
   "interlinear-study": "05_interlineal_estudio",
   "bilingual-parallel": "06_bilingue_paralela",
+  "field-review-workbook": "07_cuaderno_5lineas_apaisado",
   "field-notebook-5line": "07_cuaderno_5lineas_apaisado",
   "booklet-pocket": "08_bolsillo_misionero",
+  "papel": "09_atril_liturgico",
   "pulpit-folio": "09_atril_liturgico",
+  "standard-1col": "10_evangelio_14_pericopas",
   "gospel-14-pericopes": "10_evangelio_14_pericopas",
+  "doc": "11_braille_nemeth_b70",
   "braille-nemeth-b70": "11_braille_nemeth_b70",
+  "mobile-9x16": "12_dislexia_espaciado_amplio",
   "dyslexia-wide": "12_dislexia_espaciado_amplio",
+  "compact-2col": "13_contraste_extremo_baja_vision",
   "low-vision-contrast": "13_contraste_extremo_baja_vision",
+  "ultra-compact-3col": "14_pliego_mural_comunitario",
   "mural-sheet-a3": "14_pliego_mural_comunitario",
 });
 
@@ -627,14 +638,21 @@ export function resolveEditionGeometrySpec(profileId = "02_2col_pastoral", paper
     "08": 8.5, "09": 12.0, "10": 10.0, "11": 16.0, "12": 12.5, "13": 15.0, "14": 11.0,
   };
   const usePrefixDefaults = Boolean(numPrefix && exactIdx < 0 && prefixIdx < 0);
+  const isBraille11 = cleanId === "11_braille_nemeth_b70";
+  const isExplicitSingleColumnVariant =
+    isBraille11 || (exactIdx < 0 && /1col|lectura|braille|baja_vision|pulpito|pliego_mural|interlineal/i.test(cleanId));
   return {
-    profileId: usePrefixDefaults ? cleanId : found.id,
-    columns: usePrefixDefaults
-      ? defaultColsByPrefix[resolvedPrefix] || 2
-      : Number(found.columns) || defaultColsByPrefix[resolvedPrefix] || 2,
-    fontPt: usePrefixDefaults
-      ? defaultFontByPrefix[resolvedPrefix] || 9.5
-      : Number(found.fontPt) || defaultFontByPrefix[resolvedPrefix] || 9.5,
+    profileId: exactIdx < 0 && numPrefix ? cleanId : found.id,
+    columns: isExplicitSingleColumnVariant
+      ? 1
+      : usePrefixDefaults
+        ? defaultColsByPrefix[resolvedPrefix] || 2
+        : Number(found.columns) || defaultColsByPrefix[resolvedPrefix] || 2,
+    fontPt: isBraille11
+      ? 16.0
+      : usePrefixDefaults
+        ? defaultFontByPrefix[resolvedPrefix] || 9.5
+        : Number(found.fontPt) || defaultFontByPrefix[resolvedPrefix] || 9.5,
     leadingRatio: Number(found.leadingRatio) || 1.35,
     gutterMm: Number(found.gutterMm) || 20.0,
     paperSize,
@@ -661,29 +679,16 @@ export function resolvePrintEditionPdfAssetUrl(
     return "obras/biblia/campo/checklist_80_bloques.pdf";
   }
   const cleanLang = String(lang || "es").trim().toLowerCase() || "es";
-  const precompiledLang = resolvePrecompiledDiskLang(cleanLang);
   const spec = resolveEditionGeometrySpec(id, paper);
   const editionDir = spec.editionDir;
-
-  if (!precompiledLang) {
-    const chosenBlock =
-      blockId && /^B\d{2}$/i.test(String(blockId))
-        ? String(blockId).toUpperCase()
-        : spec.sampleBlockId || "FULL";
-    return `mostrador/tanda_print_worker.js?lang=${encodeURIComponent(cleanLang)}&edition=${encodeURIComponent(editionDir)}&profile=${encodeURIComponent(id)}&block=${encodeURIComponent(chosenBlock)}`;
-  }
-
-  if (spec.sampleBlockId) {
-    const chosenBlock =
-      blockId && /^B\d{2}$/i.test(String(blockId)) && String(blockId).toUpperCase() !== "B01"
-        ? String(blockId).toUpperCase()
-        : spec.sampleBlockId;
-    return `editions-01/data/blocks/${precompiledLang}/${editionDir}/${chosenBlock}.pdf`;
-  }
+  const chosenBlock =
+    blockId && /^B\d{2}$/i.test(String(blockId)) && String(blockId).toUpperCase() !== "B01"
+      ? String(blockId).toUpperCase()
+      : spec.sampleBlockId || "FULL";
   if (manifestFallbackPath) {
     return buildRelativePdfAssetUrl(manifestFallbackPath);
   }
-  return `editions-01/data/full/${precompiledLang}/${editionDir}.pdf`;
+  return `mostrador/tanda_print_worker.js?lang=${encodeURIComponent(cleanLang)}&edition=${encodeURIComponent(editionDir)}&id=${encodeURIComponent(id)}&cols=${spec.columns}&font=${spec.fontPt}pt&block=${encodeURIComponent(chosenBlock)}`;
 }
 
 /** Calcula en tiempo real el presupuesto tipográfico Kindle / Impresión. */

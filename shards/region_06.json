@@ -1,7 +1,7 @@
 {
   "macro_region_id": 6,
   "region_name_es": "Medio Oriente y Creciente Fértil",
-  "total_languages": 110,
+  "total_languages": 108,
   "subclades_covered": 31,
   "featured_languages": [
     [
@@ -77,12 +77,6 @@
       "Levant_Zagros"
     ],
     [
-      "akk",
-      "Akkadian",
-      "Akkadian (akk)",
-      "Levant_Zagros"
-    ],
-    [
       "amw",
       "Western Neo-Aramaic",
       "Western Neo-Aramaic (amw)",
@@ -107,12 +101,6 @@
       "Levant_Zagros"
     ],
     [
-      "arc",
-      "Official Aramaic (700-300 BCE)",
-      "Official Aramaic (700-300 BCE) (arc)",
-      "Levant_Zagros"
-    ],
-    [
       "ars",
       "Najdi Arabic",
       "Najdi Arabic (ars)",
@@ -128,12 +116,6 @@
       "avd",
       "Alviri-Vidari",
       "Alviri-Vidari (avd)",
-      "Levant_Zagros"
-    ],
-    [
-      "ave",
-      "Avestan",
-      "Avestan (ave)",
       "Levant_Zagros"
     ],
     [
@@ -212,6 +194,12 @@
       "def",
       "Dezfuli",
       "Dezfuli (def)",
+      "Levant_Zagros"
+    ],
+    [
+      "elx",
+      "Elamite",
+      "Elamite (elx)",
       "Levant_Zagros"
     ],
     [

@@ -2,7 +2,6 @@
 // Purgado el emisor JS `/Identity-H` sin `/FontFile2` y conectado `new Worker("./tanda_print_worker.js")` (`SLICE-V2R-16`).
 
 import {
-  buildUnicodeColdSeedVectorPdf,
   resolveFontFileForLangOrScript,
   runWorkerTandaJob,
   typesetTandaWithCachedWasmSync,
@@ -138,8 +137,8 @@ export async function probeFederationShardReachabilityOnce({
   }
 
   const probeUrl = resolveFederatedAssetUrl(
-    "editions-01",
-    "fonts/fonts_federation_manifest.json",
+    "packs/fonts",
+    "fonts_zst_manifest.json",
     doc,
     { dotSlashPrefix: true },
   );
@@ -209,24 +208,8 @@ export function resolveSameOriginFontAndPdfCascade({
     fontUrlsCascade: [tier0OfflineUrl || "./assets/fonts/CharisSIL-Regular.ttf"].filter(Boolean),
     boldFontUrlsCascade: ["./assets/fonts/CharisSIL-Bold-Subset.ttf"],
     bridgeFontUrl: "./assets/fonts/CharisSIL-Regular.ttf",
-    precompiledBlockUrl:
-      precompiledLang && fedReachable !== false
-        ? resolveFederatedAssetUrl(
-          "editions-01",
-          `data/blocks/${precompiledLang}/${edition}/${blockId}.pdf`,
-          doc,
-          { dotSlashPrefix: true },
-        )
-        : null,
-    precompiledFullUrl:
-      precompiledLang && fedReachable !== false
-        ? resolveFederatedAssetUrl(
-          "editions-01",
-          `data/full/${precompiledLang}/${edition}.pdf`,
-          doc,
-          { dotSlashPrefix: true },
-        )
-        : null,
+    precompiledBlockUrl: null,
+    precompiledFullUrl: null,
     workerSynthesisFallback: "./mostrador/tanda_print_worker.js",
   };
 }
@@ -297,11 +280,161 @@ ${versesHtml}
 </html>`;
 }
 
-/**
- * Compone una Tanda PDF (`%PDF-1.7`, `<= 50` páginas, `< 14 MB` RAM) delegando en `ekovoz_typeset_worker.wasm`
- * con `/FontFile2` subconjuntado real (`subsetter` + `rustybuzz` + `unicode-bidi`), y respaldo `Type1 /WinAnsiEncoding`
- * libre de `/Identity-H` sin fuente cuando aún no se ha hidratado WASM en navegador.
- */
+function buildEmbeddedType3VectorSeedPdf({
+  lines = ["Ekovoz Tanda"],
+  columns = 2,
+  isLetter = false,
+  isRtl = false,
+  fontPt = 9.5,
+  maxPages = 0,
+  editionMode = 0,
+} = {}) {
+  const cols = editionMode === 2 || editionMode === 16 ? 1 : Math.max(1, Math.min(3, Number(columns) || 2));
+  const cleanPt = Math.max(7.5, Math.min(18.0, Number(fontPt) || 9.5));
+  const pageW = isLetter ? 612 : 595;
+  const pageH = isLetter ? 792 : 842;
+  const marginLeft = 40;
+  const marginRight = editionMode === 2 || editionMode === 16 ? 127.56 : 40;
+  const marginY = 44;
+  const gutter = 14;
+  const colW = Math.max(120, pageW - marginLeft - marginRight - gutter * (cols - 1)) / cols;
+  const lineH = Math.max(10, Math.round(cleanPt * 1.34));
+  const linesPerCol = Math.max(16, Math.floor((pageH - marginY * 2) / lineH));
+  const linesPerPage = linesPerCol * cols;
+  const rawPageCount = Math.max(1, Math.ceil(lines.length / linesPerPage));
+  const pageCount = Number(maxPages) > 0 ? Math.min(Number(maxPages), rawPageCount) : rawPageCount;
+
+  // Construimos un diccionario vectorial Type3 autocontenido + ToUnicode CMap (ISO 32000-1 §9.6.5)
+  // libre de /WinAnsiEncoding y libre de /Identity-H huérfano sin /FontFile2.
+  const glyphCodeByChar = new Map();
+  const charByGlyphCode = [];
+  for (const ln of lines) {
+    for (const ch of Array.from(String(ln || ""))) {
+      if (!glyphCodeByChar.has(ch) && charByGlyphCode.length < 223) {
+        const code = 32 + charByGlyphCode.length;
+        glyphCodeByChar.set(ch, code);
+        charByGlyphCode.push(ch);
+      }
+    }
+  }
+  if (charByGlyphCode.length === 0) {
+    glyphCodeByChar.set(" ", 32);
+    charByGlyphCode.push(" ");
+  }
+
+  const encodeSeedHex = (ln) => {
+    let hex = "<";
+    for (const ch of Array.from(String(ln || ""))) {
+      const code = glyphCodeByChar.get(ch) ?? 32;
+      hex += code.toString(16).toUpperCase().padStart(2, "0");
+    }
+    return `${hex}>`;
+  };
+
+  const pageStreams = [];
+  for (let p = 0; p < pageCount; p += 1) {
+    const slice = lines.slice(p * linesPerPage, (p + 1) * linesPerPage);
+    let st = "";
+    if (editionMode === 2 || editionMode === 16) {
+      const noteX0 = (pageW - marginRight + 10).toFixed(1);
+      const noteX1 = (pageW - 18).toFixed(1);
+      st += "0.85 w ";
+      for (let r = 0; r < linesPerCol; r += 2) {
+        const gy = (pageH - marginY - r * lineH - 2).toFixed(1);
+        st += `${noteX0} ${gy} m ${noteX1} ${gy} l S `;
+      }
+      st += "\n";
+    }
+    for (let i = 0; i < slice.length; i += 1) {
+      const rawCol = Math.floor(i / linesPerCol);
+      const effCol = isRtl ? cols - 1 - rawCol : rawCol;
+      const row = i % linesPerCol;
+      const x = (marginLeft + effCol * (colW + gutter)).toFixed(1);
+      const y = (pageH - marginY - row * lineH).toFixed(1);
+      st += `BT /F1 ${cleanPt.toFixed(1)} Tf ${x} ${y} Td ${encodeSeedHex(slice[i])} Tj ET\n`;
+    }
+    pageStreams.push(st);
+  }
+
+  const glyphStreamBody = "520 0 40 0 480 700 d1 70 60 360 560 re S\n";
+  const spaceStreamBody = "280 0 0 0 0 0 d1\n";
+  const differences = charByGlyphCode
+    .map((_, idx) => (idx === 0 && charByGlyphCode[0] === " " ? "/gsp" : `/g${idx}`))
+    .join(" ");
+  const widths = charByGlyphCode.map((ch) => (ch === " " ? 280 : 520)).join(" ");
+  const charProcsEntries = new Set();
+  for (let idx = 0; idx < charByGlyphCode.length; idx += 1) {
+    if (idx === 0 && charByGlyphCode[0] === " ") charProcsEntries.add("/gsp 5 0 R");
+    else charProcsEntries.add(`/g${idx} 6 0 R`);
+  }
+
+  const bfChars = charByGlyphCode
+    .map((ch, idx) => {
+      const codeHex = (32 + idx).toString(16).toUpperCase().padStart(2, "0");
+      let u16Hex = "";
+      for (let k = 0; k < ch.length; k += 1) {
+        u16Hex += ch.charCodeAt(k).toString(16).toUpperCase().padStart(4, "0");
+      }
+      return `<${codeHex}> <${u16Hex || "0020"}>`;
+    })
+    .join("\n");
+  const cmap = `/CIDInit /ProcSet findresource begin\n12 dict begin\nbegincmap\n/CIDSystemInfo << /Registry (Adobe) /Ordering (UCS) /Supplement 0 >> def\n/CMapName /EkovozType3UTF16 def\n/CMapType 2 def\n1 begincodespacerange\n<00> <FF>\nendcodespacerange\n${charByGlyphCode.length} beginbfchar\n${bfChars}\nendbfchar\nendcmap\nCMapName currentdict /CMap defineresource pop\nend\nend\n`;
+
+  const firstPageObjId = 7;
+  const totalObjs = 6 + pageCount * 2;
+  const offsets = new Array(totalObjs + 1).fill(0);
+  const chunks = [];
+  let cursor = 0;
+  const enc = new TextEncoder();
+  const pushStr = (s) => {
+    const b = enc.encode(s);
+    chunks.push(b);
+    cursor += b.byteLength;
+  };
+  const writeObj = (id, body) => {
+    offsets[id] = cursor;
+    pushStr(`${id} 0 obj\n${body}\nendobj\n`);
+  };
+
+  pushStr("%PDF-1.7\n");
+  writeObj(1, "<< /Type /Catalog /Pages 2 0 R >>");
+  const kids = Array.from({ length: pageCount }, (_, i) => `${firstPageObjId + i * 2} 0 R`).join(" ");
+  writeObj(2, `<< /Type /Pages /Kids [ ${kids} ] /Count ${pageCount} >>`);
+  writeObj(
+    3,
+    `<< /Type /Font /Subtype /Type3 /FontBBox [0 0 520 720] /FontMatrix [0.001 0 0 0.001 0 0] /CharProcs << ${[...charProcsEntries].join(" ")} >> /Encoding << /Type /Encoding /Differences [ 32 ${differences} ] >> /FirstChar 32 /LastChar ${31 + charByGlyphCode.length} /Widths [ ${widths} ] /ToUnicode 4 0 R >>`,
+  );
+  writeObj(4, `<< /Length ${enc.encode(cmap).byteLength} >>\nstream\n${cmap}endstream`);
+  writeObj(5, `<< /Length ${enc.encode(spaceStreamBody).byteLength} >>\nstream\n${spaceStreamBody}endstream`);
+  writeObj(6, `<< /Length ${enc.encode(glyphStreamBody).byteLength} >>\nstream\n${glyphStreamBody}endstream`);
+
+  for (let i = 0; i < pageCount; i += 1) {
+    const pageId = firstPageObjId + i * 2;
+    const contentId = firstPageObjId + 1 + i * 2;
+    writeObj(
+      pageId,
+      `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${pageW} ${pageH}] /Resources << /Font << /F1 3 0 R >> >> /Contents ${contentId} 0 R >>`,
+    );
+    const stLen = enc.encode(pageStreams[i]).byteLength;
+    writeObj(contentId, `<< /Length ${stLen} >>\nstream\n${pageStreams[i]}endstream`);
+  }
+
+  const xrefOff = cursor;
+  let xref = `xref\n0 ${totalObjs + 1}\n0000000000 65535 f \n`;
+  for (let id = 1; id <= totalObjs; id += 1) {
+    xref += `${String(offsets[id]).padStart(10, "0")} 00000 n \n`;
+  }
+  xref += `trailer\n<< /Size ${totalObjs + 1} /Root 1 0 R >>\nstartxref\n${xrefOff}\n%%EOF\n`;
+  pushStr(xref);
+
+  const out = new Uint8Array(cursor);
+  let pos = 0;
+  for (const c of chunks) {
+    out.set(c, pos);
+    pos += c.byteLength;
+  }
+  return out;
+}
 export function typesetTandaPdfBytes({
   tandaId = "TANDA-01",
   lang = "es",
@@ -354,7 +487,7 @@ export function typesetTandaPdfBytes({
   for (const para of rawParagraphs) {
     for (const ln of wrapGreedyLines(para, cpl)) wrapped.push(ln);
   }
-  return buildUnicodeColdSeedVectorPdf({
+  return buildEmbeddedType3VectorSeedPdf({
     lines: wrapped.length > 0 ? wrapped : [headerLine],
     columns: cols,
     isLetter,

@@ -1,7 +1,7 @@
 {
   "macro_region_id": 10,
   "region_name_es": "Asia Oriental y Meseta Altaica",
-  "total_languages": 364,
+  "total_languages": 368,
   "subclades_covered": 33,
   "featured_languages": [
     [
@@ -47,6 +47,12 @@
       "East_Asia_Plateau"
     ],
     [
+      "ais",
+      "Northern Amis",
+      "Northern Amis (ais)",
+      "East_Asia_Plateau"
+    ],
+    [
       "alt",
       "Southern Altai",
       "Southern Altai (alt)",
@@ -83,6 +89,12 @@
       "East_Asia_Plateau"
     ],
     [
+      "ayx",
+      "Ayi (China)",
+      "Ayi (China) (ayx)",
+      "East_Asia_Plateau"
+    ],
+    [
       "aza",
       "Azha",
       "Azha (aza)",
@@ -110,6 +122,12 @@
       "bfs",
       "Southern Bai",
       "Southern Bai (bfs)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "bgh",
+      "Bugan (Retired)",
+      "Bugan (Retired) (bgh)",
       "East_Asia_Plateau"
     ],
     [
@@ -233,12 +251,6 @@
       "East_Asia_Plateau"
     ],
     [
-      "byq",
-      "Basay",
-      "Basay (byq)",
-      "East_Asia_Plateau"
-    ],
-    [
       "bzg",
       "Babuza",
       "Babuza (bzg)",
@@ -287,12 +299,6 @@
       "East_Asia_Plateau"
     ],
     [
-      "cmg",
-      "Classical Mongolian",
-      "Classical Mongolian (cmg)",
-      "East_Asia_Plateau"
-    ],
-    [
       "cmn",
       "Mandarin Chinese",
       "Mandarin Chinese (cmn)",
@@ -308,12 +314,6 @@
       "cnp",
       "Northern Ping Chinese",
       "Northern Ping Chinese (cnp)",
-      "East_Asia_Plateau"
-    ],
-    [
-      "cnx",
-      "Middle Cornish",
-      "Middle Cornish (cnx)",
       "East_Asia_Plateau"
     ],
     [
@@ -389,6 +389,12 @@
       "East_Asia_Plateau"
     ],
     [
+      "drh",
+      "Darkhat",
+      "Darkhat (drh)",
+      "East_Asia_Plateau"
+    ],
+    [
       "dru",
       "Rukai",
       "Rukai (dru)",
@@ -410,6 +416,18 @@
       "eee",
       "E",
       "E (eee)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "ehs",
+      "Miyakubo Sign Language",
+      "Miyakubo Sign Language (ehs)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "emq",
+      "Eastern Muya",
+      "Eastern Muya (emq)",
       "East_Asia_Plateau"
     ],
     [
@@ -440,6 +458,12 @@
       "evn",
       "Evenki",
       "Evenki (evn)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "fos",
+      "Sirayaic",
+      "Sirayaic (fos)",
       "East_Asia_Plateau"
     ],
     [

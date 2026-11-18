@@ -1,7 +1,7 @@
 {
   "macro_region_id": 5,
   "region_name_es": "Anatolia, Cáucaso y Asia Central",
-  "total_languages": 62,
+  "total_languages": 61,
   "subclades_covered": 32,
   "featured_languages": [
     [
@@ -47,12 +47,6 @@
       "Caucasus_Steppes"
     ],
     [
-      "axm",
-      "Middle Armenian",
-      "Middle Armenian (axm)",
-      "Caucasus_Steppes"
-    ],
-    [
       "aze",
       "Azerbaijani",
       "Azerbaijani (aze)",
@@ -95,12 +89,6 @@
       "Caucasus_Steppes"
     ],
     [
-      "chg",
-      "Chagatai",
-      "Chagatai (chg)",
-      "Caucasus_Steppes"
-    ],
-    [
       "dar",
       "Dargwa",
       "Dargwa (dar)",
@@ -122,6 +110,12 @@
       "dng",
       "Dungan",
       "Dungan (dng)",
+      "Caucasus_Steppes"
+    ],
+    [
+      "dsz",
+      "Mardin Sign Language",
+      "Mardin Sign Language (dsz)",
       "Caucasus_Steppes"
     ],
     [
