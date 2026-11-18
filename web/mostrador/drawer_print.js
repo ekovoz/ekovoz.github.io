@@ -474,12 +474,23 @@ export function renderPrintDrawerPanelsSyncInDrawer(ctx = {}) {
         const isSelected = ed.kind !== "field_pdf" && cardId === activeProfileId;
         const fedOfflineOrStandalone =
           state.federationReachable === false || getCachedFederationReachability() === false;
+        const dynamicFieldMode =
+          ed.id?.includes("refugio_4_hojas") || ed.editionSlug === "refugio_4_hojas"
+            ? 1
+            : ed.id?.includes("checklist_80_bloques") || ed.editionSlug === "checklist_80_bloques"
+              ? 2
+              : ed.id === "06_bilingue_paralela"
+                ? 1
+                : ed.id === "07_cuaderno_5lineas_apaisado"
+                  ? 2
+                  : 0;
         const useLiveTandaHref =
-          ed.kind !== "field_pdf" &&
-          (fedOfflineOrStandalone ||
-            !ed.hasPrecompiledPdf ||
-            Boolean(ed.requiresLiveWorkerSynthesis) ||
-            effectiveLang === "es-1909");
+          ed.kind === "field_pdf"
+            ? effectiveLang !== "es" || fedOfflineOrStandalone
+            : fedOfflineOrStandalone ||
+              !ed.hasPrecompiledPdf ||
+              Boolean(ed.requiresLiveWorkerSynthesis) ||
+              effectiveLang === "es-1909";
         const staticRawUrl = ed.profileUrl || ed.url || "";
         const resolvedStaticHref = staticRawUrl.startsWith("editions-01/")
           ? resolveFederatedAssetUrl(
@@ -499,11 +510,12 @@ export function renderPrintDrawerPanelsSyncInDrawer(ctx = {}) {
               verse: state.verse || 1,
               verses: Array.isArray(state.fullBookVerses) ? state.fullBookVerses : null,
               versesMap: !Array.isArray(state.fullBookVerses) ? state.lastNavResult?.chapter?.verses || null : null,
+              editionMode: dynamicFieldMode,
               columns: ed.columns || 2,
               fontPt: ed.fontPt || 9.5,
               paper: ed.paperSize || effectivePaper || "a4",
               dir: isRtlLocale(effectiveLang) ? "rtl" : "ltr",
-              maxPages: 50,
+              maxPages: 0,
             }),
           )
           : resolvedStaticHref;
@@ -736,6 +748,15 @@ export async function hydratePrintDrawerPanelsInDrawer(ctx = {}) {
             maxPagesPerTanda: activeMacroTanda.logicalPagesCount || 80,
           }),
         ]);
+        if (dose2Res?.type === "tanda-offline-font-notice" || dose3Res?.type === "tanda-offline-font-notice") {
+          const noticeEl = getEl("tanda-offline-font-notice", targetDoc);
+          const activeNotice = dose2Res?.type === "tanda-offline-font-notice" ? dose2Res : dose3Res;
+          if (noticeEl && activeNotice) {
+            noticeEl.hidden = false;
+            noticeEl.setAttribute?.("data-font-fsm-state", activeNotice.fontFsmState || "OFFLINE_CSS_FALLBACK");
+            noticeEl.textContent = activeNotice.message || "";
+          }
+        }
         if (dose2Res?.pdfBytes?.byteLength > 0) {
           state.dose2WorkerPdfBytes = dose2Res.pdfBytes;
           state.dose2ObjectUrl = toDownloadablePdfHref(dose2Res.pdfBytes);

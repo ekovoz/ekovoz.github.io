@@ -1,7 +1,7 @@
 {
   "macro_region_id": 11,
   "region_name_es": "Sudeste Asiático Continental e Insular",
-  "total_languages": 1214,
+  "total_languages": 1216,
   "subclades_covered": 33,
   "featured_languages": [
     [
@@ -146,12 +146,6 @@
       "ahh",
       "Aghu",
       "Aghu (ahh)",
-      "Nusantara_Mekong"
-    ],
-    [
-      "aib",
-      "Ainu (China)",
-      "Ainu (China) (aib)",
       "Nusantara_Mekong"
     ],
     [
@@ -302,7 +296,7 @@
       "asc",
       "Casuarina Coast Asmat",
       "Casuarina Coast Asmat (asc)",
-      "Sepik_Highlands_Pacific"
+      "Nusantara_Mekong"
     ],
     [
       "asi",
@@ -320,7 +314,7 @@
       "asy",
       "Yaosakor Asmat",
       "Yaosakor Asmat (asy)",
-      "Sepik_Highlands_Pacific"
+      "Nusantara_Mekong"
     ],
     [
       "asz",
@@ -386,6 +380,12 @@
       "auu",
       "Auye",
       "Auye (auu)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "auw",
+      "Awyi",
+      "Awyi (auw)",
       "Nusantara_Mekong"
     ],
     [
@@ -617,12 +617,6 @@
       "Nusantara_Mekong"
     ],
     [
-      "bgr",
-      "Bawm Chin",
-      "Bawm Chin (bgr)",
-      "Nusantara_Mekong"
-    ],
-    [
       "bgs",
       "Tagabawa",
       "Tagabawa (bgs)",
@@ -791,12 +785,6 @@
       "Nusantara_Mekong"
     ],
     [
-      "blt",
-      "Tai Dam",
-      "Tai Dam (blt)",
-      "Nusantara_Mekong"
-    ],
-    [
       "blw",
       "Balangao",
       "Balangao (blw)",
@@ -830,6 +818,12 @@
       "bnc",
       "Bontok",
       "Bontok (bnc)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "bnd",
+      "Banda (Indonesia)",
+      "Banda (Indonesia) (bnd)",
       "Nusantara_Mekong"
     ],
     [
@@ -899,6 +893,12 @@
       "Nusantara_Mekong"
     ],
     [
+      "bpq",
+      "Banda Malay",
+      "Banda Malay (bpq)",
+      "Nusantara_Mekong"
+    ],
+    [
       "bpr",
       "Koronadal Blaan",
       "Koronadal Blaan (bpr)",
@@ -908,6 +908,12 @@
       "bps",
       "Sarangani Blaan",
       "Sarangani Blaan (bps)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "bpv",
+      "Bian Marind",
+      "Bian Marind (bpv)",
       "Nusantara_Mekong"
     ],
     [
@@ -980,6 +986,12 @@
       "bsb",
       "Brunei Bisaya",
       "Brunei Bisaya (bsb)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "bsm",
+      "Busami",
+      "Busami (bsm)",
       "Nusantara_Mekong"
     ],
     [
@@ -1133,12 +1145,6 @@
       "Nusantara_Mekong"
     ],
     [
-      "bxu",
-      "China Buriat",
-      "China Buriat (bxu)",
-      "Nusantara_Mekong"
-    ],
-    [
       "bya",
       "Batak",
       "Batak (bya)",
@@ -1241,39 +1247,15 @@
       "Nusantara_Mekong"
     ],
     [
-      "cfm",
-      "Falam Chin",
-      "Falam Chin (cfm)",
-      "Nusantara_Mekong"
-    ],
-    [
       "cgc",
       "Kagayanen",
       "Kagayanen (cgc)",
       "Nusantara_Mekong"
     ],
     [
-      "chh",
-      "Chinook",
-      "Chinook (chh)",
-      "Nusantara_Mekong"
-    ],
-    [
-      "chn",
-      "Chinook jargon",
-      "Chinook jargon (chn)",
-      "Nusantara_Mekong"
-    ],
-    [
       "cia",
       "Cia-Cia",
       "Cia-Cia (cia)",
-      "Nusantara_Mekong"
-    ],
-    [
-      "cih",
-      "Chinali",
-      "Chinali (cih)",
       "Nusantara_Mekong"
     ],
     [
@@ -1355,18 +1337,6 @@
       "Nusantara_Mekong"
     ],
     [
-      "cnh",
-      "Hakha Chin",
-      "Hakha Chin (cnh)",
-      "Nusantara_Mekong"
-    ],
-    [
-      "cnk",
-      "Khumi Chin",
-      "Khumi Chin (cnk)",
-      "Nusantara_Mekong"
-    ],
-    [
       "cno",
       "Con",
       "Con (cno)",
@@ -1376,18 +1346,12 @@
       "cns",
       "Central Asmat",
       "Central Asmat (cns)",
-      "Sepik_Highlands_Pacific"
+      "Nusantara_Mekong"
     ],
     [
       "cnw",
       "Ngawn Chin",
       "Ngawn Chin (cnw)",
-      "Nusantara_Mekong"
-    ],
-    [
-      "coa",
-      "Cocos Islands Malay",
-      "Cocos Islands Malay (coa)",
       "Nusantara_Mekong"
     ],
     [
@@ -1415,12 +1379,6 @@
       "Nusantara_Mekong"
     ],
     [
-      "csh",
-      "Asho Chin",
-      "Asho Chin (csh)",
-      "Nusantara_Mekong"
-    ],
-    [
       "csj",
       "Songlai Chin",
       "Songlai Chin (csj)",
@@ -1433,9 +1391,9 @@
       "Nusantara_Mekong"
     ],
     [
-      "ctd",
-      "Tedim Chin",
-      "Tedim Chin (ctd)",
+      "csy",
+      "Siyin Chin",
+      "Siyin Chin (csy)",
       "Nusantara_Mekong"
     ],
     [
@@ -1454,12 +1412,6 @@
       "cua",
       "Cua",
       "Cua (cua)",
-      "Nusantara_Mekong"
-    ],
-    [
-      "cuu",
-      "Tai Ya",
-      "Tai Ya (cuu)",
       "Nusantara_Mekong"
     ],
     [
@@ -1547,6 +1499,12 @@
       "Nusantara_Mekong"
     ],
     [
+      "dgc",
+      "Casiguran Dumagat Agta",
+      "Casiguran Dumagat Agta (dgc)",
+      "Nusantara_Mekong"
+    ],
+    [
       "dij",
       "Dai",
       "Dai (dij)",
@@ -1616,13 +1574,13 @@
       "dna",
       "Upper Grand Valley Dani",
       "Upper Grand Valley Dani (dna)",
-      "Sepik_Highlands_Pacific"
+      "Nusantara_Mekong"
     ],
     [
       "dni",
       "Lower Grand Valley Dani",
       "Lower Grand Valley Dani (dni)",
-      "Sepik_Highlands_Pacific"
+      "Nusantara_Mekong"
     ],
     [
       "dnk",
@@ -1634,7 +1592,7 @@
       "dnt",
       "Mid Grand Valley Dani",
       "Mid Grand Valley Dani (dnt)",
-      "Sepik_Highlands_Pacific"
+      "Nusantara_Mekong"
     ],
     [
       "dnu",
@@ -1652,7 +1610,7 @@
       "dnw",
       "Western Dani",
       "Western Dani (dnw)",
-      "Sepik_Highlands_Pacific"
+      "Nusantara_Mekong"
     ],
     [
       "dok",
@@ -1841,6 +1799,12 @@
       "Nusantara_Mekong"
     ],
     [
+      "erw",
+      "Erokwanas",
+      "Erokwanas (erw)",
+      "Nusantara_Mekong"
+    ],
+    [
       "esy",
       "Eskayan",
       "Eskayan (esy)",
@@ -1925,6 +1889,12 @@
       "Nusantara_Mekong"
     ],
     [
+      "gef",
+      "Gerai",
+      "Gerai (gef)",
+      "Nusantara_Mekong"
+    ],
+    [
       "gei",
       "Gebe",
       "Gebe (gei)",
@@ -1940,12 +1910,6 @@
       "ghk",
       "Geko Karen",
       "Geko Karen (ghk)",
-      "Nusantara_Mekong"
-    ],
-    [
-      "ghs",
-      "Guhu-Samane",
-      "Guhu-Samane (ghs)",
       "Nusantara_Mekong"
     ],
     [
@@ -2063,9 +2027,9 @@
       "Nusantara_Mekong"
     ],
     [
-      "hlt",
-      "Matu Chin",
-      "Matu Chin (hlt)",
+      "hmf",
+      "Hmong Don",
+      "Hmong Don (hmf)",
       "Nusantara_Mekong"
     ],
     [
@@ -2489,6 +2453,18 @@
       "Nusantara_Mekong"
     ],
     [
+      "jmn",
+      "Makuri Naga",
+      "Makuri Naga (jmn)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "jra",
+      "Jarai",
+      "Jarai (jra)",
+      "Nusantara_Mekong"
+    ],
+    [
       "jav",
       "Javanese",
       "Basa Jawa",
@@ -2501,12 +2477,6 @@
       "Nusantara_Mekong"
     ],
     [
-      "kac",
-      "Kachin",
-      "Kachin (kac)",
-      "Nusantara_Mekong"
-    ],
-    [
       "kag",
       "Kajaman",
       "Kajaman (kag)",
@@ -2516,12 +2486,6 @@
       "kak",
       "Kalanguya",
       "Kalanguya (kak)",
-      "Nusantara_Mekong"
-    ],
-    [
-      "kav",
-      "Katukína",
-      "Katukína (kav)",
       "Nusantara_Mekong"
     ],
     [
@@ -2687,12 +2651,6 @@
       "Nusantara_Mekong"
     ],
     [
-      "kjg",
-      "Khmu",
-      "Khmu (kjg)",
-      "Nusantara_Mekong"
-    ],
-    [
       "kjk",
       "Highland Konjo",
       "Highland Konjo (kjk)",
@@ -2855,12 +2813,6 @@
       "Nusantara_Mekong"
     ],
     [
-      "knt",
-      "Panoan Katukína",
-      "Panoan Katukína (knt)",
-      "Nusantara_Mekong"
-    ],
-    [
       "knx",
       "Kendayan",
       "Kendayan (knx)",
@@ -2945,6 +2897,12 @@
       "Nusantara_Mekong"
     ],
     [
+      "krr",
+      "Krung",
+      "Krung (krr)",
+      "Nusantara_Mekong"
+    ],
+    [
       "krv",
       "Kavet",
       "Kavet (krv)",
@@ -2960,6 +2918,12 @@
       "ksc",
       "Southern Kalinga",
       "Southern Kalinga (ksc)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "ksn",
+      "Kasiguranin",
+      "Kasiguranin (ksn)",
       "Nusantara_Mekong"
     ],
     [
@@ -3089,6 +3053,12 @@
       "Nusantara_Mekong"
     ],
     [
+      "kvu",
+      "Yinbaw Karen",
+      "Yinbaw Karen (kvu)",
+      "Nusantara_Mekong"
+    ],
+    [
       "kvv",
       "Kola",
       "Kola (kvv)",
@@ -3098,6 +3068,18 @@
       "kvw",
       "Wersing",
       "Wersing (kvw)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "kvy",
+      "Yintale Karen",
+      "Yintale Karen (kvy)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "kvz",
+      "Tsakwambo",
+      "Tsakwambo (kvz)",
       "Nusantara_Mekong"
     ],
     [
@@ -3617,6 +3599,12 @@
       "Nusantara_Mekong"
     ],
     [
+      "lpn",
+      "Long Phuri Naga",
+      "Long Phuri Naga (lpn)",
+      "Nusantara_Mekong"
+    ],
+    [
       "lra",
       "Rara Bakati'",
       "Rara Bakati' (lra)",
@@ -3695,6 +3683,12 @@
       "Nusantara_Mekong"
     ],
     [
+      "lzn",
+      "Leinong Naga",
+      "Leinong Naga (lzn)",
+      "Nusantara_Mekong"
+    ],
+    [
       "mad",
       "Madurese",
       "Madurese (mad)",
@@ -3740,12 +3734,6 @@
       "mbi",
       "Ilianen Manobo",
       "Ilianen Manobo (mbi)",
-      "Nusantara_Mekong"
-    ],
-    [
-      "mbp",
-      "Malayo",
-      "Malayo (mbp)",
       "Nusantara_Mekong"
     ],
     [
@@ -3827,6 +3815,12 @@
       "Nusantara_Mekong"
     ],
     [
+      "mgm",
+      "Mambae",
+      "Mambae (mgm)",
+      "Nusantara_Mekong"
+    ],
+    [
       "mhe",
       "Besisi",
       "Besisi (mhe)",
@@ -3866,12 +3860,6 @@
       "mjb",
       "Makalero",
       "Makalero (mjb)",
-      "Nusantara_Mekong"
-    ],
-    [
-      "mkg",
-      "Mak (China)",
-      "Mak (China) (mkg)",
       "Nusantara_Mekong"
     ],
     [
@@ -3932,6 +3920,12 @@
       "mmb",
       "Momina",
       "Momina (mmb)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "mmn",
+      "Mamanwa",
+      "Mamanwa (mmn)",
       "Nusantara_Mekong"
     ],
     [
@@ -4001,9 +3995,9 @@
       "Nusantara_Mekong"
     ],
     [
-      "mpd",
-      "Machinere",
-      "Machinere (mpd)",
+      "moq",
+      "Mor (Bomberai Peninsula)",
+      "Mor (Bomberai Peninsula) (moq)",
       "Nusantara_Mekong"
     ],
     [
@@ -4043,6 +4037,18 @@
       "Nusantara_Mekong"
     ],
     [
+      "mqi",
+      "Mariri",
+      "Mariri (mqi)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "mqj",
+      "Mamasa",
+      "Mamasa (mqj)",
+      "Nusantara_Mekong"
+    ],
+    [
       "mqk",
       "Rajah Kabunsuwan Manobo",
       "Rajah Kabunsuwan Manobo (mqk)",
@@ -4073,9 +4079,27 @@
       "Nusantara_Mekong"
     ],
     [
+      "mqr",
+      "Mander",
+      "Mander (mqr)",
+      "Nusantara_Mekong"
+    ],
+    [
       "mqs",
       "West Makian",
       "West Makian (mqs)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "mqx",
+      "Mamuju",
+      "Mamuju (mqx)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "mqy",
+      "Manggarai",
+      "Manggarai (mqy)",
       "Nusantara_Mekong"
     ],
     [
@@ -4088,12 +4112,6 @@
       "mrf",
       "Elseng",
       "Elseng (mrf)",
-      "Nusantara_Mekong"
-    ],
-    [
-      "mrh",
-      "Mara Chin",
-      "Mara Chin (mrh)",
       "Nusantara_Mekong"
     ],
     [
@@ -4115,6 +4133,12 @@
       "Nusantara_Mekong"
     ],
     [
+      "mrz",
+      "Marind",
+      "Marind (mrz)",
+      "Nusantara_Mekong"
+    ],
+    [
       "msa",
       "Malay (macrolanguage)",
       "Malay (macrolanguage) (msa)",
@@ -4130,6 +4154,12 @@
       "msf",
       "Mekwei",
       "Mekwei (msf)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "msg",
+      "Moraid",
+      "Moraid (msg)",
       "Nusantara_Mekong"
     ],
     [
@@ -4217,6 +4247,12 @@
       "Nusantara_Mekong"
     ],
     [
+      "mvd",
+      "Mamboru",
+      "Mamboru (mvd)",
+      "Nusantara_Mekong"
+    ],
+    [
       "mvp",
       "Duri",
       "Duri (mvp)",
@@ -4238,12 +4274,6 @@
       "mvv",
       "Tagal Murut",
       "Tagal Murut (mvv)",
-      "Nusantara_Mekong"
-    ],
-    [
-      "mvw",
-      "Machinga",
-      "Machinga (mvw)",
       "Nusantara_Mekong"
     ],
     [
@@ -4430,7 +4460,7 @@
       "nks",
       "North Asmat",
       "North Asmat (nks)",
-      "Sepik_Highlands_Pacific"
+      "Nusantara_Mekong"
     ],
     [
       "nlc",
@@ -4445,6 +4475,12 @@
       "Nusantara_Mekong"
     ],
     [
+      "nlq",
+      "Lao Naga",
+      "Lao Naga (nlq)",
+      "Nusantara_Mekong"
+    ],
+    [
       "nni",
       "North Nuaulu",
       "North Nuaulu (nni)",
@@ -4454,6 +4490,12 @@
       "nod",
       "Northern Thai",
       "Northern Thai (nod)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "npg",
+      "Ponyo-Gongwang Naga",
+      "Ponyo-Gongwang Naga (npg)",
       "Nusantara_Mekong"
     ],
     [
@@ -4475,6 +4517,18 @@
       "Nusantara_Mekong"
     ],
     [
+      "nqq",
+      "Kyan-Karyaw Naga",
+      "Kyan-Karyaw Naga (nqq)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "nqy",
+      "Akyaung Ari Naga",
+      "Akyaung Ari Naga (nqy)",
+      "Nusantara_Mekong"
+    ],
+    [
       "nrm",
       "Narom",
       "Narom (nrm)",
@@ -4490,6 +4544,12 @@
       "ntd",
       "Northern Tidung",
       "Northern Tidung (ntd)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "ntx",
+      "Tangkhul Naga (Myanmar)",
+      "Tangkhul Naga (Myanmar) (ntx)",
       "Nusantara_Mekong"
     ],
     [
@@ -4520,6 +4580,12 @@
       "nxg",
       "Ngad'a",
       "Ngad'a (nxg)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "nxk",
+      "Koki Naga",
+      "Koki Naga (nxk)",
       "Nusantara_Mekong"
     ],
     [
@@ -4667,18 +4733,6 @@
       "Nusantara_Mekong"
     ],
     [
-      "pce",
-      "Ruching Palaung",
-      "Ruching Palaung (pce)",
-      "Nusantara_Mekong"
-    ],
-    [
-      "pck",
-      "Paite Chin",
-      "Paite Chin (pck)",
-      "Nusantara_Mekong"
-    ],
-    [
       "pdn",
       "Podena",
       "Podena (pdn)",
@@ -4787,12 +4841,6 @@
       "Nusantara_Mekong"
     ],
     [
-      "pll",
-      "Shwe Palaung",
-      "Shwe Palaung (pll)",
-      "Nusantara_Mekong"
-    ],
-    [
       "plv",
       "Southwest Palawano",
       "Southwest Palawano (plv)",
@@ -4886,12 +4934,6 @@
       "ppm",
       "Papuma",
       "Papuma (ppm)",
-      "Nusantara_Mekong"
-    ],
-    [
-      "pqm",
-      "Malecite-Passamaquoddy",
-      "Malecite-Passamaquoddy (pqm)",
       "Nusantara_Mekong"
     ],
     [
@@ -5051,12 +5093,6 @@
       "Nusantara_Mekong"
     ],
     [
-      "rbb",
-      "Rumai Palaung",
-      "Rumai Palaung (rbb)",
-      "Nusantara_Mekong"
-    ],
-    [
       "rbk",
       "Northern Bontok",
       "Northern Bontok (rbk)",
@@ -5090,7 +5126,7 @@
       "ren",
       "Rengao",
       "Rengao (ren)",
-      "Sepik_Highlands_Pacific"
+      "Nusantara_Mekong"
     ],
     [
       "ret",
@@ -5144,6 +5180,12 @@
       "rmm",
       "Roma",
       "Roma (rmm)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "rmx",
+      "Romam",
+      "Romam (rmx)",
       "Nusantara_Mekong"
     ],
     [
@@ -5282,12 +5324,6 @@
       "scg",
       "Sanggau",
       "Sanggau (scg)",
-      "Nusantara_Mekong"
-    ],
-    [
-      "sci",
-      "Sri Lankan Creole Malay",
-      "Sri Lankan Creole Malay (sci)",
       "Nusantara_Mekong"
     ],
     [
@@ -5438,7 +5474,7 @@
       "sko",
       "Seko Tengah",
       "Seko Tengah (sko)",
-      "Sepik_Highlands_Pacific"
+      "Nusantara_Mekong"
     ],
     [
       "skp",
@@ -5504,12 +5540,6 @@
       "slz",
       "Ma'ya",
       "Ma'ya (slz)",
-      "Nusantara_Mekong"
-    ],
-    [
-      "smd",
-      "Sama",
-      "Sama (smd)",
       "Nusantara_Mekong"
     ],
     [
@@ -5807,12 +5837,6 @@
       "Nusantara_Mekong"
     ],
     [
-      "syx",
-      "Samay",
-      "Samay (syx)",
-      "Nusantara_Mekong"
-    ],
-    [
       "sza",
       "Semelai",
       "Semelai (sza)",
@@ -5885,6 +5909,12 @@
       "Nusantara_Mekong"
     ],
     [
+      "tcg",
+      "Tamagario",
+      "Tamagario (tcg)",
+      "Nusantara_Mekong"
+    ],
+    [
       "tcm",
       "Tanahmerah",
       "Tanahmerah (tcm)",
@@ -5906,18 +5936,6 @@
       "tcq",
       "Kaiy",
       "Kaiy (tcq)",
-      "Nusantara_Mekong"
-    ],
-    [
-      "tcz",
-      "Thado Chin",
-      "Thado Chin (tcz)",
-      "Nusantara_Mekong"
-    ],
-    [
-      "tdd",
-      "Tai Nüa",
-      "Tai Nüa (tdd)",
       "Nusantara_Mekong"
     ],
     [
@@ -6080,12 +6098,6 @@
       "tiy",
       "Tiruray",
       "Tiruray (tiy)",
-      "Nusantara_Mekong"
-    ],
-    [
-      "tiz",
-      "Tai Hongjin",
-      "Tai Hongjin (tiz)",
       "Nusantara_Mekong"
     ],
     [
@@ -6317,12 +6329,6 @@
       "Nusantara_Mekong"
     ],
     [
-      "tsb",
-      "Tsamai",
-      "Tsamai (tsb)",
-      "Nusantara_Mekong"
-    ],
-    [
       "tsg",
       "Tausug",
       "Tausug (tsg)",
@@ -6437,15 +6443,15 @@
       "Nusantara_Mekong"
     ],
     [
-      "twg",
-      "Tereweng",
-      "Tereweng (twg)",
+      "twe",
+      "Tewa (Indonesia)",
+      "Tewa (Indonesia) (twe)",
       "Nusantara_Mekong"
     ],
     [
-      "twh",
-      "Tai Dón",
-      "Tai Dón (twh)",
+      "twg",
+      "Tereweng",
+      "Tereweng (twg)",
       "Nusantara_Mekong"
     ],
     [
@@ -6635,6 +6641,12 @@
       "Nusantara_Mekong"
     ],
     [
+      "umn",
+      "Makyan Naga",
+      "Makyan Naga (umn)",
+      "Nusantara_Mekong"
+    ],
+    [
       "ums",
       "Pendau",
       "Pendau (ums)",
@@ -6644,12 +6656,6 @@
       "unz",
       "Unde Kaili",
       "Unde Kaili (unz)",
-      "Nusantara_Mekong"
-    ],
-    [
-      "upv",
-      "Uripiv-Wala-Rano-Atchin",
-      "Uripiv-Wala-Rano-Atchin (upv)",
       "Nusantara_Mekong"
     ],
     [
@@ -6695,6 +6701,12 @@
       "Nusantara_Mekong"
     ],
     [
+      "vkl",
+      "Kulisusu",
+      "Kulisusu (vkl)",
+      "Nusantara_Mekong"
+    ],
+    [
       "vko",
       "Kodeoha",
       "Kodeoha (vko)",
@@ -6716,12 +6728,6 @@
       "vto",
       "Vitou",
       "Vitou (vto)",
-      "Nusantara_Mekong"
-    ],
-    [
-      "vwa",
-      "Awa (China)",
-      "Awa (China) (vwa)",
       "Nusantara_Mekong"
     ],
     [
@@ -6770,6 +6776,12 @@
       "weo",
       "Wemale",
       "Wemale (weo)",
+      "Nusantara_Mekong"
+    ],
+    [
+      "wet",
+      "Perai",
+      "Perai (wet)",
       "Nusantara_Mekong"
     ],
     [
@@ -6989,6 +7001,12 @@
       "Nusantara_Mekong"
     ],
     [
+      "xdy",
+      "Malayic Dayak",
+      "Malayic Dayak (xdy)",
+      "Nusantara_Mekong"
+    ],
+    [
       "xem",
       "Kembayan",
       "Kembayan (xem)",
@@ -7121,6 +7139,12 @@
       "Nusantara_Mekong"
     ],
     [
+      "xwr",
+      "Kwerba Mamberamo",
+      "Kwerba Mamberamo (xwr)",
+      "Nusantara_Mekong"
+    ],
+    [
       "xxk",
       "Ke'o",
       "Ke'o (xxk)",
@@ -7163,6 +7187,12 @@
       "Nusantara_Mekong"
     ],
     [
+      "yli",
+      "Angguruk Yali",
+      "Angguruk Yali (yli)",
+      "Nusantara_Mekong"
+    ],
+    [
       "ymn",
       "Yamna",
       "Yamna (ymn)",
@@ -7196,18 +7226,6 @@
       "yrs",
       "Yarsun",
       "Yarsun (yrs)",
-      "Nusantara_Mekong"
-    ],
-    [
-      "ysd",
-      "Samatao",
-      "Samatao (ysd)",
-      "Nusantara_Mekong"
-    ],
-    [
-      "yso",
-      "Nisi (China)",
-      "Nisi (China) (yso)",
       "Nusantara_Mekong"
     ],
     [
@@ -7280,12 +7298,6 @@
       "zsm",
       "Standard Malay",
       "Standard Malay (zsm)",
-      "Nusantara_Mekong"
-    ],
-    [
-      "zyp",
-      "Zyphe Chin",
-      "Zyphe Chin (zyp)",
       "Nusantara_Mekong"
     ]
   ]

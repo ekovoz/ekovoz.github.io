@@ -81,6 +81,13 @@ import {
   updateMostradorDoseLinks,
 } from "./mostrador/mostrador_viewport_dose1.js";
 import {
+  OPEN_CANONICAL_TIER1_LANGS,
+  isVerifiedCanonicalTier0Or1,
+  mapFullChapterGmisRows,
+  renderProgressiveTwoStrataDiglossicBridge,
+  resolveHonestSovereignTier,
+} from "./mostrador/diglossic_chapter_renderer.js";
+import {
   CANONICAL_ECO_PACKS_MANIFEST, STORED_ECO_PACKS, computeEcoPackCrc32Hex, exportSneakernetBundleJson, hydrateEcoPacksManifest,
   importSneakernetBundleJson, probeEcoPackRandomAccessBounds, renderOfflineMeshEcoCardHtml, triggerOptInOfflinePackDownload,
   verifyAndStoreEcoPack,
@@ -561,7 +568,7 @@ export function createMostradorController(options = {}) {
     state.lastDiglossicBridgeHtml = "";
 
     const normCorpusLang = String(effectiveCorpusLang || state.lang || "").toLowerCase();
-    const isTier0Or1 = ["es", "es-1909", "en", "he", "grc"].includes(normCorpusLang);
+    const isTier0Or1 = isVerifiedCanonicalTier0Or1(normCorpusLang, res);
 
     if (state.register === "bilingue" && res.status === STATUS.READY) {
       const bridgeLang = state.lang === "es" ? "en" : "es";
@@ -644,27 +651,20 @@ export function createMostradorController(options = {}) {
         matrixShard = null;
       }
       const rawMatrixRows = Array.isArray(matrixShard?.rows) ? matrixShard.rows : [];
-      const gmisRows = rawMatrixRows.slice(0, 64).map((r) =>
-        Array.isArray(r)
-          ? {
-            verse: Number(r[0]) || 1,
-            c05_orig_text: r[1] ?? "∅",
-            c08_morph_code: r[4] ?? "∅",
-            c13_nsm_65: r[11] ?? "∅",
-          }
-          : r,
-      );
-      const sovereignTier =
-        res.status === STATUS.UNAVAILABLE
-          ? "TIER_4_GMIS_CELF250"
-          : normCorpusLang === "stp"
-            ? "TIER_2_NT_PLUS_OT_SYNTH"
-            : String(catalogEntry?.sovereign_tier || "TIER_3_PORTION_LADDER");
+      const gmisRows = mapFullChapterGmisRows(rawMatrixRows);
+      const sovereignTier = resolveHonestSovereignTier({
+        lang: normCorpusLang,
+        navStatus: res.status,
+        provenance: res.chapter?.provenance || null,
+        catalogEntry,
+      });
 
-      state.lastDiglossicBridgeHtml = renderDiglossicParallelBridge({
+      state.lastDiglossicBridgeHtml = renderProgressiveTwoStrataDiglossicBridge({
         lang: state.lang,
         book: state.book,
         chapter: state.chapter,
+        selectedVerse: state.verse,
+        register: state.register,
         sovereignTier,
         macroRegion,
         bridgeLang: bridgeSpec.code,
@@ -673,7 +673,11 @@ export function createMostradorController(options = {}) {
         gmisRows,
       });
 
-      if (res.status === STATUS.UNAVAILABLE && rawMatrixRows.length > 0) {
+      if (
+        res.status === STATUS.UNAVAILABLE &&
+        rawMatrixRows.length > 0 &&
+        !OPEN_CANONICAL_TIER1_LANGS.has(normCorpusLang)
+      ) {
         state.lastMatrixFallbackHtml = renderLeipzig4LineGmisHtml(matrixShard, {
           lang: state.lang,
           book: state.book,

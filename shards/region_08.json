@@ -1,7 +1,7 @@
 {
   "macro_region_id": 8,
   "region_name_es": "África Subsahariana, Cuenca del Congo y Golfo de Guinea",
-  "total_languages": 1797,
+  "total_languages": 1798,
   "subclades_covered": 31,
   "featured_languages": [
     [
@@ -167,15 +167,15 @@
       "Congo_Niger_Basin"
     ],
     [
-      "afi",
-      "Akrukay",
-      "Akrukay (afi)",
-      "Congo_Niger_Basin"
-    ],
-    [
       "afn",
       "Defaka",
       "Defaka (afn)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "afo",
+      "Eloyi",
+      "Eloyi (afo)",
       "Congo_Niger_Basin"
     ],
     [
@@ -401,27 +401,21 @@
       "Congo_Niger_Basin"
     ],
     [
+      "any",
+      "Anyin",
+      "Anyin (any)",
+      "Congo_Niger_Basin"
+    ],
+    [
       "aoa",
       "Angolar",
       "Angolar (aoa)",
       "Congo_Niger_Basin"
     ],
     [
-      "aoi",
-      "Anindilyakwa",
-      "Anindilyakwa (aoi)",
-      "Congo_Niger_Basin"
-    ],
-    [
-      "apq",
-      "A-Pucikwar",
-      "A-Pucikwar (apq)",
-      "Congo_Niger_Basin"
-    ],
-    [
-      "aqd",
-      "Ampari Dogon",
-      "Ampari Dogon (aqd)",
+      "apd",
+      "Sudanese Arabic",
+      "Sudanese Arabic (apd)",
       "Congo_Niger_Basin"
     ],
     [
@@ -539,12 +533,6 @@
       "Congo_Niger_Basin"
     ],
     [
-      "axx",
-      "Xârâgurè",
-      "Xârâgurè (axx)",
-      "Congo_Niger_Basin"
-    ],
-    [
       "ayb",
       "Ayizo Gbe",
       "Ayizo Gbe (ayb)",
@@ -560,6 +548,12 @@
       "ayg",
       "Ginyanga",
       "Ginyanga (ayg)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ayi",
+      "Leyigha",
+      "Leyigha (ayi)",
       "Congo_Niger_Basin"
     ],
     [
@@ -734,6 +728,12 @@
       "bby",
       "Befang",
       "Befang (bby)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bcb",
+      "Bainouk-Samik",
+      "Bainouk-Samik (bcb)",
       "Congo_Niger_Basin"
     ],
     [
@@ -1049,12 +1049,6 @@
       "Congo_Niger_Basin"
     ],
     [
-      "bix",
-      "Bijori",
-      "Bijori (bix)",
-      "Congo_Niger_Basin"
-    ],
-    [
       "biz",
       "Baloi",
       "Baloi (biz)",
@@ -1166,6 +1160,12 @@
       "bkw",
       "Bekwel",
       "Bekwel (bkw)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "bky",
+      "Bokyi",
+      "Bokyi (bky)",
       "Congo_Niger_Basin"
     ],
     [
@@ -1283,16 +1283,10 @@
       "Congo_Niger_Basin"
     ],
     [
-      "bnd",
-      "Banda (Indonesia)",
-      "Banda (Indonesia) (bnd)",
-      "Congo_Niger_Basin"
-    ],
-    [
       "bng",
       "Benga",
       "Benga (bng)",
-      "Sepik_Highlands_Pacific"
+      "Congo_Niger_Basin"
     ],
     [
       "bni",
@@ -1322,6 +1316,12 @@
       "bob",
       "Aweer",
       "Aweer (bob)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "boe",
+      "Mundabli",
+      "Mundabli (boe)",
       "Congo_Niger_Basin"
     ],
     [
@@ -1388,12 +1388,6 @@
       "bpj",
       "Binji",
       "Binji (bpj)",
-      "Congo_Niger_Basin"
-    ],
-    [
-      "bpq",
-      "Banda Malay",
-      "Banda Malay (bpq)",
       "Congo_Niger_Basin"
     ],
     [
@@ -1985,12 +1979,6 @@
       "Congo_Niger_Basin"
     ],
     [
-      "cbd",
-      "Carijona",
-      "Carijona (cbd)",
-      "Congo_Niger_Basin"
-    ],
-    [
       "cbj",
       "Ede Cabe",
       "Ede Cabe (cbj)",
@@ -2159,6 +2147,12 @@
       "Congo_Niger_Basin"
     ],
     [
+      "coh",
+      "Chonyi-Dzihana-Kauma",
+      "Chonyi-Dzihana-Kauma (coh)",
+      "Congo_Niger_Basin"
+    ],
+    [
       "cou",
       "Wamey",
       "Wamey (cou)",
@@ -2210,12 +2204,6 @@
       "cuv",
       "Cuvok",
       "Cuvok (cuv)",
-      "Congo_Niger_Basin"
-    ],
-    [
-      "cuw",
-      "Chukwa",
-      "Chukwa (cuw)",
       "Congo_Niger_Basin"
     ],
     [
@@ -2291,12 +2279,6 @@
       "Congo_Niger_Basin"
     ],
     [
-      "dbg",
-      "Dogul Dom Dogon",
-      "Dogul Dom Dogon (dbg)",
-      "Congo_Niger_Basin"
-    ],
-    [
       "dbi",
       "Doka",
       "Doka (dbi)",
@@ -2327,27 +2309,9 @@
       "Congo_Niger_Basin"
     ],
     [
-      "dbt",
-      "Ben Tey Dogon",
-      "Ben Tey Dogon (dbt)",
-      "Congo_Niger_Basin"
-    ],
-    [
-      "dbu",
-      "Bondum Dom Dogon",
-      "Bondum Dom Dogon (dbu)",
-      "Congo_Niger_Basin"
-    ],
-    [
       "dbv",
       "Dungu",
       "Dungu (dbv)",
-      "Congo_Niger_Basin"
-    ],
-    [
-      "dbw",
-      "Bankan Tey Dogon",
-      "Bankan Tey Dogon (dbw)",
       "Congo_Niger_Basin"
     ],
     [
@@ -2360,12 +2324,6 @@
       "ddn",
       "Dendi (Benin)",
       "Dendi (Benin) (ddn)",
-      "Congo_Niger_Basin"
-    ],
-    [
-      "dds",
-      "Donno So Dogon",
-      "Donno So Dogon (dds)",
       "Congo_Niger_Basin"
     ],
     [
@@ -2402,18 +2360,6 @@
       "dga",
       "Southern Dagaare",
       "Southern Dagaare (dga)",
-      "Congo_Niger_Basin"
-    ],
-    [
-      "dgb",
-      "Bunoge Dogon",
-      "Bunoge Dogon (dgb)",
-      "Congo_Niger_Basin"
-    ],
-    [
-      "dgc",
-      "Casiguran Dumagat Agta",
-      "Casiguran Dumagat Agta (dgc)",
       "Congo_Niger_Basin"
     ],
     [
@@ -2456,6 +2402,12 @@
       "dhs",
       "Dhaiso",
       "Dhaiso (dhs)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "dic",
+      "Lakota Dida",
+      "Lakota Dida (dic)",
       "Congo_Niger_Basin"
     ],
     [
@@ -2516,12 +2468,6 @@
       "dma",
       "Duma",
       "Duma (dma)",
-      "Congo_Niger_Basin"
-    ],
-    [
-      "dmb",
-      "Mombo Dogon",
-      "Mombo Dogon (dmb)",
       "Congo_Niger_Basin"
     ],
     [
@@ -2639,45 +2585,9 @@
       "Congo_Niger_Basin"
     ],
     [
-      "dti",
-      "Ana Tinga Dogon",
-      "Ana Tinga Dogon (dti)",
-      "Congo_Niger_Basin"
-    ],
-    [
-      "dtk",
-      "Tene Kan Dogon",
-      "Tene Kan Dogon (dtk)",
-      "Congo_Niger_Basin"
-    ],
-    [
       "dtm",
       "Tomo Kan Dogon",
       "Tomo Kan Dogon (dtm)",
-      "Congo_Niger_Basin"
-    ],
-    [
-      "dto",
-      "Tommo So Dogon",
-      "Tommo So Dogon (dto)",
-      "Congo_Niger_Basin"
-    ],
-    [
-      "dts",
-      "Toro So Dogon",
-      "Toro So Dogon (dts)",
-      "Congo_Niger_Basin"
-    ],
-    [
-      "dtt",
-      "Toro Tegu Dogon",
-      "Toro Tegu Dogon (dtt)",
-      "Congo_Niger_Basin"
-    ],
-    [
-      "dtu",
-      "Tebul Ure Dogon",
-      "Tebul Ure Dogon (dtu)",
       "Congo_Niger_Basin"
     ],
     [
@@ -2723,9 +2633,9 @@
       "Congo_Niger_Basin"
     ],
     [
-      "dym",
-      "Yanda Dom Dogon",
-      "Yanda Dom Dogon (dym)",
+      "dyo",
+      "Jola-Fonyi",
+      "Jola-Fonyi (dyo)",
       "Congo_Niger_Basin"
     ],
     [
@@ -2927,12 +2837,6 @@
       "Congo_Niger_Basin"
     ],
     [
-      "erw",
-      "Erokwanas",
-      "Erokwanas (erw)",
-      "Congo_Niger_Basin"
-    ],
-    [
       "est",
       "Estonian",
       "Estonian (est)",
@@ -3119,6 +3023,12 @@
       "Congo_Niger_Basin"
     ],
     [
+      "fng",
+      "Fanagalo",
+      "Fanagalo (fng)",
+      "Congo_Niger_Basin"
+    ],
+    [
       "fod",
       "Foodo",
       "Foodo (fod)",
@@ -3251,6 +3161,12 @@
       "Congo_Niger_Basin"
     ],
     [
+      "gbr",
+      "Gbagyi",
+      "Gbagyi (gbr)",
+      "Congo_Niger_Basin"
+    ],
+    [
       "gbs",
       "Gbesi Gbe",
       "Gbesi Gbe (gbs)",
@@ -3290,12 +3206,6 @@
       "gdi",
       "Gundi",
       "Gundi (gdi)",
-      "Congo_Niger_Basin"
-    ],
-    [
-      "gdj",
-      "Gurdjar",
-      "Gurdjar (gdj)",
       "Congo_Niger_Basin"
     ],
     [
@@ -3377,18 +3287,6 @@
       "Congo_Niger_Basin"
     ],
     [
-      "gge",
-      "Gurr-goni",
-      "Gurr-goni (gge)",
-      "Congo_Niger_Basin"
-    ],
-    [
-      "ggg",
-      "Gurgula",
-      "Gurgula (ggg)",
-      "Congo_Niger_Basin"
-    ],
-    [
       "ggu",
       "Gagu",
       "Gagu (ggu)",
@@ -3446,12 +3344,6 @@
       "gjn",
       "Gonja",
       "Gonja (gjn)",
-      "Congo_Niger_Basin"
-    ],
-    [
-      "gjr",
-      "Gurindji Kriol",
-      "Gurindji Kriol (gjr)",
       "Congo_Niger_Basin"
     ],
     [
@@ -3593,6 +3485,12 @@
       "Congo_Niger_Basin"
     ],
     [
+      "gou",
+      "Gavar",
+      "Gavar (gou)",
+      "Congo_Niger_Basin"
+    ],
+    [
       "gow",
       "Gorowa",
       "Gorowa (gow)",
@@ -3659,21 +3557,9 @@
       "Congo_Niger_Basin"
     ],
     [
-      "grx",
-      "Guriaso",
-      "Guriaso (grx)",
-      "Congo_Niger_Basin"
-    ],
-    [
       "gry",
       "Barclayville Grebo",
       "Barclayville Grebo (gry)",
-      "Congo_Niger_Basin"
-    ],
-    [
-      "grz",
-      "Guramalum",
-      "Guramalum (grz)",
       "Congo_Niger_Basin"
     ],
     [
@@ -3704,12 +3590,6 @@
       "gud",
       "Yocoboué Dida",
       "Yocoboué Dida (gud)",
-      "Congo_Niger_Basin"
-    ],
-    [
-      "gue",
-      "Gurindji",
-      "Gurindji (gue)",
       "Congo_Niger_Basin"
     ],
     [
@@ -3746,12 +3626,6 @@
       "gvm",
       "Gurmana",
       "Gurmana (gvm)",
-      "Congo_Niger_Basin"
-    ],
-    [
-      "gvr",
-      "Gurung",
-      "Gurung (gvr)",
       "Congo_Niger_Basin"
     ],
     [
@@ -3821,6 +3695,12 @@
       "Congo_Niger_Basin"
     ],
     [
+      "gyg",
+      "Gbayi",
+      "Gbayi (gyg)",
+      "Congo_Niger_Basin"
+    ],
+    [
       "gyi",
       "Gyele",
       "Gyele (gyi)",
@@ -3831,12 +3711,6 @@
       "Hausa",
       "Harshen Hausa",
       "Kano,Kaduna,Sokoto,Maradi,Zinder"
-    ],
-    [
-      "hac",
-      "Gurani",
-      "Gurani (hac)",
-      "Congo_Niger_Basin"
     ],
     [
       "hag",
@@ -3950,6 +3824,12 @@
       "hke",
       "Hunde",
       "Hunde (hke)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "hmb",
+      "Humburi Senni Songhay",
+      "Humburi Senni Songhay (hmb)",
       "Congo_Niger_Basin"
     ],
     [
@@ -4256,12 +4136,6 @@
       "ilv",
       "Ilue",
       "Ilue (ilv)",
-      "Congo_Niger_Basin"
-    ],
-    [
-      "imi",
-      "Anamgura",
-      "Anamgura (imi)",
       "Congo_Niger_Basin"
     ],
     [
@@ -4769,6 +4643,12 @@
       "Congo_Niger_Basin"
     ],
     [
+      "kdi",
+      "Kumam",
+      "Kumam (kdi)",
+      "Congo_Niger_Basin"
+    ],
+    [
       "kdj",
       "Karamojong",
       "Karamojong (kdj)",
@@ -5099,12 +4979,6 @@
       "Congo_Niger_Basin"
     ],
     [
-      "kmq",
-      "Kwama",
-      "Kwama (kmq)",
-      "Congo_Niger_Basin"
-    ],
-    [
       "kmw",
       "Komo (Democratic Republic of Congo)",
       "Komo (Democratic Republic of Congo) (kmw)",
@@ -5120,6 +4994,12 @@
       "kna",
       "Dera (Nigeria)",
       "Dera (Nigeria) (kna)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "knc",
+      "Central Kanuri",
+      "Central Kanuri (knc)",
       "Congo_Niger_Basin"
     ],
     [
@@ -5339,12 +5219,6 @@
       "Congo_Niger_Basin"
     ],
     [
-      "krr",
-      "Krung",
-      "Krung (krr)",
-      "Congo_Niger_Basin"
-    ],
-    [
       "krs",
       "Gbaya (Sudan)",
       "Gbaya (Sudan) (krs)",
@@ -5384,12 +5258,6 @@
       "ksm",
       "Kumba",
       "Kumba (ksm)",
-      "Congo_Niger_Basin"
-    ],
-    [
-      "ksn",
-      "Kasiguranin",
-      "Kasiguranin (ksn)",
       "Congo_Niger_Basin"
     ],
     [
@@ -5513,12 +5381,6 @@
       "Congo_Niger_Basin"
     ],
     [
-      "kvi",
-      "Kwang",
-      "Kwang (kvi)",
-      "Congo_Niger_Basin"
-    ],
-    [
       "kvj",
       "Psikye",
       "Psikye (kvj)",
@@ -5528,12 +5390,6 @@
       "kvm",
       "Kendem",
       "Kendem (kvm)",
-      "Congo_Niger_Basin"
-    ],
-    [
-      "kvz",
-      "Tsakwambo",
-      "Tsakwambo (kvz)",
       "Congo_Niger_Basin"
     ],
     [
@@ -5549,33 +5405,9 @@
       "Congo_Niger_Basin"
     ],
     [
-      "kwd",
-      "Kwaio",
-      "Kwaio (kwd)",
-      "Congo_Niger_Basin"
-    ],
-    [
-      "kwf",
-      "Kwara'ae",
-      "Kwara'ae (kwf)",
-      "Congo_Niger_Basin"
-    ],
-    [
       "kwg",
       "Sara Kaba Deme",
       "Sara Kaba Deme (kwg)",
-      "Congo_Niger_Basin"
-    ],
-    [
-      "kwj",
-      "Kwanga",
-      "Kwanga (kwj)",
-      "Congo_Niger_Basin"
-    ],
-    [
-      "kwk",
-      "Kwakiutl",
-      "Kwakiutl (kwk)",
       "Congo_Niger_Basin"
     ],
     [
@@ -5789,6 +5621,18 @@
       "Congo_Niger_Basin"
     ],
     [
+      "ldd",
+      "Luri",
+      "Luri (ldd)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "ldg",
+      "Lenyima",
+      "Lenyima (ldg)",
+      "Congo_Niger_Basin"
+    ],
+    [
       "ldh",
       "Lamja-Dengsa-Tola",
       "Lamja-Dengsa-Tola (ldh)",
@@ -5924,7 +5768,7 @@
       "lgm",
       "Lega-Mwenga",
       "Lega-Mwenga (lgm)",
-      "Sepik_Highlands_Pacific"
+      "Congo_Niger_Basin"
     ],
     [
       "lgq",
@@ -5954,12 +5798,6 @@
       "lig",
       "Ligbi",
       "Ligbi (lig)",
-      "Congo_Niger_Basin"
-    ],
-    [
-      "lij",
-      "Ligurian",
-      "Ligurian (lij)",
       "Congo_Niger_Basin"
     ],
     [
@@ -5996,6 +5834,12 @@
       "lkb",
       "Kabras",
       "Kabras (lkb)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "lke",
+      "Kenyi",
+      "Kenyi (lke)",
       "Congo_Niger_Basin"
     ],
     [
@@ -6050,6 +5894,12 @@
       "lmi",
       "Lombi",
       "Lombi (lmi)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "lmp",
+      "Limbum",
+      "Limbum (lmp)",
       "Congo_Niger_Basin"
     ],
     [
@@ -6191,6 +6041,12 @@
       "Congo_Niger_Basin"
     ],
     [
+      "lsm",
+      "Saamia",
+      "Saamia (lsm)",
+      "Congo_Niger_Basin"
+    ],
+    [
       "lsy",
       "Mauritian Sign Language",
       "Mauritian Sign Language (lsy)",
@@ -6317,6 +6173,12 @@
       "Congo_Niger_Basin"
     ],
     [
+      "maw",
+      "Mampruli",
+      "Mampruli (maw)",
+      "Congo_Niger_Basin"
+    ],
+    [
       "mbm",
       "Ombamba",
       "Ombamba (mbm)",
@@ -6365,9 +6227,21 @@
       "Congo_Niger_Basin"
     ],
     [
+      "mcs",
+      "Mambai",
+      "Mambai (mcs)",
+      "Congo_Niger_Basin"
+    ],
+    [
       "mct",
       "Mengisa",
       "Mengisa (mct)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mcu",
+      "Cameroon Mambila",
+      "Cameroon Mambila (mcu)",
       "Congo_Niger_Basin"
     ],
     [
@@ -6386,6 +6260,12 @@
       "mdd",
       "Mbum",
       "Mbum (mdd)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mdi",
+      "Mamvu",
+      "Mamvu (mdi)",
       "Congo_Niger_Basin"
     ],
     [
@@ -6617,6 +6497,12 @@
       "Congo_Niger_Basin"
     ],
     [
+      "mgr",
+      "Mambwe-Lungu",
+      "Mambwe-Lungu (mgr)",
+      "Congo_Niger_Basin"
+    ],
+    [
       "mgs",
       "Manda (Tanzania)",
       "Manda (Tanzania) (mgs)",
@@ -6698,12 +6584,6 @@
       "mjh",
       "Mwera (Nyasa)",
       "Mwera (Nyasa) (mjh)",
-      "Congo_Niger_Basin"
-    ],
-    [
-      "mjl",
-      "Mandeali",
-      "Mandeali (mjl)",
       "Congo_Niger_Basin"
     ],
     [
@@ -6791,6 +6671,18 @@
       "Congo_Niger_Basin"
     ],
     [
+      "mma",
+      "Mama",
+      "Mama (mma)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mmf",
+      "Mundat",
+      "Mundat (mmf)",
+      "Congo_Niger_Basin"
+    ],
+    [
       "mmu",
       "Mmaala",
       "Mmaala (mmu)",
@@ -6803,9 +6695,21 @@
       "Congo_Niger_Basin"
     ],
     [
+      "mnf",
+      "Mundani",
+      "Mundani (mnf)",
+      "Congo_Niger_Basin"
+    ],
+    [
       "mnh",
       "Mono (Democratic Republic of Congo)",
       "Mono (Democratic Republic of Congo) (mnh)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mnk",
+      "Mandinka",
+      "Mandinka (mnk)",
       "Congo_Niger_Basin"
     ],
     [
@@ -6869,12 +6773,6 @@
       "Congo_Niger_Basin"
     ],
     [
-      "mqr",
-      "Mander",
-      "Mander (mqr)",
-      "Congo_Niger_Basin"
-    ],
-    [
       "mrt",
       "Marghi Central",
       "Marghi Central (mrt)",
@@ -6923,6 +6821,12 @@
       "Congo_Niger_Basin"
     ],
     [
+      "mtb",
+      "Anyin Morofo",
+      "Anyin Morofo (mtb)",
+      "Congo_Niger_Basin"
+    ],
+    [
       "mtk",
       "Mbe'",
       "Mbe' (mtk)",
@@ -6932,6 +6836,12 @@
       "mtl",
       "Montol",
       "Montol (mtl)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mua",
+      "Mundang",
+      "Mundang (mua)",
       "Congo_Niger_Basin"
     ],
     [
@@ -6971,6 +6881,12 @@
       "Congo_Niger_Basin"
     ],
     [
+      "mvw",
+      "Machinga",
+      "Machinga (mvw)",
+      "Congo_Niger_Basin"
+    ],
+    [
       "mwe",
       "Mwera (Chimwera)",
       "Mwera (Chimwera) (mwe)",
@@ -6998,6 +6914,12 @@
       "mwz",
       "Moingi",
       "Moingi (mwz)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mxc",
+      "Manyika",
+      "Manyika (mxc)",
       "Congo_Niger_Basin"
     ],
     [
@@ -7067,6 +6989,12 @@
       "Congo_Niger_Basin"
     ],
     [
+      "myk",
+      "Mamara Senoufo",
+      "Mamara Senoufo (myk)",
+      "Congo_Niger_Basin"
+    ],
+    [
       "myx",
       "Masaaba",
       "Masaaba (myx)",
@@ -7088,6 +7016,12 @@
       "mzj",
       "Manya",
       "Manya (mzj)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "mzk",
+      "Nigeria Mambila",
+      "Nigeria Mambila (mzk)",
       "Congo_Niger_Basin"
     ],
     [
@@ -7202,6 +7136,12 @@
       "nbs",
       "Namibian Sign Language",
       "Namibian Sign Language (nbs)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "nbv",
+      "Ngamambo",
+      "Ngamambo (nbv)",
       "Congo_Niger_Basin"
     ],
     [
@@ -7481,6 +7421,12 @@
       "Congo_Niger_Basin"
     ],
     [
+      "ngx",
+      "Nggwahyi",
+      "Nggwahyi (ngx)",
+      "Congo_Niger_Basin"
+    ],
+    [
       "ngy",
       "Tibea",
       "Tibea (ngy)",
@@ -7508,6 +7454,12 @@
       "nhu",
       "Noone",
       "Noone (nhu)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "nih",
+      "Nyiha (Tanzania)",
+      "Nyiha (Tanzania) (nih)",
       "Congo_Niger_Basin"
     ],
     [
@@ -7541,6 +7493,12 @@
       "Congo_Niger_Basin"
     ],
     [
+      "nja",
+      "Nzanyi",
+      "Nzanyi (nja)",
+      "Congo_Niger_Basin"
+    ],
+    [
       "njd",
       "Ndonde Hamba",
       "Ndonde Hamba (njd)",
@@ -7556,6 +7514,12 @@
       "njr",
       "Njerep",
       "Njerep (njr)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "njx",
+      "Kunyi",
+      "Kunyi (njx)",
       "Congo_Niger_Basin"
     ],
     [
@@ -7595,9 +7559,21 @@
       "Congo_Niger_Basin"
     ],
     [
+      "nkt",
+      "Nyika (Tanzania)",
+      "Nyika (Tanzania) (nkt)",
+      "Congo_Niger_Basin"
+    ],
+    [
       "nku",
       "Bouna Kulango",
       "Bouna Kulango (nku)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "nkv",
+      "Nyika (Malawi and Zambia)",
+      "Nyika (Malawi and Zambia) (nkv)",
       "Congo_Niger_Basin"
     ],
     [
@@ -7796,7 +7772,7 @@
       "nse",
       "Nsenga",
       "Nsenga (nse)",
-      "Sepik_Highlands_Pacific"
+      "Congo_Niger_Basin"
     ],
     [
       "nsg",
@@ -7979,6 +7955,12 @@
       "Congo_Niger_Basin"
     ],
     [
+      "nyg",
+      "Nyindu",
+      "Nyindu (nyg)",
+      "Congo_Niger_Basin"
+    ],
+    [
       "nyj",
       "Nyanga",
       "Nyanga (nyj)",
@@ -8006,6 +7988,12 @@
       "nyo",
       "Nyoro",
       "Nyoro (nyo)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "nyr",
+      "Nyiha (Malawi)",
+      "Nyiha (Malawi) (nyr)",
       "Congo_Niger_Basin"
     ],
     [
@@ -8060,12 +8048,6 @@
       "nzy",
       "Nzakambay",
       "Nzakambay (nzy)",
-      "Congo_Niger_Basin"
-    ],
-    [
-      "nzz",
-      "Nanga Dama Dogon",
-      "Nanga Dama Dogon (nzz)",
       "Congo_Niger_Basin"
     ],
     [
@@ -8150,12 +8132,6 @@
       "oki",
       "Okiek",
       "Okiek (oki)",
-      "Congo_Niger_Basin"
-    ],
-    [
-      "okk",
-      "Kwamtim One",
-      "Kwamtim One (okk)",
       "Congo_Niger_Basin"
     ],
     [
@@ -8429,6 +8405,12 @@
       "Congo_Niger_Basin"
     ],
     [
+      "pmm",
+      "Pomo",
+      "Pomo (pmm)",
+      "Congo_Niger_Basin"
+    ],
+    [
       "pmn",
       "Pam",
       "Pam (pmn)",
@@ -8459,9 +8441,9 @@
       "Congo_Niger_Basin"
     ],
     [
-      "pnv",
-      "Pinigura",
-      "Pinigura (pnv)",
+      "pny",
+      "Pinyin",
+      "Pinyin (pny)",
       "Congo_Niger_Basin"
     ],
     [
@@ -8684,12 +8666,6 @@
       "rwm",
       "Amba (Uganda)",
       "Amba (Uganda) (rwm)",
-      "Congo_Niger_Basin"
-    ],
-    [
-      "sac",
-      "Meskwaki",
-      "Meskwaki (sac)",
       "Congo_Niger_Basin"
     ],
     [
@@ -8927,6 +8903,12 @@
       "Congo_Niger_Basin"
     ],
     [
+      "shu",
+      "Chadian Arabic",
+      "Chadian Arabic (shu)",
+      "Congo_Niger_Basin"
+    ],
+    [
       "shz",
       "Syenara Senoufo",
       "Syenara Senoufo (shz)",
@@ -8993,6 +8975,12 @@
       "Congo_Niger_Basin"
     ],
     [
+      "smd",
+      "Sama",
+      "Sama (smd)",
+      "Congo_Niger_Basin"
+    ],
+    [
       "smx",
       "Samba",
       "Samba (smx)",
@@ -9014,6 +9002,12 @@
       "sng",
       "Sanga (Democratic Republic of Congo)",
       "Sanga (Democratic Republic of Congo) (sng)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "snj",
+      "Riverain Sango",
+      "Riverain Sango (snj)",
       "Congo_Niger_Basin"
     ],
     [
@@ -9098,6 +9092,12 @@
       "soz",
       "Temi",
       "Temi (soz)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "spp",
+      "Supyire Senoufo",
+      "Supyire Senoufo (spp)",
       "Congo_Niger_Basin"
     ],
     [
@@ -9281,6 +9281,18 @@
       "Congo_Niger_Basin"
     ],
     [
+      "sym",
+      "Maya Samo",
+      "Maya Samo (sym)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "syx",
+      "Samay",
+      "Samay (syx)",
+      "Congo_Niger_Basin"
+    ],
+    [
       "szg",
       "Sengele",
       "Sengele (szg)",
@@ -9317,9 +9329,21 @@
       "Congo_Niger_Basin"
     ],
     [
+      "taq",
+      "Tamasheq",
+      "Tamasheq (taq)",
+      "Congo_Niger_Basin"
+    ],
+    [
       "tbt",
       "Tembo (Kitembo)",
       "Tembo (Kitembo) (tbt)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "tbz",
+      "Ditammari",
+      "Ditammari (tbz)",
       "Congo_Niger_Basin"
     ],
     [
@@ -9338,12 +9362,6 @@
       "tck",
       "Tchitchege",
       "Tchitchege (tck)",
-      "Congo_Niger_Basin"
-    ],
-    [
-      "tde",
-      "Tiranige Diga Dogon",
-      "Tiranige Diga Dogon (tde)",
       "Congo_Niger_Basin"
     ],
     [
@@ -9524,12 +9542,6 @@
       "tmv",
       "Tembo (Motembo)",
       "Tembo (Motembo) (tmv)",
-      "Congo_Niger_Basin"
-    ],
-    [
-      "tnk",
-      "Kwamera",
-      "Kwamera (tnk)",
       "Congo_Niger_Basin"
     ],
     [
@@ -9767,6 +9779,12 @@
       "Congo_Niger_Basin"
     ],
     [
+      "tyi",
+      "Teke-Tsaayi",
+      "Teke-Tsaayi (tyi)",
+      "Congo_Niger_Basin"
+    ],
+    [
       "tyu",
       "Kua",
       "Kua (tyu)",
@@ -9812,6 +9830,12 @@
       "uha",
       "Uhami",
       "Uhami (uha)",
+      "Congo_Niger_Basin"
+    ],
+    [
+      "uiv",
+      "Iyive",
+      "Iyive (uiv)",
       "Congo_Niger_Basin"
     ],
     [
@@ -10316,7 +10340,7 @@
       "xmg",
       "Mengaka",
       "Mengaka (xmg)",
-      "Sepik_Highlands_Pacific"
+      "Congo_Niger_Basin"
     ],
     [
       "xmj",
@@ -10400,12 +10424,6 @@
       "xuu",
       "Kxoe",
       "Kxoe (xuu)",
-      "Congo_Niger_Basin"
-    ],
-    [
-      "xwa",
-      "Kwaza",
-      "Kwaza (xwa)",
       "Congo_Niger_Basin"
     ],
     [
@@ -10499,12 +10517,6 @@
       "Congo_Niger_Basin"
     ],
     [
-      "ybe",
-      "West Yugur",
-      "West Yugur (ybe)",
-      "Congo_Niger_Basin"
-    ],
-    [
       "ybj",
       "Hasha",
       "Hasha (ybj)",
@@ -10535,6 +10547,12 @@
       "Congo_Niger_Basin"
     ],
     [
+      "yey",
+      "Yeyi",
+      "Yeyi (yey)",
+      "Congo_Niger_Basin"
+    ],
+    [
       "yko",
       "Yasa",
       "Yasa (yko)",
@@ -10544,12 +10562,6 @@
       "yky",
       "Yakoma",
       "Yakoma (yky)",
-      "Congo_Niger_Basin"
-    ],
-    [
-      "yli",
-      "Angguruk Yali",
-      "Angguruk Yali (yli)",
       "Congo_Niger_Basin"
     ],
     [
@@ -10616,12 +10628,6 @@
       "yun",
       "Bena (Nigeria)",
       "Bena (Nigeria) (yun)",
-      "Congo_Niger_Basin"
-    ],
-    [
-      "yuy",
-      "East Yugur",
-      "East Yugur (yuy)",
       "Congo_Niger_Basin"
     ],
     [
@@ -10781,9 +10787,9 @@
       "Congo_Niger_Basin"
     ],
     [
-      "zyb",
-      "Yongbei Zhuang",
-      "Yongbei Zhuang (zyb)",
+      "zuy",
+      "Zumaya",
+      "Zumaya (zuy)",
       "Congo_Niger_Basin"
     ]
   ]

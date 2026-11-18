@@ -1,7 +1,7 @@
 {
   "macro_region_id": 10,
   "region_name_es": "Asia Oriental y Meseta Altaica",
-  "total_languages": 407,
+  "total_languages": 364,
   "subclades_covered": 33,
   "featured_languages": [
     [
@@ -23,27 +23,21 @@
       "East_Asia_Plateau"
     ],
     [
-      "afo",
-      "Eloyi",
-      "Eloyi (afo)",
-      "East_Asia_Plateau"
-    ],
-    [
       "ahk",
       "Akha",
       "Akha (ahk)",
       "East_Asia_Plateau"
     ],
     [
-      "aih",
-      "Ai-Cham",
-      "Ai-Cham (aih)",
+      "aib",
+      "Ainu (China)",
+      "Ainu (China) (aib)",
       "East_Asia_Plateau"
     ],
     [
-      "aij",
-      "Lishanid Noshan",
-      "Lishanid Noshan (aij)",
+      "aih",
+      "Ai-Cham",
+      "Ai-Cham (aih)",
       "East_Asia_Plateau"
     ],
     [
@@ -65,21 +59,15 @@
       "East_Asia_Plateau"
     ],
     [
-      "any",
-      "Anyin",
-      "Anyin (any)",
-      "East_Asia_Plateau"
+      "ams",
+      "Southern Amami-Oshima",
+      "Southern Amami-Oshima (ams)",
+      "Ryukyu,Amami_Oshima,Kagoshima"
     ],
     [
       "aou",
       "A'ou",
       "A'ou (aou)",
-      "East_Asia_Plateau"
-    ],
-    [
-      "ape",
-      "Bukiyip",
-      "Bukiyip (ape)",
       "East_Asia_Plateau"
     ],
     [
@@ -92,24 +80,6 @@
       "aub",
       "Alugu",
       "Alugu (aub)",
-      "East_Asia_Plateau"
-    ],
-    [
-      "auw",
-      "Awyi",
-      "Awyi (auw)",
-      "East_Asia_Plateau"
-    ],
-    [
-      "ayi",
-      "Leyigha",
-      "Leyigha (ayi)",
-      "East_Asia_Plateau"
-    ],
-    [
-      "ayq",
-      "Ayi (Papua New Guinea)",
-      "Ayi (Papua New Guinea) (ayq)",
       "East_Asia_Plateau"
     ],
     [
@@ -155,15 +125,15 @@
       "East_Asia_Plateau"
     ],
     [
-      "bky",
-      "Bokyi",
-      "Bokyi (bky)",
-      "East_Asia_Plateau"
-    ],
-    [
       "blr",
       "Blang",
       "Blang (blr)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "blt",
+      "Tai Dam",
+      "Tai Dam (blt)",
       "East_Asia_Plateau"
     ],
     [
@@ -242,6 +212,12 @@
       "bxr",
       "Russia Buriat",
       "Russia Buriat (bxr)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "bxu",
+      "China Buriat",
+      "China Buriat (bxu)",
       "East_Asia_Plateau"
     ],
     [
@@ -341,12 +317,6 @@
       "East_Asia_Plateau"
     ],
     [
-      "coh",
-      "Chonyi-Dzihana-Kauma",
-      "Chonyi-Dzihana-Kauma (coh)",
-      "East_Asia_Plateau"
-    ],
-    [
       "cov",
       "Cao Miao",
       "Cao Miao (cov)",
@@ -383,15 +353,15 @@
       "East_Asia_Plateau"
     ],
     [
-      "csy",
-      "Siyin Chin",
-      "Siyin Chin (csy)",
-      "East_Asia_Plateau"
-    ],
-    [
       "cuq",
       "Cun",
       "Cun (cuq)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "cuu",
+      "Tai Ya",
+      "Tai Ya (cuu)",
       "East_Asia_Plateau"
     ],
     [
@@ -407,18 +377,6 @@
       "East_Asia_Plateau"
     ],
     [
-      "dax",
-      "Dayi",
-      "Dayi (dax)",
-      "East_Asia_Plateau"
-    ],
-    [
-      "dbl",
-      "Dyirbal",
-      "Dyirbal (dbl)",
-      "East_Asia_Plateau"
-    ],
-    [
       "doc",
       "Northern Dong",
       "Northern Dong (doc)",
@@ -428,12 +386,6 @@
       "dre",
       "Dolpo",
       "Dolpo (dre)",
-      "East_Asia_Plateau"
-    ],
-    [
-      "drl",
-      "Paakantyi",
-      "Paakantyi (drl)",
       "East_Asia_Plateau"
     ],
     [
@@ -452,12 +404,6 @@
       "duu",
       "Drung",
       "Drung (duu)",
-      "East_Asia_Plateau"
-    ],
-    [
-      "dyo",
-      "Jola-Fonyi",
-      "Jola-Fonyi (dyo)",
       "East_Asia_Plateau"
     ],
     [
@@ -491,6 +437,12 @@
       "East_Asia_Plateau"
     ],
     [
+      "evn",
+      "Evenki",
+      "Evenki (evn)",
+      "East_Asia_Plateau"
+    ],
+    [
       "gan",
       "Gan Chinese",
       "Gan Chinese (gan)",
@@ -500,12 +452,6 @@
       "gbm",
       "Garhwali",
       "Garhwali (gbm)",
-      "East_Asia_Plateau"
-    ],
-    [
-      "gbr",
-      "Gbagyi",
-      "Gbagyi (gbr)",
       "East_Asia_Plateau"
     ],
     [
@@ -539,18 +485,6 @@
       "East_Asia_Plateau"
     ],
     [
-      "gmg",
-      "Magɨyi",
-      "Magɨyi (gmg)",
-      "East_Asia_Plateau"
-    ],
-    [
-      "goz",
-      "Gozarkhani",
-      "Gozarkhani (goz)",
-      "East_Asia_Plateau"
-    ],
-    [
       "gqi",
       "Guiqiong",
       "Guiqiong (gqi)",
@@ -560,18 +494,6 @@
       "gqu",
       "Qau",
       "Qau (gqu)",
-      "East_Asia_Plateau"
-    ],
-    [
-      "gyg",
-      "Gbayi",
-      "Gbayi (gyg)",
-      "East_Asia_Plateau"
-    ],
-    [
-      "gyl",
-      "Gayil",
-      "Gayil (gyl)",
       "East_Asia_Plateau"
     ],
     [
@@ -620,12 +542,6 @@
       "hme",
       "Eastern Huishui Hmong",
       "Eastern Huishui Hmong (hme)",
-      "East_Asia_Plateau"
-    ],
-    [
-      "hmf",
-      "Hmong Don",
-      "Hmong Don (hmf)",
       "East_Asia_Plateau"
     ],
     [
@@ -839,15 +755,15 @@
       "East_Asia_Plateau"
     ],
     [
-      "kaf",
-      "Katso",
-      "Katso (kaf)",
+      "kac",
+      "Kachin",
+      "Kachin (kac)",
       "East_Asia_Plateau"
     ],
     [
-      "kal",
-      "Kalaallisut",
-      "Kalaallisut (kal)",
+      "kaf",
+      "Katso",
+      "Katso (kaf)",
       "East_Asia_Plateau"
     ],
     [
@@ -893,6 +809,12 @@
       "East_Asia_Plateau"
     ],
     [
+      "kjg",
+      "Khmu",
+      "Khmu (kjg)",
+      "East_Asia_Plateau"
+    ],
+    [
       "kjh",
       "Khakas",
       "Khakas (kjh)",
@@ -908,12 +830,6 @@
       "kkn",
       "Kon Keu",
       "Kon Keu (kkn)",
-      "East_Asia_Plateau"
-    ],
-    [
-      "kky",
-      "Guugu Yimidhirr",
-      "Guugu Yimidhirr (kky)",
       "East_Asia_Plateau"
     ],
     [
@@ -944,18 +860,6 @@
       "kvk",
       "Korean Sign Language",
       "Korean Sign Language (kvk)",
-      "East_Asia_Plateau"
-    ],
-    [
-      "kvu",
-      "Yinbaw Karen",
-      "Yinbaw Karen (kvu)",
-      "East_Asia_Plateau"
-    ],
-    [
-      "kvy",
-      "Yintale Karen",
-      "Yintale Karen (kvy)",
       "East_Asia_Plateau"
     ],
     [
@@ -1013,21 +917,9 @@
       "East_Asia_Plateau"
     ],
     [
-      "ldg",
-      "Lenyima",
-      "Lenyima (ldg)",
-      "East_Asia_Plateau"
-    ],
-    [
       "lhi",
       "Lahu Shi",
       "Lahu Shi (lhi)",
-      "East_Asia_Plateau"
-    ],
-    [
-      "lhl",
-      "Lahul Lohar",
-      "Lahul Lohar (lhl)",
       "East_Asia_Plateau"
     ],
     [
@@ -1049,33 +941,15 @@
       "East_Asia_Plateau"
     ],
     [
-      "lid",
-      "Nyindrou",
-      "Nyindrou (lid)",
-      "East_Asia_Plateau"
-    ],
-    [
       "lis",
       "Lisu",
       "Lisu (lis)",
       "East_Asia_Plateau"
     ],
     [
-      "ljw",
-      "Yirandali",
-      "Yirandali (ljw)",
-      "East_Asia_Plateau"
-    ],
-    [
       "lkc",
       "Kucong",
       "Kucong (lkc)",
-      "East_Asia_Plateau"
-    ],
-    [
-      "lke",
-      "Kenyi",
-      "Kenyi (lke)",
       "East_Asia_Plateau"
     ],
     [
@@ -1133,12 +1007,6 @@
       "East_Asia_Plateau"
     ],
     [
-      "mgt",
-      "Mongol",
-      "Mongol (mgt)",
-      "East_Asia_Plateau"
-    ],
-    [
       "mhu",
       "Digaro-Mishmi",
       "Digaro-Mishmi (mhu)",
@@ -1160,6 +1028,12 @@
       "mji",
       "Kim Mun",
       "Kim Mun (mji)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "mkg",
+      "Mak (China)",
+      "Mak (China) (mkg)",
       "East_Asia_Plateau"
     ],
     [
@@ -1205,12 +1079,6 @@
       "East_Asia_Plateau"
     ],
     [
-      "mpc",
-      "Mangarrayi",
-      "Mangarrayi (mpc)",
-      "East_Asia_Plateau"
-    ],
-    [
       "mqt",
       "Mok",
       "Mok (mqt)",
@@ -1220,12 +1088,6 @@
       "msr",
       "Mongolian Sign Language",
       "Mongolian Sign Language (msr)",
-      "East_Asia_Plateau"
-    ],
-    [
-      "mtb",
-      "Anyin Morofo",
-      "Anyin Morofo (mtb)",
       "East_Asia_Plateau"
     ],
     [
@@ -1259,12 +1121,6 @@
       "East_Asia_Plateau"
     ],
     [
-      "mxc",
-      "Manyika",
-      "Manyika (mxc)",
-      "East_Asia_Plateau"
-    ],
-    [
       "mxj",
       "Miju-Mishmi",
       "Miju-Mishmi (mxj)",
@@ -1283,54 +1139,6 @@
       "East_Asia_Plateau"
     ],
     [
-      "nfl",
-      "Ayiwo",
-      "Ayiwo (nfl)",
-      "East_Asia_Plateau"
-    ],
-    [
-      "ngx",
-      "Nggwahyi",
-      "Nggwahyi (ngx)",
-      "East_Asia_Plateau"
-    ],
-    [
-      "nih",
-      "Nyiha (Tanzania)",
-      "Nyiha (Tanzania) (nih)",
-      "East_Asia_Plateau"
-    ],
-    [
-      "nja",
-      "Nzanyi",
-      "Nzanyi (nja)",
-      "East_Asia_Plateau"
-    ],
-    [
-      "njx",
-      "Kunyi",
-      "Kunyi (njx)",
-      "East_Asia_Plateau"
-    ],
-    [
-      "njz",
-      "Nyishi",
-      "Nyishi (njz)",
-      "East_Asia_Plateau"
-    ],
-    [
-      "nkt",
-      "Nyika (Tanzania)",
-      "Nyika (Tanzania) (nkt)",
-      "East_Asia_Plateau"
-    ],
-    [
-      "nkv",
-      "Nyika (Malawi and Zambia)",
-      "Nyika (Malawi and Zambia) (nkv)",
-      "East_Asia_Plateau"
-    ],
-    [
       "nmy",
       "Namuyi",
       "Namuyi (nmy)",
@@ -1340,12 +1148,6 @@
       "nos",
       "Eastern Nisu",
       "Eastern Nisu (nos)",
-      "East_Asia_Plateau"
-    ],
-    [
-      "noz",
-      "Nayi",
-      "Nayi (noz)",
       "East_Asia_Plateau"
     ],
     [
@@ -1397,30 +1199,6 @@
       "East_Asia_Plateau"
     ],
     [
-      "nyg",
-      "Nyindu",
-      "Nyindu (nyg)",
-      "East_Asia_Plateau"
-    ],
-    [
-      "nyh",
-      "Nyikina",
-      "Nyikina (nyh)",
-      "East_Asia_Plateau"
-    ],
-    [
-      "nyq",
-      "Nayini",
-      "Nayini (nyq)",
-      "East_Asia_Plateau"
-    ],
-    [
-      "nyr",
-      "Nyiha (Malawi)",
-      "Nyiha (Malawi) (nyr)",
-      "East_Asia_Plateau"
-    ],
-    [
       "oaa",
       "Orok",
       "Orok (oaa)",
@@ -1448,6 +1226,12 @@
       "pcc",
       "Bouyei",
       "Bouyei (pcc)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "pce",
+      "Ruching Palaung",
+      "Ruching Palaung (pce)",
       "East_Asia_Plateau"
     ],
     [
@@ -1481,9 +1265,9 @@
       "East_Asia_Plateau"
     ],
     [
-      "pib",
-      "Yine",
-      "Yine (pib)",
+      "pll",
+      "Shwe Palaung",
+      "Shwe Palaung (pll)",
       "East_Asia_Plateau"
     ],
     [
@@ -1508,12 +1292,6 @@
       "pnu",
       "Jiongnai Bunu",
       "Jiongnai Bunu (pnu)",
-      "East_Asia_Plateau"
-    ],
-    [
-      "pny",
-      "Pinyin",
-      "Pinyin (pny)",
       "East_Asia_Plateau"
     ],
     [
@@ -1559,9 +1337,21 @@
       "East_Asia_Plateau"
     ],
     [
+      "rbb",
+      "Rumai Palaung",
+      "Rumai Palaung (rbb)",
+      "East_Asia_Plateau"
+    ],
+    [
       "ril",
       "Riang Lang",
       "Riang Lang (ril)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "ryn",
+      "Northern Amami-Oshima",
+      "Northern Amami-Oshima (ryn)",
       "East_Asia_Plateau"
     ],
     [
@@ -1631,12 +1421,6 @@
       "East_Asia_Plateau"
     ],
     [
-      "spp",
-      "Supyire Senoufo",
-      "Supyire Senoufo (spp)",
-      "East_Asia_Plateau"
-    ],
-    [
       "srh",
       "Sarikoli",
       "Sarikoli (srh)",
@@ -1673,12 +1457,6 @@
       "East_Asia_Plateau"
     ],
     [
-      "syy",
-      "Al-Sayyid Bedouin Sign Language",
-      "Al-Sayyid Bedouin Sign Language (syy)",
-      "East_Asia_Plateau"
-    ],
-    [
       "szy",
       "Sakizaya",
       "Sakizaya (szy)",
@@ -1700,6 +1478,30 @@
       "tct",
       "T'en",
       "T'en (tct)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "tdd",
+      "Tai Nüa",
+      "Tai Nüa (tdd)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "tdg",
+      "Western Tamang",
+      "Western Tamang (tdg)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "tge",
+      "Eastern Gorkha Tamang",
+      "Eastern Gorkha Tamang (tge)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "tiz",
+      "Tai Hongjin",
+      "Tai Hongjin (tiz)",
       "East_Asia_Plateau"
     ],
     [
@@ -1751,9 +1553,9 @@
       "East_Asia_Plateau"
     ],
     [
-      "tyi",
-      "Teke-Tsaayi",
-      "Teke-Tsaayi (tyi)",
+      "twh",
+      "Tai Dón",
+      "Tai Dón (twh)",
       "East_Asia_Plateau"
     ],
     [
@@ -1775,39 +1577,21 @@
       "East_Asia_Plateau"
     ],
     [
-      "uiv",
-      "Iyive",
-      "Iyive (uiv)",
-      "East_Asia_Plateau"
-    ],
-    [
-      "ung",
-      "Ngarinyin",
-      "Ngarinyin (ung)",
-      "East_Asia_Plateau"
-    ],
-    [
       "uuu",
       "U",
       "U (uuu)",
       "East_Asia_Plateau"
     ],
     [
-      "vkl",
-      "Kulisusu",
-      "Kulisusu (vkl)",
+      "vwa",
+      "Awa (China)",
+      "Awa (China) (vwa)",
       "East_Asia_Plateau"
     ],
     [
       "wbm",
       "Wa",
       "Wa (wbm)",
-      "East_Asia_Plateau"
-    ],
-    [
-      "wny",
-      "Wanyi",
-      "Wanyi (wny)",
       "East_Asia_Plateau"
     ],
     [
@@ -1835,12 +1619,6 @@
       "East_Asia_Plateau"
     ],
     [
-      "xdy",
-      "Malayic Dayak",
-      "Malayic Dayak (xdy)",
-      "East_Asia_Plateau"
-    ],
-    [
       "xnb",
       "Kanakanabu",
       "Kanakanabu (xnb)",
@@ -1853,9 +1631,9 @@
       "East_Asia_Plateau"
     ],
     [
-      "xny",
-      "Nyiyaparli",
-      "Nyiyaparli (xny)",
+      "xsr",
+      "Sherpa",
+      "Sherpa (xsr)",
       "East_Asia_Plateau"
     ],
     [
@@ -1868,6 +1646,12 @@
       "xug",
       "Kunigami",
       "Kunigami (xug)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "ybe",
+      "West Yugur",
+      "West Yugur (ybe)",
       "East_Asia_Plateau"
     ],
     [
@@ -1895,30 +1679,6 @@
       "East_Asia_Plateau"
     ],
     [
-      "ydd",
-      "Eastern Yiddish",
-      "Eastern Yiddish (ydd)",
-      "East_Asia_Plateau"
-    ],
-    [
-      "ydg",
-      "Yidgha",
-      "Yidgha (ydg)",
-      "East_Asia_Plateau"
-    ],
-    [
-      "yee",
-      "Yimas",
-      "Yimas (yee)",
-      "East_Asia_Plateau"
-    ],
-    [
-      "yey",
-      "Yeyi",
-      "Yeyi (yey)",
-      "East_Asia_Plateau"
-    ],
-    [
       "ygp",
       "Gepo",
       "Gepo (ygp)",
@@ -1934,12 +1694,6 @@
       "yhl",
       "Hlepho Phowa",
       "Hlepho Phowa (yhl)",
-      "East_Asia_Plateau"
-    ],
-    [
-      "yia",
-      "Yinggarda",
-      "Yinggarda (yia)",
       "East_Asia_Plateau"
     ],
     [
@@ -1961,24 +1715,6 @@
       "East_Asia_Plateau"
     ],
     [
-      "yih",
-      "Western Yiddish",
-      "Western Yiddish (yih)",
-      "East_Asia_Plateau"
-    ],
-    [
-      "yii",
-      "Yidiny",
-      "Yidiny (yii)",
-      "East_Asia_Plateau"
-    ],
-    [
-      "yij",
-      "Yindjibarndi",
-      "Yindjibarndi (yij)",
-      "East_Asia_Plateau"
-    ],
-    [
       "yik",
       "Dongshanba Lalo",
       "Dongshanba Lalo (yik)",
@@ -1994,12 +1730,6 @@
       "yiq",
       "Miqie",
       "Miqie (yiq)",
-      "East_Asia_Plateau"
-    ],
-    [
-      "yis",
-      "Yis",
-      "Yis (yis)",
       "East_Asia_Plateau"
     ],
     [
@@ -2060,12 +1790,6 @@
       "ylb",
       "Yaleba",
       "Yaleba (ylb)",
-      "East_Asia_Plateau"
-    ],
-    [
-      "yll",
-      "Yil",
-      "Yil (yll)",
       "East_Asia_Plateau"
     ],
     [
@@ -2207,21 +1931,33 @@
       "East_Asia_Plateau"
     ],
     [
-      "yrm",
-      "Yirrk-Mel",
-      "Yirrk-Mel (yrm)",
-      "East_Asia_Plateau"
-    ],
-    [
       "yrn",
       "Yerong",
       "Yerong (yrn)",
       "East_Asia_Plateau"
     ],
     [
+      "ysd",
+      "Samatao",
+      "Samatao (ysd)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "ysg",
+      "Sonaga",
+      "Sonaga (ysg)",
+      "East_Asia_Plateau"
+    ],
+    [
       "ysn",
       "Sani",
       "Sani (ysn)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "yso",
+      "Nisi (China)",
+      "Nisi (China) (yso)",
       "East_Asia_Plateau"
     ],
     [
@@ -2261,9 +1997,9 @@
       "Guangdong,Hong_Kong,Macau"
     ],
     [
-      "ywg",
-      "Yinhawangka",
-      "Yinhawangka (ywg)",
+      "yuy",
+      "East Yugur",
+      "East Yugur (yuy)",
       "East_Asia_Plateau"
     ],
     [
@@ -2420,6 +2156,12 @@
       "zua",
       "Zeem",
       "Zeem (zua)",
+      "East_Asia_Plateau"
+    ],
+    [
+      "zyb",
+      "Yongbei Zhuang",
+      "Yongbei Zhuang (zyb)",
       "East_Asia_Plateau"
     ],
     [

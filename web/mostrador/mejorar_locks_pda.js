@@ -288,11 +288,11 @@ export let CRDT_WAL_SEMILATTICE = {
   raw_wal_lines_count: 60,
   canonical_patches_count: 5,
   canonical_patches: [
-    { patch_id: "PATCH-STP-L2-0001", level: "L2", ref: "GEN.1.1", strong_id: "H0430", status: "COMMITTED" },
-    { patch_id: "PATCH-STP-L3-001", level: "L3", ref: "GEN.1.2", strong_id: "H7307", status: "COMMITTED" },
-    { patch_id: "PATCH-STP-L2-TEST-9D", level: "L2", ref: "PSA.23.1", strong_id: "H3068", status: "COMMITTED" },
-    { patch_id: "PATCH-STP-L4-BEATITUDE-CLI", level: "L4", ref: "MAT.5.3", strong_id: "G3107", status: "COMMITTED" },
-    { patch_id: "PATCH-WAL-COMMIT-R16", level: "L2", ref: "GEN.1.1", strong_id: "H0430", status: "COMMITTED" },
+    { patch_id: "PATCH-STP-L2-0001", level: "L2", ref: "GEN.1.1", strong_id: "H0430", surface_stp: "Na t'ek'at jix b'et Dios jix b'o'on sat k'ul yetoj lum lu'um.", status: "COMMITTED" },
+    { patch_id: "PATCH-STP-L3-001", level: "L3", ref: "GEN.1.2", strong_id: "H7307", surface_stp: "Ja' naj Yespíritu Dios xec' yib'an ja'.", status: "COMMITTED" },
+    { patch_id: "PATCH-STP-L2-TEST-9D", level: "L2", ref: "PSA.23.1", strong_id: "H3068", surface_stp: "Ja' naj Jehová quintanab'il, c'am tzet chi paltayi.", status: "COMMITTED" },
+    { patch_id: "PATCH-STP-L4-BEATITUDE-CLI", level: "L4", ref: "MAT.5.3", strong_id: "G3107", surface_stp: "Jix b'hai' sc'ul eb' na'an yu Dios tol meb'a' yul yatut sc'ul.", status: "COMMITTED" },
+    { patch_id: "PATCH-WAL-COMMIT-R16", level: "L2", ref: "GEN.1.1", strong_id: "H0430", surface_stp: "Na t'ek'at jix b'et Dios jix b'o'on smasanil.", status: "COMMITTED" },
   ],
 };
 export let PATCH_JOURNAL_LOCK_P2 = {
@@ -378,10 +378,18 @@ export function computeWalSnapshotRollbackPreview(
     level: "L2",
     ref: "GEN.1.1",
     strong_id: "H0430",
+    surface_stp: "Na t'ek'at jix b'et Dios jix b'o'on sat k'ul yetoj lum lu'um.",
     status: "COMMITTED",
   };
+  const resolvedStrong = String(targetPatch.strong_id || targetPatch.strong || "H0430");
+  const resolvedSurfaceStp = String(
+    targetPatch.surface_stp ||
+      targetPatch.new_surface ||
+      targetPatch.surfaceStp ||
+      `[${targetPatch.ref || "GEN.1.1"} · ${resolvedStrong}]`,
+  );
   const sha256Prefix = computeDeterministicContentHashHex(
-    `${targetPatch.patch_id}|${targetPatch.ref}|${targetPatch.strong_id}|snap:${idx}`,
+    `${targetPatch.patch_id}|${targetPatch.ref}|${resolvedStrong}|${resolvedSurfaceStp}|snap:${idx}`,
   ).slice(0, 16);
   return {
     snapshotIndex: idx,
@@ -389,10 +397,12 @@ export function computeWalSnapshotRollbackPreview(
     patchId: String(targetPatch.patch_id || `PATCH-WAL-SNAP-${idx}`),
     level: String(targetPatch.level || "L2"),
     ref: String(targetPatch.ref || "GEN.1.1"),
-    strongId: String(targetPatch.strong_id || "H0430"),
+    strongId: resolvedStrong,
+    strong: resolvedStrong,
+    surfaceStp: resolvedSurfaceStp,
     vetoLockGuard: String(lockJournal?.veto_lock || "Lock P2 (PDA Unbalanced Nested Quotation)"),
     restorableVersesCount: idx === 1 ? 31102 : idx * 25,
-    previewText: `Snapshot #${idx} (sha256:${sha256Prefix}…) · Parche ${targetPatch.patch_id} (${targetPatch.level} · ${targetPatch.ref} · ${targetPatch.strong_id}) · Guardia activa: ${lockJournal?.veto_lock || "Lock P2"} · Restauración atómica lista.`,
+    previewText: `Snapshot #${idx} (sha256:${sha256Prefix}…) · Parche ${targetPatch.patch_id} (${targetPatch.level} · ${targetPatch.ref} · ${resolvedStrong}) · «${resolvedSurfaceStp}» · Guardia activa: ${lockJournal?.veto_lock || "Lock P2"} · Restauración atómica lista.`,
   };
 }
 

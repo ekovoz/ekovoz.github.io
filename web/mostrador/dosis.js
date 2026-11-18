@@ -5,6 +5,7 @@
 //   Dosis 3 · La Biblia completa (PDF con /Outlines).
 
 import { BIBLE_CONSTANTS } from "../bible_constants.js";
+import { CANONICAL_BOOK_ORDER } from "./canonical_versification.js";
 import {
   buildCssPagedMediaPrintHtml,
   dispatchTandaWorkerJob,
@@ -60,13 +61,26 @@ const prefixCache = new WeakMap();
 
 function prefixTable(catalogOrVerseCounts) {
   if (!catalogOrVerseCounts || typeof catalogOrVerseCounts !== "object") {
-    return { table: new Map(), total: 0 };
+    return { table: new Map(), total: 0, bookOrder: [] };
   }
   if (prefixCache.has(catalogOrVerseCounts)) return prefixCache.get(catalogOrVerseCounts);
   const verseCounts = catalogOrVerseCounts.verse_counts || catalogOrVerseCounts;
-  const bookOrder = Array.isArray(catalogOrVerseCounts.book_order)
-    ? catalogOrVerseCounts.book_order
-    : Object.keys(verseCounts);
+  let bookOrder;
+  if (Array.isArray(catalogOrVerseCounts.book_order) && catalogOrVerseCounts.book_order.length > 0) {
+    bookOrder = catalogOrVerseCounts.book_order;
+  } else {
+    const canonical66 =
+      Array.isArray(CANONICAL_BOOK_ORDER) && CANONICAL_BOOK_ORDER.length >= 66
+        ? CANONICAL_BOOK_ORDER
+        : (BIBLE_CONSTANTS?.CANONICAL_66_BOOKS || []).map((b) =>
+            typeof b === "string" ? b : b.id,
+          );
+    const presentCanonical = canonical66.filter((b) =>
+      Object.prototype.hasOwnProperty.call(verseCounts, b),
+    );
+    const extraKeys = Object.keys(verseCounts).filter((k) => !presentCanonical.includes(k));
+    bookOrder = [...presentCanonical, ...extraKeys];
+  }
   const table = new Map();
   let running = 0;
   for (const book of bookOrder) {
@@ -654,7 +668,8 @@ export function listCatalogEditionsForLang(manifestOrLang, maybeLang = "es", opt
         : CANONICAL_14_PLUS_2_EDITIONS_CATALOG;
 
   const baseCatalog =
-    options && options.includeAll14Profiles === true
+    resolvedOptions?.includeAll14Profiles === true ||
+    Boolean(resolvedOptions?.verses || resolvedOptions?.bridgeVerses)
       ? catalogSource
       : [
         ...catalogSource.slice(0, 9),
@@ -678,9 +693,13 @@ export function listCatalogEditionsForLang(manifestOrLang, maybeLang = "es", opt
     const localizedLabel = isEn && item.label_en ? item.label_en : item.label;
     if (item.kind === "field_pdf") {
       const regEntry = FIELD_PDFS_REGISTRY[item.editionSlug] || {};
-      const cleanFieldUrl = buildRelativePdfAssetUrl(
-        regEntry.path || item.url || "obras/biblia/campo/refugio_4_hojas.pdf",
-      );
+      const editionMode = item.editionSlug === "refugio_4_hojas" ? 1 : 2;
+      const isStaticEs = resolvedLang === "es";
+      const cleanFieldUrl = isStaticEs
+        ? buildRelativePdfAssetUrl(
+            regEntry.path || item.url || "obras/biblia/campo/refugio_4_hojas.pdf",
+          )
+        : `mostrador/tanda_print_worker.js?lang=${encodeURIComponent(resolvedLang)}&edition=${encodeURIComponent(item.id)}&editionMode=${editionMode}`;
       const fieldBytes = Number(regEntry.bytes ?? item.bytes ?? 0);
       return {
         ...item,
@@ -688,6 +707,10 @@ export function listCatalogEditionsForLang(manifestOrLang, maybeLang = "es", opt
         profileId: item.id,
         profileUrl: cleanFieldUrl,
         lang: resolvedLang,
+        editionMode,
+        hasPrecompiledPdf: isStaticEs,
+        requiresLiveWorkerSynthesis: !isStaticEs,
+        availabilityMode: isStaticEs ? "precompiled_pdf" : "bimodal_client_print",
         path: cleanFieldUrl,
         url: cleanFieldUrl,
         bytes: fieldBytes,

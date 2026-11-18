@@ -4,6 +4,12 @@
 // ============================================================================
 
 import {
+  CASCADE_SEMILATTICE_PRIORITY,
+  exportSignedEcoPatchV2Artifact,
+  foldCascadePatchV2Semilattice,
+  projectChapterThroughCascadeSemilattice,
+} from "./cascade_l1_l5.js";
+import {
   CANONICAL_BOOK_ORDER,
   CANONICAL_TOTAL_VERSES,
   canonicalOrdinalOf,
@@ -26,6 +32,12 @@ import {
 import { computeEcoPackCrc32Hex } from "./offline_mesh.js";
 import { parseBiblicalCoordinateReference } from "./reference.js";
 
+export {
+  CASCADE_SEMILATTICE_PRIORITY,
+  exportSignedEcoPatchV2Artifact,
+  foldCascadePatchV2Semilattice,
+  projectChapterThroughCascadeSemilattice,
+};
 export const HAREL_WORKSHOP_SUBTABS = ["patch", "ladder", "audit"];
 
 function escHtml(val) {
@@ -638,10 +650,13 @@ export function applyOverlayEntriesToLiveState(state, entries = []) {
     const prevTs = Number(prev?.lamport_ts || 0);
     const nextIso = String(entry.savedAtIso || "");
     const prevIso = String(prev?.savedAtIso || "");
+    const nextPrio = Number(entry.semilattice_priority ?? CASCADE_SEMILATTICE_PRIORITY.DIRECT_VERSE);
+    const prevPrio = Number(prev?.semilattice_priority ?? CASCADE_SEMILATTICE_PRIORITY.DIRECT_VERSE);
     const shouldReplace =
       !prev ||
-      nextTs > prevTs ||
-      (nextTs === prevTs && nextIso >= prevIso);
+      nextPrio > prevPrio ||
+      (nextPrio === prevPrio && nextTs > prevTs) ||
+      (nextPrio === prevPrio && nextTs === prevTs && nextIso >= prevIso);
 
     if (shouldReplace) {
       state.verifiedOverlaysByOsis[mapKey] = {
@@ -719,7 +734,10 @@ export async function ensureStateOverlaysHydrated(state, targetLang = "") {
   const lang = String(targetLang || state.lang || "es").trim().toLowerCase();
   if (state.hydratedOverlayLang !== lang) {
     state.hydratedOverlayLang = lang;
-    const idbOverlays = await loadLiveCascadeOverlaysIdb(lang).catch(() => []);
+    const idbOverlays = await Promise.race([
+      loadLiveCascadeOverlaysIdb(lang).catch(() => []),
+      new Promise((r) => setTimeout(() => r([]), 120)),
+    ]);
     if (idbOverlays.length > 0) {
       state.liveCascadeOverlays = idbOverlays;
       applyOverlayEntriesToLiveState(state, idbOverlays);
@@ -734,6 +752,27 @@ export function projectChapterWithLiveOverlays(state, effectiveLang, rawChapter)
     return { chapterForRender: null, bannerHtml: "", activeAuthority: "" };
   }
   const rawVerses = rawChapter.verses || [];
+  const baseVerseMap = {};
+  if (Array.isArray(rawVerses)) {
+    for (const vItem of rawVerses) {
+      if (vItem && typeof vItem === "object") {
+        baseVerseMap[String(vItem.start ?? vItem.verse ?? "")] = String(vItem.text || "");
+      }
+    }
+  } else {
+    Object.assign(baseVerseMap, rawVerses);
+  }
+  const semilatticeProjectedMap =
+    Array.isArray(state?.liveCascadeOverlays) && state.liveCascadeOverlays.length > 0
+      ? projectChapterThroughCascadeSemilattice({
+          verses: baseVerseMap,
+          matrixRows: state?.lastNavResult?.matrix?.rows || [],
+          overlays: state.liveCascadeOverlays,
+          lang: effectiveLang,
+          book: state?.book || "GEN",
+          chapter: state?.chapter || 1,
+        })
+      : baseVerseMap;
   const badges = [];
   let projectedVerses;
   if (Array.isArray(rawVerses)) {
@@ -742,7 +781,8 @@ export function projectChapterWithLiveOverlays(state, effectiveLang, rawChapter)
       const vKey = String(vItem.start ?? vItem.verse ?? "");
       const osisKey = `${state.book}.${state.chapter}.${vKey}`;
       const ovEntry = resolveOverlayEntryForOsis(state, effectiveLang, osisKey);
-      const projectedText = resolveVerseWithOverlay(state, effectiveLang, osisKey, vItem.text || "");
+      const baseCandidate = semilatticeProjectedMap[vKey] ?? (vItem.text || "");
+      const projectedText = resolveVerseWithOverlay(state, effectiveLang, osisKey, baseCandidate);
       if (ovEntry) {
         const auth = ovEntry.authorityTier || OVERLAY_AUTHORITY_LOCAL_SELF_SIGNED;
         badges.push(
@@ -1102,6 +1142,26 @@ export function bindImproveFormControlsInDrawer(mod, ctx = {}) {
     });
   }
 
+  if (downloadBtn && typeof downloadBtn.addEventListener === "function" && !downloadBtn._downloadPatchBound) {
+    downloadBtn._downloadPatchBound = true;
+    downloadBtn.addEventListener("click", () => {
+      const patch = (state.refreshPatchPreview || refreshPatchPreview)();
+      const artifact = exportSignedEcoPatchV2Artifact(state.liveCascadeOverlays || [], {
+        lang: state.lang || "stp",
+        signatureHex: state.pendingCascadeSignatureHex || "",
+        publicKeyHex: state.pendingCascadePublicKeyHex || "",
+      });
+      if (typeof downloadBtn.setAttribute === "function") {
+        downloadBtn.setAttribute(
+          "data-last-download-filename",
+          patch.filename || `${state.lang || "stp"}.eco.patch.json`,
+        );
+        downloadBtn.setAttribute("data-ecopatch-v2-crc32", artifact.crc32Hex);
+        downloadBtn.setAttribute("data-last-downloaded-hash", patch.contentHash);
+      }
+    });
+  }
+
   const applyBtn = getEl("btnApplySuggestedImprovement", targetDoc);
   if (applyBtn && typeof applyBtn.addEventListener === "function" && !applyBtn._applySuggestedBound) {
     applyBtn._applySuggestedBound = true;
@@ -1192,13 +1252,34 @@ export function bindImproveFormControlsInDrawer(mod, ctx = {}) {
     walRestoreBtn._walRestoreBound = true;
     walRestoreBtn.addEventListener("click", () => {
       const preview = updateWalSnapshotPreviewDom();
-      if (preview && preview.surfaceStp && newInput) {
-        newInput.value = preview.surfaceStp;
+      if (preview && preview.surfaceStp) {
+        if (newInput) {
+          newInput.value = preview.surfaceStp;
+        }
+        applyOverlayEntriesToLiveState(state, [
+          {
+            patch_id: preview.patchId || "PATCH-WAL-RESTORED",
+            lang_code: String(state.lang || "stp").toLowerCase(),
+            cascade_level: preview.level || "L2",
+            semilattice_priority: CASCADE_SEMILATTICE_PRIORITY.L1_DIRECT,
+            target_ref: preview.ref || `${String(state.book || "GEN").toUpperCase()}.${state.chapter || 1}.${state.verse || 1}`,
+            strong_id: preview.strongId || preview.strong || "H0430",
+            new_surface: preview.surfaceStp,
+            authorityTier: OVERLAY_AUTHORITY_LOCAL_SELF_SIGNED,
+            savedAtIso: new Date().toISOString(),
+          },
+        ]);
+        if (typeof walRestoreBtn.setAttribute === "function") {
+          walRestoreBtn.setAttribute("data-restored-surface-stp", preview.surfaceStp);
+        }
       }
-      if (preview && preview.strong) {
-        state.activeStrongId = String(preview.strong).toUpperCase();
+      if (preview && (preview.strong || preview.strongId)) {
+        state.activeStrongId = String(preview.strong || preview.strongId).toUpperCase();
       }
       (state.refreshPatchPreview || refreshPatchPreview)();
+      if (typeof ctx.renderViewportFromState === "function") {
+        ctx.renderViewportFromState(targetDoc);
+      }
     });
   }
 

@@ -2,7 +2,7 @@
 // Purgado el emisor JS `/Identity-H` sin `/FontFile2` y conectado `new Worker("./tanda_print_worker.js")` (`SLICE-V2R-16`).
 
 import {
-  buildStandard14WinAnsiFallbackPdf,
+  buildUnicodeColdSeedVectorPdf,
   resolveFontFileForLangOrScript,
   runWorkerTandaJob,
   typesetTandaWithCachedWasmSync,
@@ -189,7 +189,7 @@ export function resolveSameOriginFontAndPdfCascade({
   doc = null,
 } = {}) {
   const cleanLang = String(lang || "es").trim().toLowerCase() || "es";
-  const fontFile = resolveFontFileForLangOrScript(script || cleanLang);
+  const fontFile = resolveFontFileForLangOrScript(cleanLang, script);
   const tier0OfflineUrl =
     fontFile === "CharisSIL-Regular.ttf"
       ? "./assets/fonts/CharisSIL-Regular.ttf"
@@ -198,23 +198,16 @@ export function resolveSameOriginFontAndPdfCascade({
         : fontFile === "EBGaramond-Regular.ttf"
           ? "./assets/fonts/EBGaramond-Greek-Biblical.ttf"
           : null;
-  const federatedFontUrl = resolveFederatedAssetUrl("editions-01", `fonts/${fontFile}`, doc, {
-    dotSlashPrefix: true,
-  });
-  const federatedBoldFontUrl = resolveFederatedAssetUrl("editions-01", "fonts/CharisSIL-Bold.ttf", doc, {
-    dotSlashPrefix: true,
-  });
+  const sameOriginZstFontUrl = `./packs/fonts/${fontFile}.zst`;
   const precompiledLang = resolvePrecompiledDiskLang(cleanLang);
   const fedReachable = getCachedFederationReachability();
   return {
     lang: cleanLang,
     fontFile,
+    fontZstUrl: sameOriginZstFontUrl,
     federationReachable: fedReachable,
-    fontUrlsCascade: [tier0OfflineUrl, fedReachable === false ? null : federatedFontUrl].filter(Boolean),
-    boldFontUrlsCascade: [
-      "./assets/fonts/CharisSIL-Bold-Subset.ttf",
-      fedReachable === false ? null : federatedBoldFontUrl,
-    ].filter(Boolean),
+    fontUrlsCascade: [tier0OfflineUrl || "./assets/fonts/CharisSIL-Regular.ttf"].filter(Boolean),
+    boldFontUrlsCascade: ["./assets/fonts/CharisSIL-Bold-Subset.ttf"],
     bridgeFontUrl: "./assets/fonts/CharisSIL-Regular.ttf",
     precompiledBlockUrl:
       precompiledLang && fedReachable !== false
@@ -324,7 +317,8 @@ export function typesetTandaPdfBytes({
   paper = "a4",
   paperFormat = "",
   dir = "ltr",
-  maxPages = 50,
+  maxPages = 0,
+  editionMode = 0,
   wasmBytes = null,
   fontBytes = null,
 } = {}) {
@@ -337,11 +331,12 @@ export function typesetTandaPdfBytes({
     lang,
     script,
     joinedText: rawParagraphs.join("\n"),
+    editionMode,
     columns,
     paper: effectivePaper,
     dir,
     fontPt,
-    maxPages,
+    maxPages: maxPages || 200,
     wasmBytes,
     fontBytes,
   });
@@ -349,23 +344,24 @@ export function typesetTandaPdfBytes({
     return wasmPdf;
   }
 
-  const cols = Math.max(1, Math.min(3, Number(columns) || 2));
+  const cols = editionMode === 2 ? 1 : Math.max(1, Math.min(3, Number(columns) || 2));
   const cleanPt = Math.max(7.5, Math.min(18.0, Number(fontPt) || 9.5));
   const isLetter = String(effectivePaper).toLowerCase().includes("letter");
   const pageW = isLetter ? 612 : 595;
-  const colW = Math.max(140, pageW - 80 - 14 * (cols - 1)) / cols;
+  const colW = Math.max(120, pageW - (editionMode === 2 ? 168 : 80) - 14 * (cols - 1)) / cols;
   const cpl = Math.max(20, Math.min(86, Math.round(colW / (cleanPt * 0.5))));
   const wrapped = [];
   for (const para of rawParagraphs) {
     for (const ln of wrapGreedyLines(para, cpl)) wrapped.push(ln);
   }
-  return buildStandard14WinAnsiFallbackPdf({
+  return buildUnicodeColdSeedVectorPdf({
     lines: wrapped.length > 0 ? wrapped : [headerLine],
     columns: cols,
     isLetter,
     isRtl: String(dir || "ltr").toLowerCase() === "rtl",
     fontPt: cleanPt,
     maxPages,
+    editionMode,
   });
 }
 
@@ -391,7 +387,7 @@ export async function dispatchTandaWorkerJob(payload = {}, onProgress = () => { 
         const msg = ev?.data || {};
         if (msg.type === "tanda-progress") {
           onProgress(msg);
-        } else if (msg.type === "tanda-complete") {
+        } else if (msg.type === "tanda-complete" || msg.type === "tanda-offline-font-notice") {
           cleanup();
           resolve(msg);
         } else if (msg.type === "tanda-error") {

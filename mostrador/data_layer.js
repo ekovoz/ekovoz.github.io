@@ -9,6 +9,7 @@
 // Regla de honestidad: si un capítulo no existe en el idioma pedido, el estado es `unavailable`.
 
 import { BIBLE_CONSTANTS as _BIBLE_CONSTANTS } from "../bible_constants.js";
+import { CANONICAL_BOOK_ORDER } from "./canonical_versification.js";
 import {
   MATRIX_ROW_COLUMNS,
   allocWasmBuffer,
@@ -35,6 +36,7 @@ import {
   inspectDeltaZstPatch,
   parseEkpackContainerJs,
   parseEkpackPreamble32Js,
+  sliceVaultEkpackRange,
   truncateAtWordBoundary,
   verifyEd25519ManifestSignature,
   verifyEd25519ManifestSignatureAsync,
@@ -78,11 +80,12 @@ function normalizeEditionSlug(edition) {
   return EDITION_ALIASES[raw] || raw;
 }
 
-/** Adaptador de red: rutas relativas al sitio (`data/...`, `editions-01/...`), mismo origen. */
+/** Adaptador de red: rutas relativas al sitio (`data/...`, `packs/...`), mismo origen. */
 export function createFetchSource({ baseUrl = "", fetchImpl = globalThis.fetch } = {}) {
   if (typeof fetchImpl !== "function") throw new TypeError("createFetchSource requiere fetch");
   const url = (rel) => `${baseUrl}${rel}`;
   return {
+    isFetchNetworkSource: true,
     async getJson(rel) {
       const resp = await fetchImpl(url(rel));
       if (!resp || !resp.ok) return null;
@@ -175,20 +178,31 @@ export function createDataLayer({ source, cacheLimit = 32 } = {}) {
     return getJson(`data/book_names/${lang}.json`);
   }
 
+  const EMBEDDED_SEED_PACK_LANGS = new Set(["es", "en", "stp", "he", "grc", "matrix_tier0"]);
+
   async function loadBytes(rel) {
     if (typeof sourceGetBytes !== "function") return null;
     if (
-      !/^(?:data|wasm|editions-0\d|packs-0\d)\/[A-Za-z0-9._/-]+$/.test(String(rel || "")) ||
+      !/^(?:data|wasm|packs)\/[A-Za-z0-9._/-]+$/.test(String(rel || "")) ||
       String(rel).includes("..")
     ) {
       return null;
     }
-    return bytesCache.get(rel, () => sourceGetBytes.call(source, rel));
+    return bytesCache.get(rel, async () => {
+      const vaultedFull = await sliceVaultEkpackRange(rel, 0, 64 * 1024 * 1024);
+      if (vaultedFull && vaultedFull.byteLength >= 32) return vaultedFull;
+      return sourceGetBytes.call(source, rel);
+    });
   }
 
   async function readEkpackSlice(relPath, startByte, endByteInclusive) {
     const s = Math.max(0, Number(startByte) || 0);
     const e = Math.max(s, Number(endByteInclusive) || s);
+    // D3-V2G: Consultar primero la bóveda persistente IndexedDB (`ekovoz_vault_v2`) con `Blob.slice` zero-copy (< 64 KB RAM)
+    const vaultedSlice = await sliceVaultEkpackRange(relPath, s, e);
+    if (vaultedSlice && vaultedSlice.byteLength > 0) {
+      return vaultedSlice;
+    }
     if (typeof sourceGetRangeBytes === "function") {
       return sourceGetRangeBytes.call(source, relPath, s, e);
     }
@@ -209,11 +223,53 @@ export function createDataLayer({ source, cacheLimit = 32 } = {}) {
     return res && res.status === STATUS.READY ? res : null;
   }
 
+  async function resolvePackCandidatePaths(baseLang) {
+    const vaultHead = await sliceVaultEkpackRange(baseLang, 0, 31);
+    if (vaultHead && vaultHead.byteLength >= 32) {
+      return [`packs/${baseLang}.ekpack`];
+    }
+    if (EMBEDDED_SEED_PACK_LANGS.has(baseLang)) {
+      return [`data/packs/${baseLang}.ekpack`, `packs/${baseLang}.ekpack`];
+    }
+    let packCat = null;
+    try {
+      packCat = await getJson("data/offline_packs_catalog.json");
+    } catch (_err) {
+      packCat = null;
+    }
+    const availLangs = Array.isArray(packCat?.available_pack_langs)
+      ? packCat.available_pack_langs
+      : Array.isArray(packCat?.packs)
+        ? packCat.packs.map((p) => String(p?.lang || ""))
+        : null;
+    if (
+      source?.isFetchNetworkSource &&
+      Array.isArray(availLangs) &&
+      availLangs.length > 0 &&
+      !availLangs.includes(baseLang) &&
+      !availLangs.includes(baseLang.toLowerCase())
+    ) {
+      return [];
+    }
+    const mounts = Array.isArray(packCat?.pack_mounts)
+      ? packCat.pack_mounts
+          .map((m) => String(m?.base_url || "").replace(/^\/+|\/+$/g, ""))
+          .filter((p) => p === "packs" || p === "data/packs")
+      : [];
+    const orderedBases = mounts.length > 0 ? mounts : ["packs", "data/packs"];
+    const out = [];
+    for (const base of orderedBases) {
+      if (base === "data/packs" && source?.isFetchNetworkSource && !EMBEDDED_SEED_PACK_LANGS.has(baseLang)) {
+        continue;
+      }
+      const candidate = `${base}/${baseLang}.ekpack`;
+      if (!out.includes(candidate)) out.push(candidate);
+    }
+    return out;
+  }
+
   async function resolvePackHeaderInfo(baseLang) {
-    const candidates = [
-      `data/packs/${baseLang}.ekpack`,
-      `packs-01/${baseLang}.ekpack`,
-    ];
+    const candidates = await resolvePackCandidatePaths(baseLang);
     for (const relPack of candidates) {
       const hdrInfo = await ekpackHeaderCache.get(relPack, async () => {
         const headProbe = await readEkpackSlice(relPack, 0, 65535);
@@ -363,10 +419,43 @@ export function createDataLayer({ source, cacheLimit = 32 } = {}) {
     }
 
     const chapters = parseBookTsvIntoChapters(bookTsvBytes);
+    const bookOrdinal = Math.max(0, CANONICAL_BOOK_ORDER.indexOf(book));
+    const tierVec = Array.isArray(hdrInfo.hdr.book_epistemic_tiers)
+      ? hdrInfo.hdr.book_epistemic_tiers
+      : null;
+    const bookTierBits =
+      tierVec && tierVec.length >= 17
+        ? ((Number(tierVec[bookOrdinal >> 2]) || 0) >> ((bookOrdinal & 3) * 2)) & 0b11
+        : reqLang === "he" || reqLang === "grc"
+          ? 0
+          : reqLang === "stp" && bookOrdinal < 39
+            ? 2
+            : 1;
+    const bookEpistemicTier =
+      bookTierBits === 0
+        ? "tier0_autograph_witness"
+        : bookTierBits === 2
+          ? "tier2_nt_human_ot_synthesized"
+          : bookTierBits === 3
+            ? "tier4_gmis_scaffold"
+            : "tier1_canonical_human_66";
+    const sovereignTier =
+      reqLang === "stp"
+        ? "tier2_nt_human_ot_synthesized"
+        : bookTierBits === 3
+          ? "tier4_gmis_scaffold"
+          : "tier1_canonical_human_66";
     const provenance = {
-      tier: reqLang === "stp" ? "nt_human_ot_scaffold" : "canonical_human_complete",
-      sovereign_tier:
-        reqLang === "stp" ? "tier2_nt_human_ot_synthesized" : "tier1_canonical_human_66",
+      tier:
+        bookTierBits === 2
+          ? "nt_human_ot_scaffold"
+          : bookTierBits === 0
+            ? "autograph_witness_tier0"
+            : "canonical_human_complete",
+      sovereign_tier: sovereignTier,
+      book_epistemic_tier: bookEpistemicTier,
+      book_epistemic_tier_bits: bookTierBits,
+      versification_tradition: hdrInfo.hdr.versification_tradition || "eng",
       source: isIntralang1909 ? "ekpack_http206_range_frame67_rlz" : "ekpack_http206_range",
       merkle_root: hdrInfo.hdr.merkle_root_sha256_hex,
       ed25519_verified: true,
@@ -441,9 +530,11 @@ export function createDataLayer({ source, cacheLimit = 32 } = {}) {
     if (ekpackResult.status === STATUS.READY || ekpackResult.reason !== "missing") {
       return ekpackResult;
     }
-    const mockData = await getJson(`data/text/${lang}/${book}.json`);
-    if (mockData && mockData.book === book && mockData.lang === lang) {
-      return { status: STATUS.READY, data: mockData, provenance: mockData.provenance };
+    if (!source?.isFetchNetworkSource) {
+      const mockData = await getJson(`data/text/${lang}/${book}.json`);
+      if (mockData && mockData.book === book && mockData.lang === lang) {
+        return { status: STATUS.READY, data: mockData, provenance: mockData.provenance };
+      }
     }
     return ekpackResult;
   }

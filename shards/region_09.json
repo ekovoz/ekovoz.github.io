@@ -1,7 +1,7 @@
 {
   "macro_region_id": 9,
   "region_name_es": "Subcontinente Indio e Himalaya",
-  "total_languages": 631,
+  "total_languages": 624,
   "subclades_covered": 32,
   "featured_languages": [
     [
@@ -44,12 +44,6 @@
       "adl",
       "Galo",
       "Galo (adl)",
-      "Indo_Gangetic_Himalaya"
-    ],
-    [
-      "adw",
-      "Amundava",
-      "Amundava (adw)",
       "Indo_Gangetic_Himalaya"
     ],
     [
@@ -185,6 +179,12 @@
       "Indo_Gangetic_Himalaya"
     ],
     [
+      "apq",
+      "A-Pucikwar",
+      "A-Pucikwar (apq)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
       "apt",
       "Apatani",
       "Apatani (apt)",
@@ -215,21 +215,15 @@
       "Indo_Gangetic_Himalaya"
     ],
     [
+      "azb",
+      "South Azerbaijani",
+      "South Azerbaijani (azb)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
       "bap",
       "Bantawa",
       "Bantawa (bap)",
-      "Indo_Gangetic_Himalaya"
-    ],
-    [
-      "bbb",
-      "Barai",
-      "Barai (bbb)",
-      "Indo_Gangetic_Himalaya"
-    ],
-    [
-      "bcc",
-      "Southern Balochi",
-      "Southern Balochi (bcc)",
       "Indo_Gangetic_Himalaya"
     ],
     [
@@ -341,6 +335,12 @@
       "Indo_Gangetic_Himalaya"
     ],
     [
+      "bgr",
+      "Bawm Chin",
+      "Bawm Chin (bgr)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
       "bgw",
       "Bhatri",
       "Bhatri (bgw)",
@@ -413,6 +413,12 @@
       "Indo_Gangetic_Himalaya"
     ],
     [
+      "bix",
+      "Bijori",
+      "Bijori (bix)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
       "biy",
       "Birhor",
       "Birhor (biy)",
@@ -446,12 +452,6 @@
       "bns",
       "Bundeli",
       "Bundeli (bns)",
-      "Indo_Gangetic_Himalaya"
-    ],
-    [
-      "boe",
-      "Mundabli",
-      "Mundabli (boe)",
       "Indo_Gangetic_Himalaya"
     ],
     [
@@ -533,12 +533,6 @@
       "Indo_Gangetic_Himalaya"
     ],
     [
-      "cbs",
-      "Cashinahua",
-      "Cashinahua (cbs)",
-      "Indo_Gangetic_Himalaya"
-    ],
-    [
       "ccp",
       "Chakma",
       "Chakma (ccp)",
@@ -593,6 +587,12 @@
       "Indo_Gangetic_Himalaya"
     ],
     [
+      "cfm",
+      "Falam Chin",
+      "Falam Chin (cfm)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
       "cgk",
       "Chocangacakha",
       "Chocangacakha (cgk)",
@@ -602,6 +602,12 @@
       "chx",
       "Chantyal",
       "Chantyal (chx)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "cih",
+      "Chinali",
+      "Chinali (cih)",
       "Indo_Gangetic_Himalaya"
     ],
     [
@@ -629,9 +635,33 @@
       "Indo_Gangetic_Himalaya"
     ],
     [
+      "cnh",
+      "Hakha Chin",
+      "Hakha Chin (cnh)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "cnk",
+      "Khumi Chin",
+      "Khumi Chin (cnk)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
       "crv",
       "Chaura",
       "Chaura (crv)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "csh",
+      "Asho Chin",
+      "Asho Chin (csh)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "ctd",
+      "Tedim Chin",
+      "Tedim Chin (ctd)",
       "Indo_Gangetic_Himalaya"
     ],
     [
@@ -659,9 +689,21 @@
       "Indo_Gangetic_Himalaya"
     ],
     [
+      "cuw",
+      "Chukwa",
+      "Chukwa (cuw)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
       "cvg",
       "Chug",
       "Chug (cvg)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "daq",
+      "Dandami Maria",
+      "Dandami Maria (daq)",
       "Indo_Gangetic_Himalaya"
     ],
     [
@@ -881,9 +923,9 @@
       "Indo_Gangetic_Himalaya"
     ],
     [
-      "fng",
-      "Fanagalo",
-      "Fanagalo (fng)",
+      "gac",
+      "Mixed Great Andamanese",
+      "Mixed Great Andamanese (gac)",
       "Indo_Gangetic_Himalaya"
     ],
     [
@@ -947,9 +989,9 @@
       "Indo_Gangetic_Himalaya"
     ],
     [
-      "gef",
-      "Gerai",
-      "Gerai (gef)",
+      "ggg",
+      "Gurgula",
+      "Gurgula (ggg)",
       "Indo_Gangetic_Himalaya"
     ],
     [
@@ -1067,6 +1109,12 @@
       "Gujarat,Mumbai"
     ],
     [
+      "gvr",
+      "Gurung",
+      "Gurung (gvr)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
       "gwc",
       "Gawri",
       "Gawri (gwc)",
@@ -1115,12 +1163,6 @@
       "Uttar_Pradesh,Bihar,MP,Rajasthan,Delhi"
     ],
     [
-      "hif",
-      "Fiji Hindi",
-      "Fiji Hindi (hif)",
-      "Indo_Gangetic_Himalaya"
-    ],
-    [
       "hii",
       "Hinduri",
       "Hinduri (hii)",
@@ -1130,6 +1172,12 @@
       "hlb",
       "Halbi",
       "Halbi (hlb)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "hlt",
+      "Matu Chin",
+      "Matu Chin (hlt)",
       "Indo_Gangetic_Himalaya"
     ],
     [
@@ -1253,12 +1301,6 @@
       "Indo_Gangetic_Himalaya"
     ],
     [
-      "jmn",
-      "Makuri Naga",
-      "Makuri Naga (jmn)",
-      "Indo_Gangetic_Himalaya"
-    ],
-    [
       "jna",
       "Jangshung",
       "Jangshung (jna)",
@@ -1286,12 +1328,6 @@
       "jog",
       "Jogi",
       "Jogi (jog)",
-      "Indo_Gangetic_Himalaya"
-    ],
-    [
-      "jra",
-      "Jarai",
-      "Jarai (jra)",
       "Indo_Gangetic_Himalaya"
     ],
     [
@@ -1331,6 +1367,12 @@
       "Indo_Gangetic_Himalaya"
     ],
     [
+      "kaz",
+      "Kazakh",
+      "Kazakh (kaz)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
       "kbg",
       "Khamba",
       "Khamba (kbg)",
@@ -1346,12 +1388,6 @@
       "kdq",
       "Koch",
       "Koch (kdq)",
-      "Indo_Gangetic_Himalaya"
-    ],
-    [
-      "kdr",
-      "Karaim",
-      "Karaim (kdr)",
       "Indo_Gangetic_Himalaya"
     ],
     [
@@ -1727,6 +1763,12 @@
       "Indo_Gangetic_Himalaya"
     ],
     [
+      "lax",
+      "Tiwa",
+      "Tiwa (lax)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
       "lbm",
       "Lodhi",
       "Lodhi (lbm)",
@@ -1745,6 +1787,12 @@
       "Indo_Gangetic_Himalaya"
     ],
     [
+      "lhl",
+      "Lahul Lohar",
+      "Lahul Lohar (lhl)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
       "lhp",
       "Lhokpu",
       "Lhokpu (lhp)",
@@ -1754,12 +1802,6 @@
       "lif",
       "Limbu",
       "Limbu (lif)",
-      "Indo_Gangetic_Himalaya"
-    ],
-    [
-      "lim",
-      "Limburgan",
-      "Limburgan (lim)",
       "Indo_Gangetic_Himalaya"
     ],
     [
@@ -1787,21 +1829,9 @@
       "Indo_Gangetic_Himalaya"
     ],
     [
-      "lmp",
-      "Limbum",
-      "Limbum (lmp)",
-      "Indo_Gangetic_Himalaya"
-    ],
-    [
       "loy",
       "Loke",
       "Loke (loy)",
-      "Indo_Gangetic_Himalaya"
-    ],
-    [
-      "lpn",
-      "Long Phuri Naga",
-      "Long Phuri Naga (lpn)",
       "Indo_Gangetic_Himalaya"
     ],
     [
@@ -1859,12 +1889,6 @@
       "Indo_Gangetic_Himalaya"
     ],
     [
-      "lzn",
-      "Leinong Naga",
-      "Leinong Naga (lzn)",
-      "Indo_Gangetic_Himalaya"
-    ],
-    [
       "mag",
       "Magahi",
       "Magahi (mag)",
@@ -1916,6 +1940,12 @@
       "mhj",
       "Mogholi",
       "Mogholi (mhj)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "mjl",
+      "Mandeali",
+      "Mandeali (mjl)",
       "Indo_Gangetic_Himalaya"
     ],
     [
@@ -1997,12 +2027,6 @@
       "Kerala,Lakshadweep"
     ],
     [
-      "mmf",
-      "Mundat",
-      "Mundat (mmf)",
-      "Indo_Gangetic_Himalaya"
-    ],
-    [
       "mmj",
       "Majhwar",
       "Majhwar (mmj)",
@@ -2012,12 +2036,6 @@
       "mmk",
       "Mukha-Dora",
       "Mukha-Dora (mmk)",
-      "Indo_Gangetic_Himalaya"
-    ],
-    [
-      "mnf",
-      "Mundani",
-      "Mundani (mnf)",
       "Indo_Gangetic_Himalaya"
     ],
     [
@@ -2033,18 +2051,6 @@
       "Indo_Gangetic_Himalaya"
     ],
     [
-      "moq",
-      "Mor (Bomberai Peninsula)",
-      "Mor (Bomberai Peninsula) (moq)",
-      "Indo_Gangetic_Himalaya"
-    ],
-    [
-      "mqy",
-      "Manggarai",
-      "Manggarai (mqy)",
-      "Indo_Gangetic_Himalaya"
-    ],
-    [
       "mrd",
       "Western Magar",
       "Western Magar (mrd)",
@@ -2057,27 +2063,27 @@
       "Indo_Gangetic_Himalaya"
     ],
     [
+      "mrh",
+      "Mara Chin",
+      "Mara Chin (mrh)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
       "mro",
       "Mru",
       "Mru (mro)",
       "Indo_Gangetic_Himalaya"
     ],
     [
-      "msg",
-      "Moraid",
-      "Moraid (msg)",
+      "mrr",
+      "Maria (India)",
+      "Maria (India) (mrr)",
       "Indo_Gangetic_Himalaya"
     ],
     [
       "mtr",
       "Mewari",
       "Mewari (mtr)",
-      "Indo_Gangetic_Himalaya"
-    ],
-    [
-      "mua",
-      "Mundang",
-      "Mundang (mua)",
       "Indo_Gangetic_Himalaya"
     ],
     [
@@ -2255,6 +2261,12 @@
       "Indo_Gangetic_Himalaya"
     ],
     [
+      "njz",
+      "Nyishi",
+      "Nyishi (njz)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
       "nkb",
       "Khoibu Naga",
       "Khoibu Naga (nkb)",
@@ -2303,12 +2315,6 @@
       "Indo_Gangetic_Himalaya"
     ],
     [
-      "nlq",
-      "Lao Naga",
-      "Lao Naga (nlq)",
-      "Indo_Gangetic_Himalaya"
-    ],
-    [
       "nlx",
       "Nahali",
       "Nahali (nlx)",
@@ -2351,6 +2357,12 @@
       "Indo_Gangetic_Himalaya"
     ],
     [
+      "nng",
+      "Maring Naga",
+      "Maring Naga (nng)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
       "nnl",
       "Northern Rengma Naga",
       "Northern Rengma Naga (nnl)",
@@ -2387,12 +2399,6 @@
       "Indo_Gangetic_Himalaya"
     ],
     [
-      "npg",
-      "Ponyo-Gongwang Naga",
-      "Ponyo-Gongwang Naga (npg)",
-      "Indo_Gangetic_Himalaya"
-    ],
-    [
       "nph",
       "Phom Naga",
       "Phom Naga (nph)",
@@ -2414,18 +2420,6 @@
       "npu",
       "Puimei Naga",
       "Puimei Naga (npu)",
-      "Indo_Gangetic_Himalaya"
-    ],
-    [
-      "nqq",
-      "Kyan-Karyaw Naga",
-      "Kyan-Karyaw Naga (nqq)",
-      "Indo_Gangetic_Himalaya"
-    ],
-    [
-      "nqy",
-      "Akyaung Ari Naga",
-      "Akyaung Ari Naga (nqy)",
       "Indo_Gangetic_Himalaya"
     ],
     [
@@ -2465,18 +2459,6 @@
       "Indo_Gangetic_Himalaya"
     ],
     [
-      "ntx",
-      "Tangkhul Naga (Myanmar)",
-      "Tangkhul Naga (Myanmar) (ntx)",
-      "Indo_Gangetic_Himalaya"
-    ],
-    [
-      "nxk",
-      "Koki Naga",
-      "Koki Naga (nxk)",
-      "Indo_Gangetic_Himalaya"
-    ],
-    [
       "nzm",
       "Zeme Naga",
       "Zeme Naga (nzm)",
@@ -2486,12 +2468,6 @@
       "odk",
       "Od",
       "Od (odk)",
-      "Indo_Gangetic_Himalaya"
-    ],
-    [
-      "oka",
-      "Okanagan",
-      "Okanagan (oka)",
       "Indo_Gangetic_Himalaya"
     ],
     [
@@ -2588,7 +2564,13 @@
       "pcj",
       "Parenga",
       "Parenga (pcj)",
-      "Sepik_Highlands_Pacific"
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "pck",
+      "Paite Chin",
+      "Paite Chin (pck)",
+      "Indo_Gangetic_Himalaya"
     ],
     [
       "pcl",
@@ -2945,6 +2927,12 @@
       "Indo_Gangetic_Himalaya"
     ],
     [
+      "sci",
+      "Sri Lankan Creole Malay",
+      "Sri Lankan Creole Malay (sci)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
       "sck",
       "Sadri",
       "Sadri (sck)",
@@ -2984,6 +2972,12 @@
       "sdr",
       "Oraon Sadri",
       "Oraon Sadri (sdr)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "sgh",
+      "Shughni",
+      "Shughni (sgh)",
       "Indo_Gangetic_Himalaya"
     ],
     [
@@ -3095,21 +3089,9 @@
       "Indo_Gangetic_Himalaya"
     ],
     [
-      "snj",
-      "Riverain Sango",
-      "Riverain Sango (snj)",
-      "Indo_Gangetic_Himalaya"
-    ],
-    [
       "soi",
       "Sonha",
       "Sonha (soi)",
-      "Indo_Gangetic_Himalaya"
-    ],
-    [
-      "sor",
-      "Somrai",
-      "Somrai (sor)",
       "Indo_Gangetic_Himalaya"
     ],
     [
@@ -3203,21 +3185,9 @@
       "Indo_Gangetic_Himalaya"
     ],
     [
-      "tcg",
-      "Tamagario",
-      "Tamagario (tcg)",
-      "Indo_Gangetic_Himalaya"
-    ],
-    [
       "tcn",
       "Tichurong",
       "Tichurong (tcn)",
-      "Indo_Gangetic_Himalaya"
-    ],
-    [
-      "tcs",
-      "Torres Strait Creole",
-      "Torres Strait Creole (tcs)",
       "Indo_Gangetic_Himalaya"
     ],
     [
@@ -3233,15 +3203,15 @@
       "Indo_Gangetic_Himalaya"
     ],
     [
-      "tdb",
-      "Panchpargania",
-      "Panchpargania (tdb)",
+      "tcz",
+      "Thado Chin",
+      "Thado Chin (tcz)",
       "Indo_Gangetic_Himalaya"
     ],
     [
-      "tdg",
-      "Western Tamang",
-      "Western Tamang (tdg)",
+      "tdb",
+      "Panchpargania",
+      "Panchpargania (tdb)",
       "Indo_Gangetic_Himalaya"
     ],
     [
@@ -3260,12 +3230,6 @@
       "tef",
       "Teressa",
       "Teressa (tef)",
-      "Indo_Gangetic_Himalaya"
-    ],
-    [
-      "tge",
-      "Eastern Gorkha Tamang",
-      "Eastern Gorkha Tamang (tge)",
       "Indo_Gangetic_Himalaya"
     ],
     [
@@ -3413,6 +3377,12 @@
       "Indo_Gangetic_Himalaya"
     ],
     [
+      "tuk",
+      "Turkmen",
+      "Turkmen (tuk)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
       "tvt",
       "Tutsa Naga",
       "Tutsa Naga (tvt)",
@@ -3443,21 +3413,9 @@
       "Indo_Gangetic_Himalaya"
     ],
     [
-      "ukl",
-      "Ukrainian Sign Language",
-      "Ukrainian Sign Language (ukl)",
-      "Indo_Gangetic_Himalaya"
-    ],
-    [
       "ull",
       "Ullatan",
       "Ullatan (ull)",
-      "Indo_Gangetic_Himalaya"
-    ],
-    [
-      "umn",
-      "Makyan Naga",
-      "Makyan Naga (umn)",
       "Indo_Gangetic_Himalaya"
     ],
     [
@@ -3494,6 +3452,12 @@
       "usi",
       "Usui",
       "Usui (usi)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "uzs",
+      "Southern Uzbek",
+      "Southern Uzbek (uzs)",
       "Indo_Gangetic_Himalaya"
     ],
     [
@@ -3569,6 +3533,12 @@
       "Indo_Gangetic_Himalaya"
     ],
     [
+      "wbl",
+      "Wakhi",
+      "Wakhi (wbl)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
       "wbq",
       "Waddar",
       "Waddar (wbq)",
@@ -3584,12 +3554,6 @@
       "wbs",
       "West Bengal Sign Language",
       "West Bengal Sign Language (wbs)",
-      "Sepik_Highlands_Pacific"
-    ],
-    [
-      "wet",
-      "Perai",
-      "Perai (wet)",
       "Indo_Gangetic_Himalaya"
     ],
     [
@@ -3695,12 +3659,6 @@
       "Indo_Gangetic_Himalaya"
     ],
     [
-      "xsr",
-      "Sherpa",
-      "Sherpa (xsr)",
-      "Indo_Gangetic_Himalaya"
-    ],
-    [
       "xua",
       "Alu Kurumba",
       "Alu Kurumba (xua)",
@@ -3737,6 +3695,12 @@
       "Indo_Gangetic_Himalaya"
     ],
     [
+      "ydg",
+      "Yidgha",
+      "Yidgha (ydg)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
       "yea",
       "Ravula",
       "Ravula (yea)",
@@ -3761,21 +3725,9 @@
       "Indo_Gangetic_Himalaya"
     ],
     [
-      "ysg",
-      "Sonaga",
-      "Sonaga (ysg)",
-      "Indo_Gangetic_Himalaya"
-    ],
-    [
       "zau",
       "Zangskari",
       "Zangskari (zau)",
-      "Indo_Gangetic_Himalaya"
-    ],
-    [
-      "zen",
-      "Zenaga",
-      "Zenaga (zen)",
       "Indo_Gangetic_Himalaya"
     ],
     [
@@ -3788,6 +3740,12 @@
       "zrg",
       "Mirgan",
       "Mirgan (zrg)",
+      "Indo_Gangetic_Himalaya"
+    ],
+    [
+      "zyp",
+      "Zyphe Chin",
+      "Zyphe Chin (zyp)",
       "Indo_Gangetic_Himalaya"
     ]
   ]

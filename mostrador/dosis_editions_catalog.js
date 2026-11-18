@@ -329,6 +329,30 @@ export function resolveCanonicalBlockCode(book = "GEN", chapter = 1, verse = 1) 
   };
 }
 
+const EDITORIAL_PROFILE_PRIMARY_KEY_ALIASES = Object.freeze({
+  "1col-reading": "01_1col_lectura",
+  "1col-a4": "01_1col_lectura",
+  "1col-letter": "01_1col_lectura",
+  "2col-pastoral": "02_2col_pastoral",
+  "2col-letter": "02_2col_pastoral",
+  "2col-a4": "02_2col_pastoral",
+  "3col-compact": "03_3col_compacta",
+  "3col-a4": "03_3col_compacta",
+  "3col-letter": "03_3col_compacta",
+  "1col-large-print": "04_1col_letra_grande",
+  "large-print": "04_1col_letra_grande",
+  "interlinear-study": "05_interlineal_estudio",
+  "bilingual-parallel": "06_bilingue_paralela",
+  "field-notebook-5line": "07_cuaderno_5lineas_apaisado",
+  "booklet-pocket": "08_bolsillo_misionero",
+  "pulpit-folio": "09_atril_liturgico",
+  "gospel-14-pericopes": "10_evangelio_14_pericopas",
+  "braille-nemeth-b70": "11_braille_nemeth_b70",
+  "dyslexia-wide": "12_dislexia_espaciado_amplio",
+  "low-vision-contrast": "13_contraste_extremo_baja_vision",
+  "mural-sheet-a3": "14_pliego_mural_comunitario",
+});
+
 export function hydrateEditorialProfiles(artifact) {
   if (!artifact || typeof artifact !== "object") return false;
   const rawPrint = Array.isArray(artifact.print_profiles_14) && artifact.print_profiles_14.length > 0
@@ -337,26 +361,43 @@ export function hydrateEditorialProfiles(artifact) {
       ? artifact.print_profiles
       : null;
   if (rawPrint) {
-    const prevById = new Map(CANONICAL_14_PRINT_PROFILES.map((item) => [item.id, item]));
-    CANONICAL_14_PRINT_PROFILES.length = 0;
+    // D5-V2G (DEBRIS-V2G-10 erradicado): Hidratar estrictamente por llave primaria `id` canónica (`01_..14_`),
+    // prohibiendo sobrescribir por posición alfabética (`bilingual-parallel`, `booklet-pocket`, ...).
+    const indexByCanonicalId = new Map(
+      CANONICAL_14_PRINT_PROFILES.map((item, idx) => [item.id, idx]),
+    );
     for (const p of rawPrint) {
-      const prev = prevById.get(p.id) || {};
+      if (!p || typeof p !== "object") continue;
+      const rawId = String(p.id || "").trim();
+      const canonicalId = EDITORIAL_PROFILE_PRIMARY_KEY_ALIASES[rawId] || rawId;
+      const slotIdx = indexByCanonicalId.get(canonicalId);
+      if (slotIdx === undefined) continue;
+      const prev = CANONICAL_14_PRINT_PROFILES[slotIdx];
       const parsedTypography = p.parsed?.typography || p.parsed?.layout || p.parsed || {};
-      CANONICAL_14_PRINT_PROFILES.push({
+      CANONICAL_14_PRINT_PROFILES[slotIdx] = {
         ...prev,
         ...p,
-        tomlPath: p.tomlPath || p.toml_path || prev.tomlPath || `obras/biblia/profiles/${p.id}.toml`,
+        id: canonicalId,
+        tomlPath: prev.tomlPath || p.tomlPath || p.toml_path || `obras/biblia/profiles/${canonicalId}.toml`,
         columns: Number(p.columns ?? parsedTypography.columns ?? parsedTypography.default_columns ?? prev.columns ?? 2),
         fontPt: Number(p.fontPt ?? parsedTypography.font_size_pt ?? parsedTypography.default_font_size_pt ?? prev.fontPt ?? 9.5),
         leadingRatio: Number(p.leadingRatio ?? parsedTypography.line_height_ratio ?? prev.leadingRatio ?? 1.35),
-      });
+      };
     }
     CANONICAL_9_TOML_PROFILES.length = 0;
-    const rawToml9 = Array.isArray(artifact.canonical_9_toml_profiles) && artifact.canonical_9_toml_profiles.length > 0
+    const rawToml9 = Array.isArray(artifact.canonical_9_toml_profiles)
       ? artifact.canonical_9_toml_profiles
-      : CANONICAL_14_PRINT_PROFILES.slice(0, 9);
-    for (const p of rawToml9) {
-      CANONICAL_9_TOML_PROFILES.push(p);
+      : [];
+    const toml9ById = new Map();
+    for (const item of rawToml9) {
+      if (item && typeof item === "object") {
+        const rawId = String(item.id || "").trim();
+        toml9ById.set(EDITORIAL_PROFILE_PRIMARY_KEY_ALIASES[rawId] || rawId, item);
+      }
+    }
+    for (const p of CANONICAL_14_PRINT_PROFILES.slice(0, 9)) {
+      const extra9 = toml9ById.get(p.id);
+      CANONICAL_9_TOML_PROFILES.push(extra9 ? { ...extra9, ...p, id: p.id } : p);
     }
   }
   if (Array.isArray(artifact.canonical_9_plus_2_editions) && artifact.canonical_9_plus_2_editions.length >= 16) {

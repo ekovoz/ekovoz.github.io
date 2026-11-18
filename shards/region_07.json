@@ -1,7 +1,7 @@
 {
   "macro_region_id": 7,
   "region_name_es": "África del Norte, Sahel y Cuerno de África",
-  "total_languages": 337,
+  "total_languages": 366,
   "subclades_covered": 32,
   "featured_languages": [
     [
@@ -20,6 +20,18 @@
       "acz",
       "Acheron",
       "Acheron (acz)",
+      "Sahel_Horn"
+    ],
+    [
+      "aeb",
+      "Tunisian Arabic",
+      "Tunisian Arabic (aeb)",
+      "Sahel_Horn"
+    ],
+    [
+      "aec",
+      "Saidi Arabic",
+      "Saidi Arabic (aec)",
       "Sahel_Horn"
     ],
     [
@@ -83,9 +95,33 @@
       "Sahel_Horn"
     ],
     [
+      "aqd",
+      "Ampari Dogon",
+      "Ampari Dogon (aqd)",
+      "Sahel_Horn"
+    ],
+    [
+      "arq",
+      "Algerian Arabic",
+      "Algerian Arabic (arq)",
+      "Sahel_Horn"
+    ],
+    [
       "arv",
       "Arbore",
       "Arbore (arv)",
+      "Sahel_Horn"
+    ],
+    [
+      "ary",
+      "Moroccan Arabic",
+      "Moroccan Arabic (ary)",
+      "Sahel_Horn"
+    ],
+    [
+      "arz",
+      "Egyptian Arabic",
+      "Egyptian Arabic (arz)",
       "Sahel_Horn"
     ],
     [
@@ -107,9 +143,21 @@
       "Sahel_Horn"
     ],
     [
+      "avl",
+      "Eastern Egyptian Bedawi Arabic",
+      "Eastern Egyptian Bedawi Arabic (avl)",
+      "Sahel_Horn"
+    ],
+    [
       "awn",
       "Awngi",
       "Awngi (awn)",
+      "Sahel_Horn"
+    ],
+    [
+      "ayl",
+      "Libyan Arabic",
+      "Libyan Arabic (ayl)",
       "Sahel_Horn"
     ],
     [
@@ -401,9 +449,33 @@
       "Sahel_Horn"
     ],
     [
+      "dbg",
+      "Dogul Dom Dogon",
+      "Dogul Dom Dogon (dbg)",
+      "Sahel_Horn"
+    ],
+    [
       "dbr",
       "Dabarre",
       "Dabarre (dbr)",
+      "Sahel_Horn"
+    ],
+    [
+      "dbt",
+      "Ben Tey Dogon",
+      "Ben Tey Dogon (dbt)",
+      "Sahel_Horn"
+    ],
+    [
+      "dbu",
+      "Bondum Dom Dogon",
+      "Bondum Dom Dogon (dbu)",
+      "Sahel_Horn"
+    ],
+    [
+      "dbw",
+      "Bankan Tey Dogon",
+      "Bankan Tey Dogon (dbw)",
       "Sahel_Horn"
     ],
     [
@@ -413,9 +485,21 @@
       "Sahel_Horn"
     ],
     [
+      "dds",
+      "Donno So Dogon",
+      "Donno So Dogon (dds)",
+      "Sahel_Horn"
+    ],
+    [
       "dec",
       "Dagik",
       "Dagik (dec)",
+      "Sahel_Horn"
+    ],
+    [
+      "dgb",
+      "Bunoge Dogon",
+      "Bunoge Dogon (dgb)",
       "Sahel_Horn"
     ],
     [
@@ -491,6 +575,12 @@
       "Sahel_Horn"
     ],
     [
+      "dmb",
+      "Mombo Dogon",
+      "Mombo Dogon (dmb)",
+      "Sahel_Horn"
+    ],
+    [
       "dox",
       "Bussa",
       "Bussa (dox)",
@@ -533,9 +623,45 @@
       "Sahel_Horn"
     ],
     [
+      "dti",
+      "Ana Tinga Dogon",
+      "Ana Tinga Dogon (dti)",
+      "Sahel_Horn"
+    ],
+    [
+      "dtk",
+      "Tene Kan Dogon",
+      "Tene Kan Dogon (dtk)",
+      "Sahel_Horn"
+    ],
+    [
       "dtn",
       "Daatsʼíin",
       "Daatsʼíin (dtn)",
+      "Sahel_Horn"
+    ],
+    [
+      "dto",
+      "Tommo So Dogon",
+      "Tommo So Dogon (dto)",
+      "Sahel_Horn"
+    ],
+    [
+      "dts",
+      "Toro So Dogon",
+      "Toro So Dogon (dts)",
+      "Sahel_Horn"
+    ],
+    [
+      "dtt",
+      "Toro Tegu Dogon",
+      "Toro Tegu Dogon (dtt)",
+      "Sahel_Horn"
+    ],
+    [
+      "dtu",
+      "Tebul Ure Dogon",
+      "Tebul Ure Dogon (dtu)",
       "Sahel_Horn"
     ],
     [
@@ -548,6 +674,12 @@
       "dwr",
       "Dawro",
       "Dawro (dwr)",
+      "Sahel_Horn"
+    ],
+    [
+      "dym",
+      "Yanda Dom Dogon",
+      "Yanda Dom Dogon (dym)",
       "Sahel_Horn"
     ],
     [
@@ -743,6 +875,12 @@
       "Sahel_Horn"
     ],
     [
+      "gyl",
+      "Gayil",
+      "Gayil (gyl)",
+      "Sahel_Horn"
+    ],
+    [
       "gza",
       "Ganza",
       "Ganza (gza)",
@@ -770,12 +908,6 @@
       "hdy",
       "Hadiyya",
       "Hadiyya (hdy)",
-      "Sahel_Horn"
-    ],
-    [
-      "hmb",
-      "Humburi Senni Songhay",
-      "Humburi Senni Songhay (hmb)",
       "Sahel_Horn"
     ],
     [
@@ -959,9 +1091,9 @@
       "Sahel_Horn"
     ],
     [
-      "knc",
-      "Central Kanuri",
-      "Central Kanuri (knc)",
+      "kmq",
+      "Kwama",
+      "Kwama (kmq)",
       "Sahel_Horn"
     ],
     [
@@ -989,6 +1121,12 @@
       "Sahel_Horn"
     ],
     [
+      "krt",
+      "Tumari Kanuri",
+      "Tumari Kanuri (krt)",
+      "Sahel_Horn"
+    ],
+    [
       "ktb",
       "Kambaata",
       "Kambaata (ktb)",
@@ -1013,6 +1151,12 @@
       "Sahel_Horn"
     ],
     [
+      "kvi",
+      "Kwang",
+      "Kwang (kvi)",
+      "Sahel_Horn"
+    ],
+    [
       "kxc",
       "Konso",
       "Konso (kxc)",
@@ -1034,7 +1178,7 @@
       "kyq",
       "Kenga",
       "Kenga (kyq)",
-      "Sepik_Highlands_Pacific"
+      "Sahel_Horn"
     ],
     [
       "laf",
@@ -1259,12 +1403,6 @@
       "Sahel_Horn"
     ],
     [
-      "mnk",
-      "Mandinka",
-      "Mandinka (mnk)",
-      "Sahel_Horn"
-    ],
-    [
       "mor",
       "Moro",
       "Moro (mor)",
@@ -1439,6 +1577,12 @@
       "Sahel_Horn"
     ],
     [
+      "noz",
+      "Nayi",
+      "Nayi (noz)",
+      "Sahel_Horn"
+    ],
+    [
       "nrb",
       "Nara",
       "Nara (nrb)",
@@ -1460,6 +1604,12 @@
       "nyi",
       "Ama (Sudan)",
       "Ama (Sudan) (nyi)",
+      "Sahel_Horn"
+    ],
+    [
+      "nzz",
+      "Nanga Dama Dogon",
+      "Nanga Dama Dogon (nzz)",
       "Sahel_Horn"
     ],
     [
@@ -1487,6 +1637,12 @@
       "Sahel_Horn"
     ],
     [
+      "pga",
+      "Sudanese Creole Arabic",
+      "Sudanese Creole Arabic (pga)",
+      "Sahel_Horn"
+    ],
+    [
       "ras",
       "Tegali",
       "Tegali (ras)",
@@ -1496,6 +1652,12 @@
       "rif",
       "Tarifit",
       "Tarifit (rif)",
+      "Sahel_Horn"
+    ],
+    [
+      "rmt",
+      "Domari",
+      "Domari (rmt)",
       "Sahel_Horn"
     ],
     [
@@ -1601,6 +1763,12 @@
       "Sahel_Horn"
     ],
     [
+      "sor",
+      "Somrai",
+      "Somrai (sor)",
+      "Sahel_Horn"
+    ],
+    [
       "ssy",
       "Saho",
       "Saho (ssy)",
@@ -1649,12 +1817,6 @@
       "Sahel_Horn"
     ],
     [
-      "taq",
-      "Tamasheq",
-      "Tamasheq (taq)",
-      "Sahel_Horn"
-    ],
-    [
       "tax",
       "Tamki",
       "Tamki (tax)",
@@ -1688,6 +1850,12 @@
       "tda",
       "Tagdal",
       "Tagdal (tda)",
+      "Sahel_Horn"
+    ],
+    [
+      "tde",
+      "Tiranige Diga Dogon",
+      "Tiranige Diga Dogon (tde)",
       "Sahel_Horn"
     ],
     [
@@ -1799,12 +1967,6 @@
       "Sahel_Horn"
     ],
     [
-      "tno",
-      "Toromono",
-      "Toromono (tno)",
-      "Sahel_Horn"
-    ],
-    [
       "tqq",
       "Tunni",
       "Tunni (tqq)",
@@ -1814,6 +1976,12 @@
       "trj",
       "Toram",
       "Toram (trj)",
+      "Sahel_Horn"
+    ],
+    [
+      "tsb",
+      "Tsamai",
+      "Tsamai (tsb)",
       "Sahel_Horn"
     ],
     [
@@ -1988,6 +2156,12 @@
       "zay",
       "Zayse-Zergulla",
       "Zayse-Zergulla (zay)",
+      "Sahel_Horn"
+    ],
+    [
+      "zen",
+      "Zenaga",
+      "Zenaga (zen)",
       "Sahel_Horn"
     ],
     [

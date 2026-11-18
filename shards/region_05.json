@@ -1,7 +1,7 @@
 {
   "macro_region_id": 5,
   "region_name_es": "Anatolia, Cáucaso y Asia Central",
-  "total_languages": 68,
+  "total_languages": 62,
   "subclades_covered": 32,
   "featured_languages": [
     [
@@ -21,12 +21,6 @@
       "Abaza",
       "Abaza (abq)",
       "Karachay_Cherkessia"
-    ],
-    [
-      "ady",
-      "Adyghe",
-      "Adyghe (ady)",
-      "Caucasus_Steppes"
     ],
     [
       "aen",
@@ -56,12 +50,6 @@
       "axm",
       "Middle Armenian",
       "Middle Armenian (axm)",
-      "Caucasus_Steppes"
-    ],
-    [
-      "azb",
-      "South Azerbaijani",
-      "South Azerbaijani (azb)",
       "Caucasus_Steppes"
     ],
     [
@@ -95,6 +83,12 @@
       "Caucasus_Steppes"
     ],
     [
+      "bhn",
+      "Bohtan Neo-Aramaic",
+      "Bohtan Neo-Aramaic (bhn)",
+      "Caucasus_Steppes"
+    ],
+    [
       "che",
       "Chechen",
       "Chechen (che)",
@@ -104,18 +98,6 @@
       "chg",
       "Chagatai",
       "Chagatai (chg)",
-      "Caucasus_Steppes"
-    ],
-    [
-      "chv",
-      "Chuvash",
-      "Chuvash (chv)",
-      "Caucasus_Steppes"
-    ],
-    [
-      "crh",
-      "Crimean Tatar",
-      "Crimean Tatar (crh)",
       "Caucasus_Steppes"
     ],
     [
@@ -140,12 +122,6 @@
       "dng",
       "Dungan",
       "Dungan (dng)",
-      "Caucasus_Steppes"
-    ],
-    [
-      "gou",
-      "Gavar",
-      "Gavar (gou)",
       "Caucasus_Steppes"
     ],
     [
@@ -203,12 +179,6 @@
       "Caucasus_Steppes"
     ],
     [
-      "kaz",
-      "Kazakh",
-      "Kazakh (kaz)",
-      "Caucasus_Steppes"
-    ],
-    [
       "kiu",
       "Kirmanjki (individual language)",
       "Kirmanjki (individual language) (kiu)",
@@ -218,6 +188,12 @@
       "kjj",
       "Khinalugh",
       "Khinalugh (kjj)",
+      "Caucasus_Steppes"
+    ],
+    [
+      "kmr",
+      "Northern Kurdish",
+      "Northern Kurdish (kmr)",
       "Caucasus_Steppes"
     ],
     [
@@ -257,6 +233,12 @@
       "Caucasus_Steppes"
     ],
     [
+      "mhr",
+      "Eastern Mari",
+      "Eastern Mari (mhr)",
+      "Caucasus_Steppes"
+    ],
+    [
       "myv",
       "Erzya",
       "Erzya (myv)",
@@ -281,18 +263,6 @@
       "Caucasus_Steppes"
     ],
     [
-      "sgh",
-      "Shughni",
-      "Shughni (sgh)",
-      "Caucasus_Steppes"
-    ],
-    [
-      "sty",
-      "Siberian Tatar",
-      "Siberian Tatar (sty)",
-      "Caucasus_Steppes"
-    ],
-    [
       "sva",
       "Svan",
       "Svan (sva)",
@@ -314,6 +284,12 @@
       "tkr",
       "Tsakhur",
       "Tsakhur (tkr)",
+      "Caucasus_Steppes"
+    ],
+    [
+      "tly",
+      "Talysh",
+      "Talysh (tly)",
       "Caucasus_Steppes"
     ],
     [
@@ -347,15 +323,15 @@
       "Caucasus_Steppes"
     ],
     [
-      "tuk",
-      "Turkmen",
-      "Turkmen (tuk)",
-      "Caucasus_Steppes"
-    ],
-    [
       "udi",
       "Udi",
       "Udi (udi)",
+      "Caucasus_Steppes"
+    ],
+    [
+      "udm",
+      "Udmurt",
+      "Udmurt (udm)",
       "Caucasus_Steppes"
     ],
     [
@@ -374,18 +350,6 @@
       "uzb",
       "Uzbek",
       "Uzbek (uzb)",
-      "Caucasus_Steppes"
-    ],
-    [
-      "uzs",
-      "Southern Uzbek",
-      "Southern Uzbek (uzs)",
-      "Caucasus_Steppes"
-    ],
-    [
-      "wbl",
-      "Wakhi",
-      "Wakhi (wbl)",
       "Caucasus_Steppes"
     ],
     [

@@ -1,7 +1,7 @@
 {
   "macro_region_id": 2,
   "region_name_es": "Norteamérica y Ártico",
-  "total_languages": 235,
+  "total_languages": 238,
   "subclades_covered": 32,
   "featured_languages": [
     [
@@ -56,31 +56,31 @@
       "apj",
       "Jicarilla Apache",
       "Jicarilla Apache (apj)",
-      "North,Plains,Northwest"
+      "North_Plains_Subarctic"
     ],
     [
       "apk",
       "Kiowa Apache",
       "Kiowa Apache (apk)",
-      "North,Plains,Northwest"
+      "North_Plains_Subarctic"
     ],
     [
       "apl",
       "Lipan Apache",
       "Lipan Apache (apl)",
-      "North,Plains,Northwest"
+      "North_Plains_Subarctic"
     ],
     [
       "apm",
       "Mescalero-Chiricahua Apache",
       "Mescalero-Chiricahua Apache (apm)",
-      "North,Plains,Northwest"
+      "North_Plains_Subarctic"
     ],
     [
       "apw",
       "Western Apache",
       "Western Apache (apw)",
-      "North,Plains,Northwest"
+      "North_Plains_Subarctic"
     ],
     [
       "aqp",
@@ -215,9 +215,21 @@
       "North_Plains_Subarctic"
     ],
     [
+      "chh",
+      "Chinook",
+      "Chinook (chh)",
+      "North_Plains_Subarctic"
+    ],
+    [
       "chl",
       "Cahuilla",
       "Cahuilla (chl)",
+      "North_Plains_Subarctic"
+    ],
+    [
+      "chn",
+      "Chinook jargon",
+      "Chinook jargon (chn)",
       "North_Plains_Subarctic"
     ],
     [
@@ -248,6 +260,12 @@
       "cic",
       "Chickasaw",
       "Chickasaw (cic)",
+      "North_Plains_Subarctic"
+    ],
+    [
+      "cid",
+      "Chimariko",
+      "Chimariko (cid)",
       "North_Plains_Subarctic"
     ],
     [
@@ -338,25 +356,25 @@
       "crj",
       "Southern East Cree",
       "Southern East Cree (crj)",
-      "North,Plains,Northwest"
+      "North_Plains_Subarctic"
     ],
     [
       "crk",
       "Plains Cree",
       "Plains Cree (crk)",
-      "North,Plains,Northwest"
+      "North_Plains_Subarctic"
     ],
     [
       "crl",
       "Northern East Cree",
       "Northern East Cree (crl)",
-      "North,Plains,Northwest"
+      "North_Plains_Subarctic"
     ],
     [
       "crm",
       "Moose Cree",
       "Moose Cree (crm)",
-      "North,Plains,Northwest"
+      "North_Plains_Subarctic"
     ],
     [
       "cro",
@@ -386,13 +404,13 @@
       "csi",
       "Coast Miwok",
       "Coast Miwok (csi)",
-      "North,Plains,Northwest"
+      "North_Plains_Subarctic"
     ],
     [
       "csm",
       "Central Sierra Miwok",
       "Central Sierra Miwok (csm)",
-      "North,Plains,Northwest"
+      "North_Plains_Subarctic"
     ],
     [
       "css",
@@ -410,7 +428,7 @@
       "csw",
       "Swampy Cree",
       "Swampy Cree (csw)",
-      "North,Plains,Northwest"
+      "North_Plains_Subarctic"
     ],
     [
       "csz",
@@ -440,13 +458,13 @@
       "cwd",
       "Woods Cree",
       "Woods Cree (cwd)",
-      "North,Plains,Northwest"
+      "North_Plains_Subarctic"
     ],
     [
       "dak",
       "Dakota",
       "Dakota (dak)",
-      "North,Plains,Northwest"
+      "North_Plains_Subarctic"
     ],
     [
       "dcr",
@@ -479,12 +497,6 @@
       "North_Plains_Subarctic"
     ],
     [
-      "dic",
-      "Lakota Dida",
-      "Lakota Dida (dic)",
-      "North,Plains,Northwest"
-    ],
-    [
       "dtd",
       "Ditidaht",
       "Ditidaht (dtd)",
@@ -494,7 +506,7 @@
       "ems",
       "Pacific Gulf Yupik",
       "Pacific Gulf Yupik (ems)",
-      "North,Plains,Northwest"
+      "North_Plains_Subarctic"
     ],
     [
       "eng",
@@ -515,16 +527,10 @@
       "North_Plains_Subarctic"
     ],
     [
-      "ess",
-      "Central Siberian Yupik",
-      "Central Siberian Yupik (ess)",
-      "North,Plains,Northwest"
-    ],
-    [
       "esu",
       "Central Yupik",
       "Central Yupik (esu)",
-      "North,Plains,Northwest"
+      "North_Plains_Subarctic"
     ],
     [
       "fcs",
@@ -548,6 +554,12 @@
       "gcf",
       "Guadeloupean Creole French",
       "Guadeloupean Creole French (gcf)",
+      "North_Plains_Subarctic"
+    ],
+    [
+      "geh",
+      "Hutterite German",
+      "Hutterite German (geh)",
       "North_Plains_Subarctic"
     ],
     [
@@ -578,7 +590,7 @@
       "hai",
       "Haida",
       "Haida (hai)",
-      "North,Plains,Northwest"
+      "North_Plains_Subarctic"
     ],
     [
       "has",
@@ -596,13 +608,13 @@
       "hax",
       "Southern Haida",
       "Southern Haida (hax)",
-      "North,Plains,Northwest"
+      "North_Plains_Subarctic"
     ],
     [
       "hdn",
       "Northern Haida",
       "Northern Haida (hdn)",
-      "North,Plains,Northwest"
+      "North_Plains_Subarctic"
     ],
     [
       "hei",
@@ -656,7 +668,7 @@
       "ike",
       "Eastern Canadian Inuktitut",
       "Eastern Canadian Inuktitut (ike)",
-      "North,Plains,Northwest"
+      "North_Plains_Subarctic"
     ],
     [
       "iks",
@@ -674,7 +686,7 @@
       "iku",
       "Inuktitut",
       "Inuktitut (iku)",
-      "North,Plains,Northwest"
+      "North_Plains_Subarctic"
     ],
     [
       "ing",
@@ -743,6 +755,12 @@
       "North_Plains_Subarctic"
     ],
     [
+      "kwk",
+      "Kwakiutl",
+      "Kwakiutl (kwk)",
+      "North_Plains_Subarctic"
+    ],
+    [
       "kyh",
       "Karok",
       "Karok (kyh)",
@@ -755,12 +773,6 @@
       "North_Plains_Subarctic"
     ],
     [
-      "lax",
-      "Tiwa",
-      "Tiwa (lax)",
-      "North,Plains,Northwest"
-    ],
-    [
       "lil",
       "Lillooet",
       "Lillooet (lil)",
@@ -770,13 +782,13 @@
       "lkt",
       "Lakota",
       "Lakota (lkt)",
-      "North,Plains,Northwest"
+      "North_Plains_Subarctic"
     ],
     [
       "lmw",
       "Lake Miwok",
       "Lake Miwok (lmw)",
-      "North,Plains,Northwest"
+      "North_Plains_Subarctic"
     ],
     [
       "lou",
@@ -812,7 +824,7 @@
       "mic",
       "Mi'kmaq",
       "Mi'kmaq (mic)",
-      "North,Plains,Northwest"
+      "North_Plains_Subarctic"
     ],
     [
       "mik",
@@ -851,10 +863,16 @@
       "North_Plains_Subarctic"
     ],
     [
+      "mrc",
+      "Maricopa",
+      "Maricopa (mrc)",
+      "North_Plains_Subarctic"
+    ],
+    [
       "mus",
       "Creek",
       "Creek (mus)",
-      "North,Plains,Northwest"
+      "North_Plains_Subarctic"
     ],
     [
       "myh",
@@ -866,7 +884,7 @@
       "nav",
       "Navajo",
       "Navajo (nav)",
-      "North,Plains,Northwest"
+      "North_Plains_Subarctic"
     ],
     [
       "ncg",
@@ -896,7 +914,13 @@
       "nsq",
       "Northern Sierra Miwok",
       "Northern Sierra Miwok (nsq)",
-      "North,Plains,Northwest"
+      "North_Plains_Subarctic"
+    ],
+    [
+      "nsr",
+      "Maritime Sign Language",
+      "Maritime Sign Language (nsr)",
+      "North_Plains_Subarctic"
     ],
     [
       "nsz",
@@ -914,37 +938,43 @@
       "ojb",
       "Northwestern Ojibwa",
       "Northwestern Ojibwa (ojb)",
-      "North,Plains,Northwest"
+      "North_Plains_Subarctic"
     ],
     [
       "ojc",
       "Central Ojibwa",
       "Central Ojibwa (ojc)",
-      "North,Plains,Northwest"
+      "North_Plains_Subarctic"
     ],
     [
       "ojg",
       "Eastern Ojibwa",
       "Eastern Ojibwa (ojg)",
-      "North,Plains,Northwest"
+      "North_Plains_Subarctic"
     ],
     [
       "oji",
       "Ojibwa",
       "Ojibwa (oji)",
-      "North,Plains,Northwest"
+      "North_Plains_Subarctic"
     ],
     [
       "ojs",
       "Severn Ojibwa",
       "Severn Ojibwa (ojs)",
-      "North,Plains,Northwest"
+      "North_Plains_Subarctic"
     ],
     [
       "ojw",
       "Western Ojibwa",
       "Western Ojibwa (ojw)",
-      "North,Plains,Northwest"
+      "North_Plains_Subarctic"
+    ],
+    [
+      "oka",
+      "Okanagan",
+      "Okanagan (oka)",
+      "North_Plains_Subarctic"
     ],
     [
       "oma",
@@ -963,12 +993,6 @@
       "Onondaga",
       "Onondaga (ono)",
       "North_Plains_Subarctic"
-    ],
-    [
-      "ood",
-      "Tohono O'odham",
-      "Tohono O'odham (ood)",
-      "North,Plains,Northwest"
     ],
     [
       "ori",
@@ -992,7 +1016,7 @@
       "pao",
       "Northern Paiute",
       "Northern Paiute (pao)",
-      "North,Plains,Northwest"
+      "North_Plains_Subarctic"
     ],
     [
       "par",
@@ -1007,6 +1031,12 @@
       "North_Plains_Subarctic"
     ],
     [
+      "pdc",
+      "Pennsylvania German",
+      "Pennsylvania German (pdc)",
+      "North_Plains_Subarctic"
+    ],
+    [
       "pdt",
       "Plautdietsch",
       "Plautdietsch (pdt)",
@@ -1016,30 +1046,30 @@
       "peq",
       "Southern Pomo",
       "Southern Pomo (peq)",
-      "North,Plains,Northwest"
-    ],
-    [
-      "pmm",
-      "Pomo",
-      "Pomo (pmm)",
-      "North,Plains,Northwest"
+      "North_Plains_Subarctic"
     ],
     [
       "pmw",
       "Plains Miwok",
       "Plains Miwok (pmw)",
-      "North,Plains,Northwest"
+      "North_Plains_Subarctic"
     ],
     [
       "pom",
       "Southeastern Pomo",
       "Southeastern Pomo (pom)",
-      "North,Plains,Northwest"
+      "North_Plains_Subarctic"
     ],
     [
       "pot",
       "Potawatomi",
       "Potawatomi (pot)",
+      "North_Plains_Subarctic"
+    ],
+    [
+      "pqm",
+      "Malecite-Passamaquoddy",
+      "Malecite-Passamaquoddy (pqm)",
       "North_Plains_Subarctic"
     ],
     [
@@ -1064,6 +1094,12 @@
       "qui",
       "Quileute",
       "Quileute (qui)",
+      "North_Plains_Subarctic"
+    ],
+    [
+      "sac",
+      "Meskwaki",
+      "Meskwaki (sac)",
       "North_Plains_Subarctic"
     ],
     [
@@ -1100,7 +1136,7 @@
       "shh",
       "Shoshoni",
       "Shoshoni (shh)",
-      "North,Plains,Northwest"
+      "North_Plains_Subarctic"
     ],
     [
       "shs",
@@ -1124,13 +1160,13 @@
       "skd",
       "Southern Sierra Miwok",
       "Southern Sierra Miwok (skd)",
-      "North,Plains,Northwest"
+      "North_Plains_Subarctic"
     ],
     [
       "slh",
       "Southern Puget Sound Salish",
       "Southern Puget Sound Salish (slh)",
-      "North,Plains,Northwest"
+      "North_Plains_Subarctic"
     ],
     [
       "sno",
@@ -1166,7 +1202,7 @@
       "str",
       "Straits Salish",
       "Straits Salish (str)",
-      "North,Plains,Northwest"
+      "North_Plains_Subarctic"
     ],
     [
       "svc",
@@ -1208,7 +1244,7 @@
       "tew",
       "Tewa (USA)",
       "Tewa (USA) (tew)",
-      "North,Plains,Northwest"
+      "North_Plains_Subarctic"
     ],
     [
       "tfn",
@@ -1238,13 +1274,13 @@
       "tix",
       "Southern Tiwa",
       "Southern Tiwa (tix)",
-      "North,Plains,Northwest"
+      "North_Plains_Subarctic"
     ],
     [
       "tli",
       "Tlingit",
       "Tlingit (tli)",
-      "North,Plains,Northwest"
+      "North_Plains_Subarctic"
     ],
     [
       "tow",
@@ -1289,16 +1325,10 @@
       "North_Plains_Subarctic"
     ],
     [
-      "twe",
-      "Tewa (Indonesia)",
-      "Tewa (Indonesia) (twe)",
-      "North,Plains,Northwest"
-    ],
-    [
       "twf",
       "Northern Tiwa",
       "Northern Tiwa (twf)",
-      "North,Plains,Northwest"
+      "North_Plains_Subarctic"
     ],
     [
       "uma",
@@ -1316,7 +1346,7 @@
       "ute",
       "Ute-Southern Paiute",
       "Ute-Southern Paiute (ute)",
-      "North,Plains,Northwest"
+      "North_Plains_Subarctic"
     ],
     [
       "vic",
@@ -1349,12 +1379,6 @@
       "North_Plains_Subarctic"
     ],
     [
-      "wtf",
-      "Watiwa",
-      "Watiwa (wtf)",
-      "North,Plains,Northwest"
-    ],
-    [
       "wya",
       "Wyandot",
       "Wyandot (wya)",
@@ -1379,16 +1403,10 @@
       "North_Plains_Subarctic"
     ],
     [
-      "ynk",
-      "Naukan Yupik",
-      "Naukan Yupik (ynk)",
-      "North,Plains,Northwest"
-    ],
-    [
       "yok",
       "Yokuts",
       "Yokuts (yok)",
-      "North,Plains,Northwest"
+      "North_Plains_Subarctic"
     ],
     [
       "yuc",

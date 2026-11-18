@@ -1,7 +1,7 @@
 {
   "macro_region_id": 6,
   "region_name_es": "Medio Oriente y Creciente Fértil",
-  "total_languages": 121,
+  "total_languages": 110,
   "subclades_covered": 31,
   "featured_languages": [
     [
@@ -35,27 +35,15 @@
       "Levant_Zagros"
     ],
     [
-      "acy",
-      "Cypriot Arabic",
-      "Cypriot Arabic (acy)",
-      "Levant_Zagros"
-    ],
-    [
       "adf",
       "Dhofari Arabic",
       "Dhofari Arabic (adf)",
       "Levant_Zagros"
     ],
     [
-      "aeb",
-      "Tunisian Arabic",
-      "Tunisian Arabic (aeb)",
-      "Levant_Zagros"
-    ],
-    [
-      "aec",
-      "Saidi Arabic",
-      "Saidi Arabic (aec)",
+      "ady",
+      "Adyghe",
+      "Adyghe (ady)",
       "Levant_Zagros"
     ],
     [
@@ -71,15 +59,15 @@
       "Levant_Zagros"
     ],
     [
-      "ajp",
-      "South Levantine Arabic",
-      "South Levantine Arabic (ajp)",
+      "aij",
+      "Lishanid Noshan",
+      "Lishanid Noshan (aij)",
       "Levant_Zagros"
     ],
     [
-      "ajt",
-      "Judeo-Tunisian Arabic",
-      "Judeo-Tunisian Arabic (ajt)",
+      "ajp",
+      "South Levantine Arabic",
+      "South Levantine Arabic (ajp)",
       "Levant_Zagros"
     ],
     [
@@ -107,12 +95,6 @@
       "Levant_Zagros"
     ],
     [
-      "apd",
-      "Sudanese Arabic",
-      "Sudanese Arabic (apd)",
-      "Levant_Zagros"
-    ],
-    [
       "arb",
       "Árabe",
       "العربية",
@@ -131,27 +113,9 @@
       "Levant_Zagros"
     ],
     [
-      "arq",
-      "Algerian Arabic",
-      "Algerian Arabic (arq)",
-      "Levant_Zagros"
-    ],
-    [
       "ars",
       "Najdi Arabic",
       "Najdi Arabic (ars)",
-      "Levant_Zagros"
-    ],
-    [
-      "ary",
-      "Moroccan Arabic",
-      "Moroccan Arabic (ary)",
-      "Levant_Zagros"
-    ],
-    [
-      "arz",
-      "Egyptian Arabic",
-      "Egyptian Arabic (arz)",
       "Levant_Zagros"
     ],
     [
@@ -173,21 +137,9 @@
       "Levant_Zagros"
     ],
     [
-      "avl",
-      "Eastern Egyptian Bedawi Arabic",
-      "Eastern Egyptian Bedawi Arabic (avl)",
-      "Levant_Zagros"
-    ],
-    [
       "ayh",
       "Hadrami Arabic",
       "Hadrami Arabic (ayh)",
-      "Levant_Zagros"
-    ],
-    [
-      "ayl",
-      "Libyan Arabic",
-      "Libyan Arabic (ayl)",
       "Levant_Zagros"
     ],
     [
@@ -203,6 +155,12 @@
       "Levant_Zagros"
     ],
     [
+      "bcc",
+      "Southern Balochi",
+      "Southern Balochi (bcc)",
+      "Levant_Zagros"
+    ],
+    [
       "bhh",
       "Bukharic",
       "Bukharic (bhh)",
@@ -212,12 +170,6 @@
       "bhm",
       "Bathari",
       "Bathari (bhm)",
-      "Levant_Zagros"
-    ],
-    [
-      "bhn",
-      "Bohtan Neo-Aramaic",
-      "Bohtan Neo-Aramaic (bhn)",
       "Levant_Zagros"
     ],
     [
@@ -317,9 +269,21 @@
       "Levant_Zagros"
     ],
     [
+      "goz",
+      "Gozarkhani",
+      "Gozarkhani (goz)",
+      "Levant_Zagros"
+    ],
+    [
       "gzi",
       "Gazi",
       "Gazi (gzi)",
+      "Levant_Zagros"
+    ],
+    [
+      "hac",
+      "Gurani",
+      "Gurani (hac)",
       "Levant_Zagros"
     ],
     [
@@ -368,7 +332,7 @@
       "jos",
       "Jordanian Sign Language",
       "Jordanian Sign Language (jos)",
-      "Sepik_Highlands_Pacific"
+      "Levant_Zagros"
     ],
     [
       "jpr",
@@ -407,12 +371,6 @@
       "Levant_Zagros"
     ],
     [
-      "kmr",
-      "Northern Kurdish",
-      "Northern Kurdish (kmr)",
-      "Levant_Zagros"
-    ],
-    [
       "kmz",
       "Khorasani Turkish",
       "Khorasani Turkish (kmz)",
@@ -434,12 +392,6 @@
       "kur",
       "Kurdish",
       "Kurdish (kur)",
-      "Levant_Zagros"
-    ],
-    [
-      "ldd",
-      "Luri",
-      "Luri (ldd)",
       "Levant_Zagros"
     ],
     [
@@ -503,21 +455,15 @@
       "Levant_Zagros"
     ],
     [
+      "nyq",
+      "Nayini",
+      "Nayini (nyq)",
+      "Levant_Zagros"
+    ],
+    [
       "okh",
       "Koresh-e Rostam",
       "Koresh-e Rostam (okh)",
-      "Levant_Zagros"
-    ],
-    [
-      "pga",
-      "Sudanese Creole Arabic",
-      "Sudanese Creole Arabic (pga)",
-      "Levant_Zagros"
-    ],
-    [
-      "piu",
-      "Pintupi-Luritja",
-      "Pintupi-Luritja (piu)",
       "Levant_Zagros"
     ],
     [
@@ -593,12 +539,6 @@
       "Levant_Zagros"
     ],
     [
-      "shu",
-      "Chadian Arabic",
-      "Chadian Arabic (shu)",
-      "Levant_Zagros"
-    ],
-    [
       "shv",
       "Shehri",
       "Shehri (shv)",
@@ -659,15 +599,15 @@
       "Nineveh,Tur_Abdin"
     ],
     [
-      "tks",
-      "Takestani",
-      "Takestani (tks)",
+      "syy",
+      "Al-Sayyid Bedouin Sign Language",
+      "Al-Sayyid Bedouin Sign Language (syy)",
       "Levant_Zagros"
     ],
     [
-      "tly",
-      "Talysh",
-      "Talysh (tly)",
+      "tks",
+      "Takestani",
+      "Takestani (tks)",
       "Levant_Zagros"
     ],
     [
@@ -710,12 +650,6 @@
       "xkp",
       "Kabatei",
       "Kabatei (xkp)",
-      "Levant_Zagros"
-    ],
-    [
-      "yhd",
-      "Judeo-Iraqi Arabic",
-      "Judeo-Iraqi Arabic (yhd)",
       "Levant_Zagros"
     ],
     [

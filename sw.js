@@ -1,8 +1,8 @@
-// Ekovoz Service Worker (v45.0.0 — Linaje unificado ekovoz-mostrador-v20 -> ekovoz-mostrador-v45)
-// Cero precarga invasiva sin consentimiento del usuario (protección de cuota en celulares de gama baja).
-// Jamás intercepta ni almacena en caché PDFs de Biblia completa o cuadernos completos.
+// Ekovoz Service Worker (v46.0.0 — Bóveda Soberana ekovoz-mostrador-v46, supersede ekovoz-mostrador-v20..v45, D3-V2G / ARB-EKOVOZ-95)
+// Cero precarga invasiva sin consentimiento del usuario y CERO peticiones fantasma `/data/text/*.json` (DEBRIS-V2G-05 erradicado).
+// Los contenedores `.ekpack` y fuentes `.ttf.zst` residen verificados por Ed25519 en IndexedDB (`ekovoz_vault_v2`).
 
-export const CACHE_NAME = "ekovoz-mostrador-v45";
+export const CACHE_NAME = "ekovoz-mostrador-v46";
 
 export const SHELL_CORE_ASSETS = [
   "/",
@@ -13,6 +13,7 @@ export const SHELL_CORE_ASSETS = [
   "/i18n_ui.js",
   "/mostrador/bridge_and_chapter.js",
   "/mostrador/canonical_versification.js",
+  "/mostrador/diglossic_chapter_renderer.js",
   "/mostrador/drawer_hydrators.js",
   "/mostrador/drawer_study.js",
   "/mostrador/drawer_print.js",
@@ -20,7 +21,9 @@ export const SHELL_CORE_ASSETS = [
   "/mostrador/drawer_share.js",
   "/mostrador/i18n.js",
   "/mostrador/data_layer.js",
+  "/mostrador/data_layer_wasm_codecs.js",
   "/mostrador/dom_projection_contracts.js",
+  "/mostrador/ed25519_field_math.js",
   "/mostrador/pdf_pages.js",
   "/mostrador/dosis.js",
   "/mostrador/dosis_editions_catalog.js",
@@ -32,7 +35,10 @@ export const SHELL_CORE_ASSETS = [
   "/mostrador/optical_lt.js",
   "/mostrador/oral_portico_wasm.js",
   "/mostrador/estudio.js",
+  "/mostrador/estudio_rosetta_and_realia.js",
   "/mostrador/mejorar.js",
+  "/mostrador/mejorar_locks_pda.js",
+  "/mostrador/mejorar_renderers.js",
   "/mostrador/mostrador_viewport_dose1.js",
   "/mostrador/offline_mesh.js",
   "/mostrador/projection_contract.js",
@@ -43,14 +49,19 @@ export const SHELL_CORE_ASSETS = [
   "/mostrador/cascade_l1_l5.js",
   "/mostrador/tanda_print_worker.js",
   "/mostrador/bimodal_tanda_print.js",
+  "/wasm/ekovoz_player_wasm.wasm",
+  "/wasm/qr_stream_receiver_wasm.wasm",
   "/i18n/index.json",
   "/i18n/en.json",
   "/i18n/es.json",
+  "/assets/fonts/CharisSIL-Regular.ttf",
   "/assets/fonts/CharisSIL-Bold-Subset.ttf",
   "/data/catalog.json",
+  "/data/offline_packs_catalog.json",
   "/manifest.webmanifest",
 ];
 
+const SUPPORTED_BOOK_NAMES_LANGS = new Set(["es", "en", "stp", "he", "grc"]);
 let _offlineOptInEnabled = false;
 
 export function setOfflineOptInState(enabled) {
@@ -81,19 +92,21 @@ export function serializeFieldFeedbackPatchL1L5({
 export function isFullBibleOrWorkPdfUrl(rawUrl) {
   const path = String(rawUrl || "").split("?")[0].toLowerCase();
   if (!path.endsWith(".pdf")) return false;
-  // Solo los bloques cortos /data/blocks/<lang>/<ed>/B01..B80.pdf pueden guardarse bajo opt-in
-  if (/\/data\/blocks\/[^/]+\/[^/]+\/b\d{2}\.pdf$/i.test(path)) {
-    return false;
-  }
+  if (path.includes("/data/blocks/")) return false;
   return true;
 }
 
 export function classifyRequestRoute(rawUrl, options = {}) {
   const optIn = Boolean(options.offlineOptIn ?? _offlineOptInEnabled);
+  const hasRangeHeader = Boolean(options.hasRangeHeader);
   const path = String(rawUrl || "").split("?")[0];
 
   if (isFullBibleOrWorkPdfUrl(path)) {
     return "bypass-full-pdf";
+  }
+
+  if (hasRangeHeader) {
+    return "network-only";
   }
 
   if (!optIn) {
@@ -112,11 +125,10 @@ export function classifyRequestRoute(rawUrl, options = {}) {
   }
 
   if (
-    path.includes("/data/text/") ||
-    path.includes("/data/pages/") ||
-    path.includes("/data/book_names/") ||
-    path.includes("/data/catalog.json") ||
-    /\/data\/blocks\/[^/]+\/[^/]+\/b\d{2}\.pdf$/i.test(path)
+    path.startsWith("/data/") ||
+    path.includes("/wasm/") ||
+    path.includes("/assets/fonts/") ||
+    path.includes("/packs/")
   ) {
     return "cache-first";
   }
@@ -124,20 +136,22 @@ export function classifyRequestRoute(rawUrl, options = {}) {
   return "network-first";
 }
 
+/**
+ * Construye la lista exacta del App Shell real bajo Opt-In (`D3-V2G`):
+ * CERO URLs inexistentes `/data/text/<lang>/<BOOK>.json` (`DEBRIS-V2G-05` eliminado).
+ */
 export function buildOptInAssetList({
   uiLocale = "en",
   lang = "es",
-  books = ["GEN", "PSA", "MAT", "JHN", "ROM"],
 } = {}) {
   const urls = new Set(SHELL_CORE_ASSETS);
-  if (uiLocale && uiLocale !== "en") {
-    urls.add(`/i18n/${uiLocale}.json`);
+  const cleanUi = String(uiLocale || "en").trim().toLowerCase();
+  if (cleanUi && cleanUi !== "en" && /^[a-z]{2,3}(-[a-z0-9]+)?$/i.test(cleanUi)) {
+    urls.add(`/i18n/${cleanUi}.json`);
   }
-  if (lang) {
-    urls.add(`/data/book_names/${lang}.json`);
-    for (const b of books) {
-      urls.add(`/data/text/${lang}/${String(b).toUpperCase()}.json`);
-    }
+  const cleanLang = String(lang || "es").trim().toLowerCase();
+  if (SUPPORTED_BOOK_NAMES_LANGS.has(cleanLang)) {
+    urls.add(`/data/book_names/${cleanLang}.json`);
   }
   return Array.from(urls);
 }
@@ -169,10 +183,13 @@ if (typeof self !== "undefined" && typeof self.addEventListener === "function") 
       const assets = buildOptInAssetList({
         uiLocale: data.uiLocale || "en",
         lang: data.lang || "es",
-        books: Array.isArray(data.books) ? data.books : ["GEN", "JHN", "ROM"],
       });
       event.waitUntil(
-        caches.open(CACHE_NAME).then((cache) => cache.addAll(assets)),
+        caches.open(CACHE_NAME).then(async (cache) => {
+          await Promise.all(
+            assets.map((assetUrl) => cache.add(assetUrl).catch(() => undefined)),
+          );
+        }),
       );
     } else if (data.type === "EKOVOZ_OFFLINE_CLEAR") {
       _offlineOptInEnabled = false;
@@ -191,8 +208,10 @@ if (typeof self !== "undefined" && typeof self.addEventListener === "function") 
   self.addEventListener("fetch", (event) => {
     if (event.request.method !== "GET") return;
     const urlObj = new URL(event.request.url);
+    const hasRangeHeader = Boolean(event.request.headers && event.request.headers.get("Range"));
     const route = classifyRequestRoute(urlObj.pathname, {
       offlineOptIn: _offlineOptInEnabled,
+      hasRangeHeader,
     });
 
     if (route === "bypass-full-pdf" || route === "network-only") {

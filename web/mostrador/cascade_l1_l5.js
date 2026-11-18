@@ -23,7 +23,8 @@ const EVANGELIOS_52_ANCHORS = {
   "JHN.20": "s50",
 };
 
-const FELICES_28_PLATES_BY_VERSE = {
+const FELICES_27_PLATES_BY_VERSE = {
+  "MAT.5.1": [25],
   "MAT.5.3": [1, 3],
   "MAT.5.4": [5],
   "MAT.5.5": [7],
@@ -34,7 +35,28 @@ const FELICES_28_PLATES_BY_VERSE = {
   "MAT.5.10": [17],
   "MAT.5.11": [19],
   "MAT.5.12": [24],
-  "PSA.1.1": [25],
+};
+
+/**
+ * Jerarquía constitucional de semirretículo (`D9-V2G`):
+ * Un ajuste puntual `L1` sobre un versículo domina estrictamente (`>`) a una sustitución
+ * onomástica `L2` (`C13`, 3,100 nombres propios), la cual domina a una propagación léxica
+ * `L3` (`C05`, concordancia Strong). Ninguna propagación global pisa correcciones locales `L1`.
+ */
+export const CASCADE_SEMILATTICE_PRIORITY = {
+  L1_DIRECT: 300,
+  DIRECT_VERSE: 250,
+  L2_ONOMASTICON_C13: 200,
+  L3_STRONG_C05: 100,
+  FORMULAIC_PARALLEL: 90,
+};
+
+const CONSTITUTIONAL_AXIS_BY_LEVEL = {
+  L1: "VERSE_PUNCTUATION_ORTHOGRAPHY",
+  L2: "ONOMASTICON_C13_3100",
+  L3: "STRONG_LEXICON_C05_BATCH",
+  L4: "BRANCH_PROFILE_TOML_AND_LITURGY",
+  L5: "CANONICAL_LANG_TOML_300DPI_PDF",
 };
 
 function fnv1aHex(str) {
@@ -66,12 +88,14 @@ export function propagateCascadeL1ToL5({
   level = "L2",
   ref = "GEN.1.1",
   strongId = "",
+  onomasticonId = "",
   oldSurface = "",
   newSurface = "",
   note = "",
   votes = [],
   existingOverlayEntries = [],
   validateLocksFn = null,
+  lamportTs = 0,
 } = {}) {
   const cleanLang = String(lang || "stp").trim().toLowerCase();
   const cleanLevel = String(level || "L2").trim().toUpperCase();
@@ -170,23 +194,38 @@ export function propagateCascadeL1ToL5({
   const felicesPlatesTouched = [];
   if (levelNum >= 5) {
     for (const r of touchedBibleRefs) {
-      for (const pl of FELICES_28_PLATES_BY_VERSE[r] || []) {
+      for (const pl of FELICES_27_PLATES_BY_VERSE[r] || []) {
         if (!felicesPlatesTouched.includes(pl)) felicesPlatesTouched.push(pl);
       }
     }
   }
 
+  const cleanStrongId = String(strongId || "").trim().toUpperCase();
+  const cleanOnomasticonId = String(
+    onomasticonId || (cleanLevel === "L2" && cleanStrongId ? `C13:${cleanStrongId}` : ""),
+  ).trim();
+  const constitutionalAxis = CONSTITUTIONAL_AXIS_BY_LEVEL[cleanLevel] || "ONOMASTICON_C13_3100";
+  const directPriority =
+    cleanLevel === "L1"
+      ? CASCADE_SEMILATTICE_PRIORITY.L1_DIRECT
+      : CASCADE_SEMILATTICE_PRIORITY.DIRECT_VERSE;
+
   const digestHex = fnv1aHex(
-    `${cleanLang}|${cleanLevel}|${cleanRef}|${strongId}|${oldSurface}|${trimmedNew}|${note}`,
+    `${cleanLang}|${cleanLevel}|${cleanRef}|${cleanStrongId}|${cleanOnomasticonId}|${oldSurface}|${trimmedNew}|${note}`,
   );
   const patchId = `PATCH-${cleanLang.toUpperCase()}-${cleanLevel}-${digestHex.slice(0, 8).toUpperCase()}`;
 
   const ekpackOverlayEntry = {
+    schema: "ekovoz.cascade_patch.v2",
     patch_id: patchId,
     lang_code: cleanLang,
     cascade_level: cleanLevel,
+    constitutional_axis: constitutionalAxis,
+    semilattice_priority: directPriority,
+    lamport_ts: Number(lamportTs) || 1,
     target_ref: cleanRef,
-    strong_id: String(strongId || ""),
+    strong_id: cleanStrongId,
+    onomasticon_c13_id: cleanOnomasticonId,
     old_surface: String(oldSurface || ""),
     new_surface: trimmedNew,
     note_pure_text: String(note || ""),
@@ -196,25 +235,35 @@ export function propagateCascadeL1ToL5({
     formulaic_parallel_refs: formulaicParallelRefs,
     evangelios_weeks_touched: evangeliosWeeksTouched,
     felices_plates_touched: felicesPlatesTouched,
+    requires_cli_materialization: levelNum >= 4,
+    cli_targets:
+      levelNum >= 5
+        ? [`obras/biblia/perfiles_ramas/${cleanLang}.toml`, `obras/biblia/corpus/${cleanLang}/lang.toml`, "300dpi_pdf_editions"]
+        : levelNum === 4
+          ? [`obras/biblia/perfiles_ramas/${cleanLang}.toml`]
+          : [],
     audio_bytes: 0,
     jpg_bytes: 0,
     content_hash_hex: digestHex,
   };
 
-  // Fold into CRDT join-semilattice overlay for local .ekpack instant reading
-  const overlayMap = new Map();
-  for (const prev of Array.isArray(existingOverlayEntries) ? existingOverlayEntries : []) {
-    if (prev && prev.target_ref) {
-      overlayMap.set(`${prev.lang_code || cleanLang}:${prev.target_ref}`, prev);
-    }
-  }
+  // Fold into CRDT join-semilattice overlay (`Δ_L1 > Δ_L2 > Δ_L3`) for local .ekpack instant reading
+  const incomingEntries = [];
   for (const r of touchedBibleRefs) {
-    overlayMap.set(`${cleanLang}:${r}`, {
+    const isDirect = r === cleanRef;
+    incomingEntries.push({
       ...ekpackOverlayEntry,
       target_ref: r,
-      propagated_from: r === cleanRef ? "DIRECT" : "FORMULAIC_PARALLEL_L3",
+      propagated_from: isDirect ? "DIRECT" : "FORMULAIC_PARALLEL_L3",
+      semilattice_priority: isDirect
+        ? directPriority
+        : CASCADE_SEMILATTICE_PRIORITY.FORMULAIC_PARALLEL,
     });
   }
+  const foldedOverlayEntries = foldCascadePatchV2Semilattice([
+    ...(Array.isArray(existingOverlayEntries) ? existingOverlayEntries : []),
+    ...incomingEntries,
+  ]);
 
   return {
     accepted: true,
@@ -222,6 +271,8 @@ export function propagateCascadeL1ToL5({
     patchId,
     lang: cleanLang,
     level: cleanLevel,
+    constitutionalAxis,
+    semilatticePriority: directPriority,
     posteriorTruthProb,
     promotedToCanonicalWal,
     qualifiedAffirmativeSpeakers,
@@ -230,6 +281,180 @@ export function propagateCascadeL1ToL5({
     evangeliosWeeksTouched,
     felicesPlatesTouched,
     ekpackOverlayEntry,
-    foldedOverlayEntries: Array.from(overlayMap.values()),
+    foldedOverlayEntries,
+  };
+}
+
+function entryPriorityRank(entry) {
+  if (Number.isFinite(entry?.semilattice_priority)) return Number(entry.semilattice_priority);
+  const lvl = String(entry?.cascade_level || "L2").toUpperCase();
+  if (entry?.propagated_from && entry.propagated_from !== "DIRECT") {
+    if (lvl === "L2") return CASCADE_SEMILATTICE_PRIORITY.L2_ONOMASTICON_C13;
+    return CASCADE_SEMILATTICE_PRIORITY.FORMULAIC_PARALLEL;
+  }
+  if (lvl === "L1") return CASCADE_SEMILATTICE_PRIORITY.L1_DIRECT;
+  return CASCADE_SEMILATTICE_PRIORITY.DIRECT_VERSE;
+}
+
+/**
+ * Pliega un conjunto arbitrario de parches `CascadePatchV2` bajo un semirretículo de unión
+ * conmutativo, asociativo e idempotente (`Δ_L1 > Δ_L2 > Δ_L3`, desempate por `lamport_ts` y `content_hash_hex`).
+ */
+export function foldCascadePatchV2Semilattice(entries = []) {
+  const byKey = new Map();
+  for (const item of Array.isArray(entries) ? entries : []) {
+    if (!item || !item.target_ref || !item.new_surface) continue;
+    const lang = String(item.lang_code || "stp").trim().toLowerCase();
+    const ref = String(item.target_ref).trim().toUpperCase();
+    const key = `${lang}:${ref}`;
+    const prev = byKey.get(key);
+    if (!prev) {
+      byKey.set(key, item);
+      continue;
+    }
+    const nextRank = entryPriorityRank(item);
+    const prevRank = entryPriorityRank(prev);
+    const nextTs = Number(item.lamport_ts || 0);
+    const prevTs = Number(prev.lamport_ts || 0);
+    const nextHash = String(item.content_hash_hex || "");
+    const prevHash = String(prev.content_hash_hex || "");
+    if (
+      nextRank > prevRank ||
+      (nextRank === prevRank && nextTs > prevTs) ||
+      (nextRank === prevRank && nextTs === prevTs && nextHash >= prevHash)
+    ) {
+      byKey.set(key, item);
+    }
+  }
+  return Array.from(byKey.values());
+}
+
+function replaceAllWholeToken(text, needle, replacement) {
+  const src = String(text || "");
+  const oldTok = String(needle || "").trim();
+  const newTok = String(replacement || "").trim();
+  if (!src || !oldTok || !newTok || oldTok === newTok) return src;
+  return src.split(oldTok).join(newTok);
+}
+
+/**
+ * Proyecta en vivo (`< 2 ms`) un capítulo completo a través del semirretículo `L1..L3`:
+ *  1) `L3` (`C05` concordancia Strong): sustituye `old_surface -> new_surface` en versos que comparten `strong_id`.
+ *  2) `L2` (`C13` onomástica 3,100): sustituye nombres propios transliterados en todo el capítulo.
+ *  3) `L1` / `DIRECT`: aplica el texto íntegro del versículo con máxima prioridad (`Δ_L1 > Δ_L2 > Δ_L3`).
+ */
+export function projectChapterThroughCascadeSemilattice({
+  verses = {},
+  matrixRows = [],
+  overlays = [],
+  lang = "stp",
+  book = "GEN",
+  chapter = 1,
+} = {}) {
+  const cleanLang = String(lang || "stp").trim().toLowerCase();
+  const prefix = `${String(book || "GEN").trim().toUpperCase()}.${Number(chapter) || 1}.`;
+  const relevant = (Array.isArray(overlays) ? overlays : []).filter(
+    (e) => e && String(e.lang_code || cleanLang).toLowerCase() === cleanLang,
+  );
+  if (relevant.length === 0) return { ...verses };
+
+  // Build verse -> Set(strongId) and verse -> Set(c13Onomasticon) from 14-col matrixRows when available
+  const strongsByVerse = new Map();
+  const c13ByVerse = new Map();
+  for (const row of Array.isArray(matrixRows) ? matrixRows : []) {
+    if (!row) continue;
+    const vKey = String(row.verse ?? row.v ?? "");
+    if (!vKey) continue;
+    const st = String(row.strong ?? row.c05_strong ?? "").trim().toUpperCase();
+    if (st) {
+      if (!strongsByVerse.has(vKey)) strongsByVerse.set(vKey, new Set());
+      strongsByVerse.get(vKey).add(st);
+    }
+    const c13 = String(row.onomasticon ?? row.c13_onomasticon ?? "").trim();
+    if (c13) {
+      if (!c13ByVerse.has(vKey)) c13ByVerse.set(vKey, new Set());
+      c13ByVerse.get(vKey).add(c13);
+    }
+  }
+
+  const l3Rules = relevant.filter(
+    (e) => String(e.cascade_level || "").toUpperCase() === "L3" && e.old_surface && e.new_surface,
+  );
+  const l2Rules = relevant.filter(
+    (e) => String(e.cascade_level || "").toUpperCase() === "L2" && e.old_surface && e.new_surface,
+  );
+  const foldedDirect = foldCascadePatchV2Semilattice(relevant);
+  const directByRef = new Map(
+    foldedDirect.map((e) => [String(e.target_ref || "").toUpperCase(), e]),
+  );
+
+  const projected = {};
+  for (const [vNum, rawText] of Object.entries(verses || {})) {
+    const osis = `${prefix}${vNum}`;
+    const direct = directByRef.get(osis);
+    if (direct && entryPriorityRank(direct) >= CASCADE_SEMILATTICE_PRIORITY.DIRECT_VERSE) {
+      projected[vNum] = direct.new_surface;
+      continue;
+    }
+    let text = String(rawText ?? "");
+    const vStrongs = strongsByVerse.get(String(vNum));
+    for (const r3 of l3Rules) {
+      const reqStrong = String(r3.strong_id || "").toUpperCase();
+      if (!reqStrong || !vStrongs || vStrongs.has(reqStrong)) {
+        text = replaceAllWholeToken(text, r3.old_surface, r3.new_surface);
+      }
+    }
+    const vC13 = c13ByVerse.get(String(vNum));
+    for (const r2 of l2Rules) {
+      const reqStrong = String(r2.strong_id || "").toUpperCase();
+      if (!reqStrong || !vStrongs || vStrongs.has(reqStrong) || (vC13 && vC13.size > 0)) {
+        text = replaceAllWholeToken(text, r2.old_surface, r2.new_surface);
+      }
+    }
+    if (direct && direct.new_surface) {
+      text = direct.new_surface;
+    }
+    projected[vNum] = text;
+  }
+  return projected;
+}
+
+/**
+ * Serializa un paquete `.eco.patch.json` firmado con Ed25519 para exportación Sneakernet
+ * y materialización en `ekovoz-cli cascade apply` (`L4` TOML de rama + `L5` PDF 300 DPI).
+ */
+export function exportSignedEcoPatchV2Artifact({
+  cascadeResult,
+  signatureHex = "",
+  publicKeyHex = "",
+  crc32Hex = "",
+} = {}) {
+  const entry = cascadeResult?.ekpackOverlayEntry || {};
+  const artifact = {
+    schema: "ekovoz.eco.patch.v2",
+    patch_id: entry.patch_id || cascadeResult?.patchId || "PATCH-UNKNOWN",
+    lang_code: entry.lang_code || cascadeResult?.lang || "stp",
+    cascade_level: entry.cascade_level || cascadeResult?.level || "L2",
+    constitutional_axis: entry.constitutional_axis || cascadeResult?.constitutionalAxis || "ONOMASTICON_C13_3100",
+    target_ref: entry.target_ref || "GEN.1.1",
+    strong_id: entry.strong_id || "",
+    onomasticon_c13_id: entry.onomasticon_c13_id || "",
+    old_surface: entry.old_surface || "",
+    new_surface: entry.new_surface || "",
+    note_pure_text: entry.note_pure_text || "",
+    touched_bible_refs: cascadeResult?.touchedBibleRefs || [],
+    evangelios_weeks_touched: cascadeResult?.evangeliosWeeksTouched || [],
+    felices_plates_touched: cascadeResult?.felicesPlatesTouched || [],
+    cli_targets: entry.cli_targets || [],
+    crc32_hex: String(crc32Hex || ""),
+    ed25519_public_key_hex: String(publicKeyHex || ""),
+    ed25519_signature_hex: String(signatureHex || ""),
+    audio_bytes: 0,
+    jpg_bytes: 0,
+  };
+  return {
+    filename: `${artifact.patch_id.toLowerCase()}.eco.patch.json`,
+    artifact,
+    json: JSON.stringify(artifact, null, 2),
   };
 }

@@ -23,6 +23,18 @@
       "Gelderland,Overijssel"
     ],
     [
+      "acy",
+      "Cypriot Arabic",
+      "Cypriot Arabic (acy)",
+      "Regional_EU"
+    ],
+    [
+      "ajt",
+      "Judeo-Tunisian Arabic",
+      "Judeo-Tunisian Arabic (ajt)",
+      "Regional_EU"
+    ],
+    [
       "aln",
       "Gheg Albanian",
       "Gheg Albanian (aln)",
@@ -65,33 +77,15 @@
       "Regional_EU"
     ],
     [
-      "bcb",
-      "Bainouk-Samik",
-      "Bainouk-Samik (bcb)",
-      "Regional_EU"
-    ],
-    [
       "bfi",
       "British Sign Language",
       "British Sign Language (bfi)",
       "Regional_EU"
     ],
     [
-      "brc",
-      "Berbice Creole Dutch",
-      "Berbice Creole Dutch (brc)",
-      "Regional_EU"
-    ],
-    [
       "bre",
       "Breton",
       "Breton (bre)",
-      "Regional_EU"
-    ],
-    [
-      "bsm",
-      "Busami",
-      "Busami (bsm)",
       "Regional_EU"
     ],
     [
@@ -143,12 +137,6 @@
       "Regional_EU"
     ],
     [
-      "cym",
-      "Welsh",
-      "Welsh (cym)",
-      "Regional_EU"
-    ],
-    [
       "dan",
       "Danish",
       "Danish (dan)",
@@ -170,6 +158,12 @@
       "drt",
       "Drents",
       "Drents (drt)",
+      "Regional_EU"
+    ],
+    [
+      "dsb",
+      "Lower Sorbian",
+      "Lower Sorbian (dsb)",
       "Regional_EU"
     ],
     [
@@ -317,18 +311,6 @@
       "Regional_EU"
     ],
     [
-      "gct",
-      "Colonia Tovar German",
-      "Colonia Tovar German (gct)",
-      "Regional_EU"
-    ],
-    [
-      "geh",
-      "Hutterite German",
-      "Hutterite German (geh)",
-      "Regional_EU"
-    ],
-    [
       "gla",
       "Scottish Gaelic",
       "Scottish Gaelic (gla)",
@@ -383,6 +365,12 @@
       "Regional_EU"
     ],
     [
+      "hsb",
+      "Upper Sorbian",
+      "Upper Sorbian (hsb)",
+      "Regional_EU"
+    ],
+    [
       "hun",
       "Hungarian",
       "Hungarian (hun)",
@@ -431,6 +419,18 @@
       "Regional_EU"
     ],
     [
+      "kal",
+      "Kalaallisut",
+      "Kalaallisut (kal)",
+      "Regional_EU"
+    ],
+    [
+      "krl",
+      "Karelian",
+      "Karelian (krl)",
+      "Regional_EU"
+    ],
+    [
       "ksh",
       "Kölsch",
       "Kölsch (ksh)",
@@ -443,6 +443,18 @@
       "Regional_EU"
     ],
     [
+      "lij",
+      "Ligurian",
+      "Ligurian (lij)",
+      "Regional_EU"
+    ],
+    [
+      "lim",
+      "Limburgan",
+      "Limburgan (lim)",
+      "Regional_EU"
+    ],
+    [
       "lld",
       "Ladin",
       "Ladin (lld)",
@@ -452,12 +464,6 @@
       "lmo",
       "Lombard",
       "Lombard (lmo)",
-      "Regional_EU"
-    ],
-    [
-      "lsm",
-      "Saamia",
-      "Saamia (lsm)",
       "Regional_EU"
     ],
     [
@@ -572,12 +578,6 @@
       "pcd",
       "Picard",
       "Picard (pcd)",
-      "Regional_EU"
-    ],
-    [
-      "pdc",
-      "Pennsylvania German",
-      "Pennsylvania German (pdc)",
       "Regional_EU"
     ],
     [
@@ -731,21 +731,9 @@
       "Regional_EU"
     ],
     [
-      "sjd",
-      "Kildin Sami",
-      "Kildin Sami (sjd)",
-      "Regional_EU"
-    ],
-    [
       "sje",
       "Pite Sami",
       "Pite Sami (sje)",
-      "Regional_EU"
-    ],
-    [
-      "sjt",
-      "Ter Sami",
-      "Ter Sami (sjt)",
       "Regional_EU"
     ],
     [
@@ -986,6 +974,18 @@
       "yej",
       "Yevanic",
       "Yevanic (yej)",
+      "Regional_EU"
+    ],
+    [
+      "yhd",
+      "Judeo-Iraqi Arabic",
+      "Judeo-Iraqi Arabic (yhd)",
+      "Regional_EU"
+    ],
+    [
+      "yih",
+      "Western Yiddish",
+      "Western Yiddish (yih)",
       "Regional_EU"
     ],
     [

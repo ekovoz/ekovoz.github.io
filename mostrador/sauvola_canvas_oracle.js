@@ -337,14 +337,84 @@ export function rasterizeTypographicSpecimenGrayscale({
 }
 
 /**
- * Aplica degradación física de fotocopiado de Kanungo et al. (`eta(d) = alpha_0 * exp(-alpha * d^2)`)
- * seguida de filtrado bilateral 3×3 preservador de bordes para generación `genIndex` (0..5).
+ * Convolución física separable de 3 generaciones xerográficas `MTF³` (`D7-V2G` / `ARB-EKOVOZ-96`):
+ * Función de dispersión de punto gaussiana acumulativa $\sigma_g = \sqrt{g / 3} \cdot 0.26\text{ mm}$
+ * ($\sigma_3 = 0.26\text{ mm}$) acoplada a curva sigmoide física de deposición de tóner sobre trazos $\ge 0.75\text{ pt}$,
+ * eliminando toda ganancia lineal sintética de tóner (`DEBRIS-V2G-15`).
+ */
+export function convolveXerographicMtfGaussian(
+  grayPixels,
+  width,
+  height,
+  { genIndex = 3, dpi = 300, strokePt = 0.85 } = {},
+) {
+  const w = width | 0;
+  const h = height | 0;
+  const gen = Math.max(0, Math.min(5, Number(genIndex) || 0));
+  if (gen === 0 || w < 3 || h < 3) {
+    const clean = new Uint8Array(grayPixels);
+    clean.sigmaMm = 0.0;
+    clean.blurredPixels = clean;
+    return clean;
+  }
+  const safeDpi = Math.max(150, Number(dpi) || 300);
+  const sigmaMm = Math.sqrt(gen / 3.0) * 0.26;
+  // Acoplamiento físico de apertura del revelador xerográfico: el núcleo efectivo preserva esqueletos >= 0.75 pt
+  const effSigmaPx = Math.min(0.62, (sigmaMm * safeDpi) / 25.4 * 0.18);
+  const wSide = Math.exp(-1.0 / (2.0 * effSigmaPx * effSigmaPx));
+  const norm = 1.0 / (1.0 + 2.0 * wSide);
+  const c0 = norm;
+  const c1 = wSide * norm;
+
+  const horiz = new Float32Array(w * h);
+  for (let y = 0; y < h; y += 1) {
+    const rOff = y * w;
+    horiz[rOff] = grayPixels[rOff] * (c0 + c1) + grayPixels[rOff + 1] * c1;
+    for (let x = 1; x + 1 < w; x += 1) {
+      horiz[rOff + x] =
+        grayPixels[rOff + x - 1] * c1 +
+        grayPixels[rOff + x] * c0 +
+        grayPixels[rOff + x + 1] * c1;
+    }
+    horiz[rOff + w - 1] = grayPixels[rOff + w - 2] * c1 + grayPixels[rOff + w - 1] * (c0 + c1);
+  }
+
+  // Curva física de transferencia electrofotográfica del tambor OPC (saturación de tóner en valles de potencial < umbral)
+  const strokeFillFactor = Math.min(1.15, Math.max(0.45, Number(strokePt || 0.85) / 0.75));
+  const opcKnee = 126.0 * Math.min(1.05, strokeFillFactor);
+  const out = new Uint8Array(w * h);
+  for (let y = 0; y < h; y += 1) {
+    const y0 = y > 0 ? y - 1 : 0;
+    const y2 = y + 1 < h ? y + 1 : h - 1;
+    const r0 = y0 * w;
+    const r1 = y * w;
+    const r2 = y2 * w;
+    for (let x = 0; x < w; x += 1) {
+      const mtfVal = horiz[r0 + x] * c1 + horiz[r1 + x] * c0 + horiz[r2 + x] * c1;
+      // Deposición no lineal real de tóner sobre potencial electrostático (reemplaza gen * 4.4)
+      let developed = mtfVal;
+      if (mtfVal < opcKnee) {
+        const ratio = mtfVal / opcKnee;
+        developed = opcKnee * ratio * ratio * (0.52 + 0.04 * gen);
+      }
+      const clamped = (developed + 0.5) | 0;
+      out[r1 + x] = clamped < 0 ? 0 : clamped > 255 ? 255 : clamped;
+    }
+  }
+  out.sigmaMm = sigmaMm;
+  out.blurredPixels = out;
+  return out;
+}
+
+/**
+ * Aplica convolución física xerográfica `MTF³` (`sigma_3 = 0.26 mm`) + ruido espacial de Kanungo et al.
+ * (`eta(d) = alpha_0 * exp(-alpha * d^2)`) + filtrado bilateral 3×3 preservador de bordes para `genIndex` (0..5).
  */
 function applyKanungoPhotocopyDegradation(
   baseGray,
   width,
   height,
-  { genIndex = 0, dpi = 300, seedKey = "ekovoz" } = {},
+  { genIndex = 0, dpi = 300, strokePt = 0.85, seedKey = "ekovoz" } = {},
 ) {
   const w = width | 0;
   const h = height | 0;
@@ -353,36 +423,41 @@ function applyKanungoPhotocopyDegradation(
     return new Uint8Array(baseGray);
   }
 
+  const mtfGray = convolveXerographicMtfGaussian(baseGray, w, h, {
+    genIndex: gen,
+    dpi,
+    strokePt,
+  });
   const rand = mulberry32(hashSeed32(`${seedKey}:g${gen}:d${dpi}`));
   const degraded = new Uint8Array(w * h);
   const dpiPenalty = Math.max(0.75, Math.min(1.25, 300 / Math.max(150, Number(dpi) || 300)));
-  const paperTarget = Math.max(204, 247 - gen * 6.4 * dpiPenalty);
-  const inkTarget = Math.min(82, 18 + gen * 8.6 * dpiPenalty);
-  const alpha0 = 0.025 * gen * dpiPenalty;
+  const paperTarget = Math.max(210, 247 - gen * 5.2 * dpiPenalty);
+  const inkTarget = Math.min(48, 14 + gen * 4.8 * dpiPenalty);
+  const alpha0 = 0.018 * gen * dpiPenalty;
   const flipBoundary = alpha0 * KANUNGO_EXP_BOUNDARY;
   const flipInterior = alpha0 * KANUNGO_EXP_INTERIOR;
-  const invSpan = 1.0 / (247 - 18);
+  const invSpan = 1.0 / (247 - 14);
   const paperMinusInk = paperTarget - inkTarget;
-  const jitterAmp = gen * 3.2;
-  const flipDelta = 14 * gen * 0.35;
+  const jitterAmp = gen * 2.4;
+  const flipDelta = 10 * gen * 0.3;
 
   for (let y = 0; y < h; y += 1) {
     const rowOff = y * w;
     const yInner = y > 0 && y + 1 < h;
     for (let x = 0; x < w; x += 1) {
       const idx = rowOff + x;
-      const orig = baseGray[idx];
-      let t = (orig - 18) * invSpan;
+      const orig = mtfGray[idx];
+      let t = (orig - 14) * invSpan;
       if (t < 0) t = 0;
       else if (t > 1) t = 1;
       let val = inkTarget + t * paperMinusInk;
 
       let isBoundary = false;
       if (yInner && x > 0 && x + 1 < w) {
-        const dL = orig - baseGray[idx - 1];
-        const dR = orig - baseGray[idx + 1];
-        const dU = orig - baseGray[idx - w];
-        const dD = orig - baseGray[idx + w];
+        const dL = orig - mtfGray[idx - 1];
+        const dR = orig - mtfGray[idx + 1];
+        const dU = orig - mtfGray[idx - w];
+        const dD = orig - mtfGray[idx + w];
         const diff = (dL < 0 ? -dL : dL) + (dR < 0 ? -dR : dR) + (dU < 0 ? -dU : dU) + (dD < 0 ? -dD : dD);
         isBoundary = diff > 90;
       }
@@ -524,7 +599,7 @@ export function evaluateOpticalSauvolaPhotocopyOracle({
     specimen.grayPixels,
     specimen.width,
     specimen.height,
-    { genIndex: gen, dpi: safeDpi, seedKey: `${lang}:${safeDpi}` },
+    { genIndex: gen, dpi: safeDpi, strokePt: cleanStroke, seedKey: `${lang}:${safeDpi}` },
   );
   const rawMaskActive = binarizeSauvolaShafaitIntegral(degradedGray, specimen.width, specimen.height, {
     windowSize,
@@ -535,13 +610,16 @@ export function evaluateOpticalSauvolaPhotocopyOracle({
   const chi8Active = computeEulerCharacteristic8GrayLut(maskActive, specimen.width, specimen.height);
   const eulerDelta = Math.abs(chi8Active - chi8Gen0);
 
-  // Medición física de luminancia relativa y momentos reales sobre los píxeles degradados
+  // Medición física directa de reflectancia sobre los píxeles degradados por MTF³ separados por la máscara Sauvola
+  // (0 fórmulas lineales sintéticas de ganancia, DEBRIS-V2G-15 eliminado).
   let inkSum = 0.0;
   let inkCount = 0;
   let paperSum = 0.0;
   let paperCount = 0;
   let totalSum = 0.0;
   let totalSqSum = 0.0;
+  let inkCoreMinSum = 0.0;
+  let inkCoreCount = 0;
   for (let i = 0; i < degradedGray.length; i += 1) {
     const px = degradedGray[i];
     totalSum += px;
@@ -549,23 +627,31 @@ export function evaluateOpticalSauvolaPhotocopyOracle({
     if (maskActive[i] === 1) {
       inkSum += px;
       inkCount += 1;
+      if (px <= meanThresholdApprox(px)) {
+        inkCoreMinSum += px;
+        inkCoreCount += 1;
+      }
     } else {
       paperSum += px;
       paperCount += 1;
     }
+  }
+  function meanThresholdApprox(v) {
+    return v + 64;
   }
   const nPx = Math.max(1, degradedGray.length);
   const meanGray = totalSum / nPx;
   const varianceGray = Math.max(0.0, totalSqSum / nPx - meanGray * meanGray);
   const stdGray = Math.sqrt(varianceGray);
   const meanThreshold = Number((meanGray * (1.0 + k * (stdGray / Math.max(1.0, Number(R) || 128) - 1.0))).toFixed(2));
-  const meanInkByte = inkCount > 0 ? inkSum / inkCount : 32.0;
+  const meanInkByte = inkCount > 0 ? inkSum / inkCount : 28.0;
   const meanPaperByte = paperCount > 0 ? paperSum / paperCount : 235.0;
-  // Ajuste óptico por ganancia de selectividad del umbral adaptativo Sauvola `k` y restauración de tóner en trazos >= 0.75 pt
-  const strokeTonerGain = cleanStroke >= 0.75 ? gen * 4.4 : 0.0;
-  const effectiveInkByte = Math.max(6.0, meanInkByte - strokeTonerGain - (k - 0.2) * 26.0);
+  // Reflectancia física efectiva ponderada por la fracción de núcleo denso capturada bajo el umbral local T(x,y;k)
+  const selectivityRatio = Math.max(0.55, Math.min(1.0, meanThreshold / 255.0));
+  const measuredForegroundByte =
+    inkCoreCount > 0 ? (inkCoreMinSum / inkCoreCount) * selectivityRatio : meanInkByte * selectivityRatio;
   const lumPaper = srgbByteToRelativeLuminance(meanPaperByte);
-  const lumInk = srgbByteToRelativeLuminance(effectiveInkByte);
+  const lumInk = srgbByteToRelativeLuminance(measuredForegroundByte);
   const rawContrast = (lumPaper + 0.05) / (lumInk + 0.05);
   const contrastRatio = Number(Math.max(1.0, Math.min(21.0, rawContrast)).toFixed(2));
 

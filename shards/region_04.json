@@ -1,7 +1,7 @@
 {
   "macro_region_id": 4,
   "region_name_es": "Europa Oriental y Eurasia Eslava",
-  "total_languages": 137,
+  "total_languages": 113,
   "subclades_covered": 30,
   "featured_languages": [
     [
@@ -53,12 +53,6 @@
       "East_Europe"
     ],
     [
-      "bjr",
-      "Binumarien",
-      "Binumarien (bjr)",
-      "East_Europe,Siberia"
-    ],
-    [
       "bos",
       "Bosnian",
       "Bosnian (bos)",
@@ -69,12 +63,6 @@
       "Botlikh",
       "Botlikh (bph)",
       "East_Europe"
-    ],
-    [
-      "bpv",
-      "Bian Marind",
-      "Bian Marind (bpv)",
-      "East_Europe,Siberia"
     ],
     [
       "bqn",
@@ -98,19 +86,19 @@
       "chm",
       "Mari (Russia)",
       "Mari (Russia) (chm)",
-      "East_Europe,Siberia"
+      "East_Europe"
     ],
     [
       "chu",
       "Church Slavic",
       "Church Slavic (chu)",
-      "East_Europe,Siberia"
+      "East_Europe"
     ],
     [
-      "cid",
-      "Chimariko",
-      "Chimariko (cid)",
-      "East_Europe,Siberia"
+      "chv",
+      "Chuvash",
+      "Chuvash (chv)",
+      "East_Europe"
     ],
     [
       "cji",
@@ -149,10 +137,16 @@
       "East_Europe"
     ],
     [
+      "crh",
+      "Crimean Tatar",
+      "Crimean Tatar (crh)",
+      "East_Europe"
+    ],
+    [
       "csb",
       "Kashubian",
       "Kashubian (csb)",
-      "East_Europe,Siberia"
+      "East_Europe"
     ],
     [
       "cse",
@@ -179,18 +173,6 @@
       "East_Europe"
     ],
     [
-      "dad",
-      "Marik",
-      "Marik (dad)",
-      "East_Europe,Siberia"
-    ],
-    [
-      "daq",
-      "Dandami Maria",
-      "Dandami Maria (daq)",
-      "East_Europe,Siberia"
-    ],
-    [
       "dlg",
       "Dolgan",
       "Dolgan (dlg)",
@@ -201,12 +183,6 @@
       "Dalmatian",
       "Dalmatian (dlm)",
       "East_Europe"
-    ],
-    [
-      "dsb",
-      "Lower Sorbian",
-      "Lower Sorbian (dsb)",
-      "East_Europe,Siberia"
     ],
     [
       "ekk",
@@ -233,16 +209,16 @@
       "East_Europe"
     ],
     [
+      "ess",
+      "Central Siberian Yupik",
+      "Central Siberian Yupik (ess)",
+      "East_Europe"
+    ],
+    [
       "eve",
       "Even",
       "Even (eve)",
       "East_Europe"
-    ],
-    [
-      "evn",
-      "Evenki",
-      "Evenki (evn)",
-      "East_Europe,Siberia"
     ],
     [
       "fin",
@@ -273,24 +249,6 @@
       "Serbo-Croatian",
       "Serbo-Croatian (hbs)",
       "East_Europe"
-    ],
-    [
-      "hir",
-      "Himarimã",
-      "Himarimã (hir)",
-      "East_Europe,Siberia"
-    ],
-    [
-      "hob",
-      "Mari (Madang Province)",
-      "Mari (Madang Province) (hob)",
-      "East_Europe,Siberia"
-    ],
-    [
-      "hsb",
-      "Upper Sorbian",
-      "Upper Sorbian (hsb)",
-      "East_Europe,Siberia"
     ],
     [
       "hsh",
@@ -332,7 +290,13 @@
       "kca",
       "Khanty",
       "Khanty (kca)",
-      "East_Europe,Siberia"
+      "East_Europe"
+    ],
+    [
+      "kdr",
+      "Karaim",
+      "Karaim (kdr)",
+      "East_Europe"
     ],
     [
       "ket",
@@ -356,13 +320,13 @@
       "koi",
       "Komi-Permyak",
       "Komi-Permyak (koi)",
-      "East_Europe,Siberia"
+      "East_Europe"
     ],
     [
       "kom",
       "Komi",
       "Komi (kom)",
-      "East_Europe,Siberia"
+      "East_Europe"
     ],
     [
       "kpe",
@@ -380,25 +344,13 @@
       "kpv",
       "Komi-Zyrian",
       "Komi-Zyrian (kpv)",
-      "East_Europe,Siberia"
+      "East_Europe"
     ],
     [
       "kpy",
       "Koryak",
       "Koryak (kpy)",
-      "East_Europe,Siberia"
-    ],
-    [
-      "krl",
-      "Karelian",
-      "Karelian (krl)",
-      "East_Europe,Siberia"
-    ],
-    [
-      "krt",
-      "Tumari Kanuri",
-      "Tumari Kanuri (krt)",
-      "East_Europe,Siberia"
+      "East_Europe"
     ],
     [
       "kva",
@@ -455,76 +407,22 @@
       "East_Europe"
     ],
     [
-      "mbw",
-      "Maring",
-      "Maring (mbw)",
-      "East_Europe,Siberia"
-    ],
-    [
-      "mbx",
-      "Mari (East Sepik Province)",
-      "Mari (East Sepik Province) (mbx)",
-      "East_Europe,Siberia"
-    ],
-    [
       "mdf",
       "Moksha",
       "Moksha (mdf)",
       "East_Europe"
     ],
     [
-      "mds",
-      "Maria (Papua New Guinea)",
-      "Maria (Papua New Guinea) (mds)",
-      "East_Europe,Siberia"
-    ],
-    [
-      "mhr",
-      "Eastern Mari",
-      "Eastern Mari (mhr)",
-      "East_Europe,Siberia"
-    ],
-    [
       "mns",
       "Mansi",
       "Mansi (mns)",
-      "East_Europe,Siberia"
-    ],
-    [
-      "mqi",
-      "Mariri",
-      "Mariri (mqi)",
-      "East_Europe,Siberia"
-    ],
-    [
-      "mrb",
-      "Marino",
-      "Marino (mrb)",
-      "East_Europe,Siberia"
-    ],
-    [
-      "mrc",
-      "Maricopa",
-      "Maricopa (mrc)",
-      "East_Europe,Siberia"
+      "East_Europe"
     ],
     [
       "mrj",
       "Western Mari",
       "Western Mari (mrj)",
-      "East_Europe,Siberia"
-    ],
-    [
-      "mrr",
-      "Maria (India)",
-      "Maria (India) (mrr)",
-      "East_Europe,Siberia"
-    ],
-    [
-      "mrz",
-      "Marind",
-      "Marind (mrz)",
-      "East_Europe,Siberia"
+      "East_Europe"
     ],
     [
       "mud",
@@ -549,18 +447,6 @@
       "Gilyak",
       "Gilyak (niv)",
       "East_Europe"
-    ],
-    [
-      "nng",
-      "Maring Naga",
-      "Maring Naga (nng)",
-      "East_Europe,Siberia"
-    ],
-    [
-      "nsr",
-      "Maritime Sign Language",
-      "Maritime Sign Language (nsr)",
-      "East_Europe,Siberia"
     ],
     [
       "oac",
@@ -611,12 +497,6 @@
       "East_Europe"
     ],
     [
-      "rmt",
-      "Domari",
-      "Domari (rmt)",
-      "East_Europe,Siberia"
-    ],
-    [
       "rom",
       "Romany",
       "Romany (rom)",
@@ -650,7 +530,7 @@
       "rue",
       "Rusyn",
       "Rusyn (rue)",
-      "East_Europe,Siberia"
+      "East_Europe"
     ],
     [
       "ruo",
@@ -677,15 +557,27 @@
       "East_Europe"
     ],
     [
-      "siv",
-      "Sumariup",
-      "Sumariup (siv)",
-      "East_Europe,Siberia"
+      "sjd",
+      "Kildin Sami",
+      "Kildin Sami (sjd)",
+      "East_Europe"
+    ],
+    [
+      "sjt",
+      "Ter Sami",
+      "Ter Sami (sjt)",
+      "East_Europe"
     ],
     [
       "sli",
       "Lower Silesian",
       "Lower Silesian (sli)",
+      "East_Europe"
+    ],
+    [
+      "sty",
+      "Siberian Tatar",
+      "Siberian Tatar (sty)",
       "East_Europe"
     ],
     [
@@ -701,12 +593,6 @@
       "East_Europe"
     ],
     [
-      "tbz",
-      "Ditammari",
-      "Ditammari (tbz)",
-      "East_Europe,Siberia"
-    ],
-    [
       "tin",
       "Tindi",
       "Tindi (tin)",
@@ -719,16 +605,16 @@
       "East_Europe"
     ],
     [
-      "udm",
-      "Udmurt",
-      "Udmurt (udm)",
-      "East_Europe,Siberia"
-    ],
-    [
       "ukr",
       "Ukrainian",
       "Українська",
       "Kyiv,Lviv"
+    ],
+    [
+      "ukl",
+      "Ukrainian Sign Language",
+      "Ukrainian Sign Language (ukl)",
+      "East_Europe"
     ],
     [
       "ulc",
@@ -767,22 +653,22 @@
       "East_Europe"
     ],
     [
-      "xoi",
-      "Kominimung",
-      "Kominimung (xoi)",
-      "East_Europe,Siberia"
-    ],
-    [
       "ykg",
       "Northern Yukaghir",
       "Northern Yukaghir (ykg)",
       "East_Europe"
     ],
     [
+      "ynk",
+      "Naukan Yupik",
+      "Naukan Yupik (ynk)",
+      "East_Europe"
+    ],
+    [
       "yrk",
       "Nenets",
       "Nenets (yrk)",
-      "East_Europe,Siberia"
+      "East_Europe"
     ],
     [
       "ysl",
@@ -795,36 +681,6 @@
       "Southern Yukaghir",
       "Southern Yukaghir (yux)",
       "East_Europe"
-    ],
-    [
-      "zmd",
-      "Maridan",
-      "Maridan (zmd)",
-      "East_Europe,Siberia"
-    ],
-    [
-      "zmj",
-      "Maridjabin",
-      "Maridjabin (zmj)",
-      "East_Europe,Siberia"
-    ],
-    [
-      "zmm",
-      "Marimanindji",
-      "Marimanindji (zmm)",
-      "East_Europe,Siberia"
-    ],
-    [
-      "zmt",
-      "Maringarr",
-      "Maringarr (zmt)",
-      "East_Europe,Siberia"
-    ],
-    [
-      "zmy",
-      "Mariyedi",
-      "Mariyedi (zmy)",
-      "East_Europe,Siberia"
     ]
   ]
 }

@@ -6,6 +6,7 @@
 
 import { renderChapterPreviewHtml } from "./bridge_and_chapter.js";
 import { STATUS } from "./data_layer.js";
+import { computeViewportRenderSignature } from "./diglossic_chapter_renderer.js";
 import { renderAnalyticalThermometerHtml } from "./diachronic_register.js";
 import {
   buildRelativePdfAssetUrl,
@@ -32,11 +33,23 @@ export function renderMostradorViewportFromState({
   i18nInstance,
   getEl,
   targetDoc,
+  force = false,
 }) {
   const viewport = getEl("bibleVerseViewport", targetDoc);
   if (!viewport || !state.lastNavResult) return;
   const res = state.lastNavResult;
   const effectiveLang = state.effectiveCorpusLang || state.lang;
+  const renderSig = computeViewportRenderSignature(state, effectiveLang);
+  const prevSig =
+    typeof viewport.getAttribute === "function" ? viewport.getAttribute("data-render-sig") : "";
+  if (!force && prevSig === renderSig && String(viewport.innerHTML || "").length > 0) {
+    return;
+  }
+  const prevPasses = Number(
+    (typeof viewport.getAttribute === "function" && viewport.getAttribute("data-render-pass-count")) || 0,
+  );
+  viewport.setAttribute("data-render-sig", renderSig);
+  viewport.setAttribute("data-render-pass-count", String(prevPasses + 1));
   viewport.setAttribute("data-status", res.status);
   viewport.setAttribute("data-current-ref", `${state.book}.${state.chapter}`);
   viewport.setAttribute("data-selected-verse", String(state.verse));
@@ -189,12 +202,7 @@ export async function dispenseMostradorDose1({ opts = {}, state, dataLayer }) {
   const duplex = opts.duplex !== undefined ? Boolean(opts.duplex) : state.duplex;
   const edition = opts.edition || state.edition;
 
-  const catalog = await dataLayer.loadCatalog();
-  if (!catalog || !catalog.verse_counts) {
-    throw new Error("Catalog verse_counts unavailable");
-  }
-  const pageIndex = await dataLayer.loadPageIndex(state.lang, edition);
-  if (!pageIndex) {
+  const synthesizeLiveBimodalDose1 = (blockIdHint = "bimodal-tanda-dose1", ordHint = 1) => {
     const chapterVerses = state.lastNavResult?.chapter?.verses || {};
     const bimodal = planBimodalClientPrint({
       dose: 1,
@@ -217,38 +225,56 @@ export async function dispenseMostradorDose1({ opts = {}, state, dataLayer }) {
       book: state.book,
       chapter: state.chapter,
       verse: state.verse,
-      blockId: "bimodal-tanda-dose1",
+      blockId: blockIdHint,
+      blockNumber: ordHint,
+      edition,
+      threatClass,
       countryIso2: state.countryIso2,
-      ordinal: 1,
+      ordinal: ordHint,
     });
-    const totalPages = countPdfPages(bimodal.pdfBytes);
+    const totalPages = Math.max(1, countPdfPages(bimodal.pdfBytes));
     return {
       bytes: bimodal.pdfBytes,
       printHtml: bimodal.printHtml,
       filename,
       threatClass,
-      blockId: "bimodal-tanda-dose1",
+      blockId: blockIdHint,
       pages: Array.from({ length: totalPages }, (_, i) => i + 1),
       sheetCount: sheets,
       pageCount: totalPages,
       availabilityMode: "bimodal_client_print",
     };
+  };
+
+  const catalog = await dataLayer.loadCatalog();
+  if (!catalog || !catalog.verse_counts) {
+    return synthesizeLiveBimodalDose1();
+  }
+  const pageIndex =
+    typeof dataLayer.loadPageIndex === "function"
+      ? await dataLayer.loadPageIndex(state.lang, edition)
+      : null;
+  if (!pageIndex) {
+    return synthesizeLiveBimodalDose1();
   }
 
   const ordinal = ordinalOf(
     state.book,
     state.chapter,
     state.verse,
-    catalog.verse_counts,
+    catalog,
   );
-  const loc = locateVersePage(pageIndex, ordinal);
+  const loc = ordinal ? locateVersePage(pageIndex, ordinal) : null;
   if (!loc) {
-    throw new Error(`Could not locate ordinal ${ordinal} in page index`);
+    return synthesizeLiveBimodalDose1();
   }
 
-  const blockBytes = await dataLayer.loadBlockPdf(state.lang, edition, loc.blockId);
+  const blockBytes =
+    typeof dataLayer.loadBlockPdf === "function"
+      ? await dataLayer.loadBlockPdf(state.lang, edition, loc.blockId)
+      : null;
   if (!blockBytes) {
-    throw new Error(`Block PDF unavailable: ${state.lang}/${edition}/${loc.blockId}`);
+    return synthesizeLiveBimodalDose1(loc.blockId, loc.blockIndex + 1);
   }
   const actualBlockPages = Math.max(1, countPdfPages(blockBytes));
   const clampedPageInBlock = Math.min(Math.max(1, Number(loc.pageInBlock) || 1), actualBlockPages);
@@ -263,6 +289,9 @@ export async function dispenseMostradorDose1({ opts = {}, state, dataLayer }) {
     chapter: state.chapter,
     verse: state.verse,
     blockId: loc.blockId,
+    blockNumber: loc.blockIndex + 1,
+    edition,
+    threatClass,
     countryIso2: state.countryIso2,
     ordinal: loc.blockIndex,
   });
@@ -275,5 +304,6 @@ export async function dispenseMostradorDose1({ opts = {}, state, dataLayer }) {
     pages: plan.pages,
     sheetCount: plan.sheetCount,
     pageCount: countPdfPages(extractedBytes),
+    availabilityMode: "precompiled_pdf",
   };
 }

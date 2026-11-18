@@ -1,7 +1,7 @@
 {
   "macro_region_id": 1,
   "region_name_es": "Mesoamérica, Andes y Amazonía",
-  "total_languages": 809,
+  "total_languages": 798,
   "subclades_covered": 36,
   "featured_languages": [
     [
@@ -32,7 +32,7 @@
       "acr",
       "Achi",
       "Achi (acr)",
-      "Baja_Verapaz"
+      "Highlands,Huehuetenango,Baja_Verapaz"
     ],
     [
       "acs",
@@ -45,6 +45,12 @@
       "Achuar-Shiwiar",
       "Achuar-Shiwiar (acu)",
       "Pastaza,Loreto"
+    ],
+    [
+      "adw",
+      "Amundava",
+      "Amundava (adw)",
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "aed",
@@ -125,16 +131,10 @@
       "Mesoamerica_Andes_Amazonia"
     ],
     [
-      "ams",
-      "Southern Amami-Oshima",
-      "Southern Amami-Oshima (ams)",
-      "Highlands,Peten,Chiapas"
-    ],
-    [
       "amu",
       "Guerrero Amuzgo",
       "Guerrero Amuzgo (amu)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "ana",
@@ -218,7 +218,7 @@
       "arh",
       "Arhuaco",
       "Arhuaco (arh)",
-      "Andes,Amazonas,Chaco"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "arj",
@@ -242,7 +242,7 @@
       "arn",
       "Mapudungun",
       "Mapudungun (arn)",
-      "Andes,Amazonas,Chaco"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "aro",
@@ -374,13 +374,13 @@
       "ayc",
       "Southern Aymara",
       "Southern Aymara (ayc)",
-      "Andes,Amazonas,Chaco"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "aym",
       "Aymara",
       "Aymara (aym)",
-      "Andes,Amazonas,Chaco"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "ayo",
@@ -398,31 +398,31 @@
       "azd",
       "Eastern Durango Nahuatl",
       "Eastern Durango Nahuatl (azd)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "azg",
       "San Pedro Amuzgos Amuzgo",
       "San Pedro Amuzgos Amuzgo (azg)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "azm",
       "Ipalapa Amuzgo",
       "Ipalapa Amuzgo (azm)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "azn",
       "Western Durango Nahuatl",
       "Western Durango Nahuatl (azn)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "azz",
       "Highland Puebla Nahuatl",
       "Highland Puebla Nahuatl (azz)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "bae",
@@ -440,13 +440,7 @@
       "bdc",
       "Emberá-Baudó",
       "Emberá-Baudó (bdc)",
-      "Andes,Amazonas,Chaco"
-    ],
-    [
-      "bia",
-      "Badimaya",
-      "Badimaya (bia)",
-      "Highlands,Peten,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "bkq",
@@ -470,6 +464,12 @@
       "bor",
       "Borôro",
       "Borôro (bor)",
+      "Mesoamerica_Andes_Amazonia"
+    ],
+    [
+      "brc",
+      "Berbice Creole Dutch",
+      "Berbice Creole Dutch (brc)",
       "Mesoamerica_Andes_Amazonia"
     ],
     [
@@ -572,7 +572,7 @@
       "cak",
       "Kaqchikel",
       "Kaqchikel (cak)",
-      "Highlands,Peten,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "cao",
@@ -635,6 +635,12 @@
       "Mesoamerica_Andes_Amazonia"
     ],
     [
+      "cbd",
+      "Carijona",
+      "Carijona (cbd)",
+      "Mesoamerica_Andes_Amazonia"
+    ],
+    [
       "cbg",
       "Chimila",
       "Chimila (cbg)",
@@ -650,6 +656,12 @@
       "cbr",
       "Cashibo-Cacataibo",
       "Cashibo-Cacataibo (cbr)",
+      "Mesoamerica_Andes_Amazonia"
+    ],
+    [
+      "cbs",
+      "Cashinahua",
+      "Cashinahua (cbs)",
       "Mesoamerica_Andes_Amazonia"
     ],
     [
@@ -692,7 +704,7 @@
       "cco",
       "Comaltepec Chinantec",
       "Comaltepec Chinantec (cco)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "ccr",
@@ -728,13 +740,13 @@
       "chj",
       "Ojitlán Chinantec",
       "Ojitlán Chinantec (chj)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "chq",
       "Quiotepec Chinantec",
       "Quiotepec Chinantec (chq)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "cht",
@@ -746,7 +758,7 @@
       "chz",
       "Ozumacín Chinantec",
       "Ozumacín Chinantec (chz)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "cin",
@@ -782,13 +794,13 @@
       "ckz",
       "Cakchiquel-Quiché Mixed Language",
       "Cakchiquel-Quiché Mixed Language (ckz)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "cle",
       "Lealao Chinantec",
       "Lealao Chinantec (cle)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "clo",
@@ -800,31 +812,31 @@
       "cly",
       "Eastern Highland Chatino",
       "Eastern Highland Chatino (cly)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "cmi",
       "Emberá-Chamí",
       "Emberá-Chamí (cmi)",
-      "Andes,Amazonas,Chaco"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "cni",
       "Asháninka",
       "Asháninka (cni)",
-      "Andes,Amazonas,Chaco"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "cnl",
       "Lalana Chinantec",
       "Lalana Chinantec (cnl)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "cnt",
       "Tepetotutla Chinantec",
       "Tepetotutla Chinantec (cnt)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "cob",
@@ -896,7 +908,7 @@
       "cpa",
       "Palantla Chinantec",
       "Palantla Chinantec (cpa)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "cpb",
@@ -956,7 +968,7 @@
       "csa",
       "Chiltepec Chinantec",
       "Chiltepec Chinantec (csa)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "csf",
@@ -980,7 +992,7 @@
       "cso",
       "Sochiapam Chinantec",
       "Sochiapam Chinantec (cso)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "csr",
@@ -992,31 +1004,31 @@
       "cta",
       "Tataltepec Chatino",
       "Tataltepec Chatino (cta)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "cte",
       "Tepinapa Chinantec",
       "Tepinapa Chinantec (cte)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "ctl",
       "Tlacoatzintepec Chinantec",
       "Tlacoatzintepec Chinantec (ctl)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "cto",
       "Emberá-Catío",
       "Emberá-Catío (cto)",
-      "Andes,Amazonas,Chaco"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "ctp",
       "Western Highland Chatino",
       "Western Highland Chatino (ctp)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "ctu",
@@ -1028,7 +1040,7 @@
       "ctz",
       "Zacatepec Chatino",
       "Zacatepec Chatino (ctz)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "cub",
@@ -1040,7 +1052,7 @@
       "cuc",
       "Usila Chinantec",
       "Usila Chinantec (cuc)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "cui",
@@ -1094,13 +1106,13 @@
       "cvn",
       "Valle Nacional Chinantec",
       "Valle Nacional Chinantec (cvn)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "cya",
       "Nopala Chatino",
       "Nopala Chatino (cya)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "cyb",
@@ -1109,10 +1121,16 @@
       "Mesoamerica_Andes_Amazonia"
     ],
     [
+      "cym",
+      "Welsh",
+      "Welsh (cym)",
+      "Mesoamerica_Andes_Amazonia"
+    ],
+    [
       "czn",
       "Zenzontepec Chatino",
       "Zenzontepec Chatino (czn)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "des",
@@ -1160,7 +1178,7 @@
       "emp",
       "Northern Emberá",
       "Northern Emberá (emp)",
-      "Andes,Amazonas,Chaco"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "enl",
@@ -1199,12 +1217,6 @@
       "Mesoamerica_Andes_Amazonia"
     ],
     [
-      "gac",
-      "Mixed Great Andamanese",
-      "Mixed Great Andamanese (gac)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
-    ],
-    [
       "gae",
       "Guarequena",
       "Guarequena (gae)",
@@ -1223,10 +1235,16 @@
       "Mesoamerica_Andes_Amazonia"
     ],
     [
+      "gct",
+      "Colonia Tovar German",
+      "Colonia Tovar German (gct)",
+      "Mesoamerica_Andes_Amazonia"
+    ],
+    [
       "gnw",
       "Western Bolivian Guaraní",
       "Western Bolivian Guaraní (gnw)",
-      "Andes,Amazonas,Chaco"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "gob",
@@ -1238,7 +1256,7 @@
       "grn",
       "Guarani",
       "Guarani (grn)",
-      "Andes,Amazonas,Chaco"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "gsm",
@@ -1268,7 +1286,7 @@
       "gug",
       "Paraguayan Guaraní",
       "Paraguayan Guaraní (gug)",
-      "Andes,Amazonas,Chaco"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "guh",
@@ -1280,7 +1298,7 @@
       "gui",
       "Eastern Bolivian Guaraní",
       "Eastern Bolivian Guaraní (gui)",
-      "Andes,Amazonas,Chaco"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "gum",
@@ -1292,7 +1310,7 @@
       "gun",
       "Mbyá Guaraní",
       "Mbyá Guaraní (gun)",
-      "Andes,Amazonas,Chaco"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "guo",
@@ -1316,7 +1334,7 @@
       "guu",
       "Yanomamö",
       "Yanomamö (guu)",
-      "Highlands,Peten,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "gva",
@@ -1370,12 +1388,18 @@
       "hch",
       "Huichol",
       "Huichol (hch)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "hds",
       "Honduras Sign Language",
       "Honduras Sign Language (hds)",
+      "Mesoamerica_Andes_Amazonia"
+    ],
+    [
+      "hir",
+      "Himarimã",
+      "Himarimã (hir)",
       "Mesoamerica_Andes_Amazonia"
     ],
     [
@@ -1544,13 +1568,13 @@
       "ixl",
       "Ixil",
       "Ixil (ixl)",
-      "Highlands,Peten,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "jaa",
       "Jamamadí",
       "Jamamadí (jaa)",
-      "Highlands,Peten,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "jac",
@@ -1592,7 +1616,7 @@
       "jiv",
       "Shuar",
       "Shuar (jiv)",
-      "Andes,Amazonas,Chaco"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "jls",
@@ -1604,7 +1628,7 @@
       "jmx",
       "Western Juxtlahuaca Mixtec",
       "Western Juxtlahuaca Mixtec (jmx)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "jqr",
@@ -1649,6 +1673,12 @@
       "Mesoamerica_Andes_Amazonia"
     ],
     [
+      "kav",
+      "Katukína",
+      "Katukína (kav)",
+      "Mesoamerica_Andes_Amazonia"
+    ],
+    [
       "kay",
       "Kamayurá",
       "Kamayurá (kay)",
@@ -1665,18 +1695,6 @@
       "Camsá",
       "Camsá (kbh)",
       "Mesoamerica_Andes_Amazonia"
-    ],
-    [
-      "kdf",
-      "Mamusi",
-      "Mamusi (kdf)",
-      "Highlands,Peten,Chiapas"
-    ],
-    [
-      "kdi",
-      "Kumam",
-      "Kumam (kdi)",
-      "Highlands,Peten,Chiapas"
     ],
     [
       "kek",
@@ -1706,7 +1724,7 @@
       "kjb",
       "Q'anjob'al",
       "Q'anjob'al (kjb)",
-      "Highlands,Peten,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "klb",
@@ -1730,6 +1748,12 @@
       "knm",
       "Kanamarí",
       "Kanamarí (knm)",
+      "Mesoamerica_Andes_Amazonia"
+    ],
+    [
+      "knt",
+      "Panoan Katukína",
+      "Panoan Katukína (knt)",
       "Mesoamerica_Andes_Amazonia"
     ],
     [
@@ -1874,31 +1898,31 @@
       "maa",
       "San Jerónimo Tecóatl Mazatec",
       "San Jerónimo Tecóatl Mazatec (maa)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "mab",
       "Yutanduchi Mixtec",
       "Yutanduchi Mixtec (mab)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "maj",
       "Jalapa De Díaz Mazatec",
       "Jalapa De Díaz Mazatec (maj)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "mam",
       "Mam",
       "Mam (mam)",
-      "Highlands,Peten,Chiapas"
+      "Highlands,Huehuetenango,Baja_Verapaz"
     ],
     [
       "maq",
       "Chiquihuitlán Mazatec",
       "Chiquihuitlán Mazatec (maq)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "mat",
@@ -1910,19 +1934,13 @@
       "mau",
       "Huautla Mazatec",
       "Huautla Mazatec (mau)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "mav",
       "Sateré-Mawé",
       "Sateré-Mawé (mav)",
       "Mesoamerica_Andes_Amazonia"
-    ],
-    [
-      "maw",
-      "Mampruli",
-      "Mampruli (maw)",
-      "Highlands,Peten,Chiapas"
     ],
     [
       "maz",
@@ -1955,6 +1973,12 @@
       "Mesoamerica_Andes_Amazonia"
     ],
     [
+      "mbp",
+      "Malayo",
+      "Malayo (mbp)",
+      "Mesoamerica_Andes_Amazonia"
+    ],
+    [
       "mbr",
       "Nukak Makú",
       "Nukak Makú (mbr)",
@@ -1964,7 +1988,7 @@
       "mbz",
       "Amoltepec Mixtec",
       "Amoltepec Mixtec (mbz)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "mca",
@@ -1976,7 +2000,7 @@
       "mcb",
       "Machiguenga",
       "Machiguenga (mcb)",
-      "Sepik_Highlands_Pacific"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "mcd",
@@ -1988,7 +2012,7 @@
       "mce",
       "Itundujia Mixtec",
       "Itundujia Mixtec (mce)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "mcf",
@@ -2012,31 +2036,13 @@
       "mco",
       "Coatlán Mixe",
       "Coatlán Mixe (mco)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
-    ],
-    [
-      "mcs",
-      "Mambai",
-      "Mambai (mcs)",
-      "Highlands,Peten,Chiapas"
-    ],
-    [
-      "mcu",
-      "Cameroon Mambila",
-      "Cameroon Mambila (mcu)",
-      "Highlands,Peten,Chiapas"
-    ],
-    [
-      "mdi",
-      "Mamvu",
-      "Mamvu (mdi)",
-      "Highlands,Peten,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "mdv",
       "Santa Lucía Monteverde Mixtec",
       "Santa Lucía Monteverde Mixtec (mdv)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "mdz",
@@ -2048,7 +2054,7 @@
       "meh",
       "Southwestern Tlaxiaco Mixtec",
       "Southwestern Tlaxiaco Mixtec (meh)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "mfs",
@@ -2063,28 +2069,10 @@
       "Mesoamerica_Andes_Amazonia"
     ],
     [
-      "mgm",
-      "Mambae",
-      "Mambae (mgm)",
-      "Highlands,Peten,Chiapas"
-    ],
-    [
-      "mgr",
-      "Mambwe-Lungu",
-      "Mambwe-Lungu (mgr)",
-      "Highlands,Peten,Chiapas"
-    ],
-    [
       "mhc",
       "Mocho",
       "Mocho (mhc)",
       "Mesoamerica_Andes_Amazonia"
-    ],
-    [
-      "mhf",
-      "Mamaa",
-      "Mamaa (mhf)",
-      "Highlands,Peten,Chiapas"
     ],
     [
       "mht",
@@ -2096,55 +2084,55 @@
       "mib",
       "Atatláhuca Mixtec",
       "Atatláhuca Mixtec (mib)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "mie",
       "Ocotepec Mixtec",
       "Ocotepec Mixtec (mie)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "mig",
       "San Miguel El Grande Mixtec",
       "San Miguel El Grande Mixtec (mig)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "mih",
       "Chayuco Mixtec",
       "Chayuco Mixtec (mih)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "mii",
       "Chigmecatitlán Mixtec",
       "Chigmecatitlán Mixtec (mii)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "mil",
       "Peñoles Mixtec",
       "Peñoles Mixtec (mil)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "mim",
       "Alacatlatzala Mixtec",
       "Alacatlatzala Mixtec (mim)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "mio",
       "Pinotepa Nacional Mixtec",
       "Pinotepa Nacional Mixtec (mio)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "mip",
       "Apasco-Apoala Mixtec",
       "Apasco-Apoala Mixtec (mip)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "miq",
@@ -2156,61 +2144,55 @@
       "mir",
       "Isthmus Mixe",
       "Isthmus Mixe (mir)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "mit",
       "Southern Puebla Mixtec",
       "Southern Puebla Mixtec (mit)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "miu",
       "Cacaloxtepec Mixtec",
       "Cacaloxtepec Mixtec (miu)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "mix",
       "Mixtepec Mixtec",
       "Mixtepec Mixtec (mix)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "miy",
       "Ayutla Mixtec",
       "Ayutla Mixtec (miy)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "miz",
       "Coatzospan Mixtec",
       "Coatzospan Mixtec (miz)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "mjc",
       "San Juan Colorado Mixtec",
       "San Juan Colorado Mixtec (mjc)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "mks",
       "Silacayoapan Mixtec",
       "Silacayoapan Mixtec (mks)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "mlg",
       "Malagasy",
       "Malagasy (mlg)",
       "Mesoamerica_Andes_Amazonia"
-    ],
-    [
-      "mma",
-      "Mama",
-      "Mama (mma)",
-      "Highlands,Peten,Chiapas"
     ],
     [
       "mmc",
@@ -2223,12 +2205,6 @@
       "Mehináku",
       "Mehináku (mmh)",
       "Mesoamerica_Andes_Amazonia"
-    ],
-    [
-      "mmn",
-      "Mamanwa",
-      "Mamanwa (mmn)",
-      "Highlands,Peten,Chiapas"
     ],
     [
       "mnd",
@@ -2246,7 +2222,7 @@
       "mop",
       "Mopán Maya",
       "Mopán Maya (mop)",
-      "Highlands,Peten,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "mot",
@@ -2255,10 +2231,16 @@
       "Mesoamerica_Andes_Amazonia"
     ],
     [
+      "mpd",
+      "Machinere",
+      "Machinere (mpd)",
+      "Mesoamerica_Andes_Amazonia"
+    ],
+    [
       "mpm",
       "Yosondúa Mixtec",
       "Yosondúa Mixtec (mpm)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "mpq",
@@ -2282,31 +2264,19 @@
       "mqh",
       "Tlazoyaltepec Mixtec",
       "Tlazoyaltepec Mixtec (mqh)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
-    ],
-    [
-      "mqj",
-      "Mamasa",
-      "Mamasa (mqj)",
-      "Highlands,Peten,Chiapas"
-    ],
-    [
-      "mqx",
-      "Mamuju",
-      "Mamuju (mqx)",
-      "Highlands,Peten,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "msd",
       "Yucatec Maya Sign Language",
       "Yucatec Maya Sign Language (msd)",
-      "Highlands,Peten,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "mto",
       "Totontepec Mixe",
       "Totontepec Mixe (mto)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "mtp",
@@ -2324,13 +2294,13 @@
       "mtu",
       "Tututepec Mixtec",
       "Tututepec Mixtec (mtu)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "mtx",
       "Tidaá Mixtec",
       "Tidaá Mixtec (mtx)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "mue",
@@ -2339,16 +2309,10 @@
       "Mesoamerica_Andes_Amazonia"
     ],
     [
-      "mvd",
-      "Mamboru",
-      "Mamboru (mvd)",
-      "Highlands,Peten,Chiapas"
-    ],
-    [
       "mvg",
       "Yucuañe Mixtec",
       "Yucuañe Mixtec (mvg)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "mvm",
@@ -2372,55 +2336,49 @@
       "mxa",
       "Northwest Oaxaca Mixtec",
       "Northwest Oaxaca Mixtec (mxa)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "mxb",
       "Tezoatlán Mixtec",
       "Tezoatlán Mixtec (mxb)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "mxp",
       "Tlahuitoltepec Mixe",
       "Tlahuitoltepec Mixe (mxp)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "mxq",
       "Juquila Mixe",
       "Juquila Mixe (mxq)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "mxs",
       "Huitepec Mixtec",
       "Huitepec Mixtec (mxs)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "mxt",
       "Jamiltepec Mixtec",
       "Jamiltepec Mixtec (mxt)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "mxv",
       "Metlatónoc Mixtec",
       "Metlatónoc Mixtec (mxv)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "mxy",
       "Southeastern Nochixtlán Mixtec",
       "Southeastern Nochixtlán Mixtec (mxy)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
-    ],
-    [
-      "myk",
-      "Mamara Senoufo",
-      "Mamara Senoufo (myk)",
-      "Highlands,Peten,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "myp",
@@ -2450,7 +2408,7 @@
       "mza",
       "Santa María Zacatepec Mixtec",
       "Santa María Zacatepec Mixtec (mza)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "mzh",
@@ -2462,19 +2420,13 @@
       "mzi",
       "Ixcatlán Mazatec",
       "Ixcatlán Mazatec (mzi)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
-    ],
-    [
-      "mzk",
-      "Nigeria Mambila",
-      "Nigeria Mambila (mzk)",
-      "Highlands,Peten,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "mzl",
       "Mazatlán Mixe",
       "Mazatlán Mixe (mzl)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "mzp",
@@ -2510,31 +2462,25 @@
       "naz",
       "Coatepec Nahuatl",
       "Coatepec Nahuatl (naz)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
-    ],
-    [
-      "nbv",
-      "Ngamambo",
-      "Ngamambo (nbv)",
-      "Highlands,Peten,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "nch",
       "Central Huasteca Nahuatl",
       "Central Huasteca Nahuatl (nch)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "ncj",
       "Northern Puebla Nahuatl",
       "Northern Puebla Nahuatl (ncj)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "ncl",
       "Michoacán Nahuatl",
       "Michoacán Nahuatl (ncl)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "ncs",
@@ -2546,19 +2492,19 @@
       "ncx",
       "Central Puebla Nahuatl",
       "Central Puebla Nahuatl (ncx)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "neq",
       "North Central Mixe",
       "North Central Mixe (neq)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "ngu",
       "Guerrero Nahuatl",
       "Guerrero Nahuatl (ngu)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "nhd",
@@ -2570,85 +2516,85 @@
       "nhe",
       "Eastern Huasteca Nahuatl",
       "Eastern Huasteca Nahuatl (nhe)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "nhg",
       "Tetelcingo Nahuatl",
       "Tetelcingo Nahuatl (nhg)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "nhi",
       "Zacatlán-Ahuacatlán-Tepetzintla Nahuatl",
       "Zacatlán-Ahuacatlán-Tepetzintla Nahuatl (nhi)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "nhk",
       "Isthmus-Cosoleacaque Nahuatl",
       "Isthmus-Cosoleacaque Nahuatl (nhk)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "nhm",
       "Morelos Nahuatl",
       "Morelos Nahuatl (nhm)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "nhn",
       "Central Nahuatl",
       "Central Nahuatl (nhn)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "nhp",
       "Isthmus-Pajapan Nahuatl",
       "Isthmus-Pajapan Nahuatl (nhp)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "nhq",
       "Huaxcaleca Nahuatl",
       "Huaxcaleca Nahuatl (nhq)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "nht",
       "Ometepec Nahuatl",
       "Ometepec Nahuatl (nht)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "nhv",
       "Temascaltepec Nahuatl",
       "Temascaltepec Nahuatl (nhv)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "nhw",
       "Western Huasteca Nahuatl",
       "Western Huasteca Nahuatl (nhw)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "nhx",
       "Isthmus-Mecayapan Nahuatl",
       "Isthmus-Mecayapan Nahuatl (nhx)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "nhy",
       "Northern Oaxaca Nahuatl",
       "Northern Oaxaca Nahuatl (nhy)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "nhz",
       "Santa María La Alta Nahuatl",
       "Santa María La Alta Nahuatl (nhz)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "njt",
@@ -2657,16 +2603,10 @@
       "Mesoamerica_Andes_Amazonia"
     ],
     [
-      "nju",
-      "Ngadjunmaya",
-      "Ngadjunmaya (nju)",
-      "Highlands,Peten,Chiapas"
-    ],
-    [
       "nlv",
       "Orizaba Nahuatl",
       "Orizaba Nahuatl (nlv)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "noa",
@@ -2684,31 +2624,31 @@
       "not",
       "Nomatsiguenga",
       "Nomatsiguenga (not)",
-      "Sepik_Highlands_Pacific"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "npl",
       "Southeastern Puebla Nahuatl",
       "Southeastern Puebla Nahuatl (npl)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "nsu",
       "Sierra Negra Nahuatl",
       "Sierra Negra Nahuatl (nsu)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "ntp",
       "Northern Tepehuan",
       "Northern Tepehuan (ntp)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "nuz",
       "Tlamacazapa Nahuatl",
       "Tlamacazapa Nahuatl (nuz)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "oca",
@@ -2735,6 +2675,12 @@
       "Mesoamerica_Andes_Amazonia"
     ],
     [
+      "ood",
+      "Tohono O'odham",
+      "Tohono O'odham (ood)",
+      "Mesoamerica_Andes_Amazonia"
+    ],
+    [
       "opy",
       "Ofayé",
       "Ofayé (opy)",
@@ -2756,55 +2702,55 @@
       "ote",
       "Mezquital Otomi",
       "Mezquital Otomi (ote)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "otl",
       "Tilapa Otomi",
       "Tilapa Otomi (otl)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "otm",
       "Eastern Highland Otomi",
       "Eastern Highland Otomi (otm)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "otn",
       "Tenango Otomi",
       "Tenango Otomi (otn)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "otq",
       "Querétaro Otomi",
       "Querétaro Otomi (otq)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "ots",
       "Estado de México Otomi",
       "Estado de México Otomi (ots)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "ott",
       "Temoaya Otomi",
       "Temoaya Otomi (ott)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "otx",
       "Texcatepec Otomi",
       "Texcatepec Otomi (otx)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "otz",
       "Ixtenco Otomi",
       "Ixtenco Otomi (otz)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "oym",
@@ -2870,13 +2816,13 @@
       "pbe",
       "Mezontla Popoloca",
       "Mezontla Popoloca (pbe)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "pbf",
       "Coyotepec Popoloca",
       "Coyotepec Popoloca (pbf)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "pbh",
@@ -2888,7 +2834,7 @@
       "pbm",
       "Puebla Mazatec",
       "Puebla Mazatec (pbm)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "pbs",
@@ -2900,7 +2846,7 @@
       "pca",
       "Santa Inés Ahuatempan Popoloca",
       "Santa Inés Ahuatempan Popoloca (pca)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "pcp",
@@ -2924,6 +2870,12 @@
       "pia",
       "Pima Bajo",
       "Pima Bajo (pia)",
+      "Mesoamerica_Andes_Amazonia"
+    ],
+    [
+      "pib",
+      "Yine",
+      "Yine (pib)",
       "Mesoamerica_Andes_Amazonia"
     ],
     [
@@ -2972,7 +2924,7 @@
       "pls",
       "San Marcos Tlacoyalco Popoloca",
       "San Marcos Tlacoyalco Popoloca (pls)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "plu",
@@ -2996,19 +2948,19 @@
       "poc",
       "Poqomam",
       "Poqomam (poc)",
-      "Highlands,Peten,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "poe",
       "San Juan Atzingo Popoloca",
       "San Juan Atzingo Popoloca (poe)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "poh",
       "Poqomchi'",
       "Poqomchi' (poh)",
-      "Highlands,Peten,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "poi",
@@ -3038,7 +2990,7 @@
       "pow",
       "San Felipe Otlaltepec Popoloca",
       "San Felipe Otlaltepec Popoloca (pow)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "ppi",
@@ -3056,7 +3008,7 @@
       "pps",
       "San Luís Temalacayuca Popoloca",
       "San Luís Temalacayuca Popoloca (pps)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "prl",
@@ -3116,7 +3068,7 @@
       "pxm",
       "Quetzaltepec Mixe",
       "Quetzaltepec Mixe (pxm)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "pyn",
@@ -3152,13 +3104,13 @@
       "que",
       "Quechua",
       "Quechua (que)",
-      "Andes,Amazonas,Chaco"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "quf",
       "Lambayeque Quechua",
       "Lambayeque Quechua (quf)",
-      "Andes,Amazonas,Chaco"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "qug",
@@ -3176,13 +3128,13 @@
       "quk",
       "Chachapoyas Quechua",
       "Chachapoyas Quechua (quk)",
-      "Andes,Amazonas,Chaco"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "qul",
       "North Bolivian Quechua",
       "North Bolivian Quechua (qul)",
-      "Andes,Amazonas,Chaco"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "qum",
@@ -3200,7 +3152,7 @@
       "qur",
       "Yanahuanca Pasco Quechua",
       "Yanahuanca Pasco Quechua (qur)",
-      "Andes,Amazonas,Chaco"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "qus",
@@ -3443,18 +3395,6 @@
       "Mesoamerica_Andes_Amazonia"
     ],
     [
-      "rmx",
-      "Romam",
-      "Romam (rmx)",
-      "Highlands,Peten,Chiapas"
-    ],
-    [
-      "ryn",
-      "Northern Amami-Oshima",
-      "Northern Amami-Oshima (ryn)",
-      "Highlands,Peten,Chiapas"
-    ],
-    [
       "sab",
       "Buglere",
       "Buglere (sab)",
@@ -3494,7 +3434,7 @@
       "shp",
       "Shipibo-Conibo",
       "Shipibo-Conibo (shp)",
-      "Andes,Amazonas,Chaco"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "sik",
@@ -3599,16 +3539,10 @@
       "Mesoamerica_Andes_Amazonia"
     ],
     [
-      "sym",
-      "Maya Samo",
-      "Maya Samo (sym)",
-      "Highlands,Peten,Chiapas"
-    ],
-    [
       "tac",
       "Lowland Tarahumara",
       "Lowland Tarahumara (tac)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "tae",
@@ -3626,7 +3560,7 @@
       "tar",
       "Central Tarahumara",
       "Central Tarahumara (tar)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "tav",
@@ -3662,19 +3596,19 @@
       "tcu",
       "Southeastern Tarahumara",
       "Southeastern Tarahumara (tcu)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "tcw",
       "Tecpatlán Totonac",
       "Tecpatlán Totonac (tcw)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "tdc",
       "Emberá-Tadó",
       "Emberá-Tadó (tdc)",
-      "Andes,Amazonas,Chaco"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "tdm",
@@ -3686,7 +3620,7 @@
       "tee",
       "Huehuetla Tepehua",
       "Huehuetla Tepehua (tee)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "teh",
@@ -3716,7 +3650,7 @@
       "thh",
       "Northern Tarahumara",
       "Northern Tarahumara (thh)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "tit",
@@ -3728,25 +3662,25 @@
       "tku",
       "Upper Necaxa Totonac",
       "Upper Necaxa Totonac (tku)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "tla",
       "Southwestern Tepehuan",
       "Southwestern Tepehuan (tla)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "tlc",
       "Yecuatla Totonac",
       "Yecuatla Totonac (tlc)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "tlp",
       "Filomena Mata-Coahuitlán Totonac",
       "Filomena Mata-Coahuitlán Totonac (tlp)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "tmf",
@@ -3779,6 +3713,12 @@
       "Mesoamerica_Andes_Amazonia"
     ],
     [
+      "tno",
+      "Toromono",
+      "Toromono (tno)",
+      "Mesoamerica_Andes_Amazonia"
+    ],
+    [
       "tob",
       "Toba",
       "Toba (tob)",
@@ -3788,7 +3728,7 @@
       "toc",
       "Coyutla Totonac",
       "Coyutla Totonac (toc)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "toj",
@@ -3800,19 +3740,19 @@
       "too",
       "Xicotepec De Juárez Totonac",
       "Xicotepec De Juárez Totonac (too)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "top",
       "Papantla Totonac",
       "Papantla Totonac (top)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "tos",
       "Highland Totonac",
       "Highland Totonac (tos)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "tpc",
@@ -3836,7 +3776,7 @@
       "tpp",
       "Pisaflores Tepehua",
       "Pisaflores Tepehua (tpp)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "tpr",
@@ -3848,7 +3788,7 @@
       "tpt",
       "Tlachichilco Tepehua",
       "Tlachichilco Tepehua (tpt)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "tpx",
@@ -3872,13 +3812,13 @@
       "tqt",
       "Western Totonac",
       "Western Totonac (tqt)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "trc",
       "Copala Triqui",
       "Copala Triqui (trc)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "trf",
@@ -3902,7 +3842,7 @@
       "trq",
       "San Martín Itunyoso Triqui",
       "San Martín Itunyoso Triqui (trq)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "trr",
@@ -3914,7 +3854,7 @@
       "trs",
       "Chicahuaxtla Triqui",
       "Chicahuaxtla Triqui (trs)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "tsz",
@@ -3956,7 +3896,7 @@
       "twr",
       "Southwestern Tarahumara",
       "Southwestern Tarahumara (twr)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "txi",
@@ -3968,7 +3908,7 @@
       "txu",
       "Kayapó",
       "Kayapó (txu)",
-      "Andes,Amazonas,Chaco"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "tzh",
@@ -3980,7 +3920,7 @@
       "tzj",
       "Tz'utujil",
       "Tz'utujil (tzj)",
-      "Highlands,Peten,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "tzo",
@@ -4070,49 +4010,49 @@
       "vmc",
       "Juxtlahuaca Mixtec",
       "Juxtlahuaca Mixtec (vmc)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "vmj",
       "Ixtayutla Mixtec",
       "Ixtayutla Mixtec (vmj)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "vmm",
       "Mitlatongo Mixtec",
       "Mitlatongo Mixtec (vmm)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "vmp",
       "Soyaltepec Mazatec",
       "Soyaltepec Mazatec (vmp)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "vmq",
       "Soyaltepec Mixtec",
       "Soyaltepec Mixtec (vmq)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "vmx",
       "Tamazola Mixtec",
       "Tamazola Mixtec (vmx)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "vmy",
       "Ayautla Mazatec",
       "Ayautla Mazatec (vmy)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "vmz",
       "Mazatlán Mazatec",
       "Mazatlán Mazatec (vmz)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "vsl",
@@ -4166,7 +4106,7 @@
       "wmd",
       "Mamaindé",
       "Mamaindé (wmd)",
-      "Highlands,Peten,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "wpc",
@@ -4217,12 +4157,6 @@
       "Mesoamerica_Andes_Amazonia"
     ],
     [
-      "xmy",
-      "Mayaguduna",
-      "Mayaguduna (xmy)",
-      "Highlands,Peten,Chiapas"
-    ],
-    [
       "xok",
       "Xokleng",
       "Xokleng (xok)",
@@ -4268,73 +4202,73 @@
       "xta",
       "Alcozauca Mixtec",
       "Alcozauca Mixtec (xta)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "xtb",
       "Chazumba Mixtec",
       "Chazumba Mixtec (xtb)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "xtd",
       "Diuxi-Tilantongo Mixtec",
       "Diuxi-Tilantongo Mixtec (xtd)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "xti",
       "Sinicahua Mixtec",
       "Sinicahua Mixtec (xti)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "xtj",
       "San Juan Teita Mixtec",
       "San Juan Teita Mixtec (xtj)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "xtl",
       "Tijaltepec Mixtec",
       "Tijaltepec Mixtec (xtl)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "xtm",
       "Magdalena Peñasco Mixtec",
       "Magdalena Peñasco Mixtec (xtm)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "xtn",
       "Northern Tlaxiaco Mixtec",
       "Northern Tlaxiaco Mixtec (xtn)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "xtp",
       "San Miguel Piedras Mixtec",
       "San Miguel Piedras Mixtec (xtp)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "xts",
       "Sindihui Mixtec",
       "Sindihui Mixtec (xts)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "xtt",
       "Tacahua Mixtec",
       "Tacahua Mixtec (xtt)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "xtu",
       "Cuyamecalco Mixtec",
       "Cuyamecalco Mixtec (xtu)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "xtw",
@@ -4346,13 +4280,13 @@
       "xty",
       "Yoloxochitl Mixtec",
       "Yoloxochitl Mixtec (xty)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
-      "xwr",
-      "Kwerba Mamberamo",
-      "Kwerba Mamberamo (xwr)",
-      "Highlands,Peten,Chiapas"
+      "xwa",
+      "Kwaza",
+      "Kwaza (xwa)",
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "yaa",
@@ -4388,7 +4322,7 @@
       "yan",
       "Mayangna",
       "Mayangna (yan)",
-      "Highlands,Peten,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "yaq",
@@ -4421,10 +4355,16 @@
       "Mesoamerica_Andes_Amazonia"
     ],
     [
+      "ydd",
+      "Eastern Yiddish",
+      "Eastern Yiddish (ydd)",
+      "Mesoamerica_Andes_Amazonia"
+    ],
+    [
       "yrl",
       "Nhengatu",
       "Nhengatu (yrl)",
-      "Sepik_Highlands_Pacific"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "yro",
@@ -4472,301 +4412,301 @@
       "zaa",
       "Sierra de Juárez Zapotec",
       "Sierra de Juárez Zapotec (zaa)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "zab",
       "Western Tlacolula Valley Zapotec",
       "Western Tlacolula Valley Zapotec (zab)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "zac",
       "Ocotlán Zapotec",
       "Ocotlán Zapotec (zac)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "zad",
       "Cajonos Zapotec",
       "Cajonos Zapotec (zad)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "zae",
       "Yareni Zapotec",
       "Yareni Zapotec (zae)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "zaf",
       "Ayoquesco Zapotec",
       "Ayoquesco Zapotec (zaf)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "zai",
       "Isthmus Zapotec",
       "Isthmus Zapotec (zai)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "zam",
       "Miahuatlán Zapotec",
       "Miahuatlán Zapotec (zam)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "zao",
       "Ozolotepec Zapotec",
       "Ozolotepec Zapotec (zao)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "zap",
       "Zapotec",
       "Zapotec (zap)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "zaq",
       "Aloápam Zapotec",
       "Aloápam Zapotec (zaq)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "zar",
       "Rincón Zapotec",
       "Rincón Zapotec (zar)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "zas",
       "Santo Domingo Albarradas Zapotec",
       "Santo Domingo Albarradas Zapotec (zas)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "zat",
       "Tabaa Zapotec",
       "Tabaa Zapotec (zat)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "zav",
       "Yatzachi Zapotec",
       "Yatzachi Zapotec (zav)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "zaw",
       "Mitla Zapotec",
       "Mitla Zapotec (zaw)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "zax",
       "Xadani Zapotec",
       "Xadani Zapotec (zax)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "zca",
       "Coatecas Altas Zapotec",
       "Coatecas Altas Zapotec (zca)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "zoc",
       "Copainalá Zoque",
       "Copainalá Zoque (zoc)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "zoh",
       "Chimalapa Zoque",
       "Chimalapa Zoque (zoh)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "zoo",
       "Asunción Mixtepec Zapotec",
       "Asunción Mixtepec Zapotec (zoo)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "zoq",
       "Tabasco Zoque",
       "Tabasco Zoque (zoq)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "zor",
       "Rayón Zoque",
       "Rayón Zoque (zor)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "zos",
       "Francisco León Zoque",
       "Francisco León Zoque (zos)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "zpa",
       "Lachiguiri Zapotec",
       "Lachiguiri Zapotec (zpa)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "zpb",
       "Yautepec Zapotec",
       "Yautepec Zapotec (zpb)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "zpc",
       "Choapan Zapotec",
       "Choapan Zapotec (zpc)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "zpd",
       "Southeastern Ixtlán Zapotec",
       "Southeastern Ixtlán Zapotec (zpd)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "zpe",
       "Petapa Zapotec",
       "Petapa Zapotec (zpe)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "zpf",
       "San Pedro Quiatoni Zapotec",
       "San Pedro Quiatoni Zapotec (zpf)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "zpg",
       "Guevea De Humboldt Zapotec",
       "Guevea De Humboldt Zapotec (zpg)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "zph",
       "Totomachapan Zapotec",
       "Totomachapan Zapotec (zph)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "zpi",
       "Santa María Quiegolani Zapotec",
       "Santa María Quiegolani Zapotec (zpi)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "zpj",
       "Quiavicuzas Zapotec",
       "Quiavicuzas Zapotec (zpj)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "zpk",
       "Tlacolulita Zapotec",
       "Tlacolulita Zapotec (zpk)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "zpl",
       "Lachixío Zapotec",
       "Lachixío Zapotec (zpl)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "zpm",
       "Mixtepec Zapotec",
       "Mixtepec Zapotec (zpm)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "zpn",
       "Santa Inés Yatzechi Zapotec",
       "Santa Inés Yatzechi Zapotec (zpn)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "zpo",
       "Amatlán Zapotec",
       "Amatlán Zapotec (zpo)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "zpp",
       "El Alto Zapotec",
       "El Alto Zapotec (zpp)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "zpq",
       "Zoogocho Zapotec",
       "Zoogocho Zapotec (zpq)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "zpr",
       "Santiago Xanica Zapotec",
       "Santiago Xanica Zapotec (zpr)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "zps",
       "Coatlán Zapotec",
       "Coatlán Zapotec (zps)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "zpt",
       "San Vicente Coatlán Zapotec",
       "San Vicente Coatlán Zapotec (zpt)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "zpu",
       "Yalálag Zapotec",
       "Yalálag Zapotec (zpu)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "zpv",
       "Chichicapan Zapotec",
       "Chichicapan Zapotec (zpv)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "zpw",
       "Zaniza Zapotec",
       "Zaniza Zapotec (zpw)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "zpx",
       "San Baltazar Loxicha Zapotec",
       "San Baltazar Loxicha Zapotec (zpx)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "zpy",
       "Mazaltepec Zapotec",
       "Mazaltepec Zapotec (zpy)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "zpz",
       "Texmelucan Zapotec",
       "Texmelucan Zapotec (zpz)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "zro",
@@ -4778,85 +4718,79 @@
       "zsr",
       "Southern Rincon Zapotec",
       "Southern Rincon Zapotec (zsr)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "zte",
       "Elotepec Zapotec",
       "Elotepec Zapotec (zte)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "ztg",
       "Xanaguía Zapotec",
       "Xanaguía Zapotec (ztg)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "ztl",
       "Lapaguía-Guivini Zapotec",
       "Lapaguía-Guivini Zapotec (ztl)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "ztm",
       "San Agustín Mixtepec Zapotec",
       "San Agustín Mixtepec Zapotec (ztm)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "ztn",
       "Santa Catarina Albarradas Zapotec",
       "Santa Catarina Albarradas Zapotec (ztn)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "ztp",
       "Loxicha Zapotec",
       "Loxicha Zapotec (ztp)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "ztq",
       "Quioquitani-Quierí Zapotec",
       "Quioquitani-Quierí Zapotec (ztq)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "zts",
       "Tilquiapan Zapotec",
       "Tilquiapan Zapotec (zts)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "ztt",
       "Tejalapan Zapotec",
       "Tejalapan Zapotec (ztt)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "ztu",
       "Güilá Zapotec",
       "Güilá Zapotec (ztu)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "ztx",
       "Zaachila Zapotec",
       "Zaachila Zapotec (ztx)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ],
     [
       "zty",
       "Yatee Zapotec",
       "Yatee Zapotec (zty)",
-      "Oaxaca,Guerrero,Puebla,Veracruz,Chiapas"
-    ],
-    [
-      "zuy",
-      "Zumaya",
-      "Zumaya (zuy)",
-      "Highlands,Peten,Chiapas"
+      "Mesoamerica_Andes_Amazonia"
     ]
   ]
 }
