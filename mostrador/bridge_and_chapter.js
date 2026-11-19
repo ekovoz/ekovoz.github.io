@@ -23,6 +23,7 @@ import {
   resolveMasoreticPericopeBreaks,
 } from "./evangelios.js";
 import { formatLocalizedNumeralWeb, isRtlLocale } from "./i18n.js";
+import { lookupIso639MacroRegionO1 } from "./lang_funnel.js";
 import {
   ReverseOrthographyMap,
   resolveCanonicalOrthoProfileId,
@@ -462,6 +463,58 @@ const VERIFIED_EKPACK_HUMAN_20 = new Set([
   "zh",
 ]);
 
+const CANONICAL_66_BOOKS_ORDER = [
+  "GEN","EXO","LEV","NUM","DEU","JOS","JDG","RUT","1SA","2SA","1KI","2KI","1CH","2CH","EZR","NEH","EST","JOB","PSA","PRO","ECC","SNG","ISA","JER","LAM","EZK","DAN","HOS","JOL","AMO","OBA","JON","MIC","NAM","HAB","ZEP","HAG","ZEC","MAL",
+  "MAT","MRK","LUK","JHN","ACT","ROM","1CO","2CO","GAL","EPH","PHP","COL","1TH","2TH","1TI","2TI","TIT","PHM","HEB","JAS","1PE","2PE","1JN","2JN","3JN","JUD","REV",
+];
+const CANONICAL_66_BOOK_INDEX = new Map(CANONICAL_66_BOOKS_ORDER.map((c, idx) => [c, idx]));
+
+/**
+ * Desempaqueta en O(1) los 2 bits epistémicos (`0=Tier0, 1=Tier1 Humano, 2=Tier2 Sint/Taller, 3=Tier4 Sin Texto`)
+ * del arreglo de 17 bytes `book_epistemic_tiers` embebido en `Frame 0` (`SLICE-EKO-V2I-20`).
+ */
+export function unpackBookEpistemicTier2Bit(packed17Bytes, bookCodeOrOrd) {
+  let idx = -1;
+  if (typeof bookCodeOrOrd === "number" && Number.isInteger(bookCodeOrOrd)) {
+    idx = bookCodeOrOrd;
+  } else {
+    const code = String(bookCodeOrOrd || "").trim().toUpperCase();
+    if (CANONICAL_66_BOOK_INDEX.has(code)) idx = CANONICAL_66_BOOK_INDEX.get(code);
+  }
+  if (idx < 0 || idx >= 66) return 3;
+  if (!packed17Bytes || typeof packed17Bytes.length !== "number" || packed17Bytes.length < 17) {
+    return null;
+  }
+  const byteIdx = idx >>> 2;
+  const shift = (idx & 3) * 2;
+  return ((Number(packed17Bytes[byteIdx]) || 0) >>> shift) & 0x03;
+}
+
+/**
+ * Determina si el libro canónico actual cuenta con texto humano verificado (`0b00` o `0b01`)
+ * según `book_epistemic_tiers` (incluyendo `stp` NT `40_MAT..66_REV` y porciones `Tier 3` como `arp` `LUK`).
+ */
+export function isBookHumanVerifiedByEpistemicTier(bookCode, navResult = null, catalogEntry = null) {
+  const cleanBook = String(bookCode || navResult?.book || navResult?.chapter?.book || "").trim().toUpperCase();
+  const bookIdx = CANONICAL_66_BOOK_INDEX.has(cleanBook) ? CANONICAL_66_BOOK_INDEX.get(cleanBook) : -1;
+  if (bookIdx < 0) return false;
+  const packed =
+    navResult?.provenance?.book_epistemic_tiers ||
+    navResult?.chapter?.provenance?.book_epistemic_tiers ||
+    navResult?.bookEpistemicTiers ||
+    catalogEntry?.bookEpistemicTiers ||
+    null;
+  const bits = unpackBookEpistemicTier2Bit(packed, bookIdx);
+  if (bits !== null) {
+    return bits === 0 || bits === 1;
+  }
+  const lang = String(navResult?.lang || catalogEntry?.code || "").trim().toLowerCase();
+  if (lang === "stp") {
+    return bookIdx >= 39;
+  }
+  return false;
+}
+
 /**
  * Derives the Epistemic Seal key strictly from Frame 0 provenance and loaded chapter status.
  * Never hardcoded in HTML.
@@ -472,6 +525,19 @@ export function deriveEpistemicSeal(navResult, catalogEntry = null) {
   }
   const verses = navResult.chapter.verses;
   if (!verses || typeof verses !== "object" || Object.keys(verses).length === 0) {
+    return "seal.unavailable";
+  }
+  const activeBook = String(navResult.book || navResult.chapter?.book || "").trim().toUpperCase();
+  const packedTiers =
+    navResult.provenance?.book_epistemic_tiers ||
+    navResult.chapter?.provenance?.book_epistemic_tiers ||
+    navResult.bookEpistemicTiers ||
+    catalogEntry?.bookEpistemicTiers ||
+    null;
+  if (activeBook && packedTiers && packedTiers.length >= 17) {
+    const bits = unpackBookEpistemicTier2Bit(packedTiers, activeBook);
+    if (bits === 0 || bits === 1) return "seal.verified";
+    if (bits === 2) return "seal.draft_review";
     return "seal.unavailable";
   }
   const provTier = String(
@@ -489,7 +555,13 @@ export function deriveEpistemicSeal(navResult, catalogEntry = null) {
     return "seal.verified";
   }
   if (provTier === "tier2_nt_human_ot_synthesized" || provTier === "tier_2_nt_plus_ot_synth") {
+    if (activeBook && CANONICAL_66_BOOK_INDEX.has(activeBook) && CANONICAL_66_BOOK_INDEX.get(activeBook) >= 39) {
+      return "seal.verified";
+    }
     return "seal.draft_review";
+  }
+  if (provTier === "tier_3_portion_ladder" || provTier === "tier3a_dialectal_wfst_projection" || provTier === "tier3b_mdl_atomic_batch_assisted") {
+    return "seal.verified";
   }
   const draftStatus = String(
     navResult.meta?.draft_status || catalogEntry?.draft_status || ""
@@ -626,32 +698,49 @@ export function renderInteractiveVerseTokensHtml(
  */
 
 /**
- * Mapa determinista de las 10 Lenguas Puente Regionales Siglo XXI (`D7-V2`, `@req[BIB-V2-21]`):
- * `es, en, fr, pt, sw, ar, hi, id, ru, zh`.
+ * Mapa determinista de las 10 Lenguas Puente Regionales Siglo XXI (`D7-V2` + `D6-V2I`, `@req[BIB-V2-21]`):
+ * `es, en, pt, fr, ru, ar, sw, hi, zh-Hans, id` alineadas `1:1` con `R01..R12` y con `packs/<code >.ekpack`.
  */
 export const REGIONAL_BRIDGE_LANGUAGES_10 = {
   1: { code: "es", label: "Español Siglo XXI (Núcleo Vivo)" },
   2: { code: "en", label: "English 21st Century (Contemporary Bridge)" },
-  3: { code: "fr", label: "Français Contemporain" },
+  3: { code: "pt", label: "Português Contemporâneo (Puente Lusófono)" },
   4: { code: "ru", label: "Русский Современный Мост" },
   5: { code: "ru", label: "Русский / Евразийский Мост" },
   6: { code: "ar", label: "العربية المعاصرة" },
-  7: { code: "fr", label: "Français / Sahel Bridge" },
+  7: { code: "fr", label: "Français Contemporain / Sahel Bridge" },
   8: { code: "sw", label: "Kiswahili Sanifu cha Karne ya 21" },
   9: { code: "hi", label: "आधुनिक हिंदी सेतु" },
-  10: { code: "zh", label: "现代中文桥接本" },
+  10: { code: "zh-Hans", label: "现代中文桥接本" },
   11: { code: "id", label: "Bahasa Indonesia Abad ke-21" },
   12: { code: "en", label: "English Pacific Bridge" },
 };
 
-export function resolveRegionalBridgeLanguage21({ macroRegion = 1, bridgeLang = "" } = {}) {
-  const validCodes = new Set(["es", "en", "fr", "pt", "sw", "ar", "hi", "id", "ru", "zh"]);
-  const cleanOverride = String(bridgeLang || "").trim().toLowerCase();
-  if (validCodes.has(cleanOverride)) {
-    const found = Object.values(REGIONAL_BRIDGE_LANGUAGES_10).find((x) => x.code === cleanOverride);
-    return found || { code: cleanOverride, label: `Bridge (${cleanOverride.toUpperCase()})` };
+export function resolveRegionalBridgeLanguage21({ macroRegion = 0, bridgeLang = "", lang = "" } = {}) {
+  const rawOverride = String(bridgeLang || "").trim();
+  const lowerOverride = rawOverride.toLowerCase();
+  const normalizedOverride =
+    lowerOverride === "zh" || lowerOverride === "zh-hans" || lowerOverride === "cmn"
+      ? "zh-Hans"
+      : lowerOverride;
+  const validCodes = new Set(["es", "en", "fr", "pt", "sw", "ar", "hi", "id", "ru", "zh-Hans"]);
+  if (validCodes.has(normalizedOverride)) {
+    const found = Object.values(REGIONAL_BRIDGE_LANGUAGES_10).find(
+      (x) => x.code.toLowerCase() === normalizedOverride.toLowerCase(),
+    );
+    return found || { code: normalizedOverride, label: `Bridge (${normalizedOverride})` };
   }
-  return REGIONAL_BRIDGE_LANGUAGES_10[Number(macroRegion) || 1] || REGIONAL_BRIDGE_LANGUAGES_10[1];
+  let resolvedRegion = Number(macroRegion) || 0;
+  if (lang) {
+    const o1 = lookupIso639MacroRegionO1(lang);
+    if (o1.isLusophone) {
+      return REGIONAL_BRIDGE_LANGUAGES_10[3];
+    }
+    if (o1.found && (resolvedRegion < 1 || resolvedRegion > 12)) {
+      resolvedRegion = o1.macroRegionId;
+    }
+  }
+  return REGIONAL_BRIDGE_LANGUAGES_10[resolvedRegion] || REGIONAL_BRIDGE_LANGUAGES_10[1];
 }
 
 /**
@@ -680,7 +769,7 @@ export function renderDiglossicParallelBridge({
     "1TH","2TH","1TI","2TI","TIT","PHM","HEB","JAS","1PE","2PE","1JN","2JN","3JN","JUD","REV",
   ]);
   const isNt = ntBooks.has(cleanBook);
-  const bridgeSpec = resolveRegionalBridgeLanguage21({ macroRegion, bridgeLang });
+  const bridgeSpec = resolveRegionalBridgeLanguage21({ macroRegion, bridgeLang, lang });
   const verseNums = Array.from(
     new Set([...Object.keys(maternalVerses || {}), ...Object.keys(bridgeVerses || {})]),
   )

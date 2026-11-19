@@ -7,14 +7,15 @@ import { serializeMostradorRouteQuery } from "../i18n_ui.js";
 import { escapeHtml } from "./bridge_and_chapter.js";
 import { canonicalOrdinalOf } from "./canonical_versification.js";
 import {
-  STATUS,
-  decodeFrameInWasmLinearMemory,
   verifyArtifactProjectionClosure,
-  verifyAudioPcmCrc16InWasmLinearMemory,
-  verifyRaptorQBlockInWasmLinearMemory,
 } from "./data_layer.js";
 import { lookupPericopeConstructiveReceipt } from "./diachronic_register.js";
 import { computeKindlePrintBudget, renderImpositionAndLayoutPreviewHtml } from "./dosis_editions_catalog.js";
+import {
+  bindOpticalCameraAndCadenceController,
+  hydrateOpticalTxAndRxPanels,
+  stopQrBeamAutoCadenceTimer,
+} from "./drawer_share_optical_controller.js";
 import { applyHarelSubtabSelection } from "./drawer_study.js";
 import { isRtlLocale } from "./i18n.js";
 import { validateAllEightLocksPda } from "./mejorar.js";
@@ -41,19 +42,8 @@ import {
   verifyEd25519ManifestSignatureWebCrypto
 } from "./offline_mesh.js";
 import {
-  LTEncoder,
-  OPTICAL_CADENCE_PRESETS,
-  QrStreamSession,
   computeSaddleStitchImpositionPlan,
   createRelayEncoderFromDecoded,
-  decodeLubyTransformPeeling,
-  decodeQrStreamViaWasmBridge,
-  encodeDropletToMatrixGrid,
-  encodeLubyTransformDroplets,
-  renderDropletMatrixSvgOrCanvas,
-  renderOpticalReceiverRxPanelHtml,
-  runOpticalReceiverBurstSession,
-  validateNyquistOpticalFps,
   verifyManifestAndMerkleAudit,
 } from "./optical_lt.js";
 
@@ -262,7 +252,6 @@ export function hydrateShareAndAuditDrawerPanel(ctx = {}) {
         if (packBytes && packBytes.byteLength >= 32) {
           const playerWasm = dataLayer?.getHydratedWasmModule?.("ekovoz_player_wasm") || null;
           await commitVerifiedPackToIndexedDb({ lang: packLang, packBytes }, SOVEREIGN_ED25519_PUBLIC_KEY_HEX, playerWasm);
-          await verifyAndStoreEcoPack({ lang: packLang, packBytes, wasmPlayerMod: playerWasm });
         }
         hydrateShareAndAuditDrawer(targetDoc);
       });
@@ -323,7 +312,16 @@ export function hydrateShareAndAuditDrawerPanel(ctx = {}) {
       exportSneakernetBtn._sneakernetExpBound = true;
       exportSneakernetBtn.addEventListener("click", async () => {
         const packBytes = await resolvePackBytesForVault(packLang, dataLayer);
-        const channel = selectBimodalAirgapChannel(packBytes ? packBytes.byteLength : 0);
+        if (!(packBytes instanceof Uint8Array) || packBytes.byteLength < 32) {
+          exportSneakernetBtn.setAttribute("data-sneakernet-error", "missing-pack-bytes");
+          const statusPanel = getEl("editorialAuditStatusPanel", targetDoc);
+          if (statusPanel) {
+            statusPanel.hidden = false;
+            statusPanel.textContent = `⛔ No hay contenedor binario ${packLang}.ekpack descargado en bóveda para exportar.`;
+          }
+          return;
+        }
+        const channel = selectBimodalAirgapChannel(packBytes.byteLength);
         const jsonBundle = exportBundleAsFile({ lang: packLang, packBytes });
         state.lastExportedSneakernetBundle = jsonBundle;
         exportSneakernetBtn.setAttribute("data-exported-bytes", String(jsonBundle.length));
@@ -395,23 +393,39 @@ export function hydrateShareAndAuditDrawerPanel(ctx = {}) {
               : null;
           if (imported.valid && candidateBin && parseEkpackPreamble32Js(candidateBin)) {
             const playerWasm = dataLayer?.getHydratedWasmModule?.("ekovoz_player_wasm") || null;
-            await commitVerifiedPackToIndexedDb(
+            const committed = await commitVerifiedPackToIndexedDb(
               { lang: imported.lang || packLang, packBytes: candidateBin },
               SOVEREIGN_ED25519_PUBLIC_KEY_HEX,
               playerWasm,
             );
+            const verifiedOk = Boolean(committed?.verified);
+            importSneakernetInput.setAttribute("data-imported-valid", String(verifiedOk));
+            if (verifiedOk && typeof ctx.navigate === "function") {
+              await ctx.navigate({ lang: committed.lang || imported.lang || packLang }, targetDoc);
+            }
+            return;
           }
-          importSneakernetInput.setAttribute("data-imported-valid", String(imported.valid));
-          if (imported.valid && typeof ctx.navigate === "function") {
-            await ctx.navigate({ lang: imported.lang || packLang }, targetDoc);
-          }
+          importSneakernetInput.setAttribute("data-imported-valid", "false");
           return;
         }
-        const bundleStr =
-          state.lastExportedSneakernetBundle ||
-          exportBundleAsFile({ lang: packLang });
-        const imported = importBundleFromFile(bundleStr);
-        importSneakernetInput.setAttribute("data-imported-valid", String(imported.valid));
+        if (state.lastExportedSneakernetBundle) {
+          const imported = importBundleFromFile(state.lastExportedSneakernetBundle);
+          const candidateBin =
+            imported.payloadBytes instanceof Uint8Array && imported.payloadBytes.byteLength >= 32
+              ? imported.payloadBytes
+              : null;
+          if (imported.valid && candidateBin && parseEkpackPreamble32Js(candidateBin)) {
+            const playerWasm = dataLayer?.getHydratedWasmModule?.("ekovoz_player_wasm") || null;
+            const committed = await commitVerifiedPackToIndexedDb(
+              { lang: imported.lang || packLang, packBytes: candidateBin },
+              SOVEREIGN_ED25519_PUBLIC_KEY_HEX,
+              playerWasm,
+            );
+            importSneakernetInput.setAttribute("data-imported-valid", String(Boolean(committed?.verified)));
+            return;
+          }
+        }
+        importSneakernetInput.setAttribute("data-imported-valid", "false");
       });
     }
   }
@@ -427,6 +441,7 @@ export function hydrateShareAndAuditDrawerPanel(ctx = {}) {
       dBtn.addEventListener("click", () => {
         applyHarelSubtabSelection(targetDoc, "dosis", tabName);
         if (tabName !== "pdf") {
+          stopQrBeamAutoCadenceTimer(state);
           const videoEl = getEl("bibleOpticalCameraVideo", targetDoc);
           if (videoEl) videoEl.hidden = true;
         }
@@ -434,140 +449,19 @@ export function hydrateShareAndAuditDrawerPanel(ctx = {}) {
     }
   }
 
-  const qrPanel = getEl("bibleOpticalQrStreamPanel", targetDoc);
-  if (qrPanel) {
-    const verseText =
-      state.lastNavResult?.chapter?.verses?.[String(state.verse)] ||
-      `${state.book}.${state.chapter}.${state.verse}`;
-    const rawBytes = new TextEncoder().encode(
-      JSON.stringify({
-        osis: `${state.book}.${state.chapter}.${state.verse}`,
-        lang: state.lang,
-        text: verseText,
-      }),
-    );
-    const safeBlockSize = Math.max(32, Math.ceil(Math.max(1, rawBytes.byteLength) / 50));
-    const encoder = new LTEncoder(rawBytes, safeBlockSize);
-    const seqNum = Number(state.qrFrameSeq) || 0;
-    let droplet = encoder.nextDroplet();
-    for (let i = 0; i < seqNum; i += 1) {
-      droplet = encoder.nextDroplet();
-    }
-    const grid = encodeDropletToMatrixGrid(droplet, 29);
-    const svgMarkup = renderDropletMatrixSvgOrCanvas(grid, null);
-    const activeCadenceKey = String(state.opticalCadenceFps || "6.67") === "10" ? "10" : "6.67";
-    const cadencePreset = OPTICAL_CADENCE_PRESETS[activeCadenceKey];
-    const nyquistCheck = validateNyquistOpticalFps(Number(activeCadenceKey) || 6.67, 30);
-    const kBound = Math.max(1, Math.min(50, rawBytes.byteLength));
-    const ltEncoded = encodeLubyTransformDroplets(rawBytes.subarray(0, kBound), {
-      maxBlocks: 50,
-      blockSize: safeBlockSize,
-      dropletCount: Math.max(4, kBound * 2 + 4),
-    });
-    const dropletArray = Array.isArray(ltEncoded) ? ltEncoded : ltEncoded?.droplets || [];
-    const kLt = Math.max(1, Math.min(50, Number(ltEncoded?.K) || kBound));
-    const ltRecoveredBytes = decodeLubyTransformPeeling(dropletArray, kLt);
-    const ltComplete =
-      Array.isArray(ltRecoveredBytes) &&
-      ltRecoveredBytes.length === kLt &&
-      ltRecoveredBytes.every((val, idx) => val !== null && val === rawBytes[idx]);
-    const ltDecoded = {
-      complete: ltComplete,
-      K: kLt,
-      dropletsCount: dropletArray.length,
-      recovered: ltRecoveredBytes,
-    };
-    qrPanel.innerHTML =
-      `<div class="mostrador-qrbeam-stream" data-fps="${activeCadenceKey}" data-nyquist-safe="${Boolean(nyquistCheck?.nyquistSafe)}" data-lt-peeling-decoded="${Boolean(ltDecoded?.complete)}" data-frame-interval-ms="${cadencePreset.intervalMs}" data-total-blocks="${encoder.K}" data-seq="${grid.seq}" data-degree="${grid.degree}" data-parity="${grid.parityBit}" style="padding:0.65rem;border-radius:10px;border:1px solid var(--card-border);background:var(--bg-secondary);">` +
-      `<div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:0.4rem;margin-bottom:0.45rem;">` +
-      `<strong>📡 QRBeam Optical Stream (${activeCadenceKey} fps · ${cadencePreset.intervalMs} ms/frame · Frame #${grid.seq} · ${isEn ? "Parity" : "Paridad"} ${grid.parityBit})</strong>` +
-      `<div style="display:inline-flex;gap:0.35rem;">` +
-      `<button type="button" id="btnNextQrBeamFrame" class="uls-chip" style="min-height:48px;padding:0.35rem 0.7rem;font-size:0.78rem;">⏭ ${isEn ? "Next Droplet" : "Siguiente Droplet"} (#${grid.seq + 1})</button>` +
-      `</div></div>` +
-      `<div style="display:flex;flex-wrap:wrap;gap:0.75rem;align-items:center;">` +
-      `<div class="qrbeam-matrix-host">${svgMarkup}</div>` +
-      `<p style="margin:0;font-size:0.81rem;flex:1;min-width:180px;">${isEn ? `Systematic Pass 1 (K=${encoder.K} blocks + XOR whitening <code>whitenBlockXor</code> + 4th-corner parity) followed by Luby Transform Soliton tail.` : `Pase 1 sistemático (K=${encoder.K} bloques + blanqueo XOR <code>whitenBlockXor</code> + paridad 4.ª esquina) seguido de cola Solitón Luby Transform.`}</p>` +
-      `</div></div>`;
-    const nextFrameBtn = getEl("btnNextQrBeamFrame", targetDoc);
-    if (nextFrameBtn && typeof nextFrameBtn.addEventListener === "function" && !nextFrameBtn._qrNextBound) {
-      nextFrameBtn._qrNextBound = true;
-      nextFrameBtn.addEventListener("click", () => {
-        state.qrFrameSeq = (Number(state.qrFrameSeq) || 0) + 1;
-        hydrateShareAndAuditDrawer(targetDoc);
-      });
-    }
-  }
-
-  const rxPanel = getEl("opticalReceiverRxPanel", targetDoc);
-  if (rxPanel) {
-    const verseText =
-      state.lastNavResult?.chapter?.verses?.[String(state.verse)] ||
-      `${state.book}.${state.chapter}.${state.verse}`;
-    const rxWasm =
-      typeof dataLayer?.getHydratedWasmModule === "function"
-        ? dataLayer.getHydratedWasmModule("qr_stream_receiver_wasm")
-        : null;
-    const report =
-      state.lastOpticalRxReport ||
-      runOpticalReceiverBurstSession(
-        {
-          payloadText: `${state.book}.${state.chapter}.${state.verse} · ${verseText}`,
-          shutterUs: state.rxShutterUs || 8000,
-          rollingReadoutMs: state.rxRollingReadoutMs || 14,
-          simulatedDrops: [1],
-        },
-        rxWasm,
-      );
-    state.lastOpticalRxReport = report;
-    rxPanel.innerHTML = renderOpticalReceiverRxPanelHtml(report);
-
-    const shutterInput = getEl("rxShutterUsInput", targetDoc);
-    const readoutInput = getEl("rxRollingReadoutMsInput", targetDoc);
-    const runRxBtn = getEl("btnRunOpticalRxSession", targetDoc);
-
-    const runRxUpdate = async () => {
-      state.rxShutterUs = Number(shutterInput?.value) || state.rxShutterUs || 8000;
-      state.rxRollingReadoutMs =
-        Number(readoutInput?.value) || state.rxRollingReadoutMs || 14;
-      let wasmMod =
-        typeof dataLayer?.getHydratedWasmModule === "function"
-          ? dataLayer.getHydratedWasmModule("qr_stream_receiver_wasm")
-          : null;
-      if (!wasmMod && typeof dataLayer?.loadWasmModule === "function") {
-        try {
-          const loaded = await dataLayer.loadWasmModule("qr_stream_receiver_wasm");
-          if (loaded && loaded.status === STATUS.READY) wasmMod = loaded;
-        } catch {
-          wasmMod = null;
-        }
-      }
-      const probeBytes = new TextEncoder().encode(`${state.book}.${state.chapter}.${state.verse}`);
-      decodeFrameInWasmLinearMemory(wasmMod, probeBytes);
-      verifyRaptorQBlockInWasmLinearMemory(wasmMod, probeBytes, 0);
-      verifyAudioPcmCrc16InWasmLinearMemory(wasmMod, probeBytes);
-      state.lastOpticalRxReport = runOpticalReceiverBurstSession(
-        {
-          payloadText: `${state.book}.${state.chapter}.${state.verse} · ${verseText}`,
-          shutterUs: state.rxShutterUs,
-          rollingReadoutMs: state.rxRollingReadoutMs,
-          simulatedDrops: [1, 3],
-        },
-        wasmMod,
-      );
-      hydrateShareAndAuditDrawer(targetDoc);
-    };
-
-    if (runRxBtn && typeof runRxBtn.addEventListener === "function" && !runRxBtn._rxRunBound) {
-      runRxBtn._rxRunBound = true;
-      runRxBtn.addEventListener("click", runRxUpdate);
-    }
-    for (const inp of [shutterInput, readoutInput]) {
-      if (inp && typeof inp.addEventListener === "function" && !inp._rxInputBound) {
-        inp._rxInputBound = true;
-        inp.addEventListener("change", runRxUpdate);
-      }
-    }
-  }
+  hydrateOpticalTxAndRxPanels({
+    qrPanel: getEl("bibleOpticalQrStreamPanel", targetDoc),
+    rxPanel: getEl("opticalReceiverRxPanel", targetDoc),
+    shutterInput: getEl("rxShutterUsInput", targetDoc),
+    readoutInput: getEl("rxRollingReadoutMsInput", targetDoc),
+    runRxBtn: getEl("btnRunOpticalRxSession", targetDoc),
+    getEl,
+    targetDoc,
+    state,
+    dataLayer,
+    isEn,
+    rehydrateDrawer: hydrateShareAndAuditDrawer,
+  });
 
   // D6-R45 (SLICE-180): Recibo canónico único P1..P8 + verifyEd25519ManifestSignature + Censo Maestro (7 claves) + Telemetría Rust en #editorialAuditStatusPanel.
   const auditStatusPanel = getEl("editorialAuditStatusPanel", targetDoc);
@@ -829,12 +723,15 @@ export function bindShareDrawerActionEvents(ctx = {}) {
         if (typeof dlLink.click === "function") dlLink.click();
       }
       if (statusPanel) {
+        const bookCountMatch = quinePayload.match(/data-(?:book-count|quine-books)="(\d+)"/);
+        const quineBookCount = bookCountMatch ? Number(bookCountMatch[1]) : 1;
         statusPanel.setAttribute("data-audit-action", "share-quine");
+        statusPanel.setAttribute("data-book-count", String(quineBookCount));
         statusPanel.innerHTML =
-          `<div class="audit-receipt" data-action="share-quine" data-quine-lang="${escapeHtml(packLang)}" data-quine-bytes="${quinePayload.length}" data-kleene-quine="true">` +
+          `<div class="audit-receipt" data-action="share-quine" data-quine-lang="${escapeHtml(packLang)}" data-quine-bytes="${quinePayload.length}" data-book-count="${quineBookCount}" data-kleene-quine="true">` +
           `✅ <strong>Quine Autónomo de Kleene Listo (${escapeHtml(packLang.toUpperCase())}):</strong> ` +
           `<a href="${escapeHtml(quineUrl)}" download="lector_offline_${escapeHtml(packLang)}.html">Descargar lector_offline_${escapeHtml(packLang)}.html</a> ` +
-          `(${quinePayload.length} B · Punto Fijo de Kleene · 66 Libros deflate-raw · 0 fetch · 100% offline).</div>`;
+          `(${quinePayload.length} B · Punto Fijo de Kleene · ${quineBookCount} ${quineBookCount === 1 ? "libro" : "libros"} deflate-raw · 0 fetch · 100% offline).</div>`;
       }
     } else if (shareBtnId === "btnCopyDirectShareLink") {
       const shareUrl = serializeMostradorRouteQuery(state);
@@ -865,6 +762,20 @@ export function bindShareDrawerActionEvents(ctx = {}) {
         signedPack.ed25519PublicKeyHex || SOVEREIGN_ED25519_PUBLIC_KEY_HEX,
         dataLayer?.getHydratedWasmModule?.("ekovoz_player_wasm") || null,
       );
+      if (ed25519Ok) {
+        const binaryPack = await resolvePackBytesForVault(packLang, dataLayer);
+        if (binaryPack instanceof Uint8Array && parseEkpackPreamble32Js(binaryPack)) {
+          await verifyAndStoreEcoPack({
+            lang: packLang,
+            packBytes: binaryPack,
+            expectedSha256: signedPack.sha256 || "",
+            signatureHex: signedPack.ed25519SignatureHex,
+            signingMessage: signedPack.signingMessage,
+            publicKeyHex: signedPack.ed25519PublicKeyHex || SOVEREIGN_ED25519_PUBLIC_KEY_HEX,
+            wasmPlayerMod: dataLayer?.getHydratedWasmModule?.("ekovoz_player_wasm") || null,
+          }).catch(() => null);
+        }
+      }
       if (statusPanel) {
         statusPanel.setAttribute("data-audit-action", "verify-signature");
         statusPanel.setAttribute("data-verified", String(receipt.verified && ed25519Ok));
@@ -965,266 +876,24 @@ export function bindShareDrawerActionEvents(ctx = {}) {
     }
   }
 
-  const fpsSel = getEl("bibleOpticalFpsSelect", targetDoc);
-  if (fpsSel && typeof fpsSel.addEventListener === "function") {
-    fpsSel.addEventListener("change", (e) => {
-      state.opticalCadenceFps = String(e?.target?.value || fpsSel.value || "6.67") === "10" ? "10" : "6.67";
-      hydrateShareAndAuditDrawer(targetDoc);
-    });
-  }
+  const getUserMediaFn =
+    typeof navigator !== "undefined" &&
+      navigator.mediaDevices &&
+      typeof navigator.mediaDevices.getUserMedia === "function"
+      ? navigator.mediaDevices.getUserMedia.bind(navigator.mediaDevices)
+      : null;
 
-  const camRxBtn = getEl("btnToggleOpticalCameraRx", targetDoc);
-  if (camRxBtn && typeof camRxBtn.addEventListener === "function") {
-    camRxBtn.addEventListener("click", async () => {
-      const statusPanel = getEl("editorialAuditStatusPanel", targetDoc);
-      const videoEl = getEl("bibleOpticalCameraVideo", targetDoc);
-      const willOpen = videoEl ? Boolean(videoEl.hidden) : !state.opticalCameraActive;
-      state.opticalCameraActive = willOpen;
-      if (videoEl) videoEl.hidden = !willOpen;
-
-      if (!willOpen) {
-        if (state.activeCameraMediaStream && typeof state.activeCameraMediaStream.getTracks === "function") {
-          for (const trk of state.activeCameraMediaStream.getTracks()) {
-            if (typeof trk.stop === "function") trk.stop();
-          }
-        }
-        state.activeCameraMediaStream = null;
-        if (state.activeCameraIntervalId) {
-          clearInterval(state.activeCameraIntervalId);
-          state.activeCameraIntervalId = null;
-        }
-        if (state.activeCameraRvfcHandle && videoEl && typeof videoEl.cancelVideoFrameCallback === "function") {
-          videoEl.cancelVideoFrameCallback(state.activeCameraRvfcHandle);
-        }
-        state.activeCameraRvfcHandle = null;
-        if (state.activeOpticalWasmSession) {
-          state.activeOpticalWasmSession = null;
-        }
-        if (statusPanel) {
-          statusPanel.setAttribute("data-audit-action", "optical-camera-stopped");
-          statusPanel.textContent = "📷 Cámara óptica detenida y hardware liberado.";
-        }
-        return;
-      }
-
-      if (statusPanel) {
-        statusPanel.hidden = false;
-        if (statusPanel.style) statusPanel.style.display = "";
-        statusPanel.setAttribute("data-audit-action", "optical-camera-rx");
-        statusPanel.setAttribute("data-wasm-bridge", "loading");
-      }
-
-      let wasmMod = null;
-      let wasmStatusAttr = "fallback";
-      if (dataLayer && typeof dataLayer.loadWasmModule === "function") {
-        try {
-          wasmMod = await dataLayer.loadWasmModule("qr_stream_receiver_wasm");
-          if (wasmMod?.exports?.ekovoz_wasm_abi_version) {
-            wasmStatusAttr = `ready-v${wasmMod.exports.ekovoz_wasm_abi_version()}`;
-          }
-        } catch {
-          wasmStatusAttr = "unavailable";
-        }
-      }
-      state.activeOpticalWasmSession = new QrStreamSession();
-      state.lastSampledCameraMediaTime = -1;
-
-      const stopOpticalCameraSession = () => {
-        state.opticalCameraActive = false;
-        if (videoEl) videoEl.hidden = true;
-        if (state.activeCameraMediaStream && typeof state.activeCameraMediaStream.getTracks === "function") {
-          for (const trk of state.activeCameraMediaStream.getTracks()) {
-            if (typeof trk.stop === "function") trk.stop();
-          }
-        }
-        state.activeCameraMediaStream = null;
-        if (state.activeCameraIntervalId) {
-          clearInterval(state.activeCameraIntervalId);
-          state.activeCameraIntervalId = null;
-        }
-        if (state.activeCameraRvfcHandle && videoEl && typeof videoEl.cancelVideoFrameCallback === "function") {
-          videoEl.cancelVideoFrameCallback(state.activeCameraRvfcHandle);
-        }
-        state.activeCameraRvfcHandle = null;
-      };
-
-      const onBatchDecodedMaybeComplete = (wasmBatch) => {
-        if (!wasmBatch || !wasmBatch.complete) return false;
-        state.lastOpticalRxReport = wasmBatch;
-        stopOpticalCameraSession();
-        if (statusPanel) {
-          statusPanel.setAttribute("data-audit-action", "optical-camera-complete");
-          statusPanel.setAttribute("data-rx-complete", "true");
-          statusPanel.setAttribute("data-rx-bytes", String(wasmBatch.decodedBytes?.byteLength || 0));
-          statusPanel.innerHTML =
-            `<div class="audit-receipt" data-action="optical-camera-complete" data-rx-complete="true" data-rx-bytes="${wasmBatch.decodedBytes?.byteLength || 0}">` +
-            `✅ <strong>Recepción Óptica Completada (${wasmBatch.decodedBytes?.byteLength || 0} B):</strong> ` +
-            `Peeling LT/GF(2) convergente en sesión continua y cámara liberada.</div>`;
-        }
-        return true;
-      };
-
-      const detector =
-        typeof globalThis.BarcodeDetector === "function"
-          ? new globalThis.BarcodeDetector({ formats: ["qr_code"] })
-          : null;
-      let cameraMode = "wasm-homography-pgl3";
-      if (
-        typeof navigator !== "undefined" &&
-        navigator.mediaDevices &&
-        typeof navigator.mediaDevices.getUserMedia === "function"
-      ) {
-        try {
-          const mediaStream = await navigator.mediaDevices.getUserMedia({
-            video: {
-              facingMode: { ideal: "environment" },
-              width: { ideal: 480 },
-              height: { ideal: 480 },
-            },
-            audio: false,
-          });
-          state.activeCameraMediaStream = mediaStream;
-          if (videoEl) {
-            videoEl.srcObject = mediaStream;
-            if (typeof videoEl.play === "function") {
-              Promise.resolve(videoEl.play()).catch(() => { });
-            }
-            if (
-              typeof videoEl.readyState === "number" &&
-              videoEl.readyState < 2 &&
-              typeof videoEl.addEventListener === "function"
-            ) {
-              await new Promise((resolve) => {
-                let done = false;
-                const finishReady = () => {
-                  if (done) return;
-                  done = true;
-                  resolve();
-                };
-                videoEl.addEventListener("loadeddata", finishReady, { once: true });
-                setTimeout(finishReady, 80);
-              });
-            }
-          }
-          cameraMode = detector ? "getUserMedia+BarcodeDetector+WASM" : "getUserMedia+WASM-PGL3-RS256";
-          const captureCanvas =
-            typeof targetDoc?.createElement === "function" ? targetDoc.createElement("canvas") : null;
-          if (captureCanvas) {
-            captureCanvas.width = 480;
-            captureCanvas.height = 480;
-          }
-          let samplingBusy = false;
-          const sampleSingleFrame = async () => {
-            if (samplingBusy || !state.opticalCameraActive || !videoEl) return;
-            samplingBusy = true;
-            try {
-              if (detector && typeof detector.detect === "function") {
-                try {
-                  const codes = await detector.detect(videoEl);
-                  if (Array.isArray(codes) && codes.length > 0 && codes[0].rawValue) {
-                    state.lastScannedOpticalFrameRaw = String(codes[0].rawValue);
-                    const rawFrameBytes = new TextEncoder().encode(state.lastScannedOpticalFrameRaw);
-                    const wasmBatch = decodeQrStreamViaWasmBridge(
-                      [rawFrameBytes],
-                      wasmMod,
-                      state.activeOpticalWasmSession,
-                    );
-                    if (onBatchDecodedMaybeComplete(wasmBatch)) return;
-                    return;
-                  }
-                } catch {
-                  // Fall through to 480x480 Luma8 WASM homography scanner
-                }
-              }
-              const ctx2d =
-                captureCanvas && typeof captureCanvas.getContext === "function"
-                  ? captureCanvas.getContext("2d", { willReadFrequently: true })
-                  : null;
-              if (
-                ctx2d &&
-                typeof ctx2d.drawImage === "function" &&
-                typeof ctx2d.getImageData === "function" &&
-                wasmMod?.exports?.scan_luma8_homography_rs_in_place
-              ) {
-                ctx2d.drawImage(videoEl, 0, 0, 480, 480);
-                const rgba = ctx2d.getImageData(0, 0, 480, 480).data;
-                const pixCount = 480 * 480;
-                const ex = wasmMod.exports;
-                const lumaPtr = ex.wasm_alloc(pixCount);
-                const outPtr = ex.wasm_alloc(4096);
-                try {
-                  const lumaView = new Uint8Array(ex.memory.buffer, lumaPtr, pixCount);
-                  for (let p = 0, q = 0; p < pixCount; p += 1, q += 4) {
-                    lumaView[p] = (77 * rgba[q] + 150 * rgba[q + 1] + 29 * rgba[q + 2]) >> 8;
-                  }
-                  const decodedLen = ex.scan_luma8_homography_rs_in_place(lumaPtr, 480, 480, outPtr, 4096);
-                  if (decodedLen > 0) {
-                    const payloadSlice = new Uint8Array(ex.memory.buffer, outPtr, decodedLen).slice();
-                    const wasmBatch = decodeQrStreamViaWasmBridge(
-                      [payloadSlice],
-                      wasmMod,
-                      state.activeOpticalWasmSession,
-                    );
-                    onBatchDecodedMaybeComplete(wasmBatch);
-                  }
-                } finally {
-                  ex.wasm_free(lumaPtr, pixCount);
-                  ex.wasm_free(outPtr, 4096);
-                }
-              }
-            } finally {
-              samplingBusy = false;
-            }
-          };
-          await sampleSingleFrame();
-          if (state.opticalCameraActive && videoEl) {
-            const cadenceMs =
-              OPTICAL_CADENCE_PRESETS[String(state.opticalCadenceFps || "6.67")]?.frameDurationMs || 150;
-            if (typeof videoEl.requestVideoFrameCallback === "function") {
-              const onRvfc = (_now, metadata) => {
-                if (!state.opticalCameraActive || !videoEl) return;
-                const mediaTime = Number(metadata?.mediaTime ?? videoEl.currentTime ?? 0);
-                if (mediaTime !== state.lastSampledCameraMediaTime) {
-                  state.lastSampledCameraMediaTime = mediaTime;
-                  void sampleSingleFrame();
-                }
-                if (state.opticalCameraActive && typeof videoEl.requestVideoFrameCallback === "function") {
-                  state.activeCameraRvfcHandle = videoEl.requestVideoFrameCallback(onRvfc);
-                }
-              };
-              state.activeCameraRvfcHandle = videoEl.requestVideoFrameCallback(onRvfc);
-            } else {
-              state.activeCameraIntervalId = setInterval(() => {
-                if (!state.opticalCameraActive || !videoEl) return;
-                const curT = Number(videoEl.currentTime ?? -1);
-                if (curT < 0 || curT !== state.lastSampledCameraMediaTime) {
-                  state.lastSampledCameraMediaTime = curT;
-                  void sampleSingleFrame();
-                }
-              }, cadenceMs);
-              if (typeof state.activeCameraIntervalId?.unref === "function") {
-                state.activeCameraIntervalId.unref();
-              }
-            }
-          }
-        } catch {
-          cameraMode = "permission-denied-or-headless";
-        }
-      }
-
-      if (statusPanel && statusPanel.getAttribute("data-audit-action") === "optical-camera-rx") {
-        statusPanel.setAttribute("data-wasm-bridge", wasmStatusAttr);
-        statusPanel.setAttribute("data-camera-mode", cameraMode);
-        if (state.lastScannedOpticalFrameRaw) {
-          statusPanel.setAttribute("data-last-scanned-frame", state.lastScannedOpticalFrameRaw.slice(0, 64));
-        }
-        statusPanel.innerHTML =
-          `<div class="audit-receipt" data-action="optical-camera-rx" data-gf2="ready" data-camera-mode="${escapeHtml(cameraMode)}" data-wasm-bridge="${escapeHtml(wasmStatusAttr)}">` +
-          `📷 <strong>Receptor Óptico Bimodal Activo (≤ 32 KB · Modo=${escapeHtml(cameraMode)} · WASM=${escapeHtml(wasmStatusAttr)}):</strong> ` +
-          `Captura real Luma8 480×480 + Homografía PGL(3,ℝ) + Reed-Solomon GF(2⁸) + Peeling LT/GF(2).</div>`;
-      }
-    });
-  }
+  bindOpticalCameraAndCadenceController({
+    fpsSel: getEl("bibleOpticalFpsSelect", targetDoc),
+    camRxBtn: getEl("btnToggleOpticalCameraRx", targetDoc),
+    statusPanelGetter: () => getEl("editorialAuditStatusPanel", targetDoc),
+    videoElGetter: () => getEl("bibleOpticalCameraVideo", targetDoc),
+    targetDoc,
+    state,
+    dataLayer,
+    getUserMediaFn,
+    rehydrateDrawer: hydrateShareAndAuditDrawer,
+  });
 
   const relayBtn = getEl("btnOpticalRelayTx", targetDoc);
   if (relayBtn && typeof relayBtn.addEventListener === "function") {

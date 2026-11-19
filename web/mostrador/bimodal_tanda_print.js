@@ -280,32 +280,69 @@ ${versesHtml}
 </html>`;
 }
 
-function buildEmbeddedType3VectorSeedPdf({
+function hersheyGlyphStrokeOps(ch) {
+  const code = ch.codePointAt(0) || 32;
+  if (ch === " ") return { width: 260, ops: "260 0 0 0 0 0 d1\n" };
+  if ("iIl1|!.,:;'\"".includes(ch)) {
+    return {
+      width: 240,
+      ops: "240 0 40 0 200 700 d1 55 w 120 70 m 120 620 l S\n",
+    };
+  }
+  if ("mMwW".includes(ch) || code >= 0x4e00) {
+    return {
+      width: 720,
+      ops: "720 0 40 0 680 700 d1 52 w 60 640 m 180 80 l 360 500 l 540 80 l 660 640 l S\n",
+    };
+  }
+  const topY = ch === ch.toLowerCase() && ch !== ch.toUpperCase() ? 470 : 650;
+  const midY = Math.round(topY * 0.52);
+  const slant = ((code * 37) % 90) - 45;
+  const w = 480 + ((code * 13) % 80);
+  return {
+    width: w,
+    ops: `${w} 0 35 0 ${w - 35} ${topY + 40} d1 48 w 70 65 m ${110 + Math.max(0, slant)} ${topY} l ${w - 85} ${topY} l ${w - 75} 65 l 85 ${midY} m ${w - 95} ${midY} l S\n`,
+  };
+}
+
+function buildDistinctHersheyStrokeFallbackPdf({
   lines = ["Ekovoz Tanda"],
   columns = 2,
-  isLetter = false,
+  paper = "a4",
   isRtl = false,
   fontPt = 9.5,
   maxPages = 0,
   editionMode = 0,
 } = {}) {
   const cols = editionMode === 2 || editionMode === 16 ? 1 : Math.max(1, Math.min(3, Number(columns) || 2));
-  const cleanPt = Math.max(7.5, Math.min(18.0, Number(fontPt) || 9.5));
-  const pageW = isLetter ? 612 : 595;
-  const pageH = isLetter ? 792 : 842;
+  const cleanPt = Math.max(7.5, Math.min(20.0, Number(fontPt) || 9.5));
+  const pLower = String(paper || "a4").toLowerCase();
+  const isLandscape = pLower.includes("landscape") || pLower.includes("apaisado");
+  let baseW = 595.28;
+  let baseH = 841.89;
+  if (pLower.includes("a3")) {
+    baseW = 841.89;
+    baseH = 1190.55;
+  } else if (pLower.includes("folio") || pLower.includes("oficio")) {
+    baseW = 612;
+    baseH = 936;
+  } else if (pLower.includes("letter") || pLower.includes("carta")) {
+    baseW = 612;
+    baseH = 792;
+  }
+  const pageW = isLandscape ? baseH : baseW;
+  const pageH = isLandscape ? baseW : baseH;
   const marginLeft = 40;
   const marginRight = editionMode === 2 || editionMode === 16 ? 127.56 : 40;
   const marginY = 44;
   const gutter = 14;
   const colW = Math.max(120, pageW - marginLeft - marginRight - gutter * (cols - 1)) / cols;
-  const lineH = Math.max(10, Math.round(cleanPt * 1.34));
-  const linesPerCol = Math.max(16, Math.floor((pageH - marginY * 2) / lineH));
+  const lineH = Math.max(10, Math.round(cleanPt * 1.36));
+  const linesPerCol = Math.max(14, Math.floor((pageH - marginY * 2) / lineH));
   const linesPerPage = linesPerCol * cols;
   const rawPageCount = Math.max(1, Math.ceil(lines.length / linesPerPage));
   const pageCount = Number(maxPages) > 0 ? Math.min(Number(maxPages), rawPageCount) : rawPageCount;
 
-  // Construimos un diccionario vectorial Type3 autocontenido + ToUnicode CMap (ISO 32000-1 §9.6.5)
-  // libre de /WinAnsiEncoding y libre de /Identity-H huérfano sin /FontFile2.
   const glyphCodeByChar = new Map();
   const charByGlyphCode = [];
   for (const ln of lines) {
@@ -322,7 +359,7 @@ function buildEmbeddedType3VectorSeedPdf({
     charByGlyphCode.push(" ");
   }
 
-  const encodeSeedHex = (ln) => {
+  const encodeHex = (ln) => {
     let hex = "<";
     for (const ch of Array.from(String(ln || ""))) {
       const code = glyphCodeByChar.get(ch) ?? 32;
@@ -351,22 +388,16 @@ function buildEmbeddedType3VectorSeedPdf({
       const row = i % linesPerCol;
       const x = (marginLeft + effCol * (colW + gutter)).toFixed(1);
       const y = (pageH - marginY - row * lineH).toFixed(1);
-      st += `BT /F1 ${cleanPt.toFixed(1)} Tf ${x} ${y} Td ${encodeSeedHex(slice[i])} Tj ET\n`;
+      st += `BT /F1 ${cleanPt.toFixed(1)} Tf ${x} ${y} Td ${encodeHex(slice[i])} Tj ET\n`;
     }
     pageStreams.push(st);
   }
 
-  const glyphStreamBody = "520 0 40 0 480 700 d1 70 60 360 560 re S\n";
-  const spaceStreamBody = "280 0 0 0 0 0 d1\n";
-  const differences = charByGlyphCode
-    .map((_, idx) => (idx === 0 && charByGlyphCode[0] === " " ? "/gsp" : `/g${idx}`))
-    .join(" ");
-  const widths = charByGlyphCode.map((ch) => (ch === " " ? 280 : 520)).join(" ");
-  const charProcsEntries = new Set();
-  for (let idx = 0; idx < charByGlyphCode.length; idx += 1) {
-    if (idx === 0 && charByGlyphCode[0] === " ") charProcsEntries.add("/gsp 5 0 R");
-    else charProcsEntries.add(`/g${idx} 6 0 R`);
-  }
+  const glyphSpecs = charByGlyphCode.map((ch) => hersheyGlyphStrokeOps(ch));
+  const differences = charByGlyphCode.map((_, idx) => `/g${idx}`).join(" ");
+  const widths = glyphSpecs.map((g) => g.width).join(" ");
+  const firstGlyphObjId = 5;
+  const charProcsEntries = charByGlyphCode.map((_, idx) => `/g${idx} ${firstGlyphObjId + idx} 0 R`);
 
   const bfChars = charByGlyphCode
     .map((ch, idx) => {
@@ -378,10 +409,10 @@ function buildEmbeddedType3VectorSeedPdf({
       return `<${codeHex}> <${u16Hex || "0020"}>`;
     })
     .join("\n");
-  const cmap = `/CIDInit /ProcSet findresource begin\n12 dict begin\nbegincmap\n/CIDSystemInfo << /Registry (Adobe) /Ordering (UCS) /Supplement 0 >> def\n/CMapName /EkovozType3UTF16 def\n/CMapType 2 def\n1 begincodespacerange\n<00> <FF>\nendcodespacerange\n${charByGlyphCode.length} beginbfchar\n${bfChars}\nendbfchar\nendcmap\nCMapName currentdict /CMap defineresource pop\nend\nend\n`;
+  const cmap = `/CIDInit /ProcSet findresource begin\n12 dict begin\nbegincmap\n/CIDSystemInfo << /Registry (Adobe) /Ordering (UCS) /Supplement 0 >> def\n/CMapName /EkovozHersheyUTF16 def\n/CMapType 2 def\n1 begincodespacerange\n<00> <FF>\nendcodespacerange\n${charByGlyphCode.length} beginbfchar\n${bfChars}\nendbfchar\nendcmap\nCMapName currentdict /CMap defineresource pop\nend\nend\n`;
 
-  const firstPageObjId = 7;
-  const totalObjs = 6 + pageCount * 2;
+  const firstPageObjId = firstGlyphObjId + glyphSpecs.length;
+  const totalObjs = firstPageObjId - 1 + pageCount * 2;
   const offsets = new Array(totalObjs + 1).fill(0);
   const chunks = [];
   let cursor = 0;
@@ -402,18 +433,20 @@ function buildEmbeddedType3VectorSeedPdf({
   writeObj(2, `<< /Type /Pages /Kids [ ${kids} ] /Count ${pageCount} >>`);
   writeObj(
     3,
-    `<< /Type /Font /Subtype /Type3 /FontBBox [0 0 520 720] /FontMatrix [0.001 0 0 0.001 0 0] /CharProcs << ${[...charProcsEntries].join(" ")} >> /Encoding << /Type /Encoding /Differences [ 32 ${differences} ] >> /FirstChar 32 /LastChar ${31 + charByGlyphCode.length} /Widths [ ${widths} ] /ToUnicode 4 0 R >>`,
+    `<< /Type /Font /Subtype /Type3 /FontBBox [0 0 740 720] /FontMatrix [0.001 0 0 0.001 0 0] /CharProcs << ${charProcsEntries.join(" ")} >> /Encoding << /Type /Encoding /Differences [ 32 ${differences} ] >> /FirstChar 32 /LastChar ${31 + charByGlyphCode.length} /Widths [ ${widths} ] /ToUnicode 4 0 R >>`,
   );
   writeObj(4, `<< /Length ${enc.encode(cmap).byteLength} >>\nstream\n${cmap}endstream`);
-  writeObj(5, `<< /Length ${enc.encode(spaceStreamBody).byteLength} >>\nstream\n${spaceStreamBody}endstream`);
-  writeObj(6, `<< /Length ${enc.encode(glyphStreamBody).byteLength} >>\nstream\n${glyphStreamBody}endstream`);
+  for (let idx = 0; idx < glyphSpecs.length; idx += 1) {
+    const ops = glyphSpecs[idx].ops;
+    writeObj(firstGlyphObjId + idx, `<< /Length ${enc.encode(ops).byteLength} >>\nstream\n${ops}endstream`);
+  }
 
   for (let i = 0; i < pageCount; i += 1) {
     const pageId = firstPageObjId + i * 2;
     const contentId = firstPageObjId + 1 + i * 2;
     writeObj(
       pageId,
-      `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${pageW} ${pageH}] /Resources << /Font << /F1 3 0 R >> >> /Contents ${contentId} 0 R >>`,
+      `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${pageW.toFixed(2)} ${pageH.toFixed(2)}] /Resources << /Font << /F1 3 0 R >> >> /Contents ${contentId} 0 R >>`,
     );
     const stLen = enc.encode(pageStreams[i]).byteLength;
     writeObj(contentId, `<< /Length ${stLen} >>\nstream\n${pageStreams[i]}endstream`);
@@ -457,7 +490,7 @@ export function typesetTandaPdfBytes({
 } = {}) {
   const effectivePaper = paperFormat || paper || "a4";
   const entries = normalizeVerseEntriesForTanda({ book, chapter, verse, text, verses, versesMap });
-  const headerLine = `${tandaId} · ${String(lang).toUpperCase()} · ${book} ${chapter}`;
+  const headerLine = `=== ${tandaId} · ${String(lang).toUpperCase()} · ${book} ${chapter} ===`;
   const rawParagraphs = [headerLine, ...entries.map((e) => `${e.ref} ${e.text}`)];
 
   const wasmPdf = typesetTandaWithCachedWasmSync({
@@ -477,20 +510,20 @@ export function typesetTandaPdfBytes({
     return wasmPdf;
   }
 
-  const cols = editionMode === 2 ? 1 : Math.max(1, Math.min(3, Number(columns) || 2));
-  const cleanPt = Math.max(7.5, Math.min(18.0, Number(fontPt) || 9.5));
+  const cols = editionMode === 2 || editionMode === 16 ? 1 : Math.max(1, Math.min(3, Number(columns) || 2));
+  const cleanPt = Math.max(7.5, Math.min(20.0, Number(fontPt) || 9.5));
   const isLetter = String(effectivePaper).toLowerCase().includes("letter");
   const pageW = isLetter ? 612 : 595;
-  const colW = Math.max(120, pageW - (editionMode === 2 ? 168 : 80) - 14 * (cols - 1)) / cols;
+  const colW = Math.max(120, pageW - (editionMode === 2 || editionMode === 16 ? 168 : 80) - 14 * (cols - 1)) / cols;
   const cpl = Math.max(20, Math.min(86, Math.round(colW / (cleanPt * 0.5))));
   const wrapped = [];
   for (const para of rawParagraphs) {
     for (const ln of wrapGreedyLines(para, cpl)) wrapped.push(ln);
   }
-  return buildEmbeddedType3VectorSeedPdf({
+  return buildDistinctHersheyStrokeFallbackPdf({
     lines: wrapped.length > 0 ? wrapped : [headerLine],
     columns: cols,
-    isLetter,
+    paper: effectivePaper,
     isRtl: String(dir || "ltr").toLowerCase() === "rtl",
     fontPt: cleanPt,
     maxPages,

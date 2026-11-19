@@ -187,6 +187,9 @@ function tier0OfflineCandidateForFont(fontFile) {
   if (fontFile === "CharisSIL-Regular.ttf") {
     return new URL("../assets/fonts/CharisSIL-Regular.ttf", import.meta.url);
   }
+  if (fontFile === "CharisSIL-Bold-Subset.ttf") {
+    return new URL("../assets/fonts/CharisSIL-Bold-Subset.ttf", import.meta.url);
+  }
   if (fontFile === "Cardo-Regular.ttf" || fontFile === "NotoSansHebrew-Regular.ttf") {
     return new URL("../assets/fonts/Cardo-Hebrew-Biblical.ttf", import.meta.url);
   }
@@ -194,6 +197,82 @@ function tier0OfflineCandidateForFont(fontFile) {
     return new URL("../assets/fonts/EBGaramond-Greek-Biblical.ttf", import.meta.url);
   }
   return null;
+}
+
+export function encodePaperFormatCode(paper = "a4", orientation = "") {
+  const raw = String(paper || "a4").trim().toLowerCase();
+  const orient = String(orientation || "").trim().toLowerCase();
+  const isLandscape = orient === "landscape" || raw.includes("landscape");
+  const base = raw.includes("a3")
+    ? 2
+    : raw.includes("folio") || raw.includes("oficio")
+      ? 3
+      : raw.includes("letter") || raw.includes("carta")
+        ? 1
+        : 0;
+  return isLandscape ? (base | 0x80) : base;
+}
+
+function concatUint8Chunks(chunks, totalBytes) {
+  if (!Array.isArray(chunks) || chunks.length === 0 || totalBytes <= 0) {
+    return new Uint8Array();
+  }
+  if (chunks.length === 1) return chunks[0];
+  const merged = new Uint8Array(totalBytes);
+  let offset = 0;
+  for (const part of chunks) {
+    merged.set(part, offset);
+    offset += part.byteLength;
+  }
+  return merged;
+}
+
+export function extractGlyphContoursWithWorkerWasm(
+  fontBytes,
+  codepoint,
+  wasmBytesOverride = null,
+) {
+  if (!(fontBytes instanceof Uint8Array) || fontBytes.byteLength < 64) return null;
+  if (!cachedWorkerWasmExports && wasmBytesOverride instanceof Uint8Array && wasmBytesOverride.byteLength > 8) {
+    const mod = new WebAssembly.Module(wasmBytesOverride);
+    cachedWorkerWasmExports = new WebAssembly.Instance(mod, {}).exports;
+  }
+  const wasmExports = cachedWorkerWasmExports;
+  if (
+    !wasmExports ||
+    !wasmExports.memory ||
+    typeof wasmExports.wasm_alloc !== "function" ||
+    typeof wasmExports.wasm_free !== "function" ||
+    typeof wasmExports.wasm_extract_glyph_contours_f32 !== "function"
+  ) {
+    return null;
+  }
+  const fLen = fontBytes.byteLength;
+  const outCap = 32768;
+  const fPtr = wasmExports.wasm_alloc(fLen) >>> 0;
+  const outPtr = wasmExports.wasm_alloc(outCap) >>> 0;
+  if (!fPtr || !outPtr || outPtr < 4096) {
+    if (fPtr) wasmExports.wasm_free(fPtr, fLen);
+    if (outPtr) wasmExports.wasm_free(outPtr, outCap);
+    return null;
+  }
+  try {
+    new Uint8Array(wasmExports.memory.buffer, fPtr, fLen).set(fontBytes);
+    const written = wasmExports.wasm_extract_glyph_contours_f32(
+      fPtr,
+      fLen,
+      Number(codepoint) >>> 0,
+      outPtr,
+      outCap,
+    );
+    if (written < 32) return null;
+    const raw = new Uint8Array(written);
+    raw.set(new Uint8Array(wasmExports.memory.buffer, outPtr, written));
+    return raw;
+  } finally {
+    wasmExports.wasm_free(fPtr, fLen);
+    wasmExports.wasm_free(outPtr, outCap);
+  }
 }
 
 function cacheLoadedFontInRam(fontFile, rawTtfBytes) {
@@ -281,9 +360,11 @@ function executeWasmTandaTypeset(
   utf8Bytes,
   {
     bridgeFontBytes = null,
+    boldFontBytes = null,
     bridgeUtf8Bytes = null,
     editionMode = 0,
     columns = 2,
+    paperCode = 0,
     isLetter = false,
     isRtl = false,
     booklet4n = false,
@@ -308,18 +389,21 @@ function executeWasmTandaTypeset(
 
   const f1Len = fontBytes.byteLength;
   const f2Len = bridgeFontBytes instanceof Uint8Array ? bridgeFontBytes.byteLength : 0;
+  const f3Len = boldFontBytes instanceof Uint8Array ? boldFontBytes.byteLength : 0;
   const tLen = utf8Bytes.byteLength;
   const bLen = bridgeUtf8Bytes instanceof Uint8Array ? bridgeUtf8Bytes.byteLength : 0;
   const outCap = Math.min(8 * 1024 * 1024, Math.max(131072, (tLen + bLen) * 6 + 262144));
 
   const f1Ptr = wasmExports.wasm_alloc(f1Len) >>> 0;
   const f2Ptr = (hasEditionMode || hasDual4n) && f2Len > 0 ? wasmExports.wasm_alloc(f2Len) >>> 0 : 0;
+  const f3Ptr = hasEditionMode && f3Len > 0 ? wasmExports.wasm_alloc(f3Len) >>> 0 : 0;
   const tPtr = wasmExports.wasm_alloc(tLen) >>> 0;
   const bPtr = (hasEditionMode || hasDual4n) && bLen > 0 ? wasmExports.wasm_alloc(bLen) >>> 0 : 0;
   const outPtr = wasmExports.wasm_alloc(outCap) >>> 0;
   if (!f1Ptr || !tPtr || !outPtr) {
     if (f1Ptr) wasmExports.wasm_free(f1Ptr, f1Len);
     if (f2Ptr) wasmExports.wasm_free(f2Ptr, f2Len);
+    if (f3Ptr) wasmExports.wasm_free(f3Ptr, f3Len);
     if (tPtr) wasmExports.wasm_free(tPtr, tLen);
     if (bPtr) wasmExports.wasm_free(bPtr, bLen);
     if (outPtr) wasmExports.wasm_free(outPtr, outCap);
@@ -330,6 +414,9 @@ function executeWasmTandaTypeset(
     new Uint8Array(wasmExports.memory.buffer, f1Ptr, f1Len).set(fontBytes);
     if (f2Ptr && f2Len > 0) {
       new Uint8Array(wasmExports.memory.buffer, f2Ptr, f2Len).set(bridgeFontBytes);
+    }
+    if (f3Ptr && f3Len > 0) {
+      new Uint8Array(wasmExports.memory.buffer, f3Ptr, f3Len).set(boldFontBytes);
     }
     new Uint8Array(wasmExports.memory.buffer, tPtr, tLen).set(utf8Bytes);
     if (bPtr && bLen > 0) {
@@ -342,22 +429,27 @@ function executeWasmTandaTypeset(
     const rawMode = Number(editionMode) || 0;
     const mappedEditionCode =
       rawMode === 1 || rawMode === 15 ? 15 : rawMode === 2 || rawMode === 16 ? 16 : 0;
+    const resolvedPaperByte = Number.isFinite(Number(paperCode)) && Number(paperCode) > 0
+      ? Number(paperCode) & 0xff
+      : isLetter
+        ? 1
+        : 0;
 
     const written =
-      mappedEditionCode > 0 && hasEditionMode
+      (mappedEditionCode > 0 || f3Ptr > 0 || resolvedPaperByte > 1) && hasEditionMode
         ? wasmExports.typeset_tanda_pdf_edition_mode_in_place(
           f1Ptr,
           f1Len,
           f2Ptr,
           f2Len,
-          0,
-          0,
+          f3Ptr,
+          f3Len,
           tPtr,
           tLen,
           bPtr,
           bLen,
           safeCols,
-          isLetter ? 1 : 0,
+          resolvedPaperByte,
           isRtl ? 1 : 0,
           booklet4n ? 1 : 0,
           safeTenths,
@@ -377,7 +469,7 @@ function executeWasmTandaTypeset(
             bPtr,
             bLen,
             safeCols,
-            isLetter ? 1 : 0,
+            resolvedPaperByte,
             isRtl ? 1 : 0,
             booklet4n ? 1 : 0,
             safeTenths,
@@ -391,7 +483,7 @@ function executeWasmTandaTypeset(
             tPtr,
             tLen,
             safeCols,
-            isLetter ? 1 : 0,
+            resolvedPaperByte,
             isRtl ? 1 : 0,
             safeTenths,
             safePages,
@@ -408,6 +500,7 @@ function executeWasmTandaTypeset(
   } finally {
     wasmExports.wasm_free(f1Ptr, f1Len);
     if (f2Ptr) wasmExports.wasm_free(f2Ptr, f2Len);
+    if (f3Ptr) wasmExports.wasm_free(f3Ptr, f3Len);
     wasmExports.wasm_free(tPtr, tLen);
     if (bPtr) wasmExports.wasm_free(bPtr, bLen);
     wasmExports.wasm_free(outPtr, outCap);
@@ -418,10 +511,12 @@ function executeWasmStreamingPdfSession(
   wasmExports,
   fontBytes,
   bridgeFontBytes,
+  boldFontBytes,
   tandaSlices,
   {
     editionMode = 0,
     columns = 2,
+    paperCode = 0,
     isLetter = false,
     isRtl = false,
     booklet4n = false,
@@ -438,19 +533,25 @@ function executeWasmStreamingPdfSession(
   ) {
     return null;
   }
+  const hasChunkDrain =
+    typeof wasmExports.wasm_pdf_session_drain_chunk === "function" &&
+    typeof wasmExports.wasm_pdf_session_finish_tail_with_desc === "function";
   const f1Len = fontBytes.byteLength;
   const f2Len = bridgeFontBytes instanceof Uint8Array ? bridgeFontBytes.byteLength : 0;
-  const outCap = 6 * 1024 * 1024;
+  const f3Len = boldFontBytes instanceof Uint8Array ? boldFontBytes.byteLength : 0;
+  const outCap = hasChunkDrain ? 2 * 1024 * 1024 : 6 * 1024 * 1024;
   const f1Ptr = wasmExports.wasm_alloc(f1Len) >>> 0;
   const f2Ptr = f2Len > 0 ? wasmExports.wasm_alloc(f2Len) >>> 0 : 0;
+  const f3Ptr = f3Len > 0 ? wasmExports.wasm_alloc(f3Len) >>> 0 : 0;
   const descPtr =
-    typeof wasmExports.wasm_pdf_session_finish_with_desc === "function"
+    hasChunkDrain || typeof wasmExports.wasm_pdf_session_finish_with_desc === "function"
       ? wasmExports.wasm_alloc(16) >>> 0
       : 0;
   const outPtr = wasmExports.wasm_alloc(outCap) >>> 0;
   if (!f1Ptr || !outPtr || outPtr < 4096) {
     if (f1Ptr) wasmExports.wasm_free(f1Ptr, f1Len);
     if (f2Ptr) wasmExports.wasm_free(f2Ptr, f2Len);
+    if (f3Ptr) wasmExports.wasm_free(f3Ptr, f3Len);
     if (descPtr) wasmExports.wasm_free(descPtr, 16);
     if (outPtr) wasmExports.wasm_free(outPtr, outCap);
     return null;
@@ -462,22 +563,30 @@ function executeWasmStreamingPdfSession(
     if (f2Ptr && f2Len > 0) {
       new Uint8Array(wasmExports.memory.buffer, f2Ptr, f2Len).set(bridgeFontBytes);
     }
+    if (f3Ptr && f3Len > 0) {
+      new Uint8Array(wasmExports.memory.buffer, f3Ptr, f3Len).set(boldFontBytes);
+    }
     const safeCols = Math.max(1, Math.min(3, Number(columns) || 2));
     const safeTenths = Math.max(75, Math.min(180, Math.round(Number(fontTenthsPt) || 95)));
     const safePages = Math.max(1, Math.min(200, Number(maxPagesPerTanda) || 50));
     const rawMode = Number(editionMode) || 0;
     const mappedEditionCode =
       rawMode === 1 || rawMode === 15 ? 15 : rawMode === 2 || rawMode === 16 ? 16 : 0;
+    const resolvedPaperByte = Number.isFinite(Number(paperCode)) && Number(paperCode) > 0
+      ? Number(paperCode) & 0xff
+      : isLetter
+        ? 1
+        : 0;
 
     const beginCode = wasmExports.wasm_pdf_session_begin(
       f1Ptr,
       f1Len,
       f2Ptr,
       f2Len,
-      0,
-      0,
+      f3Ptr,
+      f3Len,
       safeCols,
-      isLetter ? 1 : 0,
+      resolvedPaperByte,
       isRtl ? 1 : 0,
       booklet4n ? 1 : 0,
       safeTenths,
@@ -487,6 +596,8 @@ function executeWasmStreamingPdfSession(
     sessionStarted = true;
 
     const tandas = [];
+    const blobParts = [];
+    let totalBlobBytes = 0;
     let maxObservedRam = 65536;
 
     for (let idx = 0; idx < tandaSlices.length; idx += 1) {
@@ -508,6 +619,18 @@ function executeWasmStreamingPdfSession(
           safePages,
         );
         if (pagesEmitted <= 0) return null;
+        let drainedBytes = 0;
+        if (hasChunkDrain) {
+          const chunkLen = wasmExports.wasm_pdf_session_drain_chunk(outPtr, outCap);
+          if (chunkLen < 0 || (!booklet4n && chunkLen === 0)) return null;
+          if (chunkLen > 0) {
+            const chunk = new Uint8Array(chunkLen);
+            chunk.set(new Uint8Array(wasmExports.memory.buffer, outPtr, chunkLen));
+            blobParts.push(chunk);
+            totalBlobBytes += chunkLen;
+            drainedBytes = chunkLen;
+          }
+        }
         const linearRam = wasmExports.memory.buffer.byteLength;
         if (linearRam > maxObservedRam) maxObservedRam = linearRam;
         emitProgress({
@@ -515,6 +638,7 @@ function executeWasmStreamingPdfSession(
           tandaIndex: idx + 1,
           totalTandas: tandaSlices.length,
           pages: pagesEmitted,
+          bytes: drainedBytes,
           peakRamBytes: linearRam,
           fontFile,
         });
@@ -523,12 +647,38 @@ function executeWasmStreamingPdfSession(
           totalTandas: tandaSlices.length,
           fontFile,
           pages: pagesEmitted,
+          bytes: drainedBytes,
           peakRamBytes: Math.max(65536, linearRam),
         });
       } finally {
         wasmExports.wasm_free(tPtr, tLen);
         if (bPtr) wasmExports.wasm_free(bPtr, bLen);
       }
+    }
+
+    if (hasChunkDrain) {
+      const tailLen = wasmExports.wasm_pdf_session_finish_tail_with_desc(descPtr, outPtr, outCap);
+      sessionStarted = false;
+      if (tailLen <= 0) return null;
+      if (descPtr >= 4096) {
+        const dv = new DataView(wasmExports.memory.buffer, descPtr, 16);
+        if (dv.getUint32(0, true) !== 0x50444653) return null;
+      }
+      const tailChunk = new Uint8Array(tailLen);
+      tailChunk.set(new Uint8Array(wasmExports.memory.buffer, outPtr, tailLen));
+      blobParts.push(tailChunk);
+      totalBlobBytes += tailLen;
+      const fullPdf = concatUint8Chunks(blobParts, totalBlobBytes);
+      if (
+        fullPdf.byteLength < 8 ||
+        fullPdf[0] !== 0x25 ||
+        fullPdf[1] !== 0x50 ||
+        fullPdf[2] !== 0x44 ||
+        fullPdf[3] !== 0x46
+      ) {
+        return null;
+      }
+      return { fullPdf, blobParts, tandas, peakRamBytes: maxObservedRam };
     }
 
     const pdfLen =
@@ -553,7 +703,7 @@ function executeWasmStreamingPdfSession(
     ) {
       return null;
     }
-    return { fullPdf, tandas, peakRamBytes: maxObservedRam };
+    return { fullPdf, blobParts: [fullPdf], tandas, peakRamBytes: maxObservedRam };
   } finally {
     if (sessionStarted && typeof wasmExports.wasm_pdf_session_finish === "function") {
       try {
@@ -564,6 +714,7 @@ function executeWasmStreamingPdfSession(
     }
     wasmExports.wasm_free(f1Ptr, f1Len);
     if (f2Ptr) wasmExports.wasm_free(f2Ptr, f2Len);
+    if (f3Ptr) wasmExports.wasm_free(f3Ptr, f3Len);
     if (descPtr) wasmExports.wasm_free(descPtr, 16);
     wasmExports.wasm_free(outPtr, outCap);
   }
@@ -577,6 +728,7 @@ export function typesetTandaWithCachedWasmSync({
   editionMode = 0,
   columns = 2,
   paper = "a4",
+  orientation = "",
   dir = "ltr",
   booklet4n = false,
   fontPt = 9.5,
@@ -584,6 +736,7 @@ export function typesetTandaWithCachedWasmSync({
   wasmBytes = null,
   fontBytes: fontBytesOverride = null,
   bridgeFontBytes: bridgeFontOverride = null,
+  boldFontBytes: boldFontOverride = null,
 } = {}) {
   const fontFile = resolveFontFileForLangOrScript(lang, script);
   if (!cachedWorkerWasmExports && wasmBytes instanceof Uint8Array && wasmBytes.byteLength > 8) {
@@ -599,16 +752,23 @@ export function typesetTandaWithCachedWasmSync({
     bridgeFontOverride instanceof Uint8Array
       ? bridgeFontOverride
       : cachedFontBytes.get("CharisSIL-Regular.ttf") || null;
+  const boldFont =
+    boldFontOverride instanceof Uint8Array
+      ? boldFontOverride
+      : cachedFontBytes.get("CharisSIL-Bold-Subset.ttf") || null;
   const utf8Bytes = new TextEncoder().encode(String(joinedText || "Ekovoz Tanda"));
   const bridgeUtf8Bytes = bridgeJoinedText
     ? new TextEncoder().encode(String(bridgeJoinedText))
     : null;
+  const paperCode = encodePaperFormatCode(paper, orientation);
   return executeWasmTandaTypeset(cachedWorkerWasmExports, fontBytes, utf8Bytes, {
     bridgeFontBytes: bridgeFont,
+    boldFontBytes: boldFont,
     bridgeUtf8Bytes,
     editionMode,
     columns,
-    isLetter: String(paper || "a4").toLowerCase().includes("letter"),
+    paperCode,
+    isLetter: (paperCode & 0x7f) === 1,
     isRtl: String(dir || "ltr").toLowerCase() === "rtl",
     booklet4n: Boolean(booklet4n),
     fontTenthsPt: Math.round((Number(fontPt) || 9.5) * 10),
@@ -628,15 +788,19 @@ export async function runWorkerTandaJob(payload = {}, emitProgress = () => { }) 
     columns = 2,
     fontPt = 9.5,
     paper = "a4",
+    orientation = "",
     dir = "ltr",
     booklet4n = false,
     maxPagesPerTanda = 50,
     wasmUrl = "",
     fontUrl = "",
     bridgeFontUrl = "",
+    boldFontUrl = "",
+    includeBoldFont = false,
     wasmBytes = null,
     fontBytes: fontBytesOverride = null,
     bridgeFontBytes: bridgeFontOverride = null,
+    boldFontBytes: boldFontOverride = null,
   } = payload;
 
   const normalizeEntries = (raw) =>
@@ -658,14 +822,23 @@ export async function runWorkerTandaJob(payload = {}, emitProgress = () => { }) 
   const totalTandas = Math.max(1, Math.ceil(Math.max(1, entries.length) / versesPerTanda));
   const fontFile = resolveFontFileForLangOrScript(lang, script);
   const needsBridgeFont =
-    Number(editionMode) === 1 || bridgeEntries.length > 0 || fontFile !== "CharisSIL-Regular.ttf";
+    Number(editionMode) === 1 ||
+    Number(editionMode) === 15 ||
+    bridgeEntries.length > 0 ||
+    fontFile !== "CharisSIL-Regular.ttf";
+  const wantsBoldFont = Boolean(
+    includeBoldFont || boldFontOverride instanceof Uint8Array || boldFontUrl,
+  );
 
   const fontFsm = createFontLoadingHarelFsm();
-  const [wasmExports, fontBytes, bridgeFontBytes] = await Promise.all([
+  const [wasmExports, fontBytes, bridgeFontBytes, boldFontBytes] = await Promise.all([
     ensureWorkerWasmExports(wasmUrl, wasmBytes),
     ensureFontBytesLoaded(fontFile, fontUrl, fontBytesOverride, fontFsm),
     needsBridgeFont
       ? ensureFontBytesLoaded("CharisSIL-Regular.ttf", bridgeFontUrl, bridgeFontOverride)
+      : Promise.resolve(null),
+    wantsBoldFont
+      ? ensureFontBytesLoaded("CharisSIL-Bold-Subset.ttf", boldFontUrl, boldFontOverride)
       : Promise.resolve(null),
   ]);
 
@@ -688,7 +861,8 @@ export async function runWorkerTandaJob(payload = {}, emitProgress = () => { }) 
     };
   }
 
-  const isLetter = String(paper || "a4").toLowerCase().includes("letter");
+  const paperCode = encodePaperFormatCode(paper, orientation);
+  const isLetter = (paperCode & 0x7f) === 1;
   const resolvedScript = resolveScriptIso15924ForLang(lang, script);
   const isRtl =
     String(dir || "ltr").toLowerCase() === "rtl" ||
@@ -708,17 +882,19 @@ export async function runWorkerTandaJob(payload = {}, emitProgress = () => { }) 
     tandaSlices.push({ utf8, bridgeUtf8 });
   }
 
-  // Cuando hay múltiples tandas (`totalTandas > 1`), ejecutamos `StreamingPdfSession` para emitir `/FontFile2` 1 sola vez en Chunk 0
-  // y concatenar el 100% de `tandas[0..N]` sin truncamiento en un único PDF completo con `M_RAM <= 8 MiB`.
+  // Cuando hay múltiples tandas (`totalTandas > 1`), ejecutamos `StreamingPdfSession` por `BlobParts[]`
+  // (`1` sola incrustación `/FontFile2` por fuente y `0` descarte de `tandas[1..N]`, `M_RAM <= 6 MiB`).
   if (totalTandas > 1 && typeof wasmExports.wasm_pdf_session_begin === "function") {
     const streamed = executeWasmStreamingPdfSession(
       wasmExports,
       fontBytes,
       bridgeFontBytes,
+      boldFontBytes,
       tandaSlices,
       {
         editionMode,
         columns,
+        paperCode,
         isLetter,
         isRtl,
         booklet4n: Boolean(booklet4n),
@@ -728,82 +904,88 @@ export async function runWorkerTandaJob(payload = {}, emitProgress = () => { }) 
       emitProgress,
       fontFile,
     );
-    if (streamed && streamed.fullPdf.byteLength > 0) {
-      if (streamed.peakRamBytes > MAX_WORKER_RAM_CEILING_BYTES) {
-        throw new Error(
-          `Worker WASM linear memory (${streamed.peakRamBytes} B) exceeded constitutional 14 MiB ceiling (${MAX_WORKER_RAM_CEILING_BYTES} B)`,
-        );
-      }
-      return {
-        type: "tanda-complete",
-        lang,
-        fontFile,
-        fontFsmState: fontFsm.state,
-        wasmFontEmbedded: true,
-        streamingSessionUsed: true,
-        booklet4n: Boolean(booklet4n),
-        editionMode: Number(editionMode) || 0,
-        totalTandas,
-        tandas: streamed.tandas,
-        pdfBytes: streamed.fullPdf,
-        peakRamBytes: Math.max(65536, streamed.peakRamBytes),
-      };
-    }
-  }
-
-  const tandas = [];
-  for (let tIdx = 0; tIdx < totalTandas; tIdx += 1) {
-    const { utf8, bridgeUtf8 } = tandaSlices[tIdx];
-    const pdfBytes = executeWasmTandaTypeset(wasmExports, fontBytes, utf8, {
-      bridgeFontBytes,
-      bridgeUtf8Bytes: bridgeUtf8,
-      editionMode,
-      columns,
-      isLetter,
-      isRtl,
-      booklet4n: Boolean(booklet4n),
-      fontTenthsPt,
-      maxPages: cappedMaxPages,
-    });
-    if (!pdfBytes) {
-      return {
-        type: "tanda-offline-font-notice",
-        status: "OFFLINE_FONT_REQUIRED_USE_CSS_PRINT",
-        fontFsmState: FONT_HAREL_STATES.OFFLINE_CSS_FALLBACK,
-        lang,
-        fontFile,
-        wasmFontEmbedded: false,
-        winAnsiFallbackForbidden: true,
-        fallbackRecommendation: "css-paged-media",
-        totalTandas: 0,
-        tandas: [],
-        pdfBytes: new Uint8Array(),
-        peakRamBytes: wasmExports?.memory?.buffer?.byteLength || 0,
-      };
-    }
-    const wasmLinearBytes = wasmExports?.memory?.buffer?.byteLength || 0;
-    const peakRamBytes = wasmLinearBytes > 0 ? wasmLinearBytes : pdfBytes.byteLength;
-    if (peakRamBytes > MAX_WORKER_RAM_CEILING_BYTES) {
+    if (!streamed || streamed.fullPdf.byteLength === 0) {
       throw new Error(
-        `Worker WASM linear memory (${peakRamBytes} B) exceeded constitutional 14 MiB ceiling (${MAX_WORKER_RAM_CEILING_BYTES} B)`,
+        `StreamingPdfSession multi-tanda failed to finalize all ${totalTandas} tandas without truncation`,
       );
     }
-    emitProgress({
-      type: "tanda-progress",
-      tandaIndex: tIdx + 1,
-      totalTandas,
-      bytes: pdfBytes.byteLength,
-      peakRamBytes,
+    if (streamed.peakRamBytes > MAX_WORKER_RAM_CEILING_BYTES) {
+      throw new Error(
+        `Worker WASM linear memory (${streamed.peakRamBytes} B) exceeded constitutional 14 MiB ceiling (${MAX_WORKER_RAM_CEILING_BYTES} B)`,
+      );
+    }
+    return {
+      type: "tanda-complete",
+      lang,
       fontFile,
-    });
-    tandas.push({
-      tandaIndex: tIdx + 1,
+      fontFsmState: fontFsm.state,
+      wasmFontEmbedded: true,
+      streamingSessionUsed: true,
+      booklet4n: Boolean(booklet4n),
+      editionMode: Number(editionMode) || 0,
+      paperCode,
       totalTandas,
+      tandas: streamed.tandas,
+      blobParts: streamed.blobParts,
+      pdfBytes: streamed.fullPdf,
+      peakRamBytes: Math.max(65536, streamed.peakRamBytes),
+    };
+  }
+
+  const { utf8, bridgeUtf8 } = tandaSlices[0];
+  const pdfBytes = executeWasmTandaTypeset(wasmExports, fontBytes, utf8, {
+    bridgeFontBytes,
+    boldFontBytes,
+    bridgeUtf8Bytes: bridgeUtf8,
+    editionMode,
+    columns,
+    paperCode,
+    isLetter,
+    isRtl,
+    booklet4n: Boolean(booklet4n),
+    fontTenthsPt,
+    maxPages: cappedMaxPages,
+  });
+  if (!pdfBytes) {
+    return {
+      type: "tanda-offline-font-notice",
+      status: "OFFLINE_FONT_REQUIRED_USE_CSS_PRINT",
+      fontFsmState: FONT_HAREL_STATES.OFFLINE_CSS_FALLBACK,
+      lang,
+      fontFile,
+      wasmFontEmbedded: false,
+      winAnsiFallbackForbidden: true,
+      fallbackRecommendation: "css-paged-media",
+      totalTandas: 0,
+      tandas: [],
+      pdfBytes: new Uint8Array(),
+      peakRamBytes: wasmExports?.memory?.buffer?.byteLength || 0,
+    };
+  }
+  const wasmLinearBytes = wasmExports?.memory?.buffer?.byteLength || 0;
+  const peakRamBytes = wasmLinearBytes > 0 ? wasmLinearBytes : pdfBytes.byteLength;
+  if (peakRamBytes > MAX_WORKER_RAM_CEILING_BYTES) {
+    throw new Error(
+      `Worker WASM linear memory (${peakRamBytes} B) exceeded constitutional 14 MiB ceiling (${MAX_WORKER_RAM_CEILING_BYTES} B)`,
+    );
+  }
+  emitProgress({
+    type: "tanda-progress",
+    tandaIndex: 1,
+    totalTandas: 1,
+    bytes: pdfBytes.byteLength,
+    peakRamBytes,
+    fontFile,
+  });
+  const tandas = [
+    {
+      tandaIndex: 1,
+      totalTandas: 1,
       fontFile,
       pdfBytes,
       peakRamBytes: Math.max(65536, peakRamBytes),
-    });
-  }
+    },
+  ];
 
   return {
     type: "tanda-complete",
@@ -814,10 +996,12 @@ export async function runWorkerTandaJob(payload = {}, emitProgress = () => { }) 
     streamingSessionUsed: false,
     booklet4n: Boolean(booklet4n),
     editionMode: Number(editionMode) || 0,
-    totalTandas,
+    paperCode,
+    totalTandas: 1,
     tandas,
-    pdfBytes: tandas[0]?.pdfBytes || new Uint8Array(),
-    peakRamBytes: Math.max(...tandas.map((t) => t.peakRamBytes), 65536),
+    blobParts: [pdfBytes],
+    pdfBytes,
+    peakRamBytes: Math.max(65536, peakRamBytes),
   };
 }
 

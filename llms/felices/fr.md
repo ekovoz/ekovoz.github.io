@@ -114,11 +114,7 @@ Quand Il vit la foule, Il monta sur le flanc de la colline et s'assit.
 
 Ses étudiants vinrent auprès de Lui,
 
-## Lámina 27: Colofón A (dedicatoria)
+## Lámina 27: Colofón (dedicatoria)
 
-Il donna des instructions pour le partage libre de ce travail auprès de ses heureux.
-
-## Lámina 28: Colofón B (dedicatoria)
-
-Les plus petits dans le royaume des cieux.
+Il donna des instructions pour le partage libre de ce travail auprès de ses heureux. Les plus petits dans le royaume des cieux.
 

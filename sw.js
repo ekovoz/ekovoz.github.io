@@ -20,6 +20,7 @@ export const SHELL_CORE_ASSETS = [
   "/mostrador/drawer_workshop.js",
   "/mostrador/workshop_overlay_store.js",
   "/mostrador/drawer_share.js",
+  "/mostrador/drawer_share_optical_controller.js",
   "/mostrador/i18n.js",
   "/mostrador/data_layer.js",
   "/mostrador/data_layer_wasm_codecs.js",

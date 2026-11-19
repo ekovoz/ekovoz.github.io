@@ -53,11 +53,19 @@ async function compressUtf8DeflateRawBase64(jsonStr) {
   };
 }
 
+const RTL_LANG_BASE_CODES = new Set(["he", "heb", "hbo", "ar", "arb", "fa", "pes", "ur", "urd", "yi", "syr"]);
+
+function isRtlQuineLang(langCode) {
+  const base = String(langCode || "").trim().toLowerCase().split("-")[0];
+  return RTL_LANG_BASE_CODES.has(base);
+}
+
 /**
  * Constructor síncrono de semilla Quine con bootstrap `DecompressionStream("deflate-raw")` embebido.
  */
 export function buildQuineHtml(lang = "es", title = "Ekovoz Offline Quine", options = {}) {
   const cleanLang = String(lang || "es").replace(/[^a-zA-Z0-9-]/g, "") || "es";
+  const dirAttr = options.dir || (isRtlQuineLang(cleanLang) ? "rtl" : "ltr");
   const safeTitle = escapeHtmlBasic(title || "Ekovoz Offline Quine");
   const book = String(options.book || "GEN").replace(/[^A-Z0-9]/gi, "").toUpperCase();
   const chapter = Math.max(1, Number(options.chapter) || 1);
@@ -73,6 +81,7 @@ export function buildQuineHtml(lang = "es", title = "Ekovoz Offline Quine", opti
   const seedPayloadJson = JSON.stringify({
     schema: "ekovoz.kleene_quine.v3",
     lang: cleanLang,
+    dir: dirAttr,
     title: safeTitle,
     book,
     chapter,
@@ -94,22 +103,23 @@ export function buildQuineHtml(lang = "es", title = "Ekovoz Offline Quine", opti
       : `<p>Ekovoz Quine Autónomo (${escapeHtmlBasic(cleanLang.toUpperCase())}) · 31,102 versículos</p>`;
 
   return (
-    `<!DOCTYPE html><html lang="${escapeHtmlBasic(cleanLang)}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">` +
+    `<!DOCTYPE html><html lang="${escapeHtmlBasic(cleanLang)}" dir="${dirAttr}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">` +
     `<title>${safeTitle} (${escapeHtmlBasic(cleanLang.toUpperCase())})</title>` +
     `<style>body{font-family:Georgia,serif;max-width:46rem;margin:2rem auto;padding:0 1rem;line-height:1.65;background:#faf8f5;color:#1c1917}header{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;justify-content:space-between;margin-bottom:1rem}button,select{min-height:44px;padding:.45rem .85rem;border-radius:8px;border:1px solid #78716c;background:#fff;cursor:pointer}</style>` +
-    `</head><body data-quine-lang="${escapeHtmlBasic(cleanLang)}" data-kleene-quine="true" data-quine-books="${bookCount}">` +
+    `</head><body data-quine-lang="${escapeHtmlBasic(cleanLang)}" data-quine-dir="${dirAttr}" data-kleene-quine="true" data-quine-books="${bookCount}" data-book-count="${bookCount}">` +
     `<header><div><h1 id="quineHeading" style="margin:0;font-size:1.25rem;">${safeTitle} (${escapeHtmlBasic(cleanLang.toUpperCase())}) · ${book} ${chapter}</h1>` +
     `<small data-quine-codec="${escapeHtmlBasic(corpusEncoding)}">${bookCount} libro(s) · 0 fetch · DecompressionStream("deflate-raw")</small></div>` +
     `<div style="display:flex;gap:.4rem;flex-wrap:wrap;"><select id="quineBookSelect" aria-label="Libro"></select><select id="quineChapterSelect" aria-label="Capítulo"></select>` +
     `<button type="button" id="btnReplicateKleeneQuine" onclick="window.__replicateKleeneQuine()">🔁 Clonar Quine Offline (Punto Fijo de Kleene · 0 red)</button></div></header>` +
-    `<main id="quineOfflineReader">${bodyVersesHtml}</main>` +
+    `<main id="quineOfflineReader" dir="${dirAttr}">${bodyVersesHtml}</main>` +
     `<script id="quineInitialDomSeed" type="application/json">${seedPayloadJson}</script>` +
     `<script id="ecoCorpusPayload" type="application/octet-stream" data-encoding="${escapeHtmlBasic(corpusEncoding)}">${compressedCorpusB64}</script>` +
     `<script id="quineKleeneBootstrap">(function(){` +
-    `window.__buildCanonicalKleeneQuineHtml=function(){return '<!DOCTYPE html>'+document.documentElement.outerHTML;};` +
+    `window.__resetToInitialQuineSeed=function(){var sd=document.getElementById('quineInitialDomSeed');if(!sd||!sd.textContent)return;try{var s=JSON.parse(sd.textContent);var h=document.getElementById('quineHeading');var r=document.getElementById('quineOfflineReader');var bs=document.getElementById('quineBookSelect');var cs=document.getElementById('quineChapterSelect');if(h)h.textContent=s.title+' ('+String(s.lang||'es').toUpperCase()+') · '+s.book+' '+s.chapter;if(bs)bs.innerHTML='';if(cs)cs.innerHTML='';if(r&&Array.isArray(s.verses))r.innerHTML=s.verses.map(function(it){return '<p data-verse="'+it[0]+'"><sup>'+it[0]+'</sup> '+String(it[1]||'').replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</p>';}).join('');}catch(_e){}};` +
+    `window.__buildCanonicalKleeneQuineHtml=function(){window.__resetToInitialQuineSeed();var html='<!DOCTYPE html>'+document.documentElement.outerHTML;if(window.__renderActiveQuineSelection)window.__renderActiveQuineSelection();return html;};` +
     `window.__replicateKleeneQuine=function(){var html=window.__buildCanonicalKleeneQuineHtml();var blob=new Blob([html],{type:'text/html;charset=utf-8'});var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='lector_offline_${escapeHtmlBasic(cleanLang)}.html';a.click();};` +
     `window.__decodeEcoQuineCorpus=async function(){var el=document.getElementById('ecoCorpusPayload');if(!el||!el.textContent)return null;var b64=el.textContent.trim();if(!b64)return null;var binStr=atob(b64);var bytes=new Uint8Array(binStr.length);for(var i=0;i<binStr.length;i++)bytes[i]=binStr.charCodeAt(i);if(el.getAttribute('data-encoding')==='deflate-raw-base64'&&typeof DecompressionStream==='function'){var ds=new DecompressionStream('deflate-raw');var rp=new Response(ds.readable).arrayBuffer();var w=ds.writable.getWriter();w.write(bytes);w.close();var ab=await rp;return JSON.parse(new TextDecoder().decode(ab));}return JSON.parse(new TextDecoder().decode(bytes));};` +
-    `if(typeof window!=='undefined'&&document.getElementById('ecoCorpusPayload')&&document.getElementById('ecoCorpusPayload').textContent){window.__decodeEcoQuineCorpus().then(function(corpus){if(!corpus||!corpus.books)return;window.__quineCorpus=corpus;var bSel=document.getElementById('quineBookSelect');var cSel=document.getElementById('quineChapterSelect');var reader=document.getElementById('quineOfflineReader');var heading=document.getElementById('quineHeading');var bKeys=Object.keys(corpus.books);bSel.innerHTML=bKeys.map(function(k){return '<option value="'+k+'">'+k+'</option>';}).join('');var renderSel=function(){var bk=bSel.value||bKeys[0];var chMap=corpus.books[bk]||{};var cKeys=Object.keys(chMap);if(!cKeys.includes(cSel.value)){cSel.innerHTML=cKeys.map(function(c){return '<option value="'+c+'">'+c+'</option>';}).join('');}var ch=cSel.value||cKeys[0]||'1';var vv=chMap[ch]||[];heading.textContent=corpus.title+' ('+corpus.lang.toUpperCase()+') · '+bk+' '+ch;reader.innerHTML=vv.map(function(it){return '<p data-verse="'+it[0]+'"><sup>'+it[0]+'</sup> '+String(it[1]||'').replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</p>';}).join('');};bSel.value='${book}';renderSel();bSel.onchange=renderSel;cSel.onchange=renderSel;}).catch(function(){});}` +
+    `if(typeof window!=='undefined'&&document.getElementById('ecoCorpusPayload')&&document.getElementById('ecoCorpusPayload').textContent){window.__decodeEcoQuineCorpus().then(function(corpus){if(!corpus||!corpus.books)return;window.__quineCorpus=corpus;var bSel=document.getElementById('quineBookSelect');var cSel=document.getElementById('quineChapterSelect');var reader=document.getElementById('quineOfflineReader');var heading=document.getElementById('quineHeading');var bKeys=Object.keys(corpus.books);bSel.innerHTML=bKeys.map(function(k){return '<option value="'+k+'">'+k+'</option>';}).join('');var renderSel=function(){if(!bSel.innerHTML)bSel.innerHTML=bKeys.map(function(k){return '<option value="'+k+'">'+k+'</option>';}).join('');var bk=bSel.value||bKeys[0];var chMap=corpus.books[bk]||{};var cKeys=Object.keys(chMap);if(!cKeys.includes(cSel.value)){cSel.innerHTML=cKeys.map(function(c){return '<option value="'+c+'">'+c+'</option>';}).join('');}var ch=cSel.value||cKeys[0]||'1';var vv=chMap[ch]||[];heading.textContent=corpus.title+' ('+corpus.lang.toUpperCase()+') · '+bk+' '+ch;reader.innerHTML=vv.map(function(it){return '<p data-verse="'+it[0]+'"><sup>'+it[0]+'</sup> '+String(it[1]||'').replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</p>';}).join('');};window.__renderActiveQuineSelection=renderSel;bSel.value='${book}';renderSel();bSel.onchange=renderSel;cSel.onchange=renderSel;}).catch(function(){});}` +
     `})();</script></body></html>`
   );
 }
@@ -127,15 +137,24 @@ export async function buildFullCorpusDeflateQuineHtml(
     typeof arg1 === "string"
       ? { ...(arg3 || {}), lang: arg1, title: arg2 }
       : arg1 || {};
+  const fbDoc = opts.fallbackChapterDoc && typeof opts.fallbackChapterDoc === "object"
+    ? opts.fallbackChapterDoc
+    : null;
   const {
     lang = "es",
     title = "Ekovoz Offline Quine",
-    book = "GEN",
-    chapter = 1,
-    verses = {},
     packBytes = null,
     liveOverlays = [],
   } = opts;
+  const book = String(opts.book || fbDoc?.book || "GEN");
+  const chapter = Number(opts.chapter || fbDoc?.chapter) || 1;
+  const verses =
+    opts.verses && typeof opts.verses === "object" && Object.keys(opts.verses).length > 0
+      ? opts.verses
+      : fbDoc?.verses && typeof fbDoc.verses === "object"
+        ? fbDoc.verses
+        : {};
+  const isIntralang1909 = String(lang || "").trim().toLowerCase() === "es-1909";
   const parseEkpackContainerFn =
     opts.parseEkpackContainerFn || opts.parseEkpackContainerJs || null;
   const decodeZstdFrameFn =
@@ -179,6 +198,16 @@ export async function buildFullCorpusDeflateQuineHtml(
         }
         const decoder = new TextDecoder("utf-8");
         const unicodeBase = Number(hdr.unicode_block_base) || 0;
+        const rlzDesc = isIntralang1909 ? hdr.intralang_rlz : null;
+        const f67Slice =
+          rlzDesc &&
+          Number(rlzDesc.frame_byte_len) > 0 &&
+          Number(rlzDesc.frame_byte_offset) + Number(rlzDesc.frame_byte_len) <= packBytes.byteLength
+            ? packBytes.subarray(
+                Number(rlzDesc.frame_byte_offset),
+                Number(rlzDesc.frame_byte_offset) + Number(rlzDesc.frame_byte_len),
+              )
+            : null;
         for (const bkEntry of hdr.books) {
           const start = Number(bkEntry.frame_byte_offset ?? bkEntry.byte_offset) || 0;
           const len = Number(bkEntry.frame_byte_len ?? bkEntry.byte_len) || 0;
@@ -238,6 +267,40 @@ export async function buildFullCorpusDeflateQuineHtml(
             rawTsv = decodeZstdFrameFn(frameSlice, wasmPlayerMod);
           }
           if (!rawTsv) continue;
+          if (
+            f67Slice &&
+            ex?.memory &&
+            typeof ex.wasm_alloc === "function" &&
+            typeof ex.wasm_free === "function" &&
+            typeof ex.decode_ekpack_rlz_book_in_place === "function"
+          ) {
+            const bLen = rawTsv.byteLength;
+            const rLen = f67Slice.byteLength;
+            const bPtr = ex.wasm_alloc(bLen) >>> 0;
+            const rPtr = ex.wasm_alloc(rLen) >>> 0;
+            const rOutCap = Math.max(131072, bLen * 2 + 16384);
+            const rOutPtr = ex.wasm_alloc(rOutCap) >>> 0;
+            try {
+              new Uint8Array(ex.memory.buffer, bPtr, bLen).set(rawTsv);
+              new Uint8Array(ex.memory.buffer, rPtr, rLen).set(f67Slice);
+              const rWritten = ex.decode_ekpack_rlz_book_in_place(
+                bPtr,
+                bLen,
+                (Number(bkEntry.first_verse_ord) || 0) >>> 0,
+                rPtr,
+                rLen,
+                rOutPtr,
+                rOutCap,
+              );
+              if (rWritten > 0) {
+                rawTsv = new Uint8Array(ex.memory.buffer, rOutPtr, rWritten).slice();
+              }
+            } finally {
+              ex.wasm_free(bPtr, bLen);
+              ex.wasm_free(rPtr, rLen);
+              ex.wasm_free(rOutPtr, rOutCap);
+            }
+          }
           const lines = decoder.decode(rawTsv).split("\n");
           const chMap = {};
           for (let i = 0; i < lines.length; i += 1) {
@@ -322,15 +385,25 @@ export function createSneakernetCodecs({
   verifyEd25519SyncFn,
   probeBoundsFn,
 }) {
-  function exportSneakernetBundleJson({ lang = "es", packBytes = null, sha256 = "" } = {}) {
+  function exportSneakernetBundleJson({
+    lang = "es",
+    packBytes = null,
+    sha256 = "",
+    requireBinaryPackBytes = false,
+  } = {}) {
     const cleanLang = String(lang || "es").trim();
     const lowerLang = cleanLang.toLowerCase();
+    const hasBinaryPack = packBytes instanceof Uint8Array && packBytes.byteLength >= 32;
+    if (requireBinaryPackBytes && !hasBinaryPack) {
+      throw new Error(
+        `ERR_SNEAKERNET_MISSING_PACK_BYTES: real .ekpack binary bytes (>= 32 B) required for ${cleanLang}`,
+      );
+    }
     const manifestEntry =
       manifestList.find((p) => p.lang.toLowerCase() === lowerLang) || manifestList[0];
-    const bytes =
-      packBytes instanceof Uint8Array
-        ? packBytes
-        : new TextEncoder().encode(manifestEntry.signingMessage);
+    const bytes = hasBinaryPack
+      ? packBytes
+      : new TextEncoder().encode(manifestEntry.signingMessage);
     const hexChars = new Array(bytes.byteLength);
     for (let i = 0; i < bytes.byteLength; i += 1) {
       hexChars[i] = bytes[i].toString(16).padStart(2, "0");
@@ -340,6 +413,7 @@ export function createSneakernetCodecs({
     return JSON.stringify(
       {
         schema: "ekovoz.sneakernet.ekpack.v2",
+        payloadKind: hasBinaryPack ? "ekpack-binary" : "manifest-receipt-only",
         lang: cleanLang,
         file: manifestEntry.file || `${cleanLang}.ekpack`,
         bytes: bytes.byteLength,
@@ -366,14 +440,16 @@ export function createSneakernetCodecs({
     }
     const computedCrc = computeCrc32HexFn(bytes);
     const crcMatch = !parsed.crc32Hex || computedCrc === String(parsed.crc32Hex).toLowerCase();
+    const pinnedPubKey = String(defaultPubKeyHex || "").trim().toLowerCase();
+    const bundlePubKey = String(parsed.ed25519PublicKeyHex || "").trim().toLowerCase();
+    const keyPinned = Boolean(pinnedPubKey) && (!parsed.ed25519PublicKeyHex || bundlePubKey === pinnedPubKey);
+    const sigHex = String(parsed.ed25519SignatureHex || "").trim();
     const sigTarget = parsed.signingMessage ? parsed.signingMessage : bytes;
-    const edOk = parsed.ed25519SignatureHex
-      ? verifyEd25519SyncFn(
-          sigTarget,
-          parsed.ed25519SignatureHex,
-          parsed.ed25519PublicKeyHex || defaultPubKeyHex,
-        )
-      : true;
+    const edOk = Boolean(
+      keyPinned &&
+      sigHex &&
+      verifyEd25519SyncFn(sigTarget, sigHex, pinnedPubKey),
+    );
     const probe = probeBoundsFn(bytes, 0, parsed.lang || "es");
     const isValid = Boolean(crcMatch && edOk && bytes.byteLength > 0);
     return {

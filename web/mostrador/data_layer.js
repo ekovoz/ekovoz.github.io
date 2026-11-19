@@ -32,6 +32,8 @@ import {
 import { buildCanonical80BlocksPagesIndex } from "./dosis.js";
 import {
   SOVEREIGN_ED25519_PUBLIC_KEY_HEX,
+  buildEkpackSigningMessageV2,
+  computeSha256HexWebCrypto,
   decodeRfc8878RawZstdFrameJs,
   inspectDeltaZstPatch,
   parseEkpackContainerJs,
@@ -178,12 +180,22 @@ export function createDataLayer({ source, cacheLimit = 32 } = {}) {
     return getJson(`data/book_names/${lang}.json`);
   }
 
+  async function loadJson(rel) {
+    if (
+      !/^(?:data|i18n|shards)\/[A-Za-z0-9._/-]+\.json$/.test(String(rel || "")) ||
+      String(rel).includes("..")
+    ) {
+      return null;
+    }
+    return getJson(rel);
+  }
+
   const EMBEDDED_SEED_PACK_LANGS = new Set(["es", "en", "stp", "he", "grc", "matrix_tier0"]);
 
   async function loadBytes(rel) {
     if (typeof sourceGetBytes !== "function") return null;
     if (
-      !/^(?:data|wasm|packs)\/[A-Za-z0-9._/-]+$/.test(String(rel || "")) ||
+      !/^(?:data|wasm|packs|assets|mostrador)\/[A-Za-z0-9._/-]+$/.test(String(rel || "")) ||
       String(rel).includes("..")
     ) {
       return null;
@@ -296,35 +308,63 @@ export function createDataLayer({ source, cacheLimit = 32 } = {}) {
           playerWasm,
         );
         const hdr = JSON.parse(new TextDecoder("utf-8").decode(f0JsonBytes));
-        const signMsg = `EKOVOZ_EKPACK_V1:${hdr.lang_code}:${hdr.content_digest_sha256_hex}:${hdr.merkle_root_sha256_hex}`;
-        const edOk = await verifyEd25519ManifestSignatureWebCrypto(
-          signMsg,
-          hdr.ed25519_signature_hex,
-          hdr.ed25519_public_key_hex || SOVEREIGN_ED25519_PUBLIC_KEY_HEX,
-          playerWasm,
-        );
+        const pinnedPubKey = SOVEREIGN_ED25519_PUBLIC_KEY_HEX.toLowerCase();
+        const headerPubKey = String(hdr.ed25519_public_key_hex || "").trim().toLowerCase();
+        if (headerPubKey !== pinnedPubKey) {
+          return { ed25519Invalid: true, reason: "UNPINNED_ED25519_KEY", relPack };
+        }
         if (
-          !edOk ||
-          !verifyEd25519ManifestSignature(
-            signMsg,
-            hdr.ed25519_signature_hex,
-            hdr.ed25519_public_key_hex || SOVEREIGN_ED25519_PUBLIC_KEY_HEX,
-            playerWasm,
-          )
+          String(hdr.lang_code || "").trim().toLowerCase() !==
+          String(baseLang || "").trim().toLowerCase()
         ) {
+          return { ed25519Invalid: true, reason: "EKPACK_LANG_REPLAY", relPack };
+        }
+        const signMsgV2 = buildEkpackSigningMessageV2(hdr);
+        const signMsgLegacy = `EKOVOZ_EKPACK_V1:${hdr.lang_code}:${hdr.content_digest_sha256_hex}:${hdr.merkle_root_sha256_hex}`;
+        const sigOkV2 =
+          (await verifyEd25519ManifestSignatureWebCrypto(
+            signMsgV2,
+            hdr.ed25519_signature_hex,
+            pinnedPubKey,
+            playerWasm,
+          )) &&
+          verifyEd25519ManifestSignature(
+            signMsgV2,
+            hdr.ed25519_signature_hex,
+            pinnedPubKey,
+            playerWasm,
+          );
+        const sigOkLegacy =
+          !sigOkV2 &&
+          (await verifyEd25519ManifestSignatureWebCrypto(
+            signMsgLegacy,
+            hdr.ed25519_signature_hex,
+            pinnedPubKey,
+            playerWasm,
+          )) &&
+          verifyEd25519ManifestSignature(
+            signMsgLegacy,
+            hdr.ed25519_signature_hex,
+            pinnedPubKey,
+            playerWasm,
+          );
+        if (!sigOkV2 && !sigOkLegacy) {
           return { ed25519Invalid: true, relPack };
         }
         let packedSymbols;
+        let symZstdLen = 0;
+        if (f0Envelope.byteLength >= 8 + actualF0Len) {
+          symZstdLen = new DataView(
+            f0Envelope.buffer,
+            f0Envelope.byteOffset + 4 + actualF0Len,
+            4,
+          ).getUint32(0, true);
+        }
         if (
           (!hdr.fsst_symbol_table ||
             (Array.isArray(hdr.fsst_symbol_table) && hdr.fsst_symbol_table.length === 0)) &&
           f0Envelope.byteLength >= 8 + actualF0Len
         ) {
-          const symZstdLen = new DataView(
-            f0Envelope.buffer,
-            f0Envelope.byteOffset + 4 + actualF0Len,
-            4,
-          ).getUint32(0, true);
           if (symZstdLen > 0 && 8 + actualF0Len + symZstdLen <= f0Envelope.byteLength) {
             packedSymbols = f0Envelope.subarray(8 + actualF0Len, 8 + actualF0Len + symZstdLen);
           } else {
@@ -332,6 +372,74 @@ export function createDataLayer({ source, cacheLimit = 32 } = {}) {
           }
         } else {
           packedSymbols = packFsstSymbolTableBytes(hdr.fsst_symbol_table);
+        }
+        const metaPos = 8 + actualF0Len + symZstdLen;
+        if (Array.isArray(hdr.books) && hdr.books.length > 0) {
+          const hasMetaEnvelope = metaPos + 4 <= f0Envelope.byteLength;
+          const metaZstdLen = hasMetaEnvelope
+            ? new DataView(
+                f0Envelope.buffer,
+                f0Envelope.byteOffset + metaPos,
+                4,
+              ).getUint32(0, true)
+            : 0;
+          if (
+            hdr.meta_zstd_sha256_hex &&
+            (!hasMetaEnvelope ||
+              metaZstdLen === 0 ||
+              metaPos + 4 + metaZstdLen > f0Envelope.byteLength)
+          ) {
+            return { ed25519Invalid: true, reason: "EKPACK_META_ZSTD_INVALID", relPack };
+          }
+          if (hasMetaEnvelope && metaZstdLen > 0 && metaPos + 4 + metaZstdLen <= f0Envelope.byteLength) {
+            const metaZstdSlice = f0Envelope.subarray(metaPos + 4, metaPos + 4 + metaZstdLen);
+            if (hdr.meta_zstd_sha256_hex) {
+              const actualMetaSha = await computeSha256HexWebCrypto(metaZstdSlice);
+              if (actualMetaSha !== String(hdr.meta_zstd_sha256_hex).toLowerCase()) {
+                return { ed25519Invalid: true, reason: "EKPACK_META_ZSTD_INVALID", relPack };
+              }
+            }
+            try {
+              const metaRaw = decodeRfc8878RawZstdFrameJs(metaZstdSlice, playerWasm);
+              const cnt =
+                metaRaw && metaRaw.byteLength >= 2 ? metaRaw[0] | (metaRaw[1] << 8) : 0;
+              if (
+                hdr.meta_zstd_sha256_hex &&
+                (!metaRaw || cnt < hdr.books.length || metaRaw.byteLength < 2 + cnt * 32)
+              ) {
+                return { ed25519Invalid: true, reason: "EKPACK_META_ZSTD_INVALID", relPack };
+              }
+              if (metaRaw && metaRaw.byteLength >= 2) {
+                const lim = Math.min(hdr.books.length, cnt);
+                if (metaRaw.byteLength >= 2 + lim * 32) {
+                  for (let bi = 0; bi < lim; bi += 1) {
+                    let hexStr = "";
+                    for (let k = 0; k < 32; k += 1) {
+                      hexStr += metaRaw[2 + bi * 32 + k].toString(16).padStart(2, "0");
+                    }
+                    if (
+                      hdr.meta_zstd_sha256_hex &&
+                      hdr.books[bi].frame_sha256_hex &&
+                      String(hdr.books[bi].frame_sha256_hex).toLowerCase() !== hexStr
+                    ) {
+                      return {
+                        ed25519Invalid: true,
+                        reason: "EKPACK_META_ZSTD_INVALID",
+                        relPack,
+                      };
+                    }
+                    if (!hdr.books[bi].frame_sha256_hex) {
+                      hdr.books[bi].frame_sha256_hex = hexStr;
+                    }
+                  }
+                }
+              }
+            } catch {
+              if (hdr.meta_zstd_sha256_hex) {
+                return { ed25519Invalid: true, reason: "EKPACK_META_ZSTD_INVALID", relPack };
+              }
+            }
+          }
         }
         return {
           relPack,
@@ -360,7 +468,11 @@ export function createDataLayer({ source, cacheLimit = 32 } = {}) {
       return { status: STATUS.UNAVAILABLE, data: null, reason: "missing" };
     }
     if (hdrInfo.ed25519Invalid) {
-      return { status: STATUS.UNAVAILABLE, data: null, reason: "EKPACK_ED25519_INVALID" };
+      return {
+        status: STATUS.UNAVAILABLE,
+        data: null,
+        reason: hdrInfo.reason || "EKPACK_ED25519_INVALID",
+      };
     }
 
     const bookEntry = (hdrInfo.hdr.books || []).find((b) => b.usfm_id === book);
@@ -372,6 +484,21 @@ export function createDataLayer({ source, cacheLimit = 32 } = {}) {
     const frameBytes = await readEkpackSlice(hdrInfo.relPack, startOff, endOff);
     if (!frameBytes || frameBytes.byteLength !== bookEntry.frame_byte_len) {
       return { status: STATUS.UNAVAILABLE, data: null, reason: "ekpack_range_incomplete" };
+    }
+    if (!bookEntry.frame_sha256_hex) {
+      return {
+        status: STATUS.UNAVAILABLE,
+        data: null,
+        reason: "EKPACK_BOOK_FRAME_SHA256_MISSING",
+      };
+    }
+    const actualBookSha256 = await computeSha256HexWebCrypto(frameBytes);
+    if (actualBookSha256 !== String(bookEntry.frame_sha256_hex).toLowerCase()) {
+      return {
+        status: STATUS.UNAVAILABLE,
+        data: null,
+        reason: "EKPACK_BOOK_FRAME_SHA256_MISMATCH",
+      };
     }
 
     const playerWasm = await ensurePlayerWasmLoaded();
@@ -404,6 +531,26 @@ export function createDataLayer({ source, cacheLimit = 32 } = {}) {
       if (!f67Bytes || f67Bytes.byteLength !== rlzDesc.frame_byte_len) {
         return { status: STATUS.UNAVAILABLE, data: null, reason: "frame67_range_incomplete" };
       }
+      if (
+        f67Bytes.byteLength < 8 ||
+        new DataView(f67Bytes.buffer, f67Bytes.byteOffset, 4).getUint32(0, true) >>> 0 !==
+          0xfd2fb528
+      ) {
+        return { status: STATUS.UNAVAILABLE, data: null, reason: "FRAME67_ZSTD_TAMPERED" };
+      }
+      if (rlzDesc.frame_sha256_hex) {
+        const actualF67Sha = await computeSha256HexWebCrypto(f67Bytes);
+        if (actualF67Sha !== String(rlzDesc.frame_sha256_hex).toLowerCase()) {
+          return { status: STATUS.UNAVAILABLE, data: null, reason: "FRAME67_SHA256_MISMATCH" };
+        }
+      }
+      if (
+        !rlzDesc.base_content_sha256_hex ||
+        String(rlzDesc.base_content_sha256_hex).toLowerCase() !==
+          String(hdrInfo.hdr.content_digest_sha256_hex || "").toLowerCase()
+      ) {
+        return { status: STATUS.UNAVAILABLE, data: null, reason: "FRAME67_BASE_DIGEST_MISMATCH" };
+      }
       const deltaStats = inspectDeltaZstPatch(f67Bytes, {
         lang: "es",
         bytes: hdrInfo.preamble.totalFileBytes,
@@ -431,16 +578,23 @@ export function createDataLayer({ source, cacheLimit = 32 } = {}) {
           : reqLang === "stp" && bookOrdinal < 39
             ? 2
             : 1;
+    let hasTier0 = reqLang === "he" || reqLang === "grc";
+    let hasTier1 = false;
     let packHasTier2Scaffold = reqLang === "stp";
+    let hasTier3Unattested = false;
     if (tierVec && tierVec.length >= 17) {
       for (let bIdx = 0; bIdx < 66; bIdx += 1) {
         const tb = ((Number(tierVec[bIdx >> 2]) || 0) >> ((bIdx & 3) * 2)) & 0b11;
-        if (tb === 2) {
-          packHasTier2Scaffold = true;
-          break;
-        }
+        if (tb === 0) hasTier0 = true;
+        else if (tb === 1) hasTier1 = true;
+        else if (tb === 2) packHasTier2Scaffold = true;
+        else if (tb === 3) hasTier3Unattested = true;
       }
     }
+    const isTier3PortionPack =
+      !packHasTier2Scaffold &&
+      hasTier3Unattested &&
+      (hasTier1 || (Array.isArray(hdrInfo.hdr.books) && hdrInfo.hdr.books.length < 66));
     const bookEpistemicTier =
       bookTierBits === 0
         ? "tier0_autograph_witness"
@@ -451,18 +605,25 @@ export function createDataLayer({ source, cacheLimit = 32 } = {}) {
             : "tier1_canonical_human_66";
     const sovereignTier = packHasTier2Scaffold
       ? "tier2_nt_human_ot_synthesized"
-      : bookTierBits === 3
-        ? "tier4_gmis_scaffold"
-        : "tier1_canonical_human_66";
+      : isTier3PortionPack
+        ? "tier_3_portion_ladder"
+        : hasTier0 && !hasTier1
+          ? "tier0_autograph_witness"
+          : bookTierBits === 3
+            ? "tier4_gmis_scaffold"
+            : "tier1_canonical_human_66";
     const provenance = {
       tier: packHasTier2Scaffold
         ? "nt_human_ot_scaffold"
-        : bookTierBits === 0
-          ? "autograph_witness_tier0"
-          : "canonical_human_complete",
+        : isTier3PortionPack
+          ? "portion_ladder_tier3"
+          : bookTierBits === 0
+            ? "autograph_witness_tier0"
+            : "canonical_human_complete",
       sovereign_tier: sovereignTier,
       book_epistemic_tier: bookEpistemicTier,
       book_epistemic_tier_bits: bookTierBits,
+      book_epistemic_tiers: tierVec,
       versification_tradition: hdrInfo.hdr.versification_tradition || "eng",
       source: isIntralang1909 ? "ekpack_http206_range_frame67_rlz" : "ekpack_http206_range",
       merkle_root: hdrInfo.hdr.merkle_root_sha256_hex,
@@ -616,11 +777,19 @@ export function createDataLayer({ source, cacheLimit = 32 } = {}) {
         playerWasm,
       );
       const hdr = JSON.parse(new TextDecoder("utf-8").decode(f0JsonBytes));
+      const pinnedPubKey = SOVEREIGN_ED25519_PUBLIC_KEY_HEX.toLowerCase();
+      const headerPubKey = String(hdr.ed25519_public_key_hex || "").trim().toLowerCase();
+      if (headerPubKey !== pinnedPubKey) {
+        return { ed25519Invalid: true };
+      }
+      if (hdr.schema_crc32 !== undefined && Number(hdr.schema_crc32) !== 0x4e14c015) {
+        return { ed25519Invalid: true };
+      }
       const signMsg = `EKOVOZ_MATRIX_TIER0_V1:${hdr.content_digest_sha256_hex}:${hdr.merkle_root_sha256_hex}`;
       const edOk = await verifyEd25519ManifestSignatureAsync(
         signMsg,
         hdr.ed25519_signature_hex,
-        hdr.ed25519_public_key_hex || SOVEREIGN_ED25519_PUBLIC_KEY_HEX,
+        pinnedPubKey,
         playerWasm,
       );
       if (!edOk) return { ed25519Invalid: true };
@@ -706,7 +875,14 @@ export function createDataLayer({ source, cacheLimit = 32 } = {}) {
         bEntry.offset,
         bEntry.offset + bEntry.byteLen - 1,
       );
-      if (!slice || slice.byteLength !== bEntry.byteLen) return null;
+      if (
+        !slice ||
+        slice.byteLength !== bEntry.byteLen ||
+        slice.byteLength < 8 ||
+        new DataView(slice.buffer, slice.byteOffset, 4).getUint32(0, true) >>> 0 !== 0xfd2fb528
+      ) {
+        return null;
+      }
       const rawJsonBytes = decodeZstdFrameInPlayerWasm(playerWasm, slice, bEntry.decLen);
       return JSON.parse(new TextDecoder("utf-8").decode(rawJsonBytes));
     });
@@ -1028,6 +1204,7 @@ export function createDataLayer({ source, cacheLimit = 32 } = {}) {
     loadMatrixChapter: loadChapterMatrix,
     loadPages,
     loadPageIndex: loadPages,
+    loadJson,
     loadBytes,
     loadBlockPdf,
     loadI18nIndex,

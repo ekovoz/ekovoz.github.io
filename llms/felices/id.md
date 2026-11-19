@@ -114,11 +114,7 @@ Ketika Yesus melihat orang banyak itu, naiklah Ia ke atas bukit dan setelah Ia d
 
 Datanglah murid-murid-Nya kepada-Nya,
 
-## Lámina 27: Colofón A (dedicatoria)
-
-Dia menyatakan agar karya ini dibagikan secara cuma-cuma di antara mereka yang berbahagia. Yang terkecil dalam Kerajaan Sorga.
-
-## Lámina 28: Colofón B (dedicatoria)
+## Lámina 27: Colofón (dedicatoria)
 
 Dia menyatakan agar karya ini dibagikan secara cuma-cuma di antara mereka yang berbahagia. Yang terkecil dalam Kerajaan Sorga.
 

@@ -74,6 +74,125 @@ function fnv1aHex(str) {
 }
 
 /**
+ * Evalúa consenso comunitario multi-revisor con regularización Bayesiana `Beta(4, 1.2)` + `SPRT` de Wald (`D9-V2I = 9B+`),
+ * deduplicando revisores por clave pública / `informantId` para impedir auto-promoción Sybil de un solo clic (`DEBRIS-V2I-21`).
+ */
+export function evaluateBetaDawidSkeneSprt(votes = []) {
+  const rawList = Array.isArray(votes) ? votes : [];
+  if (rawList.length === 0) {
+    return {
+      logOdds: Number(Math.log(4.0 / 1.2).toFixed(4)),
+      posteriorTruthProb: Number((4.0 / 5.2).toFixed(4)),
+      qualifiedAffirmativeSpeakers: 1,
+      distinctReviewersCount: 1,
+      sprtThresholdNats: Number(Math.log(19.0).toFixed(4)),
+      promotedToCanonicalWal: false,
+      editorialStatus: "SPEAKER_REVIEWED_QUARANTINE",
+    };
+  }
+
+  const seenReviewers = new Set();
+  let logOdds = 0.0;
+  let qualifiedAffirmativeSpeakers = 0;
+  let distinctReviewersCount = 0;
+  const sprtAcceptBound = Math.log(0.95 / 0.05);
+
+  for (let idx = 0; idx < rawList.length; idx += 1) {
+    const v = rawList[idx];
+    if (!v || typeof v !== "object") continue;
+    const revKey = String(
+      v.publicKeyHex || v.informantId || v.reviewerId || `anon-${idx}`,
+    )
+      .trim()
+      .toLowerCase();
+    if (seenReviewers.has(revKey)) {
+      continue;
+    }
+    seenReviewers.add(revKey);
+    if (v.passedGoldSeeds === false || (v.passedGoldSeed1 === false && v.passedGoldSeed2 === false)) {
+      continue;
+    }
+    distinctReviewersCount += 1;
+    const hasCalibratedGold =
+      v.passedGoldSeeds === true ||
+      (v.passedGoldSeed1 === true && v.passedGoldSeed2 === true) ||
+      v.approved === true;
+    const alphaHat = Number.isFinite(v.sensitivity)
+      ? Math.min(0.99, Math.max(0.51, Number(v.sensitivity)))
+      : hasCalibratedGold
+        ? 6.0 / 7.2
+        : 4.0 / 5.2;
+    const fprHat = Number.isFinite(v.falsePositiveRate)
+      ? Math.max(0.01, Math.min(0.49, Number(v.falsePositiveRate)))
+      : hasCalibratedGold
+        ? 1.2 / 7.2
+        : 1.2 / 5.2;
+    const agrees = v.agrees !== false && v.approved !== false;
+    if (agrees) {
+      logOdds += Math.log(alphaHat / fprHat);
+      qualifiedAffirmativeSpeakers += 1;
+    } else {
+      logOdds += Math.log((1.0 - alphaHat) / (1.0 - fprHat));
+    }
+  }
+
+  const posteriorTruthProb = Number((1 / (1 + Math.exp(-logOdds))).toFixed(4));
+  const allGoldVerified = rawList.every(
+    (v) =>
+      v?.passedGoldSeeds === true ||
+      (v?.passedGoldSeed1 === true && v?.passedGoldSeed2 === true) ||
+      v?.approved === true,
+  );
+  const minRequired = allGoldVerified ? 2 : 3;
+  const promotedToCanonicalWal =
+    qualifiedAffirmativeSpeakers >= minRequired &&
+    logOdds >= sprtAcceptBound &&
+    posteriorTruthProb >= 0.9;
+  return {
+    logOdds: Number(logOdds.toFixed(4)),
+    posteriorTruthProb,
+    qualifiedAffirmativeSpeakers,
+    distinctReviewersCount,
+    sprtThresholdNats: Number(sprtAcceptBound.toFixed(4)),
+    promotedToCanonicalWal,
+    editorialStatus: promotedToCanonicalWal
+      ? "COMMUNITY_VALIDATED"
+      : "SPEAKER_REVIEWED_QUARANTINE",
+  };
+}
+
+export function hydrateFormulaicParallelsIndex(formulaicJson) {
+  const quotes = Array.isArray(formulaicJson?.ot_in_nt_quotations)
+    ? formulaicJson.ot_in_nt_quotations
+    : [];
+  for (const q of quotes) {
+    const ot = String(q?.ot_ref || "").trim().toUpperCase();
+    const nt = String(q?.nt_ref || "").trim().toUpperCase();
+    if (!ot || !nt) continue;
+    if (!FORMULAIC_PARALLEL_QUOTES[ot]) FORMULAIC_PARALLEL_QUOTES[ot] = [];
+    if (!FORMULAIC_PARALLEL_QUOTES[ot].includes(nt)) {
+      FORMULAIC_PARALLEL_QUOTES[ot].push(nt);
+    }
+  }
+  const templates = Array.isArray(formulaicJson?.templates)
+    ? formulaicJson.templates
+    : [];
+  for (const tpl of templates) {
+    const anchor = String(tpl?.canonical_anchor_ref || "").trim().toUpperCase();
+    const samples = Array.isArray(tpl?.sample_instance_refs) ? tpl.sample_instance_refs : [];
+    if (!anchor || samples.length === 0) continue;
+    if (!FORMULAIC_PARALLEL_QUOTES[anchor]) FORMULAIC_PARALLEL_QUOTES[anchor] = [];
+    for (const sampleRef of samples) {
+      const cleanSample = String(sampleRef || "").trim().toUpperCase();
+      if (cleanSample && !FORMULAIC_PARALLEL_QUOTES[anchor].includes(cleanSample)) {
+        FORMULAIC_PARALLEL_QUOTES[anchor].push(cleanSample);
+      }
+    }
+  }
+  return Object.keys(FORMULAIC_PARALLEL_QUOTES).length;
+}
+
+/**
  * Evalúa el posterior Bayesiano Dawid-Skene + SPRT (`P(T=1 | votos)`) y ejecuta
  * la propagación determinista en cascada `L1–L5` sobre:
  *  - `L1`: Ortografía / puntuación local
@@ -95,6 +214,9 @@ export function propagateCascadeL1ToL5({
   votes = [],
   existingOverlayEntries = [],
   validateLocksFn = null,
+  expectedProperNouns = [],
+  expectedAgent = "",
+  expectedPatient = "",
   lamportTs = 0,
 } = {}) {
   const cleanLang = String(lang || "stp").trim().toLowerCase();
@@ -121,6 +243,9 @@ export function propagateCascadeL1ToL5({
     const lockReport = validateLocksFn({
       oldSurface: String(oldSurface || ""),
       newSurface: trimmedNew,
+      expectedProperNouns,
+      expectedAgent,
+      expectedPatient,
     });
     const locksPassed =
       lockReport && lockReport.passed !== false && lockReport.allPassed !== false;
@@ -134,30 +259,14 @@ export function propagateCascadeL1ToL5({
     }
   }
 
-  // Dawid-Skene + SPRT posterior P(T=1 | votes) with Gold-Seed reliability filter
-  const normalizedVotes = Array.isArray(votes) && votes.length > 0
-    ? votes
-    : [{ informantId: "local-proposer", passedGoldSeeds: true, agrees: true }];
-
-  let logOdds = 0.0; // Prior P(T=1) = 0.50 -> log(0.5 / 0.5) = 0
-  let qualifiedAffirmativeSpeakers = 0;
-  for (const v of normalizedVotes) {
-    if (v.passedGoldSeeds === false) {
-      // Bot / uncalibrated voter: zero epistemic weight (anti-spam veto)
-      continue;
-    }
-    const sensitivity = Number.isFinite(v.sensitivity) ? v.sensitivity : 0.82;
-    const fpr = Number.isFinite(v.falsePositiveRate) ? v.falsePositiveRate : 0.12;
-    if (v.agrees !== false) {
-      logOdds += Math.log(sensitivity / fpr);
-      qualifiedAffirmativeSpeakers += 1;
-    } else {
-      logOdds += Math.log((1 - sensitivity) / (1 - fpr));
-    }
-  }
-  const posteriorTruthProb = Number((1 / (1 + Math.exp(-logOdds))).toFixed(4));
-  const promotedToCanonicalWal = qualifiedAffirmativeSpeakers >= 2 && posteriorTruthProb >= 0.9;
-  const editorialStatus = promotedToCanonicalWal ? "COMMUNITY_VALIDATED" : "SPEAKER_REVIEWED_QUARANTINE";
+  // Dawid-Skene Beta(4, 1.2) + Wald SPRT posterior P(T=1 | votes) with Sybil deduplication
+  const dsVerdict = evaluateBetaDawidSkeneSprt(votes);
+  const {
+    posteriorTruthProb,
+    promotedToCanonicalWal,
+    editorialStatus,
+    qualifiedAffirmativeSpeakers,
+  } = dsVerdict;
 
   const cleanRef = String(ref || "GEN.1.1").trim().toUpperCase();
   const bookChap = cleanRef.split(".").slice(0, 2).join(".");
@@ -371,7 +480,7 @@ export function projectChapterThroughCascadeSemilattice({
     const isArr = Array.isArray(row);
     const vKey = String(isArr ? (row[0] ?? "") : (row.verse ?? row.v ?? ""));
     if (!vKey) continue;
-    const st = String(isArr ? (row[4] ?? "") : (row.strong ?? row.c05_strong ?? ""))
+    const st = String(isArr ? (row[3] ?? "") : (row.strong ?? row.c05_strong ?? ""))
       .trim()
       .toUpperCase();
     if (st) {
@@ -381,7 +490,7 @@ export function projectChapterThroughCascadeSemilattice({
       }
     }
     const c13 = String(
-      isArr ? (row[12] ?? row[13] ?? "") : (row.onomasticon ?? row.c13_onomasticon ?? ""),
+      isArr ? (row[11] ?? row[12] ?? "") : (row.onomasticon ?? row.c13_onomasticon ?? ""),
     ).trim();
     if (c13 && c13 !== "-" && c13 !== "0") {
       if (!c13ByVerse.has(vKey)) c13ByVerse.set(vKey, new Set());

@@ -48,6 +48,7 @@ import {
   hydrateWasmManifestStatus, renderCrdtWalAndLockP2AuditCardHtml, renderMasterCensus7164CardHtml,
   renderPhotocopyResilienceAndSocialCardHtml, renderPrintDrawerPanelsSyncInDrawer, syncActiveStrongInStudyDrawer,
 } from "./mostrador/drawer_hydrators.js";
+import { revokePrintObjectUrls } from "./mostrador/drawer_print.js";
 import {
   bindShareDrawerActionEvents,
 } from "./mostrador/drawer_share.js";
@@ -70,7 +71,7 @@ import {
   applyToDom, createI18n, formatLocalizedNumeralWeb, isRtlLocale, localizeWorkChromeLabels, negotiate,
 } from "./mostrador/i18n.js";
 import {
-  GEOGRAPHIC_MACRO_REGIONS, indexRegionShards, listCountriesInRegion, listLanguagesInCountry, listMacroRegions, searchLanguages,
+  GEOGRAPHIC_MACRO_REGIONS, indexRegionShards, listCountriesInRegion, listLanguagesInCountry, listMacroRegions, lookupIso639MacroRegionO1, searchLanguages,
   suggestLayer0Languages,
 } from "./mostrador/lang_funnel.js";
 import {
@@ -489,6 +490,7 @@ export function createMostradorController(options = {}) {
   }
 
   async function navigate(partial = {}, targetDoc = doc) {
+    revokePrintObjectUrls(state);
     if (partial.lang) state.lang = String(partial.lang);
     if (partial.book) state.book = String(partial.book).toUpperCase();
     if (partial.chapter !== undefined) state.chapter = Math.max(1, Number(partial.chapter) || 1);
@@ -603,6 +605,7 @@ export function createMostradorController(options = {}) {
       const allCatEntries = [
         ...(Array.isArray(cat?.languages) ? cat.languages : []),
         ...(Array.isArray(cat?.ekpack_languages_21) ? cat.ekpack_languages_21 : []),
+        ...(Array.isArray(cat?.tier3_portion_languages) ? cat.tier3_portion_languages : []),
       ];
       if (allCatEntries.length > 0) {
         catalogEntry =
@@ -630,15 +633,20 @@ export function createMostradorController(options = {}) {
           `El contenedor canónico <code>${escapeHtml(state.lang)}.ekpack</code> no está accesible sin red aún; impórtelo vía Sneakernet o conéctese una vez (0% Falsa Biblia GMIS).` +
           `</section>`;
       } else {
+        const o1Route = lookupIso639MacroRegionO1(normCorpusLang || state.lang || "");
         const macroRegion = Number(
           catalogEntry?.macro_region ||
           catalogEntry?.macroRegion ||
-          (normCorpusLang === "kgv" ? 11 : normCorpusLang === "sw" ? 8 : 1),
+          (o1Route?.found ? o1Route.macroRegionId : 0) ||
+          1,
         );
         const regionalSlot = REGIONAL_BRIDGE_LANGUAGES_10[macroRegion] || REGIONAL_BRIDGE_LANGUAGES_10[1];
         const bridgeSpec = resolveRegionalBridgeLanguage21({
+          lang: normCorpusLang || state.lang || "",
           macroRegion,
-          bridgeLang: catalogEntry?.bridge_lang || regionalSlot?.code || "",
+          bridgeLang:
+            catalogEntry?.bridge_lang ||
+            (o1Route?.isLusophone ? "pt" : regionalSlot?.code || ""),
         });
         let bridgeVerses = {};
         try {

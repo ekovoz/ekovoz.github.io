@@ -4,7 +4,12 @@
 // Pórtico Oral WASM) y dispensación de Dosis 1/2/3 extraída de web/mostrador.js (GOLD-696).
 // ============================================================================
 
-import { escapeHtml, renderChapterPreviewHtml } from "./bridge_and_chapter.js";
+import {
+  escapeHtml,
+  isBookHumanVerifiedByEpistemicTier,
+  renderChapterPreviewHtml,
+  unpackBookEpistemicTier2Bit,
+} from "./bridge_and_chapter.js";
 import { STATUS } from "./data_layer.js";
 import {
   computeViewportRenderSignature,
@@ -12,7 +17,6 @@ import {
 } from "./diglossic_chapter_renderer.js";
 import { renderAnalyticalThermometerHtml } from "./diachronic_register.js";
 import {
-  buildRelativePdfAssetUrl,
   dispatchTandaWorkerJob,
   doseFilename,
   effectiveThreatClassWeb,
@@ -20,8 +24,6 @@ import {
   ordinalOf,
   planBimodalClientPrint,
   planDose1,
-  planDose2,
-  planDose3,
   syncDose2AndDose3LinksForActiveLang,
 } from "./dosis.js";
 import { projectChapterWithLiveOverlays } from "./drawer_workshop.js";
@@ -81,9 +83,34 @@ export function renderMostradorViewportFromState({
   viewport.setAttribute("data-active-overlay-authority", overlayProj.activeAuthority);
   state.reverseOrthoMap = reverseMap;
 
-  // SLICE-EKO-V2H-20: Proyección XOR estricta de 1 sola vista por capítulo (-50% nodos DOM, 0 duplicación)
+  // SLICE-EKO-V2H-20 + SLICE-EKO-V2I-20: Proyección XOR estricta de 1 sola vista por capítulo.
+  // En `stp` (`Tier 2`), el NT humano verificado (`40_MAT..66_REV`, `book_epistemic_tiers == 0b01`)
+  // se renderiza en mostrador monolingüe canónico con sello verificado; el AT (`01_GEN..39_MAL`, `0b10`)
+  // se renderiza en Puente Diglósico de 2 columnas.
+  const packedBookTiers =
+    res.provenance?.book_epistemic_tiers ||
+    res.chapter?.provenance?.book_epistemic_tiers ||
+    res.bookEpistemicTiers ||
+    null;
+  const bookTierBits = unpackBookEpistemicTier2Bit(packedBookTiers, state.book);
+  viewport.setAttribute(
+    "data-book-epistemic-tier-bits",
+    bookTierBits === null ? "auto" : String(bookTierBits),
+  );
+  const isHumanVerifiedBook =
+    isBookHumanVerifiedByEpistemicTier(state.book, {
+      ...res,
+      book: state.book,
+      lang: state.lang,
+    }) &&
+    (bookTierBits === 0 || bookTierBits === 1 || String(state.lang || "").toLowerCase() === "stp");
   let baseHtml = "";
-  if (res.status === STATUS.READY && state.lastDiglossicContext && state.register !== "bilingue") {
+  if (
+    res.status === STATUS.READY &&
+    state.lastDiglossicContext &&
+    state.register !== "bilingue" &&
+    !isHumanVerifiedBook
+  ) {
     const dCtx = state.lastDiglossicContext;
     const diglossicOnly = renderProgressiveTwoStrataDiglossicBridge({
       lang: state.lang,
@@ -160,65 +187,15 @@ export function renderMostradorViewportFromState({
   }
 }
 
-export async function updateMostradorDoseLinks({ state, dataLayer, getEl, targetDoc }) {
+export async function updateMostradorDoseLinks({ state, targetDoc, getEl }) {
   try {
-    const syncedLive = syncDose2AndDose3LinksForActiveLang({
+    syncDose2AndDose3LinksForActiveLang({
       state,
       targetDoc,
       getEl,
     });
-    if (syncedLive && syncedLive.mode !== "precompiled") {
-      return;
-    }
-    const catalog = await dataLayer.loadCatalog();
-    const pageIndex = await dataLayer.loadPageIndex(state.lang, state.edition);
-    const manifest = await dataLayer.loadManifest();
-    if (catalog && pageIndex) {
-      const ordinal = ordinalOf(
-        state.book,
-        state.chapter,
-        state.verse,
-        catalog.verse_counts,
-      );
-      const loc = locateVersePage(pageIndex, ordinal);
-      if (loc) {
-        const d2 = planDose2(loc.blockId, state.lang, state.edition, {
-          paperFormat: state.paperFormat,
-          columns: state.columns,
-        });
-        const linkDose2 = getEl("linkDose2BlockPdf", targetDoc);
-        if (linkDose2) {
-          linkDose2.setAttribute("href", buildRelativePdfAssetUrl(d2.url));
-          linkDose2.setAttribute("data-edition-slug", d2.editionSlug);
-          linkDose2.setAttribute(
-            "download",
-            doseFilename({
-              dose: 2,
-              lang: state.lang,
-              blockId: loc.blockId,
-              countryIso2: state.countryIso2,
-            }),
-          );
-        }
-      }
-    }
-    if (manifest) {
-      const d3 = planDose3(manifest, state.lang);
-      const linkDose3 = getEl("linkDose3FullBiblePdf", targetDoc);
-      if (linkDose3 && d3) {
-        linkDose3.setAttribute("href", buildRelativePdfAssetUrl(d3.href || d3.path));
-        linkDose3.setAttribute(
-          "download",
-          doseFilename({
-            dose: 3,
-            lang: state.lang,
-            countryIso2: state.countryIso2,
-          }),
-        );
-      }
-    }
   } catch {
-    // Non-fatal if page index or manifest is unavailable for an uncompiled language
+    // Non-fatal if DOM targets are absent in headless environment
   }
 }
 
@@ -271,7 +248,7 @@ export async function dispenseMostradorDose1({ opts = {}, state, dataLayer }) {
         pdfBytes = workerRes.pdfBytes;
       }
     } catch {
-      // Fallback to valid embedded Type3 vector seed when Worker/fetch is mocked out
+      // Fallback to distinct Hershey stroke vector seed when Worker/fetch is mocked out
     }
     const threatClass = effectiveThreatClassWeb(state.countryIso2, state.lang);
     const filename = doseFilename({

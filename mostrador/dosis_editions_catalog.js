@@ -161,7 +161,7 @@ const CANONICAL_66_BOOKS_CHAPTER_COUNTS = [
   ["NEH", 13, "AT · Libros Históricos"], ["EST", 10, "AT · Libros Históricos"], ["JOB", 42, "AT · Poesía y Sabiduría"],
   ["PSA", 150, "AT · Poesía y Sabiduría"], ["PRO", 31, "AT · Poesía y Sabiduría"], ["ECC", 12, "AT · Poesía y Sabiduría"],
   ["SNG", 8, "AT · Poesía y Sabiduría"], ["ISA", 66, "AT · Profetas Mayores"], ["JER", 52, "AT · Profetas Mayores"],
-  ["LAM", 5, "AT · Profetas Mayores"], ["EZE", 48, "AT · Profetas Mayores"], ["DAN", 12, "AT · Profetas Mayores"],
+  ["LAM", 5, "AT · Profetas Mayores"], ["EZK", 48, "AT · Profetas Mayores"], ["DAN", 12, "AT · Profetas Mayores"],
   ["HOS", 14, "AT · Profetas Menores"], ["JOL", 3, "AT · Profetas Menores"], ["AMO", 9, "AT · Profetas Menores"],
   ["OBA", 1, "AT · Profetas Menores"], ["JON", 4, "AT · Profetas Menores"], ["MIC", 7, "AT · Profetas Menores"],
   ["NAM", 3, "AT · Profetas Menores"], ["HAB", 3, "AT · Profetas Menores"], ["ZEP", 3, "AT · Profetas Menores"],
@@ -702,14 +702,38 @@ export function computeKindlePrintBudget({
   const cleanPt = Math.max(7.0, Math.min(18.0, Number(fontPt) || 9.5));
   const reqCols = Math.max(1, Math.min(3, Number(columns) || 2));
   const cleanOrientation = String(orientation || "landscape").toLowerCase() === "portrait" ? "Portrait" : "Landscape";
-  const cleanPaper = String(paper || "A4").toUpperCase() === "LETTER" ? "Letter" : "A4";
+  const rawPaperUpper = String(paper || "A4").toUpperCase();
+  const cleanPaper = rawPaperUpper.includes("A3")
+    ? "A3"
+    : rawPaperUpper.includes("FOLIO") || rawPaperUpper.includes("OFICIO")
+      ? "Folio"
+      : rawPaperUpper.includes("B70") || rawPaperUpper.includes("BRAILLE")
+        ? "B70"
+        : rawPaperUpper.includes("LETTER") || rawPaperUpper.includes("CARTA")
+          ? "Letter"
+          : "A4";
   const isComplexScript = /^(Tibt|Arab|Hebr|Deva)$/i.test(String(script || "Latn"));
 
-  const effectiveColumns = reqCols === 3 && (cleanPt >= 11.0 || isComplexScript) ? 2 : reqCols;
-  const pageWidthPt =
-    cleanPaper === "LETTER"
-      ? cleanOrientation === "Landscape" ? 792 : 612
-      : cleanOrientation === "Landscape" ? 842 : 595;
+  const effectiveColumns = reqCols === 3 && (cleanPt >= 11.0 && cleanPaper !== "A3" || isComplexScript) ? 2 : reqCols;
+  const baseWidthPt =
+    cleanPaper === "A3"
+      ? 842
+      : cleanPaper === "B70"
+        ? 794
+        : cleanPaper === "Folio" || cleanPaper === "Letter"
+          ? 612
+          : 595;
+  const baseHeightPt =
+    cleanPaper === "A3"
+      ? 1191
+      : cleanPaper === "B70"
+        ? 828
+        : cleanPaper === "Folio"
+          ? 936
+          : cleanPaper === "Letter"
+            ? 792
+            : 842;
+  const pageWidthPt = cleanOrientation === "Landscape" ? baseHeightPt : baseWidthPt;
   const printableWidthPt = pageWidthPt - 72 - (effectiveColumns - 1) * 18;
   const colWidthPt = printableWidthPt / effectiveColumns;
   const cpl = Math.max(24, Math.min(92, Math.round((colWidthPt / (cleanPt * 0.52)) * 0.42)));
@@ -843,4 +867,129 @@ export function renderImpositionAndLayoutPreviewHtml({
     `<span>${detailText}</span>` +
     `</div>`
   );
+}
+
+export const GOSPEL_14_PERICOPES_SPEC = Object.freeze([
+  { id: "P01", book: "JHN", chapter: 1, startVerse: 1, endVerse: 18, title: "1. El Verbo se hizo carne" },
+  { id: "P02", book: "LUK", chapter: 2, startVerse: 1, endVerse: 20, title: "2. Nacimiento del Mesías" },
+  { id: "P03", book: "MRK", chapter: 1, startVerse: 9, endVerse: 20, title: "3. Bautismo y llamado" },
+  { id: "P04", book: "MAT", chapter: 5, startVerse: 1, endVerse: 16, title: "4. Las Dichas y la Luz del Mundo" },
+  { id: "P05", book: "MAT", chapter: 6, startVerse: 5, endVerse: 15, title: "5. La Oración del Reino" },
+  { id: "P06", book: "MRK", chapter: 4, startVerse: 35, endVerse: 41, title: "6. Autoridad sobre la tempestad" },
+  { id: "P07", book: "JHN", chapter: 3, startVerse: 1, endVerse: 21, title: "7. Nacer de nuevo" },
+  { id: "P08", book: "JHN", chapter: 4, startVerse: 5, endVerse: 26, title: "8. Agua viva junto al pozo" },
+  { id: "P09", book: "LUK", chapter: 10, startVerse: 25, endVerse: 37, title: "9. El buen samaritano" },
+  { id: "P10", book: "LUK", chapter: 15, startVerse: 11, endVerse: 32, title: "10. El hijo pródigo y el Padre" },
+  { id: "P11", book: "JHN", chapter: 10, startVerse: 1, endVerse: 18, title: "11. El Buen Pastor" },
+  { id: "P12", book: "JHN", chapter: 11, startVerse: 17, endVerse: 44, title: "12. La Resurrección y la Vida" },
+  { id: "P13", book: "LUK", chapter: 23, startVerse: 32, endVerse: 49, title: "13. Entrega en la cruz" },
+  { id: "P14", book: "JHN", chapter: 20, startVerse: 1, endVerse: 29, title: "14. Sepulcro vacío y envío" },
+]);
+
+export const REFUGE_4_SHEETS_PASSAGES_SPEC = Object.freeze([
+  { book: "GEN", chapter: 1, startVerse: 1, endVerse: 5 },
+  { book: "PSA", chapter: 23, startVerse: 1, endVerse: 6 },
+  { book: "PSA", chapter: 46, startVerse: 1, endVerse: 11 },
+  { book: "PSA", chapter: 91, startVerse: 1, endVerse: 16 },
+  { book: "ISA", chapter: 40, startVerse: 28, endVerse: 31 },
+  { book: "ISA", chapter: 53, startVerse: 1, endVerse: 12 },
+  { book: "MAT", chapter: 5, startVerse: 1, endVerse: 12 },
+  { book: "MAT", chapter: 11, startVerse: 28, endVerse: 30 },
+  { book: "LUK", chapter: 15, startVerse: 1, endVerse: 10 },
+  { book: "JHN", chapter: 1, startVerse: 1, endVerse: 14 },
+  { book: "JHN", chapter: 3, startVerse: 16, endVerse: 17 },
+  { book: "JHN", chapter: 14, startVerse: 1, endVerse: 6 },
+  { book: "JHN", chapter: 20, startVerse: 19, endVerse: 29 },
+  { book: "ROM", chapter: 8, startVerse: 28, endVerse: 39 },
+  { book: "PHP", chapter: 4, startVerse: 4, endVerse: 9 },
+  { book: "REV", chapter: 21, startVerse: 1, endVerse: 7 },
+]);
+
+export function formatCanonical80BlocksChecklistEntries(lang = "es") {
+  const isEn = String(lang || "es").toLowerCase().startsWith("en");
+  return CANONICAL_80_BLOCKS_CATALOG.map((blk) => ({
+    ref: blk.blockId,
+    text: isEn
+      ? `[ ] ${blk.shortCode} (${blk.testament}) · ${blk.rangeLabel} · ${blk.chaptersCount} ch · ${blk.pagesCount} pp`
+      : `[ ] ${blk.shortCode} (${blk.testament}) · ${blk.rangeLabel} · ${blk.chaptersCount} caps · ${blk.pagesCount} págs`,
+  }));
+}
+
+// Mapa Braille Literario 6-puntos ISO 17049 (patrón de bits d1..d6 -> U+2800 + mask y ASCII BRF).
+const BRAILLE_DOTS_BY_CHAR = Object.freeze({
+  a: 0x01, b: 0x03, c: 0x09, d: 0x19, e: 0x11, f: 0x0b, g: 0x1b, h: 0x13, i: 0x0a, j: 0x1a,
+  k: 0x05, l: 0x07, m: 0x0d, n: 0x1d, o: 0x15, p: 0x0f, q: 0x1f, r: 0x17, s: 0x0e, t: 0x1e,
+  u: 0x25, v: 0x27, w: 0x3a, x: 0x2d, y: 0x3d, z: 0x35,
+  á: 0x37, é: 0x2e, í: 0x0c, ó: 0x2c, ú: 0x3e, ü: 0x33, ñ: 0x3b,
+  ",": 0x02, ";": 0x06, ":": 0x12, ".": 0x04, "!": 0x16, "¡": 0x16, "?": 0x22, "¿": 0x22,
+  "-": 0x24, "'": 0x04, "\"": 0x26, "(": 0x23, ")": 0x1c,
+});
+
+const BRF_ASCII_BY_DOTS = (() => {
+  const table = " A1B'K2L@CIF/MSP\"E3H9O6R^DJG>NTQ,*5<-U8V.%[$+X!&;:4\\0Z7(_?W]#Y)=";
+  const arr = new Array(64).fill(" ");
+  for (let i = 0; i < 64 && i < table.length; i += 1) arr[i] = table[i];
+  return arr;
+})();
+
+const DIGIT_TO_BRAILLE_DOTS = [0x1a, 0x01, 0x03, 0x09, 0x19, 0x11, 0x0b, 0x1b, 0x13, 0x0a];
+
+/**
+ * Transductor determinista Braille Literario de 6 puntos (`ISO 17049` / `D1-V2I = 1B+`):
+ * produce archivo `.brf` táctil listo para embosser (`40` celdas/línea) y entradas pareadas de Baja Visión (`16pt`).
+ */
+export function transduceTextToBrailleBrfAndUnicode(entries = [], { lineWidth = 40 } = {}) {
+  const safeWidth = Math.max(20, Math.min(80, Number(lineWidth) || 40));
+  const brfLines = [];
+  const unicodeBrailleEntries = [];
+
+  for (const item of Array.isArray(entries) ? entries : []) {
+    const rawLine = `${String(item?.ref || "").trim()} ${String(item?.text || "").trim()}`.trim();
+    if (!rawLine) continue;
+    const cells = [];
+    let inNumber = false;
+    for (const ch of Array.from(rawLine)) {
+      if (ch === " " || ch === "\t") {
+        cells.push(0x00);
+        inNumber = false;
+        continue;
+      }
+      if (ch >= "0" && ch <= "9") {
+        if (!inNumber) {
+          cells.push(0x3c); // Signo numérico ⠼
+          inNumber = true;
+        }
+        cells.push(DIGIT_TO_BRAILLE_DOTS[ch.charCodeAt(0) - 48]);
+        continue;
+      }
+      inNumber = false;
+      const lower = ch.toLowerCase();
+      if (ch !== lower && BRAILLE_DOTS_BY_CHAR[lower] !== undefined) {
+        cells.push(0x28); // Signo mayúscula ⠨
+      }
+      const mask = BRAILLE_DOTS_BY_CHAR[lower];
+      if (mask !== undefined) {
+        cells.push(mask);
+      } else {
+        const nfdBase = lower.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        cells.push(BRAILLE_DOTS_BY_CHAR[nfdBase] ?? 0x22);
+      }
+    }
+    const unicodeStr = cells.map((m) => String.fromCodePoint(0x2800 + (m & 0x3f))).join("");
+    const brfStr = cells.map((m) => BRF_ASCII_BY_DOTS[m & 0x3f] || " ").join("");
+    for (let pos = 0; pos < brfStr.length; pos += safeWidth) {
+      brfLines.push(brfStr.slice(pos, pos + safeWidth));
+    }
+    unicodeBrailleEntries.push({
+      ref: String(item?.ref || ""),
+      text: String(item?.text || ""),
+      brfAsciiLine: brfStr,
+      unicodeBraille: unicodeStr,
+    });
+  }
+
+  return {
+    brfAscii: `${brfLines.join("\r\n")}\r\n`,
+    unicodeBrailleEntries,
+  };
 }

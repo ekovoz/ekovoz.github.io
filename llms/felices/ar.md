@@ -114,11 +114,7 @@ canonical_url: https://ekovoz.org/ar//
 
 أتى تلاميذه إليه
 
-## Lámina 27: Colofón A (dedicatoria)
+## Lámina 27: Colofón (dedicatoria)
 
-فوجههم لمشاركة هذا العمل بحرية بين مبتهجيه
-
-## Lámina 28: Colofón B (dedicatoria)
-
-إنهم صغار ملكوت السموات
+فوجههم لمشاركة هذا العمل بحرية بين مبتهجيه. إنهم صغار ملكوت السموات.
 

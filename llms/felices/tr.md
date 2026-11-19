@@ -114,11 +114,7 @@ Sevinin, sevinçle coşun! Çünkü göklerdeki ödülünüz büyüktür…
 
 Öğrencileri O'na geldi,
 
-## Lámina 27: Colofón A (dedicatoria)
-
-O, bu eserin Kendi mutlu olanları arasında serbestçe paylaşılmasını buyurdu. Göklerin Egemenliğinde en küçük olanlar için.
-
-## Lámina 28: Colofón B (dedicatoria)
+## Lámina 27: Colofón (dedicatoria)
 
 O, bu eserin Kendi mutlu olanları arasında serbestçe paylaşılmasını buyurdu. Göklerin Egemenliğinde en küçük olanlar için.
 

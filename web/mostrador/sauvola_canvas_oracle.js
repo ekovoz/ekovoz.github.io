@@ -5,6 +5,8 @@
 // degradación morfológica estocástica de Kanungo (1994) y característica de Euler 8-conexa exacta por bit-quads 2×2 de Gray (1971).
 // ============================================================================
 
+import { extractGlyphContoursWithWorkerWasm } from "./tanda_print_worker.js";
+
 /**
  * LUT exacta de 16 entradas sobre bit-quads 2×2 (Gray 1971, conectividad 8 para tinta `1`, 4 para fondo `0`):
  * Índice = (tl << 3) | (tr << 2) | (bl << 1) | br
@@ -227,7 +229,7 @@ export function rasterizeTrueTypeGlyphsFromSfntBytes(
   if (!(ttfBytes instanceof Uint8Array) || ttfBytes.byteLength < 128) return null;
   const dv = new DataView(ttfBytes.buffer, ttfBytes.byteOffset, ttfBytes.byteLength);
   const sfntVer = dv.getUint32(0, false);
-  if (sfntVer !== 0x00010000 && sfntVer !== 0x74727565) return null;
+  if (sfntVer !== 0x00010000 && sfntVer !== 0x74727565 && sfntVer !== 0x4f54544f) return null;
   const numTables = dv.getUint16(4, false);
   const tables = new Map();
   for (let i = 0; i < numTables; i += 1) {
@@ -250,11 +252,82 @@ export function rasterizeTrueTypeGlyphsFromSfntBytes(
   const loca = tables.get("loca");
   const glyf = tables.get("glyf");
   const cmap = tables.get("cmap");
-  if (!head || !maxp || !loca || !glyf || !cmap) return null;
+  if (!head || !maxp || !cmap) return null;
 
   const unitsPerEm = Math.max(64, dv.getUint16(head.offset + 18, false));
   const indexToLocFormat = dv.getInt16(head.offset + 50, false);
   const numGlyphs = dv.getUint16(maxp.offset + 4, false);
+
+  const decodeWasmOutlineBytes = (rawBytes) => {
+    if (!(rawBytes instanceof Uint8Array) || rawBytes.byteLength < 32 || rawBytes.byteLength % 4 !== 0) {
+      return null;
+    }
+    const fdv = new DataView(rawBytes.buffer, rawBytes.byteOffset, rawBytes.byteLength);
+    const nFloats = rawBytes.byteLength >> 2;
+    const advUnits = Math.max(unitsPerEm * 0.35, fdv.getFloat32(4, true));
+    const polys = [];
+    let cur = [];
+    let cx = 0;
+    let cy = 0;
+    let idx = 7;
+    while (idx < nFloats) {
+      const cmd = Math.round(fdv.getFloat32(idx * 4, true));
+      idx += 1;
+      if (cmd === 1 && idx + 2 <= nFloats) {
+        if (cur.length >= 3) polys.push(cur);
+        cx = fdv.getFloat32(idx * 4, true);
+        cy = fdv.getFloat32((idx + 1) * 4, true);
+        cur = [[cx, cy]];
+        idx += 2;
+      } else if (cmd === 2 && idx + 2 <= nFloats) {
+        cx = fdv.getFloat32(idx * 4, true);
+        cy = fdv.getFloat32((idx + 1) * 4, true);
+        cur.push([cx, cy]);
+        idx += 2;
+      } else if (cmd === 3 && idx + 4 <= nFloats) {
+        const x1 = fdv.getFloat32(idx * 4, true);
+        const y1 = fdv.getFloat32((idx + 1) * 4, true);
+        const x2 = fdv.getFloat32((idx + 2) * 4, true);
+        const y2 = fdv.getFloat32((idx + 3) * 4, true);
+        for (let step = 1; step <= 4; step += 1) {
+          const t = step / 4;
+          const mt = 1 - t;
+          cur.push([
+            mt * mt * cx + 2 * mt * t * x1 + t * t * x2,
+            mt * mt * cy + 2 * mt * t * y1 + t * t * y2,
+          ]);
+        }
+        cx = x2;
+        cy = y2;
+        idx += 4;
+      } else if (cmd === 4 && idx + 6 <= nFloats) {
+        const x1 = fdv.getFloat32(idx * 4, true);
+        const y1 = fdv.getFloat32((idx + 1) * 4, true);
+        const x2 = fdv.getFloat32((idx + 2) * 4, true);
+        const y2 = fdv.getFloat32((idx + 3) * 4, true);
+        const x3 = fdv.getFloat32((idx + 4) * 4, true);
+        const y3 = fdv.getFloat32((idx + 5) * 4, true);
+        for (let step = 1; step <= 4; step += 1) {
+          const t = step / 4;
+          const mt = 1 - t;
+          cur.push([
+            mt * mt * mt * cx + 3 * mt * mt * t * x1 + 3 * mt * t * t * x2 + t * t * t * x3,
+            mt * mt * mt * cy + 3 * mt * mt * t * y1 + 3 * mt * t * t * y2 + t * t * t * y3,
+          ]);
+        }
+        cx = x3;
+        cy = y3;
+        idx += 6;
+      } else if (cmd === 5) {
+        if (cur.length >= 3) polys.push(cur);
+        cur = [];
+      } else {
+        break;
+      }
+    }
+    if (cur.length >= 3) polys.push(cur);
+    return polys.length > 0 ? { polys, advUnits } : null;
+  };
 
   const lookupGid = (cp) => {
     const numSub = dv.getUint16(cmap.offset + 2, false);
@@ -305,8 +378,14 @@ export function rasterizeTrueTypeGlyphsFromSfntBytes(
     return 0;
   };
 
-  const getGlyphContours = (gid) => {
-    if (gid <= 0 || gid >= numGlyphs) return null;
+  const getGlyphContours = (gid, depth = 0, codepointHint = 0) => {
+    if (!loca || !glyf) {
+      if (codepointHint > 0) {
+        return decodeWasmOutlineBytes(extractGlyphContoursWithWorkerWasm(ttfBytes, codepointHint));
+      }
+      return null;
+    }
+    if (gid <= 0 || gid >= numGlyphs || depth > 6) return null;
     let g0 = 0;
     let g1 = 0;
     if (indexToLocFormat === 0) {
@@ -319,9 +398,70 @@ export function rasterizeTrueTypeGlyphsFromSfntBytes(
     if (g1 <= g0 || glyf.offset + g1 > ttfBytes.byteLength) return null;
     const base = glyf.offset + g0;
     const nContours = dv.getInt16(base, false);
-    if (nContours <= 0) return null;
+    if (nContours === 0) return null;
     const xMin = dv.getInt16(base + 2, false);
     const xMax = dv.getInt16(base + 6, false);
+    if (nContours < 0) {
+      let cPtr = base + 10;
+      const compPolys = [];
+      let compFlags = 0x0020;
+      while ((compFlags & 0x0020) !== 0 && cPtr + 4 <= ttfBytes.byteLength) {
+        compFlags = dv.getUint16(cPtr, false);
+        const compGid = dv.getUint16(cPtr + 2, false);
+        cPtr += 4;
+        let arg1 = 0;
+        let arg2 = 0;
+        if ((compFlags & 0x0001) !== 0) {
+          if (cPtr + 4 > ttfBytes.byteLength) break;
+          arg1 = (compFlags & 0x0002) !== 0 ? dv.getInt16(cPtr, false) : dv.getUint16(cPtr, false);
+          arg2 = (compFlags & 0x0002) !== 0 ? dv.getInt16(cPtr + 2, false) : dv.getUint16(cPtr + 2, false);
+          cPtr += 4;
+        } else {
+          if (cPtr + 2 > ttfBytes.byteLength) break;
+          arg1 = (compFlags & 0x0002) !== 0 ? dv.getInt8(cPtr) : ttfBytes[cPtr];
+          arg2 = (compFlags & 0x0002) !== 0 ? dv.getInt8(cPtr + 1) : ttfBytes[cPtr + 1];
+          cPtr += 2;
+        }
+        const dx = (compFlags & 0x0002) !== 0 ? arg1 : 0;
+        const dy = (compFlags & 0x0002) !== 0 ? arg2 : 0;
+        let m00 = 1.0;
+        let m01 = 0.0;
+        let m10 = 0.0;
+        let m11 = 1.0;
+        if ((compFlags & 0x0008) !== 0) {
+          if (cPtr + 2 > ttfBytes.byteLength) break;
+          const s = dv.getInt16(cPtr, false) / 16384.0;
+          m00 = s;
+          m11 = s;
+          cPtr += 2;
+        } else if ((compFlags & 0x0040) !== 0) {
+          if (cPtr + 4 > ttfBytes.byteLength) break;
+          m00 = dv.getInt16(cPtr, false) / 16384.0;
+          m11 = dv.getInt16(cPtr + 2, false) / 16384.0;
+          cPtr += 4;
+        } else if ((compFlags & 0x0080) !== 0) {
+          if (cPtr + 8 > ttfBytes.byteLength) break;
+          m00 = dv.getInt16(cPtr, false) / 16384.0;
+          m01 = dv.getInt16(cPtr + 2, false) / 16384.0;
+          m10 = dv.getInt16(cPtr + 4, false) / 16384.0;
+          m11 = dv.getInt16(cPtr + 6, false) / 16384.0;
+          cPtr += 8;
+        }
+        const subGlyph = getGlyphContours(compGid, depth + 1, 0);
+        if (subGlyph && subGlyph.polys.length > 0) {
+          for (const poly of subGlyph.polys) {
+            compPolys.push(
+              poly.map(([px, py]) => [m00 * px + m10 * py + dx, m01 * px + m11 * py + dy]),
+            );
+          }
+        }
+      }
+      if (compPolys.length === 0) return null;
+      return {
+        polys: compPolys,
+        advUnits: Math.max(unitsPerEm * 0.35, (xMax - xMin) + unitsPerEm * 0.14),
+      };
+    }
     const endPts = new Uint16Array(nContours);
     let ptr = base + 10;
     for (let c = 0; c < nContours; c += 1) {
@@ -440,8 +580,9 @@ export function rasterizeTrueTypeGlyphsFromSfntBytes(
   let penX = 12.0;
   let renderedAny = false;
   for (const ch of sampleChars) {
-    const gid = lookupGid(ch.codePointAt(0) || 0x6f);
-    const glyph = getGlyphContours(gid);
+    const cp = ch.codePointAt(0) || 0x6f;
+    const gid = lookupGid(cp);
+    const glyph = getGlyphContours(gid, 0, cp);
     if (!glyph || glyph.polys.length === 0) continue;
     renderedAny = true;
     const screenPolys = glyph.polys.map((poly) =>
@@ -924,8 +1065,6 @@ export function evaluateOpticalSauvolaPhotocopyOracle({
   let paperCount = 0;
   let totalSum = 0.0;
   let totalSqSum = 0.0;
-  let inkCoreMinSum = 0.0;
-  let inkCoreCount = 0;
   for (let i = 0; i < degradedGray.length; i += 1) {
     const px = degradedGray[i];
     totalSum += px;
@@ -933,17 +1072,10 @@ export function evaluateOpticalSauvolaPhotocopyOracle({
     if (maskActive[i] === 1) {
       inkSum += px;
       inkCount += 1;
-      if (px <= meanThresholdApprox(px)) {
-        inkCoreMinSum += px;
-        inkCoreCount += 1;
-      }
     } else {
       paperSum += px;
       paperCount += 1;
     }
-  }
-  function meanThresholdApprox(v) {
-    return v + 64;
   }
   const nPx = Math.max(1, degradedGray.length);
   const meanGray = totalSum / nPx;
@@ -952,10 +1084,8 @@ export function evaluateOpticalSauvolaPhotocopyOracle({
   const meanThreshold = Number((meanGray * (1.0 + k * (stdGray / Math.max(1.0, Number(R) || 128) - 1.0))).toFixed(2));
   const meanInkByte = inkCount > 0 ? inkSum / inkCount : 28.0;
   const meanPaperByte = paperCount > 0 ? paperSum / paperCount : 235.0;
-  // Reflectancia física efectiva ponderada por la fracción de núcleo denso capturada bajo el umbral local T(x,y;k)
   const selectivityRatio = Math.max(0.55, Math.min(1.0, meanThreshold / 255.0));
-  const measuredForegroundByte =
-    inkCoreCount > 0 ? (inkCoreMinSum / inkCoreCount) * selectivityRatio : meanInkByte * selectivityRatio;
+  const measuredForegroundByte = meanInkByte * selectivityRatio;
   const lumPaper = srgbByteToRelativeLuminance(meanPaperByte);
   const lumInk = srgbByteToRelativeLuminance(measuredForegroundByte);
   const rawContrast = (lumPaper + 0.05) / (lumInk + 0.05);

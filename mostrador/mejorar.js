@@ -1,7 +1,11 @@
 // Fachada pública 100% compatible del Taller Comunitario L1-L5 (`D11-V2C`, ∂(C)=0, ΔCallSites=0).
 // Orquesta la aplicación interactiva en el DOM y re-exporta los 8 candados PDA + renderizadores.
 
-import { propagateCascadeL1ToL5 } from "./cascade_l1_l5.js";
+import {
+  evaluateBetaDawidSkeneSprt,
+  hydrateFormulaicParallelsIndex,
+  propagateCascadeL1ToL5,
+} from "./cascade_l1_l5.js";
 import { validateAllEightLocksPda } from "./mejorar_locks_pda.js";
 
 export {
@@ -14,7 +18,11 @@ export {
   IMPROVE_I18N_FALLBACKS_ES, renderCascadeAndLadderHtml, renderImproveDrawerHtml,
   renderStpDraftCheckHtml, renderStpLexiconExplorerHtml, renderStpLexiconResultsRowsHtml, renderTallerArtifactsCatalogHtml
 } from "./mejorar_renderers.js";
-export { propagateCascadeL1ToL5 };
+export {
+  evaluateBetaDawidSkeneSprt,
+  hydrateFormulaicParallelsIndex,
+  propagateCascadeL1ToL5,
+};
 
 /**
  * Aplica una propuesta de mejora en el formulario del Taller de Campo (`button.apply-improvement`, `D5-E+`),
@@ -76,6 +84,11 @@ export function applySuggestedImprovement(targetDoc, buttonEl = null, onRefresh 
       existingOverlayEntries: Array.isArray(extraPayload.existingOverlayEntries)
         ? extraPayload.existingOverlayEntries
         : [],
+      expectedProperNouns: Array.isArray(extraPayload.expectedProperNouns)
+        ? extraPayload.expectedProperNouns
+        : [],
+      expectedAgent: String(extraPayload.expectedAgent || ""),
+      expectedPatient: String(extraPayload.expectedPatient || ""),
       validateLocksFn: validateAllEightLocksPda,
     })
     : null;

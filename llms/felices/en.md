@@ -114,11 +114,7 @@ When He saw the crowds, He climbed the hillside and sat down.
 
 His students came to Him,
 
-## Lámina 27: Colofón A (dedicatoria)
+## Lámina 27: Colofón (dedicatoria)
 
-He gave instructions to freely share this work among His joyful.
-
-## Lámina 28: Colofón B (dedicatoria)
-
-The smallest ones in the Kingdom of Heaven.
+He gave instructions to freely share this work among His joyful. The smallest ones in the Kingdom of Heaven.
 

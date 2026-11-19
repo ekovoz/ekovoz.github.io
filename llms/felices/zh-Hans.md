@@ -114,11 +114,7 @@ canonical_url: https://ekovoz.org/zh-Hans//
 
 他的学生来到他面前，
 
-## Lámina 27: Colofón A (dedicatoria)
+## Lámina 27: Colofón (dedicatoria)
 
-他指示要在他喜乐的子民中自由地分享这项工作。
-
-## Lámina 28: Colofón B (dedicatoria)
-
-献给天国中最小的人。
+他指示要在他喜乐的子民中自由地分享这项工作。献给天国中最小的人。
 

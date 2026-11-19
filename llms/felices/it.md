@@ -114,11 +114,7 @@ Vedendo le folle, salì sul monte; e messosi a sedere.
 
 I suoi discepoli gli si accostarono,
 
-## Lámina 27: Colofón A (dedicatoria)
-
-Egli ha indicato che quest'opera sia condivisa liberamente tra i suoi beati. I più piccoli del regno dei cieli.
-
-## Lámina 28: Colofón B (dedicatoria)
+## Lámina 27: Colofón (dedicatoria)
 
 Egli ha indicato che quest'opera sia condivisa liberamente tra i suoi beati. I più piccoli del regno dei cieli.
 

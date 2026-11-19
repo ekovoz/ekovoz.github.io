@@ -9,11 +9,14 @@
 import {
   REGIONAL_BRIDGE_LANGUAGES_10,
   escapeHtml,
+  isBookHumanVerifiedByEpistemicTier,
   resolveRegionalBridgeLanguage21,
 } from "./bridge_and_chapter.js";
 import { STATUS } from "./data_layer.js";
+import { lookupIso639MacroRegionO1 } from "./lang_funnel.js";
 
 const TIER0_AUTOGRAPH_LANGS = new Set(["he", "hbo", "heb", "grc", "el"]);
+const OPEN_PORTION_TIER3_LANGS = new Set(["arp", "bre", "cha"]);
 
 const OPEN_CANONICAL_TIER1_LANGS = new Set([
   "es",
@@ -73,6 +76,14 @@ export function resolveHonestSovereignTier({
   }
   if (provTier === "tier2_nt_human_ot_synthesized" || norm === "stp") {
     return "TIER_2_NT_PLUS_OT_SYNTH";
+  }
+  if (
+    provTier === "tier_3_portion_ladder" ||
+    provTier === "tier3a_dialectal_wfst_projection" ||
+    provTier === "tier3b_mdl_atomic_batch_assisted" ||
+    OPEN_PORTION_TIER3_LANGS.has(norm)
+  ) {
+    return "TIER_3_PORTION_LADDER";
   }
   if (OPEN_CANONICAL_TIER1_LANGS.has(norm)) {
     return navStatus === STATUS.READY
@@ -160,10 +171,17 @@ export function renderProgressiveTwoStrataDiglossicBridge({
     "1TH", "2TH", "1TI", "2TI", "TIT", "PHM", "HEB", "JAS", "1PE", "2PE", "1JN", "2JN", "3JN", "JUD", "REV",
   ]);
   const isNt = ntBooks.has(cleanBook);
-  const regionalSlot = REGIONAL_BRIDGE_LANGUAGES_10[macroRegion] || REGIONAL_BRIDGE_LANGUAGES_10[1];
+  const o1Region = lookupIso639MacroRegionO1(lang);
+  const resolvedMacroRegion =
+    Number(macroRegion) >= 1 && Number(macroRegion) <= 12 && (Number(macroRegion) !== 1 || !o1Region.found)
+      ? Number(macroRegion)
+      : o1Region.macroRegionId;
+  const regionalSlot =
+    REGIONAL_BRIDGE_LANGUAGES_10[resolvedMacroRegion] || REGIONAL_BRIDGE_LANGUAGES_10[1];
   const bridgeSpec = resolveRegionalBridgeLanguage21({
-    macroRegion,
-    bridgeLang: bridgeLang || regionalSlot?.code || "",
+    macroRegion: resolvedMacroRegion,
+    bridgeLang: bridgeLang || (o1Region.isLusophone ? "pt" : regionalSlot?.code || ""),
+    lang,
   });
 
   const gmisByVerse = new Map();
@@ -186,7 +204,8 @@ export function renderProgressiveTwoStrataDiglossicBridge({
   const isHumanMaternalPortion =
     sovereignTier === "TIER_0_AUTOGRAPH_WITNESS" ||
     sovereignTier === "TIER_1_OPEN_CANONICAL_66" ||
-    (sovereignTier === "TIER_2_NT_PLUS_OT_SYNTH" && isNt) ||
+    (sovereignTier === "TIER_2_NT_PLUS_OT_SYNTH" &&
+      (isNt || isBookHumanVerifiedByEpistemicTier(cleanBook, { lang, book: cleanBook }))) ||
     (sovereignTier === "TIER_3_PORTION_LADDER" && Object.keys(matMap).length > 0);
 
   const sealCode = isHumanMaternalPortion

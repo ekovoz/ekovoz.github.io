@@ -114,11 +114,7 @@ Cuando vio a las multitudes, subió a la colina y tomó asiento.
 
 Sus alumnos se acercaron a Él,
 
-## Lámina 27: Colofón A (dedicatoria)
+## Lámina 27: Colofón (dedicatoria)
 
-Él indicó que esta obra sea compartida libremente entre sus felices.
-
-## Lámina 28: Colofón B (dedicatoria)
-
-Los más pequeñitos del reino del cielo.
+Él indicó que esta obra sea compartida libremente entre sus felices. Los más pequeñitos del reino del cielo.
 

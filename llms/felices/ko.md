@@ -114,11 +114,7 @@ canonical_url: https://ekovoz.org/ko//
 
 제자들이 나아온지라,
 
-## Lámina 27: Colofón A (dedicatoria)
+## Lámina 27: Colofón (dedicatoria)
 
-그분께서는 이 작품이 그분의 복된 자들 사이에 자유롭게 공유되기를 명하셨습니다.
-
-## Lámina 28: Colofón B (dedicatoria)
-
-천국에서 지극히 작은 자들에게.
+그분께서는 이 작품이 그분의 복된 자들 사이에 자유롭게 공유되기를 명하셨습니다. 천국에서 지극히 작은 자들에게.
 

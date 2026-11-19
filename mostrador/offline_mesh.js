@@ -41,31 +41,148 @@ const STORED_FONT_ZST_BLOBS = new Map();
 
 const DEFAULT_SIGNED_SEED_RECEIPTS = {
   es: {
-    signingMessage: "EKOVOZ_EKPACK_V1:es:bootstrap:bootstrap",
+    signingMessage: "EKPACK-V2-MANIFEST:es:2:bootstrap:bootstrap",
     ed25519SignatureHex:
-      "694458dbe862c543e6e7723bcf2c185ffe91675853b31bd3b7a9c373f9971a161fc5b759856b72479b8ab2f20627020d7a8c46f624dfbe01bb0a8aa9a4c62d0c",
+      "49a0826f26c97c0281108e2d52c5a597a5587a35c6785783be7af09d1ebf1cf87919e2dcff91ac3f12cea924baa4d5b28c60418e06430d14e1e1dafff9e21802",
   },
   en: {
-    signingMessage: "EKOVOZ_EKPACK_V1:en:bootstrap:bootstrap",
+    signingMessage: "EKPACK-V2-MANIFEST:en:2:bootstrap:bootstrap",
     ed25519SignatureHex:
-      "420dfd3c592fcd3c4e315d843fba27adf2547eabc5376547f68d66ea1d8d991e7818588b0d894a4c9d8b66640122110953bd449a1f276288334616407114a00a",
+      "379871d21b9570cee3e37006b813225ee2ff10411d98cb217904a068f5b34d5e2e8e844c4d98f1defa64ee551cfe9428a7a50ca7aaea2a30b0c649b5da54af0a",
   },
   stp: {
-    signingMessage: "EKOVOZ_EKPACK_V1:stp:bootstrap:bootstrap",
+    signingMessage: "EKPACK-V2-MANIFEST:stp:2:bootstrap:bootstrap",
     ed25519SignatureHex:
-      "59954d69d3fa0c6d3bb28516ccec60dc6daa8da8b44a88f459788aa86b43fea0b0a8966a9b9c0b7e8a8bd82a39a50dfaec506001f0fc5a7573e9079e8be99300",
+      "8597b1725187f925b1c645cacaeb5582285810d90c5e0c3fbaf8023a26fa7b0707723c62c0b15fd77d1189330f5e1a4db4737a8ae7182a4373a6af700468800b",
   },
   he: {
-    signingMessage: "EKOVOZ_EKPACK_V1:he:bootstrap:bootstrap",
+    signingMessage: "EKPACK-V2-MANIFEST:he:2:bootstrap:bootstrap",
     ed25519SignatureHex:
-      "497f092db7113b3dbd4334323e4456c77879b2ffe72c7fb68679e837872f0e84bca804750b1bf6fa60b889e37a6dabbca44cc947907932a9587713c3417b9804",
+      "023062e6b141eeac678af39a459257db1c14a3cc0eef0fa285aa00f7bc6807ffa6317980609c44497e47b985cba3c141fa2fbc7b58d030ba903abe4a12cf640c",
   },
   grc: {
-    signingMessage: "EKOVOZ_EKPACK_V1:grc:bootstrap:bootstrap",
+    signingMessage: "EKPACK-V2-MANIFEST:grc:2:bootstrap:bootstrap",
     ed25519SignatureHex:
-      "42dc2997c9e773f11743713a39a3d37d80e7c0d7e39caf56b18a2860c430794849f11a0ca02de6118c0c6c4da9f63fcb17702cfe21bb647737fe72737f2ae40d",
+      "a667527bab9991fdd8cc21b49d3b21623e3393df11e20ee4697dc4aa2f66d23e0f2f4ef2624d399360a95aed5926593baaba1d4772c480444e53e8518665bf02",
   },
 };
+
+const SHA256_K = new Uint32Array([
+  0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5,
+  0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3, 0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174,
+  0xe49b69c1, 0xefbe4786, 0x0fc19dc6, 0x240ca1cc, 0x2de92c6f, 0x4a7484aa, 0x5cb0a9dc, 0x76f988da,
+  0x983e5152, 0xa831c66d, 0xb00327c8, 0xbf597fc7, 0xc6e00bf3, 0xd5a79147, 0x06ca6351, 0x14292967,
+  0x27b70a85, 0x2e1b2138, 0x4d2c6dfc, 0x53380d13, 0x650a7354, 0x766a0abb, 0x81c2c92e, 0x92722c85,
+  0xa2bfe8a1, 0xa81a664b, 0xc24b8b70, 0xc76c51a3, 0xd192e819, 0xd6990624, 0xf40e3585, 0x106aa070,
+  0x19a4c116, 0x1e376c08, 0x2748774c, 0x34b0bcb5, 0x391c0cb3, 0x4ed8aa4a, 0x5b9cca4f, 0x682e6ff3,
+  0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208, 0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2,
+]);
+
+function sha256BytesSyncPureJs(inputBytes) {
+  const data = inputBytes instanceof Uint8Array ? inputBytes : new Uint8Array(inputBytes || []);
+  const bitLenHi = Math.floor((data.byteLength * 8) / 0x100000000);
+  const bitLenLo = (data.byteLength * 8) >>> 0;
+  const padLen = ((data.byteLength + 9 + 63) & ~63);
+  const padded = new Uint8Array(padLen);
+  padded.set(data);
+  padded[data.byteLength] = 0x80;
+  const dv = new DataView(padded.buffer);
+  dv.setUint32(padLen - 8, bitLenHi >>> 0, false);
+  dv.setUint32(padLen - 4, bitLenLo >>> 0, false);
+
+  let h0 = 0x6a09e667, h1 = 0xbb67ae85, h2 = 0x3c6ef372, h3 = 0xa54ff53a;
+  let h4 = 0x510e527f, h5 = 0x9b05688c, h6 = 0x1f83d9ab, h7 = 0x5be0cd19;
+  const w = new Uint32Array(64);
+  const rotr = (x, n) => (x >>> n) | (x << (32 - n));
+
+  for (let off = 0; off < padLen; off += 64) {
+    for (let i = 0; i < 16; i += 1) w[i] = dv.getUint32(off + i * 4, false);
+    for (let i = 16; i < 64; i += 1) {
+      const s0 = rotr(w[i - 15], 7) ^ rotr(w[i - 15], 18) ^ (w[i - 15] >>> 3);
+      const s1 = rotr(w[i - 2], 17) ^ rotr(w[i - 2], 19) ^ (w[i - 2] >>> 10);
+      w[i] = (w[i - 16] + s0 + w[i - 7] + s1) >>> 0;
+    }
+    let a = h0, b = h1, c = h2, d = h3, e = h4, f = h5, g = h6, h = h7;
+    for (let i = 0; i < 64; i += 1) {
+      const S1 = rotr(e, 6) ^ rotr(e, 11) ^ rotr(e, 25);
+      const ch = (e & f) ^ (~e & g);
+      const temp1 = (h + S1 + ch + SHA256_K[i] + w[i]) >>> 0;
+      const S0 = rotr(a, 2) ^ rotr(a, 13) ^ rotr(a, 22);
+      const maj = (a & b) ^ (a & c) ^ (b & c);
+      const temp2 = (S0 + maj) >>> 0;
+      h = g; g = f; f = e; e = (d + temp1) >>> 0;
+      d = c; c = b; b = a; a = (temp1 + temp2) >>> 0;
+    }
+    h0 = (h0 + a) >>> 0; h1 = (h1 + b) >>> 0; h2 = (h2 + c) >>> 0; h3 = (h3 + d) >>> 0;
+    h4 = (h4 + e) >>> 0; h5 = (h5 + f) >>> 0; h6 = (h6 + g) >>> 0; h7 = (h7 + h) >>> 0;
+  }
+  const out = new Uint8Array(32);
+  const odv = new DataView(out.buffer);
+  odv.setUint32(0, h0, false); odv.setUint32(4, h1, false); odv.setUint32(8, h2, false); odv.setUint32(12, h3, false);
+  odv.setUint32(16, h4, false); odv.setUint32(20, h5, false); odv.setUint32(24, h6, false); odv.setUint32(28, h7, false);
+  return out;
+}
+
+function bytesToHexLower(bytes) {
+  let s = "";
+  for (let i = 0; i < bytes.byteLength; i += 1) {
+    s += bytes[i].toString(16).padStart(2, "0");
+  }
+  return s;
+}
+
+export async function computeSha256HexWebCrypto(inputBytes) {
+  const src = inputBytes instanceof Uint8Array ? inputBytes : new Uint8Array(inputBytes || []);
+  if (typeof globalThis.crypto !== "undefined" && globalThis.crypto?.subtle?.digest) {
+    try {
+      const ab = await globalThis.crypto.subtle.digest("SHA-256", src);
+      return bytesToHexLower(new Uint8Array(ab));
+    } catch {
+      // Fallback determinista RFC 6234
+    }
+  }
+  return bytesToHexLower(sha256BytesSyncPureJs(src));
+}
+
+export function buildEkpackSigningMessageV2(hdr = {}) {
+  const langCode = String(hdr.lang_code || hdr.lang || "es");
+  const codecId = Number(hdr.codec_id ?? hdr.codecId ?? EKPACK_CODEC_FSST_ZSTD) || EKPACK_CODEC_FSST_ZSTD;
+  const contentDigest = String(hdr.content_digest_sha256_hex || "");
+  const merkleRoot = String(hdr.merkle_root_sha256_hex || "");
+  const metaSha = String(hdr.meta_zstd_sha256_hex || "");
+  return metaSha
+    ? `EKPACK-V2-MANIFEST:${langCode}:${codecId}:${contentDigest}:${merkleRoot}:${metaSha}`
+    : `EKPACK-V2-MANIFEST:${langCode}:${codecId}:${contentDigest}:${merkleRoot}`;
+}
+
+function computeEditionMerkleRootHexSync(leaves) {
+  const enc = new TextEncoder();
+  if (!Array.isArray(leaves) || leaves.length === 0) {
+    return bytesToHexLower(sha256BytesSyncPureJs(enc.encode("EKOVOZ_MERKLE_EMPTY_V1")));
+  }
+  let level = leaves.map(([id, data]) => {
+    const prefix = enc.encode(`LEAF:${id}:`);
+    const buf = new Uint8Array(prefix.byteLength + data.byteLength);
+    buf.set(prefix, 0);
+    buf.set(data, prefix.byteLength);
+    return sha256BytesSyncPureJs(buf);
+  });
+  const nodePrefix = enc.encode("NODE:");
+  while (level.length > 1) {
+    const next = [];
+    for (let i = 0; i < level.length; i += 2) {
+      const left = level[i];
+      const right = i + 1 < level.length ? level[i + 1] : left;
+      const buf = new Uint8Array(5 + 64);
+      buf.set(nodePrefix, 0);
+      buf.set(left, 5);
+      buf.set(right, 37);
+      next.push(sha256BytesSyncPureJs(buf));
+    }
+    level = next;
+  }
+  return bytesToHexLower(level[0]);
+}
 
 /**
  * Recorta un texto a `maxChars` sin partir palabras (`D8-R44`).
@@ -439,10 +556,49 @@ export function parseEkpackContainerJs(bytes, wasmPlayerMod = null) {
     wasmPlayerMod,
   );
   const hdr = JSON.parse(new TextDecoder("utf-8").decode(f0Raw));
+  const books = Array.isArray(hdr.books) ? hdr.books : [];
+  if (f0Envelope.byteLength >= 8 + actualF0Len && books.length > 0) {
+    const symZstdLen = new DataView(
+      f0Envelope.buffer,
+      f0Envelope.byteOffset + 4 + actualF0Len,
+      4,
+    ).getUint32(0, true);
+    const metaPos = 8 + actualF0Len + symZstdLen;
+    if (metaPos + 4 <= f0Envelope.byteLength) {
+      const metaZstdLen = new DataView(
+        f0Envelope.buffer,
+        f0Envelope.byteOffset + metaPos,
+        4,
+      ).getUint32(0, true);
+      if (metaZstdLen > 0 && metaPos + 4 + metaZstdLen <= f0Envelope.byteLength) {
+        try {
+          const metaRaw = decodeRfc8878RawZstdFrameJs(
+            f0Envelope.subarray(metaPos + 4, metaPos + 4 + metaZstdLen),
+            wasmPlayerMod,
+          );
+          if (metaRaw && metaRaw.byteLength >= 2) {
+            const metaBookCnt = metaRaw[0] | (metaRaw[1] << 8);
+            const limit = Math.min(books.length, metaBookCnt);
+            if (metaRaw.byteLength >= 2 + limit * 32) {
+              for (let i = 0; i < limit; i += 1) {
+                if (!books[i].frame_sha256_hex) {
+                  books[i].frame_sha256_hex = bytesToHexLower(
+                    metaRaw.subarray(2 + i * 32, 2 + (i + 1) * 32),
+                  );
+                }
+              }
+            }
+          }
+        } catch {
+          // Si meta_zstd requiere playerWasm aún no hidratado, se validará por Merkle root completo
+        }
+      }
+    }
+  }
   return {
     ...preamble,
     ...hdr,
-    books: Array.isArray(hdr.books) ? hdr.books : [],
+    books,
   };
 }
 
@@ -462,12 +618,24 @@ export function probeEcoPackRandomAccessBounds(
   if (preamble && preamble.frame0Offset + preamble.frame0ByteLen <= bytes.byteLength) {
     try {
       const hdr = parseEkpackContainerJs(bytes, wasmPlayerMod);
-      const signMsg = `EKOVOZ_EKPACK_V1:${hdr.lang_code}:${hdr.content_digest_sha256_hex}:${hdr.merkle_root_sha256_hex}`;
-      const edOk = verifyEd25519ManifestSignature(
-        signMsg,
-        hdr.ed25519_signature_hex,
-        hdr.ed25519_public_key_hex,
-        wasmPlayerMod,
+      const pinnedPubKey = SOVEREIGN_ED25519_PUBLIC_KEY_HEX.toLowerCase();
+      const headerPubKey = String(hdr.ed25519_public_key_hex || "").trim().toLowerCase();
+      const signMsgV2 = buildEkpackSigningMessageV2(hdr);
+      const signMsgLegacy = `EKOVOZ_EKPACK_V1:${hdr.lang_code}:${hdr.content_digest_sha256_hex}:${hdr.merkle_root_sha256_hex}`;
+      const edOk = Boolean(
+        headerPubKey === pinnedPubKey &&
+        (verifyEd25519ManifestSignature(
+          signMsgV2,
+          hdr.ed25519_signature_hex,
+          pinnedPubKey,
+          wasmPlayerMod,
+        ) ||
+          verifyEd25519ManifestSignature(
+            signMsgLegacy,
+            hdr.ed25519_signature_hex,
+            pinnedPubKey,
+            wasmPlayerMod,
+          )),
       );
       const ord = Math.max(0, Number(verseOrdinal) || 0);
       const bookEntry = (hdr.books || []).find(
@@ -747,16 +915,29 @@ export async function commitVerifiedPackToIndexedDb(
   }
 
   const computedCrc32 = computeEcoPackCrc32Hex(bytes);
-  const expectedCrc32 = String(packRecord.expectedCrc32 || computedCrc32).toLowerCase();
-  if (computedCrc32 !== expectedCrc32) {
+  const computedPackSha256 = await computeSha256HexWebCrypto(bytes);
+  if (typeof packRecord.expectedCrc32 === "string" && packRecord.expectedCrc32.trim()) {
+    const expCrc = packRecord.expectedCrc32.trim().toLowerCase();
+    if (computedCrc32 !== expCrc) {
+      throw new Error(
+        `[TWO-GATE PRE-COMMIT REJECTED] CRC32 mismatch for ${lang}: computed=${computedCrc32} expected=${expCrc}`,
+      );
+    }
+  }
+  const explicitExpectedSha256 = String(packRecord.expectedSha256 || packRecord.sha256 || "")
+    .trim()
+    .toLowerCase();
+  if (/^[0-9a-f]{64}$/.test(explicitExpectedSha256) && computedPackSha256 !== explicitExpectedSha256) {
     throw new Error(
-      `[TWO-GATE PRE-COMMIT REJECTED] CRC32 mismatch for ${lang}: computed=${computedCrc32} expected=${expectedCrc32}`,
+      `[TWO-GATE PRE-COMMIT REJECTED] ERR_PACK_SHA256_TAMPERED for ${lang}: computed=${computedPackSha256} expected=${explicitExpectedSha256}`,
     );
   }
 
   let signingPayload = packRecord.signingMessage ?? bytes;
   let signatureHex = packRecord.signatureHex;
-  let effectivePubKeyHex = publicKeyHex;
+  const pinnedPubKeyHex = String(publicKeyHex || SOVEREIGN_ED25519_PUBLIC_KEY_HEX)
+    .trim()
+    .toLowerCase();
 
   const preamble = parseEkpackPreamble32Js(bytes);
   const isBinaryEkpack = Boolean(
@@ -764,25 +945,102 @@ export async function commitVerifiedPackToIndexedDb(
   );
   if (signatureHex === undefined && isBinaryEkpack) {
     const hdr = parseEkpackContainerJs(bytes, effectiveWasmMod);
-    signingPayload = `EKOVOZ_EKPACK_V1:${hdr.lang_code}:${hdr.content_digest_sha256_hex}:${hdr.merkle_root_sha256_hex}`;
-    signatureHex = hdr.ed25519_signature_hex;
-    effectivePubKeyHex = hdr.ed25519_public_key_hex || effectivePubKeyHex;
+    const hdrPk = String(hdr.ed25519_public_key_hex || "").trim().toLowerCase();
+    if (hdrPk !== pinnedPubKeyHex) {
+      throw new Error(
+        `[TWO-GATE PRE-COMMIT REJECTED] ERR_UNPINNED_ED25519_KEY for ${lang}: header key ${hdrPk} !== pinned ${pinnedPubKeyHex}`,
+      );
+    }
+    if (String(hdr.lang_code || "").trim().toLowerCase() !== lang) {
+      throw new Error(
+        `[TWO-GATE PRE-COMMIT REJECTED] ERR_LANG_REPLAY_MISMATCH: expected ${lang}, got ${hdr.lang_code}`,
+      );
+    }
+    const merkleLeaves = [];
+    for (const bk of hdr.books || []) {
+      const fStart = Number(bk.frame_byte_offset) || 0;
+      const fEnd = fStart + (Number(bk.frame_byte_len) || 0);
+      if (fEnd > bytes.byteLength) {
+        throw new Error(`[TWO-GATE PRE-COMMIT REJECTED] Truncated book frame ${bk.usfm_id}`);
+      }
+      const fSlice = bytes.subarray(fStart, fEnd);
+      if (bk.frame_sha256_hex) {
+        const actualBookSha = await computeSha256HexWebCrypto(fSlice);
+        if (actualBookSha !== String(bk.frame_sha256_hex).toLowerCase()) {
+          throw new Error(
+            `[TWO-GATE PRE-COMMIT REJECTED] ERR_BOOK_FRAME_SHA256_MISMATCH on ${bk.usfm_id}`,
+          );
+        }
+      }
+      merkleLeaves.push([bk.usfm_id, fSlice]);
+    }
+    if (hdr.intralang_rlz && hdr.intralang_rlz.frame_byte_len) {
+      const rStart = Number(hdr.intralang_rlz.frame_byte_offset) || 0;
+      const rEnd = rStart + (Number(hdr.intralang_rlz.frame_byte_len) || 0);
+      if (rEnd > bytes.byteLength) {
+        throw new Error(`[TWO-GATE PRE-COMMIT REJECTED] Truncated Frame 67 RLZ`);
+      }
+      merkleLeaves.push([
+        `RLZ67:${hdr.intralang_rlz.variant_lang_code}`,
+        bytes.subarray(rStart, rEnd),
+      ]);
+    }
+    const actualMerkleRoot = computeEditionMerkleRootHexSync(merkleLeaves);
+    if (actualMerkleRoot !== String(hdr.merkle_root_sha256_hex || "").toLowerCase()) {
+      throw new Error(
+        `[TWO-GATE PRE-COMMIT REJECTED] ERR_MERKLE_ROOT_TAMPERED for ${lang}: actual=${actualMerkleRoot} !== header=${hdr.merkle_root_sha256_hex}`,
+      );
+    }
+    const signMsgV2 = buildEkpackSigningMessageV2(hdr);
+    const signMsgV1Legacy = `EKOVOZ_EKPACK_V1:${hdr.lang_code}:${hdr.content_digest_sha256_hex}:${hdr.merkle_root_sha256_hex}`;
+    const sigStr = String(hdr.ed25519_signature_hex || "");
+    const okV2 = await verifyEd25519ManifestSignatureWebCrypto(
+      signMsgV2,
+      sigStr,
+      pinnedPubKeyHex,
+      effectiveWasmMod,
+    );
+    const okLegacy =
+      !okV2 &&
+      (await verifyEd25519ManifestSignatureWebCrypto(
+        signMsgV1Legacy,
+        sigStr,
+        pinnedPubKeyHex,
+        effectiveWasmMod,
+      ));
+    if (!okV2 && !okLegacy) {
+      throw new Error(
+        `[TWO-GATE PRE-COMMIT REJECTED] Ed25519 signature invalid (Ed25519 RFC 8032 signature invalid) for ${lang}`,
+      );
+    }
+    signingPayload = okV2 ? signMsgV2 : signMsgV1Legacy;
+    signatureHex = sigStr;
   } else if (signatureHex === undefined && manifestEntry?.ed25519SignatureHex) {
     signingPayload = manifestEntry.signingMessage;
     signatureHex = manifestEntry.ed25519SignatureHex;
-    effectivePubKeyHex = manifestEntry.ed25519PublicKeyHex || effectivePubKeyHex;
-  }
-
-  const ed25519Ok = await verifyEd25519ManifestSignatureWebCrypto(
-    signingPayload,
-    String(signatureHex || ""),
-    effectivePubKeyHex,
-    effectiveWasmMod,
-  );
-  if (!ed25519Ok) {
-    throw new Error(
-      `[TWO-GATE PRE-COMMIT REJECTED] Ed25519 signature invalid (Ed25519 RFC 8032 signature invalid) for ${lang}`,
+    const ed25519Ok = await verifyEd25519ManifestSignatureWebCrypto(
+      signingPayload,
+      String(signatureHex || ""),
+      pinnedPubKeyHex,
+      effectiveWasmMod,
     );
+    if (!ed25519Ok) {
+      throw new Error(
+        `[TWO-GATE PRE-COMMIT REJECTED] Ed25519 signature invalid (Ed25519 RFC 8032 signature invalid) for ${lang}`,
+      );
+    }
+  } else {
+    const ed25519Ok = await verifyEd25519ManifestSignatureWebCrypto(
+      signingPayload,
+      String(signatureHex || ""),
+      pinnedPubKeyHex,
+      effectiveWasmMod,
+    );
+    if (!ed25519Ok) {
+      throw new Error(
+        `[TWO-GATE PRE-COMMIT REJECTED] Ed25519 signature invalid (Ed25519 RFC 8032 signature invalid) for ${lang}`,
+      );
+    }
   }
 
   const probe = probeEcoPackRandomAccessBounds(bytes, 0, lang, "", effectiveWasmMod);
@@ -791,6 +1049,7 @@ export async function commitVerifiedPackToIndexedDb(
   const committed = {
     verified: true,
     crc32Verified: true,
+    sha256Verified: true,
     ed25519Verified: true,
     isBinaryEkpack,
     lang,
@@ -798,7 +1057,7 @@ export async function commitVerifiedPackToIndexedDb(
     byteLen: bytes.byteLength,
     crc32Hex: computedCrc32,
     signatureHex: String(signatureHex),
-    sha256: String(packRecord.sha256 || manifestEntry?.sha256 || ""),
+    sha256: computedPackSha256,
     unicodeBlockBase: probe.unicodeBlockBase,
     versePreview: probe.versePreview,
     randomAccessUs: probe.randomAccessUs,
@@ -946,7 +1205,7 @@ export function importSneakernetBundleJson(bundleJsonString) {
 }
 
 export function exportBundleAsFile(opts = {}) {
-  return exportSneakernetBundleJson(opts);
+  return exportSneakernetBundleJson({ ...opts, requireBinaryPackBytes: true });
 }
 
 export function importBundleFromFile(bundleJsonString) {

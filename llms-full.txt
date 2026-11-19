@@ -142,8 +142,7 @@ OBRA: Los Felices del Señor Jesús (felices)
 [felices:24] (es) …porque de esta forma persiguieron a los portavoces antes que ustedes.
 [felices:25] (es) Cuando vio a las multitudes, subió a la colina y tomó asiento.
 [felices:26] (es) Sus alumnos se acercaron a Él,
-[felices:27] (es) Él indicó que esta obra sea compartida libremente entre sus felices.
-[felices:28] (es) Los más pequeñitos del reino del cielo.
+[felices:27] (es) Él indicó que esta obra sea compartida libremente entre sus felices. Los más pequeñitos del reino del cielo.
 [felices:1] (it) I beati del Signore Gesù
 [felices:2] (it) 
 [felices:3] (it) 
@@ -171,7 +170,6 @@ OBRA: Los Felices del Señor Jesús (felices)
 [felices:25] (it) Vedendo le folle, salì sul monte; e messosi a sedere.
 [felices:26] (it) I suoi discepoli gli si accostarono,
 [felices:27] (it) Egli ha indicato che quest'opera sia condivisa liberamente tra i suoi beati. I più piccoli del regno dei cieli.
-[felices:28] (it) Egli ha indicato che quest'opera sia condivisa liberamente tra i suoi beati. I più piccoli del regno dei cieli.
 [felices:1] (id) Mereka yang Berbahagia dari Tuhan Yesus
 [felices:2] (id) 
 [felices:3] (id) 
@@ -199,7 +197,6 @@ OBRA: Los Felices del Señor Jesús (felices)
 [felices:25] (id) Ketika Yesus melihat orang banyak itu, naiklah Ia ke atas bukit dan setelah Ia duduk.
 [felices:26] (id) Datanglah murid-murid-Nya kepada-Nya,
 [felices:27] (id) Dia menyatakan agar karya ini dibagikan secara cuma-cuma di antara mereka yang berbahagia. Yang terkecil dalam Kerajaan Sorga.
-[felices:28] (id) Dia menyatakan agar karya ini dibagikan secara cuma-cuma di antara mereka yang berbahagia. Yang terkecil dalam Kerajaan Sorga.
 [felices:1] (tr) Rab İsa'nın Mutlu Olanları
 [felices:2] (tr) 
 [felices:3] (tr) 
@@ -227,7 +224,6 @@ OBRA: Los Felices del Señor Jesús (felices)
 [felices:25] (tr) İsa kalabalıkları görünce dağa çıktı. Oturunca.
 [felices:26] (tr) Öğrencileri O'na geldi,
 [felices:27] (tr) O, bu eserin Kendi mutlu olanları arasında serbestçe paylaşılmasını buyurdu. Göklerin Egemenliğinde en küçük olanlar için.
-[felices:28] (tr) O, bu eserin Kendi mutlu olanları arasında serbestçe paylaşılmasını buyurdu. Göklerin Egemenliğinde en küçük olanlar için.
 [felices:1] (ru) Блаженные Господа Иисуса
 [felices:2] (ru) 
 [felices:3] (ru) 
@@ -255,7 +251,6 @@ OBRA: Los Felices del Señor Jesús (felices)
 [felices:25] (ru) Увидев народ, Он взошел на гору; и, когда сел.
 [felices:26] (ru) Приступили к Нему ученики Его,
 [felices:27] (ru) Он указал, чтобы этот труд свободно распространялся среди Его блаженных. Наименьших в Царстве Небесном.
-[felices:28] (ru) Он указал, чтобы этот труд свободно распространялся среди Его блаженных. Наименьших в Царстве Небесном.
 [felices:1] (en) The blessed of the Lord Jesus
 [felices:2] (en) 
 [felices:3] (en) 
@@ -282,8 +277,7 @@ OBRA: Los Felices del Señor Jesús (felices)
 [felices:24] (en) …because in this same way, the spokespeople who came before you were also persecuted.
 [felices:25] (en) When He saw the crowds, He climbed the hillside and sat down.
 [felices:26] (en) His students came to Him,
-[felices:27] (en) He gave instructions to freely share this work among His joyful.
-[felices:28] (en) The smallest ones in the Kingdom of Heaven.
+[felices:27] (en) He gave instructions to freely share this work among His joyful. The smallest ones in the Kingdom of Heaven.
 [felices:1] (fr) Les heureux du Seigneur Jésus
 [felices:2] (fr) 
 [felices:3] (fr) 
@@ -310,8 +304,7 @@ OBRA: Los Felices del Señor Jesús (felices)
 [felices:24] (fr) ...car c'est ainsi que les messagers qui vous ont précédés ont été persécutés.
 [felices:25] (fr) Quand Il vit la foule, Il monta sur le flanc de la colline et s'assit.
 [felices:26] (fr) Ses étudiants vinrent auprès de Lui,
-[felices:27] (fr) Il donna des instructions pour le partage libre de ce travail auprès de ses heureux.
-[felices:28] (fr) Les plus petits dans le royaume des cieux.
+[felices:27] (fr) Il donna des instructions pour le partage libre de ce travail auprès de ses heureux. Les plus petits dans le royaume des cieux.
 [felices:1] (pt) Os bem-aventurados do Senhor Jesus
 [felices:2] (pt) 
 [felices:3] (pt) 
@@ -338,8 +331,7 @@ OBRA: Los Felices del Señor Jesús (felices)
 [felices:24] (pt) …pois assim perseguiram os profetas que foram antes de vós.
 [felices:25] (pt) E Jesus, vendo a multidão, subiu a um monte, e, assentando-se,
 [felices:26] (pt) aproximaram-se dele os seus discípulos;
-[felices:27] (pt) Ele orientou que esta obra seja compartilhada livremente entre os seus bem-aventurados.
-[felices:28] (pt) Os pequeninos do reino dos céus.
+[felices:27] (pt) Ele orientou que esta obra seja compartilhada livremente entre os seus bem-aventurados. Os pequeninos do reino dos céus.
 [felices:1] (zh-Hans) 主耶稣蒙福的百姓
 [felices:2] (zh-Hans) 
 [felices:3] (zh-Hans) 
@@ -366,8 +358,7 @@ OBRA: Los Felices del Señor Jesús (felices)
 [felices:24] (zh-Hans) ……因为同样的，那些比你更早的使者也受到了迫害。
 [felices:25] (zh-Hans) 他看见众人，就爬上山坡坐下。
 [felices:26] (zh-Hans) 他的学生来到他面前，
-[felices:27] (zh-Hans) 他指示要在他喜乐的子民中自由地分享这项工作。
-[felices:28] (zh-Hans) 献给天国中最小的人。
+[felices:27] (zh-Hans) 他指示要在他喜乐的子民中自由地分享这项工作。献给天国中最小的人。
 [felices:1] (ja) 主イエスのさいわいな人々
 [felices:2] (ja) 
 [felices:3] (ja) 
@@ -394,8 +385,7 @@ OBRA: Los Felices del Señor Jesús (felices)
 [felices:24] (ja) ……あなたがたより前にいた預言者たちをも、人々はそのように迫害したのです。
 [felices:25] (ja) イエスはこの群衆を見て、山に登り、座につかれると、
 [felices:26] (ja) 弟子たちがみもとに近寄って来た。
-[felices:27] (ja) 主はこの作品が主の幸いな人々の間で自由に分かち合われることを望まれました。
-[felices:28] (ja) 天の御国において最も小さい者たちへ。
+[felices:27] (ja) 主はこの作品が主の幸いな人々の間で自由に分かち合われることを望まれました。天の御国において最も小さい者たちへ。
 [felices:1] (ko) 주 예수님의 복된 사람들
 [felices:2] (ko) 
 [felices:3] (ko) 
@@ -422,8 +412,7 @@ OBRA: Los Felices del Señor Jesús (felices)
 [felices:24] (ko) …너희 전에 있던 선지자들도 이같이 박해하였느니라.
 [felices:25] (ko) 예수께서 무리를 보시고 산에 올라가 앉으시니
 [felices:26] (ko) 제자들이 나아온지라,
-[felices:27] (ko) 그분께서는 이 작품이 그분의 복된 자들 사이에 자유롭게 공유되기를 명하셨습니다.
-[felices:28] (ko) 천국에서 지극히 작은 자들에게.
+[felices:27] (ko) 그분께서는 이 작품이 그분의 복된 자들 사이에 자유롭게 공유되기를 명하셨습니다. 천국에서 지극히 작은 자들에게.
 [felices:1] (hi) प्रभु यीशु के हर्षित लोग
 [felices:2] (hi) 
 [felices:3] (hi) 
@@ -450,8 +439,7 @@ OBRA: Los Felices del Señor Jesús (felices)
 [felices:24] (hi) ... क्योंकि इसी तरह से आपके सामने आने वाले वक्ताओं को भी सताया गया था।
 [felices:25] (hi) भीड़ को देखकर वह पहाड़ी पर चढ़कर बैठ गया।
 [felices:26] (hi) उनके छात्र उनके पास आए,
-[felices:27] (hi) उन्होंने इस काम को अपने आनंदित लोगों के बीच स्वतंत्र रूप से साझा करने का निर्देश दिया।
-[felices:28] (hi) उनके लिए जो स्वर्ग के राज्य में छोटे हैं।
+[felices:27] (hi) उन्होंने इस काम को अपने आनंदित लोगों के बीच स्वतंत्र रूप से साझा करने का निर्देश दिया। उनके लिए जो स्वर्ग के राज्य में छोटे हैं।
 [felices:1] (bn) প্রভু যীশুর আনন্দময় মানুষ
 [felices:2] (bn) 
 [felices:3] (bn) 
@@ -478,8 +466,7 @@ OBRA: Los Felices del Señor Jesús (felices)
 [felices:24] (bn) …কারণ এইভাবে, আপনার আগে আসা মুখপাত্ররাও নির্যাতিত হয়েছিল।
 [felices:25] (bn) যখন তিনি ভিড় দেখলেন, তিনি পাহাড়ের চূড়ায় উঠে বসলেন।
 [felices:26] (bn) তাঁর ছাত্ররা তাঁর কাছে এসেছিল,
-[felices:27] (bn) তিনি এই কাজকে তাঁর আনন্দিতদের মধ্যে অবাধে ভাগ করে নেওয়ার নির্দেশ দিয়েছিলেন।
-[felices:28] (bn) স্বর্গরাজ্যে সবচেয়ে ছোট।
+[felices:27] (bn) তিনি এই কাজকে তাঁর আনন্দিতদের মধ্যে অবাধে ভাগ করে নেওয়ার নির্দেশ দিয়েছিলেন। স্বর্গরাজ্যে সবচেয়ে ছোট।
 [felices:1] (ar) شعب الرب يسوع المبتهجون
 [felices:2] (ar) 
 [felices:3] (ar) 
@@ -506,8 +493,7 @@ OBRA: Los Felices del Señor Jesús (felices)
 [felices:24] (ar) لأنك على خطى من تحدث قبلك؛ فقد تعرضوا هم أيضاً للاضطهاد
 [felices:25] (ar) عندما أبصَر الجموع، صعد إلى جانب التل وجلس
 [felices:26] (ar) أتى تلاميذه إليه
-[felices:27] (ar) فوجههم لمشاركة هذا العمل بحرية بين مبتهجيه
-[felices:28] (ar) إنهم صغار ملكوت السموات
+[felices:27] (ar) فوجههم لمشاركة هذا العمل بحرية بين مبتهجيه. إنهم صغار ملكوت السموات.
 [felices:1] (ur) خداوند یسوع کے مبارک لوگ
 [felices:2] (ur) 
 [felices:3] (ur) 
@@ -534,8 +520,7 @@ OBRA: Los Felices del Señor Jesús (felices)
 [felices:24] (ur) …کیونکہ انہوں نے ان نبیوں کو بھی ستایا جو تم سے پہلے تھے۔
 [felices:25] (ur) وہ بھیڑوں کو دیکھ کر پہاڑ پر چڑھ گیا اور بیٹھ گیا،
 [felices:26] (ur) اور اس کے شاگرد اس کے پاس آئے۔
-[felices:27] (ur) انہوں نے ہدایت دی کہ یہ کام ان کے مبارک لوگوں میں آزادانہ طور پر شیئر کیا جائے۔
-[felices:28] (ur) آسمان کی بادشاہی میں سب سے چھوٹوں کے لیے۔
+[felices:27] (ur) انہوں نے ہدایت دی کہ یہ کام ان کے مبارک لوگوں میں آزادانہ طور پر شیئر کیا جائے۔ آسمان کی بادشاہی میں سب سے چھوٹوں کے لیے۔
 [felices:1] (fa) مبارک‌بادهای خداوند عیسی
 [felices:2] (fa) 
 [felices:3] (fa) 
@@ -562,5 +547,4 @@ OBRA: Los Felices del Señor Jesús (felices)
 [felices:24] (fa) …چرا که پیش از شما بر انبیایی نیز که بودند همین‌گونه جفا می‌رسانیدند.
 [felices:25] (fa) چون عیسی جمعیت‌ها را دید، بر فراز تپه رفت و نشست.
 [felices:26] (fa) و شاگردانش نزد وی آمدند،
-[felices:27] (fa) او فرمان داد که این اثر آزادانه در میان مبارکانش به اشتراک گذاشته شود.
-[felices:28] (fa) کوچک‌ترین‌ها در پادشاهی آسمان.
+[felices:27] (fa) او فرمان داد که این اثر آزادانه در میان مبارکانش به اشتراک گذاشته شود. کوچک‌ترین‌ها در پادشاهی آسمان.

@@ -1,13 +1,13 @@
 # Plantilla Soberana de Corrección de Campo L1-L5 (CC0-1.0)
 lang_code = "stp"
-merkle_base_sha256 = "816d1a32bf3d481694a2a2dacf110eb15136637a94a29d9df8d7f45e6c4883e3"
+merkle_base_sha256 = "34de96ee00d0fe31a809a73ee49499d96fed5aa472f6c0e25b3b07e530edfae7"
 audio_bytes_allowed = 0
 jpg_bytes_allowed = 0
 
 [[patches]]
 patch_id = "PATCH-STP-L1-001"
 cascade_level = "L1"
-target_ref_or_lemma = "EST.8.9"
+target_ref_or_lemma = "DAN.2.45"
 old_surface = ""
 new_surface = ""
 note_pure_text = "Revisión comunitaria en texto puro (0 Bytes Audio)"

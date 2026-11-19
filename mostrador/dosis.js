@@ -5,7 +5,18 @@
 //   Dosis 3 · La Biblia completa (PDF con /Outlines).
 
 import { BIBLE_CONSTANTS } from "../bible_constants.js";
-import { CANONICAL_BOOK_ORDER } from "./canonical_versification.js";
+const CANONICAL_66_USFM = [
+  "GEN","EXO","LEV","NUM","DEU","JOS","JDG","RUT","1SA","2SA","1KI","2KI","1CH","2CH","EZR","NEH","EST","JOB","PSA","PRO","ECC","SNG",
+  "ISA","JER","LAM","EZK","DAN","HOS","JOL","AMO","OBA","JON","MIC","NAM","HAB","ZEP","HAG","ZEC","MAL",
+  "MAT","MRK","LUK","JHN","ACT","ROM","1CO","2CO","GAL","EPH","PHP","COL","1TH","2TH","1TI","2TI","TIT","PHM","HEB","JAS","1PE","2PE","1JN","2JN","3JN","JUD","REV",
+];
+const USFM_BOOK_ALIAS_MAP = {
+  EZE: "EZK",
+  JOE: "JOL",
+  NAH: "NAM",
+  PHI: "PHP",
+  SOL: "SNG",
+};
 import {
   buildCssPagedMediaPrintHtml,
   dispatchTandaWorkerJob,
@@ -72,12 +83,7 @@ function prefixTable(catalogOrVerseCounts) {
   if (Array.isArray(catalogOrVerseCounts.book_order) && catalogOrVerseCounts.book_order.length > 0) {
     bookOrder = catalogOrVerseCounts.book_order;
   } else {
-    const canonical66 =
-      Array.isArray(CANONICAL_BOOK_ORDER) && CANONICAL_BOOK_ORDER.length >= 66
-        ? CANONICAL_BOOK_ORDER
-        : (BIBLE_CONSTANTS?.CANONICAL_66_BOOKS || []).map((b) =>
-            typeof b === "string" ? b : b.id,
-          );
+    const canonical66 = CANONICAL_66_USFM;
     const presentCanonical = canonical66.filter((b) =>
       Object.prototype.hasOwnProperty.call(verseCounts, b),
     );
@@ -342,9 +348,22 @@ function buildCanonical16MacroTandasCatalog() {
       dir: "ltr",
     });
     const booksSet = new Set();
+    const bookOrder66 = CANONICAL_66_USFM;
     for (const blk of slice5) {
-      if (blk.startBook) booksSet.add(String(blk.startBook).toUpperCase());
-      if (blk.endBook) booksSet.add(String(blk.endBook).toUpperCase());
+      const rawStart = String(blk.startBook || "").toUpperCase();
+      const rawEnd = String(blk.endBook || rawStart).toUpperCase();
+      const sBook = USFM_BOOK_ALIAS_MAP[rawStart] || rawStart;
+      const eBook = USFM_BOOK_ALIAS_MAP[rawEnd] || rawEnd;
+      const sIdx = bookOrder66.indexOf(sBook);
+      const eIdx = bookOrder66.indexOf(eBook);
+      if (sIdx >= 0 && eIdx >= sIdx) {
+        for (let k = sIdx; k <= eIdx; k += 1) {
+          booksSet.add(bookOrder66[k]);
+        }
+      } else {
+        if (sBook) booksSet.add(sBook);
+        if (eBook) booksSet.add(eBook);
+      }
     }
     const rangeLabel = `${firstBlk.startBook} ${firstBlk.startChapter} – ${lastBlk.endBook} ${lastBlk.endChapter}`;
     macroTandas.push({
@@ -545,6 +564,7 @@ export function syncDose2AndDose3LinksForActiveLang({
 
   const dose2Href = state.dose2ObjectUrl || encodePdfBytesToDataUri(dose2Bytes);
   const dose3Href = state.dose3ObjectUrl || encodePdfBytesToDataUri(dose3Bytes);
+  const dose2Planned = planDose2(blockCode, lang, edition);
 
   if (linkDose2) {
     linkDose2.href = dose2Href;
@@ -552,7 +572,7 @@ export function syncDose2AndDose3LinksForActiveLang({
     linkDose2.setAttribute?.("download", `ekovoz-${lang}-${book.toLowerCase()}-${activeCols}col-${activeFontPt}pt.pdf`);
     linkDose2.setAttribute?.("data-dose-mode", "bimodal-tanda");
     linkDose2.setAttribute?.("data-tanda-scope", Array.isArray(state.fullBookVerses) ? "full-book" : "chapter-seed");
-    linkDose2.setAttribute?.("data-worker-url", bimodalDose2.workerUrl);
+    linkDose2.setAttribute?.("data-worker-url", bimodalDose2.workerUrl || dose2Planned.url);
     linkDose2.setAttribute?.("data-block-code", blockCode);
     linkDose2.setAttribute?.("data-columns", String(activeCols));
     linkDose2.setAttribute?.("data-font-pt", String(activeFontPt));
@@ -900,9 +920,17 @@ export function syncPrintDrawerControlsFromEditionProfile(
   const columns = Number(found.columns) || (cleanId.includes("3col") ? 3 : cleanId.includes("1col") ? 1 : 2);
   const fontPt = Number(found.fontPt) || (cleanId.includes("3col") ? 8.0 : 9.5);
   const rawPaper = String(found.paperSize || found.paper_size || "A4");
-  const paper = rawPaper.toLowerCase().includes("letter") ? "letter" : "a4";
-  const orientation =
-    rawPaper.toLowerCase().includes("landscape") || columns === 2 ? "landscape" : "portrait";
+  const rawPaperLower = rawPaper.toLowerCase();
+  const paper = rawPaperLower.includes("a3")
+    ? "a3"
+    : rawPaperLower.includes("folio") || rawPaperLower.includes("oficio")
+      ? "folio"
+      : rawPaperLower.includes("b70") || rawPaperLower.includes("braille")
+        ? "b70"
+        : rawPaperLower.includes("letter") || rawPaperLower.includes("carta")
+          ? "letter"
+          : "a4";
+  const orientation = rawPaperLower.includes("landscape") ? "landscape" : "portrait";
   const rawImpMode = String(
     found.impositionMode ||
     found.imposition_mode ||
@@ -919,11 +947,21 @@ export function syncPrintDrawerControlsFromEditionProfile(
       ? "saddle_stitch"
       : "single_sheet_20mm";
 
+  const budgetPaperLabel =
+    paper === "a3"
+      ? "A3"
+      : paper === "folio"
+        ? "Folio"
+        : paper === "b70"
+          ? "B70"
+          : paper === "letter"
+            ? "Letter"
+            : "A4";
   const budget = computeKindlePrintBudget({
     fontPt,
     columns,
     orientation,
-    paper: paper === "letter" ? "Letter" : "A4",
+    paper: budgetPaperLabel,
   });
 
   if (targetDoc && typeof targetDoc.getElementById === "function") {

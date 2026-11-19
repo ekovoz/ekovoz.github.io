@@ -114,11 +114,7 @@ canonical_url: https://ekovoz.org/ja//
 
 弟子たちがみもとに近寄って来た。
 
-## Lámina 27: Colofón A (dedicatoria)
+## Lámina 27: Colofón (dedicatoria)
 
-主はこの作品が主の幸いな人々の間で自由に分かち合われることを望まれました。
-
-## Lámina 28: Colofón B (dedicatoria)
-
-天の御国において最も小さい者たちへ。
+主はこの作品が主の幸いな人々の間で自由に分かち合われることを望まれました。天の御国において最も小さい者たちへ。
 

@@ -1,4 +1,4 @@
-# Guía de Armonización Comunitaria CC0 (L1–L5 · 8 Candados PDA)
+# Guía de Armonización Comunitaria CC0 [lang=stp] (L1–L5 · 8 Candados PDA)
 
 - **L1 (Ortografía / Puntuación):** Normalización unicameral WFST y balance de comillas (`« »`).
 - **L2 (Versículo Puntual):** Ajuste léxico o sintáctico local verificado contra la Matriz de 14 Columnas.

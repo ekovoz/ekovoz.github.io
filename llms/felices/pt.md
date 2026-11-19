@@ -114,11 +114,7 @@ E Jesus, vendo a multidão, subiu a um monte, e, assentando-se,
 
 aproximaram-se dele os seus discípulos;
 
-## Lámina 27: Colofón A (dedicatoria)
+## Lámina 27: Colofón (dedicatoria)
 
-Ele orientou que esta obra seja compartilhada livremente entre os seus bem-aventurados.
-
-## Lámina 28: Colofón B (dedicatoria)
-
-Os pequeninos do reino dos céus.
+Ele orientou que esta obra seja compartilhada livremente entre os seus bem-aventurados. Os pequeninos do reino dos céus.
 

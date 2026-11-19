@@ -160,7 +160,10 @@ export function validateAllEightLocksPda({
   const oldStr = String(oldSurface || "").trim();
   const newStr = String(newSurface || "").trim();
 
-  const p1Pass = !newStr.includes("\uFFFD") && !newStr.includes("\u0000");
+  const p1Pass =
+    !newStr.includes("\uFFFD") &&
+    !newStr.includes("\u0000") &&
+    newStr === newStr.normalize("NFC");
 
   let p2Pass = true;
   let lengthRatio = 1.0;

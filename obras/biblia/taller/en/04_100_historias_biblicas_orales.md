@@ -1,4 +1,4 @@
-# 100 Historias Bíblicas Orales (CC0 · Ekovoz Taller de Campo)
+# 100 Oral Biblical Stories (CC0 · Ekovoz Field Workshop · en)
 
 1. **Creación del Cosmos y la Luz** (`GEN 1:1–2:3`)
 2. **El Huerto del Edén y la Pareja Humana** (`GEN 2:4–25`)

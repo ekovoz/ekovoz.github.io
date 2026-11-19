@@ -11,8 +11,10 @@ import {
 } from "./canonical_versification.js";
 import {
   CASCADE_SEMILATTICE_PRIORITY,
+  evaluateBetaDawidSkeneSprt,
   exportSignedEcoPatchV2Artifact,
   foldCascadePatchV2Semilattice,
+  hydrateFormulaicParallelsIndex,
   projectChapterThroughCascadeSemilattice,
 } from "./cascade_l1_l5.js";
 import {
@@ -405,6 +407,39 @@ export async function hydrateImproveDrawerPanel(ctx = {}) {
   const currentVerseText =
     state.lastNavResult?.chapter?.verses?.[String(state.verse)] || "";
   const osis = `${state.book}.${state.chapter}.${state.verse}`;
+  // SLICE-EKO-V2I-25: Hidratar perezosamente `matrixRows` del capítulo + `formulaic_index.json` al abrir Gaveta 3
+  if (!state.lastNavResult?.matrix?.rows) {
+    const loadMatFn =
+      typeof dataLayer?.loadChapterMatrix === "function"
+        ? dataLayer.loadChapterMatrix.bind(dataLayer)
+        : typeof dataLayer?.loadMatrixChapter === "function"
+          ? dataLayer.loadMatrixChapter.bind(dataLayer)
+          : null;
+    if (loadMatFn) {
+      try {
+        const matRes = await loadMatFn(state.book || "GEN", state.chapter || 1);
+        const rows = Array.isArray(matRes?.rows)
+          ? matRes.rows
+          : Array.isArray(matRes?.data?.rows)
+            ? matRes.data.rows
+            : null;
+        if (rows && rows.length > 0) {
+          if (!state.lastNavResult) state.lastNavResult = {};
+          state.lastNavResult.matrix = { rows };
+        }
+      } catch {
+        // Mantener operación degradada limpia cuando matrix_tier0 no está disponible
+      }
+    }
+  }
+  if (!state.formulaicIndexHydrated && typeof dataLayer?.loadJson === "function") {
+    state.formulaicIndexHydrated = true;
+    Promise.resolve(dataLayer.loadJson("data/formulaic_index.json"))
+      .then((fj) => {
+        if (fj) hydrateFormulaicParallelsIndex(fj);
+      })
+      .catch(() => {});
+  }
   const activeStrongId = await resolvePrimaryStrongForVerse(state, dataLayer);
   state.activeStrongId = activeStrongId;
   const ladder250 =
@@ -496,10 +531,15 @@ export async function hydrateImproveDrawerPanel(ctx = {}) {
 
   const tallerEl = getEl("tallerArtifactsCatalog", targetDoc);
   if (tallerEl && typeof mod.renderTallerArtifactsCatalogHtml === "function") {
-    const draftCheckHtml =
+    const rawDraftHtml =
       String(state.lang || "").toLowerCase() === "stp"
         ? renderStpDraftCheckHtml({ lang: state.lang })
         : "";
+    const sanitizedDraftHtml = String(rawDraftHtml || "")
+      .replace(/<!doctype[^>]*>/gi, "")
+      .replace(/<head\b[^>]*>[\s\S]*?<\/head>/gi, "")
+      .replace(/<title\b[^>]*>[\s\S]*?<\/title>/gi, "")
+      .replace(/<\/?(?:html|body|meta)[^>]*>/gi, "");
     tallerEl.innerHTML =
       mod.renderTallerArtifactsCatalogHtml({
         lang: state.lang,
@@ -507,7 +547,7 @@ export async function hydrateImproveDrawerPanel(ctx = {}) {
         includeEightLocksBar: false,
         masterCensusSummary: state.masterCensusSummary || null,
         uiLocale: state.uiLocale || "es",
-      }) + draftCheckHtml;
+      }) + sanitizedDraftHtml;
   }
 
   for (const [btnId, tabName] of [
@@ -743,20 +783,120 @@ export function bindImproveFormControlsInDrawer(mod, ctx = {}) {
     });
   }
 
+  const voteReviewerInput = getEl("improveVoteReviewerIdInput", targetDoc);
+  const voteGoldChk = getEl("improveVoteGoldSeedsCheck", targetDoc);
+  const btnVoteApprove = getEl("btnAddCommunityVoteApprove", targetDoc);
+  const btnVoteReject = getEl("btnAddCommunityVoteReject", targetDoc);
+  const importVotesInput = getEl("inputImportCommunityVotesJson", targetDoc);
+  const votesStatusEl = getEl("improveCommunityVotesStatus", targetDoc);
+
+  const renderCommunityVotesStatus = () => {
+    const votes = Array.isArray(state.pendingCommunityVotes) ? state.pendingCommunityVotes : [];
+    const ds = evaluateBetaDawidSkeneSprt(votes);
+    if (votesStatusEl) {
+      votesStatusEl.setAttribute?.("data-ds-sprt-status", ds.editorialStatus);
+      votesStatusEl.setAttribute?.("data-vote-count", String(votes.length));
+      votesStatusEl.setAttribute?.("data-distinct-reviewers", String(ds.distinctReviewersCount));
+      votesStatusEl.textContent = `${ds.editorialStatus} · ${ds.distinctReviewersCount} rev (${votes.length} raw) · P=${ds.posteriorTruthProb}`;
+    }
+    return ds;
+  };
+  const pushCommunityVote = (approvedFlag) => {
+    if (!Array.isArray(state.pendingCommunityVotes)) state.pendingCommunityVotes = [];
+    const idx = state.pendingCommunityVotes.length + 1;
+    const revId = String(voteReviewerInput?.value || `hablante_${idx}`).trim() || `hablante_${idx}`;
+    const passedGold = Boolean(voteGoldChk ? voteGoldChk.checked !== false : true);
+    state.pendingCommunityVotes.push({
+      reviewerId: revId,
+      approved: Boolean(approvedFlag),
+      agrees: Boolean(approvedFlag),
+      passedGoldSeeds: passedGold,
+    });
+    return renderCommunityVotesStatus();
+  };
+  if (btnVoteApprove && typeof btnVoteApprove.addEventListener === "function" && !btnVoteApprove._voteBound) {
+    btnVoteApprove._voteBound = true;
+    btnVoteApprove.addEventListener("click", () => pushCommunityVote(true));
+  }
+  if (btnVoteReject && typeof btnVoteReject.addEventListener === "function" && !btnVoteReject._voteBound) {
+    btnVoteReject._voteBound = true;
+    btnVoteReject.addEventListener("click", () => pushCommunityVote(false));
+  }
+  if (importVotesInput && typeof importVotesInput.addEventListener === "function" && !importVotesInput._votesImpBound) {
+    importVotesInput._votesImpBound = true;
+    importVotesInput.addEventListener("change", async (evt) => {
+      const f = evt?.target?.files?.[0] || importVotesInput.files?.[0] || null;
+      if (!f || typeof f.text !== "function") return;
+      try {
+        const parsed = JSON.parse(await f.text());
+        const importedVotes = Array.isArray(parsed)
+          ? parsed
+          : Array.isArray(parsed?.votes)
+            ? parsed.votes
+            : [];
+        if (importedVotes.length > 0) {
+          state.pendingCommunityVotes = [
+            ...(Array.isArray(state.pendingCommunityVotes) ? state.pendingCommunityVotes : []),
+            ...importedVotes,
+          ];
+          renderCommunityVotesStatus();
+        }
+      } catch {
+        // Non-fatal invalid vote import JSON
+      }
+    });
+  }
+  renderCommunityVotesStatus();
+
   const applyBtn = getEl("btnApplySuggestedImprovement", targetDoc);
   if (applyBtn && typeof applyBtn.addEventListener === "function" && !applyBtn._applySuggestedBound) {
     applyBtn._applySuggestedBound = true;
     applyBtn.addEventListener("click", async () => {
       const refreshFn = state.refreshPatchPreview || refreshPatchPreview;
       const osis = `${state.book}.${state.chapter}.${state.verse}`;
+      const oldSurfStr = oldInput?.value || "";
+      const verseMatrixRows = Array.isArray(state.lastNavResult?.matrix?.rows)
+        ? state.lastNavResult.matrix.rows.filter((r) => Array.isArray(r) && Number(r[0]) === Number(state.verse))
+        : [];
+      const derivedProperNouns = [];
+      let derivedAgent = "";
+      let derivedPatient = "";
+      for (const r of verseMatrixRows) {
+        const morphTag = String(r[4] || "");
+        const glossCandidates = [String(r[6] || "").trim(), String(r[7] || "").trim()].filter(Boolean);
+        for (const g of glossCandidates) {
+          if (g.length >= 3 && oldSurfStr.toLowerCase().includes(g.toLowerCase())) {
+            if (/(?:^|[\/\-H])Np\b|\b(?:NP|PRI|PROP)\b/.test(morphTag) && !derivedProperNouns.includes(g)) {
+              derivedProperNouns.push(g);
+            }
+            const roleTag = `${r[8] || ""} ${r[10] || ""}`.toUpperCase();
+            if (!derivedAgent && /\b(?:SUBJ|AG|A0|A0_AGENT)\b/.test(roleTag)) {
+              derivedAgent = g;
+            } else if (!derivedPatient && /\b(?:OBJ|PAT|A1|A1_PATIENT)\b/.test(roleTag)) {
+              derivedPatient = g;
+            }
+          }
+        }
+      }
+      const communityVotes = Array.isArray(state.pendingCommunityVotes) ? state.pendingCommunityVotes : [];
+      const dsVerdict = evaluateBetaDawidSkeneSprt(communityVotes);
+      if (typeof applyBtn.setAttribute === "function") {
+        applyBtn.setAttribute("data-ds-sprt-status", dsVerdict.editorialStatus);
+      }
+      renderCommunityVotesStatus();
       const payloadArgs = {
         lang: state.lang || "stp",
         level: levelSel?.value || state.cascadeLevel || "L2",
         ref: osis,
         strongId: state.activeStrongId || "H0430",
-        oldSurface: oldInput?.value || "",
+        oldSurface: oldSurfStr,
         note: noteInput?.value || "",
-        votes: Array.isArray(state.pendingCommunityVotes) ? state.pendingCommunityVotes : [],
+        votes: communityVotes,
+        expectedProperNouns: Array.isArray(state.expectedProperNouns)
+          ? state.expectedProperNouns
+          : derivedProperNouns,
+        expectedAgent: state.expectedAgent || derivedAgent,
+        expectedPatient: state.expectedPatient || derivedPatient,
         existingOverlayEntries: Array.isArray(state.liveCascadeOverlays) ? state.liveCascadeOverlays : [],
         signature: state.pendingCascadeSignatureHex || "",
         publicKey: state.pendingCascadePublicKeyHex || "",

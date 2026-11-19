@@ -13,35 +13,41 @@ import {
   computeKindlePrintBudget,
   dispatchTandaWorkerJob,
   encodePdfBytesToDataUri,
-  getCachedFederationReachability,
   hydrateEditorialProfiles,
   listAll14PrintEditionsForLang,
   normalizeEditionSlug,
   paperForRegion,
+  planDose3,
   planSequential16MacroTandasGeneration,
   probeFederationShardReachabilityOnce,
   renderBranchAndTypologyInspectorHtml,
   renderCanonical16MacroTandasSelectorHtml,
   renderImpositionAndLayoutPreviewHtml,
   renderMultiSignatureAndPocketRefugeHtml,
-  requiresLiveGeometrySynthesis,
   resolveCanonicalBlockCode,
   resolveCanonicalBlockForPassage,
   resolveMacroTandaForBlock,
-  resolvePrecompiledDiskLang,
   resolveRegionalPrintDefaults,
   simulateFifthGenPhotocopySauvolaBilateral,
   simulateThirdGenPhotocopySauvola,
   syncDose2AndDose3LinksForActiveLang,
   syncPrintDrawerControlsFromEditionProfile,
 } from "./dosis.js";
+import {
+  GOSPEL_14_PERICOPES_SPEC,
+  REFUGE_4_SHEETS_PASSAGES_SPEC,
+  formatCanonical80BlocksChecklistEntries,
+  transduceTextToBrailleBrfAndUnicode,
+} from "./dosis_editions_catalog.js";
 import { applyHarelSubtabSelection } from "./drawer_study.js";
 import { isRtlLocale } from "./i18n.js";
+import { decodeRfc8878RawZstdFrameJs } from "./offline_mesh.js";
 import {
   evaluateOpticalSauvolaPhotocopyOracle,
   filterEphemeralSubpixelIslands1px,
 } from "./sauvola_canvas_oracle.js";
-export { runWorkerTandaJob } from "./tanda_print_worker.js";
+import { encodePaperFormatCode, runWorkerTandaJob } from "./tanda_print_worker.js";
+export { runWorkerTandaJob };
 
 export const HAREL_PRINT_SUBTABS = ["doses", "imposition", "stationery"];
 
@@ -55,7 +61,7 @@ function escHtml(val) {
 
 /**
  * Oráculo óptico real Kanungo + Filtro Bilateral + Binarización Adaptativa Shafait-Sauvola (`Float64Array` `O(1)`/px)
- * + Bit-Quads `2×2` de Gray (`SLICE-V2C-14`, `DEB-V2C-09` purgado: `0` fórmulas lineales sintéticas).
+ * + Bit-Quads `2×2` de Gray (`SLICE-V2C-14`, `SLICE-EKO-V2I-13`: contornos reales `ttfBytes` compuestos incluidos).
  */
 export function simulateKanungoSauvolaGeneration(genIndex = 5, sauvolaK = 0.32, dpi = 300, extraOpts = {}) {
   const report = evaluateOpticalSauvolaPhotocopyOracle({
@@ -65,6 +71,7 @@ export function simulateKanungoSauvolaGeneration(genIndex = 5, sauvolaK = 0.32, 
     strokePt: extraOpts?.strokePt ?? 0.85,
     lang: extraOpts?.lang || "es",
     text: extraOpts?.text || "",
+    ttfBytes: extraOpts?.ttfBytes instanceof Uint8Array ? extraOpts.ttfBytes : null,
     useBrowserCanvasIfAvailable: extraOpts?.useBrowserCanvasIfAvailable ?? true,
   });
   if (extraOpts?.rawBinaryMask instanceof Uint8Array) {
@@ -99,11 +106,16 @@ export function renderEditorialGraphicsAndPrintSpecsCard({
   activeGen = 5,
   sauvolaK = 0.32,
   uiLocale = "es",
+  ttfBytes = null,
 } = {}) {
   const isEn = String(uiLocale || "es").trim().toLowerCase().startsWith("en");
   const refLabel = `${String(book || "GEN").toUpperCase()} ${Number(chapter) || 1}:${Number(verse) || 1}`;
   const cleanText = String(text || "En el principio creó Dios los cielos y la tierra.").slice(0, 140);
-  const activeSim = simulateKanungoSauvolaGeneration(activeGen, sauvolaK, 300, { lang, text: cleanText });
+  const activeSim = simulateKanungoSauvolaGeneration(activeGen, sauvolaK, 300, {
+    lang,
+    text: cleanText,
+    ttfBytes,
+  });
   const fifthGenBilateral = simulateFifthGenPhotocopySauvolaBilateral({
     strokePt: 0.85,
     k: activeSim.sauvolaK,
@@ -115,6 +127,7 @@ export function renderEditorialGraphicsAndPrintSpecsCard({
       g,
       g === activeSim.genIndex ? activeSim.sauvolaK : defaultK,
       300,
+      { lang, text: cleanText, ttfBytes },
     );
     return {
       gen: g,
@@ -204,6 +217,23 @@ export function renderPrintDrawerPanelsSyncInDrawer(ctx = {}) {
     state.activeBlockNumber = liveBlock.blockNumber || 1;
   }
   syncDose2AndDose3LinksForActiveLang({ state, targetDoc, getEl });
+  for (const [linkId, flag] of [
+    ["linkDose2BlockPdf", "_dose2Bound"],
+    ["linkDose3FullBiblePdf", "_dose3Bound"],
+  ]) {
+    const linkEl = getEl(linkId, targetDoc);
+    if (linkEl && typeof linkEl.addEventListener === "function" && !linkEl[flag]) {
+      linkEl[flag] = true;
+      linkEl.addEventListener("click", (ev) => {
+        if (linkEl._directSynthesizedClick) return;
+        const curHref = String(linkEl.getAttribute?.("href") || linkEl.href || "");
+        if (!curHref || curHref.startsWith("#") || curHref.startsWith("data:")) {
+          ev?.preventDefault?.();
+          hydratePrintDrawerPanels?.(targetDoc);
+        }
+      });
+    }
+  }
   const isEn = String(state.uiLocale || "es").trim().toLowerCase().startsWith("en");
   const regionalDefaults = resolveRegionalPrintDefaults(state.countryIso2 || "MX", {
     lang: state.lang,
@@ -307,7 +337,7 @@ export function renderPrintDrawerPanelsSyncInDrawer(ctx = {}) {
         const chosenMt = Math.max(1, Math.min(16, Number(e?.target?.value || macroSel.value) || 1));
         state.activeMacroTandaNumber = chosenMt;
         state.activeBlockNumber = (chosenMt - 1) * 5 + 1;
-        state.forceMacroTandaWorker = true;
+        state.generateFull66BookBible = false;
         hydratePrintDrawerPanels(targetDoc);
       });
     }
@@ -315,14 +345,15 @@ export function renderPrintDrawerPanelsSyncInDrawer(ctx = {}) {
     if (btnGenAll16 && typeof btnGenAll16.addEventListener === "function" && !btnGenAll16._gen16Bound) {
       btnGenAll16._gen16Bound = true;
       btnGenAll16.addEventListener("click", () => {
-        planSequential16MacroTandasGeneration({
+        state.fullBible16MacroTandasPlan = planSequential16MacroTandasGeneration({
           lang: state.effectiveCorpusLang || state.lang || "es",
           columns: state.columns || 2,
           fontPt: state.fontSizePt || 9.5,
           paper: effectivePaper || "a4",
           dir: isRtlLocale(state.lang) ? "rtl" : "ltr",
         });
-        state.forceMacroTandaWorker = true;
+        state.generateFull66BookBible = true;
+        state.lastHydratedWorkerTandaKey = "";
         hydratePrintDrawerPanels(targetDoc);
       });
     }
@@ -334,6 +365,7 @@ export function renderPrintDrawerPanelsSyncInDrawer(ctx = {}) {
       blockSel._blockSelBound = true;
       blockSel.addEventListener("change", (e) => {
         state.activeBlockNumber = Math.max(1, Math.min(80, Number(e?.target?.value || blockSel.value) || 1));
+        state.generateFull66BookBible = false;
         hydratePrintDrawerPanels(targetDoc);
       });
     }
@@ -359,7 +391,11 @@ export function renderPrintDrawerPanelsSyncInDrawer(ctx = {}) {
   if (photocopyBadge) {
     const activeGen = Number.isInteger(state.photocopyGen) ? state.photocopyGen : 3;
     const activeSauvolaK = typeof state.sauvolaK === "number" ? state.sauvolaK : 0.25;
-    const simLive = simulateKanungoSauvolaGeneration(activeGen, activeSauvolaK, 300);
+    const simLive = simulateKanungoSauvolaGeneration(activeGen, activeSauvolaK, 300, {
+      lang: state.lang || "es",
+      text: "eo",
+      ttfBytes: state.activePrintTtfBytes || null,
+    });
     const sim3rd = simulateThirdGenPhotocopySauvola({
       strokePt: (state.fontSizePt || 9.5) >= 9.0 ? 0.85 : 0.75,
       k: simLive.sauvolaK,
@@ -392,6 +428,7 @@ export function renderPrintDrawerPanelsSyncInDrawer(ctx = {}) {
       activeGen: state.photocopyGen ?? 5,
       sauvolaK: state.sauvolaK ?? 0.32,
       uiLocale: state.uiLocale || "es",
+      ttfBytes: state.activePrintTtfBytes || null,
     });
     if (typeof graphicsHost.addEventListener === "function" && !graphicsHost._photocopyBound) {
       graphicsHost._photocopyBound = true;
@@ -467,7 +504,8 @@ export function renderPrintDrawerPanelsSyncInDrawer(ctx = {}) {
     if (!state.editionObjectUrls || typeof state.editionObjectUrls !== "object") {
       state.editionObjectUrls = {};
     }
-    if (state._editionObjectUrlsLang && state._editionObjectUrlsLang !== effectiveLang) {
+    const editionScopeSig = `${effectiveLang}::${state.book || "GEN"}::${state.chapter || 1}::${activeBlockCode}`;
+    if (state._editionObjectUrlsScope && state._editionObjectUrlsScope !== editionScopeSig) {
       for (const prevUrl of Object.values(state.editionObjectUrls)) {
         if (typeof prevUrl === "string" && prevUrl.startsWith("blob:")) {
           try {
@@ -479,7 +517,7 @@ export function renderPrintDrawerPanelsSyncInDrawer(ctx = {}) {
       }
       state.editionObjectUrls = {};
     }
-    state._editionObjectUrlsLang = effectiveLang;
+    state._editionObjectUrlsScope = editionScopeSig;
     catalogGrid.setAttribute("data-editions-count", String(editions.length));
     catalogGrid.setAttribute("data-active-block-code", activeBlockCode);
     catalogGrid.innerHTML = editions
@@ -490,21 +528,26 @@ export function renderPrintDrawerPanelsSyncInDrawer(ctx = {}) {
           ed.id?.includes("refugio_4_hojas") || ed.editionSlug === "refugio_4_hojas"
             ? 15
             : ed.id?.includes("checklist_80_bloques") || ed.editionSlug === "checklist_80_bloques"
-              ? 16
+              ? 0
               : ed.id === "06_bilingue_paralela"
                 ? 15
                 : ed.id === "07_cuaderno_5lineas_apaisado"
                   ? 16
                   : 0;
-        const cachedCardHref = state.editionObjectUrls[cardId] || "";
+        const editionCacheKey = `${cardId}::${editionScopeSig}`;
+        const cachedCardHref = state.editionObjectUrls[editionCacheKey] || state.editionObjectUrls[cardId] || "";
         const staticFieldHref =
-          ed.kind === "field_pdf" && effectiveLang === "es"
+          ed.kind === "field_pdf" && effectiveLang === "es" && state.federationReachable !== false
             ? buildRelativePdfAssetUrl(ed.profileUrl || ed.url || "")
             : "";
         const resolvedHref =
           cachedCardHref ||
           staticFieldHref ||
           buildRelativePdfAssetUrl(ed.profileUrl || ed.url || "mostrador/tanda_print_worker.js");
+        const paperCode = encodePaperFormatCode(
+          ed.paperSize || effectivePaper,
+          String(ed.paperSize || "").toLowerCase().includes("landscape") ? "landscape" : "portrait",
+        );
         const specParts =
           ed.kind === "field_pdf"
             ? [
@@ -526,7 +569,7 @@ export function renderPrintDrawerPanelsSyncInDrawer(ctx = {}) {
             resolvedHref,
           )}" data-profile-id="${escapeHtml(cardId)}" data-edition-slug="${escapeHtml(
             ed.editionSlug,
-          )}" data-edition-mode="${dynamicFieldMode}" data-active-block="${escapeHtml(activeBlockCode)}" data-field-pdf-bytes="${escapeHtml(
+          )}" data-edition-mode="${dynamicFieldMode}" data-paper-code="${paperCode}" data-active-block="${escapeHtml(activeBlockCode)}" data-field-pdf-bytes="${escapeHtml(
             ed.bytes || "",
           )}" data-geometry-key="${escapeHtml(ed.geometryKey || "")}" data-edition-kind="${escapeHtml(
             ed.kind || "edition",
@@ -548,11 +591,16 @@ export function renderPrintDrawerPanelsSyncInDrawer(ctx = {}) {
             : null;
         const profId = cardEl?.getAttribute?.("data-profile-id");
         if (!profId) return;
+        const curLang = String(state.effectiveCorpusLang || state.lang || "es").trim() || "es";
         const isFieldCard =
           profId.includes("refugio_4_hojas") || profId.includes("checklist_80_bloques");
+        if (isFieldCard && curLang === "es" && state.federationReachable !== false) {
+          return;
+        }
         let cols = Number(cardEl?.getAttribute?.("data-columns")) || Number(state.columns) || 2;
         let fontPt = Number(cardEl?.getAttribute?.("data-font-pt")) || Number(state.fontSizePt) || 9.5;
         let paper = cardEl?.getAttribute?.("data-paper-size") || state.paperFormat || "a4";
+        let orientation = String(paper).toLowerCase().includes("landscape") ? "landscape" : "portrait";
         let booklet4n = state.foliationMode === "saddle_stitch";
         if (!isFieldCard) {
           const synced = syncPrintDrawerControlsFromEditionProfile(profId, targetDoc);
@@ -565,30 +613,90 @@ export function renderPrintDrawerPanelsSyncInDrawer(ctx = {}) {
           cols = synced.columns;
           fontPt = synced.fontPt;
           paper = synced.paper;
+          orientation = synced.orientation || orientation;
           booklet4n = synced.foliationMode === "saddle_stitch";
         }
-        const edMode = Number(cardEl?.getAttribute?.("data-edition-mode")) || 0;
-        const curLang = String(state.effectiveCorpusLang || state.lang || "es").trim() || "es";
+        const curBlockCode = `B${String(
+          Math.max(1, Math.min(80, Number(state.activeBlockNumber) || 1)),
+        ).padStart(2, "0")}`;
+        const cacheKey = `${profId}::${curLang}::${state.book || "GEN"}::${state.chapter || 1}::${curBlockCode}`;
         if (!state.editionObjectUrls || typeof state.editionObjectUrls !== "object") {
           state.editionObjectUrls = {};
         }
-        if (!state.editionObjectUrls[profId] || !cardEl._directSynthesizedClick) {
+        if (!state.editionObjectUrls[cacheKey] || !cardEl._directSynthesizedClick) {
           e?.preventDefault?.();
           try {
-            const versesPayload = Array.isArray(state.fullBookVerses) && state.fullBookVerses.length > 0
-              ? state.fullBookVerses
-              : state.lastNavResult?.chapter?.verses || {};
-            const res = await dispatchTandaWorkerJob({
-              lang: curLang,
-              book: state.book || "GEN",
-              chapter: state.chapter || 1,
-              verses: versesPayload,
-              editionMode: edMode,
+            const substrate = await resolveEditionSubstrateForProfile(profId, {
+              state,
+              dataLayer: ctx.dataLayer,
+              curLang,
+              activeBook: state.book || "GEN",
+              activeChapter: state.chapter || 1,
               columns: cols,
               fontPt,
               paper,
-              dir: isRtlLocale(curLang) ? "rtl" : "ltr",
+              orientation,
               booklet4n,
+            });
+            if (substrate.brfAscii || substrate.brfHref) {
+              if (!state.brfObjectUrls || typeof state.brfObjectUrls !== "object") {
+                state.brfObjectUrls = {};
+              }
+              const prevBrfUrl = state.brfObjectUrls[cacheKey];
+              if (typeof prevBrfUrl === "string" && prevBrfUrl.startsWith("blob:")) {
+                try {
+                  globalThis.URL?.revokeObjectURL?.(prevBrfUrl);
+                } catch {
+                  // Non-fatal
+                }
+              }
+              let resolvedBrfHref = substrate.brfHref || "";
+              if (
+                substrate.brfAscii &&
+                typeof globalThis.Blob === "function" &&
+                typeof globalThis.URL?.createObjectURL === "function"
+              ) {
+                try {
+                  resolvedBrfHref = globalThis.URL.createObjectURL(
+                    new globalThis.Blob([substrate.brfAscii], { type: "text/plain;charset=utf-8" }),
+                  );
+                } catch {
+                  // Fallback to data URI
+                }
+              }
+              state.brfObjectUrls[cacheKey] = resolvedBrfHref;
+              const brfFilename = `ekovoz-${curLang}-${String(substrate.book || state.book || "GEN").toLowerCase()}-braille.brf`;
+              cardEl.setAttribute?.("data-brf-href", resolvedBrfHref);
+              cardEl.setAttribute?.("data-brf-download", brfFilename);
+              if (resolvedBrfHref && typeof targetDoc?.createElement === "function") {
+                try {
+                  const brfAnchor = targetDoc.createElement("a");
+                  if (brfAnchor) {
+                    brfAnchor.href = resolvedBrfHref;
+                    brfAnchor.download = brfFilename;
+                    brfAnchor.setAttribute?.("href", resolvedBrfHref);
+                    brfAnchor.setAttribute?.("download", brfFilename);
+                    brfAnchor.click?.();
+                  }
+                } catch {
+                  // Non-fatal in mock docs
+                }
+              }
+            }
+            const res = await dispatchTandaWorkerJob({
+              lang: curLang,
+              book: substrate.book || state.book || "GEN",
+              chapter: substrate.chapter || state.chapter || 1,
+              verses: substrate.verses,
+              bridgeVerses: substrate.bridgeVerses,
+              editionMode: substrate.editionMode,
+              columns: substrate.columns,
+              fontPt: substrate.fontPt,
+              paper: substrate.paper,
+              orientation: substrate.orientation,
+              includeBoldFont: true,
+              dir: isRtlLocale(curLang) ? "rtl" : "ltr",
+              booklet4n: substrate.booklet4n,
               maxPagesPerTanda: 50,
             });
             if (res?.type === "tanda-offline-font-notice") {
@@ -599,7 +707,7 @@ export function renderPrintDrawerPanelsSyncInDrawer(ctx = {}) {
                 noticeEl.textContent = res.message || "";
               }
             } else if (res?.pdfBytes instanceof Uint8Array && res.pdfBytes.byteLength > 0) {
-              const prevHref = state.editionObjectUrls[profId];
+              const prevHref = state.editionObjectUrls[cacheKey];
               if (typeof prevHref === "string" && prevHref.startsWith("blob:")) {
                 try {
                   globalThis.URL?.revokeObjectURL?.(prevHref);
@@ -608,6 +716,7 @@ export function renderPrintDrawerPanelsSyncInDrawer(ctx = {}) {
                 }
               }
               const nextHref = toDownloadablePdfHref(res.pdfBytes);
+              state.editionObjectUrls[cacheKey] = nextHref;
               state.editionObjectUrls[profId] = nextHref;
               cardEl.href = nextHref;
               cardEl.setAttribute?.("href", nextHref);
@@ -630,6 +739,258 @@ export function renderPrintDrawerPanelsSyncInDrawer(ctx = {}) {
       });
     }
   }
+}
+
+function normalizeChapterMapToEntries(bookCode, chapterNum, versesMap) {
+  if (Array.isArray(versesMap)) return versesMap;
+  if (!versesMap || typeof versesMap !== "object") return [];
+  return Object.keys(versesMap)
+    .sort((a, b) => (Number(a) || 0) - (Number(b) || 0))
+    .map((vNum) => ({ ref: `${bookCode} ${chapterNum}:${vNum}`, text: String(versesMap[vNum] ?? "") }));
+}
+
+function filterBookEntriesRange(entries, bookCode, minCh = 1, maxCh = 999, minV = 1, maxV = 999) {
+  const out = [];
+  for (const item of entries) {
+    const m = String(item?.ref || "").match(/^([A-Z0-9]+)\s+(\d+):(\d+)/i);
+    if (!m) continue;
+    if (String(m[1]).toUpperCase() !== String(bookCode).toUpperCase()) continue;
+    const ch = Number(m[2]);
+    const v = Number(m[3]);
+    if (ch < minCh || ch > maxCh) continue;
+    if (ch === minCh && v < minV) continue;
+    if (ch === maxCh && v > maxV) continue;
+    out.push(item);
+  }
+  return out;
+}
+
+export async function resolveEditionSubstrateForProfile(
+  profId,
+  {
+    state = {},
+    dataLayer = null,
+    curLang = "es",
+    activeBook = "GEN",
+    activeChapter = 1,
+    columns = 2,
+    fontPt = 9.5,
+    paper = "a4",
+    orientation = "portrait",
+    booklet4n = false,
+  } = {},
+) {
+  const id = String(profId || "02_2col_pastoral").trim();
+  const baseVerses =
+    Array.isArray(state.fullBookVerses) && state.fullBookVerses.length > 0
+      ? state.fullBookVerses
+      : normalizeChapterMapToEntries(activeBook, activeChapter, state.lastNavResult?.chapter?.verses || {});
+
+  if (id.includes("checklist_80_bloques")) {
+    return {
+      book: "GEN",
+      chapter: 1,
+      verses: formatCanonical80BlocksChecklistEntries(curLang),
+      bridgeVerses: null,
+      editionMode: 0,
+      columns: 2,
+      fontPt: 9.0,
+      paper: "a4",
+      orientation: "portrait",
+      booklet4n: false,
+      brfHref: "",
+    };
+  }
+
+  const loadBookEntries = async (langCode, bookCode) => {
+    if (typeof dataLayer?.loadBookFromEkpackRange !== "function") return [];
+    const res = await dataLayer.loadBookFromEkpackRange(langCode, bookCode);
+    return String(res?.status || "").toLowerCase() === "ready"
+      ? flattenLoadedBookChapters(bookCode, res.data?.chapters)
+      : [];
+  };
+
+  if (id.includes("refugio_4_hojas")) {
+    const bridgeLang = curLang === "es" ? "en" : "es";
+    const vernOut = [];
+    const bridgeOut = [];
+    const vernByBook = new Map();
+    const bridgeByBook = new Map();
+    for (const p of REFUGE_4_SHEETS_PASSAGES_SPEC) {
+      if (!vernByBook.has(p.book)) {
+        vernByBook.set(p.book, await loadBookEntries(curLang, p.book));
+        bridgeByBook.set(p.book, await loadBookEntries(bridgeLang, p.book));
+      }
+      for (const item of filterBookEntriesRange(vernByBook.get(p.book), p.book, p.chapter, p.chapter, p.startVerse, p.endVerse)) {
+        vernOut.push(item);
+      }
+      for (const item of filterBookEntriesRange(bridgeByBook.get(p.book), p.book, p.chapter, p.chapter, p.startVerse, p.endVerse)) {
+        bridgeOut.push(item);
+      }
+    }
+    return {
+      book: "GEN",
+      chapter: 1,
+      verses: vernOut.length > 0 ? vernOut : baseVerses,
+      bridgeVerses: bridgeOut.length > 0 ? bridgeOut : null,
+      editionMode: 15,
+      columns: 2,
+      fontPt: 8.5,
+      paper: "a4",
+      orientation: "portrait",
+      booklet4n: true,
+      brfHref: "",
+    };
+  }
+
+  if (id === "10_evangelio_14_pericopas") {
+    const gospelOut = [];
+    const gospelByBook = new Map();
+    for (const p of GOSPEL_14_PERICOPES_SPEC) {
+      if (!gospelByBook.has(p.book)) {
+        gospelByBook.set(p.book, await loadBookEntries(curLang, p.book));
+      }
+      const slice = filterBookEntriesRange(gospelByBook.get(p.book), p.book, p.chapter, p.chapter, p.startVerse, p.endVerse);
+      if (slice.length > 0) {
+        gospelOut.push({ ref: `${p.book} ${p.chapter}:${p.startVerse}`, text: `[${p.title}] ${slice[0].text}` });
+        for (let k = 1; k < slice.length; k += 1) gospelOut.push(slice[k]);
+      }
+    }
+    return {
+      book: "JHN",
+      chapter: 1,
+      verses: gospelOut.length > 0 ? gospelOut : baseVerses,
+      bridgeVerses: null,
+      editionMode: 0,
+      columns: 2,
+      fontPt: 10.0,
+      paper: "a4",
+      orientation: "portrait",
+      booklet4n: true,
+      brfHref: "",
+    };
+  }
+
+  if (id === "06_bilingue_paralela") {
+    const bridgeLang = curLang === "es" ? "en" : "es";
+    let bridgeEntries = await loadBookEntries(bridgeLang, activeBook);
+    if (bridgeEntries.length === 0 && state.lastNavResult?.bridgeChapter?.verses) {
+      bridgeEntries = normalizeChapterMapToEntries(activeBook, activeChapter, state.lastNavResult.bridgeChapter.verses);
+    }
+    if (bridgeEntries.length === 0 && baseVerses.length > 0) {
+      bridgeEntries = baseVerses.map((e) => ({ ref: e.ref, text: `[${bridgeLang.toUpperCase()}] ${e.text}` }));
+    }
+    return {
+      book: activeBook,
+      chapter: activeChapter,
+      verses: baseVerses,
+      bridgeVerses: bridgeEntries,
+      editionMode: 15,
+      columns: 2,
+      fontPt: 9.5,
+      paper,
+      orientation,
+      booklet4n,
+      brfHref: "",
+    };
+  }
+
+  if (id === "05_interlineal_estudio") {
+    const chapEntries = normalizeChapterMapToEntries(
+      activeBook,
+      activeChapter,
+      state.lastNavResult?.chapter?.verses || {},
+    );
+    const activeSet = chapEntries.length > 0 ? chapEntries : baseVerses;
+    let matrixRes = state.lastNavResult?.chapterMatrix || null;
+    if (!matrixRes && typeof dataLayer?.loadChapterMatrix === "function") {
+      try {
+        matrixRes = await dataLayer.loadChapterMatrix(activeBook, activeChapter);
+      } catch {
+        matrixRes = null;
+      }
+    }
+    const matrixRows = Array.isArray(matrixRes?.rows) ? matrixRes.rows : [];
+    const interlinearVerses = activeSet.map((entry) => {
+      const vMatch = String(entry.ref || "").match(/:(\d+)$/);
+      const vNum = Number(vMatch ? vMatch[1] : 1) || 1;
+      const tokens = matrixRows.filter((r) =>
+        Array.isArray(r) ? Number(r[0]) === vNum : Number(r?.verse ?? r?.v ?? 0) === vNum,
+      );
+      if (tokens.length === 0) {
+        const pendingLabel = curLang.startsWith("en")
+          ? "Tier-0 matrix loading"
+          : "Matriz Tier-0 cargándose";
+        return { ref: entry.ref, text: `${entry.text} ‖ (${pendingLabel})` };
+      }
+      const colsSummary = tokens
+        .slice(0, 12)
+        .map((tk) => {
+          const surf = Array.isArray(tk) ? tk[1] || "" : tk.surface || tk.c03 || "";
+          const lem = Array.isArray(tk) ? tk[2] || "" : tk.lemma || tk.c04 || "";
+          const strong = Array.isArray(tk) ? tk[3] || "" : tk.strong || tk.c05 || "";
+          const morph = Array.isArray(tk) ? tk[4] || "" : tk.morph || tk.c06 || "";
+          const gloss = Array.isArray(tk)
+            ? curLang.startsWith("en")
+              ? tk[6] || tk[7] || ""
+              : tk[7] || tk[6] || ""
+            : tk.gloss || tk.c09 || tk.c08 || "";
+          return `[${surf}|${lem}|${strong}|${morph}|${gloss}]`;
+        })
+        .join(" ");
+      return { ref: entry.ref, text: `${entry.text} ‖ ${colsSummary}` };
+    });
+    return {
+      book: activeBook,
+      chapter: activeChapter,
+      verses: interlinearVerses,
+      bridgeVerses: null,
+      editionMode: 0,
+      columns: 1,
+      fontPt: 9.0,
+      paper: "a4",
+      orientation: "portrait",
+      booklet4n: false,
+      brfAscii: "",
+      brfHref: "",
+    };
+  }
+
+  if (id === "11_braille_nemeth_b70") {
+    const braille = transduceTextToBrailleBrfAndUnicode(baseVerses, { lineWidth: 40 });
+    const brfHref = `data:text/plain;charset=utf-8,${encodeURIComponent(braille.brfAscii)}`;
+    return {
+      book: activeBook,
+      chapter: activeChapter,
+      verses: braille.unicodeBrailleEntries.map((e) => ({
+        ref: e.ref,
+        text: `${e.text} [BRF: ${e.brfAsciiLine}]`,
+      })),
+      bridgeVerses: null,
+      editionMode: 0,
+      columns: 1,
+      fontPt: 16.0,
+      paper: "b70",
+      orientation: "portrait",
+      booklet4n: false,
+      brfAscii: braille.brfAscii,
+      brfHref,
+    };
+  }
+
+  return {
+    book: activeBook,
+    chapter: activeChapter,
+    verses: baseVerses,
+    bridgeVerses: null,
+    editionMode: id === "07_cuaderno_5lineas_apaisado" ? 16 : 0,
+    columns,
+    fontPt,
+    paper,
+    orientation: id === "07_cuaderno_5lineas_apaisado" ? "landscape" : orientation,
+    booklet4n,
+    brfHref: "",
+  };
 }
 
 function flattenLoadedBookChapters(bookCode, chaptersObj) {
@@ -689,6 +1050,31 @@ export async function hydratePrintDrawerPanelsInDrawer(ctx = {}) {
   }
 
   if (
+    !(state.activePrintTtfBytes instanceof Uint8Array) &&
+    typeof dataLayer?.loadBytes === "function"
+  ) {
+    try {
+      let ttf = await dataLayer.loadBytes("assets/fonts/CharisSIL-Regular.ttf");
+      if (!(ttf instanceof Uint8Array) || ttf.byteLength <= 64) {
+        const zst = await dataLayer.loadBytes("packs/fonts/CharisSIL-Regular.ttf.zst");
+        if (zst instanceof Uint8Array && zst.byteLength > 16) {
+          const playerWasm =
+            dataLayer?.getHydratedWasmModule?.("ekovoz_player_wasm") ||
+            (typeof dataLayer?.loadWasmModule === "function"
+              ? await dataLayer.loadWasmModule("ekovoz_player_wasm")
+              : null);
+          ttf = decodeRfc8878RawZstdFrameJs(zst, playerWasm);
+        }
+      }
+      if (ttf instanceof Uint8Array && ttf.byteLength > 64) {
+        state.activePrintTtfBytes = ttf;
+      }
+    } catch {
+      // Non-fatal in headless mocks without font asset
+    }
+  }
+
+  if (
     state.federationReachable === undefined &&
     typeof globalThis.fetch === "function" &&
     typeof globalThis.window !== "undefined"
@@ -702,76 +1088,87 @@ export async function hydratePrintDrawerPanelsInDrawer(ctx = {}) {
   }
 
   const effectiveLang = String(state.effectiveCorpusLang || state.lang || "es").trim() || "es";
+  const dose3Plan = planDose3([], effectiveLang, state.edition || "01_lectura_general");
+  const dose3LinkEl = getEl("linkDose3FullBiblePdf", targetDoc);
+  if (dose3Plan && dose3LinkEl && typeof dose3LinkEl.setAttribute === "function") {
+    dose3LinkEl.setAttribute("data-dose3-edition", String(dose3Plan.edition || state.edition || "01_lectura_general"));
+  }
   const activeCols = Number(state.columns) || 2;
   const activeFontPt = Number(state.fontSizePt) || 9.5;
-  const liveGeomActive =
-    (state.columns !== undefined || state.fontSizePt !== undefined) &&
-    requiresLiveGeometrySynthesis({ columns: activeCols, fontPt: activeFontPt });
-  const needsLiveWorkerTanda =
-    state.federationReachable === false ||
-    getCachedFederationReachability() === false ||
-    !resolvePrecompiledDiskLang(effectiveLang) ||
-    effectiveLang === "es-1909" ||
-    liveGeomActive ||
-    Boolean(state.forceMacroTandaWorker);
   const resolvedBlock = resolveCanonicalBlockCode(state.book, state.chapter, state.verse);
   const activeBlockNum = Number(state.activeBlockNumber) || resolvedBlock.blockNumber || 1;
+  const activeBlockSpec = CANONICAL_80_BLOCKS_CATALOG[Math.max(0, Math.min(79, activeBlockNum - 1))];
   const activeMacroTanda =
     CANONICAL_16_MACRO_TANDAS[
     Math.max(1, Math.min(16, Number(state.activeMacroTandaNumber) || resolveMacroTandaForBlock(activeBlockNum).macroTandaNumber)) - 1
     ] || resolveMacroTandaForBlock(activeBlockNum);
-  const workerCacheKey = `${effectiveLang}:${state.book || "GEN"}:MT${activeMacroTanda.macroTandaNumber}:${activeCols}:${activeFontPt}:${state.paperFormat || "a4"}`;
+  const full66Flag = state.generateFull66BookBible ? "FULL66" : `MT${activeMacroTanda.macroTandaNumber}`;
+  const workerCacheKey = `${effectiveLang}:${state.book || "GEN"}:B${activeBlockNum}:${full66Flag}:${activeCols}:${activeFontPt}:${state.paperFormat || "a4"}`;
   if (
-    needsLiveWorkerTanda &&
     state.lastHydratedWorkerTandaKey !== workerCacheKey &&
     typeof dataLayer?.loadBookFromEkpackRange === "function"
   ) {
     state.lastHydratedWorkerTandaKey = workerCacheKey;
     try {
       const activeBook = String(state.book || "GEN").toUpperCase();
-      const bookRes = await dataLayer.loadBookFromEkpackRange(effectiveLang, activeBook);
-      const fullBookVerses = String(bookRes?.status || "").toLowerCase() === "ready"
-        ? flattenLoadedBookChapters(activeBook, bookRes.data?.chapters)
-        : [];
+      const bookCache = new Map();
+      const fetchBookEntries = async (bCode) => {
+        const cleanB = String(bCode || "").toUpperCase();
+        if (!cleanB) return [];
+        if (bookCache.has(cleanB)) return bookCache.get(cleanB);
+        const bRes = await dataLayer.loadBookFromEkpackRange(effectiveLang, cleanB);
+        const flat = String(bRes?.status || "").toLowerCase() === "ready"
+          ? flattenLoadedBookChapters(cleanB, bRes.data?.chapters)
+          : [];
+        bookCache.set(cleanB, flat);
+        return flat;
+      };
+
+      const fullBookVerses = await fetchBookEntries(activeBook);
       if (fullBookVerses.length > 0) {
         state.fullBookVerses = fullBookVerses;
-        const tandaVerses = [];
-        const seenBooks = new Set();
-        const macroBooks =
-          Array.isArray(activeMacroTanda.booksIncluded) && activeMacroTanda.booksIncluded.length > 0
-            ? activeMacroTanda.booksIncluded
-            : [activeBook];
-        const booksForMacroTanda = macroBooks.includes(activeBook)
-          ? macroBooks
-          : [activeBook, ...macroBooks];
-        for (const targetBook of booksForMacroTanda) {
-          if (seenBooks.has(targetBook)) continue;
-          seenBooks.add(targetBook);
-          if (targetBook === activeBook) {
-            for (const item of fullBookVerses) tandaVerses.push(item);
-          } else {
-            const nextRes = await dataLayer.loadBookFromEkpackRange(effectiveLang, targetBook);
-            if (String(nextRes?.status || "").toLowerCase() === "ready") {
-              const extra = flattenLoadedBookChapters(targetBook, nextRes.data?.chapters);
-              for (const item of extra) tandaVerses.push(item);
+
+        const blockVerses = [];
+        if (activeBlockSpec) {
+          const mtForBlock = resolveMacroTandaForBlock(activeBlockNum);
+          const candidateBooks = Array.isArray(mtForBlock?.booksIncluded) ? mtForBlock.booksIncluded : [activeBook];
+          const sBookIdx = candidateBooks.indexOf(activeBlockSpec.startBook);
+          const eBookIdx = candidateBooks.indexOf(activeBlockSpec.endBook);
+          const blockBooks = sBookIdx >= 0 && eBookIdx >= sBookIdx
+            ? candidateBooks.slice(sBookIdx, eBookIdx + 1)
+            : [activeBlockSpec.startBook, activeBlockSpec.endBook].filter(Boolean);
+          for (const bCode of [...new Set(blockBooks)]) {
+            const entries = await fetchBookEntries(bCode);
+            const minCh = bCode === activeBlockSpec.startBook ? activeBlockSpec.startChapter : 1;
+            const maxCh = bCode === activeBlockSpec.endBook ? activeBlockSpec.endChapter : 999;
+            for (const item of filterBookEntriesRange(entries, bCode, minCh, maxCh, 1, 999)) {
+              blockVerses.push(item);
             }
           }
         }
-        if (tandaVerses.length <= fullBookVerses.length) {
-          const fromBlocks = CANONICAL_80_BLOCKS_CATALOG
-            .map((b) => String(b?.startBook || b?.start_book || b?.book_code || "").toUpperCase())
-            .filter(Boolean);
-          const orderedBooks = [...new Set(fromBlocks.length > 0 ? fromBlocks : ["GEN", "EXO", "RUT", "1SA", "MAT", "JHN"])];
-          const nextIdx = (Math.max(0, orderedBooks.indexOf(activeBook)) + 1) % orderedBooks.length;
-          const neighborBook = orderedBooks[nextIdx];
-          if (neighborBook && !seenBooks.has(neighborBook)) {
-            const nextRes = await dataLayer.loadBookFromEkpackRange(effectiveLang, neighborBook);
-            if (String(nextRes?.status || "").toLowerCase() === "ready") {
-              for (const item of flattenLoadedBookChapters(neighborBook, nextRes.data?.chapters)) {
-                tandaVerses.push(item);
-              }
+        const dose2Payload = blockVerses.length > 0 ? blockVerses : fullBookVerses;
+
+        const tandaVerses = [];
+        const targetMacroPlans =
+          state.generateFull66BookBible && Array.isArray(state.fullBible16MacroTandasPlan) && state.fullBible16MacroTandasPlan.length === 16
+            ? state.fullBible16MacroTandasPlan
+            : [activeMacroTanda];
+        const seenBooks = new Set();
+        for (const mtStep of targetMacroPlans) {
+          const macroBooks =
+            Array.isArray(mtStep.booksIncluded) && mtStep.booksIncluded.length > 0
+              ? mtStep.booksIncluded
+              : [activeBook];
+          for (const targetBook of macroBooks) {
+            if (seenBooks.has(targetBook)) continue;
+            seenBooks.add(targetBook);
+            for (const item of await fetchBookEntries(targetBook)) {
+              tandaVerses.push(item);
             }
           }
+        }
+        if (tandaVerses.length === 0) {
+          for (const item of fullBookVerses) tandaVerses.push(item);
         }
         state.bibleTandaVerses = tandaVerses;
 
@@ -779,27 +1176,31 @@ export async function hydratePrintDrawerPanelsInDrawer(ctx = {}) {
         const [dose2Res, dose3Res] = await Promise.all([
           dispatchTandaWorkerJob({
             lang: effectiveLang,
-            book: activeBook,
-            chapter: 1,
-            verses: fullBookVerses,
+            book: activeBlockSpec?.startBook || activeBook,
+            chapter: activeBlockSpec?.startChapter || 1,
+            verses: dose2Payload,
             columns: activeCols,
             fontPt: activeFontPt,
             paper: state.paperFormat || "a4",
+            orientation: state.orientation || "portrait",
+            includeBoldFont: true,
             dir,
             booklet4n: state.foliationMode === "saddle_stitch",
             maxPagesPerTanda: 50,
           }),
           dispatchTandaWorkerJob({
             lang: effectiveLang,
-            book: activeMacroTanda.startBook || activeBook,
-            chapter: activeMacroTanda.startChapter || 1,
+            book: state.generateFull66BookBible ? "GEN" : activeMacroTanda.startBook || activeBook,
+            chapter: state.generateFull66BookBible ? 1 : activeMacroTanda.startChapter || 1,
             verses: tandaVerses,
             columns: activeCols,
             fontPt: activeFontPt,
             paper: state.paperFormat || "a4",
+            orientation: state.orientation || "portrait",
+            includeBoldFont: true,
             dir,
             booklet4n: true,
-            maxPagesPerTanda: activeMacroTanda.logicalPagesCount || 80,
+            maxPagesPerTanda: state.generateFull66BookBible ? 200 : activeMacroTanda.logicalPagesCount || 80,
           }),
         ]);
         if (dose2Res?.type === "tanda-offline-font-notice" || dose3Res?.type === "tanda-offline-font-notice") {
@@ -812,12 +1213,27 @@ export async function hydratePrintDrawerPanelsInDrawer(ctx = {}) {
           }
         }
         if (dose2Res?.pdfBytes?.byteLength > 0) {
+          if (typeof state.dose2ObjectUrl === "string" && state.dose2ObjectUrl.startsWith("blob:")) {
+            try {
+              globalThis.URL?.revokeObjectURL?.(state.dose2ObjectUrl);
+            } catch {
+              // Non-fatal
+            }
+          }
           state.dose2WorkerPdfBytes = dose2Res.pdfBytes;
           state.dose2ObjectUrl = toDownloadablePdfHref(dose2Res.pdfBytes);
         }
         if (dose3Res?.pdfBytes?.byteLength > 0) {
+          if (typeof state.dose3ObjectUrl === "string" && state.dose3ObjectUrl.startsWith("blob:")) {
+            try {
+              globalThis.URL?.revokeObjectURL?.(state.dose3ObjectUrl);
+            } catch {
+              // Non-fatal
+            }
+          }
           state.dose3WorkerPdfBytes = dose3Res.pdfBytes;
           state.dose3ObjectUrl = toDownloadablePdfHref(dose3Res.pdfBytes);
+          state.generateFull66BookBible = false;
         }
         syncDose2AndDose3LinksForActiveLang({ state, targetDoc, getEl });
         renderPrintDrawerPanelsSyncInDrawer(ctx);
@@ -826,5 +1242,41 @@ export async function hydratePrintDrawerPanelsInDrawer(ctx = {}) {
       // Non-fatal fallback to synchronous seed tanda
     }
   }
+}
+
+export function revokePrintObjectUrls(targetState) {
+  if (!targetState || typeof targetState !== "object") return;
+  for (const key of ["dose2ObjectUrl", "dose3ObjectUrl"]) {
+    const urlVal = targetState[key];
+    if (typeof urlVal === "string" && urlVal.startsWith("blob:")) {
+      try {
+        globalThis.URL?.revokeObjectURL?.(urlVal);
+      } catch {
+        // Non-fatal
+      }
+    }
+    targetState[key] = "";
+  }
+  for (const mapKey of ["editionObjectUrls", "brfObjectUrls"]) {
+    const urlMap = targetState[mapKey];
+    if (urlMap && typeof urlMap === "object") {
+      for (const prevUrl of Object.values(urlMap)) {
+        if (typeof prevUrl === "string" && prevUrl.startsWith("blob:")) {
+          try {
+            globalThis.URL?.revokeObjectURL?.(prevUrl);
+          } catch {
+            // Non-fatal
+          }
+        }
+      }
+      targetState[mapKey] = {};
+    }
+  }
+  targetState.dose2WorkerPdfBytes = null;
+  targetState.dose3WorkerPdfBytes = null;
+  targetState.fullBookVerses = null;
+  targetState.bibleTandaVerses = null;
+  targetState.generateFull66BookBible = false;
+  targetState.lastHydratedWorkerTandaKey = "";
 }
 

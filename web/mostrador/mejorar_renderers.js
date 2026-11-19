@@ -186,6 +186,19 @@ export function renderImproveDrawerHtml({
         `<pre id="celf250SeedOutput" style="margin:0.35rem 0 0 0;font-size:0.75rem;overflow-x:auto;">${seed250.payloadLine}</pre>` +
         `</div>`
       : "") +
+    `<details id="improveCommunityVotesDetails" class="hig-tech-meta">` +
+    `<summary>${isEn ? "🗳️ Community consensus votes (Dawid-Skene + SPRT)" : "🗳️ Votos de consenso comunitario (Dawid-Skene + SPRT)"}</summary>` +
+    `<div style="display:grid;gap:0.45rem;margin-top:0.45rem;">` +
+    `<label style="font-size:0.8rem;">${isEn ? "Reviewer ID" : "ID revisor"} <input id="improveVoteReviewerIdInput" type="text" placeholder="hablante_1" style="width:100%;min-height:40px;padding:0.35rem;"></label>` +
+    `<label style="font-size:0.8rem;display:flex;align-items:center;gap:0.4rem;"><input id="improveVoteGoldSeedsCheck" type="checkbox" checked> <span>${isEn ? "Passed 2 Gold Seeds" : "Aprobó 2 semillas de oro"}</span></label>` +
+    `<div style="display:flex;flex-wrap:wrap;gap:0.4rem;">` +
+    `<button type="button" id="btnAddCommunityVoteApprove" class="uls-chip">👍 ${isEn ? "Approve vote" : "Voto aprobar"}</button>` +
+    `<button type="button" id="btnAddCommunityVoteReject" class="uls-chip">👎 ${isEn ? "Reject vote" : "Voto rechazar"}</button>` +
+    `<input type="file" id="inputImportCommunityVotesJson" accept=".json,application/json" aria-label="Import Community Votes JSON">` +
+    `</div>` +
+    `<output id="improveCommunityVotesStatus" style="font-size:0.78rem;"></output>` +
+    `</div>` +
+    `</details>` +
     `<div style="display:flex;flex-wrap:wrap;gap:0.5rem;">` +
     `<button type="button" id="btnApplySuggestedImprovement" class="uls-chip apply-improvement" data-apply-improvement="true" data-lang="${patch.lang}" data-ref="${patch.ref}" data-strong-id="${patch.strong_id}" data-proposed-surface="${patch.new_surface.replace(/"/g, "&quot;")}" style="min-height:48px;">✅ ${isEn ? "Apply improvement to cascade" : "Aplicar mejora a la cascada"}</button>` +
     `<button type="button" id="btnCopyPatchPayload" class="uls-chip" style="min-height:48px;" data-i18n="improve.copy_patch">${t("improve.copy_patch")}</button>` +
@@ -640,6 +653,41 @@ export function renderStpLexiconExplorerHtml({
   );
 }
 
+const DISK_MATERIALIZED_TALLER_LANGS = new Set(["es", "en", "stp", "he", "grc"]);
+
+function buildDynamicTallerKitHref(langCode, art) {
+  const safeLang = String(langCode || "es").replace(/[^a-zA-Z0-9-]/g, "") || "es";
+  if (DISK_MATERIALIZED_TALLER_LANGS.has(safeLang.toLowerCase())) {
+    return {
+      href: `obras/biblia/taller/${safeLang.toLowerCase()}/${art.file}`,
+      downloadName: art.file,
+      isDynamic: false,
+    };
+  }
+  let mime = "text/plain;charset=utf-8";
+  let body = "";
+  if (art.file.endsWith(".tsv")) {
+    mime = "text/tab-separated-values;charset=utf-8";
+    body =
+      art.id === "01_diccionario"
+        ? `strong_id\tlemma_bridge_es\tlang_target\tgloss_seed\nH0430\tDios\t${safeLang}\t[COMPLETAR_${safeLang.toUpperCase()}]\nH0776\ttierra\t${safeLang}\t[COMPLETAR_${safeLang.toUpperCase()}]\nG3056\tPalabra\t${safeLang}\t[COMPLETAR_${safeLang.toUpperCase()}]\n`
+        : art.id === "02_concordancia"
+          ? `strong_id\toccurrences_canon\tsample_refs\tlang_code\nH0430\t2602\tGEN.1.1,PSA.23.1\t${safeLang}\nH3068\t6828\tGEN.2.4,PSA.23.1\t${safeLang}\nG2316\t1317\tJHN.1.1,MAT.5.8\t${safeLang}\n`
+          : `rank\tverse_id\trung\tlang_code\tresponse_surface\n1\tGEN.1.1\tRung1SwadeshAndNsm65\t${safeLang}\t\n2\tGEN.3.1\tRung1SwadeshAndNsm65\t${safeLang}\t\n3\tMAT.5.3\tRung2MorphosyntaxAndTamValence\t${safeLang}\t\n`;
+  } else if (art.file.endsWith(".toml")) {
+    mime = "application/toml;charset=utf-8";
+    body = `# Kit de Taller Comunitario CC0 (${safeLang})\n[[patches]]\nlang = "${safeLang}"\nlevel = "L2"\nref = "GEN.1.1"\nstrong_id = "H0430"\nold_surface = ""\nnew_surface = ""\naudio_bytes = 0\n`;
+  } else {
+    mime = "text/markdown;charset=utf-8";
+    body = `# Kit de Armonización y Relatos Orales CC0 (${safeLang})\n\n- Lengua objetivo: \`${safeLang}\`\n- Licencia: \`CC0-1.0\` (0 Bytes Audio, 100% texto verificable P1..P8)\n`;
+  }
+  return {
+    href: `data:${mime},${encodeURIComponent(body)}`,
+    downloadName: `${safeLang}_${art.file}`,
+    isDynamic: true,
+  };
+}
+
 export function renderTallerArtifactsCatalogHtml(langOrOpts = "es") {
   const rawLang =
     typeof langOrOpts === "object" && langOrOpts !== null
@@ -661,9 +709,7 @@ export function renderTallerArtifactsCatalogHtml(langOrOpts = "es") {
     typeof langOrOpts === "object" && langOrOpts !== null && langOrOpts.stpLedgerSummary
       ? langOrOpts.stpLedgerSummary
       : customMasterCensus?.stp_ledger_summary || STP_LEDGER_SUMMARY;
-  const cleanLang = ["es", "en", "stp", "he", "grc"].includes(String(rawLang || "").toLowerCase())
-    ? String(rawLang).toLowerCase()
-    : "es";
+  const cleanLang = String(rawLang || "es").trim().replace(/[^a-zA-Z0-9-]/g, "") || "es";
   const walAuditHtml = renderCrdtWalAndLockP2AuditCardHtml({
     crdt_wal_semilattice: CRDT_WAL_SEMILATTICE,
     patch_journal_lock_p2: PATCH_JOURNAL_LOCK_P2,
@@ -687,10 +733,10 @@ export function renderTallerArtifactsCatalogHtml(langOrOpts = "es") {
       ? `<div class="eight-locks-pda-bar" data-eight-locks-bar="true" style="grid-column:1 / -1;width:100%;display:flex;flex-wrap:wrap;gap:0.3rem;margin-bottom:0.55rem;">${eightLocksPillsHtml}</div>`
       : "") +
     `<div class="taller-artifacts-grid" data-taller-lang="${cleanLang}" style="grid-column:1 / -1;width:100%;display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:0.45rem;margin-bottom:0.6rem;">` +
-    TALLER_CC0_ARTIFACTS.map(
-      (art) =>
-        `<a class="uls-chip taller-artifact-link" data-taller-artifact="${art.id}" href="obras/biblia/taller/${cleanLang}/${art.file}" download style="min-height:48px;display:inline-flex;align-items:center;padding:0.4rem 0.65rem;text-decoration:none;font-size:0.8rem;">${art.label}</a>`,
-    ).join("") +
+    TALLER_CC0_ARTIFACTS.map((art) => {
+      const kit = buildDynamicTallerKitHref(cleanLang, art);
+      return `<a class="uls-chip taller-artifact-link" data-taller-artifact="${art.id}" data-taller-dynamic="${kit.isDynamic}" href="${kit.href}" download="${kit.downloadName}" style="min-height:48px;display:inline-flex;align-items:center;padding:0.4rem 0.65rem;text-decoration:none;font-size:0.8rem;">${art.label}</a>`;
+    }).join("") +
     `</div>` +
     `<div class="taller-fullwidth-audit-stack" style="grid-column:1 / -1;width:100%;display:grid;grid-template-columns:minmax(0,1fr);gap:0.55rem;">` +
     walAuditHtml +
