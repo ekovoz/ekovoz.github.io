@@ -94,7 +94,13 @@ export function applySuggestedImprovement(targetDoc, buttonEl = null, onRefresh 
     : null;
   const patch = typeof onRefresh === "function" ? onRefresh() : null;
   return {
-    applied: Boolean(cascade ? cascade.accepted : surfaceVal.length > 0),
+    applied: Boolean(
+      surfaceVal.length > 0 &&
+        (!cascade ||
+          (cascade.status !== "VETO_EIGHT_LOCKS" &&
+            cascade.status !== "REJECTED_INVALID_LEVEL" &&
+            cascade.status !== "REJECTED_EMPTY_SURFACE")),
+    ),
     lang: langVal,
     level: levelVal,
     ref: refVal,

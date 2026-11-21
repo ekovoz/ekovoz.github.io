@@ -129,6 +129,7 @@ export function binarizeSauvolaShafaitIntegral(
   const { sumTable, sqTable, stride } = buildShafaitIntegralTables(grayPixels, w, h);
   const outMask = new Uint8Array(w * h);
   const invR = 1.0 / (R || 128.0);
+  let thresholdSum = 0.0;
 
   for (let y = 0; y < h; y += 1) {
     const y0 = y - radius < 0 ? 0 : y - radius;
@@ -148,9 +149,15 @@ export function binarizeSauvolaShafaitIntegral(
       const variance = Math.max(0.0, s2 / area - mean * mean);
       const stdDev = Math.sqrt(variance);
       const threshold = mean * (1.0 + k * (stdDev * invR - 1.0));
+      thresholdSum += threshold;
       outMask[rowOff + x] = grayPixels[rowOff + x] <= threshold ? 1 : 0;
     }
   }
+  Object.defineProperty(outMask, "meanLocalThreshold", {
+    value: thresholdSum / Math.max(1, w * h),
+    enumerable: false,
+    configurable: true,
+  });
   return outMask;
 }
 
@@ -221,10 +228,50 @@ export function filterEphemeralSubpixelIslands1px(binaryMask, width, height) {
   return out;
 }
 
+export function resolveOracleSpecimenDefaults(lang = "es", text = "") {
+  const cleanLang = String(lang || "es").trim().toLowerCase();
+  const baseLang = cleanLang.split("-")[0];
+  let defaultSample = "guꞌ xoiꞌkam";
+  let cssFontStack = '"EkovozPrimaryPrint", "Charis SIL", serif';
+  if (baseLang === "he" || baseLang === "heb" || baseLang === "hbo") {
+    defaultSample = "בראשית";
+    cssFontStack = '"Cardo", "Noto Serif Hebrew", serif';
+  } else if (baseLang === "grc" || baseLang === "el" || baseLang === "ell") {
+    defaultSample = "λόγος";
+    cssFontStack = '"EB Garamond", "Gentium Plus", serif';
+  } else if (baseLang === "ar" || baseLang === "fa" || baseLang === "ur") {
+    defaultSample = baseLang === "ur" ? "خدا" : "الله";
+    cssFontStack = baseLang === "ur" ? '"Noto Nastaliq Urdu", serif' : '"Noto Naskh Arabic", serif';
+  } else if (baseLang === "hi" || baseLang === "mr" || baseLang === "ne") {
+    defaultSample = "आदि";
+    cssFontStack = '"Noto Sans Devanagari", sans-serif';
+  } else if (baseLang === "bn") {
+    defaultSample = "আদি";
+    cssFontStack = '"Noto Sans Bengali", sans-serif';
+  } else if (baseLang === "zh") {
+    defaultSample = "起初";
+    cssFontStack = cleanLang.includes("hant") ? '"Noto Sans TC", sans-serif' : '"Noto Sans SC", sans-serif';
+  } else if (baseLang === "ja") {
+    defaultSample = "初めに";
+    cssFontStack = '"Noto Sans JP", sans-serif';
+  } else if (baseLang === "ko") {
+    defaultSample = "태초";
+    cssFontStack = '"Noto Sans KR", sans-serif';
+  } else if (baseLang === "ru") {
+    defaultSample = "Слово";
+    cssFontStack = '"Noto Sans", serif';
+  }
+  const cleanText = String(text || "").trim();
+  return {
+    sampleText: cleanText || defaultSample,
+    cssFontStack,
+  };
+}
+
 export function rasterizeTrueTypeGlyphsFromSfntBytes(
   ttfBytes,
-  text = "eo",
-  { width = 220, height = 64, dpi = 300, ptSize = 9.5 } = {},
+  text = "",
+  { width = 220, height = 64, dpi = 300, ptSize = 9.5, lang = "es" } = {},
 ) {
   if (!(ttfBytes instanceof Uint8Array) || ttfBytes.byteLength < 128) return null;
   const dv = new DataView(ttfBytes.buffer, ttfBytes.byteOffset, ttfBytes.byteLength);
@@ -574,8 +621,9 @@ export function rasterizeTrueTypeGlyphsFromSfntBytes(
   const gray = new Uint8Array(w * h);
   gray.fill(247);
 
-  const sampleChars = Array.from(String(text || "eo")).filter((c) => c.trim().length > 0).slice(0, 6);
-  if (sampleChars.length === 0) sampleChars.push("e", "o");
+  const { sampleText: resolvedSampleText } = resolveOracleSpecimenDefaults(lang, text);
+  const sampleChars = Array.from(resolvedSampleText).filter((c) => c.trim().length > 0).slice(0, 6);
+  if (sampleChars.length === 0) sampleChars.push("g", "u");
 
   let penX = 12.0;
   let renderedAny = false;
@@ -643,12 +691,14 @@ export function rasterizeTypographicSpecimenGrayscale({
   const h = Math.max(20, height | 0);
   const safeDpi = Math.max(150, Number(dpi) || 300);
 
+  const { sampleText, cssFontStack } = resolveOracleSpecimenDefaults(lang, text);
   if (ttfBytes instanceof Uint8Array && ttfBytes.byteLength > 128) {
-    const sfntRaster = rasterizeTrueTypeGlyphsFromSfntBytes(ttfBytes, text || "eo", {
+    const sfntRaster = rasterizeTrueTypeGlyphsFromSfntBytes(ttfBytes, sampleText, {
       width: w,
       height: h,
       dpi: safeDpi,
       ptSize: 9.5,
+      lang,
     });
     if (sfntRaster) return sfntRaster;
   }
@@ -668,9 +718,9 @@ export function rasterizeTypographicSpecimenGrayscale({
         ctx.fillRect(0, 0, w, h);
         ctx.fillStyle = "#121212";
         const pxSize = h >= 48 ? Math.round((9.5 * safeDpi) / 72.0) : Math.max(12, Math.round((14 * safeDpi) / 300));
-        ctx.font = `${pxSize}px "EkovozPrimaryPrint", "Charis SIL", serif`;
+        ctx.font = `${pxSize}px ${cssFontStack}`;
         ctx.textBaseline = "middle";
-        const sample = `${String(text || "eoꞌa").slice(0, 8)} Ꞌ`;
+        const sample = sampleText.slice(0, 10);
         ctx.fillText(sample, 8, Math.floor(h / 2));
         const img = ctx.getImageData(0, 0, w, h).data;
         if (img && img.length >= w * h * 4) {
@@ -817,9 +867,14 @@ export function convolveXerographicMtfGaussian(
     }
   }
 
-  // Curva física de transferencia electrofotográfica del tambor OPC sobre el potencial integrado por la PSF 21×21
+  // Curva física suave C¹ de transferencia electrofotográfica del tambor OPC sobre el potencial integrado por la PSF 21×21
   const cleanStroke = Math.max(0.2, Number(strokePt) || 0.85);
-  const opcBiasThreshold = cleanStroke >= 0.75 ? 196.0 : 120.0 * (cleanStroke / 0.75);
+  const tStroke = Math.max(0.0, Math.min(1.0, (cleanStroke - 0.25) / 0.80));
+  const smoothT = tStroke * tStroke * (3.0 - 2.0 * tStroke);
+  const opcBiasThreshold = 96.0 + 122.0 * smoothT;
+  const darkFloor = 16.0 + gen * 2.2;
+  const invOpc = 1.0 / Math.max(1.0, opcBiasThreshold);
+  const invLightSpan = 1.0 / Math.max(1.0, 247.0 - opcBiasThreshold);
   const out = new Uint8Array(w * h);
   for (let y = 0; y < h; y += 1) {
     const r1 = y * w;
@@ -829,13 +884,21 @@ export function convolveXerographicMtfGaussian(
         const sy = y + d < 0 ? 0 : y + d >= h ? h - 1 : y + d;
         mtfVal += horiz[sy * w + x] * weights[d + radius];
       }
-      let developed = mtfVal;
-      if (mtfVal <= opcBiasThreshold) {
-        const u = mtfVal / Math.max(1.0, opcBiasThreshold);
-        developed = 16.0 + 26.0 * Math.pow(u, 4.0) + gen * 2.2;
+      const z = (mtfVal - opcBiasThreshold) / 1.8;
+      let developed;
+      if (z <= -18.0) {
+        const u = Math.min(1.0, Math.max(0.0, mtfVal * invOpc));
+        developed = darkFloor + 26.0 * Math.pow(u, 4.0);
+      } else if (z >= 18.0) {
+        const v = Math.min(1.0, Math.max(0.0, (mtfVal - opcBiasThreshold) * invLightSpan));
+        developed = opcBiasThreshold + (247.0 - opcBiasThreshold) * Math.pow(v, 0.65);
       } else {
-        const v = (mtfVal - opcBiasThreshold) / Math.max(1.0, 247.0 - opcBiasThreshold);
-        developed = opcBiasThreshold + (247.0 - opcBiasThreshold) * Math.pow(Math.min(1.0, v), 0.65);
+        const u = Math.min(1.0, Math.max(0.0, mtfVal * invOpc));
+        const bDark = darkFloor + 26.0 * Math.pow(u, 4.0);
+        const v = Math.min(1.0, Math.max(0.0, (mtfVal - opcBiasThreshold) * invLightSpan));
+        const bLight = opcBiasThreshold + (247.0 - opcBiasThreshold) * Math.pow(v, 0.65);
+        const sig = 1.0 / (1.0 + Math.exp(-z));
+        developed = bDark + (bLight - bDark) * sig;
       }
       const clamped = (developed + 0.5) | 0;
       out[r1 + x] = clamped < 0 ? 0 : clamped > 255 ? 255 : clamped;
@@ -844,6 +907,7 @@ export function convolveXerographicMtfGaussian(
   out.sigmaMm = sigmaMm;
   out.sigmaPx = sigmaPx;
   out.kernelRadiusPx = physicalRadius;
+  out.opcBiasThreshold = opcBiasThreshold;
   out.blurredPixels = out;
   return out;
 }
@@ -1077,15 +1141,16 @@ export function evaluateOpticalSauvolaPhotocopyOracle({
       paperCount += 1;
     }
   }
-  const nPx = Math.max(1, degradedGray.length);
-  const meanGray = totalSum / nPx;
-  const varianceGray = Math.max(0.0, totalSqSum / nPx - meanGray * meanGray);
-  const stdGray = Math.sqrt(varianceGray);
-  const meanThreshold = Number((meanGray * (1.0 + k * (stdGray / Math.max(1.0, Number(R) || 128) - 1.0))).toFixed(2));
   const meanInkByte = inkCount > 0 ? inkSum / inkCount : 28.0;
   const meanPaperByte = paperCount > 0 ? paperSum / paperCount : 235.0;
-  const selectivityRatio = Math.max(0.55, Math.min(1.0, meanThreshold / 255.0));
-  const measuredForegroundByte = meanInkByte * selectivityRatio;
+  const meanThreshold = Number(
+    (
+      Number.isFinite(maskActive.meanLocalThreshold)
+        ? maskActive.meanLocalThreshold
+        : meanPaperByte * (1.0 - k * 0.5)
+    ).toFixed(2),
+  );
+  const measuredForegroundByte = meanInkByte;
   const lumPaper = srgbByteToRelativeLuminance(meanPaperByte);
   const lumInk = srgbByteToRelativeLuminance(measuredForegroundByte);
   const rawContrast = (lumPaper + 0.05) / (lumInk + 0.05);

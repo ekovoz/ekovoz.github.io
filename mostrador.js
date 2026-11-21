@@ -24,12 +24,7 @@ import {
   renderAnalyticalThermometerHtml, renderChapterDiachronicAuditCardHtml, renderUnifiedDiachronicContextHtml, resolveEffectiveCorpusTarget,
   summarizeChapterDiachronicTransformations, syncDiachronicRegisterOrthogonality,
 } from "./mostrador/diachronic_register.js";
-import {
-  isVerifiedCanonicalTier0Or1,
-  mapFullChapterGmisRows,
-  renderProgressiveTwoStrataDiglossicBridge,
-  resolveHonestSovereignTier,
-} from "./mostrador/diglossic_chapter_renderer.js";
+import { isVerifiedCanonicalTier0Or1, mapFullChapterGmisRows, renderProgressiveTwoStrataDiglossicBridge, resolveHonestSovereignTier } from "./mostrador/diglossic_chapter_renderer.js";
 import {
   CANONICAL_12_BRANCH_PROFILES, CANONICAL_14_PLUS_2_EDITIONS_CATALOG, CANONICAL_14_PRINT_PROFILES, CANONICAL_16_TYPOLOGY_PROFILES,
   CANONICAL_80_BLOCKS_CATALOG, CANONICAL_9_TOML_PROFILES, POCKET_REFUGE_4_SHEETS_SPEC, PRECOMPILED_PDF_LANGS, VERIFIED_TEXT_BIBLE_LANGS,
@@ -49,14 +44,8 @@ import {
   renderPhotocopyResilienceAndSocialCardHtml, renderPrintDrawerPanelsSyncInDrawer, syncActiveStrongInStudyDrawer,
 } from "./mostrador/drawer_hydrators.js";
 import { revokePrintObjectUrls } from "./mostrador/drawer_print.js";
-import {
-  bindShareDrawerActionEvents,
-} from "./mostrador/drawer_share.js";
-import {
-  ensureStateOverlaysHydrated,
-  resolveOverlayEntryForOsis,
-  resolveVerseWithOverlay
-} from "./mostrador/drawer_workshop.js";
+import { bindShareDrawerActionEvents } from "./mostrador/drawer_share.js";
+import { ensureStateOverlaysHydrated, resolveOverlayEntryForOsis, resolveVerseWithOverlay } from "./mostrador/drawer_workshop.js";
 import {
   classifyMaculaArgumentRole, highlightStudyCardByStrongId, hydrateCulturalGlossesLexicon, renderLeipzig4LineGmisHtml,
   renderPhilologyRosettaExplorerHtml, renderPhilologyRosettaInspectorHtml, renderPhilologyRosettaResultsRowsHtml,
@@ -82,11 +71,7 @@ import {
   renderCascadeAndLadderHtml, renderImproveDrawerHtml, renderStpLexiconExplorerHtml,
   renderStpLexiconResultsRowsHtml, renderTallerArtifactsCatalogHtml, selectTopEntropyVerseQueue, verifyLock8PredicativeAndNegation,
 } from "./mostrador/mejorar.js";
-import {
-  dispenseMostradorDose1,
-  renderMostradorViewportFromState,
-  updateMostradorDoseLinks,
-} from "./mostrador/mostrador_viewport_dose1.js";
+import { dispenseMostradorDose1, renderMostradorViewportFromState, updateMostradorDoseLinks } from "./mostrador/mostrador_viewport_dose1.js";
 import {
   CANONICAL_ECO_PACKS_MANIFEST, STORED_ECO_PACKS, computeEcoPackCrc32Hex, exportSneakernetBundleJson, hydrateEcoPacksManifest,
   importSneakernetBundleJson, probeEcoPackRandomAccessBounds, renderOfflineMeshEcoCardHtml, triggerOptInOfflinePackDownload,
@@ -97,19 +82,13 @@ import {
   dlog, encodeLubyTransformDroplets, renderOpticalReceiverRxPanelHtml, runOpticalReceiverBurstSession, solitonCdf, splitmix32,
   whitenBlockXor,
 } from "./mostrador/optical_lt.js";
-import {
-  bindOralPorticoToggleEvent,
-} from "./mostrador/oral_portico_wasm.js";
+import { bindOralPorticoToggleEvent } from "./mostrador/oral_portico_wasm.js";
 import {
   ReverseOrthographyMap, listOrthographyProfilesForLang, resolveCanonicalOrthoProfileId, resolveOrthoFamilyKey,
   resolveScriptioContinuaCodeForLang, segmentScriptioContinuaSyllables, transduceOrthographyWeb, transduceVerseWithReverseMap,
 } from "./mostrador/orthography_wfst.js";
-import {
-  countPdfPages, extractPdfPages,
-} from "./mostrador/pdf_pages.js";
-import {
-  syncStickyDrawerContextHeader,
-} from "./mostrador/projection_contract.js";
+import { countPdfPages, extractPdfPages } from "./mostrador/pdf_pages.js";
+import { syncStickyDrawerContextHeader } from "./mostrador/projection_contract.js";
 import {
   ROSETTA_66_BOOKS, createReferenceResolver, normalizeBookAliasToken, parseBiblicalCoordinateReference, resolveBookCodeByAliasOrName,
 } from "./mostrador/reference.js";
@@ -117,9 +96,7 @@ import {
   bindFelicesStageEvents, bindSisterWorksStageEvents, buildEvangeliosWeekOptionsHtml, renderEvangeliosStageCardHtml,
   resolveEvangeliosActiveSelection, syncSisterWorksTabsDom,
 } from "./mostrador/sister_works_controller.js";
-import {
-  bindStageDomEvents,
-} from "./mostrador/stage_dom_bindings.js";
+import { bindStageDomEvents } from "./mostrador/stage_dom_bindings.js";
 
 export {
   ARTIFACT_PROJECTION_SCHEMA, CANONICAL_12_BRANCH_PROFILES, CANONICAL_14_PLUS_2_EDITIONS_CATALOG, CANONICAL_14_PRINT_PROFILES, CANONICAL_16_TYPOLOGY_PROFILES, CANONICAL_80_BLOCKS_CATALOG, CANONICAL_9_TOML_PROFILES, CANONICAL_ECO_PACKS_MANIFEST, CRDT_WAL_SEMILATTICE, CROSS_WORK_BRIDGE_TABLE, EVANGELIOS_MACRO_THREADS_AND_ECHOES, FELICES_12_DICHAS_COORDINATE_MAP, FELICES_28_PLATES_MAP, FELICES_PLATE_TO_BIBLE_COORDINATE, FIELD_WORKSHOP_STP_LEXICON, GEOGRAPHIC_MACRO_REGIONS,
@@ -206,22 +183,31 @@ export function createMostradorController(options = {}) {
     state.seal = effectiveSealKey;
     const sealEl = getEl("epistemicStatusSeal", targetDoc);
     if (sealEl) {
+      const corpusLang = String(state.effectiveCorpusLang || state.lang || "").trim().toLowerCase();
+      const displayKey =
+        effectiveSealKey === "seal.verified" && (corpusLang === "stp" || corpusLang === "st")
+          ? "seal.verified_nt"
+          : effectiveSealKey;
       sealEl.setAttribute("data-seal", effectiveSealKey);
-      sealEl.setAttribute("data-i18n", effectiveSealKey);
-      const rawLabel = i18nInstance ? i18nInstance.t(effectiveSealKey) : effectiveSealKey;
+      sealEl.setAttribute("data-i18n", displayKey);
+      const rawLabel = i18nInstance ? i18nInstance.t(displayKey) : displayKey;
       const isEn = String(state.uiLocale || "en").toLowerCase().startsWith("en");
       const fallbackHuman =
-        effectiveSealKey === "seal.verified"
+        displayKey === "seal.verified_nt"
           ? isEn
-            ? "Verified text · 66 Canonical Books"
-            : "Texto verificado · 66 Libros Canónicos"
-          : effectiveSealKey === "seal.draft_review"
+            ? "Verified text · 27 New Testament Books"
+            : "Texto verificado · 27 Libros del Nuevo Testamento"
+          : effectiveSealKey === "seal.verified"
             ? isEn
-              ? "Workshop draft & verified portion · Tiers 2–4 (L1–L5 review)"
-              : "Borrador de taller y porción verificada · Tiers 2–4 (revisión L1–L5)"
-            : isEn
-              ? "GMIS 4-line interlinear scaffold + 21st-Century Bridge"
-              : "Andamiaje interlineal GMIS 4 líneas + Puente Siglo XXI";
+              ? "Verified text · 66 Canonical Books"
+              : "Texto verificado · 66 Libros Canónicos"
+            : effectiveSealKey === "seal.draft_review"
+              ? isEn
+                ? "Workshop draft & verified portion · Tiers 2–4 (L1–L5 review)"
+                : "Borrador de taller y porción verificada · Tiers 2–4 (revisión L1–L5)"
+              : isEn
+                ? "GMIS 4-line interlinear scaffold + 21st-Century Bridge"
+                : "Andamiaje interlineal GMIS 4 líneas + Puente Siglo XXI";
       sealEl.textContent =
         !rawLabel || rawLabel === effectiveSealKey || rawLabel.startsWith("seal.")
           ? fallbackHuman
@@ -478,7 +464,9 @@ export function createMostradorController(options = {}) {
     syncI18nUiFromState(state, targetDoc);
     syncActiveChromeProjection(targetDoc);
     syncUrlFromState(targetDoc, { push: false });
-    await updateDoseLinks(targetDoc);
+    if (state.activeSheet === "print") {
+      await updateDoseLinks(targetDoc);
+    }
     if (state.activeSheet === "study") {
       await hydrateStudyDrawer(targetDoc);
     } else if (state.activeSheet === "field") {
@@ -620,7 +608,8 @@ export function createMostradorController(options = {}) {
     const sealKey = deriveEpistemicSeal(res, catalogEntry);
     updateSealDom(sealKey, targetDoc);
 
-    if (!isTier0Or1 || sealKey !== "seal.verified") {
+    const isStpNtVerified = (normCorpusLang === "stp" || normCorpusLang === "st") && sealKey === "seal.verified";
+    if ((!isTier0Or1 && !isStpNtVerified) || sealKey !== "seal.verified") {
       const sovereignTier = resolveHonestSovereignTier({
         lang: normCorpusLang,
         navStatus: res.status,
@@ -748,7 +737,6 @@ export function createMostradorController(options = {}) {
 
     renderViewportFromState(targetDoc);
     updateCompassTriggerDom(targetDoc);
-
     await updateDoseLinks(targetDoc);
 
     if (state.activeSheet === "study") {
@@ -766,7 +754,7 @@ export function createMostradorController(options = {}) {
   }
 
   async function updateDoseLinks(targetDoc = doc) {
-    return updateMostradorDoseLinks({ state, dataLayer, getEl, targetDoc });
+    return updateMostradorDoseLinks({ state, getEl, targetDoc });
   }
 
   async function dispenseDose1(opts = {}) {
@@ -892,6 +880,7 @@ export function createMostradorController(options = {}) {
     } else if (willOpen && normalized === "field") {
       await hydrateImproveDrawer(targetDoc);
     } else if (willOpen && normalized === "print") {
+      await updateDoseLinks(targetDoc);
       await hydratePrintDrawerPanels(targetDoc);
     } else if (willOpen && normalized === "share") {
       hydrateShareAndAuditDrawer(targetDoc);

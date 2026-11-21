@@ -60,14 +60,40 @@ function isRtlQuineLang(langCode) {
   return RTL_LANG_BASE_CODES.has(base);
 }
 
+function resolveQuineFontHint(langCode, explicitHint = "") {
+  const manual = String(explicitHint || "").trim();
+  if (manual) return manual;
+  const base = String(langCode || "").trim().toLowerCase().split("-")[0];
+  if (base === "he" || base === "heb" || base === "hbo") {
+    return "'Noto Serif Hebrew', 'SBL Hebrew', serif";
+  }
+  if (base === "grc" || base === "el") {
+    return "'Gentium Plus', 'Galatia SIL', Georgia, serif";
+  }
+  if (base === "ar" || base === "arb" || base === "ur" || base === "urd" || base === "fa" || base === "pes" || base === "syr") {
+    return "'Noto Naskh Arabic', 'Scheherazade New', serif";
+  }
+  if (base === "hi" || base === "hin" || base === "mr" || base === "ne") {
+    return "'Noto Serif Devanagari', serif";
+  }
+  if (base === "zh" || base === "ja" || base === "yue") {
+    return "'Noto Serif CJK TC', 'Noto Serif CJK JP', serif";
+  }
+  if (base === "ko") {
+    return "'Noto Serif KR', serif";
+  }
+  return "'Charis SIL', Georgia, serif";
+}
+
 /**
  * Constructor síncrono de semilla Quine con bootstrap `DecompressionStream("deflate-raw")` embebido.
  */
 export function buildQuineHtml(lang = "es", title = "Ekovoz Offline Quine", options = {}) {
   const cleanLang = String(lang || "es").replace(/[^a-zA-Z0-9-]/g, "") || "es";
   const dirAttr = options.dir || (isRtlQuineLang(cleanLang) ? "rtl" : "ltr");
+  const fontHint = resolveQuineFontHint(cleanLang, options.fontHint).replace(/"/g, "'");
   const safeTitle = escapeHtmlBasic(title || "Ekovoz Offline Quine");
-  const book = String(options.book || "GEN").replace(/[^A-Z0-9]/gi, "").toUpperCase();
+  const book = String(options.book || "GEN").replace(/[^A-Z0-9]/gi, "").toUpperCase() || "GEN";
   const chapter = Math.max(1, Number(options.chapter) || 1);
   const versesObj = options.verses && typeof options.verses === "object" ? options.verses : {};
   const verseEntries = Object.entries(versesObj)
@@ -82,6 +108,7 @@ export function buildQuineHtml(lang = "es", title = "Ekovoz Offline Quine", opti
     schema: "ekovoz.kleene_quine.v3",
     lang: cleanLang,
     dir: dirAttr,
+    fontHint,
     title: safeTitle,
     book,
     chapter,
@@ -95,20 +122,20 @@ export function buildQuineHtml(lang = "es", title = "Ekovoz Offline Quine", opti
   const bodyVersesHtml =
     verseEntries.length > 0
       ? verseEntries
-          .map(
-            ([vn, tx]) =>
-              `<p data-verse="${vn}"><sup>${vn}</sup> ${escapeHtmlBasic(tx)}</p>`,
-          )
-          .join("")
+        .map(
+          ([vn, tx]) =>
+            `<p data-verse="${vn}"><sup>${vn}</sup> ${escapeHtmlBasic(tx)}</p>`,
+        )
+        .join("")
       : `<p>Ekovoz Quine Autónomo (${escapeHtmlBasic(cleanLang.toUpperCase())}) · 31,102 versículos</p>`;
 
   return (
     `<!DOCTYPE html><html lang="${escapeHtmlBasic(cleanLang)}" dir="${dirAttr}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">` +
     `<title>${safeTitle} (${escapeHtmlBasic(cleanLang.toUpperCase())})</title>` +
-    `<style>body{font-family:Georgia,serif;max-width:46rem;margin:2rem auto;padding:0 1rem;line-height:1.65;background:#faf8f5;color:#1c1917}header{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;justify-content:space-between;margin-bottom:1rem}button,select{min-height:44px;padding:.45rem .85rem;border-radius:8px;border:1px solid #78716c;background:#fff;cursor:pointer}</style>` +
-    `</head><body data-quine-lang="${escapeHtmlBasic(cleanLang)}" data-quine-dir="${dirAttr}" data-kleene-quine="true" data-quine-books="${bookCount}" data-book-count="${bookCount}">` +
+    `<style>body{font-family:${fontHint};max-width:46rem;margin:2rem auto;padding:0 1rem;line-height:1.65;background:#faf8f5;color:#1c1917}header{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;justify-content:space-between;margin-bottom:1rem}button,select{min-height:44px;padding:.45rem .85rem;border-radius:8px;border:1px solid #78716c;background:#fff;cursor:pointer}</style>` +
+    `</head><body data-quine-lang="${escapeHtmlBasic(cleanLang)}" data-quine-dir="${dirAttr}" data-quine-font-hint="${escapeHtmlBasic(fontHint)}" data-quine-initial-book="${escapeHtmlBasic(book)}" data-quine-initial-chapter="${chapter}" data-kleene-quine="true" data-quine-books="${bookCount}" data-book-count="${bookCount}">` +
     `<header><div><h1 id="quineHeading" style="margin:0;font-size:1.25rem;">${safeTitle} (${escapeHtmlBasic(cleanLang.toUpperCase())}) · ${book} ${chapter}</h1>` +
-    `<small data-quine-codec="${escapeHtmlBasic(corpusEncoding)}">${bookCount} libro(s) · 0 fetch · DecompressionStream("deflate-raw")</small></div>` +
+    `<small data-quine-codec="${escapeHtmlBasic(corpusEncoding)}" data-quine-font-hint="${escapeHtmlBasic(fontHint)}">${bookCount} libro(s) · 0 fetch · DecompressionStream("deflate-raw")</small></div>` +
     `<div style="display:flex;gap:.4rem;flex-wrap:wrap;"><select id="quineBookSelect" aria-label="Libro"></select><select id="quineChapterSelect" aria-label="Capítulo"></select>` +
     `<button type="button" id="btnReplicateKleeneQuine" onclick="window.__replicateKleeneQuine()">🔁 Clonar Quine Offline (Punto Fijo de Kleene · 0 red)</button></div></header>` +
     `<main id="quineOfflineReader" dir="${dirAttr}">${bodyVersesHtml}</main>` +
@@ -119,7 +146,7 @@ export function buildQuineHtml(lang = "es", title = "Ekovoz Offline Quine", opti
     `window.__buildCanonicalKleeneQuineHtml=function(){window.__resetToInitialQuineSeed();var html='<!DOCTYPE html>'+document.documentElement.outerHTML;if(window.__renderActiveQuineSelection)window.__renderActiveQuineSelection();return html;};` +
     `window.__replicateKleeneQuine=function(){var html=window.__buildCanonicalKleeneQuineHtml();var blob=new Blob([html],{type:'text/html;charset=utf-8'});var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='lector_offline_${escapeHtmlBasic(cleanLang)}.html';a.click();};` +
     `window.__decodeEcoQuineCorpus=async function(){var el=document.getElementById('ecoCorpusPayload');if(!el||!el.textContent)return null;var b64=el.textContent.trim();if(!b64)return null;var binStr=atob(b64);var bytes=new Uint8Array(binStr.length);for(var i=0;i<binStr.length;i++)bytes[i]=binStr.charCodeAt(i);if(el.getAttribute('data-encoding')==='deflate-raw-base64'&&typeof DecompressionStream==='function'){var ds=new DecompressionStream('deflate-raw');var rp=new Response(ds.readable).arrayBuffer();var w=ds.writable.getWriter();w.write(bytes);w.close();var ab=await rp;return JSON.parse(new TextDecoder().decode(ab));}return JSON.parse(new TextDecoder().decode(bytes));};` +
-    `if(typeof window!=='undefined'&&document.getElementById('ecoCorpusPayload')&&document.getElementById('ecoCorpusPayload').textContent){window.__decodeEcoQuineCorpus().then(function(corpus){if(!corpus||!corpus.books)return;window.__quineCorpus=corpus;var bSel=document.getElementById('quineBookSelect');var cSel=document.getElementById('quineChapterSelect');var reader=document.getElementById('quineOfflineReader');var heading=document.getElementById('quineHeading');var bKeys=Object.keys(corpus.books);bSel.innerHTML=bKeys.map(function(k){return '<option value="'+k+'">'+k+'</option>';}).join('');var renderSel=function(){if(!bSel.innerHTML)bSel.innerHTML=bKeys.map(function(k){return '<option value="'+k+'">'+k+'</option>';}).join('');var bk=bSel.value||bKeys[0];var chMap=corpus.books[bk]||{};var cKeys=Object.keys(chMap);if(!cKeys.includes(cSel.value)){cSel.innerHTML=cKeys.map(function(c){return '<option value="'+c+'">'+c+'</option>';}).join('');}var ch=cSel.value||cKeys[0]||'1';var vv=chMap[ch]||[];heading.textContent=corpus.title+' ('+corpus.lang.toUpperCase()+') · '+bk+' '+ch;reader.innerHTML=vv.map(function(it){return '<p data-verse="'+it[0]+'"><sup>'+it[0]+'</sup> '+String(it[1]||'').replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</p>';}).join('');};window.__renderActiveQuineSelection=renderSel;bSel.value='${book}';renderSel();bSel.onchange=renderSel;cSel.onchange=renderSel;}).catch(function(){});}` +
+    `if(typeof window!=='undefined'&&document.getElementById('ecoCorpusPayload')&&document.getElementById('ecoCorpusPayload').textContent){window.__decodeEcoQuineCorpus().then(function(corpus){if(!corpus||!corpus.books)return;window.__quineCorpus=corpus;var bSel=document.getElementById('quineBookSelect');var cSel=document.getElementById('quineChapterSelect');var reader=document.getElementById('quineOfflineReader');var heading=document.getElementById('quineHeading');var bKeys=Object.keys(corpus.books);bSel.innerHTML=bKeys.map(function(k){return '<option value="'+k+'">'+k+'</option>';}).join('');var initBk=bKeys.includes('${book}')?'${book}':(bKeys[0]||'GEN');bSel.value=initBk;var initChMap=corpus.books[initBk]||{};var initCKeys=Object.keys(initChMap);cSel.innerHTML=initCKeys.map(function(c){return '<option value="'+c+'">'+c+'</option>';}).join('');var initCh=initCKeys.includes('${chapter}')?'${chapter}':(initCKeys[0]||'1');cSel.value=initCh;var renderSel=function(){if(!bSel.innerHTML)bSel.innerHTML=bKeys.map(function(k){return '<option value="'+k+'">'+k+'</option>';}).join('');var bk=bSel.value||initBk;var chMap=corpus.books[bk]||{};var cKeys=Object.keys(chMap);if(!cKeys.includes(cSel.value)){cSel.innerHTML=cKeys.map(function(c){return '<option value="'+c+'">'+c+'</option>';}).join('');if(bk===initBk&&cKeys.includes(initCh))cSel.value=initCh;}var ch=cSel.value||cKeys[0]||'1';var vv=chMap[ch]||[];heading.textContent=corpus.title+' ('+corpus.lang.toUpperCase()+') · '+bk+' '+ch;reader.innerHTML=vv.map(function(it){return '<p data-verse="'+it[0]+'"><sup>'+it[0]+'</sup> '+String(it[1]||'').replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</p>';}).join('');};window.__renderActiveQuineSelection=renderSel;renderSel();bSel.onchange=function(){cSel.innerHTML='';renderSel();};cSel.onchange=renderSel;}).catch(function(){});}` +
     `})();</script></body></html>`
   );
 }
@@ -155,6 +182,28 @@ export async function buildFullCorpusDeflateQuineHtml(
         ? fbDoc.verses
         : {};
   const isIntralang1909 = String(lang || "").trim().toLowerCase() === "es-1909";
+  const targetLangBase = String(lang || "es").trim().toLowerCase().split("-")[0];
+  const overlayMap = new Map();
+  if (Array.isArray(liveOverlays)) {
+    for (const ov of liveOverlays) {
+      if (!ov || typeof ov !== "object") continue;
+      const ovLang = ov.lang_code ?? ov.lang ?? "";
+      if (ovLang) {
+        const ovBase = String(ovLang).trim().toLowerCase().split("-")[0];
+        if (ovBase !== targetLangBase && !(isIntralang1909 && ovBase === "es")) continue;
+      }
+      const rawRef = String(ov.osis ?? ov.target_ref ?? ov.ref ?? ov.verse_ref ?? "").trim().toUpperCase();
+      const rawSurface = ov.newSurface ?? ov.new_surface ?? ov.text;
+      if (rawRef && typeof rawSurface === "string" && rawSurface.length > 0) {
+        const refParts = rawRef.split(".");
+        const normRef =
+          refParts.length === 3
+            ? `${refParts[0]}.${Number(refParts[1]) || 1}.${Number(refParts[2]) || 1}`
+            : rawRef;
+        overlayMap.set(normRef, rawSurface);
+      }
+    }
+  }
   const parseEkpackContainerFn =
     opts.parseEkpackContainerFn || opts.parseEkpackContainerJs || null;
   const decodeZstdFrameFn =
@@ -188,25 +237,17 @@ export async function buildFullCorpusDeflateQuineHtml(
           }
         }
         booksObj = {};
-        const overlayMap = new Map();
-        if (Array.isArray(liveOverlays)) {
-          for (const ov of liveOverlays) {
-            if (ov?.osis && ov?.newSurface) {
-              overlayMap.set(String(ov.osis).toUpperCase(), String(ov.newSurface));
-            }
-          }
-        }
         const decoder = new TextDecoder("utf-8");
         const unicodeBase = Number(hdr.unicode_block_base) || 0;
         const rlzDesc = isIntralang1909 ? hdr.intralang_rlz : null;
         const f67Slice =
           rlzDesc &&
-          Number(rlzDesc.frame_byte_len) > 0 &&
-          Number(rlzDesc.frame_byte_offset) + Number(rlzDesc.frame_byte_len) <= packBytes.byteLength
+            Number(rlzDesc.frame_byte_len) > 0 &&
+            Number(rlzDesc.frame_byte_offset) + Number(rlzDesc.frame_byte_len) <= packBytes.byteLength
             ? packBytes.subarray(
-                Number(rlzDesc.frame_byte_offset),
-                Number(rlzDesc.frame_byte_offset) + Number(rlzDesc.frame_byte_len),
-              )
+              Number(rlzDesc.frame_byte_offset),
+              Number(rlzDesc.frame_byte_offset) + Number(rlzDesc.frame_byte_len),
+            )
             : null;
         for (const bkEntry of hdr.books) {
           const start = Number(bkEntry.frame_byte_offset ?? bkEntry.byte_offset) || 0;
@@ -315,7 +356,7 @@ export async function buildFullCorpusDeflateQuineHtml(
             const parts = ref.split(".");
             const chKey = String(Number(parts[1]) || 1);
             const vNum = Math.max(1, Number(parts[2]) || 1);
-            const osisKey = `${bkEntry.usfm_id}.${chKey}.${vNum}`;
+            const osisKey = `${String(bkEntry.usfm_id).toUpperCase()}.${chKey}.${vNum}`;
             if (overlayMap.has(osisKey)) {
               txt = overlayMap.get(osisKey);
             }
@@ -336,14 +377,22 @@ export async function buildFullCorpusDeflateQuineHtml(
     const chKey = String(Math.max(1, Number(chapter) || 1));
     const bkKey = String(book || "GEN").toUpperCase();
     const fallbackEntries = Object.entries(verses || {})
-      .map(([v, t]) => [Number(v) || 1, String(t || "")])
+      .map(([v, t]) => {
+        const vn = Number(v) || 1;
+        const osisKey = `${bkKey}.${chKey}.${vn}`;
+        return [vn, overlayMap.has(osisKey) ? overlayMap.get(osisKey) : String(t || "")];
+      })
       .sort((a, b) => a[0] - b[0]);
+    if (fallbackEntries.length === 0) {
+      const defKey = `${bkKey}.${chKey}.1`;
+      fallbackEntries.push([
+        1,
+        overlayMap.get(defKey) || "En el principio creó Dios los cielos y la tierra.",
+      ]);
+    }
     booksObj = {
       [bkKey]: {
-        [chKey]:
-          fallbackEntries.length > 0
-            ? fallbackEntries
-            : [[1, "En el principio creó Dios los cielos y la tierra."]],
+        [chKey]: fallbackEntries,
       },
     };
     bookCount = 1;
@@ -371,6 +420,7 @@ export async function buildFullCorpusDeflateQuineHtml(
   return buildQuineHtml(lang, title, {
     book,
     chapter,
+    fontHint: opts.fontHint,
     verses: seedVersesMap,
     compressedCorpusB64: compressed.base64,
     corpusEncoding: compressed.encoding,

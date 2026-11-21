@@ -82,6 +82,8 @@
     "mostrador.title": "La Biblia — imprimir y compartir",
     "seal.canonical_human_complete": "Texto verificado (traducción humana)",
     "seal.verified": "Texto verificado · 66 Libros Canónicos",
+    "seal.verified_nt": "Texto verificado · 27 Libros del Nuevo Testamento",
+    "seal.draft_review": "Borrador asistido · Requiere revisión de taller",
     "seal.canonical_nt_human_ot_draft": "Nuevo Testamento verificado · el Antiguo Testamento es un borrador en revisión comunitaria",
     "seal.seed_draft_field_review_l1_l5": "Borrador en revisión comunitaria — todavía no es una Biblia verificada",
     "dose.paper.letter": "Carta",

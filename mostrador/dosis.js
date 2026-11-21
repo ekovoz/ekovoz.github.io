@@ -5,18 +5,6 @@
 //   Dosis 3 · La Biblia completa (PDF con /Outlines).
 
 import { BIBLE_CONSTANTS } from "../bible_constants.js";
-const CANONICAL_66_USFM = [
-  "GEN","EXO","LEV","NUM","DEU","JOS","JDG","RUT","1SA","2SA","1KI","2KI","1CH","2CH","EZR","NEH","EST","JOB","PSA","PRO","ECC","SNG",
-  "ISA","JER","LAM","EZK","DAN","HOS","JOL","AMO","OBA","JON","MIC","NAM","HAB","ZEP","HAG","ZEC","MAL",
-  "MAT","MRK","LUK","JHN","ACT","ROM","1CO","2CO","GAL","EPH","PHP","COL","1TH","2TH","1TI","2TI","TIT","PHM","HEB","JAS","1PE","2PE","1JN","2JN","3JN","JUD","REV",
-];
-const USFM_BOOK_ALIAS_MAP = {
-  EZE: "EZK",
-  JOE: "JOL",
-  NAH: "NAM",
-  PHI: "PHP",
-  SOL: "SNG",
-};
 import {
   buildCssPagedMediaPrintHtml,
   dispatchTandaWorkerJob,
@@ -26,10 +14,6 @@ import {
   resolveFederatedAssetUrl,
   typesetTandaPdfBytes,
 } from "./bimodal_tanda_print.js";
-import {
-  evaluateOpticalSauvolaPhotocopyOracle,
-  rasterizeTrueTypeGlyphsFromSfntBytes,
-} from "./sauvola_canvas_oracle.js";
 import {
   buildRelativePdfAssetUrl,
   CANONICAL_12_BRANCH_PROFILES,
@@ -55,6 +39,22 @@ import {
   resolvePrintEditionPdfAssetUrl,
   VERIFIED_TEXT_BIBLE_LANGS,
 } from "./dosis_editions_catalog.js";
+import {
+  evaluateOpticalSauvolaPhotocopyOracle,
+  rasterizeTrueTypeGlyphsFromSfntBytes,
+} from "./sauvola_canvas_oracle.js";
+const CANONICAL_66_USFM = [
+  "GEN", "EXO", "LEV", "NUM", "DEU", "JOS", "JDG", "RUT", "1SA", "2SA", "1KI", "2KI", "1CH", "2CH", "EZR", "NEH", "EST", "JOB", "PSA", "PRO", "ECC", "SNG",
+  "ISA", "JER", "LAM", "EZK", "DAN", "HOS", "JOL", "AMO", "OBA", "JON", "MIC", "NAM", "HAB", "ZEP", "HAG", "ZEC", "MAL",
+  "MAT", "MRK", "LUK", "JHN", "ACT", "ROM", "1CO", "2CO", "GAL", "EPH", "PHP", "COL", "1TH", "2TH", "1TI", "2TI", "TIT", "PHM", "HEB", "JAS", "1PE", "2PE", "1JN", "2JN", "3JN", "JUD", "REV",
+];
+const USFM_BOOK_ALIAS_MAP = {
+  EZE: "EZK",
+  JOE: "JOL",
+  NAH: "NAM",
+  PHI: "PHP",
+  SOL: "SNG",
+};
 
 export {
   buildRelativePdfAssetUrl, CANONICAL_12_BRANCH_PROFILES, CANONICAL_14_PLUS_2_EDITIONS_CATALOG, CANONICAL_14_PRINT_PROFILES, CANONICAL_16_TYPOLOGY_PROFILES, CANONICAL_80_BLOCKS_CATALOG, CANONICAL_9_TOML_PROFILES, computeFoliationLayout, computeKindlePrintBudget, computeMultiSignatureImposition, FIELD_PDFS_REGISTRY, hydrateEditorialProfiles, POCKET_REFUGE_4_SHEETS_SPEC, PRECOMPILED_PDF_LANGS, renderBranchAndTypologyInspectorHtml, renderImpositionAndLayoutPreviewHtml, renderMultiSignatureAndPocketRefugeHtml, resolveCanonicalBlockCode, resolveCanonicalBlockForPassage, resolveEditionGeometrySpec, resolvePrecompiledDiskLang, resolvePrintEditionPdfAssetUrl, VERIFIED_TEXT_BIBLE_LANGS
@@ -657,12 +657,17 @@ export function listCatalogEditionsForLang(manifestOrLang, maybeLang = "es", opt
     const localizedLabel = isEn && item.label_en ? item.label_en : item.label;
     if (item.kind === "field_pdf") {
       const regEntry = FIELD_PDFS_REGISTRY[item.editionSlug] || {};
-      const editionMode = item.editionSlug === "refugio_4_hojas" ? 1 : 2;
+      const editionMode =
+        item.editionSlug === "refugio_4_hojas"
+          ? 1
+          : item.editionSlug === "checklist_80_bloques"
+            ? 0
+            : 2;
       const isStaticEs = resolvedLang === "es";
       const cleanFieldUrl = isStaticEs
         ? buildRelativePdfAssetUrl(
-            regEntry.path || item.url || "obras/biblia/campo/refugio_4_hojas.pdf",
-          )
+          regEntry.path || item.url || "obras/biblia/campo/refugio_4_hojas.pdf",
+        )
         : `mostrador/tanda_print_worker.js?lang=${encodeURIComponent(resolvedLang)}&edition=${encodeURIComponent(item.id)}&editionMode=${editionMode}`;
       const fieldBytes = Number(regEntry.bytes ?? item.bytes ?? 0);
       return {
@@ -691,10 +696,19 @@ export function listCatalogEditionsForLang(manifestOrLang, maybeLang = "es", opt
       "B01",
       null,
     );
+    const budgetPaper = resolvedPaper.includes("B70")
+      ? "B70"
+      : resolvedPaper.includes("Letter")
+        ? "Letter"
+        : resolvedPaper.includes("A3")
+          ? "A3"
+          : resolvedPaper.includes("Folio")
+            ? "Folio"
+            : "A4";
     const budget = computeKindlePrintBudget({
       fontPt: resolvedFontPt,
       columns: resolvedCols,
-      paper: resolvedPaper.includes("Letter") ? "Letter" : "A4",
+      paper: budgetPaper,
     });
     const requiresLiveWorkerSynthesis = true;
     const hasPrecompiledPdf = false;
@@ -712,6 +726,13 @@ export function listCatalogEditionsForLang(manifestOrLang, maybeLang = "es", opt
       gutterMm: tomlMeta.gutterMm || 20.0,
       paperSize: resolvedPaper,
       impositionMode,
+      ...(item.id === "11_braille_nemeth_b70"
+        ? {
+          brfCellsPerLine: 40,
+          brfFormat: "iso_17049_braillefit_40col",
+          brfAssetPath: `obras/biblia/editions/${resolvedLang}/braille_40col.brf`,
+        }
+        : {}),
       cpl: budget.cpl,
       estimatedPages: budget.estimatedPages,
       summarySpec: `${resolvedCols} col · ${resolvedFontPt}pt · ${resolvedPaper} (~${budget.estimatedPages} ${isEn ? "pages" : "págs"})`,

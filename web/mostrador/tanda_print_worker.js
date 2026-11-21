@@ -203,13 +203,15 @@ export function encodePaperFormatCode(paper = "a4", orientation = "") {
   const raw = String(paper || "a4").trim().toLowerCase();
   const orient = String(orientation || "").trim().toLowerCase();
   const isLandscape = orient === "landscape" || raw.includes("landscape");
-  const base = raw.includes("a3")
-    ? 2
-    : raw.includes("folio") || raw.includes("oficio")
-      ? 3
-      : raw.includes("letter") || raw.includes("carta")
-        ? 1
-        : 0;
+  const base = raw.includes("b70") || raw.includes("braille")
+    ? 4
+    : raw.includes("a3")
+      ? 2
+      : raw.includes("folio") || raw.includes("oficio")
+        ? 3
+        : raw.includes("letter") || raw.includes("carta")
+          ? 1
+          : 0;
   return isLandscape ? (base | 0x80) : base;
 }
 
@@ -425,7 +427,7 @@ function executeWasmTandaTypeset(
 
     const safeCols = Math.max(1, Math.min(3, Number(columns) || 2));
     const safeTenths = Math.max(75, Math.min(180, Math.round(Number(fontTenthsPt) || 95)));
-    const safePages = Math.max(1, Math.min(255, Number(maxPages) || 50));
+    const safePages = Number(maxPages) === 0 ? 0 : Math.max(1, Math.min(255, Number(maxPages) || 0));
     const rawMode = Number(editionMode) || 0;
     const mappedEditionCode =
       rawMode === 1 || rawMode === 15 ? 15 : rawMode === 2 || rawMode === 16 ? 16 : 0;
@@ -568,7 +570,7 @@ function executeWasmStreamingPdfSession(
     }
     const safeCols = Math.max(1, Math.min(3, Number(columns) || 2));
     const safeTenths = Math.max(75, Math.min(180, Math.round(Number(fontTenthsPt) || 95)));
-    const safePages = Math.max(1, Math.min(200, Number(maxPagesPerTanda) || 50));
+    const safePages = Number(maxPagesPerTanda) === 0 ? 0 : Math.max(1, Math.min(255, Number(maxPagesPerTanda) || 0));
     const rawMode = Number(editionMode) || 0;
     const mappedEditionCode =
       rawMode === 1 || rawMode === 15 ? 15 : rawMode === 2 || rawMode === 16 ? 16 : 0;
@@ -668,17 +670,30 @@ function executeWasmStreamingPdfSession(
       tailChunk.set(new Uint8Array(wasmExports.memory.buffer, outPtr, tailLen));
       blobParts.push(tailChunk);
       totalBlobBytes += tailLen;
-      const fullPdf = concatUint8Chunks(blobParts, totalBlobBytes);
+      const headChunk = blobParts[0];
       if (
-        fullPdf.byteLength < 8 ||
-        fullPdf[0] !== 0x25 ||
-        fullPdf[1] !== 0x50 ||
-        fullPdf[2] !== 0x44 ||
-        fullPdf[3] !== 0x46
+        !headChunk ||
+        headChunk.byteLength < 8 ||
+        headChunk[0] !== 0x25 ||
+        headChunk[1] !== 0x50 ||
+        headChunk[2] !== 0x44 ||
+        headChunk[3] !== 0x46
       ) {
         return null;
       }
-      return { fullPdf, blobParts, tandas, peakRamBytes: maxObservedRam };
+      let cachedFullPdf = null;
+      return {
+        blobParts,
+        byteLength: totalBlobBytes,
+        tandas,
+        peakRamBytes: maxObservedRam,
+        get fullPdf() {
+          if (!cachedFullPdf) {
+            cachedFullPdf = concatUint8Chunks(blobParts, totalBlobBytes);
+          }
+          return cachedFullPdf;
+        },
+      };
     }
 
     const pdfLen =
@@ -703,7 +718,13 @@ function executeWasmStreamingPdfSession(
     ) {
       return null;
     }
-    return { fullPdf, blobParts: [fullPdf], tandas, peakRamBytes: maxObservedRam };
+    return {
+      blobParts: [fullPdf],
+      byteLength: fullPdf.byteLength,
+      fullPdf,
+      tandas,
+      peakRamBytes: maxObservedRam,
+    };
   } finally {
     if (sessionStarted && typeof wasmExports.wasm_pdf_session_finish === "function") {
       try {
@@ -817,8 +838,10 @@ export async function runWorkerTandaJob(payload = {}, emitProgress = () => { }) 
   const entries = normalizeEntries(verses);
   const bridgeEntries = bridgeVerses ? normalizeEntries(bridgeVerses) : [];
 
-  const cappedMaxPages = Math.max(1, Math.min(200, Number(maxPagesPerTanda) || 50));
-  const versesPerTanda = Math.max(40, cappedMaxPages * 22);
+  const rawMaxPages = payload.maxPagesPerTanda === undefined ? 50 : Number(payload.maxPagesPerTanda);
+  const cappedMaxPages = rawMaxPages === 0 ? 0 : Math.max(1, Math.min(255, Number.isFinite(rawMaxPages) ? rawMaxPages : 50));
+  const slicePagesTarget = cappedMaxPages === 0 || cappedMaxPages > 50 ? 25 : cappedMaxPages;
+  const versesPerTanda = Math.max(40, slicePagesTarget * 22);
   const totalTandas = Math.max(1, Math.ceil(Math.max(1, entries.length) / versesPerTanda));
   const fontFile = resolveFontFileForLangOrScript(lang, script);
   const needsBridgeFont =
@@ -904,7 +927,7 @@ export async function runWorkerTandaJob(payload = {}, emitProgress = () => { }) 
       emitProgress,
       fontFile,
     );
-    if (!streamed || streamed.fullPdf.byteLength === 0) {
+    if (!streamed || !Array.isArray(streamed.blobParts) || streamed.blobParts.length === 0 || streamed.byteLength === 0) {
       throw new Error(
         `StreamingPdfSession multi-tanda failed to finalize all ${totalTandas} tandas without truncation`,
       );
@@ -927,7 +950,10 @@ export async function runWorkerTandaJob(payload = {}, emitProgress = () => { }) 
       totalTandas,
       tandas: streamed.tandas,
       blobParts: streamed.blobParts,
-      pdfBytes: streamed.fullPdf,
+      byteLength: streamed.byteLength,
+      get pdfBytes() {
+        return streamed.fullPdf;
+      },
       peakRamBytes: Math.max(65536, streamed.peakRamBytes),
     };
   }

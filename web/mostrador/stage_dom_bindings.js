@@ -502,7 +502,9 @@ export function bindStageDomEvents(ctx = {}) {
   const handleDose1Trigger = async () => {
     const pkg = await dispenseDose1();
     if (typeof Blob !== "undefined" && typeof URL !== "undefined" && URL.createObjectURL) {
-      const blob = new Blob([pkg.bytes], { type: "application/pdf" });
+      const pdfBlobParts =
+        Array.isArray(pkg.blobParts) && pkg.blobParts.length > 0 ? pkg.blobParts : [pkg.bytes];
+      const blob = new Blob(pdfBlobParts, { type: "application/pdf" });
       const url = URL.createObjectURL(blob);
       const a = targetDoc.createElement ? targetDoc.createElement("a") : null;
       if (a) {

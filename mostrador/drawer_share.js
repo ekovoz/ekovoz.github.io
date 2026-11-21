@@ -22,6 +22,8 @@ import { validateAllEightLocksPda } from "./mejorar.js";
 import {
   CANONICAL_ECO_PACKS_MANIFEST,
   SOVEREIGN_ED25519_PUBLIC_KEY_HEX,
+  STORED_ECO_PACKS,
+  buildEkpackSigningMessageV2,
   buildFullCorpusDeflateQuineHtml,
   buildQuineHtml,
   commitVerifiedPackToIndexedDb,
@@ -48,28 +50,46 @@ import {
 } from "./optical_lt.js";
 
 export const HAREL_DOSIS_SUBTABS = ["pdf", "mesh", "graphics"];
-export const MAX_OPTICAL_AIRGAP_PAYLOAD_BYTES = 32768;
+export const MAX_ECO_GRID_29_PAYLOAD_BYTES = 4096;
+export const MAX_OPTICAL_AIRGAP_PAYLOAD_BYTES = 16384;
 
 /**
- * Compuerta bimodal de Shannon (`D4-V2G` / `ARB-EKOVOZ-95`):
- * - Cargas `<= 32 KB` (`.eco.patch.json`, capítulo o Refugio en Clase C silencio RF): canal óptico QR + cámara real (`<= 18 s` a `6.5 fps`).
- * - Cargas `> 32 KB` (`.ekpack` completo): transferencia nativa de archivo en `1 s` (Web Share API Level 2 / descarga directa).
+ * Compuerta bimodal honesta de Shannon/Nyquist (`D10-V2K+`):
+ * - Cargas `<= 4 KB` (`ECO-GRID 29×29` a `12 B/cuadro × 6.5 fps = 78 B/s`): canal óptico compacto en silencio RF.
+ * - Cargas `<= 16 KB` (`QR >= v10`): ráfaga óptica extendida con verificación CRC32 + GF(2).
+ * - Cargas `> 16 KB` (`.ekpack` completos o capítulos largos): transferencia directa de archivo o HTML Quine en `1 s`.
  */
 export function selectBimodalAirgapChannel(payloadByteLength) {
   const bytes = Math.max(0, Number(payloadByteLength) || 0);
   if (bytes > MAX_OPTICAL_AIRGAP_PAYLOAD_BYTES) {
     return {
       mode: "native-file-share",
+      opticalProfile: "file-or-quine-html",
       maxOpticalBytes: MAX_OPTICAL_AIRGAP_PAYLOAD_BYTES,
+      maxEcoGrid29Bytes: MAX_ECO_GRID_29_PAYLOAD_BYTES,
       payloadBytes: bytes,
       estimatedSecondsAt6_5Fps: 1.0,
     };
   }
+  if (bytes <= MAX_ECO_GRID_29_PAYLOAD_BYTES) {
+    const ecoGridBytesPerSec = 12 * 6.5;
+    return {
+      mode: "optical-qr-camera",
+      opticalProfile: "eco-grid-29x29",
+      maxOpticalBytes: MAX_ECO_GRID_29_PAYLOAD_BYTES,
+      throughputBytesPerSec: ecoGridBytesPerSec,
+      payloadBytes: bytes,
+      estimatedSecondsAt6_5Fps: Number((bytes / ecoGridBytesPerSec).toFixed(2)),
+    };
+  }
+  const qrV10BytesPerSec = 1850;
   return {
     mode: "optical-qr-camera",
+    opticalProfile: "qr-v10-high-density",
     maxOpticalBytes: MAX_OPTICAL_AIRGAP_PAYLOAD_BYTES,
+    throughputBytesPerSec: qrV10BytesPerSec,
     payloadBytes: bytes,
-    estimatedSecondsAt6_5Fps: Number(((bytes / 1850) / 6.5 * 6.5).toFixed(2)),
+    estimatedSecondsAt6_5Fps: Number((bytes / qrV10BytesPerSec).toFixed(2)),
   };
 }
 
@@ -91,12 +111,42 @@ async function resolvePackBytesForVault(langCode, dataLayer) {
   return null;
 }
 
-function resolveSignedPackReceipt(langCode = "es") {
+function resolveSignedPackReceipt(langCode = "es", state = null, dataLayer = null) {
   const clean = String(langCode || "es").toLowerCase();
   const base = clean.split("-")[0];
+  const statePacks = Array.isArray(state?.packManifest)
+    ? state.packManifest
+    : Array.isArray(state?.packManifest?.packs)
+      ? state.packManifest.packs
+      : [];
+  const layerManifest = dataLayer?.getHydratedPackManifest?.();
+  const layerPacks = Array.isArray(layerManifest)
+    ? layerManifest
+    : Array.isArray(layerManifest?.packs)
+      ? layerManifest.packs
+      : [];
+  const sources = [...statePacks, ...layerPacks, ...CANONICAL_ECO_PACKS_MANIFEST];
+  const hasSig = (p) =>
+    p &&
+    String(p.ed25519SignatureHex || "").trim().length > 0 &&
+    String(p.signingMessage || "").trim().length > 0;
+  const exactSigned = sources.find((p) => String(p?.lang || "").toLowerCase() === clean && hasSig(p));
+  if (exactSigned) return exactSigned;
+  const baseSigned = sources.find((p) => String(p?.lang || "").toLowerCase() === base && hasSig(p));
+  if (baseSigned) return baseSigned;
+  const stored = STORED_ECO_PACKS.get(clean) || STORED_ECO_PACKS.get(base) || null;
+  if (stored?.hdr) {
+    return {
+      ...stored,
+      lang: clean,
+      signingMessage: buildEkpackSigningMessageV2(stored.hdr),
+      ed25519SignatureHex: String(stored.hdr.ed25519_signature_hex || stored.signatureHex || ""),
+      ed25519PublicKeyHex: String(stored.hdr.ed25519_public_key_hex || SOVEREIGN_ED25519_PUBLIC_KEY_HEX),
+    };
+  }
   return (
-    CANONICAL_ECO_PACKS_MANIFEST.find((p) => p.lang === clean) ||
-    CANONICAL_ECO_PACKS_MANIFEST.find((p) => p.lang === base) ||
+    sources.find((p) => String(p?.lang || "").toLowerCase() === clean) ||
+    sources.find((p) => String(p?.lang || "").toLowerCase() === base) ||
     CANONICAL_ECO_PACKS_MANIFEST[0]
   );
 }
@@ -475,7 +525,7 @@ export function hydrateShareAndAuditDrawerPanel(ctx = {}) {
       state?.activeVerseText ||
       "GEN.1.1",
     );
-    const signedPack = resolveSignedPackReceipt(activeLang);
+    const signedPack = resolveSignedPackReceipt(activeLang, state, dataLayer);
     const ed25519Ok = verifyEd25519ManifestSignature(
       signedPack.signingMessage,
       signedPack.ed25519SignatureHex,
@@ -755,7 +805,7 @@ export function bindShareDrawerActionEvents(ctx = {}) {
         book: state.book,
         chapter: state.chapter,
       });
-      const signedPack = resolveSignedPackReceipt(state.lang);
+      const signedPack = resolveSignedPackReceipt(state.lang, state, dataLayer);
       const ed25519Ok = await verifyEd25519ManifestSignatureWebCrypto(
         signedPack.signingMessage,
         signedPack.ed25519SignatureHex,

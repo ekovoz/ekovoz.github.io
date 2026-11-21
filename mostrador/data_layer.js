@@ -33,11 +33,13 @@ import { buildCanonical80BlocksPagesIndex } from "./dosis.js";
 import {
   SOVEREIGN_ED25519_PUBLIC_KEY_HEX,
   buildEkpackSigningMessageV2,
+  computeBooksDirectoryBytesJs,
   computeSha256HexWebCrypto,
   decodeRfc8878RawZstdFrameJs,
   inspectDeltaZstPatch,
   parseEkpackContainerJs,
   parseEkpackPreamble32Js,
+  parseEm2MetaTrailerBytes,
   sliceVaultEkpackRange,
   truncateAtWordBoundary,
   verifyEd25519ManifestSignature,
@@ -319,8 +321,11 @@ export function createDataLayer({ source, cacheLimit = 32 } = {}) {
         ) {
           return { ed25519Invalid: true, reason: "EKPACK_LANG_REPLAY", relPack };
         }
+        const expectedMetaSha = String(hdr.meta_zstd_sha256_hex || "").trim().toLowerCase();
+        if (!/^[0-9a-f]{64}$/.test(expectedMetaSha)) {
+          return { ed25519Invalid: true, reason: "EKPACK_META_ZSTD_SHA256_MISSING", relPack };
+        }
         const signMsgV2 = buildEkpackSigningMessageV2(hdr);
-        const signMsgLegacy = `EKOVOZ_EKPACK_V1:${hdr.lang_code}:${hdr.content_digest_sha256_hex}:${hdr.merkle_root_sha256_hex}`;
         const sigOkV2 =
           (await verifyEd25519ManifestSignatureWebCrypto(
             signMsgV2,
@@ -334,24 +339,11 @@ export function createDataLayer({ source, cacheLimit = 32 } = {}) {
             pinnedPubKey,
             playerWasm,
           );
-        const sigOkLegacy =
-          !sigOkV2 &&
-          (await verifyEd25519ManifestSignatureWebCrypto(
-            signMsgLegacy,
-            hdr.ed25519_signature_hex,
-            pinnedPubKey,
-            playerWasm,
-          )) &&
-          verifyEd25519ManifestSignature(
-            signMsgLegacy,
-            hdr.ed25519_signature_hex,
-            pinnedPubKey,
-            playerWasm,
-          );
-        if (!sigOkV2 && !sigOkLegacy) {
+        if (!sigOkV2) {
           return { ed25519Invalid: true, relPack };
         }
         let packedSymbols;
+        let symZstdSlice = null;
         let symZstdLen = 0;
         if (f0Envelope.byteLength >= 8 + actualF0Len) {
           symZstdLen = new DataView(
@@ -360,16 +352,17 @@ export function createDataLayer({ source, cacheLimit = 32 } = {}) {
             4,
           ).getUint32(0, true);
         }
-        if (
-          (!hdr.fsst_symbol_table ||
-            (Array.isArray(hdr.fsst_symbol_table) && hdr.fsst_symbol_table.length === 0)) &&
-          f0Envelope.byteLength >= 8 + actualF0Len
-        ) {
-          if (symZstdLen > 0 && 8 + actualF0Len + symZstdLen <= f0Envelope.byteLength) {
-            packedSymbols = f0Envelope.subarray(8 + actualF0Len, 8 + actualF0Len + symZstdLen);
-          } else {
-            packedSymbols = new Uint8Array([0, 0]);
+        if (symZstdLen > 0) {
+          if (8 + actualF0Len + symZstdLen > f0Envelope.byteLength) {
+            return { ed25519Invalid: true, reason: "EKPACK_SYM_ZSTD_TRUNCATED", relPack };
           }
+          symZstdSlice = f0Envelope.subarray(8 + actualF0Len, 8 + actualF0Len + symZstdLen);
+        }
+        if (
+          !hdr.fsst_symbol_table ||
+          (Array.isArray(hdr.fsst_symbol_table) && hdr.fsst_symbol_table.length === 0)
+        ) {
+          packedSymbols = symZstdSlice || new Uint8Array([0, 0]);
         } else {
           packedSymbols = packFsstSymbolTableBytes(hdr.fsst_symbol_table);
         }
@@ -384,61 +377,74 @@ export function createDataLayer({ source, cacheLimit = 32 } = {}) {
               ).getUint32(0, true)
             : 0;
           if (
-            hdr.meta_zstd_sha256_hex &&
-            (!hasMetaEnvelope ||
-              metaZstdLen === 0 ||
-              metaPos + 4 + metaZstdLen > f0Envelope.byteLength)
+            !hasMetaEnvelope ||
+            metaZstdLen === 0 ||
+            metaPos + 4 + metaZstdLen > f0Envelope.byteLength
           ) {
             return { ed25519Invalid: true, reason: "EKPACK_META_ZSTD_INVALID", relPack };
           }
-          if (hasMetaEnvelope && metaZstdLen > 0 && metaPos + 4 + metaZstdLen <= f0Envelope.byteLength) {
-            const metaZstdSlice = f0Envelope.subarray(metaPos + 4, metaPos + 4 + metaZstdLen);
-            if (hdr.meta_zstd_sha256_hex) {
-              const actualMetaSha = await computeSha256HexWebCrypto(metaZstdSlice);
-              if (actualMetaSha !== String(hdr.meta_zstd_sha256_hex).toLowerCase()) {
-                return { ed25519Invalid: true, reason: "EKPACK_META_ZSTD_INVALID", relPack };
+          const metaZstdSlice = f0Envelope.subarray(metaPos + 4, metaPos + 4 + metaZstdLen);
+          const actualMetaSha = await computeSha256HexWebCrypto(metaZstdSlice);
+          if (actualMetaSha !== expectedMetaSha) {
+            return { ed25519Invalid: true, reason: "EKPACK_META_ZSTD_INVALID", relPack };
+          }
+          try {
+            const metaRaw = decodeRfc8878RawZstdFrameJs(metaZstdSlice, playerWasm);
+            const em2 = parseEm2MetaTrailerBytes(metaRaw, hdr.books.length);
+            if (!em2.valid || !em2.hasEm2) {
+              return { ed25519Invalid: true, reason: "EKPACK_EM2_TRAILER_INVALID", relPack };
+            }
+            if (symZstdSlice && symZstdSlice.byteLength > 0) {
+              const actualSymSha = await computeSha256HexWebCrypto(symZstdSlice);
+              if (actualSymSha !== em2.symSha256Hex) {
+                return { ed25519Invalid: true, reason: "EKPACK_SYM_ZSTD_TAMPERED", relPack };
               }
             }
-            try {
-              const metaRaw = decodeRfc8878RawZstdFrameJs(metaZstdSlice, playerWasm);
-              const cnt =
-                metaRaw && metaRaw.byteLength >= 2 ? metaRaw[0] | (metaRaw[1] << 8) : 0;
+            const actualDirSha = await computeSha256HexWebCrypto(
+              computeBooksDirectoryBytesJs(hdr.books),
+            );
+            if (actualDirSha !== em2.booksDirSha256Hex) {
+              return { ed25519Invalid: true, reason: "EKPACK_BOOKS_DIR_TAMPERED", relPack };
+            }
+            for (let bi = 0; bi < hdr.books.length; bi += 1) {
+              const hexStr = em2.bookSha256Hexes[bi];
               if (
-                hdr.meta_zstd_sha256_hex &&
-                (!metaRaw || cnt < hdr.books.length || metaRaw.byteLength < 2 + cnt * 32)
+                hdr.books[bi].frame_sha256_hex &&
+                String(hdr.books[bi].frame_sha256_hex).toLowerCase() !== hexStr
               ) {
-                return { ed25519Invalid: true, reason: "EKPACK_META_ZSTD_INVALID", relPack };
+                return {
+                  ed25519Invalid: true,
+                  reason: "EKPACK_META_ZSTD_INVALID",
+                  relPack,
+                };
               }
-              if (metaRaw && metaRaw.byteLength >= 2) {
-                const lim = Math.min(hdr.books.length, cnt);
-                if (metaRaw.byteLength >= 2 + lim * 32) {
-                  for (let bi = 0; bi < lim; bi += 1) {
-                    let hexStr = "";
-                    for (let k = 0; k < 32; k += 1) {
-                      hexStr += metaRaw[2 + bi * 32 + k].toString(16).padStart(2, "0");
-                    }
-                    if (
-                      hdr.meta_zstd_sha256_hex &&
-                      hdr.books[bi].frame_sha256_hex &&
-                      String(hdr.books[bi].frame_sha256_hex).toLowerCase() !== hexStr
-                    ) {
-                      return {
-                        ed25519Invalid: true,
-                        reason: "EKPACK_META_ZSTD_INVALID",
-                        relPack,
-                      };
-                    }
-                    if (!hdr.books[bi].frame_sha256_hex) {
-                      hdr.books[bi].frame_sha256_hex = hexStr;
-                    }
-                  }
-                }
-              }
-            } catch {
-              if (hdr.meta_zstd_sha256_hex) {
-                return { ed25519Invalid: true, reason: "EKPACK_META_ZSTD_INVALID", relPack };
+              if (!hdr.books[bi].frame_sha256_hex) {
+                hdr.books[bi].frame_sha256_hex = hexStr;
               }
             }
+            if (hdr.intralang_rlz) {
+              if (!em2.frame67Sha256Hex) {
+                return {
+                  ed25519Invalid: true,
+                  reason: "FRAME67_META_HASH_MISSING",
+                  relPack,
+                };
+              }
+              if (
+                hdr.intralang_rlz.frame_sha256_hex &&
+                String(hdr.intralang_rlz.frame_sha256_hex).toLowerCase() !==
+                  em2.frame67Sha256Hex
+              ) {
+                return {
+                  ed25519Invalid: true,
+                  reason: "FRAME67_META_HASH_MISMATCH",
+                  relPack,
+                };
+              }
+              hdr.intralang_rlz.frame_sha256_hex = em2.frame67Sha256Hex;
+            }
+          } catch {
+            return { ed25519Invalid: true, reason: "EKPACK_META_ZSTD_INVALID", relPack };
           }
         }
         return {
@@ -538,11 +544,12 @@ export function createDataLayer({ source, cacheLimit = 32 } = {}) {
       ) {
         return { status: STATUS.UNAVAILABLE, data: null, reason: "FRAME67_ZSTD_TAMPERED" };
       }
-      if (rlzDesc.frame_sha256_hex) {
-        const actualF67Sha = await computeSha256HexWebCrypto(f67Bytes);
-        if (actualF67Sha !== String(rlzDesc.frame_sha256_hex).toLowerCase()) {
-          return { status: STATUS.UNAVAILABLE, data: null, reason: "FRAME67_SHA256_MISMATCH" };
-        }
+      if (!rlzDesc.frame_sha256_hex) {
+        return { status: STATUS.UNAVAILABLE, data: null, reason: "FRAME67_SHA256_MISSING" };
+      }
+      const actualF67Sha = await computeSha256HexWebCrypto(f67Bytes);
+      if (actualF67Sha !== String(rlzDesc.frame_sha256_hex).toLowerCase()) {
+        return { status: STATUS.UNAVAILABLE, data: null, reason: "FRAME67_SHA256_MISMATCH" };
       }
       if (
         !rlzDesc.base_content_sha256_hex ||
@@ -752,6 +759,39 @@ export function createDataLayer({ source, cacheLimit = 32 } = {}) {
     };
   }
 
+  function decodeBase64ToBytesJs(b64) {
+    const clean = String(b64 || "").trim();
+    if (!clean) return new Uint8Array(0);
+    if (typeof atob === "function") {
+      const bin = atob(clean);
+      const out = new Uint8Array(bin.length);
+      for (let i = 0; i < bin.length; i += 1) out[i] = bin.charCodeAt(i);
+      return out;
+    }
+    if (typeof Buffer !== "undefined") {
+      return new Uint8Array(Buffer.from(clean, "base64"));
+    }
+    return new Uint8Array(0);
+  }
+
+  function sliceFrameSha256HexJs(rawFrameHashes, frameIdx) {
+    const idx = Number(frameIdx);
+    if (
+      !(rawFrameHashes instanceof Uint8Array) ||
+      !Number.isInteger(idx) ||
+      idx < 0 ||
+      (idx + 1) * 32 > rawFrameHashes.byteLength
+    ) {
+      return "";
+    }
+    let hex = "";
+    const base = idx * 32;
+    for (let i = 0; i < 32; i += 1) {
+      hex += rawFrameHashes[base + i].toString(16).padStart(2, "0");
+    }
+    return hex;
+  }
+
   async function loadChapterMatrixFromEkpackRange(book, chapter) {
     const relMatrix = "data/packs/matrix_tier0.ekpack";
     const hdrInfo = await ekpackHeaderCache.get(relMatrix, async () => {
@@ -785,7 +825,16 @@ export function createDataLayer({ source, cacheLimit = 32 } = {}) {
       if (hdr.schema_crc32 !== undefined && Number(hdr.schema_crc32) !== 0x4e14c015) {
         return { ed25519Invalid: true };
       }
-      const signMsg = `EKOVOZ_MATRIX_TIER0_V1:${hdr.content_digest_sha256_hex}:${hdr.merkle_root_sha256_hex}`;
+      const frameDirHex = String(hdr.frame_dir_sha256_hex || "").trim().toLowerCase();
+      const rawFrameHashes = decodeBase64ToBytesJs(hdr.frame_hashes_b64);
+      if (
+        !/^[0-9a-f]{64}$/.test(frameDirHex) ||
+        rawFrameHashes.byteLength === 0 ||
+        rawFrameHashes.byteLength % 32 !== 0
+      ) {
+        return { ed25519Invalid: true };
+      }
+      const signMsg = `EKOVOZ_MATRIX_TIER0_V2:${hdr.content_digest_sha256_hex}:${hdr.merkle_root_sha256_hex}:${frameDirHex}`;
       const edOk = await verifyEd25519ManifestSignatureAsync(
         signMsg,
         hdr.ed25519_signature_hex,
@@ -793,17 +842,33 @@ export function createDataLayer({ source, cacheLimit = 32 } = {}) {
         playerWasm,
       );
       if (!edOk) return { ed25519Invalid: true };
+
+      const enc = new TextEncoder();
+      const dictIdx = Array.isArray(hdr.dict_frame) && hdr.dict_frame.length >= 4 ? Number(hdr.dict_frame[3]) : -1;
+      const realiaIdx =
+        Array.isArray(hdr.realia_frame) && hdr.realia_frame.length >= 4 ? Number(hdr.realia_frame[3]) : -1;
+      if (!Number.isInteger(dictIdx) || dictIdx < 0 || !Number.isInteger(realiaIdx) || realiaIdx < 0) {
+        return { ed25519Invalid: true };
+      }
+      const dirLines = [`D:${dictIdx}|R:${realiaIdx}`];
       const bookMap = new Map();
       for (const entry of hdr.books || []) {
-        bookMap.set(String(entry[0]).toUpperCase(), {
+        const bkCode = String(entry[0]);
+        const fidx = entry.length >= 5 ? Number(entry[4]) : -1;
+        if (!Number.isInteger(fidx) || fidx < 0) return { ed25519Invalid: true };
+        dirLines.push(`B:${bkCode}:${fidx}`);
+        bookMap.set(bkCode.toUpperCase(), {
           offset: Number(entry[1]) || 0,
           byteLen: Number(entry[2]) || 0,
           decLen: Number(entry[3]) || 0,
+          frameIdx: fidx,
         });
       }
       const windowMap = new Map();
       if (hdr.win_ranges && typeof hdr.win_ranges === "object") {
-        for (const [bkCode, wins] of Object.entries(hdr.win_ranges)) {
+        const sortedWinBooks = Object.keys(hdr.win_ranges).sort();
+        for (const bkCode of sortedWinBooks) {
+          const wins = hdr.win_ranges[bkCode];
           if (!Array.isArray(wins)) continue;
           const bUpper = String(bkCode).toUpperCase();
           const baseBook = bookMap.get(bUpper);
@@ -816,6 +881,9 @@ export function createDataLayer({ source, cacheLimit = 32 } = {}) {
             const cLast = Number(w[1]) || cFirst;
             const cLen = Number(w[2]) || 0;
             const absOff = w.length >= 4 ? Number(w[3]) : runOff;
+            const wfidx = w.length >= 5 ? Number(w[4]) : -1;
+            if (!Number.isInteger(wfidx) || wfidx < 0) return { ed25519Invalid: true };
+            dirLines.push(`W:${bkCode}:${w[0]}:${w[1]}:${wfidx}`);
             perBookWins.push({
               winIdx: i,
               cFirst,
@@ -823,29 +891,49 @@ export function createDataLayer({ source, cacheLimit = 32 } = {}) {
               offset: absOff,
               byteLen: cLen,
               decLen: 0,
+              frameIdx: wfidx,
             });
             runOff = absOff + cLen;
           }
           windowMap.set(bUpper, perBookWins);
         }
       }
+      const dirSuffixBytes = enc.encode(`\n${dirLines.join("\n")}\n`);
+      const dirBuf = new Uint8Array(rawFrameHashes.byteLength + dirSuffixBytes.byteLength);
+      dirBuf.set(rawFrameHashes, 0);
+      dirBuf.set(dirSuffixBytes, rawFrameHashes.byteLength);
+      const actualDirSha = await computeSha256HexWebCrypto(dirBuf);
+      if (actualDirSha !== frameDirHex) {
+        return { ed25519Invalid: true };
+      }
+
       let dictDoc = null;
-      if (Array.isArray(hdr.dict_frame) && hdr.dict_frame.length >= 2) {
+      if (Array.isArray(hdr.dict_frame) && hdr.dict_frame.length >= 4) {
         const dOff = Number(hdr.dict_frame[0]) || 0;
         const dLen = Number(hdr.dict_frame[1]) || 0;
         const dDec = Number(hdr.dict_frame[2]) || 0;
-        if (dLen > 0) {
+        const expectedDictSha = sliceFrameSha256HexJs(rawFrameHashes, dictIdx);
+        if (dLen > 0 && expectedDictSha) {
           const dSlice =
             dOff + dLen <= headProbe.byteLength
               ? headProbe.subarray(dOff, dOff + dLen)
               : await readEkpackSlice(relMatrix, dOff, dOff + dLen - 1);
-          if (dSlice && dSlice.byteLength === dLen && playerWasm) {
+          if (!dSlice || dSlice.byteLength !== dLen) {
+            return { ed25519Invalid: true };
+          }
+          const actualDictSha = await computeSha256HexWebCrypto(dSlice);
+          if (actualDictSha !== expectedDictSha) {
+            return { ed25519Invalid: true };
+          }
+          if (playerWasm) {
             const dRaw = decodeZstdFrameInPlayerWasm(playerWasm, dSlice, dDec);
             dictDoc = JSON.parse(new TextDecoder("utf-8").decode(dRaw));
           }
+        } else if (dLen > 0) {
+          return { ed25519Invalid: true };
         }
       }
-      return { preamble, hdr, bookMap, windowMap, dictDoc };
+      return { preamble, hdr, bookMap, windowMap, dictDoc, rawFrameHashes };
     });
 
     if (!hdrInfo) return { status: STATUS.UNAVAILABLE, reason: "missing" };
@@ -861,6 +949,10 @@ export function createDataLayer({ source, cacheLimit = 32 } = {}) {
     const bEntry = matchedWin || hdrInfo.bookMap.get(bKey);
     if (!bEntry || bEntry.byteLen <= 0) {
       return { status: STATUS.UNAVAILABLE, reason: "chapter_missing_in_matrix_ekpack" };
+    }
+    const expectedFrameSha = sliceFrameSha256HexJs(hdrInfo.rawFrameHashes, bEntry.frameIdx);
+    if (!expectedFrameSha) {
+      return { status: STATUS.UNAVAILABLE, reason: "MATRIX_FRAME_SHA256_MISSING" };
     }
     const playerWasm = await ensurePlayerWasmLoaded();
     if (!playerWasm) {
@@ -883,9 +975,16 @@ export function createDataLayer({ source, cacheLimit = 32 } = {}) {
       ) {
         return null;
       }
+      const actualFrameSha = await computeSha256HexWebCrypto(slice);
+      if (actualFrameSha !== expectedFrameSha) {
+        return { shaMismatch: true };
+      }
       const rawJsonBytes = decodeZstdFrameInPlayerWasm(playerWasm, slice, bEntry.decLen);
       return JSON.parse(new TextDecoder("utf-8").decode(rawJsonBytes));
     });
+    if (parsedBook?.shaMismatch) {
+      return { status: STATUS.UNAVAILABLE, reason: "MATRIX_FRAME_SHA256_MISMATCH" };
+    }
     if (!Array.isArray(parsedBook) || !Array.isArray(parsedBook[1])) {
       return { status: STATUS.UNAVAILABLE, reason: "matrix_range_incomplete" };
     }

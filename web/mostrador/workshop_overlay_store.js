@@ -7,7 +7,7 @@ import {
   CASCADE_SEMILATTICE_PRIORITY,
   projectChapterThroughCascadeSemilattice,
 } from "./cascade_l1_l5.js";
-import { computeEcoPackCrc32Hex } from "./offline_mesh.js";
+import { computeEcoPackCrc32Hex, computeSha256HexWebCrypto } from "./offline_mesh.js";
 
 function escHtml(val) {
   return String(val ?? "")
@@ -123,24 +123,35 @@ export async function persistSignedCascadeOverlayIdb(receipt, options = {}) {
   });
   const payloadBytes = new TextEncoder().encode(canonicalPayload);
   const computedCrc32Hex = computeEcoPackCrc32Hex(payloadBytes);
-  const expectedCrc = String(
-    options.expectedCrc32Hex || receipt.expectedCrc32Hex || computedCrc32Hex,
-  ).toLowerCase();
-  if (expectedCrc !== computedCrc32Hex.toLowerCase()) {
-    return { persisted: false, reason: "CRC32_MISMATCH", computedCrc32Hex };
+  const computedSha256Hex = await computeSha256HexWebCrypto(payloadBytes);
+  const explicitCrc = String(options.expectedCrc32Hex || receipt.expectedCrc32Hex || "")
+    .trim()
+    .toLowerCase();
+  if (explicitCrc && explicitCrc !== computedCrc32Hex.toLowerCase()) {
+    return { persisted: false, reason: "CRC32_MISMATCH", computedCrc32Hex, computedSha256Hex };
+  }
+  const explicitSha = String(options.expectedSha256Hex || receipt.expectedSha256Hex || "")
+    .trim()
+    .toLowerCase();
+  if (explicitSha && explicitSha !== computedSha256Hex) {
+    return { persisted: false, reason: "SHA256_MISMATCH", computedCrc32Hex, computedSha256Hex };
   }
 
   let signatureHex = String(options.signatureHex || receipt.signatureHex || "").trim();
   let publicKeyHex = String(options.publicKeyHex || receipt.publicKeyHex || "").trim();
   if (!subtle) return { persisted: false, reason: "WEBCRYPTO_UNAVAILABLE" };
 
-  const signMessageBytes = new TextEncoder().encode(
+  const signMsgV3Bytes = new TextEncoder().encode(
+    `EKOVOZ_CASCADE_OVERLAY_V3:${computedSha256Hex}:${canonicalPayload}`,
+  );
+  const signMsgV2Bytes = new TextEncoder().encode(
     `EKOVOZ_CASCADE_OVERLAY_V2:${computedCrc32Hex}:${canonicalPayload}`,
   );
+  let sigVersion = 3;
   let signedWithLocalEphemeralKey = false;
   if (!signatureHex && !publicKeyHex) {
     const localKp = await getOrCreateLocalWorkshopEd25519KeyPair(subtle);
-    const sigBuf = await subtle.sign({ name: "Ed25519" }, localKp.privateKey, signMessageBytes);
+    const sigBuf = await subtle.sign({ name: "Ed25519" }, localKp.privateKey, signMsgV3Bytes);
     signatureHex = bytesToHexWorkshop(new Uint8Array(sigBuf));
     publicKeyHex = localKp.publicKeyHex;
     signedWithLocalEphemeralKey = true;
@@ -162,7 +173,16 @@ export async function persistSignedCascadeOverlayIdb(receipt, options = {}) {
   let ed25519Ok = false;
   try {
     const cryptoKey = await subtle.importKey("raw", pubBytes, { name: "Ed25519" }, false, ["verify"]);
-    ed25519Ok = Boolean(await subtle.verify({ name: "Ed25519" }, cryptoKey, sigBytes, signMessageBytes));
+    ed25519Ok = Boolean(await subtle.verify({ name: "Ed25519" }, cryptoKey, sigBytes, signMsgV3Bytes));
+    if (!ed25519Ok && !signedWithLocalEphemeralKey) {
+      const okV2 = Boolean(
+        await subtle.verify({ name: "Ed25519" }, cryptoKey, sigBytes, signMsgV2Bytes),
+      );
+      if (okV2) {
+        ed25519Ok = true;
+        sigVersion = 2;
+      }
+    }
   } catch {
     ed25519Ok = false;
   }
@@ -174,6 +194,7 @@ export async function persistSignedCascadeOverlayIdb(receipt, options = {}) {
       persisted: false,
       reason: "INDEXEDDB_UNAVAILABLE",
       crc32Hex: computedCrc32Hex,
+      sha256Hex: computedSha256Hex,
       ed25519Verified: true,
       authorityTier,
       authorityLabel,
@@ -201,6 +222,8 @@ export async function persistSignedCascadeOverlayIdb(receipt, options = {}) {
         entry,
         canonicalPayload,
         crc32Hex: computedCrc32Hex,
+        sha256Hex: computedSha256Hex,
+        sigVersion,
         signatureHex,
         publicKeyHex,
         authorityTier,
@@ -215,6 +238,8 @@ export async function persistSignedCascadeOverlayIdb(receipt, options = {}) {
   return {
     persisted: true,
     crc32Hex: computedCrc32Hex,
+    sha256Hex: computedSha256Hex,
+    sigVersion,
     ed25519Verified: true,
     authorityTier,
     authorityLabel,
@@ -227,7 +252,7 @@ export async function persistSignedCascadeOverlayIdb(receipt, options = {}) {
 export async function loadLiveCascadeOverlaysIdb(lang = "stp", options = {}) {
   const idbFactory = options.indexedDB || globalThis.indexedDB || null;
   const subtle = options.subtle || globalThis.crypto?.subtle || null;
-  if (!idbFactory || typeof idbFactory.open !== "function") return [];
+  if (!subtle || !idbFactory || typeof idbFactory.open !== "function") return [];
   const db = await openCascadeOverlayIdb(idbFactory);
   const rawRecords = await new Promise((resolve, reject) => {
     const tx = db.transaction("signed_overlays", "readonly");
@@ -242,20 +267,26 @@ export async function loadLiveCascadeOverlaysIdb(lang = "stp", options = {}) {
   for (const rec of rawRecords) {
     if (!rec || !rec.entry || String(rec.entry.lang_code || "").toLowerCase() !== cleanLang) continue;
     const payloadStr = String(rec.canonicalPayload || "");
-    const crc = computeEcoPackCrc32Hex(new TextEncoder().encode(payloadStr));
-    if (crc.toLowerCase() !== String(rec.crc32Hex || "").toLowerCase()) continue;
-    if (subtle && rec.signatureHex && rec.publicKeyHex) {
-      const sigB = hexToBytesWorkshop(rec.signatureHex);
-      const pubB = hexToBytesWorkshop(rec.publicKeyHex);
-      if (!sigB || !pubB) continue;
-      const msgB = new TextEncoder().encode(`EKOVOZ_CASCADE_OVERLAY_V2:${rec.crc32Hex}:${payloadStr}`);
-      try {
-        const key = await subtle.importKey("raw", pubB, { name: "Ed25519" }, false, ["verify"]);
-        const ok = await subtle.verify({ name: "Ed25519" }, key, sigB, msgB);
-        if (!ok) continue;
-      } catch {
-        continue;
-      }
+    if (!payloadStr || !rec.sha256Hex || !rec.signatureHex || !rec.publicKeyHex) continue;
+    const payloadBytes = new TextEncoder().encode(payloadStr);
+    const actualSha = await computeSha256HexWebCrypto(payloadBytes);
+    if (actualSha !== String(rec.sha256Hex).toLowerCase()) continue;
+    const crc = computeEcoPackCrc32Hex(payloadBytes);
+    if (!rec.crc32Hex || crc.toLowerCase() !== String(rec.crc32Hex).toLowerCase()) continue;
+    const sigB = hexToBytesWorkshop(rec.signatureHex);
+    const pubB = hexToBytesWorkshop(rec.publicKeyHex);
+    if (!sigB || sigB.length !== 64 || !pubB || pubB.length !== 32) continue;
+    const msgStr =
+      rec.sigVersion === 2
+        ? `EKOVOZ_CASCADE_OVERLAY_V2:${rec.crc32Hex}:${payloadStr}`
+        : `EKOVOZ_CASCADE_OVERLAY_V3:${actualSha}:${payloadStr}`;
+    const msgB = new TextEncoder().encode(msgStr);
+    try {
+      const key = await subtle.importKey("raw", pubB, { name: "Ed25519" }, false, ["verify"]);
+      const ok = await subtle.verify({ name: "Ed25519" }, key, sigB, msgB);
+      if (!ok) continue;
+    } catch {
+      continue;
     }
     const authorityTier =
       rec.authorityTier ||

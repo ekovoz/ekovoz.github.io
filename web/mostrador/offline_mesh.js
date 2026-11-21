@@ -39,34 +39,6 @@ const IDB_STORE_PACKS = "verified_ekpacks";
 const IDB_STORE_FONTS = "verified_fonts_zst";
 const STORED_FONT_ZST_BLOBS = new Map();
 
-const DEFAULT_SIGNED_SEED_RECEIPTS = {
-  es: {
-    signingMessage: "EKPACK-V2-MANIFEST:es:2:bootstrap:bootstrap",
-    ed25519SignatureHex:
-      "49a0826f26c97c0281108e2d52c5a597a5587a35c6785783be7af09d1ebf1cf87919e2dcff91ac3f12cea924baa4d5b28c60418e06430d14e1e1dafff9e21802",
-  },
-  en: {
-    signingMessage: "EKPACK-V2-MANIFEST:en:2:bootstrap:bootstrap",
-    ed25519SignatureHex:
-      "379871d21b9570cee3e37006b813225ee2ff10411d98cb217904a068f5b34d5e2e8e844c4d98f1defa64ee551cfe9428a7a50ca7aaea2a30b0c649b5da54af0a",
-  },
-  stp: {
-    signingMessage: "EKPACK-V2-MANIFEST:stp:2:bootstrap:bootstrap",
-    ed25519SignatureHex:
-      "8597b1725187f925b1c645cacaeb5582285810d90c5e0c3fbaf8023a26fa7b0707723c62c0b15fd77d1189330f5e1a4db4737a8ae7182a4373a6af700468800b",
-  },
-  he: {
-    signingMessage: "EKPACK-V2-MANIFEST:he:2:bootstrap:bootstrap",
-    ed25519SignatureHex:
-      "023062e6b141eeac678af39a459257db1c14a3cc0eef0fa285aa00f7bc6807ffa6317980609c44497e47b985cba3c141fa2fbc7b58d030ba903abe4a12cf640c",
-  },
-  grc: {
-    signingMessage: "EKPACK-V2-MANIFEST:grc:2:bootstrap:bootstrap",
-    ed25519SignatureHex:
-      "a667527bab9991fdd8cc21b49d3b21623e3393df11e20ee4697dc4aa2f66d23e0f2f4ef2624d399360a95aed5926593baaba1d4772c480444e53e8518665bf02",
-  },
-};
-
 const SHA256_K = new Uint32Array([
   0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5,
   0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3, 0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174,
@@ -258,8 +230,8 @@ export const CANONICAL_ECO_PACKS_MANIFEST = [
     scriptRebaseHex: "0x0000",
     randomAccessTargetUs: 1.4,
     ed25519PublicKeyHex: SOVEREIGN_ED25519_PUBLIC_KEY_HEX,
-    signingMessage: DEFAULT_SIGNED_SEED_RECEIPTS.es.signingMessage,
-    ed25519SignatureHex: DEFAULT_SIGNED_SEED_RECEIPTS.es.ed25519SignatureHex,
+    signingMessage: "",
+    ed25519SignatureHex: "",
   },
   {
     lang: "en",
@@ -272,8 +244,8 @@ export const CANONICAL_ECO_PACKS_MANIFEST = [
     scriptRebaseHex: "0x0000",
     randomAccessTargetUs: 1.3,
     ed25519PublicKeyHex: SOVEREIGN_ED25519_PUBLIC_KEY_HEX,
-    signingMessage: DEFAULT_SIGNED_SEED_RECEIPTS.en.signingMessage,
-    ed25519SignatureHex: DEFAULT_SIGNED_SEED_RECEIPTS.en.ed25519SignatureHex,
+    signingMessage: "",
+    ed25519SignatureHex: "",
   },
   {
     lang: "stp",
@@ -286,8 +258,8 @@ export const CANONICAL_ECO_PACKS_MANIFEST = [
     scriptRebaseHex: "0x0000",
     randomAccessTargetUs: 1.5,
     ed25519PublicKeyHex: SOVEREIGN_ED25519_PUBLIC_KEY_HEX,
-    signingMessage: DEFAULT_SIGNED_SEED_RECEIPTS.stp.signingMessage,
-    ed25519SignatureHex: DEFAULT_SIGNED_SEED_RECEIPTS.stp.ed25519SignatureHex,
+    signingMessage: "",
+    ed25519SignatureHex: "",
   },
   {
     lang: "he",
@@ -300,8 +272,8 @@ export const CANONICAL_ECO_PACKS_MANIFEST = [
     scriptRebaseHex: "0x0590",
     randomAccessTargetUs: 1.6,
     ed25519PublicKeyHex: SOVEREIGN_ED25519_PUBLIC_KEY_HEX,
-    signingMessage: DEFAULT_SIGNED_SEED_RECEIPTS.he.signingMessage,
-    ed25519SignatureHex: DEFAULT_SIGNED_SEED_RECEIPTS.he.ed25519SignatureHex,
+    signingMessage: "",
+    ed25519SignatureHex: "",
   },
   {
     lang: "grc",
@@ -314,8 +286,8 @@ export const CANONICAL_ECO_PACKS_MANIFEST = [
     scriptRebaseHex: "0x0370",
     randomAccessTargetUs: 1.6,
     ed25519PublicKeyHex: SOVEREIGN_ED25519_PUBLIC_KEY_HEX,
-    signingMessage: DEFAULT_SIGNED_SEED_RECEIPTS.grc.signingMessage,
-    ed25519SignatureHex: DEFAULT_SIGNED_SEED_RECEIPTS.grc.ed25519SignatureHex,
+    signingMessage: "",
+    ed25519SignatureHex: "",
   },
 ];
 
@@ -333,7 +305,7 @@ export function hydrateEcoPacksManifest(manifestArtifact) {
   for (const item of packsList) {
     const cleanLang = String(item.lang || "es").toLowerCase();
     if (cleanLang === "es-1909") continue;
-    const prev = prevByLang.get(cleanLang) || DEFAULT_SIGNED_SEED_RECEIPTS[cleanLang] || {};
+    const prev = prevByLang.get(cleanLang) || {};
     CANONICAL_ECO_PACKS_MANIFEST.push({
       ...prev,
       ...item,
@@ -525,7 +497,112 @@ export function decodeRfc8878RawZstdFrameJs(frameBytes, wasmPlayerMod = null) {
   return out;
 }
 
-export function parseEkpackContainerJs(bytes, wasmPlayerMod = null) {
+export function parseEm2MetaTrailerBytes(metaRaw, expectedBookCount = 0) {
+  if (!(metaRaw instanceof Uint8Array) || metaRaw.byteLength < 2) {
+    return {
+      valid: false,
+      hasEm2: false,
+      bookCount: 0,
+      bookSha256Hexes: [],
+      em2Flags: 0,
+      symSha256Hex: "",
+      booksDirSha256Hex: "",
+      frame67Sha256Hex: "",
+    };
+  }
+  const cnt = metaRaw[0] | (metaRaw[1] << 8);
+  const trOff = 2 + cnt * 32;
+  if (cnt < expectedBookCount || metaRaw.byteLength < trOff) {
+    return {
+      valid: false,
+      hasEm2: false,
+      bookCount: cnt,
+      bookSha256Hexes: [],
+      em2Flags: 0,
+      symSha256Hex: "",
+      booksDirSha256Hex: "",
+      frame67Sha256Hex: "",
+    };
+  }
+  const bookSha256Hexes = new Array(cnt);
+  for (let i = 0; i < cnt; i += 1) {
+    bookSha256Hexes[i] = bytesToHexLower(metaRaw.subarray(2 + i * 32, 2 + (i + 1) * 32));
+  }
+  const hasEm2 =
+    metaRaw.byteLength >= trOff + 4 + 1 + 32 + 32 &&
+    metaRaw[trOff] === 0x45 &&
+    metaRaw[trOff + 1] === 0x4d &&
+    metaRaw[trOff + 2] === 0x32 &&
+    metaRaw[trOff + 3] === 0x01;
+  if (!hasEm2) {
+    return {
+      valid: true,
+      hasEm2: false,
+      bookCount: cnt,
+      bookSha256Hexes,
+      em2Flags: 0,
+      symSha256Hex: "",
+      booksDirSha256Hex: "",
+      frame67Sha256Hex: "",
+    };
+  }
+  const em2Flags = metaRaw[trOff + 4];
+  const symSha256Hex = bytesToHexLower(metaRaw.subarray(trOff + 5, trOff + 37));
+  const booksDirSha256Hex = bytesToHexLower(metaRaw.subarray(trOff + 37, trOff + 69));
+  let frame67Sha256Hex = "";
+  if ((em2Flags & 0x02) !== 0) {
+    if (metaRaw.byteLength < trOff + 101) {
+      return {
+        valid: false,
+        hasEm2: false,
+        bookCount: cnt,
+        bookSha256Hexes: [],
+        em2Flags,
+        symSha256Hex: "",
+        booksDirSha256Hex: "",
+        frame67Sha256Hex: "",
+      };
+    }
+    frame67Sha256Hex = bytesToHexLower(metaRaw.subarray(trOff + 69, trOff + 101));
+  }
+  return {
+    valid: true,
+    hasEm2: true,
+    bookCount: cnt,
+    bookSha256Hexes,
+    em2Flags,
+    symSha256Hex,
+    booksDirSha256Hex,
+    frame67Sha256Hex,
+  };
+}
+
+export function computeBooksDirectoryBytesJs(books = []) {
+  const enc = new TextEncoder();
+  const chunks = [];
+  let totalLen = 0;
+  for (const bk of Array.isArray(books) ? books : []) {
+    const idBytes = enc.encode(String(bk.usfm_id || ""));
+    const rec = new Uint8Array(idBytes.byteLength + 1 + 4 + 2 + 1);
+    rec.set(idBytes, 0);
+    rec[idBytes.byteLength] = 0x3a;
+    const dv = new DataView(rec.buffer, idBytes.byteLength + 1, 6);
+    dv.setUint32(0, Number(bk.first_verse_ord) || 0, true);
+    dv.setUint16(4, Number(bk.verse_count) || 0, true);
+    rec[rec.byteLength - 1] = 0x0a;
+    chunks.push(rec);
+    totalLen += rec.byteLength;
+  }
+  const out = new Uint8Array(totalLen);
+  let cursor = 0;
+  for (const c of chunks) {
+    out.set(c, cursor);
+    cursor += c.byteLength;
+  }
+  return out;
+}
+
+export function parseEkpackFrame0UnverifiedLayout(bytes, wasmPlayerMod = null) {
   if (!(bytes instanceof Uint8Array) || bytes.byteLength < 32) {
     throw new Error("Truncated .ekpack container (< 32-byte preamble)");
   }
@@ -557,12 +634,17 @@ export function parseEkpackContainerJs(bytes, wasmPlayerMod = null) {
   );
   const hdr = JSON.parse(new TextDecoder("utf-8").decode(f0Raw));
   const books = Array.isArray(hdr.books) ? hdr.books : [];
-  if (f0Envelope.byteLength >= 8 + actualF0Len && books.length > 0) {
+  let symZstdSlice = null;
+  let metaZstdSlice = null;
+  if (f0Envelope.byteLength >= 8 + actualF0Len) {
     const symZstdLen = new DataView(
       f0Envelope.buffer,
       f0Envelope.byteOffset + 4 + actualF0Len,
       4,
     ).getUint32(0, true);
+    if (symZstdLen > 0 && 8 + actualF0Len + symZstdLen <= f0Envelope.byteLength) {
+      symZstdSlice = f0Envelope.subarray(8 + actualF0Len, 8 + actualF0Len + symZstdLen);
+    }
     const metaPos = 8 + actualF0Len + symZstdLen;
     if (metaPos + 4 <= f0Envelope.byteLength) {
       const metaZstdLen = new DataView(
@@ -571,28 +653,35 @@ export function parseEkpackContainerJs(bytes, wasmPlayerMod = null) {
         4,
       ).getUint32(0, true);
       if (metaZstdLen > 0 && metaPos + 4 + metaZstdLen <= f0Envelope.byteLength) {
-        try {
-          const metaRaw = decodeRfc8878RawZstdFrameJs(
-            f0Envelope.subarray(metaPos + 4, metaPos + 4 + metaZstdLen),
-            wasmPlayerMod,
-          );
-          if (metaRaw && metaRaw.byteLength >= 2) {
-            const metaBookCnt = metaRaw[0] | (metaRaw[1] << 8);
-            const limit = Math.min(books.length, metaBookCnt);
-            if (metaRaw.byteLength >= 2 + limit * 32) {
-              for (let i = 0; i < limit; i += 1) {
-                if (!books[i].frame_sha256_hex) {
-                  books[i].frame_sha256_hex = bytesToHexLower(
-                    metaRaw.subarray(2 + i * 32, 2 + (i + 1) * 32),
-                  );
-                }
-              }
-            }
+        metaZstdSlice = f0Envelope.subarray(metaPos + 4, metaPos + 4 + metaZstdLen);
+      }
+    }
+  }
+  return { preamble, hdr, books, symZstdSlice, metaZstdSlice };
+}
+
+export function parseEkpackContainerJs(bytes, wasmPlayerMod = null) {
+  const { preamble, hdr, books, metaZstdSlice } = parseEkpackFrame0UnverifiedLayout(
+    bytes,
+    wasmPlayerMod,
+  );
+  if (metaZstdSlice && books.length > 0) {
+    try {
+      const metaRaw = decodeRfc8878RawZstdFrameJs(metaZstdSlice, wasmPlayerMod);
+      const em2 = parseEm2MetaTrailerBytes(metaRaw, books.length);
+      if (em2.valid) {
+        const limit = Math.min(books.length, em2.bookSha256Hexes.length);
+        for (let i = 0; i < limit; i += 1) {
+          if (!books[i].frame_sha256_hex) {
+            books[i].frame_sha256_hex = em2.bookSha256Hexes[i];
           }
-        } catch {
-          // Si meta_zstd requiere playerWasm aún no hidratado, se validará por Merkle root completo
+        }
+        if (hdr.intralang_rlz && em2.frame67Sha256Hex && !hdr.intralang_rlz.frame_sha256_hex) {
+          hdr.intralang_rlz.frame_sha256_hex = em2.frame67Sha256Hex;
         }
       }
+    } catch {
+      // Requiere runtime WASM para bloques Zstd comprimidos
     }
   }
   return {
@@ -714,13 +803,15 @@ export function probeEcoPackRandomAccessBounds(
             : 0x0000;
   const snippet = truncateAtWordBoundary(activeVerseText, 120);
   return {
-    engine: "EKPACK_HTTP206_ZSTD_RANGE_READY",
-    verseCount: 31102,
-    bounds: [0, bytes.byteLength],
-    crcVerified: bytes.byteLength > 0,
+    engine: "EKPACK_INVALID_OR_TRUNCATED",
+    verified: false,
+    verseCount: 0,
+    bounds: null,
+    crcVerified: false,
+    ed25519Verified: false,
     unicodeBlockBase: blockBase,
-    versePreview: snippet ? `«${snippet}»` : `Semilla .ekpack (${cleanLang}) lista para lectura Range`,
-    randomAccessUs: 1.5,
+    versePreview: snippet ? `«${snippet}»` : "",
+    randomAccessUs: null,
   };
 }
 
@@ -897,20 +988,20 @@ export async function commitVerifiedPackToIndexedDb(
 ) {
   const effectiveWasmMod = wasmPlayerMod || (await ensureOfflineMeshPlayerWasm());
   const lang = String(packRecord.lang || "es").trim().toLowerCase();
-  const manifestEntry =
-    CANONICAL_ECO_PACKS_MANIFEST.find((p) => p.lang === lang) || null;
 
-  let bytes = null;
-  if (packRecord.packBytes instanceof Uint8Array && packRecord.packBytes.byteLength > 0) {
-    bytes = packRecord.packBytes;
-  } else if (typeof packRecord.payload === "string" && packRecord.payload.length > 0) {
-    bytes = new TextEncoder().encode(packRecord.payload);
-  } else if (typeof packRecord.signingMessage === "string" && packRecord.signingMessage.length > 0) {
-    bytes = new TextEncoder().encode(packRecord.signingMessage);
-  }
-  if (!bytes || bytes.byteLength === 0) {
+  const bytes = packRecord.packBytes;
+  if (!(bytes instanceof Uint8Array) || bytes.byteLength === 0) {
     throw new Error(
       `[TWO-GATE PRE-COMMIT REJECTED] ERR_EMPTY_PACK_BYTES: real .ekpack binary bytes required for ${lang}`,
+    );
+  }
+  const preamble = parseEkpackPreamble32Js(bytes);
+  const isBinaryEkpack = Boolean(
+    preamble && preamble.frame0Offset + preamble.frame0ByteLen <= bytes.byteLength,
+  );
+  if (!isBinaryEkpack) {
+    throw new Error(
+      `[TWO-GATE PRE-COMMIT REJECTED] ERR_INVALID_EKPACK_CONTAINER: binary sealed .ekpack required for ${lang}`,
     );
   }
 
@@ -933,115 +1024,137 @@ export async function commitVerifiedPackToIndexedDb(
     );
   }
 
-  let signingPayload = packRecord.signingMessage ?? bytes;
-  let signatureHex = packRecord.signatureHex;
   const pinnedPubKeyHex = String(publicKeyHex || SOVEREIGN_ED25519_PUBLIC_KEY_HEX)
     .trim()
     .toLowerCase();
 
-  const preamble = parseEkpackPreamble32Js(bytes);
-  const isBinaryEkpack = Boolean(
-    preamble && preamble.frame0Offset + preamble.frame0ByteLen <= bytes.byteLength,
+  const { hdr, books, symZstdSlice, metaZstdSlice } = parseEkpackFrame0UnverifiedLayout(
+    bytes,
+    effectiveWasmMod,
   );
-  if (signatureHex === undefined && isBinaryEkpack) {
-    const hdr = parseEkpackContainerJs(bytes, effectiveWasmMod);
-    const hdrPk = String(hdr.ed25519_public_key_hex || "").trim().toLowerCase();
-    if (hdrPk !== pinnedPubKeyHex) {
+  const hdrPk = String(hdr.ed25519_public_key_hex || "").trim().toLowerCase();
+  if (hdrPk !== pinnedPubKeyHex) {
+    throw new Error(
+      `[TWO-GATE PRE-COMMIT REJECTED] ERR_UNPINNED_ED25519_KEY for ${lang}: header key ${hdrPk} !== pinned ${pinnedPubKeyHex}`,
+    );
+  }
+  if (String(hdr.lang_code || "").trim().toLowerCase() !== lang) {
+    throw new Error(
+      `[TWO-GATE PRE-COMMIT REJECTED] ERR_LANG_REPLAY_MISMATCH: expected ${lang}, got ${hdr.lang_code}`,
+    );
+  }
+  const expectedMetaSha = String(hdr.meta_zstd_sha256_hex || "").trim().toLowerCase();
+  if (!/^[0-9a-f]{64}$/.test(expectedMetaSha) || !(metaZstdSlice instanceof Uint8Array)) {
+    throw new Error(
+      `[TWO-GATE PRE-COMMIT REJECTED] ERR_META_ZSTD_SHA256_MISSING for ${lang}`,
+    );
+  }
+
+  // Verify Ed25519 FIRST before decompressing meta_zstd or trusting any slice offsets
+  const signMsgV2 = buildEkpackSigningMessageV2(hdr);
+  const sigStr = String(hdr.ed25519_signature_hex || "");
+  const okV2 = await verifyEd25519ManifestSignatureWebCrypto(
+    signMsgV2,
+    sigStr,
+    pinnedPubKeyHex,
+    effectiveWasmMod,
+  );
+  if (!okV2) {
+    throw new Error(
+      `[TWO-GATE PRE-COMMIT REJECTED] Ed25519 signature invalid (Ed25519 RFC 8032 signature invalid) for ${lang}`,
+    );
+  }
+
+  const actualMetaSha = await computeSha256HexWebCrypto(metaZstdSlice);
+  if (actualMetaSha !== expectedMetaSha) {
+    throw new Error(
+      `[TWO-GATE PRE-COMMIT REJECTED] ERR_META_ZSTD_SHA256_MISMATCH for ${lang}`,
+    );
+  }
+  const metaRaw = decodeRfc8878RawZstdFrameJs(metaZstdSlice, effectiveWasmMod);
+  const em2 = parseEm2MetaTrailerBytes(metaRaw, books.length);
+  if (!em2.valid || !em2.hasEm2) {
+    throw new Error(
+      `[TWO-GATE PRE-COMMIT REJECTED] ERR_EM2_META_TRAILER_INVALID for ${lang}`,
+    );
+  }
+  if (symZstdSlice instanceof Uint8Array && symZstdSlice.byteLength > 0) {
+    const actualSymSha = await computeSha256HexWebCrypto(symZstdSlice);
+    if (actualSymSha !== em2.symSha256Hex) {
       throw new Error(
-        `[TWO-GATE PRE-COMMIT REJECTED] ERR_UNPINNED_ED25519_KEY for ${lang}: header key ${hdrPk} !== pinned ${pinnedPubKeyHex}`,
+        `[TWO-GATE PRE-COMMIT REJECTED] ERR_SYM_ZSTD_SHA256_MISMATCH for ${lang}`,
       );
     }
-    if (String(hdr.lang_code || "").trim().toLowerCase() !== lang) {
+  }
+  const actualBooksDirSha = await computeSha256HexWebCrypto(computeBooksDirectoryBytesJs(books));
+  if (actualBooksDirSha !== em2.booksDirSha256Hex) {
+    throw new Error(
+      `[TWO-GATE PRE-COMMIT REJECTED] ERR_BOOKS_DIR_SHA256_MISMATCH for ${lang}`,
+    );
+  }
+
+  const merkleLeaves = [];
+  for (let i = 0; i < books.length; i += 1) {
+    const bk = books[i];
+    const fStart = Number(bk.frame_byte_offset) || 0;
+    const fEnd = fStart + (Number(bk.frame_byte_len) || 0);
+    if (fEnd > bytes.byteLength) {
+      throw new Error(`[TWO-GATE PRE-COMMIT REJECTED] Truncated book frame ${bk.usfm_id}`);
+    }
+    const fSlice = bytes.subarray(fStart, fEnd);
+    const actualBookSha = await computeSha256HexWebCrypto(fSlice);
+    if (actualBookSha !== em2.bookSha256Hexes[i]) {
       throw new Error(
-        `[TWO-GATE PRE-COMMIT REJECTED] ERR_LANG_REPLAY_MISMATCH: expected ${lang}, got ${hdr.lang_code}`,
+        `[TWO-GATE PRE-COMMIT REJECTED] ERR_BOOK_FRAME_SHA256_MISMATCH on ${bk.usfm_id}`,
       );
     }
-    const merkleLeaves = [];
-    for (const bk of hdr.books || []) {
-      const fStart = Number(bk.frame_byte_offset) || 0;
-      const fEnd = fStart + (Number(bk.frame_byte_len) || 0);
-      if (fEnd > bytes.byteLength) {
-        throw new Error(`[TWO-GATE PRE-COMMIT REJECTED] Truncated book frame ${bk.usfm_id}`);
-      }
-      const fSlice = bytes.subarray(fStart, fEnd);
-      if (bk.frame_sha256_hex) {
-        const actualBookSha = await computeSha256HexWebCrypto(fSlice);
-        if (actualBookSha !== String(bk.frame_sha256_hex).toLowerCase()) {
-          throw new Error(
-            `[TWO-GATE PRE-COMMIT REJECTED] ERR_BOOK_FRAME_SHA256_MISMATCH on ${bk.usfm_id}`,
-          );
-        }
-      }
-      merkleLeaves.push([bk.usfm_id, fSlice]);
-    }
-    if (hdr.intralang_rlz && hdr.intralang_rlz.frame_byte_len) {
-      const rStart = Number(hdr.intralang_rlz.frame_byte_offset) || 0;
-      const rEnd = rStart + (Number(hdr.intralang_rlz.frame_byte_len) || 0);
-      if (rEnd > bytes.byteLength) {
-        throw new Error(`[TWO-GATE PRE-COMMIT REJECTED] Truncated Frame 67 RLZ`);
-      }
-      merkleLeaves.push([
-        `RLZ67:${hdr.intralang_rlz.variant_lang_code}`,
-        bytes.subarray(rStart, rEnd),
-      ]);
-    }
-    const actualMerkleRoot = computeEditionMerkleRootHexSync(merkleLeaves);
-    if (actualMerkleRoot !== String(hdr.merkle_root_sha256_hex || "").toLowerCase()) {
+    if (bk.frame_sha256_hex && actualBookSha !== String(bk.frame_sha256_hex).toLowerCase()) {
       throw new Error(
-        `[TWO-GATE PRE-COMMIT REJECTED] ERR_MERKLE_ROOT_TAMPERED for ${lang}: actual=${actualMerkleRoot} !== header=${hdr.merkle_root_sha256_hex}`,
+        `[TWO-GATE PRE-COMMIT REJECTED] ERR_BOOK_FRAME_SHA256_MISMATCH on ${bk.usfm_id}`,
       );
     }
-    const signMsgV2 = buildEkpackSigningMessageV2(hdr);
-    const signMsgV1Legacy = `EKOVOZ_EKPACK_V1:${hdr.lang_code}:${hdr.content_digest_sha256_hex}:${hdr.merkle_root_sha256_hex}`;
-    const sigStr = String(hdr.ed25519_signature_hex || "");
-    const okV2 = await verifyEd25519ManifestSignatureWebCrypto(
-      signMsgV2,
-      sigStr,
+    merkleLeaves.push([bk.usfm_id, fSlice]);
+  }
+  if (hdr.intralang_rlz && hdr.intralang_rlz.frame_byte_len) {
+    const rStart = Number(hdr.intralang_rlz.frame_byte_offset) || 0;
+    const rEnd = rStart + (Number(hdr.intralang_rlz.frame_byte_len) || 0);
+    if (rEnd > bytes.byteLength) {
+      throw new Error(`[TWO-GATE PRE-COMMIT REJECTED] Truncated Frame 67 RLZ`);
+    }
+    if (!em2.frame67Sha256Hex) {
+      throw new Error(`[TWO-GATE PRE-COMMIT REJECTED] ERR_FRAME67_SHA256_MISSING for ${lang}`);
+    }
+    const f67Slice = bytes.subarray(rStart, rEnd);
+    const actualF67Sha = await computeSha256HexWebCrypto(f67Slice);
+    if (actualF67Sha !== em2.frame67Sha256Hex) {
+      throw new Error(`[TWO-GATE PRE-COMMIT REJECTED] ERR_FRAME67_SHA256_MISMATCH for ${lang}`);
+    }
+    merkleLeaves.push([
+      `RLZ67:${hdr.intralang_rlz.variant_lang_code}`,
+      f67Slice,
+    ]);
+  }
+  const actualMerkleRoot = computeEditionMerkleRootHexSync(merkleLeaves);
+  if (actualMerkleRoot !== String(hdr.merkle_root_sha256_hex || "").toLowerCase()) {
+    throw new Error(
+      `[TWO-GATE PRE-COMMIT REJECTED] ERR_MERKLE_ROOT_TAMPERED for ${lang}: actual=${actualMerkleRoot} !== header=${hdr.merkle_root_sha256_hex}`,
+    );
+  }
+  if (packRecord.signatureHex !== undefined) {
+    const callerPayload = packRecord.signingMessage ?? bytes;
+    const callerOk = await verifyEd25519ManifestSignatureWebCrypto(
+      callerPayload,
+      String(packRecord.signatureHex || ""),
       pinnedPubKeyHex,
       effectiveWasmMod,
     );
-    const okLegacy =
-      !okV2 &&
-      (await verifyEd25519ManifestSignatureWebCrypto(
-        signMsgV1Legacy,
-        sigStr,
-        pinnedPubKeyHex,
-        effectiveWasmMod,
-      ));
-    if (!okV2 && !okLegacy) {
-      throw new Error(
-        `[TWO-GATE PRE-COMMIT REJECTED] Ed25519 signature invalid (Ed25519 RFC 8032 signature invalid) for ${lang}`,
-      );
-    }
-    signingPayload = okV2 ? signMsgV2 : signMsgV1Legacy;
-    signatureHex = sigStr;
-  } else if (signatureHex === undefined && manifestEntry?.ed25519SignatureHex) {
-    signingPayload = manifestEntry.signingMessage;
-    signatureHex = manifestEntry.ed25519SignatureHex;
-    const ed25519Ok = await verifyEd25519ManifestSignatureWebCrypto(
-      signingPayload,
-      String(signatureHex || ""),
-      pinnedPubKeyHex,
-      effectiveWasmMod,
-    );
-    if (!ed25519Ok) {
-      throw new Error(
-        `[TWO-GATE PRE-COMMIT REJECTED] Ed25519 signature invalid (Ed25519 RFC 8032 signature invalid) for ${lang}`,
-      );
-    }
-  } else {
-    const ed25519Ok = await verifyEd25519ManifestSignatureWebCrypto(
-      signingPayload,
-      String(signatureHex || ""),
-      pinnedPubKeyHex,
-      effectiveWasmMod,
-    );
-    if (!ed25519Ok) {
+    if (!callerOk) {
       throw new Error(
         `[TWO-GATE PRE-COMMIT REJECTED] Ed25519 signature invalid (Ed25519 RFC 8032 signature invalid) for ${lang}`,
       );
     }
   }
+  const signatureHex = sigStr;
 
   const probe = probeEcoPackRandomAccessBounds(bytes, 0, lang, "", effectiveWasmMod);
   const packBlob =
@@ -1197,7 +1310,7 @@ const _sneakernetCodecs = createSneakernetCodecs({
 });
 
 export function exportSneakernetBundleJson(opts = {}) {
-  return _sneakernetCodecs.exportSneakernetBundleJson(opts);
+  return _sneakernetCodecs.exportSneakernetBundleJson({ ...opts, requireBinaryPackBytes: true });
 }
 
 export function importSneakernetBundleJson(bundleJsonString) {
@@ -1227,66 +1340,32 @@ export async function verifyAndStoreEcoPack({
     CANONICAL_ECO_PACKS_MANIFEST.find((p) => p.lang === cleanLang) ||
     CANONICAL_ECO_PACKS_MANIFEST[0];
 
-  const effectiveSig = signatureHex ?? manifestEntry.ed25519SignatureHex;
-  const effectiveMsg = signingMessage ?? manifestEntry.signingMessage;
-  const effectivePk = publicKeyHex || manifestEntry.ed25519PublicKeyHex || SOVEREIGN_ED25519_PUBLIC_KEY_HEX;
-  const edOk = await verifyEd25519ManifestSignatureWebCrypto(
-    packBytes instanceof Uint8Array && signatureHex !== undefined && signingMessage === undefined
-      ? packBytes
-      : effectiveMsg,
-    effectiveSig,
-    effectivePk,
+  const committed = await commitVerifiedPackToIndexedDb(
+    {
+      lang: cleanLang,
+      file: manifestEntry?.file || `${cleanLang}.ekpack`,
+      packBytes,
+      expectedSha256,
+      signatureHex,
+      signingMessage,
+    },
+    publicKeyHex,
     wasmPlayerMod,
   );
-  if (!edOk) {
-    throw new Error(`[EKPACK VERIFICATION REJECTED] Invalid Ed25519 signature for ${cleanLang}`);
-  }
-
-  const hasRealPackBytes = packBytes instanceof Uint8Array && packBytes.byteLength > 0;
-  const effectiveBytes = hasRealPackBytes
-    ? packBytes
-    : new TextEncoder().encode(effectiveMsg);
-  const crc32Hex = computeEcoPackCrc32Hex(effectiveBytes);
-  const probe = probeEcoPackRandomAccessBounds(effectiveBytes, 0, cleanLang, "", wasmPlayerMod);
-  const resolvedSha256 = String(expectedSha256 || manifestEntry.sha256 || crc32Hex);
-  const isBinaryEkpack = Boolean(hasRealPackBytes && parseEkpackPreamble32Js(effectiveBytes));
-  const packBlob =
-    hasRealPackBytes && typeof Blob === "function"
-      ? new Blob([effectiveBytes], { type: "application/octet-stream" })
-      : null;
 
   const record = {
+    ...committed,
     verified: true,
-    crc32Verified: true,
-    ed25519Verified: true,
-    isBinaryEkpack,
-    lang: cleanLang,
-    file: manifestEntry.file,
-    url: manifestEntry.url,
-    byteLen: effectiveBytes.byteLength || manifestEntry.bytes,
-    crc32Hex,
-    sha256: resolvedSha256,
-    engine: probe.engine,
-    verseCount: probe.verseCount,
-    randomAccessUs: probe.randomAccessUs,
-    packBlob,
+    url: manifestEntry?.url || `data/packs/${cleanLang}.ekpack`,
     storedInCache: false,
-    persistedInIdb: false,
   };
-
-  requestPersistentStorageOnce();
-  try {
-    record.persistedInIdb = await writeRecordToIndexedDb(IDB_STORE_PACKS, record);
-  } catch (_idbErr) {
-    record.persistedInIdb = false;
-  }
-
   STORED_ECO_PACKS.set(cleanLang, record);
+
   if (cachesApi && typeof cachesApi.open === "function") {
     try {
       const cache = await cachesApi.open(CACHE_NAME);
       if (cache && typeof cache.add === "function") {
-        await cache.add(manifestEntry.url);
+        await cache.add(record.url);
         record.storedInCache = true;
       }
     } catch (_err) {

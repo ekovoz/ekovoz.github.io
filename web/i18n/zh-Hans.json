@@ -82,6 +82,8 @@
     "mostrador.title": "The Bible — print and share",
     "seal.canonical_human_complete": "Verified text (human translation)",
     "seal.verified": "✓ Verified translation · Complete edition (66 books)",
+    "seal.verified_nt": "已验证文本 · 新约全书 27 卷",
+    "seal.draft_review": "辅助草稿 · 需要工坊审核",
     "seal.canonical_nt_human_ot_draft": "New Testament verified · Old Testament is a draft under community review",
     "seal.seed_draft_field_review_l1_l5": "Draft under community review — not yet a verified Bible",
     "dose.paper.letter": "Letter",

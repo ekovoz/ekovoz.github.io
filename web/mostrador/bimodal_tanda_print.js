@@ -136,12 +136,23 @@ export async function probeFederationShardReachabilityOnce({
     return false;
   }
 
-  const probeUrl = resolveFederatedAssetUrl(
-    "packs/fonts",
-    "fonts_zst_manifest.json",
-    doc,
-    { dotSlashPrefix: true },
+  const hasExternalBase = Boolean(
+    (typeof globalThis.EKOVOZ_FEDERATION_BASE_URL === "string" && globalThis.EKOVOZ_FEDERATION_BASE_URL.trim()) ||
+    extractMetaFederationBase(doc),
   );
+  const probeUrl = hasExternalBase
+    ? resolveFederatedAssetUrl(
+      "packs/fonts",
+      "fonts_zst_manifest.json",
+      doc,
+      { dotSlashPrefix: true },
+    )
+    : resolveFederatedAssetUrl(
+      "data",
+      "fonts_zst_manifest.json",
+      doc,
+      { dotSlashPrefix: true },
+    );
   const effectiveTimeout = Math.max(50, Math.min(5000, Number(timeoutMs) || 800));
 
   inFlightFederationProbe = (async () => {
@@ -607,7 +618,7 @@ export function planBimodalClientPrint(opts = {}) {
   const emittedChars = entries.reduce((acc, e) => acc + e.text.length, 0);
 
   if (Number(dose) === 1) {
-    const maxPagesLaneA = Math.max(1, Math.min(12, (Number(sheets) || 1) * (duplex ? 4 : 2)));
+    const maxPagesLaneA = Math.max(1, Math.min(6, (Number(sheets) || 1) * (duplex ? 2 : 1)));
     const printHtml = buildCssPagedMediaPrintHtml({
       lang: cleanLang,
       book,

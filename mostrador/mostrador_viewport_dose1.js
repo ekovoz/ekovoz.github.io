@@ -11,11 +11,11 @@ import {
   unpackBookEpistemicTier2Bit,
 } from "./bridge_and_chapter.js";
 import { STATUS } from "./data_layer.js";
+import { renderAnalyticalThermometerHtml } from "./diachronic_register.js";
 import {
   computeViewportRenderSignature,
   renderProgressiveTwoStrataDiglossicBridge,
 } from "./diglossic_chapter_renderer.js";
-import { renderAnalyticalThermometerHtml } from "./diachronic_register.js";
 import {
   dispatchTandaWorkerJob,
   doseFilename,
@@ -29,9 +29,11 @@ import {
 import { projectChapterWithLiveOverlays } from "./drawer_workshop.js";
 import { renderChapterPericopesRibbonHtml } from "./evangelios.js";
 import { isRtlLocale } from "./i18n.js";
+import { decodeRfc8878RawZstdFrameJs } from "./offline_mesh.js";
 import { renderOralPorticoWasmConsole } from "./oral_portico_wasm.js";
 import { ReverseOrthographyMap } from "./orthography_wfst.js";
 import { countPdfPages, extractPdfPages } from "./pdf_pages.js";
+import { resolveFontFileForLangOrScript } from "./tanda_print_worker.js";
 
 export function renderMostradorViewportFromState({
   state,
@@ -207,7 +209,7 @@ export async function dispenseMostradorDose1({ opts = {}, state, dataLayer }) {
   const synthesizeLiveBimodalDose1 = async (blockIdHint = "bimodal-tanda-dose1", ordHint = 1) => {
     const chapterVerses = state.lastNavResult?.chapter?.verses || {};
     const dir = isRtlLocale(state.lang) ? "rtl" : "ltr";
-    const maxPagesLaneA = Math.max(1, Math.min(12, sheets * (duplex ? 4 : 2)));
+    const maxPagesLaneA = Math.max(1, Math.min(6, sheets * (duplex ? 2 : 1)));
     const bimodal = planBimodalClientPrint({
       dose: 1,
       lang: state.lang,
@@ -224,15 +226,30 @@ export async function dispenseMostradorDose1({ opts = {}, state, dataLayer }) {
     });
     let pdfBytes = bimodal.pdfBytes;
     try {
-      const [wasmBytes, fontBytes] =
-        typeof dataLayer?.loadBytes === "function"
-          ? await Promise.all([
-              dataLayer.loadBytes("mostrador/ekovoz_typeset_worker.wasm"),
-              dataLayer.loadBytes("assets/fonts/CharisSIL-Regular.ttf"),
-            ])
-          : [null, null];
+      const targetFontFile = resolveFontFileForLangOrScript(state.lang || "es", state.script || "");
+      let wasmBytes = null;
+      let fontBytes = null;
+      if (typeof dataLayer?.loadBytes === "function") {
+        const fontPromise =
+          targetFontFile === "CharisSIL-Regular.ttf"
+            ? dataLayer.loadBytes("assets/fonts/CharisSIL-Regular.ttf")
+            : dataLayer.loadBytes(`packs/fonts/${targetFontFile}.zst`).then(async (zstBytes) => {
+              if (!(zstBytes instanceof Uint8Array) || zstBytes.byteLength <= 16) return null;
+              const playerWasm =
+                dataLayer?.getHydratedWasmModule?.("ekovoz_player_wasm") ||
+                (typeof dataLayer?.loadWasmModule === "function"
+                  ? await dataLayer.loadWasmModule("ekovoz_player_wasm")
+                  : null);
+              return decodeRfc8878RawZstdFrameJs(zstBytes, playerWasm);
+            });
+        [wasmBytes, fontBytes] = await Promise.all([
+          dataLayer.loadBytes("mostrador/ekovoz_typeset_worker.wasm"),
+          fontPromise.catch(() => null),
+        ]);
+      }
       const workerRes = await dispatchTandaWorkerJob({
         lang: state.lang,
+        script: state.script || "",
         book: state.book,
         chapter: state.chapter,
         verses: chapterVerses,
@@ -246,6 +263,15 @@ export async function dispenseMostradorDose1({ opts = {}, state, dataLayer }) {
       });
       if (workerRes?.pdfBytes instanceof Uint8Array && workerRes.pdfBytes.byteLength > 0) {
         pdfBytes = workerRes.pdfBytes;
+      } else if (Array.isArray(workerRes?.blobParts) && workerRes.blobParts.length > 0) {
+        const total = workerRes.blobParts.reduce((a, p) => a + p.byteLength, 0);
+        const merged = new Uint8Array(total);
+        let off = 0;
+        for (const p of workerRes.blobParts) {
+          merged.set(p, off);
+          off += p.byteLength;
+        }
+        if (merged.byteLength > 0) pdfBytes = merged;
       }
     } catch {
       // Fallback to distinct Hershey stroke vector seed when Worker/fetch is mocked out

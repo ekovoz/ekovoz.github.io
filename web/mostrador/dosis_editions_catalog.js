@@ -260,16 +260,16 @@ export const POCKET_REFUGE_4_SHEETS_SPEC = {
 
 export const CANONICAL_16_TYPOLOGY_PROFILES = [
   { id: "ar_typology", lang_code: "ar", word_order: "Vso", family_subclade: "Classical::VSO-VerbInitial", is_head_final_postpositional: false },
-  { id: "de_typology", lang_code: "de", word_order: "Vso", family_subclade: "Classical::VSO-VerbInitial", is_head_final_postpositional: false },
+  { id: "de_typology", lang_code: "de", word_order: "Svo", family_subclade: "Indo-European::Germanic-West", is_head_final_postpositional: false },
   { id: "en_typology", lang_code: "en", word_order: "Svo", family_subclade: "CLADE_008::eng", is_head_final_postpositional: false },
-  { id: "es_typology", lang_code: "es", word_order: "Vso", family_subclade: "Indo-European::Romance-Iberian", is_head_final_postpositional: false, copula_affirmative: "es", negation_preverbal: "no" },
+  { id: "es_typology", lang_code: "es", word_order: "Svo", family_subclade: "Indo-European::Romance-Iberian", is_head_final_postpositional: false, copula_affirmative: "es", negation_preverbal: "no" },
   { id: "fr_typology", lang_code: "fr", word_order: "Svo", family_subclade: "CLADE_001::fra", is_head_final_postpositional: false },
   { id: "grc_typology", lang_code: "grc", word_order: "Vso", family_subclade: "Classical::VSO-VerbInitial", is_head_final_postpositional: false },
   { id: "he_typology", lang_code: "he", word_order: "Vso", family_subclade: "Classical::VSO-VerbInitial", is_head_final_postpositional: false },
   { id: "hi_typology", lang_code: "hi", word_order: "Sov", family_subclade: "HeadFinal::SOV-Macro", is_head_final_postpositional: true },
   { id: "id_typology", lang_code: "id", word_order: "Svo", family_subclade: "CLADE_031::ind", is_head_final_postpositional: false },
   { id: "nah_typology", lang_code: "nah", word_order: "Vso", family_subclade: "Uto-Aztecan::Aztecan", is_head_final_postpositional: false, copula_affirmative: "ca", negation_preverbal: "amo" },
-  { id: "pt_typology", lang_code: "pt", word_order: "Vso", family_subclade: "Classical::VSO-VerbInitial", is_head_final_postpositional: false },
+  { id: "pt_typology", lang_code: "pt", word_order: "Svo", family_subclade: "Indo-European::Romance-Lusophone", is_head_final_postpositional: false },
   { id: "quy_typology", lang_code: "quy", word_order: "Sov", family_subclade: "Quechuan::Southern-Quechua", is_head_final_postpositional: true, copula_affirmative: "kan", negation_preverbal: "mana" },
   { id: "quz_typology", lang_code: "quz", word_order: "Sov", family_subclade: "Quechuan::Southern-Quechua", is_head_final_postpositional: true, copula_affirmative: "kan", negation_preverbal: "mana" },
   { id: "stp_typology", lang_code: "stp", word_order: "Vso", family_subclade: "Uto-Aztecan::Tepiman", is_head_final_postpositional: false, copula_affirmative: "jir", negation_preverbal: "cham" },
@@ -934,9 +934,115 @@ const BRF_ASCII_BY_DOTS = (() => {
 
 const DIGIT_TO_BRAILLE_DOTS = [0x1a, 0x01, 0x03, 0x09, 0x19, 0x11, 0x0b, 0x1b, 0x13, 0x0a];
 
+const NON_LATIN_TO_PHONETIC_LATIN = Object.freeze({
+  // Hebrew
+  "\u05d0": "", "\u05d1": "b", "\u05d2": "g", "\u05d3": "d", "\u05d4": "h", "\u05d5": "w",
+  "\u05d6": "z", "\u05d7": "ch", "\u05d8": "t", "\u05d9": "y", "\u05da": "k", "\u05db": "k",
+  "\u05dc": "l", "\u05dd": "m", "\u05de": "m", "\u05df": "n", "\u05e0": "n", "\u05e1": "s",
+  "\u05e2": "", "\u05e3": "p", "\u05e4": "p", "\u05e5": "ts", "\u05e6": "ts", "\u05e7": "q",
+  "\u05e8": "r", "\u05e9": "sh", "\u05ea": "t",
+  "\u05b0": "e", "\u05b1": "e", "\u05b2": "a", "\u05b3": "o", "\u05b4": "i", "\u05b5": "e",
+  "\u05b6": "e", "\u05b7": "a", "\u05b8": "a", "\u05b9": "o", "\u05ba": "o", "\u05bb": "u",
+  // Greek
+  "\u03b1": "a", "\u03b2": "b", "\u03b3": "g", "\u03b4": "d", "\u03b5": "e", "\u03b6": "z",
+  "\u03b7": "e", "\u03b8": "th", "\u03b9": "i", "\u03ba": "k", "\u03bb": "l", "\u03bc": "m",
+  "\u03bd": "n", "\u03be": "x", "\u03bf": "o", "\u03c0": "p", "\u03c1": "r", "\u03c2": "s",
+  "\u03c3": "s", "\u03c4": "t", "\u03c5": "u", "\u03c6": "ph", "\u03c7": "ch", "\u03c8": "ps",
+  "\u03c9": "o",
+  // Cyrillic
+  "\u0430": "a", "\u0431": "b", "\u0432": "v", "\u0433": "g", "\u0434": "d", "\u0435": "e",
+  "\u0451": "e", "\u0436": "zh", "\u0437": "z", "\u0438": "i", "\u0439": "y", "\u043a": "k",
+  "\u043b": "l", "\u043c": "m", "\u043d": "n", "\u043e": "o", "\u043f": "p", "\u0440": "r",
+  "\u0441": "s", "\u0442": "t", "\u0443": "u", "\u0444": "f", "\u0445": "kh", "\u0446": "ts",
+  "\u0447": "ch", "\u0448": "sh", "\u0449": "shch", "\u044a": "", "\u044b": "y", "\u044c": "",
+  "\u044d": "e", "\u044e": "yu", "\u044f": "ya",
+  // Arabic / Persian / Urdu
+  "\u0627": "a", "\u0623": "a", "\u0625": "i", "\u0622": "a", "\u0628": "b", "\u062a": "t",
+  "\u062b": "th", "\u062c": "j", "\u062d": "h", "\u062e": "kh", "\u062f": "d", "\u0630": "dh",
+  "\u0631": "r", "\u0632": "z", "\u0633": "s", "\u0634": "sh", "\u0635": "s", "\u0636": "d",
+  "\u0637": "t", "\u0638": "z", "\u0639": "a", "\u063a": "gh", "\u0641": "f", "\u0642": "q",
+  "\u0643": "k", "\u06a9": "k", "\u06af": "g", "\u0644": "l", "\u0645": "m", "\u0646": "n",
+  "\u0647": "h", "\u0648": "w", "\u064a": "y", "\u06cc": "y", "\u0649": "a", "\u0629": "h",
+  // Devanagari basics
+  "\u0905": "a", "\u0906": "a", "\u0907": "i", "\u0908": "i", "\u0909": "u", "\u090a": "u",
+  "\u0915": "k", "\u0917": "g", "\u091a": "ch", "\u091c": "j", "\u0924": "t", "\u0926": "d",
+  "\u0928": "n", "\u092a": "p", "\u092c": "b", "\u092e": "m", "\u092f": "y", "\u0930": "r",
+  "\u0932": "l", "\u0935": "v", "\u0938": "s", "\u0939": "h", "\u093e": "a", "\u093f": "i",
+  "\u0940": "i", "\u0941": "u", "\u0947": "e", "\u094b": "o", "\u094d": "",
+});
+
+function transliterateForBraillePipeline(rawLine) {
+  let out = "";
+  for (const ch of Array.from(String(rawLine || ""))) {
+    const lower = ch.toLowerCase();
+    if (
+      (lower >= "a" && lower <= "z") ||
+      (ch >= "0" && ch <= "9") ||
+      BRAILLE_DOTS_BY_CHAR[lower] !== undefined ||
+      ch === " " ||
+      ch === "\t"
+    ) {
+      out += ch;
+      continue;
+    }
+    const nfd = lower.normalize("NFD").replace(/[\u0300-\u036f\u1dc0-\u1dff]/g, "");
+    if (BRAILLE_DOTS_BY_CHAR[nfd] !== undefined) {
+      out += ch !== lower ? nfd.toUpperCase() : nfd;
+      continue;
+    }
+    const mapped = NON_LATIN_TO_PHONETIC_LATIN[nfd];
+    if (mapped !== undefined) {
+      out += mapped;
+      continue;
+    }
+    const cp = ch.codePointAt(0) || 0;
+    if ((cp >= 0x0591 && cp <= 0x05c7) || (cp >= 0x064b && cp <= 0x065f) || cp === 0x05f3 || cp === 0x05f4) {
+      continue;
+    }
+    if (cp > 0x7f) {
+      out += ".";
+    }
+  }
+  return out.replace(/\s+/g, " ").trim();
+}
+
+function wrapBrfWordsLine40(brfStr, maxCells) {
+  const words = String(brfStr || "").split(" ").filter(Boolean);
+  if (words.length === 0) return [];
+  const wrapped = [];
+  let current = "";
+  for (const word of words) {
+    if (word.length > maxCells) {
+      if (current) {
+        wrapped.push(current);
+        current = "";
+      }
+      for (let i = 0; i < word.length; i += maxCells) {
+        const piece = word.slice(i, i + maxCells);
+        if (piece.length === maxCells || i + maxCells < word.length) {
+          wrapped.push(piece);
+        } else {
+          current = piece;
+        }
+      }
+      continue;
+    }
+    const candidate = current ? `${current} ${word}` : word;
+    if (candidate.length <= maxCells) {
+      current = candidate;
+    } else {
+      if (current) wrapped.push(current);
+      current = word;
+    }
+  }
+  if (current) wrapped.push(current);
+  return wrapped;
+}
+
 /**
  * Transductor determinista Braille Literario de 6 puntos (`ISO 17049` / `D1-V2I = 1B+`):
- * produce archivo `.brf` táctil listo para embosser (`40` celdas/línea) y entradas pareadas de Baja Visión (`16pt`).
+ * produce archivo `.brf` táctil listo para embosser (`40` celdas/línea por frontera de palabra)
+ * con transliteración fonética multilenguaje (cero colapso de no-latinos a `'5'`) y Baja Visión (`16pt`).
  */
 export function transduceTextToBrailleBrfAndUnicode(entries = [], { lineWidth = 40 } = {}) {
   const safeWidth = Math.max(20, Math.min(80, Number(lineWidth) || 40));
@@ -946,9 +1052,10 @@ export function transduceTextToBrailleBrfAndUnicode(entries = [], { lineWidth = 
   for (const item of Array.isArray(entries) ? entries : []) {
     const rawLine = `${String(item?.ref || "").trim()} ${String(item?.text || "").trim()}`.trim();
     if (!rawLine) continue;
+    const normalizedLine = transliterateForBraillePipeline(rawLine);
     const cells = [];
     let inNumber = false;
-    for (const ch of Array.from(rawLine)) {
+    for (const ch of Array.from(normalizedLine)) {
       if (ch === " " || ch === "\t") {
         cells.push(0x00);
         inNumber = false;
@@ -972,13 +1079,13 @@ export function transduceTextToBrailleBrfAndUnicode(entries = [], { lineWidth = 
         cells.push(mask);
       } else {
         const nfdBase = lower.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-        cells.push(BRAILLE_DOTS_BY_CHAR[nfdBase] ?? 0x22);
+        cells.push(BRAILLE_DOTS_BY_CHAR[nfdBase] ?? 0x04);
       }
     }
     const unicodeStr = cells.map((m) => String.fromCodePoint(0x2800 + (m & 0x3f))).join("");
     const brfStr = cells.map((m) => BRF_ASCII_BY_DOTS[m & 0x3f] || " ").join("");
-    for (let pos = 0; pos < brfStr.length; pos += safeWidth) {
-      brfLines.push(brfStr.slice(pos, pos + safeWidth));
+    for (const wrappedLine of wrapBrfWordsLine40(brfStr, safeWidth)) {
+      brfLines.push(wrappedLine);
     }
     unicodeBrailleEntries.push({
       ref: String(item?.ref || ""),

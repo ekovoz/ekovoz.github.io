@@ -45,6 +45,33 @@ function computeCrc32(bytes) {
   return (crc ^ 0xffffffff) >>> 0;
 }
 
+/**
+ * Blanqueo/desblanqueo XOR determinista Xorshift32 (idempotente para equilibrar módulos `29×29`).
+ */
+export function whitenBlockXor(blockBytes, seed = 0x9e3779b1) {
+  const src =
+    blockBytes instanceof Uint8Array
+      ? blockBytes
+      : new Uint8Array(Array.isArray(blockBytes) ? blockBytes : []);
+  const out = new Uint8Array(src.byteLength);
+  let state = (seed >>> 0) || 0x9e3779b9;
+  for (let i = 0; i < src.byteLength; i++) {
+    if ((i & 3) === 0) {
+      state ^= state << 13;
+      state ^= state >>> 17;
+      state ^= state << 5;
+      state = state >>> 0;
+    }
+    const maskByte = (state >>> ((i & 3) << 3)) & 0xff;
+    out[i] = src[i] ^ maskByte;
+  }
+  return out;
+}
+
+function eco1WhiteningSeed(streamId, seq) {
+  return ((Number(streamId) >>> 0) ^ (Number(seq) >>> 0) ^ 0x9e3779b1) >>> 0;
+}
+
 export function encodeEco1BinaryPacket({
   streamId = 1,
   seq = 0,
@@ -55,10 +82,11 @@ export function encodeEco1BinaryPacket({
 } = {}) {
   const idxArr = Array.isArray(indices) && indices.length > 0 ? indices : [0];
   const deg = Math.max(1, Math.min(255, idxArr.length || Number(degree) || 1));
-  const payload =
+  const rawPayload =
     payloadBytes instanceof Uint8Array
       ? payloadBytes
       : new Uint8Array(Array.isArray(payloadBytes) ? payloadBytes : []);
+  const payload = whitenBlockXor(rawPayload, eco1WhiteningSeed(streamId, seq));
   const totalLen = 19 + deg * 2 + payload.length + 4;
   const buf = new Uint8Array(totalLen);
   const view = new DataView(buf.buffer);
@@ -147,7 +175,8 @@ export function decodeEcoBinaryPacket(packetBytes) {
   }
   const payloadLen = view.getUint16(offset, false);
   offset += 2;
-  const payloadBytes = packetBytes.slice(offset, offset + payloadLen);
+  const whitenedPayload = packetBytes.slice(offset, offset + payloadLen);
+  const payloadBytes = whitenBlockXor(whitenedPayload, eco1WhiteningSeed(streamId, seq));
 
   return {
     valid: true,
@@ -281,11 +310,11 @@ export function computeNyquistSafeFpsViaWasm(
   const rawFps = hasWasmFn
     ? Number(exports.compute_nyquist_safe_fps(cleanShutterUs, cleanReadoutMs))
     : (() => {
-        const exposureMs = cleanShutterUs / 1000.0;
-        const totalWindowMs = Math.max(1.0, exposureMs + cleanReadoutMs * 2.0);
-        const nyquist = 1000.0 / (2.0 * totalWindowMs);
-        return Math.max(NYQUIST_MIN_FPS, Math.min(NYQUIST_MAX_FPS, nyquist));
-      })();
+      const exposureMs = cleanShutterUs / 1000.0;
+      const totalWindowMs = Math.max(1.0, exposureMs + cleanReadoutMs * 2.0);
+      const nyquist = 1000.0 / (2.0 * totalWindowMs);
+      return Math.max(NYQUIST_MIN_FPS, Math.min(NYQUIST_MAX_FPS, nyquist));
+    })();
   const safeFps = Number(rawFps.toFixed(2));
   const frameIntervalMs = Math.round(1000.0 / safeFps);
   return {

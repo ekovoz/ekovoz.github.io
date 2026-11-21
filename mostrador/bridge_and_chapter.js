@@ -704,7 +704,7 @@ export function renderInteractiveVerseTokensHtml(
 export const REGIONAL_BRIDGE_LANGUAGES_10 = {
   1: { code: "es", label: "Español Siglo XXI (Núcleo Vivo)" },
   2: { code: "en", label: "English 21st Century (Contemporary Bridge)" },
-  3: { code: "pt", label: "Português Contemporâneo (Puente Lusófono)" },
+  3: { code: "fr", label: "Français Contemporain (Puente Europa Occidental)" },
   4: { code: "ru", label: "Русский Современный Мост" },
   5: { code: "ru", label: "Русский / Евразийский Мост" },
   6: { code: "ar", label: "العربية المعاصرة" },
@@ -714,6 +714,9 @@ export const REGIONAL_BRIDGE_LANGUAGES_10 = {
   10: { code: "zh-Hans", label: "现代中文桥接本" },
   11: { code: "id", label: "Bahasa Indonesia Abad ke-21" },
   12: { code: "en", label: "English Pacific Bridge" },
+  13: { code: "pt", label: "Português Contemporâneo (Puente Lusófono · Américas)" },
+  14: { code: "pt", label: "Português Contemporâneo (Puente Lusófono · Europa/África)" },
+  15: { code: "pt", label: "Português Contemporâneo (Puente Lusófono · Asia-Pacífico)" },
 };
 
 export function resolveRegionalBridgeLanguage21({ macroRegion = 0, bridgeLang = "", lang = "" } = {}) {
@@ -734,7 +737,7 @@ export function resolveRegionalBridgeLanguage21({ macroRegion = 0, bridgeLang = 
   if (lang) {
     const o1 = lookupIso639MacroRegionO1(lang);
     if (o1.isLusophone) {
-      return REGIONAL_BRIDGE_LANGUAGES_10[3];
+      return REGIONAL_BRIDGE_LANGUAGES_10[o1.nibble] || REGIONAL_BRIDGE_LANGUAGES_10[13];
     }
     if (o1.found && (resolvedRegion < 1 || resolvedRegion > 12)) {
       resolvedRegion = o1.macroRegionId;

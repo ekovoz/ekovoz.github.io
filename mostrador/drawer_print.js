@@ -3,7 +3,7 @@
 // Decisiones D1-R41, D4-R41, D5-R41, D6-R41 · Costura Limpia ∂(C)=0
 // ============================================================================
 
-import { escapeHtml } from "./bridge_and_chapter.js";
+import { escapeHtml, resolveRegionalBridgeLanguage21 } from "./bridge_and_chapter.js";
 import {
   CANONICAL_16_MACRO_TANDAS,
   CANONICAL_80_BLOCKS_CATALOG,
@@ -224,12 +224,30 @@ export function renderPrintDrawerPanelsSyncInDrawer(ctx = {}) {
     const linkEl = getEl(linkId, targetDoc);
     if (linkEl && typeof linkEl.addEventListener === "function" && !linkEl[flag]) {
       linkEl[flag] = true;
-      linkEl.addEventListener("click", (ev) => {
+      linkEl.addEventListener("click", async (ev) => {
         if (linkEl._directSynthesizedClick) return;
         const curHref = String(linkEl.getAttribute?.("href") || linkEl.href || "");
-        if (!curHref || curHref.startsWith("#") || curHref.startsWith("data:")) {
+        const needsSynthesis =
+          !curHref ||
+          curHref.startsWith("#") ||
+          curHref.startsWith("data:") ||
+          (linkId === "linkDose2BlockPdf" ? !state.dose2ObjectUrl : !state.dose3ObjectUrl);
+        if (needsSynthesis) {
           ev?.preventDefault?.();
-          hydratePrintDrawerPanels?.(targetDoc);
+          state.lastHydratedWorkerTandaKey = "";
+          await hydratePrintDrawerPanels?.(targetDoc);
+          const readyHref =
+            linkId === "linkDose2BlockPdf"
+              ? state.dose2ObjectUrl || String(linkEl.getAttribute?.("href") || linkEl.href || "")
+              : state.dose3ObjectUrl || String(linkEl.getAttribute?.("href") || linkEl.href || "");
+          if (readyHref && !readyHref.startsWith("#") && typeof linkEl.click === "function") {
+            linkEl._directSynthesizedClick = true;
+            try {
+              linkEl.click();
+            } finally {
+              linkEl._directSynthesizedClick = false;
+            }
+          }
         }
       });
     }
@@ -344,7 +362,7 @@ export function renderPrintDrawerPanelsSyncInDrawer(ctx = {}) {
     const btnGenAll16 = getEl("btnGenerateAll16MacroTandas", targetDoc);
     if (btnGenAll16 && typeof btnGenAll16.addEventListener === "function" && !btnGenAll16._gen16Bound) {
       btnGenAll16._gen16Bound = true;
-      btnGenAll16.addEventListener("click", () => {
+      btnGenAll16.addEventListener("click", async () => {
         state.fullBible16MacroTandasPlan = planSequential16MacroTandasGeneration({
           lang: state.effectiveCorpusLang || state.lang || "es",
           columns: state.columns || 2,
@@ -354,7 +372,21 @@ export function renderPrintDrawerPanelsSyncInDrawer(ctx = {}) {
         });
         state.generateFull66BookBible = true;
         state.lastHydratedWorkerTandaKey = "";
-        hydratePrintDrawerPanels(targetDoc);
+        try {
+          await hydratePrintDrawerPanels?.(targetDoc);
+          const dose3Link = getEl("linkDose3FullBiblePdf", targetDoc);
+          const dose3Href = state.dose3ObjectUrl || String(dose3Link?.getAttribute?.("href") || dose3Link?.href || "");
+          if (dose3Link && dose3Href && !dose3Href.startsWith("#") && typeof dose3Link.click === "function") {
+            dose3Link._directSynthesizedClick = true;
+            try {
+              dose3Link.click();
+            } finally {
+              dose3Link._directSynthesizedClick = false;
+            }
+          }
+        } finally {
+          state.generateFull66BookBible = false;
+        }
       });
     }
     const blockSel = getEl("canonicalBlockSelect", targetDoc);
@@ -697,8 +729,10 @@ export function renderPrintDrawerPanelsSyncInDrawer(ctx = {}) {
               includeBoldFont: true,
               dir: isRtlLocale(curLang) ? "rtl" : "ltr",
               booklet4n: substrate.booklet4n,
-              maxPagesPerTanda: 50,
+              maxPagesPerTanda: 0,
             });
+            const hasEditionParts = Array.isArray(res?.blobParts) && res.blobParts.length > 0;
+            const hasEditionPdf = hasEditionParts || (res?.pdfBytes instanceof Uint8Array && res.pdfBytes.byteLength > 0);
             if (res?.type === "tanda-offline-font-notice") {
               const noticeEl = getEl("tanda-offline-font-notice", targetDoc);
               if (noticeEl) {
@@ -706,7 +740,7 @@ export function renderPrintDrawerPanelsSyncInDrawer(ctx = {}) {
                 noticeEl.setAttribute?.("data-font-fsm-state", res.fontFsmState || "OFFLINE_CSS_FALLBACK");
                 noticeEl.textContent = res.message || "";
               }
-            } else if (res?.pdfBytes instanceof Uint8Array && res.pdfBytes.byteLength > 0) {
+            } else if (hasEditionPdf) {
               const prevHref = state.editionObjectUrls[cacheKey];
               if (typeof prevHref === "string" && prevHref.startsWith("blob:")) {
                 try {
@@ -715,7 +749,7 @@ export function renderPrintDrawerPanelsSyncInDrawer(ctx = {}) {
                   // Non-fatal
                 }
               }
-              const nextHref = toDownloadablePdfHref(res.pdfBytes);
+              const nextHref = toDownloadablePdfHref(hasEditionParts ? res.blobParts : res.pdfBytes);
               state.editionObjectUrls[cacheKey] = nextHref;
               state.editionObjectUrls[profId] = nextHref;
               cardEl.href = nextHref;
@@ -872,19 +906,27 @@ export async function resolveEditionSubstrateForProfile(
   }
 
   if (id === "06_bilingue_paralela") {
-    const bridgeLang = curLang === "es" ? "en" : "es";
+    const resolvedBridge =
+      typeof resolveRegionalBridgeLanguage21 === "function"
+        ? resolveRegionalBridgeLanguage21(curLang, state.countryIso2 || "MX")
+        : null;
+    const bridgeLang =
+      String(
+        state.lastBridgeLang ||
+          resolvedBridge?.code ||
+          (curLang === "es" ? "en" : "es"),
+      )
+        .trim() || "es";
     let bridgeEntries = await loadBookEntries(bridgeLang, activeBook);
-    if (bridgeEntries.length === 0 && state.lastNavResult?.bridgeChapter?.verses) {
-      bridgeEntries = normalizeChapterMapToEntries(activeBook, activeChapter, state.lastNavResult.bridgeChapter.verses);
-    }
-    if (bridgeEntries.length === 0 && baseVerses.length > 0) {
-      bridgeEntries = baseVerses.map((e) => ({ ref: e.ref, text: `[${bridgeLang.toUpperCase()}] ${e.text}` }));
+    const cachedBridgeVerses = state.lastBridgeChapter?.verses || state.lastNavResult?.bridgeChapter?.verses;
+    if (bridgeEntries.length === 0 && cachedBridgeVerses) {
+      bridgeEntries = normalizeChapterMapToEntries(activeBook, activeChapter, cachedBridgeVerses);
     }
     return {
       book: activeBook,
       chapter: activeChapter,
       verses: baseVerses,
-      bridgeVerses: bridgeEntries,
+      bridgeVerses: bridgeEntries.length > 0 ? bridgeEntries : null,
       editionMode: 15,
       columns: 2,
       fontPt: 9.5,
@@ -902,7 +944,7 @@ export async function resolveEditionSubstrateForProfile(
       state.lastNavResult?.chapter?.verses || {},
     );
     const activeSet = chapEntries.length > 0 ? chapEntries : baseVerses;
-    let matrixRes = state.lastNavResult?.chapterMatrix || null;
+    let matrixRes = state.lastNavResult?.matrix || state.lastNavResult?.chapterMatrix || null;
     if (!matrixRes && typeof dataLayer?.loadChapterMatrix === "function") {
       try {
         matrixRes = await dataLayer.loadChapterMatrix(activeBook, activeChapter);
@@ -924,7 +966,6 @@ export async function resolveEditionSubstrateForProfile(
         return { ref: entry.ref, text: `${entry.text} ‖ (${pendingLabel})` };
       }
       const colsSummary = tokens
-        .slice(0, 12)
         .map((tk) => {
           const surf = Array.isArray(tk) ? tk[1] || "" : tk.surface || tk.c03 || "";
           const lem = Array.isArray(tk) ? tk[2] || "" : tk.lemma || tk.c04 || "";
@@ -1022,15 +1063,31 @@ function flattenLoadedBookChapters(bookCode, chaptersObj) {
   return entries;
 }
 
-function toDownloadablePdfHref(pdfBytes) {
+function toDownloadablePdfHref(pdfInput) {
+  const parts = Array.isArray(pdfInput)
+    ? pdfInput.filter((p) => p instanceof Uint8Array && p.byteLength > 0)
+    : pdfInput instanceof Uint8Array && pdfInput.byteLength > 0
+      ? [pdfInput]
+      : [];
+  if (parts.length === 0) return "";
   if (
     typeof globalThis.window !== "undefined" &&
     typeof globalThis.Blob === "function" &&
     typeof globalThis.URL?.createObjectURL === "function"
   ) {
-    return globalThis.URL.createObjectURL(new globalThis.Blob([pdfBytes], { type: "application/pdf" }));
+    return globalThis.URL.createObjectURL(new globalThis.Blob(parts, { type: "application/pdf" }));
   }
-  return encodePdfBytesToDataUri(pdfBytes);
+  if (parts.length === 1) {
+    return encodePdfBytesToDataUri(parts[0]);
+  }
+  const total = parts.reduce((acc, p) => acc + p.byteLength, 0);
+  const merged = new Uint8Array(total);
+  let off = 0;
+  for (const p of parts) {
+    merged.set(p, off);
+    off += p.byteLength;
+  }
+  return encodePdfBytesToDataUri(merged);
 }
 
 export async function hydratePrintDrawerPanelsInDrawer(ctx = {}) {
@@ -1186,7 +1243,7 @@ export async function hydratePrintDrawerPanelsInDrawer(ctx = {}) {
             includeBoldFont: true,
             dir,
             booklet4n: state.foliationMode === "saddle_stitch",
-            maxPagesPerTanda: 50,
+            maxPagesPerTanda: 0,
           }),
           dispatchTandaWorkerJob({
             lang: effectiveLang,
@@ -1200,7 +1257,7 @@ export async function hydratePrintDrawerPanelsInDrawer(ctx = {}) {
             includeBoldFont: true,
             dir,
             booklet4n: true,
-            maxPagesPerTanda: state.generateFull66BookBible ? 200 : activeMacroTanda.logicalPagesCount || 80,
+            maxPagesPerTanda: 0,
           }),
         ]);
         if (dose2Res?.type === "tanda-offline-font-notice" || dose3Res?.type === "tanda-offline-font-notice") {
@@ -1212,7 +1269,8 @@ export async function hydratePrintDrawerPanelsInDrawer(ctx = {}) {
             noticeEl.textContent = activeNotice.message || "";
           }
         }
-        if (dose2Res?.pdfBytes?.byteLength > 0) {
+        const d2Parts = Array.isArray(dose2Res?.blobParts) && dose2Res.blobParts.length > 0 ? dose2Res.blobParts : null;
+        if (d2Parts || (dose2Res?.pdfBytes instanceof Uint8Array && dose2Res.pdfBytes.byteLength > 0)) {
           if (typeof state.dose2ObjectUrl === "string" && state.dose2ObjectUrl.startsWith("blob:")) {
             try {
               globalThis.URL?.revokeObjectURL?.(state.dose2ObjectUrl);
@@ -1220,10 +1278,14 @@ export async function hydratePrintDrawerPanelsInDrawer(ctx = {}) {
               // Non-fatal
             }
           }
-          state.dose2WorkerPdfBytes = dose2Res.pdfBytes;
-          state.dose2ObjectUrl = toDownloadablePdfHref(dose2Res.pdfBytes);
+          state.dose2WorkerBlobParts = d2Parts || [dose2Res.pdfBytes];
+          state.dose2WorkerPdfBytes = d2Parts
+            ? (d2Parts.length === 1 ? d2Parts[0] : null)
+            : dose2Res.pdfBytes;
+          state.dose2ObjectUrl = toDownloadablePdfHref(state.dose2WorkerBlobParts);
         }
-        if (dose3Res?.pdfBytes?.byteLength > 0) {
+        const d3Parts = Array.isArray(dose3Res?.blobParts) && dose3Res.blobParts.length > 0 ? dose3Res.blobParts : null;
+        if (d3Parts || (dose3Res?.pdfBytes instanceof Uint8Array && dose3Res.pdfBytes.byteLength > 0)) {
           if (typeof state.dose3ObjectUrl === "string" && state.dose3ObjectUrl.startsWith("blob:")) {
             try {
               globalThis.URL?.revokeObjectURL?.(state.dose3ObjectUrl);
@@ -1231,16 +1293,22 @@ export async function hydratePrintDrawerPanelsInDrawer(ctx = {}) {
               // Non-fatal
             }
           }
-          state.dose3WorkerPdfBytes = dose3Res.pdfBytes;
-          state.dose3ObjectUrl = toDownloadablePdfHref(dose3Res.pdfBytes);
-          state.generateFull66BookBible = false;
+          state.dose3WorkerBlobParts = d3Parts || [dose3Res.pdfBytes];
+          state.dose3WorkerPdfBytes = d3Parts
+            ? (d3Parts.length === 1 ? d3Parts[0] : null)
+            : dose3Res.pdfBytes;
+          state.dose3ObjectUrl = toDownloadablePdfHref(state.dose3WorkerBlobParts);
         }
         syncDose2AndDose3LinksForActiveLang({ state, targetDoc, getEl });
         renderPrintDrawerPanelsSyncInDrawer(ctx);
       }
     } catch {
       // Non-fatal fallback to synchronous seed tanda
+    } finally {
+      state.generateFull66BookBible = false;
     }
+  } else {
+    state.generateFull66BookBible = false;
   }
 }
 

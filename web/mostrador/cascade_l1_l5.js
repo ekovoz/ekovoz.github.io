@@ -73,86 +73,246 @@ function fnv1aHex(str) {
   return h1.toString(16).padStart(8, "0") + h2.toString(16).padStart(8, "0");
 }
 
+const MATRIX_15COL_INDEX = Object.freeze({
+  VERSE: 0,
+  SURFACE_C03: 1,
+  LEMMA_C04: 2,
+  STRONG_C05: 3,
+  MORPH_C06: 4,
+  DOMAIN_LN_C07: 5,
+  GLOSS_EN_C08: 6,
+  GLOSS_ES_C09: 7,
+  CLAUSE_C10: 8,
+  SYNTAX_C11: 9,
+  PRAG_C12: 10,
+  NSM_C13: 11,
+  REALIA_C14: 12,
+  WORD_POS_C02: 13,
+  TRANSLIT_C06: 14,
+});
+
+const DS_PRIOR_SENS_ALPHA = 4.0;
+const DS_PRIOR_SENS_BETA = 1.2;
+const DS_PRIOR_FPR_ALPHA = 1.2;
+const DS_PRIOR_FPR_BETA = 8.8;
+const DS_MAP_EM_ITERATIONS = 10;
+const BUHLMANN_STRAUB_K = 3.0;
+
 /**
- * Evalúa consenso comunitario multi-revisor con regularización Bayesiana `Beta(4, 1.2)` + `SPRT` de Wald (`D9-V2I = 9B+`),
- * deduplicando revisores por clave pública / `informantId` para impedir auto-promoción Sybil de un solo clic (`DEBRIS-V2I-21`).
+ * Evalúa consenso comunitario con inicialización espectral, 10 iteraciones MAP-EM (`Dawid-Skene`,
+ * prior `Beta(4, 1.2)`, `fpr = 0.12`, `Gold-Anchor Clamping`), credibilidad `Bühlmann-Straub`
+ * (`Z_i = n_i / (n_i + K)`) y deduplicación estricta anti-Sybil (`SLICE-EKO-V2K-14`).
+ * Purga `DEBRIS-V2K-04` (cero bypass `v.approved === true`, cero votos anónimos `anon-*`, cero quórum en vacío).
  */
 export function evaluateBetaDawidSkeneSprt(votes = []) {
+  const sprtAcceptBound = Math.log(0.95 / 0.05);
   const rawList = Array.isArray(votes) ? votes : [];
   if (rawList.length === 0) {
     return {
-      logOdds: Number(Math.log(4.0 / 1.2).toFixed(4)),
-      posteriorTruthProb: Number((4.0 / 5.2).toFixed(4)),
-      qualifiedAffirmativeSpeakers: 1,
-      distinctReviewersCount: 1,
-      sprtThresholdNats: Number(Math.log(19.0).toFixed(4)),
+      logOdds: 0.0,
+      posteriorTruthProb: 0.5,
+      qualifiedAffirmativeSpeakers: 0,
+      distinctReviewersCount: 0,
+      emIterations: 0,
+      buhlmannCredibility: 0.0,
+      reviewerPosteriors: [],
+      sprtThresholdNats: Number(sprtAcceptBound.toFixed(4)),
       promotedToCanonicalWal: false,
       editorialStatus: "SPEAKER_REVIEWED_QUARANTINE",
     };
   }
 
   const seenReviewers = new Set();
-  let logOdds = 0.0;
-  let qualifiedAffirmativeSpeakers = 0;
-  let distinctReviewersCount = 0;
-  const sprtAcceptBound = Math.log(0.95 / 0.05);
-
+  const parsedVoters = [];
   for (let idx = 0; idx < rawList.length; idx += 1) {
     const v = rawList[idx];
     if (!v || typeof v !== "object") continue;
     const revKey = String(
-      v.publicKeyHex || v.informantId || v.reviewerId || `anon-${idx}`,
+      v.publicKeyHex || v.informantId || v.reviewerId || v.speakerId || v.speaker_id || v.reviewer_id || "",
     )
       .trim()
       .toLowerCase();
-    if (seenReviewers.has(revKey)) {
+    if (!revKey || seenReviewers.has(revKey)) {
       continue;
     }
     seenReviewers.add(revKey);
-    if (v.passedGoldSeeds === false || (v.passedGoldSeed1 === false && v.passedGoldSeed2 === false)) {
-      continue;
-    }
-    distinctReviewersCount += 1;
-    const hasCalibratedGold =
+
+    const hasExplicitTotal = Number.isFinite(v.goldTotal) && Number(v.goldTotal) > 0;
+    const goldTotal = hasExplicitTotal ? Math.max(1, Math.round(Number(v.goldTotal))) : 2;
+    const explicitFailGold =
+      v.passedGoldSeeds === false ||
+      v.passedGoldSeed1 === false ||
+      v.passedGoldSeed2 === false ||
+      (hasExplicitTotal && Number(v.goldPassed ?? 0) < goldTotal && Number(v.goldPassed ?? 0) === 0);
+    const fullGoldPass =
       v.passedGoldSeeds === true ||
       (v.passedGoldSeed1 === true && v.passedGoldSeed2 === true) ||
-      v.approved === true;
-    const alphaHat = Number.isFinite(v.sensitivity)
-      ? Math.min(0.99, Math.max(0.51, Number(v.sensitivity)))
-      : hasCalibratedGold
-        ? 6.0 / 7.2
-        : 4.0 / 5.2;
-    const fprHat = Number.isFinite(v.falsePositiveRate)
-      ? Math.max(0.01, Math.min(0.49, Number(v.falsePositiveRate)))
-      : hasCalibratedGold
-        ? 1.2 / 7.2
-        : 1.2 / 5.2;
-    const agrees = v.agrees !== false && v.approved !== false;
-    if (agrees) {
-      logOdds += Math.log(alphaHat / fprHat);
-      qualifiedAffirmativeSpeakers += 1;
-    } else {
-      logOdds += Math.log((1.0 - alphaHat) / (1.0 - fprHat));
+      (hasExplicitTotal && Number(v.goldPassed ?? 0) >= goldTotal);
+    const partialGold =
+      !fullGoldPass &&
+      !explicitFailGold &&
+      (v.passedGoldSeed1 === true ||
+        v.passedGoldSeed2 === true ||
+        (hasExplicitTotal && Number(v.goldPassed ?? 0) > 0));
+
+    let tpGold = 0;
+    let tnGold = 0;
+    let fpGold = 0;
+    let fnGold = 0;
+    if (fullGoldPass) {
+      tpGold = goldTotal;
+      tnGold = goldTotal;
+    } else if (partialGold) {
+      const gp = hasExplicitTotal ? Math.max(1, Math.round(Number(v.goldPassed))) : 1;
+      const gf = Math.max(1, goldTotal - gp);
+      tpGold = gp;
+      tnGold = gp;
+      fpGold = gf;
+      fnGold = gf;
+    } else if (explicitFailGold) {
+      fpGold = goldTotal;
+      fnGold = goldTotal;
     }
+
+    const agrees = v.agrees !== false && v.approved !== false;
+    parsedVoters.push({
+      reviewerId: revKey,
+      agrees,
+      goldCalibrated: fullGoldPass,
+      goldFailed: explicitFailGold,
+      tpGold,
+      tnGold,
+      fpGold,
+      fnGold,
+      goldTotalTrials: tpGold + tnGold + fpGold + fnGold,
+      overrideSens: Number.isFinite(v.sensitivity)
+        ? Math.min(0.99, Math.max(0.51, Number(v.sensitivity)))
+        : null,
+      overrideFpr: Number.isFinite(v.falsePositiveRate)
+        ? Math.max(0.01, Math.min(0.49, Number(v.falsePositiveRate)))
+        : null,
+    });
   }
 
-  const posteriorTruthProb = Number((1 / (1 + Math.exp(-logOdds))).toFixed(4));
-  const allGoldVerified = rawList.every(
-    (v) =>
-      v?.passedGoldSeeds === true ||
-      (v?.passedGoldSeed1 === true && v?.passedGoldSeed2 === true) ||
-      v?.approved === true,
-  );
+  if (parsedVoters.length === 0) {
+    return {
+      logOdds: 0.0,
+      posteriorTruthProb: 0.5,
+      qualifiedAffirmativeSpeakers: 0,
+      distinctReviewersCount: 0,
+      emIterations: 0,
+      buhlmannCredibility: 0.0,
+      reviewerPosteriors: [],
+      sprtThresholdNats: Number(sprtAcceptBound.toFixed(4)),
+      promotedToCanonicalWal: false,
+      editorialStatus: "SPEAKER_REVIEWED_QUARANTINE",
+    };
+  }
+
+  // Inicialización espectral ponderada por calibración Gold (rank-1)
+  let spectralNum = 0.0;
+  let spectralDen = 0.0;
+  for (const pv of parsedVoters) {
+    const initW = pv.goldCalibrated ? 1.5 : pv.goldFailed ? 0.1 : 0.7;
+    spectralNum += initW * (pv.agrees ? 1.0 : -1.0);
+    spectralDen += initW;
+  }
+  const spectralMargin = spectralDen > 0 ? spectralNum / spectralDen : 0.0;
+  let qTarget = Math.min(0.95, Math.max(0.05, 0.5 + 0.4 * spectralMargin));
+
+  const priorSensMean = DS_PRIOR_SENS_ALPHA / (DS_PRIOR_SENS_ALPHA + DS_PRIOR_SENS_BETA); // 4/5.2 = 0.7692
+  const priorFprMean = DS_PRIOR_FPR_ALPHA / (DS_PRIOR_FPR_ALPHA + DS_PRIOR_FPR_BETA); // 1.2/10 = 0.12
+  let voterParams = [];
+
+  for (let iter = 0; iter < DS_MAP_EM_ITERATIONS; iter += 1) {
+    let llrIter = 0.0;
+    const nextParams = [];
+    for (const pv of parsedVoters) {
+      let alphaHat;
+      let fprHat;
+      if (pv.overrideSens !== null) {
+        alphaHat = pv.overrideSens;
+        fprHat = pv.overrideFpr !== null ? pv.overrideFpr : priorFprMean;
+      } else if (pv.goldFailed) {
+        // Penalización MAP estricta para revisores que fallan semillas Gold
+        const sensNum = DS_PRIOR_FPR_ALPHA + pv.tpGold + (pv.agrees ? qTarget : 0.0);
+        const sensDen = DS_PRIOR_SENS_ALPHA + DS_PRIOR_SENS_BETA + pv.tpGold + pv.fnGold + qTarget;
+        const fprNum = DS_PRIOR_SENS_ALPHA + pv.fpGold + (pv.agrees ? 1.0 - qTarget : 0.0);
+        const fprDen = DS_PRIOR_SENS_ALPHA + DS_PRIOR_SENS_BETA + pv.fpGold + pv.tnGold + (1.0 - qTarget);
+        alphaHat = Math.min(0.49, Math.max(0.05, sensNum / sensDen));
+        fprHat = Math.min(0.95, Math.max(0.51, fprNum / fprDen));
+      } else {
+        // Gold-Anchor Clamping: las anclas Gold permanecen fijadas en z_g ∈ {0, 1}; el candidato T es qTarget ∈ (0, 1)
+        const rawSens =
+          (DS_PRIOR_SENS_ALPHA + pv.tpGold + (pv.agrees ? qTarget : 0.0)) /
+          (DS_PRIOR_SENS_ALPHA + DS_PRIOR_SENS_BETA + pv.tpGold + pv.fnGold + qTarget);
+        const rawFpr =
+          (DS_PRIOR_FPR_ALPHA + pv.fpGold + (pv.agrees ? 1.0 - qTarget : 0.0)) /
+          (DS_PRIOR_FPR_ALPHA + DS_PRIOR_FPR_BETA + pv.fpGold + pv.tnGold + (1.0 - qTarget));
+        alphaHat = Math.min(0.98, Math.max(0.51, rawSens));
+        fprHat = Math.max(0.02, Math.min(0.49, rawFpr));
+      }
+
+      const nTrials = pv.goldTotalTrials + 1;
+      const buhlmannZ = nTrials / (nTrials + BUHLMANN_STRAUB_K);
+      const consensusMatch = pv.agrees ? qTarget : 1.0 - qTarget;
+      const empiricalCorrectRate = (pv.tpGold + pv.tnGold + consensusMatch) / nTrials;
+      const buhlmannCredibility =
+        buhlmannZ * empiricalCorrectRate + (1.0 - buhlmannZ) * priorSensMean;
+
+      llrIter += pv.agrees
+        ? Math.log(alphaHat / fprHat)
+        : Math.log((1.0 - alphaHat) / (1.0 - fprHat));
+
+      nextParams.push({
+        reviewerId: pv.reviewerId,
+        agrees: pv.agrees,
+        goldCalibrated: pv.goldCalibrated,
+        goldFailed: pv.goldFailed,
+        sensitivity: Number(alphaHat.toFixed(4)),
+        specificity: Number((1.0 - fprHat).toFixed(4)),
+        fpr: Number(fprHat.toFixed(4)),
+        buhlmannZ: Number(buhlmannZ.toFixed(4)),
+        buhlmannCredibility: Number(buhlmannCredibility.toFixed(4)),
+      });
+    }
+    voterParams = nextParams;
+    qTarget = 1.0 / (1.0 + Math.exp(-Math.max(-30, Math.min(30, llrIter))));
+  }
+
+  let logOdds = 0.0;
+  let qualifiedAffirmativeSpeakers = 0;
+  let distinctReviewersCount = 0;
+  let totalCred = 0.0;
+  for (const vp of voterParams) {
+    if (!vp.goldFailed) {
+      distinctReviewersCount += 1;
+      if (vp.agrees) qualifiedAffirmativeSpeakers += 1;
+    }
+    logOdds += vp.agrees
+      ? Math.log(vp.sensitivity / vp.fpr)
+      : Math.log((1.0 - vp.sensitivity) / (1.0 - vp.fpr));
+    totalCred += vp.buhlmannCredibility;
+  }
+
+  const posteriorTruthProb = Number((1 / (1 + Math.exp(-Math.max(-30, Math.min(30, logOdds))))).toFixed(4));
+  const avgCredibility =
+    voterParams.length > 0 ? Number((totalCred / voterParams.length).toFixed(4)) : 0.0;
+  const allGoldVerified = parsedVoters.length > 0 && parsedVoters.every((v) => v.goldCalibrated);
   const minRequired = allGoldVerified ? 2 : 3;
   const promotedToCanonicalWal =
     qualifiedAffirmativeSpeakers >= minRequired &&
     logOdds >= sprtAcceptBound &&
     posteriorTruthProb >= 0.9;
+
   return {
     logOdds: Number(logOdds.toFixed(4)),
     posteriorTruthProb,
     qualifiedAffirmativeSpeakers,
     distinctReviewersCount,
+    emIterations: DS_MAP_EM_ITERATIONS,
+    buhlmannCredibility: avgCredibility,
+    reviewerPosteriors: voterParams,
     sprtThresholdNats: Number(sprtAcceptBound.toFixed(4)),
     promotedToCanonicalWal,
     editorialStatus: promotedToCanonicalWal
@@ -226,6 +386,8 @@ export function propagateCascadeL1ToL5({
     return {
       accepted: false,
       status: "REJECTED_INVALID_LEVEL",
+      editorialStatus: "REJECTED_INVALID_LEVEL",
+      persistedLocal: false,
       reason: `Invalid cascade level: ${level}`,
     };
   }
@@ -235,6 +397,8 @@ export function propagateCascadeL1ToL5({
     return {
       accepted: false,
       status: "REJECTED_EMPTY_SURFACE",
+      editorialStatus: "REJECTED_EMPTY_SURFACE",
+      persistedLocal: false,
       reason: "Lock P1: newSurface cannot be empty",
     };
   }
@@ -250,16 +414,19 @@ export function propagateCascadeL1ToL5({
     const locksPassed =
       lockReport && lockReport.passed !== false && lockReport.allPassed !== false;
     if (!locksPassed) {
+      const lockStatus = lockReport?.status || lockReport?.firstFailed || "VETO_EIGHT_LOCKS";
       return {
         accepted: false,
-        status: lockReport?.status || lockReport?.firstFailed || "VETO_EIGHT_LOCKS",
-        reason: `Rejected by deterministic lock ${lockReport?.status || lockReport?.firstFailed || "P8"}`,
+        status: lockStatus,
+        editorialStatus: lockStatus,
+        persistedLocal: false,
+        reason: `Rejected by deterministic lock ${lockStatus}`,
         lockReport,
       };
     }
   }
 
-  // Dawid-Skene Beta(4, 1.2) + Wald SPRT posterior P(T=1 | votes) with Sybil deduplication
+  // Dawid-Skene Spectral + 10-Iter MAP-EM + Bühlmann-Straub + Wald SPRT
   const dsVerdict = evaluateBetaDawidSkeneSprt(votes);
   const {
     posteriorTruthProb,
@@ -267,6 +434,7 @@ export function propagateCascadeL1ToL5({
     editorialStatus,
     qualifiedAffirmativeSpeakers,
   } = dsVerdict;
+  const normalizedVotes = (Array.isArray(votes) ? votes : []).filter((v) => v && typeof v === "object");
 
   const cleanRef = String(ref || "GEN.1.1").trim().toUpperCase();
   const bookChap = cleanRef.split(".").slice(0, 2).join(".");
@@ -338,6 +506,7 @@ export function propagateCascadeL1ToL5({
     old_surface: String(oldSurface || ""),
     new_surface: trimmedNew,
     note_pure_text: String(note || ""),
+    votes: normalizedVotes,
     promoted_to_canonical_wal: promotedToCanonicalWal,
     posterior_truth_prob: posteriorTruthProb,
     editorial_status: editorialStatus,
@@ -356,7 +525,7 @@ export function propagateCascadeL1ToL5({
     content_hash_hex: digestHex,
   };
 
-  // Fold into CRDT join-semilattice overlay (`Δ_L1 > Δ_L2 > Δ_L3`) for local .ekpack instant reading
+  // Fold into CRDT join-semilattice overlay (`Δ_L1 > Δ_L2 > Δ_L3`) solo si alcanzó promoción canónica o para vista previa aislada
   const incomingEntries = [];
   for (const r of touchedBibleRefs) {
     const isDirect = r === cleanRef;
@@ -375,8 +544,10 @@ export function propagateCascadeL1ToL5({
   ]);
 
   return {
-    accepted: true,
+    accepted: promotedToCanonicalWal,
     status: editorialStatus,
+    editorialStatus,
+    persistedLocal: promotedToCanonicalWal,
     patchId,
     lang: cleanLang,
     level: cleanLevel,
@@ -385,6 +556,9 @@ export function propagateCascadeL1ToL5({
     posteriorTruthProb,
     promotedToCanonicalWal,
     qualifiedAffirmativeSpeakers,
+    emIterations: dsVerdict.emIterations,
+    buhlmannCredibility: dsVerdict.buhlmannCredibility,
+    votes: normalizedVotes,
     touchedBibleRefs,
     formulaicParallelRefs,
     evangeliosWeeksTouched,
@@ -472,29 +646,44 @@ export function projectChapterThroughCascadeSemilattice({
   );
   if (relevant.length === 0) return { ...verses };
 
-  // Build verse -> Set(strongId) and verse -> Set(c13Onomasticon) from 15-col Array rows (`matrix_tier0.ekpack`) or Object rows
+  // Build verse -> Set(strongId) and verse -> Set(onomasticonKey) from typed 15-col Array rows (`MATRIX_15COL_INDEX`) or Object rows
   const strongsByVerse = new Map();
-  const c13ByVerse = new Map();
-  for (const row of Array.isArray(matrixRows) ? matrixRows : []) {
+  const onomasticonByVerse = new Map();
+  const rawMatrixRows = Array.isArray(matrixRows) ? matrixRows : [];
+  for (const row of rawMatrixRows) {
     if (!row) continue;
     const isArr = Array.isArray(row);
-    const vKey = String(isArr ? (row[0] ?? "") : (row.verse ?? row.v ?? ""));
+    const vKey = String(isArr ? (row[MATRIX_15COL_INDEX.VERSE] ?? "") : (row.verse ?? row.v ?? ""));
     if (!vKey) continue;
-    const st = String(isArr ? (row[3] ?? "") : (row.strong ?? row.c05_strong ?? ""))
+    const st = String(isArr ? (row[MATRIX_15COL_INDEX.STRONG_C05] ?? "") : (row.strong ?? row.c05_strong ?? ""))
       .trim()
       .toUpperCase();
-    if (st) {
+    const rowStrongTokens = st ? st.split(/[+,\s/]+/).filter(Boolean) : [];
+    if (rowStrongTokens.length > 0) {
       if (!strongsByVerse.has(vKey)) strongsByVerse.set(vKey, new Set());
-      for (const subSt of st.split(/[+,\s/]+/).filter(Boolean)) {
+      for (const subSt of rowStrongTokens) {
         strongsByVerse.get(vKey).add(subSt);
       }
     }
-    const c13 = String(
-      isArr ? (row[11] ?? row[12] ?? "") : (row.onomasticon ?? row.c13_onomasticon ?? ""),
-    ).trim();
-    if (c13 && c13 !== "-" && c13 !== "0") {
-      if (!c13ByVerse.has(vKey)) c13ByVerse.set(vKey, new Set());
-      c13ByVerse.get(vKey).add(c13);
+    const morph = String(isArr ? (row[MATRIX_15COL_INDEX.MORPH_C06] ?? "") : (row.morph ?? row.c06_morph ?? "")).trim();
+    const domLn = String(isArr ? (row[MATRIX_15COL_INDEX.DOMAIN_LN_C07] ?? "") : (row.domain ?? row.c07 ?? "")).trim();
+    const onoExplicit = String(isArr ? "" : (row.onomasticon ?? row.c13_onomasticon ?? "")).trim();
+    const isProperOrOnomastic =
+      /(?:^|[\/\-H])Np\b|\b(?:NP|PRI|PROP)\b/.test(morph) ||
+      /\b(?:LN:93\.|SDBH:)/i.test(domLn) ||
+      (onoExplicit && onoExplicit !== "-" && onoExplicit !== "0");
+    if (isProperOrOnomastic) {
+      if (!onomasticonByVerse.has(vKey)) onomasticonByVerse.set(vKey, new Set());
+      const vOnoSet = onomasticonByVerse.get(vKey);
+      if (onoExplicit && onoExplicit !== "-" && onoExplicit !== "0") {
+        vOnoSet.add(onoExplicit.toUpperCase());
+      }
+      for (const subSt of rowStrongTokens) {
+        vOnoSet.add(subSt);
+        vOnoSet.add(`C13:${subSt}`);
+      }
+      const lnMatch = domLn.match(/LN:93\.[0-9]+/i);
+      if (lnMatch) vOnoSet.add(lnMatch[0].toUpperCase());
     }
   }
 
@@ -513,27 +702,38 @@ export function projectChapterThroughCascadeSemilattice({
   for (const [vNum, rawText] of Object.entries(verses || {})) {
     const osis = `${prefix}${vNum}`;
     const direct = directByRef.get(osis);
-    if (direct && entryPriorityRank(direct) >= CASCADE_SEMILATTICE_PRIORITY.DIRECT_VERSE) {
+    const directLevel = String(direct?.cascade_level || "").toUpperCase();
+    // Solo `L1` directo (prioridad >= L1_DIRECT) sobrescribe el versículo íntegro; `L2`/`L3` deben respetar guardas Strong/Onomástica.
+    if (
+      direct &&
+      (directLevel === "L1" || entryPriorityRank(direct) >= CASCADE_SEMILATTICE_PRIORITY.L1_DIRECT)
+    ) {
       projected[vNum] = direct.new_surface;
       continue;
     }
     let text = String(rawText ?? "");
     const vStrongs = strongsByVerse.get(String(vNum));
-    for (const r3 of l3Rules) {
-      const reqStrong = String(r3.strong_id || "").toUpperCase();
-      if (!reqStrong || !vStrongs || vStrongs.has(reqStrong)) {
-        text = replaceAllWholeToken(text, r3.old_surface, r3.new_surface);
+    if (vStrongs && vStrongs.size > 0) {
+      for (const r3 of l3Rules) {
+        const reqStrong = String(r3.strong_id || "").trim().toUpperCase();
+        if (reqStrong && vStrongs.has(reqStrong)) {
+          text = replaceAllWholeToken(text, r3.old_surface, r3.new_surface);
+        }
       }
     }
-    const vC13 = c13ByVerse.get(String(vNum));
+    const vOnomasticon = onomasticonByVerse.get(String(vNum));
     for (const r2 of l2Rules) {
-      const reqStrong = String(r2.strong_id || "").toUpperCase();
-      if (!reqStrong || !vStrongs || vStrongs.has(reqStrong) || (vC13 && vC13.size > 0)) {
+      const reqStrong = String(r2.strong_id || "").trim().toUpperCase();
+      const reqOno = String(r2.onomasticon_c13_id || "").trim().toUpperCase();
+      const normalizedOno = reqOno.startsWith("C13:") ? reqOno.slice(4) : reqOno;
+      const matchesStrong = Boolean(reqStrong && vStrongs && vStrongs.has(reqStrong));
+      const matchesOno = Boolean(
+        vOnomasticon &&
+        ((reqOno && vOnomasticon.has(reqOno)) || (normalizedOno && vOnomasticon.has(normalizedOno))),
+      );
+      if (matchesStrong || matchesOno) {
         text = replaceAllWholeToken(text, r2.old_surface, r2.new_surface);
       }
-    }
-    if (direct && direct.new_surface) {
-      text = direct.new_surface;
     }
     projected[vNum] = text;
   }
@@ -551,12 +751,27 @@ export function exportSignedEcoPatchV2Artifact({
   crc32Hex = "",
 } = {}) {
   const entry = cascadeResult?.ekpackOverlayEntry || {};
+  const artifactVotes = Array.isArray(entry.votes)
+    ? entry.votes
+    : Array.isArray(cascadeResult?.votes)
+      ? cascadeResult.votes
+      : [];
   const artifact = {
     schema: "ekovoz.eco.patch.v2",
     patch_id: entry.patch_id || cascadeResult?.patchId || "PATCH-UNKNOWN",
     lang_code: entry.lang_code || cascadeResult?.lang || "stp",
     cascade_level: entry.cascade_level || cascadeResult?.level || "L2",
     constitutional_axis: entry.constitutional_axis || cascadeResult?.constitutionalAxis || "ONOMASTICON_C13_3100",
+    lamport_ts: Number(entry.lamport_ts) || 1,
+    editorial_status: entry.editorial_status || cascadeResult?.status || "SPEAKER_REVIEWED_QUARANTINE",
+    promoted_to_canonical_wal: Boolean(
+      entry.promoted_to_canonical_wal ?? cascadeResult?.promotedToCanonicalWal ?? false,
+    ),
+    posterior_truth_prob: Number(
+      entry.posterior_truth_prob ?? cascadeResult?.posteriorTruthProb ?? 0.5,
+    ),
+    content_hash_hex: String(entry.content_hash_hex || ""),
+    votes: artifactVotes,
     target_ref: entry.target_ref || "GEN.1.1",
     strong_id: entry.strong_id || "",
     onomasticon_c13_id: entry.onomasticon_c13_id || "",

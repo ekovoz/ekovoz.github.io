@@ -20,6 +20,69 @@ function stopOralPorticoAnimationLoop(state) {
   state.oralPorticoPlaying = false;
 }
 
+function patchOralPorticoCursorInPlace({
+  oralBanner,
+  state,
+  prosody,
+  isPlaying,
+  getEl,
+  targetDoc,
+}) {
+  const cadenceBar =
+    (typeof getEl === "function" ? getEl("bibleAudioCadenceBar", targetDoc) : null) ||
+    (typeof oralBanner?.querySelector === "function"
+      ? oralBanner.querySelector("#bibleAudioCadenceBar")
+      : null);
+  if (cadenceBar && typeof cadenceBar.setAttribute === "function") {
+    cadenceBar.setAttribute("data-elapsed-ms", String(prosody.elapsedMs));
+    cadenceBar.setAttribute("data-playing", String(isPlaying));
+    cadenceBar.setAttribute("data-active-syllable-index", String(prosody.activeSyllableIndex));
+    cadenceBar.setAttribute("data-active-syllable", String(prosody.activeSyllable || ""));
+  }
+  const elapsedRange =
+    (typeof getEl === "function" ? getEl("audioElapsedRange", targetDoc) : null) ||
+    (typeof oralBanner?.querySelector === "function"
+      ? oralBanner.querySelector("#audioElapsedRange")
+      : null);
+  if (elapsedRange) {
+    elapsedRange.value = String(prosody.elapsedMs);
+  }
+  const playBtn =
+    (typeof getEl === "function" ? getEl("btnPlayPauseOralPorticoCadence", targetDoc) : null) ||
+    (typeof oralBanner?.querySelector === "function"
+      ? oralBanner.querySelector("#btnPlayPauseOralPorticoCadence")
+      : null);
+  if (playBtn) {
+    playBtn.textContent = isPlaying ? "⏸ Pausar" : "▶ Guiar Versículo";
+  }
+  const cursorBadge =
+    typeof oralBanner?.querySelector === "function"
+      ? oralBanner.querySelector('[data-prosodic-cursor="true"]')
+      : null;
+  if (cursorBadge) {
+    cursorBadge.textContent = `Sílaba #${prosody.activeSyllableIndex + 1}/${prosody.syllables.length}: «${prosody.activeSyllable}»`;
+  }
+  const spans =
+    Array.isArray(oralBanner?._porticoSyllableSpans) && oralBanner._porticoSyllableSpans.length > 0
+      ? oralBanner._porticoSyllableSpans
+      : typeof oralBanner?.querySelectorAll === "function"
+        ? Array.from(oralBanner.querySelectorAll("[data-syllable-index]"))
+        : [];
+  for (let idx = 0; idx < spans.length; idx += 1) {
+    const sp = spans[idx];
+    const isActive = idx === prosody.activeSyllableIndex;
+    if (sp?.classList && typeof sp.classList.toggle === "function") {
+      sp.classList.toggle("is-active-syllable", isActive);
+    } else if (sp && typeof sp.className === "string") {
+      sp.className = isActive ? "uls-badge is-active-syllable" : "uls-badge";
+    }
+    if (sp && typeof sp.setAttribute === "function") {
+      sp.setAttribute("data-syllable-active", isActive ? "true" : "false");
+    }
+  }
+  if (state) state.lastProsodyAlignment = prosody;
+}
+
 /**
  * Renderiza la consola prosódica interactiva en `#bibleOralPorticoBanner` (`0 Bytes Audio`, CRC-16 + sílabas WASM completas sin truncar a 24).
  */
@@ -35,31 +98,58 @@ export function renderOralPorticoWasmConsole({
   const verseText =
     state.lastNavResult?.chapter?.verses?.[String(state.verse)] ||
     "En el principio creó Dios los cielos y la tierra.";
-  const wpm = Number(state.audioCadenceWpm) || 135;
-  const wordCount = Math.max(1, verseText.trim().split(/\s+/).filter(Boolean).length);
-  const dynamicTotalMs = Math.max(2500, Math.round((wordCount / Math.max(60, wpm)) * 60000));
-  const totalMs = Number(state.audioTotalMs) || dynamicTotalMs;
-  const elapsedMs = Math.max(0, Math.min(totalMs, Number(state.audioElapsedMs ?? 3000)));
+  const wpm = Number(state.audioCadenceWpm) || 150;
+  const targetSyllablesPerSec = 5.0 * (Math.max(60, wpm) / 150);
   const playerWasm =
     dataLayer && typeof dataLayer.getHydratedWasmModule === "function"
       ? dataLayer.getHydratedWasmModule("ekovoz_player_wasm")
       : null;
+  const preProsody = computeProsodyAndSyllableAlignmentInWasm(
+    { text: verseText, wpm, elapsedMs: 0, totalMs: 12000 },
+    playerWasm,
+  );
+  const dynamicTotalMs = Math.max(
+    1500,
+    Math.round((Math.max(1, preProsody.syllableCount) / Math.max(1, targetSyllablesPerSec)) * 1000),
+  );
+  const totalMs = Number(state.audioTotalMs) || dynamicTotalMs;
+  const elapsedMs = Math.max(0, Math.min(totalMs, Number(state.audioElapsedMs ?? 3000)));
   const prosody = computeProsodyAndSyllableAlignmentInWasm(
     { text: verseText, wpm, elapsedMs, totalMs },
     playerWasm,
   );
   state.lastProsodyAlignment = prosody;
   const isPlaying = Boolean(state.oralPorticoPlaying);
+  const mountKey = `${state.book}|${state.chapter}|${state.verse}|${prosody.wpm}|${prosody.totalMs}|${prosody.syllables.length}|${prosody.wasmBacked}`;
+
+  if (
+    oralBanner._porticoMountKey === mountKey &&
+    ((Array.isArray(oralBanner._porticoSyllableSpans) && oralBanner._porticoSyllableSpans.length > 0) ||
+      typeof oralBanner.querySelectorAll === "function")
+  ) {
+    patchOralPorticoCursorInPlace({
+      oralBanner,
+      state,
+      prosody,
+      isPlaying,
+      getEl,
+      targetDoc,
+    });
+    return prosody;
+  }
+
   const syllablesHtml = prosody.syllables
     .map(
       (syl, idx) =>
-        `<span class="uls-badge" data-syllable-index="${idx}" data-syllable-active="${idx === prosody.activeSyllableIndex}" style="${idx === prosody.activeSyllableIndex ? "font-weight:700;border-color:var(--accent-amber);" : "opacity:0.8;"}">${escapeHtml(syl)}</span>`,
+        `<span class="uls-badge${idx === prosody.activeSyllableIndex ? " is-active-syllable" : ""}" data-syllable-index="${idx}" data-syllable-active="${idx === prosody.activeSyllableIndex}">${escapeHtml(syl)}</span>`,
     )
     .join(" ");
 
   oralBanner.innerHTML =
+    `<style id="oralPorticoDynamicStyle">.uls-badge.is-active-syllable{font-weight:700;border-color:var(--accent-amber);opacity:1}.uls-badge[data-syllable-index]:not(.is-active-syllable){opacity:0.8}</style>` +
     `<div id="bibleAudioCadenceBar" class="mostrador-audio-cadence-bar" ` +
     `data-wpm="${prosody.wpm}" ` +
+    `data-target-bits-per-sec="${prosody.targetBitsPerSec}" ` +
     `data-elapsed-ms="${prosody.elapsedMs}" ` +
     `data-total-ms="${prosody.totalMs}" ` +
     `data-syllable-count="${prosody.syllables.length}" ` +
@@ -72,12 +162,12 @@ export function renderOralPorticoWasmConsole({
     `data-audio-crc16="${escapeHtml(prosody.crc16Hex)}" ` +
     `data-wasm-backed="${prosody.wasmBacked}">` +
     `<div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:0.45rem;margin-bottom:0.4rem;">` +
-    `<strong>🗣️ Escucha Guiada (${escapeHtml(`${state.book} ${state.chapter}:${state.verse}`)}) <small class="uls-badge hig-tech-meta">Pórtico Prosódico WASM · 0 Bytes Audio · ${prosody.wpm} WPM · CRC-16=${escapeHtml(prosody.crc16Hex)}</small></strong>` +
+    `<strong>🗣️ Escucha Guiada (${escapeHtml(`${state.book} ${state.chapter}:${state.verse}`)}) <small class="uls-badge hig-tech-meta">Pórtico Prosódico WASM · 0 Bytes Audio · ${prosody.wpm} WPM (~${prosody.targetBitsPerSec} bits/s) · CRC-16=${escapeHtml(prosody.crc16Hex)}</small></strong>` +
     `<div style="display:inline-flex;flex-wrap:wrap;gap:0.4rem;align-items:center;font-size:0.78rem;">` +
     `<button type="button" id="btnPlayPauseOralPorticoCadence" class="uls-chip" style="min-height:40px;padding:0.2rem 0.6rem;">${isPlaying ? "⏸ Pausar" : "▶ Guiar Versículo"}</button>` +
     `<label for="audioCadenceWpmSelect">Cadencia: ` +
     `<select id="audioCadenceWpmSelect" style="min-height:48px;padding:0.2rem 0.4rem;">` +
-    [90, 120, 135, 160]
+    [90, 120, 135, 150, 160]
       .map((w) => `<option value="${w}"${w === prosody.wpm ? " selected" : ""}>${w} WPM</option>`)
       .join("") +
     `</select></label>` +
@@ -94,12 +184,33 @@ export function renderOralPorticoWasmConsole({
     `<div class="prosody-syllable-strip oral-portico-secondary" style="display:flex;flex-wrap:wrap;gap:0.25rem;font-size:0.76rem;">${syllablesHtml}</div>` +
     `</div>`;
 
+  oralBanner._porticoMountKey = mountKey;
+  oralBanner._porticoSyllableSpans =
+    typeof oralBanner.querySelectorAll === "function"
+      ? Array.from(oralBanner.querySelectorAll("[data-syllable-index]"))
+      : oralBanner._porticoSyllableSpans || [];
+
+  const updateTick = () => {
+    const tickProsody = computeProsodyAndSyllableAlignmentInWasm(
+      { text: verseText, wpm, elapsedMs: Number(state.audioElapsedMs) || 0, totalMs },
+      playerWasm,
+    );
+    patchOralPorticoCursorInPlace({
+      oralBanner,
+      state,
+      prosody: tickProsody,
+      isPlaying: Boolean(state.oralPorticoPlaying),
+      getEl,
+      targetDoc,
+    });
+  };
+
   const playBtn = getEl("btnPlayPauseOralPorticoCadence", targetDoc);
   if (playBtn && typeof playBtn.addEventListener === "function") {
     playBtn.addEventListener("click", () => {
       if (state.oralPorticoPlaying) {
         stopOralPorticoAnimationLoop(state);
-        renderOralPorticoWasmConsole({ state, dataLayer, getEl, targetDoc });
+        updateTick();
         return;
       }
       stopOralPorticoAnimationLoop(state);
@@ -120,10 +231,10 @@ export function renderOralPorticoWasmConsole({
           state.audioElapsedMs = nextElapsed;
           if (nextElapsed >= prosody.totalMs) {
             stopOralPorticoAnimationLoop(state);
-            renderOralPorticoWasmConsole({ state, dataLayer, getEl, targetDoc });
+            updateTick();
             return;
           }
-          renderOralPorticoWasmConsole({ state, dataLayer, getEl, targetDoc });
+          updateTick();
           state.oralPorticoRafId = globalThis.requestAnimationFrame(stepRaf);
         };
         state.oralPorticoRafId = globalThis.requestAnimationFrame(stepRaf);
@@ -138,20 +249,20 @@ export function renderOralPorticoWasmConsole({
           if (nextElapsed >= prosody.totalMs) {
             stopOralPorticoAnimationLoop(state);
           }
-          renderOralPorticoWasmConsole({ state, dataLayer, getEl, targetDoc });
+          updateTick();
         }, 120);
         if (typeof state.oralPorticoFallbackTimerId?.unref === "function") {
           state.oralPorticoFallbackTimerId.unref();
         }
       }
-      renderOralPorticoWasmConsole({ state, dataLayer, getEl, targetDoc });
+      updateTick();
     });
   }
 
   const wpmSel = getEl("audioCadenceWpmSelect", targetDoc);
   if (wpmSel && typeof wpmSel.addEventListener === "function") {
     wpmSel.addEventListener("change", (e) => {
-      state.audioCadenceWpm = Number(e?.target?.value || wpmSel.value) || 135;
+      state.audioCadenceWpm = Number(e?.target?.value || wpmSel.value) || 150;
       renderOralPorticoWasmConsole({ state, dataLayer, getEl, targetDoc });
     });
   }
@@ -159,7 +270,7 @@ export function renderOralPorticoWasmConsole({
   if (elapsedRange && typeof elapsedRange.addEventListener === "function") {
     const onRangeChange = (e) => {
       state.audioElapsedMs = Number(e?.target?.value ?? elapsedRange.value) || 0;
-      renderOralPorticoWasmConsole({ state, dataLayer, getEl, targetDoc });
+      updateTick();
     };
     elapsedRange.addEventListener("input", onRangeChange);
     elapsedRange.addEventListener("change", onRangeChange);

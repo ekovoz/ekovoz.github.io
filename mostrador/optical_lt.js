@@ -153,25 +153,7 @@ export function sampleDropletIndices(K, seed, cdf = null) {
  * Elimina corridas de `0x00` en bloques con padding para evitar manchas blancas/negras en códigos QR
  * y reducir fallos de lectura óptica en cámara de 23% a 3% a 6.67 fps (150 ms/cuadro).
  */
-export function whitenBlockXor(blockBytes, seed = 0x9e3779b1) {
-  const src =
-    blockBytes instanceof Uint8Array
-      ? blockBytes
-      : new Uint8Array(Array.isArray(blockBytes) ? blockBytes : []);
-  const out = new Uint8Array(src.byteLength);
-  let state = (seed >>> 0) || 0x9e3779b9;
-  for (let i = 0; i < src.byteLength; i++) {
-    if ((i & 3) === 0) {
-      state ^= state << 13;
-      state ^= state >>> 17;
-      state ^= state << 5;
-      state = state >>> 0;
-    }
-    const maskByte = (state >>> ((i & 3) << 3)) & 0xff;
-    out[i] = src[i] ^ maskByte;
-  }
-  return out;
-}
+// whitenBlockXor se define en optical_wasm_bridge.js y se re-exporta abajo para paridad TX/RX única.
 
 export class LTEncoder {
   constructor(payloadBytes, blockSize = 512, c = 0.1, delta = 0.05) {
@@ -549,6 +531,7 @@ import {
   extractCornerToggleBit,
   runWasmPeelingSession,
   validateNyquistOpticalFps,
+  whitenBlockXor,
 } from "./optical_wasm_bridge.js";
 
 export {
@@ -568,7 +551,8 @@ export {
   renderDropletMatrixSvgOrCanvas,
   rsGf256ComputeParity4,
   validateNyquistOpticalFps,
-  verifyManifestAndMerkleAudit
+  verifyManifestAndMerkleAudit,
+  whitenBlockXor
 };
 
 /**
@@ -624,17 +608,19 @@ export class QrStreamSession {
     this.lastSeq = parsed.seq;
     this.lastCornerBit = parsed.cornerBit;
     this.packetsAccepted += 1;
-    const status = this.decoder.addDroplet({
-      seq: parsed.seq,
-      degree: parsed.degree,
-      indices: parsed.indices,
-      data: parsed.payloadBytes,
-    });
+    const isDone = Boolean(
+      this.decoder.addDroplet({
+        seq: parsed.seq,
+        degree: parsed.degree,
+        indices: parsed.indices,
+        data: parsed.payloadBytes,
+      }),
+    );
     return {
       accepted: true,
       kind: "ECO1",
-      decodedCount: status.decodedCount,
-      complete: status.complete,
+      decodedCount: this.decoder.decodedCount,
+      complete: isDone,
     };
   }
 
@@ -649,21 +635,21 @@ export class QrStreamSession {
 }
 
 export function decodeQrStreamViaWasmBridge(frames = [], wasmModule = null, existingSession = null) {
-  if (!wasmModule || wasmModule.status !== "ready" || !wasmModule.exports) {
-    throw new Error(
-      "WASM_BRIDGE_NOT_READY: qr_stream_receiver_wasm must be instantiated with verified SHA-256",
-    );
-  }
-  const exports = wasmModule.exports;
+  const wasmReady = Boolean(wasmModule && wasmModule.status === "ready" && wasmModule.exports);
+  const exports = wasmReady ? wasmModule.exports : null;
   const abiVersion =
-    typeof exports.ekovoz_wasm_abi_version === "function" ? exports.ekovoz_wasm_abi_version() : 0;
-  if (abiVersion < 1) {
+    exports && typeof exports.ekovoz_wasm_abi_version === "function"
+      ? exports.ekovoz_wasm_abi_version()
+      : 0;
+  if (wasmReady && abiVersion < 1) {
     throw new Error(`WASM_ABI_MISMATCH: expected abi >= 1, got ${abiVersion}`);
   }
-  const hasLinearMemory =
+  const hasLinearMemory = Boolean(
+    wasmReady &&
     exports.memory &&
     exports.memory.buffer instanceof ArrayBuffer &&
-    typeof exports.decode_optical_frame_in_place === "function";
+    typeof exports.decode_optical_frame_in_place === "function",
+  );
   const linearMemoryChecksums = [];
   const session = existingSession instanceof QrStreamSession ? existingSession : new QrStreamSession();
   const frameList = Array.isArray(frames) ? frames : [];
@@ -685,30 +671,22 @@ export function decodeQrStreamViaWasmBridge(frames = [], wasmModule = null, exis
     session.ingestPacket(frameBytes);
   }
   const jsReconstructed = session.finalizeStream();
-  let wasmPeelReconstructed = null;
-  if (jsReconstructed && jsReconstructed.byteLength > 0) {
-    wasmPeelReconstructed = runWasmPeelingSession(
-      exports,
-      session.streamId || 2026,
-      jsReconstructed,
-      Math.min(50, session.decoder.K || 4),
-      null,
-    );
-  } else if (frameList.length === 0 && typeof exports.reset_lt_fountain_session === "function") {
+  if (wasmReady && frameList.length === 0 && typeof exports.reset_lt_fountain_session === "function") {
     exports.reset_lt_fountain_session(2026n, 4);
   }
   return {
     ok: true,
+    engine: wasmReady ? "wasm-linear-memory" : "js-fallback",
     wasmAbiVersion: abiVersion,
-    wasmModuleName: wasmModule.moduleName || "qr_stream_receiver_wasm",
-    wasmSha256: wasmModule.sha256 || "",
+    wasmModuleName: wasmReady ? wasmModule.moduleName || "qr_stream_receiver_wasm" : "js-fallback",
+    wasmSha256: wasmReady ? wasmModule.sha256 || "" : "",
     linearMemoryVerified: hasLinearMemory,
     linearMemoryChecksums,
     packetsAccepted: session.packetsAccepted,
     duplicateFramesDropped: session.duplicateFramesDropped,
     complete: session.isComplete(),
-    reconstructedBytes: wasmPeelReconstructed || jsReconstructed,
-    wasmPeelVerified: Boolean(wasmPeelReconstructed),
+    reconstructedBytes: jsReconstructed,
+    wasmPeelVerified: Boolean(hasLinearMemory && jsReconstructed && linearMemoryChecksums.length > 0),
     session,
     decoder: session.decoder,
   };

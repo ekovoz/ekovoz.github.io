@@ -1,7 +1,7 @@
 {
   "ed25519_public_key_hex": "5f7a02cab91d9022730752855ea280e6d8a6a6e18ac3724dd65c20583a327720",
-  "ed25519_signature_hex": "b84c261c34783f574e7525c8e9f2203fd2fd73c9a573852b87014ddcb5f5afbd9b1849d026214b6959f8422521bb28efcbd6fac8f52dffc48a65f1e459821902",
-  "entries_sha256": "ae7f61fc820f16061135a33534c1b67e873e1ef13a1629ad3e96ad6a62f40807",
+  "ed25519_signature_hex": "15deb58ab92cd9e0cac5169f7b59d7ed7c4d9654a7afa192b1bbdd4b70cddcb7fb34bd759bd510537e6bdd83bad9632155364c260a8461d30e8364d73b4e3c05",
+  "entries_sha256": "daa65d4d65dfc40fc5cb30cc3420fc16dd9d156267a3c7787dfaf637eac1bdf4",
   "mount": "packs",
   "pack_count": 24,
   "pack_mounts": [
@@ -20,341 +20,341 @@
   ],
   "packs": [
     {
-      "bytes": 1041000,
+      "bytes": 1041068,
       "file": "ar.ekpack",
       "lang": "ar",
-      "sha256": "9d999899ee8a37323b7251042ffdceb0f141f12e5cebfb1a89bee4d83e918842",
+      "sha256": "52791589397dcde45575be24f2bdb7407a4df55d6d3908108b6bb0bb88a69a2a",
       "url": "packs/ar.ekpack"
     },
     {
-      "bytes": 39185,
+      "bytes": 39255,
       "file": "arp.ekpack",
       "lang": "arp",
-      "sha256": "1335f47d3979932120ad1c76851ac7da0fc038a91e600467655e800b86ace9c1",
+      "sha256": "8065bb17f7c8ea13b8621e5a04a02a8f5d9a19f12d18b8c9943e9d186fa16582",
       "url": "packs/arp.ekpack"
     },
     {
-      "bytes": 1016377,
+      "bytes": 1016306,
       "file": "bn.ekpack",
       "lang": "bn",
-      "sha256": "26613221c1b08f3e476b241afeb843d15d79ead5d817ebf40070cc7489711f77",
+      "sha256": "e4729ae6b02516e0d5e29c96f8e82867f8f65f1914a22fbc907aa5a17c1e5939",
       "url": "packs/bn.ekpack"
     },
     {
-      "bytes": 111885,
+      "bytes": 111954,
       "file": "bre.ekpack",
       "lang": "bre",
-      "sha256": "45ec2a9f01dc64f43c6f29e562063f60f0404bb0107a43ab923162fc79ef7923",
+      "sha256": "516ae11878c8b48f8c3fe0c94c80201b0f01ad4b63344c6e5375a3dc1c8dc15e",
       "url": "packs/bre.ekpack"
     },
     {
-      "bytes": 203868,
+      "bytes": 203901,
       "file": "cha.ekpack",
       "lang": "cha",
-      "sha256": "96b82f8b2dbf76e91931a82abc48fddea7d4f23276e0aa0b2a35c18be001c660",
+      "sha256": "3c4c547d36531db2cbe0d0dfdde3f2cb5fde23ec09784b3c36f31019faec8b81",
       "url": "packs/cha.ekpack"
     },
     {
-      "bytes": 995669,
+      "bytes": 995740,
       "file": "de.ekpack",
       "lang": "de",
-      "sha256": "7d13861c57c9a6ce035c58d29e89eefd63ed38559d97ec659b120c6f3e5a0d48",
+      "sha256": "a7989ec842292742f759427ef64295afce6dcf1c2281439ff7c1ad5db5966875",
       "url": "packs/de.ekpack"
     },
     {
-      "bytes": 935635,
+      "bytes": 935704,
       "file": "en.ekpack",
       "lang": "en",
-      "sha256": "3525a094b1e292aa0b102c9666d080f2b70219f8450376817caec5d6229f46f1",
+      "sha256": "42f62aa6152d0985982d7c6e368b8e79e0dbe1614847fd6778c47334459b8da0",
       "url": "packs/en.ekpack"
     },
     {
-      "bytes": 1143807,
+      "bytes": 1143911,
       "file": "es.ekpack",
       "lang": "es",
-      "sha256": "998557a01a1d0780cc6f07abac8cc2d435e8c9dea949868715f64273aec02906",
+      "sha256": "9ccf0ed8c88f2efd979b02a6d1e25a4ac5efd39140b8586212611ad645140576",
       "url": "packs/es.ekpack"
     },
     {
-      "bytes": 982681,
+      "bytes": 982744,
       "file": "fa.ekpack",
       "lang": "fa",
-      "sha256": "42ad5c356664ed0886197ffc086ffad524706a118d463739c621014f9885566f",
+      "sha256": "c146c4325bc55f364a874b84ee74fd636da4f5af320e4be424406828c5ef4af8",
       "url": "packs/fa.ekpack"
     },
     {
-      "bytes": 1000064,
+      "bytes": 1000177,
       "file": "fr.ekpack",
       "lang": "fr",
-      "sha256": "25dc262f96cace50e129b57a445010be1ad05429c89c1f865359ded4e6f226b8",
+      "sha256": "8521125f0657f3e9d949a981fa34010cec1de8f36576ff5590f9a177dddca17f",
       "url": "packs/fr.ekpack"
     },
     {
-      "bytes": 1050490,
+      "bytes": 1050557,
       "file": "grc.ekpack",
       "lang": "grc",
-      "sha256": "f1d763dff5c05db880d0a43a84b832c1e5c7937f887517d3e06d0c11e80294c1",
+      "sha256": "d223cd0e1efd3ee84b9f960f2ba6ba93f09479ff6c3c2e52a715ae610b61db7f",
       "url": "packs/grc.ekpack"
     },
     {
-      "bytes": 1216701,
+      "bytes": 1216771,
       "file": "he.ekpack",
       "lang": "he",
-      "sha256": "a091c7e9d7a54e834572e0aedeb02510d99ddf8f06fa60c56e0fdfde56e6f9a1",
+      "sha256": "a4e0820deb8e85c9ce44ba0193bb9abe72c2a929b48560fcc35a5b30899a83e9",
       "url": "packs/he.ekpack"
     },
     {
-      "bytes": 1032546,
+      "bytes": 1032611,
       "file": "hi.ekpack",
       "lang": "hi",
-      "sha256": "07ce1b495aae23cd7f82005ca338f38b9194a01921a1271012159b387782926d",
+      "sha256": "230e99b53362237e6ee1801e9a39006b43a20c67ebf2de18b7aeaf8661d4379c",
       "url": "packs/hi.ekpack"
     },
     {
-      "bytes": 925664,
+      "bytes": 925722,
       "file": "id.ekpack",
       "lang": "id",
-      "sha256": "1c19296db38078e7fdcffff717cc86d8291a84494e0163208409b99362bcf367",
+      "sha256": "8f0ccc168a33bd233343c6191a1ed43c0b71fe28ce7dd5d40188982ee3e62d5e",
       "url": "packs/id.ekpack"
     },
     {
-      "bytes": 1061489,
+      "bytes": 1061559,
       "file": "it.ekpack",
       "lang": "it",
-      "sha256": "aedcd944074da0f54f0dbc386daedb96714100e756e076143d7a13248689b6eb",
+      "sha256": "27a8ae5544709f25328b39f4d29ee2f1dc254f228fb9c1d846886ff594d0f518",
       "url": "packs/it.ekpack"
     },
     {
-      "bytes": 1067057,
+      "bytes": 1067124,
       "file": "ja.ekpack",
       "lang": "ja",
-      "sha256": "aa799fb6e17ee262dcde5a20819be7cd61bae9ca3b4642ede737bc7ec1f77ed7",
+      "sha256": "053d1a769c37b58e1bd1ca095bf63ad04fbc412b93757e36c6854e059f795fa3",
       "url": "packs/ja.ekpack"
     },
     {
-      "bytes": 991808,
+      "bytes": 991872,
       "file": "ko.ekpack",
       "lang": "ko",
-      "sha256": "bff866537a37adf0e6f327bdd4579d78d0a297d9fbe8b1e5d23bafa984bdb191",
+      "sha256": "d9783964d27eb321a5a8f64b9e21d53eecacc0bc70b62530a1536ca236cd9f11",
       "url": "packs/ko.ekpack"
     },
     {
-      "bytes": 1002320,
+      "bytes": 1002387,
       "file": "pt.ekpack",
       "lang": "pt",
-      "sha256": "f3ab34ca014d333b082101cd1afa5b33991f5b131dc305cab69be854f93e4e92",
+      "sha256": "468f53d5997ed35bc79e51f96f6ae60834c3111a0b1244719d7ea77721fd0885",
       "url": "packs/pt.ekpack"
     },
     {
-      "bytes": 1026541,
+      "bytes": 1026612,
       "file": "ru.ekpack",
       "lang": "ru",
-      "sha256": "a2efae1f6a483a406cea3cda87b7af6daf4c66f12bf828dc0b78724cc12edbf3",
+      "sha256": "b6288f19f8dc00e59986a1761003b311d42432b11e5bfe7efa1c97226d2d8470",
       "url": "packs/ru.ekpack"
     },
     {
-      "bytes": 937813,
+      "bytes": 693480,
       "file": "stp.ekpack",
       "lang": "stp",
-      "sha256": "29088b8a23673cfa86b83cc7dd42378d4b01b685dbedc1c81d66b1b17a98534c",
+      "sha256": "852446120bbd93deb35d30e411f23a5b7f94a414926c3c2874548c349b826b7f",
       "url": "packs/stp.ekpack"
     },
     {
-      "bytes": 1042730,
+      "bytes": 1044253,
       "file": "sw.ekpack",
       "lang": "sw",
-      "sha256": "c372477bbcca713dc549abef9f5b661187d928a0308d28aa17ac2e274b864ed1",
+      "sha256": "db0a861a714d6544591256850ea3a55f0f90a4ac7d6e5e4ab11158c6e071ebd2",
       "url": "packs/sw.ekpack"
     },
     {
-      "bytes": 1013919,
+      "bytes": 1012444,
       "file": "tr.ekpack",
       "lang": "tr",
-      "sha256": "e1c24b2b482fc16f19f743f70042575c9e40414310d821bcc912287a3e54e861",
+      "sha256": "3dfc4604782ecaa247fd1642a9d6ff6aeac6ff2116442866c8a03846f497266c",
       "url": "packs/tr.ekpack"
     },
     {
-      "bytes": 1037068,
+      "bytes": 1047628,
       "file": "ur.ekpack",
       "lang": "ur",
-      "sha256": "7616c70b771ed2044af69119035555d76cbd48513844b3f33c0a0162134d8377",
+      "sha256": "a972fdc704168ebc1bdaefd38e626f7dc25c12a2694308308e87483a6d32b2a4",
       "url": "packs/ur.ekpack"
     },
     {
-      "bytes": 913347,
+      "bytes": 913340,
       "file": "zh-Hans.ekpack",
       "lang": "zh-Hans",
-      "sha256": "5f6780cd9280c505e0fcafbb38d6bb0e5532967632100c0ebccde692bf6fd92d",
+      "sha256": "fb533221b80b8146fec4daed0d3b7b424b37d26d8ace20d6cab83e45adff3b84",
       "url": "packs/zh-Hans.ekpack"
     }
   ],
   "routes": {
     "ar": {
-      "bytes": 1041000,
+      "bytes": 1041068,
       "mount": "packs",
       "origin_url": "https://ekovoz.github.io/packs/ar.ekpack",
-      "sha256": "9d999899ee8a37323b7251042ffdceb0f141f12e5cebfb1a89bee4d83e918842",
+      "sha256": "52791589397dcde45575be24f2bdb7407a4df55d6d3908108b6bb0bb88a69a2a",
       "url": "packs/ar.ekpack"
     },
     "arp": {
-      "bytes": 39185,
+      "bytes": 39255,
       "mount": "packs",
       "origin_url": "https://ekovoz.github.io/packs/arp.ekpack",
-      "sha256": "1335f47d3979932120ad1c76851ac7da0fc038a91e600467655e800b86ace9c1",
+      "sha256": "8065bb17f7c8ea13b8621e5a04a02a8f5d9a19f12d18b8c9943e9d186fa16582",
       "url": "packs/arp.ekpack"
     },
     "bn": {
-      "bytes": 1016377,
+      "bytes": 1016306,
       "mount": "packs",
       "origin_url": "https://ekovoz.github.io/packs/bn.ekpack",
-      "sha256": "26613221c1b08f3e476b241afeb843d15d79ead5d817ebf40070cc7489711f77",
+      "sha256": "e4729ae6b02516e0d5e29c96f8e82867f8f65f1914a22fbc907aa5a17c1e5939",
       "url": "packs/bn.ekpack"
     },
     "bre": {
-      "bytes": 111885,
+      "bytes": 111954,
       "mount": "packs",
       "origin_url": "https://ekovoz.github.io/packs/bre.ekpack",
-      "sha256": "45ec2a9f01dc64f43c6f29e562063f60f0404bb0107a43ab923162fc79ef7923",
+      "sha256": "516ae11878c8b48f8c3fe0c94c80201b0f01ad4b63344c6e5375a3dc1c8dc15e",
       "url": "packs/bre.ekpack"
     },
     "cha": {
-      "bytes": 203868,
+      "bytes": 203901,
       "mount": "packs",
       "origin_url": "https://ekovoz.github.io/packs/cha.ekpack",
-      "sha256": "96b82f8b2dbf76e91931a82abc48fddea7d4f23276e0aa0b2a35c18be001c660",
+      "sha256": "3c4c547d36531db2cbe0d0dfdde3f2cb5fde23ec09784b3c36f31019faec8b81",
       "url": "packs/cha.ekpack"
     },
     "de": {
-      "bytes": 995669,
+      "bytes": 995740,
       "mount": "packs",
       "origin_url": "https://ekovoz.github.io/packs/de.ekpack",
-      "sha256": "7d13861c57c9a6ce035c58d29e89eefd63ed38559d97ec659b120c6f3e5a0d48",
+      "sha256": "a7989ec842292742f759427ef64295afce6dcf1c2281439ff7c1ad5db5966875",
       "url": "packs/de.ekpack"
     },
     "en": {
-      "bytes": 935635,
+      "bytes": 935704,
       "mount": "packs",
       "origin_url": "https://ekovoz.github.io/packs/en.ekpack",
-      "sha256": "3525a094b1e292aa0b102c9666d080f2b70219f8450376817caec5d6229f46f1",
+      "sha256": "42f62aa6152d0985982d7c6e368b8e79e0dbe1614847fd6778c47334459b8da0",
       "url": "packs/en.ekpack"
     },
     "es": {
-      "bytes": 1143807,
+      "bytes": 1143911,
       "mount": "packs",
       "origin_url": "https://ekovoz.github.io/packs/es.ekpack",
-      "sha256": "998557a01a1d0780cc6f07abac8cc2d435e8c9dea949868715f64273aec02906",
+      "sha256": "9ccf0ed8c88f2efd979b02a6d1e25a4ac5efd39140b8586212611ad645140576",
       "url": "packs/es.ekpack"
     },
     "fa": {
-      "bytes": 982681,
+      "bytes": 982744,
       "mount": "packs",
       "origin_url": "https://ekovoz.github.io/packs/fa.ekpack",
-      "sha256": "42ad5c356664ed0886197ffc086ffad524706a118d463739c621014f9885566f",
+      "sha256": "c146c4325bc55f364a874b84ee74fd636da4f5af320e4be424406828c5ef4af8",
       "url": "packs/fa.ekpack"
     },
     "fr": {
-      "bytes": 1000064,
+      "bytes": 1000177,
       "mount": "packs",
       "origin_url": "https://ekovoz.github.io/packs/fr.ekpack",
-      "sha256": "25dc262f96cace50e129b57a445010be1ad05429c89c1f865359ded4e6f226b8",
+      "sha256": "8521125f0657f3e9d949a981fa34010cec1de8f36576ff5590f9a177dddca17f",
       "url": "packs/fr.ekpack"
     },
     "grc": {
-      "bytes": 1050490,
+      "bytes": 1050557,
       "mount": "packs",
       "origin_url": "https://ekovoz.github.io/packs/grc.ekpack",
-      "sha256": "f1d763dff5c05db880d0a43a84b832c1e5c7937f887517d3e06d0c11e80294c1",
+      "sha256": "d223cd0e1efd3ee84b9f960f2ba6ba93f09479ff6c3c2e52a715ae610b61db7f",
       "url": "packs/grc.ekpack"
     },
     "he": {
-      "bytes": 1216701,
+      "bytes": 1216771,
       "mount": "packs",
       "origin_url": "https://ekovoz.github.io/packs/he.ekpack",
-      "sha256": "a091c7e9d7a54e834572e0aedeb02510d99ddf8f06fa60c56e0fdfde56e6f9a1",
+      "sha256": "a4e0820deb8e85c9ce44ba0193bb9abe72c2a929b48560fcc35a5b30899a83e9",
       "url": "packs/he.ekpack"
     },
     "hi": {
-      "bytes": 1032546,
+      "bytes": 1032611,
       "mount": "packs",
       "origin_url": "https://ekovoz.github.io/packs/hi.ekpack",
-      "sha256": "07ce1b495aae23cd7f82005ca338f38b9194a01921a1271012159b387782926d",
+      "sha256": "230e99b53362237e6ee1801e9a39006b43a20c67ebf2de18b7aeaf8661d4379c",
       "url": "packs/hi.ekpack"
     },
     "id": {
-      "bytes": 925664,
+      "bytes": 925722,
       "mount": "packs",
       "origin_url": "https://ekovoz.github.io/packs/id.ekpack",
-      "sha256": "1c19296db38078e7fdcffff717cc86d8291a84494e0163208409b99362bcf367",
+      "sha256": "8f0ccc168a33bd233343c6191a1ed43c0b71fe28ce7dd5d40188982ee3e62d5e",
       "url": "packs/id.ekpack"
     },
     "it": {
-      "bytes": 1061489,
+      "bytes": 1061559,
       "mount": "packs",
       "origin_url": "https://ekovoz.github.io/packs/it.ekpack",
-      "sha256": "aedcd944074da0f54f0dbc386daedb96714100e756e076143d7a13248689b6eb",
+      "sha256": "27a8ae5544709f25328b39f4d29ee2f1dc254f228fb9c1d846886ff594d0f518",
       "url": "packs/it.ekpack"
     },
     "ja": {
-      "bytes": 1067057,
+      "bytes": 1067124,
       "mount": "packs",
       "origin_url": "https://ekovoz.github.io/packs/ja.ekpack",
-      "sha256": "aa799fb6e17ee262dcde5a20819be7cd61bae9ca3b4642ede737bc7ec1f77ed7",
+      "sha256": "053d1a769c37b58e1bd1ca095bf63ad04fbc412b93757e36c6854e059f795fa3",
       "url": "packs/ja.ekpack"
     },
     "ko": {
-      "bytes": 991808,
+      "bytes": 991872,
       "mount": "packs",
       "origin_url": "https://ekovoz.github.io/packs/ko.ekpack",
-      "sha256": "bff866537a37adf0e6f327bdd4579d78d0a297d9fbe8b1e5d23bafa984bdb191",
+      "sha256": "d9783964d27eb321a5a8f64b9e21d53eecacc0bc70b62530a1536ca236cd9f11",
       "url": "packs/ko.ekpack"
     },
     "pt": {
-      "bytes": 1002320,
+      "bytes": 1002387,
       "mount": "packs",
       "origin_url": "https://ekovoz.github.io/packs/pt.ekpack",
-      "sha256": "f3ab34ca014d333b082101cd1afa5b33991f5b131dc305cab69be854f93e4e92",
+      "sha256": "468f53d5997ed35bc79e51f96f6ae60834c3111a0b1244719d7ea77721fd0885",
       "url": "packs/pt.ekpack"
     },
     "ru": {
-      "bytes": 1026541,
+      "bytes": 1026612,
       "mount": "packs",
       "origin_url": "https://ekovoz.github.io/packs/ru.ekpack",
-      "sha256": "a2efae1f6a483a406cea3cda87b7af6daf4c66f12bf828dc0b78724cc12edbf3",
+      "sha256": "b6288f19f8dc00e59986a1761003b311d42432b11e5bfe7efa1c97226d2d8470",
       "url": "packs/ru.ekpack"
     },
     "stp": {
-      "bytes": 937813,
+      "bytes": 693480,
       "mount": "packs",
       "origin_url": "https://ekovoz.github.io/packs/stp.ekpack",
-      "sha256": "29088b8a23673cfa86b83cc7dd42378d4b01b685dbedc1c81d66b1b17a98534c",
+      "sha256": "852446120bbd93deb35d30e411f23a5b7f94a414926c3c2874548c349b826b7f",
       "url": "packs/stp.ekpack"
     },
     "sw": {
-      "bytes": 1042730,
+      "bytes": 1044253,
       "mount": "packs",
       "origin_url": "https://ekovoz.github.io/packs/sw.ekpack",
-      "sha256": "c372477bbcca713dc549abef9f5b661187d928a0308d28aa17ac2e274b864ed1",
+      "sha256": "db0a861a714d6544591256850ea3a55f0f90a4ac7d6e5e4ab11158c6e071ebd2",
       "url": "packs/sw.ekpack"
     },
     "tr": {
-      "bytes": 1013919,
+      "bytes": 1012444,
       "mount": "packs",
       "origin_url": "https://ekovoz.github.io/packs/tr.ekpack",
-      "sha256": "e1c24b2b482fc16f19f743f70042575c9e40414310d821bcc912287a3e54e861",
+      "sha256": "3dfc4604782ecaa247fd1642a9d6ff6aeac6ff2116442866c8a03846f497266c",
       "url": "packs/tr.ekpack"
     },
     "ur": {
-      "bytes": 1037068,
+      "bytes": 1047628,
       "mount": "packs",
       "origin_url": "https://ekovoz.github.io/packs/ur.ekpack",
-      "sha256": "7616c70b771ed2044af69119035555d76cbd48513844b3f33c0a0162134d8377",
+      "sha256": "a972fdc704168ebc1bdaefd38e626f7dc25c12a2694308308e87483a6d32b2a4",
       "url": "packs/ur.ekpack"
     },
     "zh-Hans": {
-      "bytes": 913347,
+      "bytes": 913340,
       "mount": "packs",
       "origin_url": "https://ekovoz.github.io/packs/zh-Hans.ekpack",
-      "sha256": "5f6780cd9280c505e0fcafbb38d6bb0e5532967632100c0ebccde692bf6fd92d",
+      "sha256": "fb533221b80b8146fec4daed0d3b7b424b37d26d8ace20d6cab83e45adff3b84",
       "url": "packs/zh-Hans.ekpack"
     }
   },

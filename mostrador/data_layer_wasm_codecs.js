@@ -296,9 +296,9 @@ export function reconstructMatrixChapterFromDictPool(
   if (!chTuple) return null;
   const bCode = String(
     (typeof chTuple[3] === "string" && chTuple[3]) ||
-      requestedBook ||
-      parsedBook[0] ||
-      "",
+    requestedBook ||
+    parsedBook[0] ||
+    "",
   );
   const idxRows = Array.isArray(chTuple[1]) ? chTuple[1] : [];
   const strongsArr = Array.isArray(chTuple[2]) ? chTuple[2] : [];
@@ -325,129 +325,129 @@ export function reconstructMatrixChapterFromDictPool(
     const isColumnarSoa = chTuple.length >= 12 && (idxRows.length === 0 || typeof idxRows[0] === "number");
     const rows = isColumnarSoa
       ? (() => {
-          const wDeltas = Array.isArray(chTuple[3]) ? chTuple[3] : [];
-          const lSurfs = Array.isArray(chTuple[4]) ? chTuple[4] : [];
-          const lexIds = Array.isArray(chTuple[5]) ? chTuple[5] : [];
-          const g06s = Array.isArray(chTuple[6]) ? chTuple[6] : [];
-          const l10s = Array.isArray(chTuple[7]) ? chTuple[7] : [];
-          const g11s = Array.isArray(chTuple[8]) ? chTuple[8] : [];
-          const l12s = Array.isArray(chTuple[9]) ? chTuple[9] : [];
-          const l13s = Array.isArray(chTuple[10]) ? chTuple[10] : [];
-          const l14s = Array.isArray(chTuple[11]) ? chTuple[11] : [];
-          const outRows = new Array(idxRows.length);
-          let curV = 1;
-          let curW = 1;
-          for (let i = 0; i < idxRows.length; i += 1) {
-            const vd = Number(idxRows[i]) || 0;
-            const wd = Number(wDeltas[i]) || 1;
-            if (i === 0) {
-              curV = vd;
-              curW = wd;
-            } else if (vd !== 0) {
-              curV += vd;
-              curW = wd;
-            } else {
-              curW += wd;
-            }
-            const vNum = Math.max(1, curV);
-            const wordPos = Math.max(1, curW);
-            const macBcv = macBc + String(vNum).padStart(3, "0");
-            const lt = bookLexemes[Number(lexIds[i]) || 0] || [0, 0, 0, 0, 0, 0];
-            const c07Full = getLocal(lt[3])
-              .replaceAll("~C:", "CONCEPTICON:")
-              .replaceAll("~S:", "SDBH:")
-              .replaceAll("~L:", "LN:");
-            const c10Exp = getLocal(l10s[i]).replaceAll("^", macBcv).replaceAll("%", macBc);
-            const c10Full = c10Exp.startsWith("~")
-              ? `${bCode}.${chapter}.${vNum}.${c10Exp.slice(1)}`
-              : c10Exp;
-            const c12Full = getLocal(l12s[i])
-              .replaceAll("^", macBcv)
-              .replaceAll("%", macBc)
-              .replaceAll("~E:", "EVID:")
-              .replaceAll("~F:", "REF:");
-            const c13Full = getLocal(l13s[i])
-              .replaceAll("^", macBcv)
-              .replaceAll("%", macBc)
-              .replaceAll("~P:", "PRIM:")
-              .replaceAll("~F:", "REF:");
-            const c14Full = getLocal(l14s[i])
-              .replaceAll("~U", "UNIVERSAL_TRANSPARENT:NONE")
-              .replaceAll("~R:", "REALIA_GLOSS_REQUIRED:")
-              .replaceAll("~M:", "METROLOGY_GLOSS_REQUIRED:")
-              .replaceAll("~V:", "VOICE:");
-            outRows[i] = [
-              vNum,
-              getLocal(lSurfs[i]),
-              getLocal(lt[0]),
-              getLocal(lt[2]),
-              getClosed(g06s[i]),
-              c07Full,
-              getLocal(lt[4]),
-              getLocal(lt[5]),
-              c10Full,
-              getClosed(g11s[i]),
-              c12Full,
-              c13Full,
-              c14Full,
-              wordPos,
-              getLocal(lt[1]),
-            ];
+        const wDeltas = Array.isArray(chTuple[3]) ? chTuple[3] : [];
+        const lSurfs = Array.isArray(chTuple[4]) ? chTuple[4] : [];
+        const lexIds = Array.isArray(chTuple[5]) ? chTuple[5] : [];
+        const g06s = Array.isArray(chTuple[6]) ? chTuple[6] : [];
+        const l10s = Array.isArray(chTuple[7]) ? chTuple[7] : [];
+        const g11s = Array.isArray(chTuple[8]) ? chTuple[8] : [];
+        const l12s = Array.isArray(chTuple[9]) ? chTuple[9] : [];
+        const l13s = Array.isArray(chTuple[10]) ? chTuple[10] : [];
+        const l14s = Array.isArray(chTuple[11]) ? chTuple[11] : [];
+        const outRows = new Array(idxRows.length);
+        let curV = 1;
+        let curW = 1;
+        for (let i = 0; i < idxRows.length; i += 1) {
+          const vd = Number(idxRows[i]) || 0;
+          const wd = Number(wDeltas[i]) || 1;
+          if (i === 0) {
+            curV = vd;
+            curW = wd;
+          } else if (vd !== 0) {
+            curV += vd;
+            curW = wd;
+          } else {
+            curW += wd;
           }
-          return outRows;
-        })()
-      : idxRows.map((r, rowIdx) => {
-          const vNum = Number(r[0]) || 1;
+          const vNum = Math.max(1, curV);
+          const wordPos = Math.max(1, curW);
           const macBcv = macBc + String(vNum).padStart(3, "0");
-          const wordPos = Number(r[1]) || rowIdx + 1;
-          const lt = bookLexemes[Number(r[3]) || 0] || [0, 0, 0, 0, 0, 0, 0];
-          const pt = bookPrags
-            ? bookPrags[Number(r[4]) || 0] || [0, 0, 0, 0, 0]
-            : [r[4], r[5], r[6], r[7], r[8]];
-          const has6Prag = pt.length >= 6;
+          const lt = bookLexemes[Number(lexIds[i]) || 0] || [0, 0, 0, 0, 0, 0];
           const c07Full = getLocal(lt[3])
             .replaceAll("~C:", "CONCEPTICON:")
             .replaceAll("~S:", "SDBH:")
             .replaceAll("~L:", "LN:");
-          const c10Exp = getLocal(pt[1]).replaceAll("^", macBcv).replaceAll("%", macBc);
+          const c10Exp = getLocal(l10s[i]).replaceAll("^", macBcv).replaceAll("%", macBc);
           const c10Full = c10Exp.startsWith("~")
             ? `${bCode}.${chapter}.${vNum}.${c10Exp.slice(1)}`
             : c10Exp;
-          const c12Full = getLocal(pt[3])
+          const c12Full = getLocal(l12s[i])
             .replaceAll("^", macBcv)
             .replaceAll("%", macBc)
             .replaceAll("~E:", "EVID:")
             .replaceAll("~F:", "REF:");
-          const raw13 = has6Prag ? getLocal(pt[4]) : getLocal(lt[6]);
-          const c13Full = raw13
+          const c13Full = getLocal(l13s[i])
             .replaceAll("^", macBcv)
             .replaceAll("%", macBc)
             .replaceAll("~P:", "PRIM:")
             .replaceAll("~F:", "REF:");
-          const raw14 = getLocal(has6Prag ? pt[5] : pt[4]);
-          const c14Full = raw14
+          const c14Full = getLocal(l14s[i])
             .replaceAll("~U", "UNIVERSAL_TRANSPARENT:NONE")
             .replaceAll("~R:", "REALIA_GLOSS_REQUIRED:")
             .replaceAll("~M:", "METROLOGY_GLOSS_REQUIRED:")
             .replaceAll("~V:", "VOICE:");
-          return [
+          outRows[i] = [
             vNum,
-            getLocal(r[2]),
+            getLocal(lSurfs[i]),
             getLocal(lt[0]),
             getLocal(lt[2]),
-            getClosed(pt[0]),
+            getClosed(g06s[i]),
             c07Full,
             getLocal(lt[4]),
             getLocal(lt[5]),
             c10Full,
-            getClosed(pt[2]),
+            getClosed(g11s[i]),
             c12Full,
             c13Full,
             c14Full,
             wordPos,
             getLocal(lt[1]),
           ];
-        });
+        }
+        return outRows;
+      })()
+      : idxRows.map((r, rowIdx) => {
+        const vNum = Number(r[0]) || 1;
+        const macBcv = macBc + String(vNum).padStart(3, "0");
+        const wordPos = Number(r[1]) || rowIdx + 1;
+        const lt = bookLexemes[Number(r[3]) || 0] || [0, 0, 0, 0, 0, 0, 0];
+        const pt = bookPrags
+          ? bookPrags[Number(r[4]) || 0] || [0, 0, 0, 0, 0]
+          : [r[4], r[5], r[6], r[7], r[8]];
+        const has6Prag = pt.length >= 6;
+        const c07Full = getLocal(lt[3])
+          .replaceAll("~C:", "CONCEPTICON:")
+          .replaceAll("~S:", "SDBH:")
+          .replaceAll("~L:", "LN:");
+        const c10Exp = getLocal(pt[1]).replaceAll("^", macBcv).replaceAll("%", macBc);
+        const c10Full = c10Exp.startsWith("~")
+          ? `${bCode}.${chapter}.${vNum}.${c10Exp.slice(1)}`
+          : c10Exp;
+        const c12Full = getLocal(pt[3])
+          .replaceAll("^", macBcv)
+          .replaceAll("%", macBc)
+          .replaceAll("~E:", "EVID:")
+          .replaceAll("~F:", "REF:");
+        const raw13 = has6Prag ? getLocal(pt[4]) : getLocal(lt[6]);
+        const c13Full = raw13
+          .replaceAll("^", macBcv)
+          .replaceAll("%", macBc)
+          .replaceAll("~P:", "PRIM:")
+          .replaceAll("~F:", "REF:");
+        const raw14 = getLocal(has6Prag ? pt[5] : pt[4]);
+        const c14Full = raw14
+          .replaceAll("~U", "UNIVERSAL_TRANSPARENT:NONE")
+          .replaceAll("~R:", "REALIA_GLOSS_REQUIRED:")
+          .replaceAll("~M:", "METROLOGY_GLOSS_REQUIRED:")
+          .replaceAll("~V:", "VOICE:");
+        return [
+          vNum,
+          getLocal(r[2]),
+          getLocal(lt[0]),
+          getLocal(lt[2]),
+          getClosed(pt[0]),
+          c07Full,
+          getLocal(lt[4]),
+          getLocal(lt[5]),
+          c10Full,
+          getClosed(pt[2]),
+          c12Full,
+          c13Full,
+          c14Full,
+          wordPos,
+          getLocal(lt[1]),
+        ];
+      });
     const realia = [];
     for (const sc of strongsArr) {
       const entries = bookRealiaMap[String(sc)];
@@ -610,31 +610,72 @@ function computeCrc16CcittFallback(bytes) {
   return Math.max(1, crc);
 }
 
-/**
- * D5-S21+ (`ARB-EKOVOZ-63`, `ekovoz_player_wasm`):
- * Calcula las pausas prosódicas ($\tau_1$ coma, $\tau_2$ punto y coma, $\tau_3$ punto/selah),
- * alinea el cursor de sílaba activa dado `(elapsedMs, totalMs, syllableCount)` e invoca
- * `verify_audio_frame_crc16_in_place` sobre la memoria lineal de `ekovoz_player_wasm`.
- */
-export function computeProsodyAndSyllableAlignmentInWasm(
-  { text = "", wpm = 135, elapsedMs = 0, totalMs = 12000 } = {},
-  wasmMod = null,
-) {
-  const exports = wasmMod?.exports || wasmMod || null;
-  const safeWpm = Math.max(70, Math.min(220, Math.floor(Number(wpm) || 135)));
-  const cleanText = String(text || "En el principio creó Dios los cielos y la tierra.").trim();
-  const rawTokens = cleanText.split(/\s+/).filter(Boolean);
+const LATIN_GREEK_CYRILLIC_SYLLABLE_RE =
+  /[^\saeiouyáéíóúüàèìòùâêîôûãõäëïöüāēīōūɨʉəɔɛœæøåαεηιουωάέήίόύώϊϋΐΰаеёиоуыэюяіїє]*[aeiouyáéíóúüàèìòùâêîôûãõäëïöüāēīōūɨʉəɔɛœæøåαεηιουωάέήίόύώϊϋΐΰаеёиоуыэюяіїє]+(?:[^\saeiouyáéíóúüàèìòùâêîôûãõäëïöüāēīōūɨʉəɔɛœæøåαεηιουωάέήίόύώϊϋΐΰаеёиоуыэюяіїє]+(?=[^\saeiouyáéíóúüàèìòùâêîôûãõäëïöüāēīōūɨʉəɔɛœæøåαεηιουωάέήίόύώϊϋΐΰаеёиоуыэюяіїє][aeiouyáéíóúüàèìòùâêîôûãõäëïöüāēīōūɨʉəɔɛœæøåαεηιουωάέήίόύώϊϋΐΰаеёиоуыэюяіїє])|[^\saeiouyáéíóúüàèìòùâêîôûãõäëïöüāēīōūɨʉəɔɛœæøåαεηιουωάέήίόύώϊϋΐΰаеёиоуыэюяіїє]*$)|.+/giu;
+
+export function segmentMultilingualSyllables(cleanText) {
+  const rawTokens = String(cleanText || "").trim().split(/\s+/).filter(Boolean);
   const syllables = [];
   for (const tok of rawTokens) {
-    const parts = tok.match(
-      /[^aeiouáéíóúü]*[aeiouáéíóúü]+(?:[^aeiouáéíóúü]+(?=[^aeiouáéíóúü][aeiouáéíóúü])|[^aeiouáéíóúü]*$)|.+/gi,
-    );
+    if (/[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Hangul}\p{Script=Thai}\p{Script=Lao}\p{Script=Khmer}\p{Script=Myanmar}]/u.test(tok)) {
+      const units = tok.match(/[\p{L}\p{N}]\p{M}*|[^\s\p{L}\p{N}]+/gu) || [tok];
+      for (const u of units) syllables.push(u);
+      continue;
+    }
+    if (/[\p{Script=Devanagari}\p{Script=Bengali}\p{Script=Tamil}\p{Script=Telugu}\p{Script=Gujarati}\p{Script=Gurmukhi}\p{Script=Kannada}\p{Script=Malayalam}\p{Script=Oriya}\p{Script=Ethiopic}]/u.test(tok)) {
+      const aksharas = tok.match(/\p{L}(?:\p{M}|\u200D\p{L}|[\u094D\u09CD\u0BCD\u0C4D\u0D4D]\p{L})*|[^\s\p{L}]+/gu) || [tok];
+      for (const ak of aksharas) syllables.push(ak);
+      continue;
+    }
+    if (/[\p{Script=Hebrew}\p{Script=Arabic}\p{Script=Syriac}]/u.test(tok)) {
+      const clusters = tok.match(/\p{L}\p{M}*/gu) || [];
+      if (clusters.length >= 2) {
+        const prefixPunct = tok.match(/^[^\p{L}]+/u)?.[0] || "";
+        const suffixPunct = tok.match(/[^\p{L}\p{M}]+$/u)?.[0] || "";
+        for (let i = 0; i < clusters.length; i += 2) {
+          let beat;
+          if (i + 3 === clusters.length) {
+            beat = clusters.slice(i, i + 3).join("");
+            i = clusters.length;
+          } else {
+            beat = clusters.slice(i, Math.min(clusters.length, i + 2)).join("");
+          }
+          if (i === 0 && prefixPunct) beat = prefixPunct + beat;
+          if (i + 2 >= clusters.length && suffixPunct) beat += suffixPunct;
+          syllables.push(beat);
+        }
+        continue;
+      }
+      syllables.push(tok);
+      continue;
+    }
+    const parts = tok.match(LATIN_GREEK_CYRILLIC_SYLLABLE_RE);
     if (parts && parts.length > 0) {
-      for (const p of parts) syllables.push(p);
+      for (const p of parts) {
+        const cleanPart = p.trim();
+        if (cleanPart) syllables.push(cleanPart);
+      }
     } else {
       syllables.push(tok);
     }
   }
+  return syllables;
+}
+
+/**
+ * D5-S21+ (`ARB-EKOVOZ-63`, `ekovoz_player_wasm`, `ARB-EKOVOZ-108` ~39 bits/s):
+ * Calcula las pausas prosódicas ($\tau_1$ coma, $\tau_2$ punto y coma, $\tau_3$ punto/selah),
+ * segmenta sílabas Unicode multilingües, alinea el cursor dado `(elapsedMs, totalMs, syllableCount)`
+ * e invoca `verify_audio_frame_crc16_in_place` sobre la memoria lineal de `ekovoz_player_wasm`.
+ */
+export function computeProsodyAndSyllableAlignmentInWasm(
+  { text = "", wpm = 150, elapsedMs = 0, totalMs = 12000 } = {},
+  wasmMod = null,
+) {
+  const exports = wasmMod?.exports || wasmMod || null;
+  const safeWpm = Math.max(70, Math.min(220, Math.floor(Number(wpm) || 150)));
+  const cleanText = String(text || "En el principio creó Dios los cielos y la tierra.").trim();
+  const syllables = segmentMultilingualSyllables(cleanText);
   if (syllables.length === 0) {
     syllables.push(cleanText || "Selah");
   }
@@ -668,6 +709,8 @@ export function computeProsodyAndSyllableAlignmentInWasm(
 
   return {
     wpm: safeWpm,
+    targetBitsPerSec: 39,
+    syllablesPerSec: Number(((syllableCount * 1000) / safeTotalMs).toFixed(2)),
     elapsedMs: safeElapsedMs,
     totalMs: safeTotalMs,
     syllableCount,
@@ -884,17 +927,17 @@ export function projectNsmRealiaLexicon3NF(pericopesDoc = {}, rosettaDoc = {}) {
     rawRealia.length >= 1800
       ? rawRealia
       : Array.from({ length: 1800 }, (_, idx) => {
-          const seed = culturalGlosses[idx % Math.max(1, culturalGlosses.length)] || {};
-          const ref = seed.anchor_ref || (idx % 2 === 0 ? "GEN.1.1" : "GEN.1.2");
-          return {
-            realia_id: `REALIA-${String(idx + 1).padStart(4, "0")}`,
-            strong_code: seed.strong_code || (idx % 2 === 0 ? "H7225" : "H0430"),
-            surface_es: seed.surface_es || "realia bíblica",
-            category: seed.category || "Contexto_Biblico",
-            anchor_ref: ref,
-            first_occurrence_ref: ref,
-          };
-        });
+        const seed = culturalGlosses[idx % Math.max(1, culturalGlosses.length)] || {};
+        const ref = seed.anchor_ref || (idx % 2 === 0 ? "GEN.1.1" : "GEN.1.2");
+        return {
+          realia_id: `REALIA-${String(idx + 1).padStart(4, "0")}`,
+          strong_code: seed.strong_code || (idx % 2 === 0 ? "H7225" : "H0430"),
+          surface_es: seed.surface_es || "realia bíblica",
+          category: seed.category || "Contexto_Biblico",
+          anchor_ref: ref,
+          first_occurrence_ref: ref,
+        };
+      });
   return {
     schema_3nf: "ekovoz-nsm-realia-3nf-v34",
     total_cultural_glosses: culturalGlosses.length || 450,

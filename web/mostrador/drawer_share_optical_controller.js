@@ -454,7 +454,7 @@ export function bindOpticalCameraAndCadenceController({
         if (videoEl) {
           videoEl.srcObject = mediaStream;
           if (typeof videoEl.play === "function") {
-            Promise.resolve(videoEl.play()).catch(() => {});
+            Promise.resolve(videoEl.play()).catch(() => { });
           }
           if (
             typeof videoEl.readyState === "number" &&
@@ -490,9 +490,18 @@ export function bindOpticalCameraAndCadenceController({
             if (detector && typeof detector.detect === "function") {
               try {
                 const codes = await detector.detect(videoEl);
-                if (Array.isArray(codes) && codes.length > 0 && codes[0].rawValue) {
-                  state.lastScannedOpticalFrameRaw = String(codes[0].rawValue);
-                  const rawFrameBytes = new TextEncoder().encode(state.lastScannedOpticalFrameRaw);
+                if (Array.isArray(codes) && codes.length > 0 && (codes[0].rawBytes || codes[0].rawValue)) {
+                  let rawFrameBytes;
+                  if (codes[0].rawBytes instanceof Uint8Array && codes[0].rawBytes.byteLength > 0) {
+                    rawFrameBytes = codes[0].rawBytes;
+                  } else {
+                    const rawStr = String(codes[0].rawValue || "");
+                    state.lastScannedOpticalFrameRaw = rawStr;
+                    const isBinaryEco = rawStr.startsWith("ECO1") || rawStr.startsWith("ECOM");
+                    rawFrameBytes = isBinaryEco
+                      ? Uint8Array.from(rawStr, (ch) => ch.charCodeAt(0) & 0xff)
+                      : new TextEncoder().encode(rawStr);
+                  }
                   const session = ensureRxSessionForPacket(rawFrameBytes);
                   const wasmBatch = decodeQrStreamViaWasmBridge([rawFrameBytes], wasmMod, session);
                   if (onBatchDecodedMaybeComplete(wasmBatch)) return;
