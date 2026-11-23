@@ -91,7 +91,7 @@
                 aria-label="Language and Appearance">
                 <button type="button" class="uls-chip" id="sovereignCorpusLangBtn" data-i18n-autonym="true" aria-expanded="false"
                     aria-controls="bibleLanguageAndRegisterDrawer">
-                    🌍 <span id="sovereignActiveCorpusLabel">Censo SIL (7,164) · 18 Biblias · Español</span>
+                    🌍 <span id="sovereignActiveCorpusLabel">Censo SIL (7,164) · 24 Biblias · Español</span>
                 </button>
                 <button type="button" class="uls-chip" id="btnAppearanceMenu" data-i18n-autonym="true" aria-expanded="false"
                     aria-controls="appearancePopover" aria-label="Appearance settings">Aa</button>
@@ -105,186 +105,178 @@
             <button type="button" id="btnFontSans" class="uls-chip" data-i18n-autonym="true" aria-pressed="false">Sans</button>
             <button type="button" id="btnScaleDown" class="uls-chip" data-i18n-autonym="true" aria-label="Decrease text size">A-</button>
             <button type="button" id="btnScaleUp" class="uls-chip" data-i18n-autonym="true" aria-label="Increase text size">A+</button>
-            <button type="button" id="btnToggleSurfaceMode" class="uls-chip" data-i18n="top.btn.studioMode" aria-pressed="false"
-                aria-label="Switch Reading or Pro Studio mode">🎛️ Studio</button>
-
-            <div id="bibleRegisterSelector" class="register-selector-group" role="group" aria-label="Reading Mode">
-                    <button type="button" id="btnRegIntergeneracional" class="uls-chip"
-                        data-register="intergeneracional" data-i18n="mostrador.register.intergenerational">🕊️ Clear
-                        contemporary reading</button>
-                    <button type="button" id="btnRegClasica" class="uls-chip" data-register="clasica"
-                        data-i18n="mostrador.register.classic">📜 Classic tradition
-                        (1909)</button>
-                    <button type="button" id="btnRegBilingue" class="uls-chip" data-register="bilingue"
-                        data-i18n="mostrador.register.bilingual">👥 Side-by-side
-                        bilingual (62/38)</button>
-                    <button type="button" id="toggleRollMode" class="uls-chip"
-                        data-i18n="mostrador.register.roll_toggle">📄 Page view ↔
-                        Continuous scroll</button>
-                    <span id="bibleStageRegisterPulseBadge" class="uls-badge" aria-live="polite">🌡️ Contemporary ·
-                        Clear reading</span>
-                </div>
-
+            <div class="ek-row-wrap ek-divider-top" role="group" aria-label="App Interface Language">
+                <button type="button" class="uls-trigger-btn" id="ulsTriggerBtn" data-i18n-autonym="true" aria-haspopup="listbox"
+                    aria-expanded="false" aria-controls="langSelect">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="2" y1="12" x2="22" y2="12"></line>
+                        <path
+                            d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z">
+                        </path>
+                    </svg>
+                    <span id="ulsCurrentLang">English</span>
+                    <span class="uls-badge" id="ulsUiCountBadge">18 UI</span>
+                </button>
+                <select id="langSelect" aria-label="Language / Idioma" hidden>
+                    <option value="en" selected>English</option>
+                    <option value="es">Español</option>
+                    <option value="bn-BD">বাংলা — বাংলাদেশ (Bangladesh · ঈসা মসীহ)</option>
+                    <option value="bn-IN">বাংলা — ভারত/প্রচলিত (West Bengal · প্রভু যীশু)</option>
+                    <option value="bn">বাংলা</option>
+                    <option value="fr">Français</option>
+                    <option value="pt">Português</option>
+                    <option value="it">Italiano</option>
+                    <option value="id">Bahasa Indonesia</option>
+                    <option value="tr">Türkçe</option>
+                    <option value="ru">Русский</option>
+                    <option value="zh-Hans">简体中文</option>
+                    <option value="ja">日本語</option>
+                    <option value="ko">한국어</option>
+                    <option value="hi">हिन्दी</option>
+                    <option value="ar">العربية</option>
+                    <option value="ur">اردو</option>
+                    <option value="fa">فارسی</option>
+                </select>
+            </div>
         </div>
-        <!-- Global Orthogonal Corpus Language Funnel (18 Complete Bibles + SIL 7,164 Census) & 8 Life Trails (D2-A+) -->
+        <!-- Global Orthogonal Corpus Language Funnel (24 Bibles & Portions + SIL 7,164 Census) & 8 Life Trails (D3-R5) -->
         <details class="advanced-editorial-drawer advanced-editorial-drawer corpus-drawer" id="bibleLanguageAndRegisterDrawer">
             <summary hidden aria-hidden="true" data-i18n="mostrador.step1.title">
-                1. Choose language: 18 complete Bibles or SIL Census (7,164)</summary>
+                1. Choose language: 24 Bibles &amp; Portions or SIL Census (7,164)</summary>
             <div>
-                <div class="ek-row-wrap ek-mb-sm">
-                    <button type="button" class="uls-trigger-btn" id="ulsTriggerBtn" data-i18n-autonym="true" aria-haspopup="listbox"
-                        aria-expanded="false" aria-controls="langSelect">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                            stroke-linecap="round" stroke-linejoin="round">
-                            <circle cx="12" cy="12" r="10"></circle>
-                            <line x1="2" y1="12" x2="22" y2="12"></line>
-                            <path
-                                d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z">
-                            </path>
-                        </svg>
-                        <span id="ulsCurrentLang">English</span>
-                        <span class="uls-badge" id="ulsUiCountBadge">18 UI</span>
-                    </button>
-                    <select id="langSelect" aria-label="Language / Idioma" hidden>
-                        <option value="en" selected>English</option>
-                        <option value="es">Español</option>
-                        <option value="bn-BD">বাংলা — বাংলাদেশ (Bangladesh · ঈসা মসীহ)</option>
-                        <option value="bn-IN">বাংলা — ভারত/প্রচলিত (West Bengal · প্রভু যীশু)</option>
-                        <option value="bn">বাংলা</option>
-                        <option value="fr">Français</option>
-                        <option value="pt">Português</option>
-                        <option value="it">Italiano</option>
-                        <option value="id">Bahasa Indonesia</option>
-                        <option value="tr">Türkçe</option>
-                        <option value="ru">Русский</option>
-                        <option value="zh-Hans">简体中文</option>
-                        <option value="ja">日本語</option>
-                        <option value="ko">한국어</option>
-                        <option value="hi">हिन्दी</option>
-                        <option value="ar">العربية</option>
-                        <option value="ur">اردو</option>
-                        <option value="fa">فارسی</option>
-                    </select>
+                <div id="corpusDrawerTabs" class="subtabs-bar" role="tablist" aria-label="Biblias y Planes de Lectura">
+                    <button type="button" id="btnCorpusTabBibles" class="uls-chip" role="tab" aria-selected="true"
+                        aria-controls="corpusTabPanelBibles">📖 Biblias y Lenguas (24)</button>
+                    <button type="button" id="btnCorpusTabTrails" class="uls-chip" role="tab" aria-selected="false"
+                        aria-controls="corpusTabPanelTrails">🧭 Planes de Lectura (8)</button>
                 </div>
-                <div id="bibleVerifiedCorpusPills" class="chip-wrap-row" role="group" aria-label="Complete Verified Bibles">
-                    <button type="button" id="quickLangEs" class="uls-chip" data-i18n-autonym="true" data-corpus-lang="es">🇲🇽 Español Siglo XXI
-                        (66)</button>
-                    <button type="button" id="quickLangEs1909" class="uls-chip" data-i18n-autonym="true" data-corpus-lang="es-1909">📜 Español
-                        Clásica 1909 (66)</button>
-                    <button type="button" id="quickLangEn" class="uls-chip" data-i18n-autonym="true" data-corpus-lang="en">🇺🇸 English KJV
-                        (66)</button>
-                    <button type="button" id="quickLangPt" class="uls-chip" data-i18n-autonym="true" data-corpus-lang="pt">🇧🇷 Português
-                        (66)</button>
-                    <button type="button" id="quickLangFr" class="uls-chip" data-i18n-autonym="true" data-corpus-lang="fr">🇫🇷 Français
-                        (66)</button>
-                    <button type="button" id="quickLangStp" class="uls-chip" data-i18n-autonym="true" data-corpus-lang="stp">🏔️ O'dam Tepehuano
-                        (66)</button>
-                    <button type="button" id="quickLangHe" class="uls-chip" data-i18n-autonym="true" data-corpus-lang="he">🕎 עברית WLC+Delitzsch
-                        (66)</button>
-                    <button type="button" id="quickLangGrc" class="uls-chip" data-i18n-autonym="true" data-corpus-lang="grc">🏛️ Ἑλληνική
-                        LXX+SRGNT (66)</button>
-                    <button type="button" id="quickLangAr" class="uls-chip" data-i18n-autonym="true" data-corpus-lang="ar">🇸🇦 العربية
-                        (66)</button>
-                    <button type="button" id="quickLangFa" class="uls-chip" data-i18n-autonym="true" data-corpus-lang="fa">🇮🇷 فارسی
-                        (66)</button>
-                    <button type="button" id="quickLangUr" class="uls-chip" data-i18n-autonym="true" data-corpus-lang="ur">🇵🇰 اردو
-                        (66)</button>
-                    <button type="button" id="quickLangHi" class="uls-chip" data-i18n-autonym="true" data-corpus-lang="hi">🇮🇳 हिन्दी
-                        (66)</button>
-                    <button type="button" id="quickLangBn" class="uls-chip" data-i18n-autonym="true" data-corpus-lang="bn">🇧🇩 বাংলা
-                        (66)</button>
-                    <button type="button" id="quickLangId" class="uls-chip" data-i18n-autonym="true" data-corpus-lang="id">🇮🇩 Bahasa Indonesia
-                        (66)</button>
-                    <button type="button" id="quickLangRu" class="uls-chip" data-i18n-autonym="true" data-corpus-lang="ru">🇷🇺 Русский
-                        (66)</button>
-                    <button type="button" id="quickLangZhHans" class="uls-chip" data-i18n-autonym="true" data-corpus-lang="zh-Hans">🇨🇳 简体中文
-                        (66)</button>
+                <div id="corpusTabPanelBibles" role="tabpanel" aria-labelledby="btnCorpusTabBibles">
+                    <div id="bibleVerifiedCorpusPills" class="chip-wrap-row" role="group" aria-label="24 Verified Bibles and Portions">
+                        <button type="button" id="quickLangEs" class="uls-chip" data-i18n-autonym="true" data-corpus-lang="es">🇲🇽 Español Siglo XXI (66)</button>
+                        <button type="button" id="quickLangEs1909" class="uls-chip" data-i18n-autonym="true" data-corpus-lang="es-1909">📜 Español Clásica 1909 (66)</button>
+                        <button type="button" id="quickLangEn" class="uls-chip" data-i18n-autonym="true" data-corpus-lang="en">🇺🇸 English KJV (66)</button>
+                        <button type="button" id="quickLangPt" class="uls-chip" data-i18n-autonym="true" data-corpus-lang="pt">🇧🇷 Português (66)</button>
+                        <button type="button" id="quickLangFr" class="uls-chip" data-i18n-autonym="true" data-corpus-lang="fr">🇫🇷 Français (66)</button>
+                        <button type="button" id="quickLangDe" class="uls-chip" data-i18n-autonym="true" data-corpus-lang="de">🇩🇪 Deutsch (66)</button>
+                        <button type="button" id="quickLangIt" class="uls-chip" data-i18n-autonym="true" data-corpus-lang="it">🇮🇹 Italiano (66)</button>
+                        <button type="button" id="quickLangStp" class="uls-chip" data-i18n-autonym="true" data-corpus-lang="stp">🏔️ O'dam Tepehuano (66)</button>
+                        <button type="button" id="quickLangHe" class="uls-chip" data-i18n-autonym="true" data-corpus-lang="he">🕎 עברית WLC+Delitzsch (66)</button>
+                        <button type="button" id="quickLangGrc" class="uls-chip" data-i18n-autonym="true" data-corpus-lang="grc">🏛️ Ἑλληνική LXX+SRGNT (66)</button>
+                        <button type="button" id="quickLangAr" class="uls-chip" data-i18n-autonym="true" data-corpus-lang="ar">🇸🇦 العربية (66)</button>
+                        <button type="button" id="quickLangFa" class="uls-chip" data-i18n-autonym="true" data-corpus-lang="fa">🇮🇷 فارسی (66)</button>
+                        <button type="button" id="quickLangUr" class="uls-chip" data-i18n-autonym="true" data-corpus-lang="ur">🇵🇰 اردو (66)</button>
+                        <button type="button" id="quickLangHi" class="uls-chip" data-i18n-autonym="true" data-corpus-lang="hi">🇮🇳 हिन्दी (66)</button>
+                        <button type="button" id="quickLangBn" class="uls-chip" data-i18n-autonym="true" data-corpus-lang="bn">🇧🇩 বাংলা (66)</button>
+                        <button type="button" id="quickLangId" class="uls-chip" data-i18n-autonym="true" data-corpus-lang="id">🇮🇩 Bahasa Indonesia (66)</button>
+                        <button type="button" id="quickLangSw" class="uls-chip" data-i18n-autonym="true" data-corpus-lang="sw">🇰🇪 Kiswahili (66)</button>
+                        <button type="button" id="quickLangTr" class="uls-chip" data-i18n-autonym="true" data-corpus-lang="tr">🇹🇷 Türkçe (66)</button>
+                        <button type="button" id="quickLangRu" class="uls-chip" data-i18n-autonym="true" data-corpus-lang="ru">🇷🇺 Русский (66)</button>
+                        <button type="button" id="quickLangZhHans" class="uls-chip" data-i18n-autonym="true" data-corpus-lang="zh-Hans">🇨🇳 简体中文 (66)</button>
+                        <button type="button" id="quickLangJa" class="uls-chip" data-i18n-autonym="true" data-corpus-lang="ja">🇯🇵 日本語 (66)</button>
+                        <button type="button" id="quickLangKo" class="uls-chip" data-i18n-autonym="true" data-corpus-lang="ko">🇰🇷 한국어 (66)</button>
+                        <button type="button" id="quickLangArp" class="uls-chip" data-i18n-autonym="true" data-corpus-lang="arp">🪶 Arapaho (Porción)</button>
+                        <button type="button" id="quickLangBre" class="uls-chip" data-i18n-autonym="true" data-corpus-lang="bre">🌊 Brezhoneg (Porción)</button>
+                        <button type="button" id="quickLangCha" class="uls-chip" data-i18n-autonym="true" data-corpus-lang="cha">🌺 Chamorro (Porción)</button>
+                    </div>
+                    <div id="bibleRegisterSelector" class="register-selector-group ek-mt-sm" role="group" aria-label="Reading Mode">
+                        <button type="button" id="btnRegIntergeneracional" class="uls-chip"
+                            data-register="intergeneracional" data-i18n="mostrador.register.intergenerational">🕊️ Clear
+                            contemporary reading</button>
+                        <button type="button" id="btnRegClasica" class="uls-chip" data-register="clasica"
+                            data-i18n="mostrador.register.classic">📜 Classic tradition
+                            (1909)</button>
+                        <button type="button" id="btnRegBilingue" class="uls-chip" data-register="bilingue"
+                            data-i18n="mostrador.register.bilingual">👥 Side-by-side
+                            bilingual (62/38)</button>
+                        <button type="button" id="toggleRollMode" class="uls-chip"
+                            data-i18n="mostrador.register.roll_toggle">📄 Page view ↔
+                            Continuous scroll</button>
+                        <span id="bibleStageRegisterPulseBadge" class="uls-badge" aria-live="polite">🌡️ Lectura clara
+                            contemporánea</span>
+                    </div>
+                    <div class="ek-mt-sm">
+                        <input type="search" id="quickLangFilterInput" class="field-search-input"
+                            placeholder="Search 7,164 languages (ISO, autonym, country)...">
+                    </div>
+                    <div id="bibleGeoFunnel" class="geo-funnel-row" aria-label="Geographic 3-Tap Funnel">
+                        <select id="bibleSelectRegion" aria-label="World Region">
+                            <option value="americas-mesoamerica" data-i18n="region.americas-mesoamerica">Mesoamerica &amp;
+                                North America</option>
+                            <option value="americas-north" data-i18n="region.americas-north">Indigenous North America &amp;
+                                Arctic</option>
+                            <option value="europe-west" data-i18n="region.europe-west">Western Europe &amp; Mediterranean
+                            </option>
+                            <option value="europe-east" data-i18n="region.europe-east">Eastern Europe &amp; Northern Eurasia
+                            </option>
+                            <option value="anatolia-central-asia" data-i18n="region.anatolia-central-asia">Anatolia,
+                                Caucasus &amp; Central Asia</option>
+                            <option value="mena-caucasus" data-i18n="region.mena-caucasus">Middle East &amp; North Africa
+                            </option>
+                            <option value="africa-sahel-horn" data-i18n="region.africa-sahel-horn">Horn of Africa &amp;
+                                Sahel</option>
+                            <option value="africa-sub-saharan" data-i18n="region.africa-sub-saharan">Sub-Saharan Africa
+                            </option>
+                            <option value="south-asia" data-i18n="region.south-asia">South Asia</option>
+                            <option value="east-asia" data-i18n="region.east-asia">East Asia</option>
+                            <option value="southeast-asia" data-i18n="region.southeast-asia">Mainland &amp; Insular
+                                Southeast Asia</option>
+                            <option value="oceania-pacific" data-i18n="region.oceania-pacific">Oceania, Papua New Guinea
+                                &amp; Pacific</option>
+                        </select>
+                        <select id="bibleSelectCountry" aria-label="Country or Subregion">
+                            <option value="MX-DUR">Durango &amp; Sierra Madre Occidental</option>
+                            <option value="MX-OAX">Oaxaca &amp; South</option>
+                            <option value="MX-GEN">Spanish &amp; English (Bridge Languages)</option>
+                            <option value="EG-LEV">Levant &amp; Nile Valley</option>
+                            <option value="CN-JP-KR">Sinosphere &amp; Archipelagos</option>
+                        </select>
+                        <select id="bibleSelectLang" aria-label="Reading Language">
+                            <option value="es" selected>Español Siglo XXI (es)</option>
+                            <option value="es-1909">Español Clásica 1909 (es-1909)</option>
+                            <option value="en">English KJV (en)</option>
+                            <option value="pt">Português (pt)</option>
+                            <option value="fr">Français (fr)</option>
+                            <option value="de">Deutsch (de)</option>
+                            <option value="it">Italiano (it)</option>
+                            <option value="stp">O'dam · Tepehuano del Sur (stp · NT verificado / AT taller)</option>
+                            <option value="he">עברית (he · WLC + Delitzsch)</option>
+                            <option value="grc">Ἑλληνική (grc · LXX + SRGNT)</option>
+                            <option value="ar">العربية (ar)</option>
+                            <option value="fa">فارسی (fa)</option>
+                            <option value="ur">اردو (ur)</option>
+                            <option value="hi">हिन्दी (hi)</option>
+                            <option value="bn">বাংলা (bn)</option>
+                            <option value="bn-BD">বাংলা — বাংলাদেশ (bn-BD · ঈসা মসীহ)</option>
+                            <option value="bn-IN">বাংলা — ভারত/প্রচলিত (bn-IN · প্রভু যীশু)</option>
+                            <option value="id">Bahasa Indonesia (id)</option>
+                            <option value="sw">Kiswahili (sw)</option>
+                            <option value="tr">Türkçe (tr)</option>
+                            <option value="ru">Русский (ru)</option>
+                            <option value="zh-Hans">简体中文 (zh-Hans)</option>
+                            <option value="ja">日本語 (ja)</option>
+                            <option value="ko">한국어 (ko)</option>
+                            <option value="quc">K'iche' (quc)</option>
+                            <option value="arp">Hinónoʼeitíít · Arapaho (arp · Porciones)</option>
+                            <option value="bre">Brezhoneg · Breton (bre · Porciones)</option>
+                            <option value="cha">Finuʼ Chamorro (cha · Porciones)</option>
+                            <option value="aud">Au'dam (aud · Draft)</option>
+                            <option value="kgv">Kalamang (kgv · Draft)</option>
+                        </select>
+                    </div>
                 </div>
-                <div>
-                    <input type="search" id="quickLangFilterInput" class="field-search-input"
-                        placeholder="Search 7,164 languages (ISO, autonym, country)...">
-                </div>
-                <div id="bibleGeoFunnel" class="geo-funnel-row" aria-label="Geographic 3-Tap Funnel">
-                    <select id="bibleSelectRegion" aria-label="World Region">
-                        <option value="americas-mesoamerica" data-i18n="region.americas-mesoamerica">Mesoamerica &amp;
-                            North America</option>
-                        <option value="americas-north" data-i18n="region.americas-north">Indigenous North America &amp;
-                            Arctic</option>
-                        <option value="europe-west" data-i18n="region.europe-west">Western Europe &amp; Mediterranean
-                        </option>
-                        <option value="europe-east" data-i18n="region.europe-east">Eastern Europe &amp; Northern Eurasia
-                        </option>
-                        <option value="anatolia-central-asia" data-i18n="region.anatolia-central-asia">Anatolia,
-                            Caucasus &amp; Central Asia</option>
-                        <option value="mena-caucasus" data-i18n="region.mena-caucasus">Middle East &amp; North Africa
-                        </option>
-                        <option value="africa-sahel-horn" data-i18n="region.africa-sahel-horn">Horn of Africa &amp;
-                            Sahel</option>
-                        <option value="africa-sub-saharan" data-i18n="region.africa-sub-saharan">Sub-Saharan Africa
-                        </option>
-                        <option value="south-asia" data-i18n="region.south-asia">South Asia</option>
-                        <option value="east-asia" data-i18n="region.east-asia">East Asia</option>
-                        <option value="southeast-asia" data-i18n="region.southeast-asia">Mainland &amp; Insular
-                            Southeast Asia</option>
-                        <option value="oceania-pacific" data-i18n="region.oceania-pacific">Oceania, Papua New Guinea
-                            &amp; Pacific</option>
-                    </select>
-                    <select id="bibleSelectCountry" aria-label="Country or Subregion">
-                        <option value="MX-DUR">Durango &amp; Sierra Madre Occidental</option>
-                        <option value="MX-OAX">Oaxaca &amp; South</option>
-                        <option value="MX-GEN">Spanish &amp; English (Bridge Languages)</option>
-                        <option value="EG-LEV">Levant &amp; Nile Valley</option>
-                        <option value="CN-JP-KR">Sinosphere &amp; Archipelagos</option>
-                    </select>
-                    <select id="bibleSelectLang" aria-label="Reading Language">
-                        <option value="es" selected>Español Siglo XXI (es)</option>
-                        <option value="es-1909">Español Clásica 1909 (es-1909)</option>
-                        <option value="en">English KJV (en)</option>
-                        <option value="pt">Português (pt)</option>
-                        <option value="fr">Français (fr)</option>
-                        <option value="de">Deutsch (de)</option>
-                        <option value="it">Italiano (it)</option>
-                        <option value="stp">O'dam · Tepehuano del Sur (stp · NT verificado / AT taller)</option>
-                        <option value="he">עברית (he · WLC + Delitzsch)</option>
-                        <option value="grc">Ἑλληνική (grc · LXX + SRGNT)</option>
-                        <option value="ar">العربية (ar)</option>
-                        <option value="fa">فارسی (fa)</option>
-                        <option value="ur">اردو (ur)</option>
-                        <option value="hi">हिन्दी (hi)</option>
-                        <option value="bn">বাংলা (bn)</option>
-                        <option value="bn-BD">বাংলা — বাংলাদেশ (bn-BD · ঈসা মসীহ)</option>
-                        <option value="bn-IN">বাংলা — ভারত/প্রচলিত (bn-IN · প্রভু যীশু)</option>
-                        <option value="id">Bahasa Indonesia (id)</option>
-                        <option value="sw">Kiswahili (sw)</option>
-                        <option value="tr">Türkçe (tr)</option>
-                        <option value="ru">Русский (ru)</option>
-                        <option value="zh-Hans">简体中文 (zh-Hans)</option>
-                        <option value="ja">日本語 (ja)</option>
-                        <option value="ko">한국어 (ko)</option>
-                        <option value="quc">K'iche' (quc)</option>
-                        <option value="arp">Hinónoʼeitíít · Arapaho (arp · Porciones)</option>
-                        <option value="bre">Brezhoneg · Breton (bre · Porciones)</option>
-                        <option value="cha">Finuʼ Chamorro (cha · Porciones)</option>
-                        <option value="aud">Au'dam (aud · Draft)</option>
-                        <option value="kgv">Kalamang (kgv · Draft)</option>
-                    </select>
-                </div>
-                <div id="bibleLifeTrails" class="chip-wrap-row" aria-label="8 Life Trails">
-                    <button type="button" id="btnTrailConsuelo" class="uls-chip" data-trail-id="consuelo" data-i18n="trail.consuelo">Comfort (Ps
-                        23)</button>
-                    <button type="button" id="btnTrailPaz" class="uls-chip" data-trail-id="paz" data-i18n="trail.paz">Peace (Jn 14)</button>
-                    <button type="button" id="btnTrailPerdon" class="uls-chip" data-trail-id="perdon" data-i18n="trail.perdon">Forgiveness (Lk
-                        15)</button>
-                    <button type="button" id="btnTrailSabiduria" class="uls-chip" data-trail-id="sabiduria" data-i18n="trail.sabiduria">Wisdom (Jas
-                        1)</button>
-                    <button type="button" id="btnTrailFamilia" class="uls-chip" data-trail-id="familia" data-i18n="trail.familia">Family (1 Cor
-                        13)</button>
-                    <button type="button" id="btnTrailEsperanza" class="uls-chip" data-trail-id="esperanza" data-i18n="trail.esperanza">Hope (Rom
-                        8)</button>
-                    <button type="button" id="btnTrailOracion" class="uls-chip" data-trail-id="oracion" data-i18n="trail.oracion">Prayer (Mt
-                        6)</button>
-                    <button type="button" id="btnTrailCreacion" class="uls-chip" data-trail-id="creacion" data-i18n="trail.creacion">Creation (Gen
-                        1)</button>
+                <div id="corpusTabPanelTrails" role="tabpanel" aria-labelledby="btnCorpusTabTrails" hidden>
+                    <div id="bibleLifeTrails" class="chip-wrap-row" aria-label="8 Life Trails">
+                        <button type="button" id="btnTrailConsuelo" class="uls-chip" data-trail-id="consuelo" data-i18n="trail.consuelo">Comfort (Ps 23)</button>
+                        <button type="button" id="btnTrailPaz" class="uls-chip" data-trail-id="paz" data-i18n="trail.paz">Peace (Jn 14)</button>
+                        <button type="button" id="btnTrailPerdon" class="uls-chip" data-trail-id="perdon" data-i18n="trail.perdon">Forgiveness (Lk 15)</button>
+                        <button type="button" id="btnTrailSabiduria" class="uls-chip" data-trail-id="sabiduria" data-i18n="trail.sabiduria">Wisdom (Jas 1)</button>
+                        <button type="button" id="btnTrailFamilia" class="uls-chip" data-trail-id="familia" data-i18n="trail.familia">Family (1 Cor 13)</button>
+                        <button type="button" id="btnTrailEsperanza" class="uls-chip" data-trail-id="esperanza" data-i18n="trail.esperanza">Hope (Rom 8)</button>
+                        <button type="button" id="btnTrailOracion" class="uls-chip" data-trail-id="oracion" data-i18n="trail.oracion">Prayer (Mt 6)</button>
+                        <button type="button" id="btnTrailCreacion" class="uls-chip" data-trail-id="creacion" data-i18n="trail.creacion">Creation (Gen 1)</button>
+                    </div>
                 </div>
             </div>
         </details>
@@ -557,20 +549,15 @@
         <div>
             <h2 id="evangeliosMainHeading">🌅 Los Evangelios · 52
                 Láminas</h2>
-            <div>
-                <select id="evangeliosLangSelect" aria-label="Idioma de Los Evangelios" hidden>
-                    <option value="es" selected>🇲🇽 Español (es)</option>
-                    <option value="en">🇺🇸 English (en)</option>
-                    <option value="pt">🇧🇷 Português (pt)</option>
-                    <option value="fr">🇫🇷 Français (fr)</option>
-                    <option value="quc">🇬🇹 K'iche' (quc)</option>
-                    <option value="gn">🇵🇾 Avañe'ẽ Guaraní (gn)</option>
-                    <option value="stp">🏔️ O'dam Tepehuano (stp)</option>
-                </select>
-                <span class="uls-badge" id="evangeliosGlobalLangBadge" data-unified-header="true" role="button"
-                    tabindex="0">🌍
-                    ES · 7,164</span>
-            </div>
+            <select id="evangeliosLangSelect" aria-label="Idioma de Los Evangelios" hidden>
+                <option value="es" selected>🇲🇽 Español (es)</option>
+                <option value="en">🇺🇸 English (en)</option>
+                <option value="pt">🇧🇷 Português (pt)</option>
+                <option value="fr">🇫🇷 Français (fr)</option>
+                <option value="quc">🇬🇹 K'iche' (quc)</option>
+                <option value="gn">🇵🇾 Avañe'ẽ Guaraní (gn)</option>
+                <option value="stp">🏔️ O'dam Tepehuano (stp)</option>
+            </select>
         </div>
         <div id="evangeliosQuarterTabs" role="tablist" aria-label="Liturgical Quarters">
             <button type="button" id="btnEvangeliosQuarterT1" class="uls-chip evangelios-quarter-btn" data-evangelios-quarter="T1" data-i18n="evangelios.quarter.t1"
@@ -598,8 +585,6 @@
             <div id="stickyDrawerContextHeader" class="sticky-drawer-context-header" hidden>
                 <span id="stickyActiveVersePill">📖 JHN 1:1</span>
                 <div class="ek-row-wrap">
-                    <button type="button" id="stickyActiveLangBtn" class="uls-chip" data-i18n-autonym="true">🌍
-                        ES</button>
                     <button type="button" id="btnStickyJumpToCanvas" class="uls-chip" data-i18n="nav.jumpToCanvas">↑
                         Lienzo</button>
                     <button type="button" id="btnCloseMobileSheet" class="uls-chip mobile-sheet-close-btn"
@@ -608,22 +593,24 @@
             </div>
             <button type="button" id="bibleEasyDrawer" class="uls-chip" data-open="false" aria-expanded="false"
                 aria-controls="bibleEasyDrawerPanel"><strong
-                    data-i18n="mostrador.door.study">💡 1. Word-by-Word Study (15 Columns)</strong><span
+                    data-i18n="mostrador.door.study">💡 1. Study (15 Columns)</strong><span
                     class="uls-badge hig-tech-meta" hidden>15 Col</span></button>
             <button type="button" id="btnOpenPrintEditionsSheet" class="uls-chip" data-open="false"
                 aria-expanded="false" aria-controls="biblePrintEditionsSheet"><strong
-                    data-i18n="mostrador.door.print">🖨️ 2. Print &amp; 14 PDF Editions</strong></button>
+                    data-i18n="mostrador.door.print">🖨️ 2. Print &amp; Editions</strong></button>
             <button type="button" id="btnOpenFieldWorkshopSheet" class="uls-chip studio-only-control" data-open="false"
                 aria-expanded="false" aria-controls="bibleFieldWorkshopSheet"><strong
-                    data-i18n="mostrador.door.improve">🌱 3. Suggest Improvement</strong></button>
-            <button type="button" id="btnOpenShareAndAuditSheet" class="uls-chip studio-only-control" data-open="false"
+                    data-i18n="mostrador.door.improve">🌱 3. Workshop (L1–L5)</strong></button>
+            <button type="button" id="btnOpenShareAndAuditSheet" class="uls-chip" data-open="false"
                 aria-expanded="false" aria-controls="bibleShareAndAuditSheet"><strong
-                    data-i18n="mostrador.door.share">📲 4. Share Offline &amp; QR</strong></button>
+                    data-i18n="mostrador.door.share">📲 4. Share Offline</strong></button>
+            <button type="button" id="btnToggleSurfaceMode" class="uls-chip inspector-studio-toggle" data-i18n="top.btn.studioMode"
+                aria-pressed="false" aria-label="Switch Reading or Pro Studio mode">🎛️ Taller</button>
         </nav>
 
         <!-- Drawer 1: 15-Column Word-by-Word Study (Lazy-loaded via estudio.js) -->
         <section id="bibleEasyDrawerPanel" class="apple-sheet" data-sheet="study" data-strong-id="G3056" hidden>
-            <h3 data-i18n="study.title">15-Column Word-by-Word Study
+            <h3 class="sr-only" data-i18n="study.title">15-Column Word-by-Word Study
                 &amp; Biblical World</h3>
             <nav id="studyHarelSubtabsBar" class="subtabs-bar" role="tablist" aria-label="Word Study and Philology Subtabs">
                 <button type="button" id="btnStudySubtabWords" class="uls-chip" role="tab" data-study-subtab-btn="words"
@@ -677,7 +664,7 @@
 
         <!-- Drawer 2: Print Settings & 14 Canonical PDF Editions -->
         <section id="biblePrintEditionsSheet" class="apple-sheet" data-sheet="print" hidden>
-            <h3 data-i18n="mostrador.door.print">🖨️ 2. Print &amp; 14
+            <h3 class="sr-only" data-i18n="mostrador.door.print">🖨️ 2. Print &amp; 14
                 PDF Editions</h3>
             <nav id="printDosisHarelSubtabsBar" class="subtabs-bar" role="tablist" aria-label="Print and Editions Subtabs">
                 <button type="button" id="btnPrintSubtabDoses" class="uls-chip" role="tab" data-print-subtab-btn="doses"
@@ -825,7 +812,7 @@
 
         <!-- Drawer 4: Offline Sharing, Optical LT Fountain & Save for Offline Use -->
         <section id="bibleShareAndAuditSheet" class="apple-sheet" data-sheet="share" hidden>
-            <h3 data-i18n="mostrador.door.share">📲 4. Share Offline
+            <h3 class="sr-only" data-i18n="mostrador.door.share">📲 4. Share Offline
                 &amp; QR</h3>
             <nav id="dosisHarelSubtabsBar" class="subtabs-bar" role="tablist" aria-label="Offline and Optical Sharing Subtabs">
                 <button type="button" id="btnDosisSubtabMesh" class="uls-chip" role="tab" data-dosis-subtab-btn="mesh"

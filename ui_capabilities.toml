@@ -430,7 +430,7 @@ selector = "#btnToggleSurfaceMode"
 module = "mostrador/projection_contract.js"
 handler = "projectStoreAttributesToDom"
 test_file = "mostrador/state_store_v3ux.test.mjs"
-test_name = "SLICE_EKO_V3UX_06_07_sticky_lang_single_toggle_and_store_dom_projection"
+test_name = "SLICE_EKO_V3UX_06_07_sovereign_corpus_lang_tabs_and_store_dom_projection"
 
 [capability.appearance_popover_typography_theme]
 surface = "public-ui"
@@ -438,7 +438,7 @@ selector = "#btnAppearanceMenu"
 module = "mostrador/stage_dom_bindings.js"
 handler = "bindStageDomEvents"
 test_file = "mostrador/state_store_v3ux.test.mjs"
-test_name = "SLICE_EKO_V3UX_06_07_sticky_lang_single_toggle_and_store_dom_projection"
+test_name = "SLICE_EKO_V3UX_06_07_sovereign_corpus_lang_tabs_and_store_dom_projection"
 
 [capability.appearance_theme_sepia_dark_control]
 surface = "public-ui"
@@ -466,8 +466,8 @@ test_name = "SLICE_EKO_V3UX_14_fonts_vault_catalog_34_and_opengraph_1200x630_in_
 
 [capability.opengraph_social_svg_in_share]
 surface = "public-ui"
-selector = "#stationeryCardPanel"
-module = "mostrador/drawer_print.js"
+selector = "#shareOpenGraphCardPanel"
+module = "mostrador/drawer_share.js"
 handler = "buildOpenGraphSocialCardSvg1200x630"
 test_file = "mostrador/typeset_multiscript_v2ld.test.mjs"
 test_name = "SLICE_EKO_V3UX_14_fonts_vault_catalog_34_and_opengraph_1200x630_in_share"
@@ -498,7 +498,7 @@ test_name = "SLICE_R3_03_04_bn_bd_localized_svg_plate_spanish_label_and_dicha_co
 
 [capability.evangelios_unified_header_and_print]
 surface = "public-ui"
-selector = "#evangeliosGlobalLangBadge"
+selector = "#sovereignCorpusLangBtn"
 module = "mostrador/sister_works_controller.js"
 handler = "renderEvangeliosStageCardHtml"
 test_file = "mostrador/evangelios.test.mjs"

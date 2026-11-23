@@ -7,11 +7,11 @@
 import { STORE_DOMAIN_OWNERS, VALID_ACTIVE_MODALS } from "./state_store.js";
 
 /**
- * Sincroniza `#stickyDrawerContextHeader` con el pasaje y la lengua activos (`D1-R44`, `DEB-R44-02`):
+ * Sincroniza `#stickyDrawerContextHeader` con el pasaje activo (`D1-R44`, `D4-R5`):
  * - `#stickyActiveVersePill` ← `📖 LIBRO cap:vers`
- * - `#stickyActiveLangBtn` ← `🌍 LANG`
  * - `#btnStickyJumpToCanvas` ← rótulo bilingüe
  * - la barra completa se oculta (`hidden`) cuando ninguna de las 4 gavetas está abierta (`!state.activeSheet`).
+ * La lengua activa se proyecta exclusivamente en el cromo superior `#sovereignCorpusLangBtn` (`D4-R5`).
  * Devuelve `true` si la barra quedó visible.
  */
 export function syncStickyDrawerContextHeader(state = {}, getEl, targetDoc) {
@@ -27,10 +27,6 @@ export function syncStickyDrawerContextHeader(state = {}, getEl, targetDoc) {
   const versePill = getEl("stickyActiveVersePill", targetDoc);
   if (versePill) {
     versePill.textContent = `📖 ${state.book || "GEN"} ${Number(state.chapter) || 1}:${Number(state.verse) || 1}`;
-  }
-  const langBtn = getEl("stickyActiveLangBtn", targetDoc);
-  if (langBtn) {
-    langBtn.textContent = `🌍 ${String(state.lang || "es").toUpperCase()}`;
   }
   const jumpBtn = getEl("btnStickyJumpToCanvas", targetDoc);
   if (jumpBtn) {

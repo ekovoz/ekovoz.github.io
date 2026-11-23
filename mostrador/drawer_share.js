@@ -413,8 +413,7 @@ export function hydrateShareAndAuditDrawerPanel(ctx = {}) {
         verse: state.verse || 1,
         text: activeVerseText,
         lang: activeLang,
-        activeGen: state.photocopyGen ?? 3,
-        sauvolaK: state.sauvolaK ?? 0.25,
+        uiLocale: state.uiLocale || "es",
       });
       const ogFilename = resolveSafeDownloadFilename(state, { kind: "opengraph_svg", blockNumber: blk.blockNumber || 1 });
       ogHost.innerHTML =

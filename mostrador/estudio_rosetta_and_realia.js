@@ -9,6 +9,7 @@ import {
   CANONICAL_TSK_ECHOES,
   VERSE_SPECIFIC_TSK_ECHOES,
 } from "./estudio_schemas.js";
+import { humanizeTechnicalCode } from "./human_labels.js";
 
 function escapeHtml(str) {
   return String(str ?? "")
@@ -324,7 +325,7 @@ export function renderPhilologyRosettaInspectorHtml(activeRows = [], options = {
     .join("");
 
   const engOrgLine = engOrg.paratextEntry
-    ? `<li data-versification-eng-org="${escapeHtml(engOrg.paratextEntry.eng_range)}"><strong>Paratext ENG↔ORG (${escapeHtml(engOrg.paratextEntry.tradition)}):</strong> <code>${escapeHtml(engOrg.paratextEntry.eng_range)}</code> ↔ <code>${escapeHtml(engOrg.paratextEntry.org_range)}</code> — ${escapeHtml(engOrg.paratextEntry.note)}</li>`
+    ? `<li data-versification-eng-org="${escapeHtml(engOrg.paratextEntry.eng_range)}" data-tradition-code="${escapeHtml(engOrg.paratextEntry.tradition)}"><strong>${isEn ? "Verse numbering comparison" : "Comparación de numeración"} (${escapeHtml(humanizeTechnicalCode(engOrg.paratextEntry.tradition, uiLocale))}):</strong> <code>${escapeHtml(engOrg.paratextEntry.eng_range)}</code> ↔ <code>${escapeHtml(engOrg.paratextEntry.org_range)}</code> — ${escapeHtml(engOrg.paratextEntry.note)}</li>`
     : "";
 
   const resCounts =
@@ -341,11 +342,11 @@ export function renderPhilologyRosettaInspectorHtml(activeRows = [], options = {
   const residualClassesLine =
     `<li data-residual-classes-5="true" data-residuals-total="${totalResiduals}">` +
     `<strong>${isEn ? `Transmission variants & notes (${totalResiduals.toLocaleString("en-US")} cases)` : `Variantes y notas de transmisión (${totalResiduals.toLocaleString("en-US")} casos)`} <span class="hig-tech-meta" data-tech-key="alignment_residuals.tsv">(${isEn ? "Textual apparatus" : "Aparato textual"})</span>:</strong> ` +
-    `<span class="uls-badge" data-residual-kind="KETIV_QERE">KETIV_QERE (${kqCount})</span> · ` +
-    `<span class="uls-badge" data-residual-kind="VERSIFICATION">VERSIFICATION (${versCount})</span> · ` +
-    `<span class="uls-badge" data-residual-kind="TR_SUPPLEMENT">TR_SUPPLEMENT (${trCount})</span> · ` +
-    `<span class="uls-badge" data-residual-kind="SURFACE_VARIANT">SURFACE_VARIANT (${surfCount})</span> · ` +
-    `<span class="uls-badge" data-residual-kind="UNMATCHED">UNMATCHED (${unmCount})</span>` +
+    `<span class="uls-badge" data-residual-kind="KETIV_QERE">${escapeHtml(humanizeTechnicalCode("KETIV_QERE", uiLocale))} (${kqCount})</span> · ` +
+    `<span class="uls-badge" data-residual-kind="VERSIFICATION">${escapeHtml(humanizeTechnicalCode("VERSIFICATION", uiLocale))} (${versCount})</span> · ` +
+    `<span class="uls-badge" data-residual-kind="TR_SUPPLEMENT">${escapeHtml(humanizeTechnicalCode("TR_SUPPLEMENT", uiLocale))} (${trCount})</span> · ` +
+    `<span class="uls-badge" data-residual-kind="SURFACE_VARIANT">${escapeHtml(humanizeTechnicalCode("SURFACE_VARIANT", uiLocale))} (${surfCount})</span> · ` +
+    `<span class="uls-badge" data-residual-kind="UNMATCHED">${escapeHtml(humanizeTechnicalCode("UNMATCHED", uiLocale))} (${unmCount})</span>` +
     `</li>`;
 
   const annotReport =
@@ -535,11 +536,12 @@ export function searchPhilologyRosettaIndex(
             : [];
       for (const rItem of bucket) {
         const refNorm = normalizeRefCode(rItem.verse_id, "GEN.1.1");
+        const humanKind = humanizeTechnicalCode(kindKey, "es");
         items.push({
           category: kindLower,
           id: `${kindKey}:${rItem.verse_id}#${rItem.token_idx || 1}`,
-          title: `[${kindKey}] ${rItem.our_token || rItem.verse_id} ↔ ${rItem.source_token || ""}`,
-          detail: `Residuo ${kindKey} en ${rItem.verse_id}`,
+          title: `[${humanKind}] ${rItem.our_token || rItem.verse_id} ↔ ${rItem.source_token || ""}`,
+          detail: `${humanKind} (${kindKey}) · ${rItem.verse_id}`,
           strong: "H0430",
           ref: refNorm,
         });
@@ -592,15 +594,15 @@ export function renderPhilologyRosettaExplorerHtml({
   const cleanQuery = String(query || "").trim();
   const results = searchPhilologyRosettaIndex(cleanQuery, cleanCat, 12, rosettaIndex);
   const catPairs = [
-    ["all", "All Rosetta sub-corpora + 5 ResidualKinds", "Todos los sub-corpus Rosetta + 5 ResidualKind"],
-    ["roots", "1. Semitic Consonantal Roots", "1. Raíces Consonánticas Semíticas"],
-    ["cognates", "2. LXX ↔ MT Cognate Bridge (PMI)", "2. Puente Cognado LXX ↔ MT (PMI)"],
-    ["ketiv_qere", "3. ResidualKind: KETIV_QERE (Masorah)", "3. ResidualKind: KETIV_QERE (Masora)"],
-    ["versification", "4. ResidualKind: VERSIFICATION (ENG ↔ ORG)", "4. ResidualKind: VERSIFICATION (ENG ↔ ORG)"],
-    ["tr_supplement", "5. ResidualKind: TR_SUPPLEMENT (Textus Receptus)", "5. ResidualKind: TR_SUPPLEMENT (Textus Receptus)"],
-    ["surface_variant", "6. ResidualKind: SURFACE_VARIANT (Surface Variant)", "6. ResidualKind: SURFACE_VARIANT (Variante Superficial)"],
-    ["unmatched", "7. ResidualKind: UNMATCHED (Unaligned Token)", "7. ResidualKind: UNMATCHED (Sin Alineación Directa)"],
-    ["divergence", "8. Bicanonical Divergence Rules", "8. Reglas de Divergencia Bicanónica"],
+    ["all", "All manuscript & reading notes", "Todas las notas y variantes textuales"],
+    ["roots", "1. Semitic consonantal roots", "1. Raíces consonánticas semíticas"],
+    ["cognates", "2. Ancient Greek ↔ Hebrew cognates", "2. Cognados griego ↔ hebreo"],
+    ["ketiv_qere", "3. Traditional reading notes (Masora)", "3. Notas de lectura tradicional (Masora)"],
+    ["versification", "4. Verse numbering differences", "4. Diferencias de numeración entre biblias"],
+    ["tr_supplement", "5. Byzantine tradition phrases", "5. Frases de tradición bizantina"],
+    ["surface_variant", "6. Surface wording variants", "6. Variantes de redacción superficial"],
+    ["unmatched", "7. Phrases awaiting direct link", "7. Expresiones pendientes de enlace"],
+    ["divergence", "8. Chapter/verse alignment rules", "8. Reglas de alineación entre ediciones"],
   ];
   const catOptions = catPairs
     .map(([val, enL, esL]) => `<option value="${escapeHtml(val)}"${val === cleanCat ? " selected" : ""}>${escapeHtml(isEn ? enL : esL)}</option>`)

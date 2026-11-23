@@ -912,20 +912,21 @@
 
   #sovereignWorkTabs,
   .top-bar-work-tabs {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 0.25rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
     flex: 1 1 auto;
-    max-width: 360px;
+    max-width: 640px;
   }
 
   #sovereignWorkTabs>button {
-    padding: 0.2rem 0.35rem;
-    font-size: 0.76rem;
-    line-height: 1.15;
+    padding: 0.28rem 0.55rem;
+    font-size: 0.78rem;
+    line-height: 1.2;
     text-align: center;
     justify-content: center;
     white-space: nowrap;
+    flex: 1 1 auto;
   }
 
   .language-region-pill-group {
@@ -958,6 +959,20 @@
     .top-bar-work-tabs {
       width: 100%;
       max-width: 100%;
+      display: flex;
+      flex-wrap: wrap;
+    }
+
+    #sovereignWorkTabs>button {
+      flex: 1 1 auto;
+      min-width: max-content;
+    }
+
+    #felicesDichaSelect,
+    #felicesPlateSelect {
+      width: 100%;
+      max-width: 100%;
+      box-sizing: border-box;
     }
 
     .language-region-pill-group {
@@ -988,13 +1003,20 @@
   }
 
   .bible-stage-card {
-    max-width: 760px;
+    max-width: 72ch;
     width: 100%;
     margin: 0 auto 0.45rem auto;
     padding: 0.5rem 0.75rem;
     border: 1px solid var(--card-border);
     border-radius: 16px;
     background: var(--card-bg);
+  }
+
+  #evangeliosActivePlateCard ol {
+    padding-inline-start: 1.5rem;
+    text-align: left;
+    max-width: 62ch;
+    margin-inline: auto;
   }
 
   .stage-heading-row {
@@ -1028,7 +1050,7 @@
     border: 1px solid var(--card-border);
     line-height: 1.55;
     min-height: 200px;
-    max-height: none;
+    max-height: calc(100dvh - 230px);
     overflow-y: auto;
     font-size: calc(1.06rem * var(--bible-font-scale, 1));
     text-align: left;
@@ -1127,13 +1149,27 @@
   .inspector-doors-grid {
     background: var(--bg-canvas);
     padding: 0.25rem 0;
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 0.35rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.3rem;
+  }
+
+  .inspector-doors-grid > button {
+    flex: 1 1 auto;
+    min-height: 44px;
+    padding: 0.28rem 0.55rem;
+    font-size: 0.78rem;
+  }
+
+  .inspector-studio-toggle {
+    flex: 0 0 auto;
+    font-size: 0.76rem;
   }
 
   .sticky-drawer-context-header {
-    grid-column: 1 / -1;
+    flex: 1 0 100%;
+    width: 100%;
     display: flex;
     flex-wrap: nowrap;
     align-items: center;

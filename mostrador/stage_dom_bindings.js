@@ -69,21 +69,6 @@ export function bindStageDomEvents(ctx = {}) {
   } = ctx;
   if (!targetDoc || !state || typeof getEl !== "function") return null;
 
-  const stickyLangBtn = getEl("stickyActiveLangBtn", targetDoc);
-  if (stickyLangBtn && typeof stickyLangBtn.addEventListener === "function" && !stickyLangBtn._stickyLangBound) {
-    stickyLangBtn._stickyLangBound = true;
-    stickyLangBtn.addEventListener("click", () => {
-      const corpusBtn = getEl("sovereignCorpusLangBtn", targetDoc);
-      if (corpusBtn && typeof corpusBtn.click === "function") {
-        corpusBtn.click();
-        return;
-      }
-      const langDrawer = getEl("bibleLanguageAndRegisterDrawer", targetDoc);
-      if (langDrawer) {
-        langDrawer.open = !langDrawer.open;
-      }
-    });
-  }
   const stickyJumpBtn = getEl("btnStickyJumpToCanvas", targetDoc);
   if (stickyJumpBtn && typeof stickyJumpBtn.addEventListener === "function" && !stickyJumpBtn._stickyJumpBound) {
     stickyJumpBtn._stickyJumpBound = true;
@@ -91,6 +76,26 @@ export function bindStageDomEvents(ctx = {}) {
       const vp = getEl("bibleVerseViewport", targetDoc);
       vp?.scrollIntoView?.({ behavior: "smooth", block: "start" });
     });
+  }
+
+  const corpusTabBibles = getEl("btnCorpusTabBibles", targetDoc);
+  const corpusTabTrails = getEl("btnCorpusTabTrails", targetDoc);
+  const corpusPanelBibles = getEl("corpusTabPanelBibles", targetDoc);
+  const corpusPanelTrails = getEl("corpusTabPanelTrails", targetDoc);
+  const switchCorpusTab = (tabName) => {
+    const isTrails = tabName === "trails";
+    if (corpusTabBibles) corpusTabBibles.setAttribute("aria-selected", isTrails ? "false" : "true");
+    if (corpusTabTrails) corpusTabTrails.setAttribute("aria-selected", isTrails ? "true" : "false");
+    if (corpusPanelBibles) corpusPanelBibles.hidden = isTrails;
+    if (corpusPanelTrails) corpusPanelTrails.hidden = !isTrails;
+  };
+  if (corpusTabBibles && typeof corpusTabBibles.addEventListener === "function" && !corpusTabBibles._tabBound) {
+    corpusTabBibles._tabBound = true;
+    corpusTabBibles.addEventListener("click", () => switchCorpusTab("bibles"));
+  }
+  if (corpusTabTrails && typeof corpusTabTrails.addEventListener === "function" && !corpusTabTrails._tabBound) {
+    corpusTabTrails._tabBound = true;
+    corpusTabTrails.addEventListener("click", () => switchCorpusTab("trails"));
   }
 
   const bookSelect = getEl("bibleSelectBook", targetDoc);
@@ -568,16 +573,6 @@ export function bindStageDomEvents(ctx = {}) {
       if (corpusDrawer) {
         corpusDrawer.open = !corpusDrawer.open;
         corpusLangBtn.setAttribute("aria-expanded", corpusDrawer.open ? "true" : "false");
-      }
-    });
-  }
-
-  const evGlobalBadge = getEl("evangeliosGlobalLangBadge", targetDoc);
-  if (evGlobalBadge && typeof evGlobalBadge.addEventListener === "function") {
-    evGlobalBadge.addEventListener("click", () => {
-      if (corpusDrawer) {
-        corpusDrawer.open = !corpusDrawer.open;
-        if (corpusLangBtn) corpusLangBtn.setAttribute("aria-expanded", corpusDrawer.open ? "true" : "false");
       }
     });
   }

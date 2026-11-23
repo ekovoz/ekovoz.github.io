@@ -763,6 +763,10 @@ export function renderPrintDrawerPanelsSyncInDrawer(ctx = {}) {
               foliationMode: synced.foliationMode,
             });
           }
+          ensureDirectEditionsAndGrambankControls({
+            ...ctx,
+            onConfigChanged: () => renderPrintDrawerPanelsSyncInDrawer(ctx),
+          });
           cols = synced.columns;
           fontPt = synced.fontPt;
           paper = synced.paper;

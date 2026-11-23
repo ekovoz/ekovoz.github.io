@@ -478,7 +478,10 @@ export function createMostradorController(options = {}) {
     }
     const corpusLbl = getEl("sovereignActiveCorpusLabel", targetDoc);
     if (corpusLbl) {
-      corpusLbl.textContent = `Corpus: ${state.lang} · 7,164`;
+      const packsCount = Array.isArray(state.availablePackLangs24) && state.availablePackLangs24.length > 0
+        ? state.availablePackLangs24.length
+        : 24;
+      corpusLbl.textContent = `Corpus: ${state.lang} · ${packsCount} Biblias · 7,164`;
     }
     const evLangSel = getEl("evangeliosLangSelect", targetDoc);
     if (evLangSel && state.lang) {

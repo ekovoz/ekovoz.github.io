@@ -293,7 +293,9 @@ export function syncSisterWorksTabsDom(cleanWork = "biblia", getElFn) {
   applySec(bibSec, cleanWork === "biblia");
   applySec(felSec, cleanWork === "felices");
   applySec(evaSec, cleanWork === "evangelios");
-  applySec(drawersHost, cleanWork === "biblia");
+  // Keep global Harel drawers accessible in Reader/Sister works when a sheet (e.g. Share/Offline) is requested
+  const showGlobalDrawers = cleanWork === "biblia" || Boolean(drawersHost?.getAttribute?.("data-inspector-open") === "true");
+  applySec(drawersHost, showGlobalDrawers);
 
   if (tabBib) tabBib.setAttribute("aria-selected", cleanWork === "biblia" ? "true" : "false");
   if (tabFel) tabFel.setAttribute("aria-selected", cleanWork === "felices" ? "true" : "false");
@@ -396,12 +398,6 @@ export function bindSisterWorksStageEvents(ctx = {}) {
       evLangSelSync.hidden = true;
       if (evLangSelSync.style) evLangSelSync.style.display = "none";
       evLangSelSync.value = activeCorpusLang;
-    }
-    const evGlobalBadge = getEl("evangeliosGlobalLangBadge", targetDoc);
-    if (evGlobalBadge) {
-      evGlobalBadge.hidden = false;
-      if (evGlobalBadge.style) evGlobalBadge.style.display = "inline-flex";
-      evGlobalBadge.textContent = `🌍 ${activeCorpusLang.toUpperCase()} · SIL 7,164`;
     }
 
     if (typeof evSec.addEventListener === "function" && !evSec._evPrintBound) {

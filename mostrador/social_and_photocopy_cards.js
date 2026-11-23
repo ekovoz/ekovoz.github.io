@@ -45,6 +45,74 @@ export function formatPhotocopySimBadgeText(simResult = null) {
   return `✅ ${genLabel} · Sauvola k=${Number(sim.sauvolaK).toFixed(2)} (Contraste ${sim.contrastLabel} ≥ 7.0:1 AAA · Δχ=${sim.eulerCharacteristicDelta})`;
 }
 
+export function wrapSvgTextLines(rawText, maxCharsPerLine = 40, maxLines = 4) {
+  const words = String(rawText || "").trim().split(/\s+/).filter(Boolean);
+  if (words.length === 0) return [""];
+  const lines = [];
+  let current = "";
+  let truncated = false;
+  for (let i = 0; i < words.length; i += 1) {
+    const word = words[i];
+    const next = current ? `${current} ${word}` : word;
+    if (next.length <= maxCharsPerLine || !current) {
+      current = next.length <= maxCharsPerLine ? next : `${next.slice(0, Math.max(1, maxCharsPerLine - 1))}…`;
+      continue;
+    }
+    if (lines.length + 1 >= maxLines) {
+      truncated = true;
+      break;
+    }
+    lines.push(current);
+    current = word;
+  }
+  if (current) {
+    lines.push(truncated ? `${current.slice(0, Math.max(1, maxCharsPerLine - 1))}…` : current);
+  }
+  return lines.slice(0, maxLines);
+}
+
+export function buildPhotocopySpecimenSvg({
+  book = "GEN",
+  chapter = 1,
+  verse = 1,
+  text = "En el principio creó Dios los cielos y la tierra.",
+  lang = "es",
+  activeGen = 5,
+  contrastLabel = "21.00:1",
+  uiLocale = "es",
+} = {}) {
+  const isEn = String(uiLocale || "es").trim().toLowerCase().startsWith("en");
+  const refLabel = `${String(book || "GEN").toUpperCase()} ${Number(chapter) || 1}:${Number(verse) || 1}`;
+  const lines = wrapSvgTextLines(
+    String(text || "En el principio creó Dios los cielos y la tierra."),
+    38,
+    4,
+  );
+  const tspans = lines
+    .map((line, idx) => `<tspan x="96" dy="${idx === 0 ? 0 : 58}">${escHtml(line)}</tspan>`)
+    .join("");
+  const genSummary =
+    activeGen === 0
+      ? isEn ? "Original 300 DPI" : "Original 300 PPP"
+      : isEn ? `Photocopy specimen (Gen ${Number(activeGen) || 0})` : `Prueba de fotocopia (Gen. ${Number(activeGen) || 0})`;
+  const svgMarkup =
+    `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">` +
+    `<rect width="1200" height="630" fill="#ffffff"/>` +
+    `<rect x="44" y="44" width="1112" height="542" rx="12" fill="#ffffff" stroke="#000000" stroke-width="4"/>` +
+    `<text x="96" y="135" fill="#000000" font-family="serif" font-size="36" font-weight="bold">EKOVOZ · ${escHtml(refLabel)} (${escHtml(String(lang).toUpperCase())})</text>` +
+    `<text x="96" y="230" fill="#000000" font-family="serif" font-size="44">${tspans}</text>` +
+    `<line x1="96" y1="470" x2="1104" y2="470" stroke="#000000" stroke-width="2"/>` +
+    `<text x="96" y="530" fill="#000000" font-family="sans-serif" font-size="26">${escHtml(genSummary)} · ${isEn ? "Ink contrast" : "Contraste"} ${escHtml(contrastLabel)} ≥ 7.0:1 AAA</text>` +
+    `</svg>`;
+  return {
+    width: 1200,
+    height: 630,
+    dimensions: "1200x630",
+    svgMarkup,
+    svgDataUrl: `data:image/svg+xml;utf8,${encodeURIComponent(svgMarkup)}`,
+  };
+}
+
 export function renderEditorialGraphicsAndPrintSpecsCard({
   book = "GEN",
   chapter = 1,
@@ -111,16 +179,15 @@ export function renderEditorialGraphicsAndPrintSpecsCard({
     )
     .join(" ");
 
-  const cardData = buildOpenGraphSocialCardSvg1200x630({
+  const specimenData = buildPhotocopySpecimenSvg({
     book,
     chapter,
     verse,
     text: cleanText,
     lang,
     activeGen: activeSim.genIndex,
-    sauvolaK: activeSim.sauvolaK,
     contrastLabel: activeSim.contrastLabel,
-    eulerDelta: activeSim.eulerCharacteristicDelta,
+    uiLocale,
   });
 
   return (
@@ -134,7 +201,7 @@ export function renderEditorialGraphicsAndPrintSpecsCard({
     `data-social-card-dimensions="${fifthGenBilateral.socialCardDimensions}">` +
     `<div class="photocopy-header-row">` +
     `<strong>🖼️ ${isEn ? "Print Legibility & Photocopy Resilience" : "Legibilidad en Impresión y Fotocopia Rural"}</strong>` +
-    `<span id="photocopyActiveStatusBadge" class="uls-badge" data-sauvola-pass="true">✅ Gen ${activeSim.genIndex} ${isEn ? "Contrast" : "Contraste"} ${activeSim.contrastLabel} ≥ 7.0:1 AAA · Δχ=${activeSim.eulerCharacteristicDelta}</span>` +
+    `<span id="photocopyActiveStatusBadge" class="uls-badge" data-sauvola-pass="true">✅ ${isEn ? `Copy Gen ${activeSim.genIndex} · Contrast` : `Copia Gen. ${activeSim.genIndex} · Contraste`} ${activeSim.contrastLabel} ≥ 7.0:1 AAA</span>` +
     `</div>` +
     `<div class="photocopy-badges-row">${genBadges}</div>` +
     `<div class="photocopy-controls-row">` +
@@ -143,8 +210,8 @@ export function renderEditorialGraphicsAndPrintSpecsCard({
     `<details class="tech-details"><summary>${isEn ? "Technical details (Sauvola + Kanungo)" : "Detalles técnicos (Sauvola + Kanungo)"}</summary><div class="photocopy-badges-row">${stagesBadges}</div></details>` +
     `</div>` +
     `<div class="photocopy-preview-caption">` +
-    `<img class="photocopy-preview-img" alt="Optical Legibility Preview" src="${cardData.svgDataUrl}" />` +
-    `<span>${isEn ? `Specimen ${escHtml(refLabel)} verified for community copying.` : `Espécimen ${escHtml(refLabel)} verificado para copiado comunitario.`}</span>` +
+    `<img class="photocopy-preview-img" alt="Photocopy Specimen Preview" src="${specimenData.svgDataUrl}" />` +
+    `<span>${isEn ? `White-paper black-ink specimen (${escHtml(refLabel)}) verified for community copying.` : `Espécimen papel blanco / tinta negra (${escHtml(refLabel)}) verificado para copiado comunitario.`}</span>` +
     `</div>` +
     `</div>`
   );
@@ -156,20 +223,28 @@ export function buildOpenGraphSocialCardSvg1200x630({
   verse = 1,
   text = "En el principio creó Dios los cielos y la tierra.",
   lang = "es",
-  activeGen = 5,
-  sauvolaK = 0.32,
-  contrastLabel = "21.00:1",
-  eulerDelta = 0,
+  uiLocale = "es",
 } = {}) {
+  const isEn = String(uiLocale || "es").trim().toLowerCase().startsWith("en");
   const refLabel = `${String(book || "GEN").toUpperCase()} ${Number(chapter) || 1}:${Number(verse) || 1}`;
-  const cleanText = String(text || "En el principio creó Dios los cielos y la tierra.").slice(0, 140);
+  const lines = wrapSvgTextLines(
+    String(text || "En el principio creó Dios los cielos y la tierra."),
+    38,
+    4,
+  );
+  const tspans = lines
+    .map((line, idx) => `<tspan x="96" dy="${idx === 0 ? 0 : 56}">${escHtml(line)}</tspan>`)
+    .join("");
+  const footerText = isEn
+    ? "Ekovoz · Public Domain CC0 · Offline Multilingual Bible"
+    : "Ekovoz · Dominio Público CC0 · Lectura sin internet";
   const svgMarkup =
     `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">` +
     `<rect width="1200" height="630" fill="#12161f"/>` +
     `<rect x="48" y="48" width="1104" height="534" rx="24" fill="#181e29" stroke="#d4a359" stroke-width="3"/>` +
-    `<text x="96" y="150" fill="#d4a359" font-family="serif" font-size="38" font-weight="bold">EKOVOZ · ${escHtml(refLabel)} (${escHtml(String(lang).toUpperCase())})</text>` +
-    `<text x="96" y="280" fill="#f8fafc" font-family="serif" font-size="42">${escHtml(cleanText)}</text>` +
-    `<text x="96" y="520" fill="#94a3b8" font-family="sans-serif" font-size="26">editorial-graphics · Gen ${Number(activeGen) || 0} (Sauvola k=${Number(sauvolaK || 0.32).toFixed(2)}) · Contraste ${escHtml(contrastLabel)} ≥ 7.0:1 AAA · Δχ=${Number(eulerDelta) || 0}</text>` +
+    `<text x="96" y="135" fill="#d4a359" font-family="serif" font-size="38" font-weight="bold">EKOVOZ · ${escHtml(refLabel)} (${escHtml(String(lang).toUpperCase())})</text>` +
+    `<text x="96" y="230" fill="#f8fafc" font-family="serif" font-size="42">${tspans}</text>` +
+    `<text x="96" y="535" fill="#cbd5e1" font-family="sans-serif" font-size="26">${escHtml(footerText)}</text>` +
     `</svg>`;
   return {
     width: 1200,

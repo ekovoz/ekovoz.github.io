@@ -437,57 +437,41 @@ export function ensureDirectEditionsAndGrambankControls(ctx = {}) {
   const cfgHost = typeof getEl === "function" ? getEl("bibleKindleConfigurator", targetDoc) : null;
   if (!cfgHost || !targetDoc || typeof targetDoc.createElement !== "function") return null;
 
-  let wrap = typeof getEl === "function" ? getEl("direct14Plus2EditionBar", targetDoc) : null;
-  if (!wrap && typeof cfgHost.appendChild === "function") {
-    wrap = targetDoc.createElement("div");
-    wrap.id = "direct14Plus2EditionBar";
-    wrap.className = "direct-14-plus-2-bar";
-    const isEn = String(state.uiLocale || "es").toLowerCase().startsWith("en");
-    const activeEd = String(state.activePrintProfileId || state.edition || "02_2col_pastoral");
-    const opts = CANONICAL_14_PLUS_2_EDITIONS_CATALOG.map((ed) => {
-      const badge =
-        ed.id === "06_bilingue_paralela"
-          ? isEn ? "Ed. 15 · Bilingual Bridge 62/38" : "Ed. 15 · Puente Bilingüe 62/38"
-          : ed.id === "07_cuaderno_5lineas_apaisado"
-            ? isEn ? "Ed. 16 · Field Notebook CC0 (45 mm)" : "Ed. 16 · Cuaderno de Campo CC0 (margen 45 mm)"
-            : ed.label || ed.id;
-      const sel = ed.id === activeEd ? " selected" : "";
-      return `<option value="${escapeHtml(ed.id)}"${sel}>${escapeHtml(badge)}</option>`;
-    }).join("");
-    const branchId = state.activeBranchId || CANONICAL_12_BRANCH_PROFILES[0]?.id || "G_01_latin_extended";
-    const typoId = state.activeTypologyId || CANONICAL_16_TYPOLOGY_PROFILES[0]?.id || "es_typology";
-    wrap.innerHTML =
-      `<label class="direct-edition-label" for="directPrintEditionSelector">${isEn ? "Edition (14+2):" : "Edición (14+2):"} ` +
-      `<select id="directPrintEditionSelector" aria-label="${isEn ? "14+2 Canonical Print Editions" : "14+2 Ediciones de Impresión"}">${opts}</select></label>` +
-      `<button type="button" id="btnApplyGrambankToPrint" class="uls-chip" data-grambank-apply-print="true" data-branch-id="${escapeHtml(branchId)}" data-typology-id="${escapeHtml(typoId)}">` +
-      `${isEn ? "🌐 Apply typological profile to Print" : "🌐 Aplicar perfil tipológico a Impresión"}</button>`;
+  const wrap =
+    (typeof getEl === "function" ? getEl("direct14Plus2EditionBar", targetDoc) : null) ||
+    targetDoc.createElement("div");
+  const isNewWrap = wrap.id !== "direct14Plus2EditionBar";
+  wrap.id = "direct14Plus2EditionBar";
+  wrap.className = "direct-14-plus-2-bar";
+  const isEn = String(state.uiLocale || "es").toLowerCase().startsWith("en");
+  const activeEd = String(state.activePrintProfileId || state.edition || "02_2col_pastoral");
+  const activeMeta =
+    CANONICAL_14_PLUS_2_EDITIONS_CATALOG.find((ed) => ed.id === activeEd) ||
+    CANONICAL_14_PLUS_2_EDITIONS_CATALOG[0];
+  const activeBadge =
+    activeMeta?.id === "06_bilingue_paralela"
+      ? isEn ? "Ed. 15 · Bilingual Bridge 62/38" : "Ed. 15 · Puente Bilingüe 62/38"
+      : activeMeta?.id === "07_cuaderno_5lineas_apaisado"
+        ? isEn ? "Ed. 16 · Field Notebook CC0 (45 mm)" : "Ed. 16 · Cuaderno de Campo CC0 (margen 45 mm)"
+        : activeMeta?.label || activeEd;
+  const branchId = state.activeBranchId || CANONICAL_12_BRANCH_PROFILES[0]?.id || "G_01_latin_extended";
+  const typoId = state.activeTypologyId || CANONICAL_16_TYPOLOGY_PROFILES[0]?.id || "es_typology";
+  wrap.innerHTML =
+    `<div id="activeEditionImpositionSummary" class="ek-row-wrap" data-active-edition-id="${escapeHtml(activeEd)}">` +
+    `<span><strong>${isEn ? "Active edition:" : "Edición activa:"}</strong> ${escapeHtml(activeBadge)}</span>` +
+    `<button type="button" id="btnGoPrintDosesCatalog" class="uls-chip">${isEn ? "Change in 1. Editions" : "Cambiar en 1. Ediciones"}</button>` +
+    `</div>` +
+    `<button type="button" id="btnApplyGrambankToPrint" class="uls-chip" data-grambank-apply-print="true" data-branch-id="${escapeHtml(branchId)}" data-typology-id="${escapeHtml(typoId)}">` +
+    `${isEn ? "🌐 Apply typological profile to Print" : "🌐 Aplicar perfil tipológico a Impresión"}</button>`;
+  if (isNewWrap && typeof cfgHost.appendChild === "function") {
     cfgHost.appendChild(wrap);
   }
 
-  const sel = typeof getEl === "function" ? getEl("directPrintEditionSelector", targetDoc) : null;
-  if (sel && !sel._directEditionBound && typeof sel.addEventListener === "function") {
-    sel._directEditionBound = true;
-    sel.addEventListener("change", (ev) => {
-      const nextProf = String(ev?.target?.value || sel.value || "02_2col_pastoral");
-      const synced = syncPrintDrawerControlsFromEditionProfile(nextProf, targetDoc);
-      state.activePrintProfileId = synced.profileId;
-      state.edition = synced.profileId;
-      state.columns = synced.columns;
-      state.fontSizePt = synced.fontPt;
-      state.paperFormat = synced.paper;
-      state.orientation = synced.orientation;
-      state.foliationMode = synced.foliationMode;
-      if (store) {
-        updatePrintConfig(store, {
-          edition: synced.profileId,
-          columns: synced.columns,
-          fontSizePt: synced.fontPt,
-          paperFormat: synced.paper,
-          orientation: synced.orientation,
-          foliationMode: synced.foliationMode,
-        });
-      }
-      onConfigChanged?.();
+  const jumpBtn = typeof getEl === "function" ? getEl("btnGoPrintDosesCatalog", targetDoc) : null;
+  if (jumpBtn && !jumpBtn._jumpPrintCatalogBound && typeof jumpBtn.addEventListener === "function") {
+    jumpBtn._jumpPrintCatalogBound = true;
+    jumpBtn.addEventListener("click", () => {
+      getEl("btnPrintSubtabDoses", targetDoc)?.click?.();
     });
   }
 

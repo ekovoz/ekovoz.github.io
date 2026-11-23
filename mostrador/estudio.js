@@ -335,17 +335,18 @@ export function renderStudy14ColDrawerHtml(matrixShard, options = {}) {
       return (
         `<article class="leipzig-14col-card${isStrongSelected ? " is-active-strong" : ""}" tabindex="0" aria-selected="${isStrongSelected ? "true" : "false"}" data-ref="${escapeHtml(r.c02_ref)}" data-osis="${escapeHtml(r.c02_ref)}" data-word-pos="${escapeHtml(r.c04_word_pos)}" data-lemma="${escapeHtml(r.c04_lemma)}" data-strong-id="${escapeHtml(r.c07_strong_id)}" data-macula-frame="${escapeHtml(maculaFrame)}" data-pragmatic-focus="${escapeHtml(r.c12_pragmatic_focus)}" data-realia-flag="${escapeHtml(String(r.c14_realia_flag || "").replace(/\bSDBH:\d+;?/gi, "").replace(/\+sdbh:[^|;\s]+/gi, ""))}">` +
         `<header class="leipzig-card-header">` +
-        `<span data-col="c01_c02">${escapeHtml(r.c02_ref)} #${escapeHtml(r.c04_word_pos)} (ord ${escapeHtml(r.c01_ordinal_31102)})</span>` +
-        `<span data-col="c03_source_corpus">${escapeHtml(r.c03_source_corpus)} · ${escapeHtml(maculaFrame)}</span>` +
+        `<span data-col="c01_c02">${escapeHtml(r.c02_ref)} #${escapeHtml(r.c04_word_pos)}</span>` +
+        `<span data-col="c03_source_corpus">${escapeHtml(isEn ? "Source word" : "Palabra original")}</span>` +
         `</header>` +
         `<div class="leipzig-orig-text" data-col="c05_orig_text">${escapeHtml(r.c05_orig_text)}</div>` +
         `<div class="leipzig-translit" data-col="c06_translit">${escapeHtml(r.c06_translit)}</div>` +
         `<div data-col="c12_gloss_es" class="leipzig-primary-gloss">${escapeHtml(r.c12_gloss_es)}</div>` +
-        `<div data-col="c13_nsm_65" class="leipzig-nsm-gloss">NSM-65: ${escapeHtml(human.nsmHuman)}</div>` +
+        `<div data-col="c13_nsm_65" class="leipzig-nsm-gloss">${isEn ? "Core meaning" : "Sentido básico"}: ${escapeHtml(human.nsmHuman)}</div>` +
         `<div data-col="c14_target_gloss" class="leipzig-target-gloss">${isEn ? "Target" : "Meta"}: ${escapeHtml(r.c14_target_gloss)}</div>` +
         `<details class="tech-details leipzig-tech-morph">` +
         `<summary>${isEn ? "Linguistic codes" : "Códigos lingüísticos"} (${escapeHtml(r.c07_strong_id)})</summary>` +
         `<div class="leipzig-codes-row">` +
+        `<code>${escapeHtml(r.c03_source_corpus)} · ${escapeHtml(maculaFrame)} · ord ${escapeHtml(r.c01_ordinal_31102)}</code> ` +
         `<code data-col="c07_strong_id">${escapeHtml(r.c07_strong_id)}</code> ` +
         `<code data-col="c08_morph_code">${escapeHtml(r.c08_morph_code)}</code>` +
         (human.strongBadges && human.strongBadges.length > 0
@@ -374,7 +375,7 @@ export function renderStudy14ColDrawerHtml(matrixShard, options = {}) {
   const nsmHtml =
     nsmEntries.length > 0
       ? `<div class="study-nsm-section">` +
-      `<strong>🧭 ${isEn ? "Universal Semantic Primitives NSM-65:" : "Primitivos Universales NSM-65:"}</strong>` +
+      `<strong>🧭 ${isEn ? "Universal Semantic Primitives:" : "Conceptos Semánticos Universales:"}</strong>` +
       `<ul class="study-list">` +
       nsmEntries
         .map(
@@ -590,7 +591,7 @@ export function renderStudyStrataCards(matrixShard, options = {}) {
       .join("") +
     `</ul>` +
     `<details id="studyCulturalGlossesCatalogAccordion" open class="cultural-glosses-accordion">` +
-    `<summary class="cultural-glosses-summary">📚 ${isEn ? `Cultural Glosses NSM-65 (${Object.keys(hydratedCulturalMap).length} terms: Weights, Coins, Crafts & Realia)` : `Glosas Culturales NSM-65 (${Object.keys(hydratedCulturalMap).length} términos: Pesos, Monedas, Oficios y Realia)`}</summary>` +
+    `<summary class="cultural-glosses-summary">📚 ${isEn ? `Cultural Glosses (${Object.keys(hydratedCulturalMap).length} terms: Weights, Coins, Crafts & Realia)` : `Glosas Culturales (${Object.keys(hydratedCulturalMap).length} términos: Pesos, Monedas, Oficios y Realia)`}</summary>` +
     `<ul class="study-list stratum-list cultural-glosses-list">` +
     Object.values(hydratedCulturalMap)
       .map(
