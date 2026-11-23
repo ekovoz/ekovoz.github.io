@@ -5,8 +5,43 @@ import { normalizeRootNotesEntries } from "./drawer_hydrators.js";
 
 export const CASCADE_LEVELS = ["L1", "L2", "L3", "L4", "L5"];
 
-const NEGATION_MARKERS_REGEX =
-  /\b(no|ni|nunca|jam[aá]s|not|never|neither|nor|non|ne|pas|cham|ma'|mana|לא|אל|אין|οὐ|οὐκ|οὐχ|μή|لا|لم|لن)\b/i;
+const NEGATION_MARKERS_LIST = [
+  "no",
+  "ni",
+  "nunca",
+  "jam[aá]s",
+  "not",
+  "never",
+  "neither",
+  "nor",
+  "non",
+  "ne",
+  "pas",
+  "cham",
+  "ma'",
+  "mana",
+  "לא",
+  "אל",
+  "אין",
+  "οὐ",
+  "οὐκ",
+  "οὐχ",
+  "μή",
+  "لا",
+  "لم",
+  "لن",
+];
+const NEGATION_MARKERS_REGEX = new RegExp(
+  `(?:^|[^\\p{L}\\p{N}_])(?:${NEGATION_MARKERS_LIST.join("|")})(?=$|[^\\p{L}\\p{N}_])`,
+  "iu",
+);
+
+function normalizeUnicodeSurfaceForLocks(value) {
+  return String(value || "")
+    .normalize("NFC")
+    .replace(/[\uA78C\u2019\u02BC]/g, "'")
+    .toLocaleLowerCase();
+}
 
 /**
  * Candado Determinista 8 (10S): Conservación de Polaridad de Negación (Ciclo de Jespersen)
@@ -18,10 +53,14 @@ export function verifyLock8PredicativeAndNegation({
   expectedAgent = "",
   expectedPatient = "",
 } = {}) {
-  const oldStr = String(oldSurface || "").trim();
-  const newStr = String(newSurface || "").trim();
-  const oldHasNeg = NEGATION_MARKERS_REGEX.test(oldStr);
-  const newHasNeg = NEGATION_MARKERS_REGEX.test(newStr);
+  const oldStr = String(oldSurface || "").normalize("NFC").trim();
+  const newStr = String(newSurface || "").normalize("NFC").trim();
+  const stripSemiticVowelMarks = (s) =>
+    s.replace(/[\uA78C\u2019\u02BC]/g, "'").replace(/[\u0591-\u05C7\u064B-\u065F\u0670]/g, "");
+  const normOld = stripSemiticVowelMarks(oldStr);
+  const normNew = stripSemiticVowelMarks(newStr);
+  const oldHasNeg = NEGATION_MARKERS_REGEX.test(normOld);
+  const newHasNeg = NEGATION_MARKERS_REGEX.test(normNew);
 
   if (oldStr.length > 0 && newStr.length > 0 && oldHasNeg !== newHasNeg) {
     return {
@@ -33,8 +72,9 @@ export function verifyLock8PredicativeAndNegation({
   }
 
   if (expectedAgent && expectedPatient && newStr.length > 0) {
-    const agIdx = newStr.toLowerCase().indexOf(String(expectedAgent).toLowerCase());
-    const patIdx = newStr.toLowerCase().indexOf(String(expectedPatient).toLowerCase());
+    const lowNew = normalizeUnicodeSurfaceForLocks(newStr);
+    const agIdx = lowNew.indexOf(normalizeUnicodeSurfaceForLocks(expectedAgent));
+    const patIdx = lowNew.indexOf(normalizeUnicodeSurfaceForLocks(expectedPatient));
     if (agIdx === -1 || patIdx === -1) {
       return {
         passed: false,
@@ -177,9 +217,10 @@ export function validateAllEightLocksPda({
   const p3Pass = oldStr.length === 0 || newStr.length === 0 || oldNums === newNums;
 
   const nouns = Array.isArray(expectedProperNouns) ? expectedProperNouns : [];
+  const normNewForMatch = normalizeUnicodeSurfaceForLocks(newStr);
   const p4Pass =
     newStr.length === 0 ||
-    nouns.every((n) => newStr.toLowerCase().includes(String(n).toLowerCase()));
+    nouns.every((n) => normNewForMatch.includes(normalizeUnicodeSurfaceForLocks(n)));
 
   const p5Res = detectLlmMetatextLeak(newStr);
   const p6Res = validateQuoteBalancePda(newStr);
@@ -222,12 +263,12 @@ export const CANONICAL_5_OT_TRANSLATION_WAVES = [
   { wave: 2, id: "WAVE_2_DEUTERONOMISTIC_HISTORY", title: "Onda 2 · Historia del Pacto y Retorno", books: ["JOS", "JDG", "1SA", "2SA", "1KI", "2KI", "EZR", "NEH", "EST"], meanUncertaintyBits: 1.42, status: "QUEUED" },
   { wave: 3, id: "WAVE_3_PSALTER_AND_WISDOM", title: "Onda 3 · Salterio Litúrgico y Sabiduría", books: ["PSA", "PRO", "ECC"], meanUncertaintyBits: 1.76, status: "ACTIVE_LITURGY" },
   { wave: 4, id: "WAVE_4_PROPHETS", title: "Onda 4 · Profetas Mayores y Menores", books: ["ISA", "JER", "LAM", "HOS", "AMO", "MIC", "HAB", "ZEC", "MAL"], meanUncertaintyBits: 2.14, status: "HIGH_ENTROPY" },
-  { wave: 5, id: "WAVE_5_APOCALYPTIC_POETRY", title: "Onda 5 · Alta Incertidumbre Léxica (Job, Ezequiel, Daniel, Cantares)", books: ["JOB", "EZE", "DAN", "SNG", "LEV", "NUM", "DEU"], meanUncertaintyBits: 2.68, status: "EXPERT_REVIEW" },
+  { wave: 5, id: "WAVE_5_APOCALYPTIC_POETRY", title: "Onda 5 · Alta Incertidumbre Léxica (Job, Ezequiel, Daniel, Cantares)", books: ["JOB", "EZK", "DAN", "SNG", "LEV", "NUM", "DEU"], meanUncertaintyBits: 2.68, status: "EXPERT_REVIEW" },
 ];
 
 export const FIELD_WORKSHOP_STP_LEXICON = [];
 export const STRONG_CONCORDANCE_COUNTS = {
-  H0430: { biblia_occurrences: 2602, evangelios_occurrences: 18, felices_occurrences: 6, sample_refs: ["GEN.1.1", "GEN.1.2", "PSA.23.1", "ISA.40.1"] },
+  H0430: { biblia_occurrences: 2576, evangelios_occurrences: 18, felices_occurrences: 6, sample_refs: ["GEN.1.1", "GEN.1.2", "PSA.23.1", "ISA.40.1"] },
   H3068: { biblia_occurrences: 6828, evangelios_occurrences: 24, felices_occurrences: 8, sample_refs: ["GEN.2.4", "PSA.23.1", "ISA.53.1", "MAL.3.6"] },
   H7225: { biblia_occurrences: 51, evangelios_occurrences: 4, felices_occurrences: 1, sample_refs: ["GEN.1.1", "PRO.1.7", "JER.26.1"] },
   H1254: { biblia_occurrences: 54, evangelios_occurrences: 3, felices_occurrences: 1, sample_refs: ["GEN.1.1", "GEN.1.27", "PSA.51.10", "ISA.65.17"] },

@@ -274,7 +274,7 @@ export async function dispenseMostradorDose1({ opts = {}, state, dataLayer }) {
         if (merged.byteLength > 0) pdfBytes = merged;
       }
     } catch {
-      // Fallback to distinct Hershey stroke vector seed when Worker/fetch is mocked out
+      // Fallback to CSS Paged Media (@media print) when WASM Worker/font is unavailable (DEB-V2LB-04)
     }
     const threatClass = effectiveThreatClassWeb(state.countryIso2, state.lang);
     const filename = doseFilename({
@@ -290,7 +290,13 @@ export async function dispenseMostradorDose1({ opts = {}, state, dataLayer }) {
       countryIso2: state.countryIso2,
       ordinal: ordHint,
     });
-    const totalPages = Math.max(1, countPdfPages(pdfBytes));
+    const hasRealPdf = pdfBytes instanceof Uint8Array && pdfBytes.byteLength >= 8;
+    const totalPages = hasRealPdf
+      ? Math.max(1, countPdfPages(pdfBytes))
+      : Math.max(1, Number(sheets) || 1);
+    const strokeFallbackNote = hasRealPdf
+      ? "Si la fuente física /F2 negrita no está embebida, /F1 aplica refuerzo vectorial PDF (q 2 Tr 0.28 w) sin degradar a latín."
+      : "Fallback CSS Paged Media (@media print): /F1 vectorial (q 2 Tr 0.28 w) reservado para el worker WASM PDF.";
     return {
       bytes: pdfBytes,
       printHtml: bimodal.printHtml,
@@ -300,7 +306,8 @@ export async function dispenseMostradorDose1({ opts = {}, state, dataLayer }) {
       pages: Array.from({ length: totalPages }, (_, i) => i + 1),
       sheetCount: sheets,
       pageCount: totalPages,
-      availabilityMode: "bimodal_client_print",
+      availabilityMode: hasRealPdf ? "bimodal_client_print" : "css_paged_media_fallback",
+      strokeFallbackNote,
     };
   };
 
@@ -364,4 +371,100 @@ export async function dispenseMostradorDose1({ opts = {}, state, dataLayer }) {
     pageCount: countPdfPages(extractedBytes),
     availabilityMode: "precompiled_pdf",
   };
+}
+
+export function resolveVerifiedBookCount(targetState = {}) {
+  const packed =
+    targetState?.lastNavResult?.provenance?.book_epistemic_tiers ||
+    targetState?.lastNavResult?.chapter?.provenance?.book_epistemic_tiers ||
+    targetState?.lastNavResult?.bookEpistemicTiers ||
+    null;
+  if (packed && typeof packed.length === "number" && packed.length >= 17) {
+    let count = 0;
+    for (let i = 0; i < 66; i += 1) {
+      const bits = ((Number(packed[i >>> 2]) || 0) >>> ((i & 3) * 2)) & 0x03;
+      if (bits === 0 || bits === 1) count += 1;
+    }
+    if (count > 0) return count;
+  }
+  const navCount = Number(
+    targetState?.lastNavResult?.provenance?.canonical_books_present ||
+      targetState?.lastNavResult?.chapter?.provenance?.canonical_books_present ||
+      0,
+  );
+  if (navCount > 0 && navCount <= 66) return navCount;
+  const catEntry = targetState?.activeCatalogEntry || null;
+  const catCount = Number(catEntry?.canonical_books_present || catEntry?.canonicalBooksPresent || 0);
+  if (catCount > 0 && catCount <= 66) return catCount;
+  const sovereignTier = String(
+    targetState?.lastNavResult?.provenance?.sovereign_tier ||
+      targetState?.lastNavResult?.chapter?.provenance?.sovereign_tier ||
+      "",
+  ).toLowerCase();
+  if (sovereignTier === "tier_1_canonical") {
+    return 66;
+  }
+  return 0;
+}
+
+export function updateMostradorSealDom({ sealKey, state, i18nInstance, getEl, targetDoc }) {
+  const effectiveSealKey = sealKey || state.seal || "seal.unavailable";
+  state.seal = effectiveSealKey;
+  const sealEl = getEl("epistemicStatusSeal", targetDoc);
+  if (!sealEl) return;
+  const corpusLang = String(state.effectiveCorpusLang || state.lang || "").trim().toLowerCase();
+  const verifiedBookCount = resolveVerifiedBookCount(state);
+  const isPartialVerified =
+    effectiveSealKey === "seal.verified" &&
+    verifiedBookCount > 0 &&
+    verifiedBookCount < 66 &&
+    !(verifiedBookCount === 27 && (corpusLang === "stp" || corpusLang === "st"));
+  const displayKey =
+    effectiveSealKey === "seal.verified" && (corpusLang === "stp" || corpusLang === "st")
+      ? "seal.verified_nt"
+      : isPartialVerified
+        ? "seal.verified_portion"
+        : effectiveSealKey;
+  sealEl.setAttribute("data-seal", effectiveSealKey);
+  sealEl.setAttribute("data-i18n", displayKey);
+  if (verifiedBookCount > 0) {
+    sealEl.setAttribute("data-verified-book-count", String(verifiedBookCount));
+  } else if (typeof sealEl.removeAttribute === "function") {
+    sealEl.removeAttribute("data-verified-book-count");
+  }
+  const rawLabel = i18nInstance ? i18nInstance.t(displayKey) : displayKey;
+  const isEn = String(state.uiLocale || "en").toLowerCase().startsWith("en");
+  const fallbackHuman =
+    displayKey === "seal.verified_nt"
+      ? isEn
+        ? "Verified text · 27 New Testament Books"
+        : "Texto verificado · 27 Libros del Nuevo Testamento"
+      : isPartialVerified
+        ? isEn
+          ? `Verified portion · ${verifiedBookCount} Canonical ${verifiedBookCount === 1 ? "Book" : "Books"}`
+          : `Porción verificada · ${verifiedBookCount} ${verifiedBookCount === 1 ? "Libro Canónico" : "Libros Canónicos"}`
+        : effectiveSealKey === "seal.verified"
+          ? isEn
+            ? "Verified text · 66 Canonical Books"
+            : "Texto verificado · 66 Libros Canónicos"
+          : effectiveSealKey === "seal.draft_review"
+            ? isEn
+              ? "Workshop draft & verified portion · Tiers 2–4 (L1–L5 review)"
+              : "Borrador de taller y porción verificada · Tiers 2–4 (revisión L1–L5)"
+            : isEn
+              ? "GMIS 4-line interlinear scaffold + 21st-Century Bridge"
+              : "Andamiaje interlineal GMIS 4 líneas + Puente Siglo XXI";
+  const hasLocalizedRawLabel =
+    Boolean(rawLabel) &&
+    rawLabel !== effectiveSealKey &&
+    !rawLabel.startsWith("seal.");
+  sealEl.textContent = isPartialVerified
+    ? hasLocalizedRawLabel
+      ? isEn
+        ? `${rawLabel} · ${verifiedBookCount} Canonical ${verifiedBookCount === 1 ? "Book" : "Books"}`
+        : `${rawLabel} · ${verifiedBookCount} ${verifiedBookCount === 1 ? "Libro Canónico" : "Libros Canónicos"}`
+      : fallbackHuman
+    : hasLocalizedRawLabel
+      ? rawLabel
+      : fallbackHuman;
 }

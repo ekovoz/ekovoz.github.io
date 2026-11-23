@@ -62,7 +62,7 @@ function build52WeeksDefaultMap() {
       weeks[key] = {
         weekId: key,
         macroThread: "Hilo 2 · El Pastor que Busca, las Parábolas de Semilla y el Banquete de la Gracia",
-        otEchoes: ["EZE.34.11 (Yo mismo buscaré mis ovejas)", "PSA.23.1 (YHWH es mi pastor)", "ISA.55.1 (Venid a las aguas)"],
+        otEchoes: ["EZK.34.11 (Yo mismo buscaré mis ovejas)", "PSA.23.1 (YHWH es mi pastor)", "ISA.55.1 (Venid a las aguas)"],
         culturalRealia: "Dracma de plata: moneda griega equivalente al jornal completo de un día, parte de la dote nupcial familiar.",
       };
     } else if (w <= 39) {
@@ -87,19 +87,21 @@ function build52WeeksDefaultMap() {
 export const EVANGELIOS_MACRO_THREADS_AND_ECHOES = build52WeeksDefaultMap();
 
 export const FELICES_12_DICHAS_COORDINATE_MAP = {
-  1: { book: "MAT", chapter: 5, verse: 1, title: "Dicha 1 · Jesús sube al Monte con sus Discípulos (Mt 5:1)" },
-  2: { book: "MAT", chapter: 5, verse: 3, title: "Dicha 2 · Los Pobres en Espíritu" },
-  3: { book: "MAT", chapter: 5, verse: 4, title: "Dicha 3 · Los que Lloran (Consuelo)" },
-  4: { book: "MAT", chapter: 5, verse: 5, title: "Dicha 4 · Los Mansos (Herencia de la Tierra)" },
-  5: { book: "MAT", chapter: 5, verse: 6, title: "Dicha 5 · Hambre y Sed de Justicia" },
-  6: { book: "MAT", chapter: 5, verse: 7, title: "Dicha 6 · Los Misericordiosos" },
-  7: { book: "MAT", chapter: 5, verse: 8, title: "Dicha 7 · Los de Limpio Corazón (Verán a Dios)" },
-  8: { book: "MAT", chapter: 5, verse: 9, title: "Dicha 8 · Los Pacificadores (Hijos de Dios)" },
-  9: { book: "MAT", chapter: 5, verse: 10, title: "Dicha 9 · Perseguidos por Causa de la Justicia" },
-  10: { book: "LUK", chapter: 11, verse: 28, title: "Dicha 10 · Los que Oyen la Palabra de Dios y la Guardan" },
-  11: { book: "JHN", chapter: 20, verse: 29, title: "Dicha 11 · Los que No Vieron y Creyeron" },
-  12: { book: "REV", chapter: 22, verse: 14, title: "Dicha 12 · Los que Lavan sus Ropas (Árbol de la Vida)" },
+  1: { book: "MAT", chapter: 5, verse: 1, title: "Dicha 1 · Jesús sube al Monte con sus Discípulos (Mt 5:1)", title_en: "Saying 1 · Jesus Goes Up the Mountain with His Disciples (Matt 5:1)" },
+  2: { book: "MAT", chapter: 5, verse: 3, title: "Dicha 2 · Los Pobres en Espíritu", title_en: "Saying 2 · The Poor in Spirit" },
+  3: { book: "MAT", chapter: 5, verse: 4, title: "Dicha 3 · Los que Lloran (Consuelo)", title_en: "Saying 3 · Those Who Mourn (Comfort)" },
+  4: { book: "MAT", chapter: 5, verse: 5, title: "Dicha 4 · Los Mansos (Herencia de la Tierra)", title_en: "Saying 4 · The Meek (Inheriting the Earth)" },
+  5: { book: "MAT", chapter: 5, verse: 6, title: "Dicha 5 · Hambre y Sed de Justicia", title_en: "Saying 5 · Hunger and Thirst for Righteousness" },
+  6: { book: "MAT", chapter: 5, verse: 7, title: "Dicha 6 · Los Misericordiosos", title_en: "Saying 6 · The Merciful" },
+  7: { book: "MAT", chapter: 5, verse: 8, title: "Dicha 7 · Los de Limpio Corazón (Verán a Dios)", title_en: "Saying 7 · The Pure in Heart (Shall See God)" },
+  8: { book: "MAT", chapter: 5, verse: 9, title: "Dicha 8 · Los Pacificadores (Hijos de Dios)", title_en: "Saying 8 · The Peacemakers (Children of God)" },
+  9: { book: "MAT", chapter: 5, verse: 10, title: "Dicha 9 · Perseguidos por Causa de la Justicia", title_en: "Saying 9 · Persecuted for Righteousness' Sake" },
+  10: { book: "LUK", chapter: 11, verse: 28, title: "Dicha 10 · Los que Oyen la Palabra de Dios y la Guardan", title_en: "Saying 10 · Those Who Hear God's Word and Keep It" },
+  11: { book: "MAT", chapter: 5, verse: 12, title: "Dicha 11 · Gozaos y Alegraos (Galardón en los Cielos)", title_en: "Saying 11 · Rejoice and Be Glad (Reward in Heaven)" },
+  12: { book: "REV", chapter: 22, verse: 14, title: "Dicha 12 · Los que Lavan sus Ropas (Árbol de la Vida)", title_en: "Saying 12 · Those Who Wash Their Robes (Tree of Life)" },
 };
+
+const FELICES_PLATE_TO_DICHA_HYDRATED = {};
 
 export const FELICES_28_PLATES_MAP = {};
 
@@ -158,10 +160,10 @@ export function hydratePericopesAndGlosses(artifact) {
       const citaMatch = /^([1-3]?[A-Z]{2,3})\s+(\d+):(\d+)/.exec(String(entry.cita || entry.ref || "").trim().toUpperCase());
       const parsedEchoParts = entry.otEcho
         ? String(entry.otEcho)
-            .split("↔")[0]
-            .split("·")
-            .map((s) => s.trim())
-            .filter(Boolean)
+          .split("↔")[0]
+          .split("·")
+          .map((s) => s.trim())
+          .filter(Boolean)
         : [];
       EVANGELIOS_MACRO_THREADS_AND_ECHOES[wKey] = {
         weekId: wKey,
@@ -195,12 +197,28 @@ export function hydratePericopesAndGlosses(artifact) {
         chapter: Number(item.chapter || parts[1]) || existing.chapter,
         verse: Number(item.verse || parts[2]) || existing.verse,
         title: item.title || existing.title,
+        title_en: item.title_en || existing.title_en || "",
         virtue: item.virtue || "",
       };
     }
   } else if (artifact.felices_12_dichas && typeof artifact.felices_12_dichas === "object") {
     for (const [dKey, dVal] of Object.entries(artifact.felices_12_dichas)) {
-      FELICES_12_DICHAS_COORDINATE_MAP[Number(dKey) || dKey] = dVal;
+      const numKey = Number(dKey) || dKey;
+      const prev = FELICES_12_DICHAS_COORDINATE_MAP[numKey] || {};
+      FELICES_12_DICHAS_COORDINATE_MAP[numKey] = {
+        ...prev,
+        ...dVal,
+        title_en: dVal?.title_en || prev.title_en || "",
+      };
+    }
+  }
+  if (artifact.felices_plate_to_dicha && typeof artifact.felices_plate_to_dicha === "object") {
+    for (const [pKey, dVal] of Object.entries(artifact.felices_plate_to_dicha)) {
+      const pNum = Number(pKey);
+      const dNum = Number(dVal);
+      if (pNum >= 1 && pNum <= 27 && dNum >= 1 && dNum <= 12) {
+        FELICES_PLATE_TO_DICHA_HYDRATED[pNum] = dNum;
+      }
     }
   }
   if (Array.isArray(artifact.felices_28_plates)) {
@@ -208,22 +226,44 @@ export function hydratePericopesAndGlosses(artifact) {
     artifact.felices_28_plates.slice(0, 27).forEach((plate, idx) => {
       const pNum = Number(plate.number ?? plate.plateNumber ?? plate.id) || (idx + 1);
       if (pNum > 27) return;
-      const dichaIdx = pNum >= 25 ? 1 : Math.max(1, Math.min(12, Math.floor((pNum + 1) / 2)));
+      const coordMeta = FELICES_PLATE_TO_BIBLE_COORDINATE[pNum];
+      const mappedDicha =
+        Number(plate.dicha_index ?? plate.dichaIndex) ||
+        FELICES_PLATE_TO_DICHA_HYDRATED[pNum] ||
+        (coordMeta && Number.isInteger(coordMeta.beatitudeIndex) ? coordMeta.beatitudeIndex + 1 : 0);
+      const dichaIdx =
+        mappedDicha >= 1 && mappedDicha <= 12
+          ? mappedDicha
+          : pNum === 27
+            ? 12
+            : pNum >= 25
+              ? 1
+              : Math.max(1, Math.min(12, Math.floor((pNum + 1) / 2)));
       const dichaMeta = FELICES_12_DICHAS_COORDINATE_MAP[dichaIdx] || FELICES_12_DICHAS_COORDINATE_MAP[1];
       const fallbackRef = `${dichaMeta.book}.${dichaMeta.chapter}.${dichaMeta.verse}`;
       FELICES_28_PLATES_MAP[pNum] = {
         ...plate,
         number: pNum,
+        dicha_index: dichaIdx,
+        dichaIndex: dichaIdx,
         type: String(plate.type || "condicion"),
         title_es: String(plate.title_es || plate.title || `${dichaMeta.title} (Lámina ${pNum}/27)`),
+        title_en: String(plate.title_en || `${dichaMeta.title_en || `Saying ${dichaIdx}`} (Plate ${pNum}/27)`),
         cita_es: String(plate.cita_es || plate.ref || fallbackRef),
         preguntas_es:
           Array.isArray(plate.preguntas_es) && plate.preguntas_es.length > 0
             ? plate.preguntas_es
             : [
-                `¿Dónde has experimentado hoy la necesidad o la promesa de «${dichaMeta.title}» (${fallbackRef})?`,
-                `¿Qué paso concreto de misericordia o paz nos invita a dar esta lámina en familia?`,
-              ],
+              `¿Dónde has experimentado hoy la necesidad o la promesa de «${dichaMeta.title}» (${fallbackRef})?`,
+              `¿Qué paso concreto de misericordia o paz nos invita a dar esta lámina en familia?`,
+            ],
+        preguntas_en:
+          Array.isArray(plate.preguntas_en) && plate.preguntas_en.length > 0
+            ? plate.preguntas_en
+            : [
+              `How does "${dichaMeta.title_en || `Saying ${dichaIdx}`}" (${fallbackRef}) speak into your week today?`,
+              `What concrete act of mercy or peacemaking does this plate invite your household to practice?`,
+            ],
       };
     });
   }
@@ -234,17 +274,35 @@ export function resolveFelicesPlate(plateNumber = 1, artifact = null) {
   if (artifact) hydratePericopesAndGlosses(artifact);
   const idx = Math.max(1, Math.min(27, Number(plateNumber) || 1));
   if (FELICES_28_PLATES_MAP[idx]) return FELICES_28_PLATES_MAP[idx];
-  const dichaIdx = idx >= 25 ? 1 : Math.max(1, Math.min(12, Math.floor((idx + 1) / 2)));
+  const coordMeta = FELICES_PLATE_TO_BIBLE_COORDINATE[idx];
+  const mappedDicha =
+    FELICES_PLATE_TO_DICHA_HYDRATED[idx] ||
+    (coordMeta && Number.isInteger(coordMeta.beatitudeIndex) ? coordMeta.beatitudeIndex + 1 : 0);
+  const dichaIdx =
+    mappedDicha >= 1 && mappedDicha <= 12
+      ? mappedDicha
+      : idx === 27
+        ? 12
+        : idx >= 25
+          ? 1
+          : Math.max(1, Math.min(12, Math.floor((idx + 1) / 2)));
   const dichaMeta = FELICES_12_DICHAS_COORDINATE_MAP[dichaIdx] || FELICES_12_DICHAS_COORDINATE_MAP[1];
   const fallbackRef = `${dichaMeta.book}.${dichaMeta.chapter}.${dichaMeta.verse}`;
   return {
     number: idx,
+    dicha_index: dichaIdx,
+    dichaIndex: dichaIdx,
     type: idx % 2 === 0 ? "condicion" : "promesa",
     title_es: `${dichaMeta.title} (Lámina ${idx}/27)`,
+    title_en: `${dichaMeta.title_en || `Saying ${dichaIdx}`} (Plate ${idx}/27)`,
     cita_es: fallbackRef,
     preguntas_es: [
       `¿Dónde has experimentado hoy la necesidad o la promesa de «${dichaMeta.title}» (${fallbackRef})?`,
       `¿Qué paso concreto de misericordia o paz nos invita a dar esta lámina en familia?`,
+    ],
+    preguntas_en: [
+      `How does "${dichaMeta.title_en || `Saying ${dichaIdx}`}" (${fallbackRef}) speak into your week today?`,
+      `What concrete act of mercy or peacemaking does this plate invite your household to practice?`,
     ],
   };
 }
@@ -404,12 +462,21 @@ export function renderEvangeliosPlateActionsHtml({
   passageRef = "MRK.1.16",
   lang = "es",
   uiLocale = null,
+  gestureText = "",
 } = {}) {
   const cleanWeek = String(weekId || "s01").trim().toLowerCase();
   const cleanRef = String(passageRef || "MRK.1.16").trim().toUpperCase();
   const cleanLang = String(lang || "es").trim().toLowerCase();
   const effectiveUi = String(uiLocale || lang || "es").trim().toLowerCase();
   const isEnUi = effectiveUi.startsWith("en");
+  const normCmp = (s) =>
+    String(s || "")
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^\p{L}\p{N}]+/gu, " ")
+      .trim();
+  const normGesture = normCmp(gestureText);
   const enrichment = resolveEvangeliosMacroThreadAndEcho({
     plateSlug,
     weekId: cleanWeek,
@@ -445,21 +512,27 @@ export function renderEvangeliosPlateActionsHtml({
     Array.isArray(enrichment.pericopeBlocks) && enrichment.pericopeBlocks.length > 0
       ? enrichment.pericopeBlocks
       : Array.isArray(MASORETIC_AND_GOSPEL_PERICOPE_MAP[bookKey]) &&
-          MASORETIC_AND_GOSPEL_PERICOPE_MAP[bookKey].length > 0
+        MASORETIC_AND_GOSPEL_PERICOPE_MAP[bookKey].length > 0
         ? MASORETIC_AND_GOSPEL_PERICOPE_MAP[bookKey]
         : [
-            {
-              beforeVerse: parsedPassage.verse || 1,
-              kind: "petuhah",
-              marker: "פ",
-              title: enrichment.title || (isEnUi ? `Pericope Opening (${bookKey})` : `Apertura de Perícopa (${bookKey})`),
-            },
-          ];
+          {
+            beforeVerse: parsedPassage.verse || 1,
+            kind: "petuhah",
+            marker: "פ",
+            title: enrichment.title || (isEnUi ? `Pericope Opening (${bookKey})` : `Apertura de Perícopa (${bookKey})`),
+          },
+        ];
 
+  const seenChipLabels = new Set();
   const pericopesHtml = rawPericopes
     .map((pb, idx) => {
       if (typeof pb === "string") {
         const cleanStr = pb.replace(/^\d+\.\s*/, "").trim();
+        const nStr = normCmp(cleanStr);
+        if (!cleanStr || (normGesture && (nStr === normGesture || normGesture.includes(nStr) || nStr.includes(normGesture))) || seenChipLabels.has(nStr)) {
+          return "";
+        }
+        seenChipLabels.add(nStr);
         const vMatch = /:(\d+)/.exec(cleanStr);
         const vStart = vMatch ? Number(vMatch[1]) || 1 : (parsedPassage.verse || 1);
         const pRef = `${enrichment.book || parsedPassage.book}.${enrichment.chapter || parsedPassage.chapter}.${vStart}`;
@@ -473,6 +546,11 @@ export function renderEvangeliosPlateActionsHtml({
       const vStart = Number(pb.beforeVerse ?? pb.startVerse ?? pb.verse ?? 1) || 1;
       const pRef = `${enrichment.book || parsedPassage.book}.${enrichment.chapter || parsedPassage.chapter}.${vStart}`;
       const label = pb.title || pb.heading || pb.label || (isEnUi ? `Block ${idx + 1} (v. ${vStart})` : `Bloque ${idx + 1} (v. ${vStart})`);
+      const nLbl = normCmp(label);
+      if ((normGesture && (nLbl === normGesture || normGesture.includes(nLbl) || nLbl.includes(normGesture))) || seenChipLabels.has(nLbl)) {
+        return "";
+      }
+      seenChipLabels.add(nLbl);
       const marker = pb.marker || (pb.kind === "setumah" ? "ס" : "פ");
       return (
         `<button type="button" class="uls-chip evangelios-pericope-chip" ` +
@@ -481,15 +559,16 @@ export function renderEvangeliosPlateActionsHtml({
         `${escapeHtml(marker)} v.${vStart} · ${escapeHtml(label)}</button>`
       );
     })
+    .filter(Boolean)
     .join(" ");
 
   const rawQuestions =
     Array.isArray(enrichment.questions) && enrichment.questions.length > 0
       ? enrichment.questions
       : [
-          `¿Qué revela este pasaje (${cleanRef}) sobre la promesa cumplida en el hilo «${enrichment.macroThread}»?`,
-          `¿Cómo transforma esta palabra nuestra vida comunitaria hoy al amanecer?`,
-        ];
+        `¿Qué revela este pasaje (${cleanRef}) sobre la promesa cumplida en el hilo «${enrichment.macroThread}»?`,
+        `¿Cómo transforma esta palabra nuestra vida comunitaria hoy al amanecer?`,
+      ];
 
   const questionsHtml = rawQuestions
     .map(
@@ -525,18 +604,18 @@ export function renderChapterPericopesRibbonHtml(bookCode = "GEN", chapterNum = 
   const key = `${cleanBook}.${cleanChap}`;
   const rawList =
     Array.isArray(MASORETIC_AND_GOSPEL_PERICOPE_MAP[key]) &&
-    MASORETIC_AND_GOSPEL_PERICOPE_MAP[key].length > 0
+      MASORETIC_AND_GOSPEL_PERICOPE_MAP[key].length > 0
       ? MASORETIC_AND_GOSPEL_PERICOPE_MAP[key]
       : [
-          {
-            beforeVerse: 1,
-            startVerse: 1,
-            kind: "petuhah",
-            marker: "פ",
-            title: `[פ Petuhah] ${cleanBook} ${cleanChap}:1`,
-            synopticParallel: `${cleanBook}.${cleanChap}.1`,
-          },
-        ];
+        {
+          beforeVerse: 1,
+          startVerse: 1,
+          kind: "petuhah",
+          marker: "פ",
+          title: `[פ Petuhah] ${cleanBook} ${cleanChap}:1`,
+          synopticParallel: `${cleanBook}.${cleanChap}.1`,
+        },
+      ];
 
   return rawList
     .map((pb, idx) => {
@@ -596,13 +675,13 @@ export function renderFelicesSocraticWonderCardHtml(plateIndex = 1, uiLang = "es
       ? plate.preguntas_es
       : isEn
         ? [
-            `How does this Beatitude (${citaStr}) resonate in our life today?`,
-            `With whom can we share this promise this week?`,
-          ]
+          `How does this Beatitude (${citaStr}) resonate in our life today?`,
+          `With whom can we share this promise this week?`,
+        ]
         : [
-            `¿Cómo resuena esta dicha (${citaStr}) en nuestra vida hoy?`,
-            `¿Con quién podemos compartir esta promesa esta semana?`,
-          ];
+          `¿Cómo resuena esta dicha (${citaStr}) en nuestra vida hoy?`,
+          `¿Con quién podemos compartir esta promesa esta semana?`,
+        ];
 
   const questionsHtml = questions
     .map(
@@ -636,11 +715,11 @@ export const FELICES_PLATE_TO_BIBLE_COORDINATE = Object.fromEntries(
     i + 1,
     i < 24
       ? {
-          book: "MAT",
-          chapter: 5,
-          verse: i < 4 ? 3 : Math.min(12, (i >> 1) + 2),
-          beatitudeIndex: Math.min(10, i >> 1),
-        }
+        book: "MAT",
+        chapter: 5,
+        verse: i < 4 ? 3 : Math.min(12, (i >> 1) + 2),
+        beatitudeIndex: Math.min(10, i >> 1),
+      }
       : i < 26
         ? { book: "MAT", chapter: 5, verse: 1, beatitudeIndex: 0 }
         : { book: "MAT", chapter: 5, verse: 12, beatitudeIndex: 11 },

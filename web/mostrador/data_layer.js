@@ -32,19 +32,22 @@ import {
 import { buildCanonical80BlocksPagesIndex } from "./dosis.js";
 import {
   SOVEREIGN_ED25519_PUBLIC_KEY_HEX,
-  buildEkpackSigningMessageV2,
+  verifyEd25519ManifestSignature,
+  verifyEd25519ManifestSignatureAsync
+} from "./ed25519_field_math.js";
+import {
   computeBooksDirectoryBytesJs,
   computeSha256HexWebCrypto,
   decodeRfc8878RawZstdFrameJs,
-  inspectDeltaZstPatch,
+  parseAndVerifyEkpackV3PreDecompressAsync,
   parseEkpackContainerJs,
   parseEkpackPreamble32Js,
-  parseEm2MetaTrailerBytes,
+  parseEm2MetaTrailerBytes
+} from "./ekpack_binary_codec.js";
+import {
+  inspectDeltaZstPatch,
   sliceVaultEkpackRange,
   truncateAtWordBoundary,
-  verifyEd25519ManifestSignature,
-  verifyEd25519ManifestSignatureAsync,
-  verifyEd25519ManifestSignatureWebCrypto,
 } from "./offline_mesh.js";
 
 export {
@@ -108,8 +111,23 @@ export function createFetchSource({ baseUrl = "", fetchImpl = globalThis.fetch }
       });
       if (!resp || !resp.ok) return null;
       const buf = new Uint8Array(await resp.arrayBuffer());
-      if (resp.status === 206) return buf;
-      return buf.subarray(s, Math.min(buf.byteLength, e + 1));
+      if (resp.status === 206) {
+        const cr = resp.headers?.get?.("Content-Range") || "";
+        if (cr) {
+          const m = /^bytes\s+(\d+)-(\d+)\/(\d+|\*)$/i.exec(cr.trim());
+          if (!m) return null;
+          const rStart = Number(m[1]);
+          const rEnd = Number(m[2]);
+          if (rStart > s || rEnd < rStart) return null;
+          const expectedLen = rEnd - rStart + 1;
+          if (buf.byteLength !== expectedLen) return null;
+          if (rStart < s || rEnd > e) {
+            return buf.slice(s - rStart, Math.min(buf.byteLength, e - rStart + 1));
+          }
+        }
+        return buf;
+      }
+      return buf.slice(s, Math.min(buf.byteLength, e + 1));
     },
     async getText(rel) {
       const resp = await fetchImpl(url(rel));
@@ -286,7 +304,7 @@ export function createDataLayer({ source, cacheLimit = 32 } = {}) {
     const candidates = await resolvePackCandidatePaths(baseLang);
     for (const relPack of candidates) {
       const hdrInfo = await ekpackHeaderCache.get(relPack, async () => {
-        const headProbe = await readEkpackSlice(relPack, 0, 65535);
+        const headProbe = await readEkpackSlice(relPack, 0, 98303);
         if (!headProbe || headProbe.byteLength < 32) return null;
         const preamble = parseEkpackPreamble32Js(headProbe);
         if (!preamble) return null;
@@ -298,107 +316,69 @@ export function createDataLayer({ source, cacheLimit = 32 } = {}) {
           f0Envelope = await readEkpackSlice(relPack, preamble.frame0Offset, f0End - 1);
         }
         if (!f0Envelope || f0Envelope.byteLength < 12) return null;
-        const actualF0Len = new DataView(
-          f0Envelope.buffer,
-          f0Envelope.byteOffset,
-          4,
-        ).getUint32(0, true);
-        if (actualF0Len === 0 || 4 + actualF0Len > f0Envelope.byteLength) return null;
         const playerWasm = await ensurePlayerWasmLoaded();
-        const f0JsonBytes = decodeRfc8878RawZstdFrameJs(
-          f0Envelope.subarray(4, 4 + actualF0Len),
+        let ev3VerifySlice = headProbe;
+        if (f0End > headProbe.byteLength) {
+          ev3VerifySlice = new Uint8Array(preamble.frame0Offset + f0Envelope.byteLength);
+          ev3VerifySlice.set(headProbe.subarray(0, 32), 0);
+          ev3VerifySlice.set(f0Envelope, preamble.frame0Offset);
+        }
+        let verifiedEv3;
+        try {
+          verifiedEv3 = await parseAndVerifyEkpackV3PreDecompressAsync(ev3VerifySlice, {
+            expectedPubKeyHex: SOVEREIGN_ED25519_PUBLIC_KEY_HEX,
+            expectedLang: String(baseLang || "").trim().toLowerCase(),
+            allowDevTest: false,
+            wasmPlayerMod: playerWasm,
+          });
+        } catch (err) {
+          const msg = String(err?.message || err || "");
+          const reason = msg.includes("ERR_UNPINNED_ED25519_KEY")
+            ? "UNPINNED_ED25519_KEY"
+            : msg.includes("ERR_LANG_REPLAY_MISMATCH")
+              ? "EKPACK_LANG_REPLAY"
+              : msg.includes("ERR_DEV_TEST")
+                ? "EKPACK_DEV_SIGNATURE_FORBIDDEN"
+                : "EKPACK_ED25519_PRE_ZSTD_REJECTED";
+          return { ed25519Invalid: true, reason, relPack };
+        }
+        const { ev3, hdr, symZstdSlice, metaZstdSlice } = verifiedEv3;
+        const syncSigOk = verifyEd25519ManifestSignature(
+          ev3.signingPayload219,
+          ev3.signatureHex,
+          SOVEREIGN_ED25519_PUBLIC_KEY_HEX.toLowerCase(),
           playerWasm,
         );
-        const hdr = JSON.parse(new TextDecoder("utf-8").decode(f0JsonBytes));
-        const pinnedPubKey = SOVEREIGN_ED25519_PUBLIC_KEY_HEX.toLowerCase();
-        const headerPubKey = String(hdr.ed25519_public_key_hex || "").trim().toLowerCase();
-        if (headerPubKey !== pinnedPubKey) {
-          return { ed25519Invalid: true, reason: "UNPINNED_ED25519_KEY", relPack };
-        }
-        if (
-          String(hdr.lang_code || "").trim().toLowerCase() !==
-          String(baseLang || "").trim().toLowerCase()
-        ) {
-          return { ed25519Invalid: true, reason: "EKPACK_LANG_REPLAY", relPack };
-        }
-        const expectedMetaSha = String(hdr.meta_zstd_sha256_hex || "").trim().toLowerCase();
-        if (!/^[0-9a-f]{64}$/.test(expectedMetaSha)) {
-          return { ed25519Invalid: true, reason: "EKPACK_META_ZSTD_SHA256_MISSING", relPack };
-        }
-        const signMsgV2 = buildEkpackSigningMessageV2(hdr);
-        const sigOkV2 =
-          (await verifyEd25519ManifestSignatureWebCrypto(
-            signMsgV2,
-            hdr.ed25519_signature_hex,
-            pinnedPubKey,
-            playerWasm,
-          )) &&
-          verifyEd25519ManifestSignature(
-            signMsgV2,
-            hdr.ed25519_signature_hex,
-            pinnedPubKey,
-            playerWasm,
-          );
-        if (!sigOkV2) {
-          return { ed25519Invalid: true, relPack };
+        if (!syncSigOk) {
+          return { ed25519Invalid: true, reason: "EKPACK_SYNC_ED25519_MISMATCH", relPack };
         }
         let packedSymbols;
-        let symZstdSlice = null;
-        let symZstdLen = 0;
-        if (f0Envelope.byteLength >= 8 + actualF0Len) {
-          symZstdLen = new DataView(
-            f0Envelope.buffer,
-            f0Envelope.byteOffset + 4 + actualF0Len,
-            4,
-          ).getUint32(0, true);
-        }
-        if (symZstdLen > 0) {
-          if (8 + actualF0Len + symZstdLen > f0Envelope.byteLength) {
-            return { ed25519Invalid: true, reason: "EKPACK_SYM_ZSTD_TRUNCATED", relPack };
-          }
-          symZstdSlice = f0Envelope.subarray(8 + actualF0Len, 8 + actualF0Len + symZstdLen);
-        }
         if (
           !hdr.fsst_symbol_table ||
           (Array.isArray(hdr.fsst_symbol_table) && hdr.fsst_symbol_table.length === 0)
         ) {
-          packedSymbols = symZstdSlice || new Uint8Array([0, 0]);
+          packedSymbols = ev3.symZstdLen > 0 ? symZstdSlice : new Uint8Array([0, 0]);
         } else {
           packedSymbols = packFsstSymbolTableBytes(hdr.fsst_symbol_table);
         }
-        const metaPos = 8 + actualF0Len + symZstdLen;
         if (Array.isArray(hdr.books) && hdr.books.length > 0) {
-          const hasMetaEnvelope = metaPos + 4 <= f0Envelope.byteLength;
-          const metaZstdLen = hasMetaEnvelope
-            ? new DataView(
-                f0Envelope.buffer,
-                f0Envelope.byteOffset + metaPos,
-                4,
-              ).getUint32(0, true)
-            : 0;
-          if (
-            !hasMetaEnvelope ||
-            metaZstdLen === 0 ||
-            metaPos + 4 + metaZstdLen > f0Envelope.byteLength
-          ) {
-            return { ed25519Invalid: true, reason: "EKPACK_META_ZSTD_INVALID", relPack };
-          }
-          const metaZstdSlice = f0Envelope.subarray(metaPos + 4, metaPos + 4 + metaZstdLen);
-          const actualMetaSha = await computeSha256HexWebCrypto(metaZstdSlice);
-          if (actualMetaSha !== expectedMetaSha) {
+          if (!(metaZstdSlice instanceof Uint8Array) || metaZstdSlice.byteLength === 0) {
             return { ed25519Invalid: true, reason: "EKPACK_META_ZSTD_INVALID", relPack };
           }
           try {
-            const metaRaw = decodeRfc8878RawZstdFrameJs(metaZstdSlice, playerWasm);
+            const metaRaw = decodeRfc8878RawZstdFrameJs(
+              metaZstdSlice,
+              playerWasm,
+              256 * 1024,
+            );
             const em2 = parseEm2MetaTrailerBytes(metaRaw, hdr.books.length);
             if (!em2.valid || !em2.hasEm2) {
               return { ed25519Invalid: true, reason: "EKPACK_EM2_TRAILER_INVALID", relPack };
             }
-            if (symZstdSlice && symZstdSlice.byteLength > 0) {
-              const actualSymSha = await computeSha256HexWebCrypto(symZstdSlice);
-              if (actualSymSha !== em2.symSha256Hex) {
-                return { ed25519Invalid: true, reason: "EKPACK_SYM_ZSTD_TAMPERED", relPack };
-              }
+            // Verificacion incondicional incluso cuando sym_zstd_len == 0 (GAP-V2LD-02/18)
+            const actualSymSha = await computeSha256HexWebCrypto(symZstdSlice);
+            if (actualSymSha !== em2.symSha256Hex) {
+              return { ed25519Invalid: true, reason: "EKPACK_SYM_ZSTD_TAMPERED", relPack };
             }
             const actualDirSha = await computeSha256HexWebCrypto(
               computeBooksDirectoryBytesJs(hdr.books),
@@ -422,18 +402,18 @@ export function createDataLayer({ source, cacheLimit = 32 } = {}) {
                 hdr.books[bi].frame_sha256_hex = hexStr;
               }
             }
-            if (hdr.intralang_rlz) {
-              if (!em2.frame67Sha256Hex) {
+            if (hdr.intralang_rlz || ev3.hasFrame67) {
+              if (!em2.frame67Sha256Hex || em2.frame67Sha256Hex !== ev3.frame67Sha256Hex) {
                 return {
                   ed25519Invalid: true,
-                  reason: "FRAME67_META_HASH_MISSING",
+                  reason: "FRAME67_META_HASH_MISMATCH",
                   relPack,
                 };
               }
               if (
-                hdr.intralang_rlz.frame_sha256_hex &&
+                hdr.intralang_rlz?.frame_sha256_hex &&
                 String(hdr.intralang_rlz.frame_sha256_hex).toLowerCase() !==
-                  em2.frame67Sha256Hex
+                ev3.frame67Sha256Hex
               ) {
                 return {
                   ed25519Invalid: true,
@@ -441,7 +421,9 @@ export function createDataLayer({ source, cacheLimit = 32 } = {}) {
                   relPack,
                 };
               }
-              hdr.intralang_rlz.frame_sha256_hex = em2.frame67Sha256Hex;
+              if (hdr.intralang_rlz) {
+                hdr.intralang_rlz.frame_sha256_hex = ev3.frame67Sha256Hex;
+              }
             }
           } catch {
             return { ed25519Invalid: true, reason: "EKPACK_META_ZSTD_INVALID", relPack };
@@ -450,6 +432,7 @@ export function createDataLayer({ source, cacheLimit = 32 } = {}) {
         return {
           relPack,
           preamble,
+          ev3,
           hdr,
           packedSymbols,
         };
@@ -540,7 +523,7 @@ export function createDataLayer({ source, cacheLimit = 32 } = {}) {
       if (
         f67Bytes.byteLength < 8 ||
         new DataView(f67Bytes.buffer, f67Bytes.byteOffset, 4).getUint32(0, true) >>> 0 !==
-          0xfd2fb528
+        0xfd2fb528
       ) {
         return { status: STATUS.UNAVAILABLE, data: null, reason: "FRAME67_ZSTD_TAMPERED" };
       }
@@ -554,7 +537,7 @@ export function createDataLayer({ source, cacheLimit = 32 } = {}) {
       if (
         !rlzDesc.base_content_sha256_hex ||
         String(rlzDesc.base_content_sha256_hex).toLowerCase() !==
-          String(hdrInfo.hdr.content_digest_sha256_hex || "").toLowerCase()
+        String(hdrInfo.hdr.content_digest_sha256_hex || "").toLowerCase()
       ) {
         return { status: STATUS.UNAVAILABLE, data: null, reason: "FRAME67_BASE_DIGEST_MISMATCH" };
       }
@@ -652,7 +635,8 @@ export function createDataLayer({ source, cacheLimit = 32 } = {}) {
   }
 
   /**
-   * Salto directo $\mathcal{O}(1)$ (`CachelineEf` + `decode_ekpack_verse_in_place`) sobre el `.ekpack` de una lengua.
+   * Salto directo $\mathcal{O}(1)$ intra-libro (`stride16_table` + `decode_ekpack_verse_in_place` en `wasm32` sub-L2;
+   * `CachelineEf` `ef_select_monotone` opera en índices nativos `editorial-core`/`ekovoz-cli` con $n \ge 10^5$).
    */
   async function loadVerseFromEkpackO1(lang, verseOrdinal = 0) {
     const rawLang = String(lang || "es").trim() || "es";
@@ -815,6 +799,7 @@ export function createDataLayer({ source, cacheLimit = 32 } = {}) {
       const f0JsonBytes = decodeRfc8878RawZstdFrameJs(
         f0Envelope.subarray(4, 4 + actualF0Len),
         playerWasm,
+        256 * 1024,
       );
       const hdr = JSON.parse(new TextDecoder("utf-8").decode(f0JsonBytes));
       const pinnedPubKey = SOVEREIGN_ED25519_PUBLIC_KEY_HEX.toLowerCase();
@@ -1160,8 +1145,15 @@ export function createDataLayer({ source, cacheLimit = 32 } = {}) {
     return val;
   }
 
-  async function loadFieldWorkshopData() {
-    const val = await getJson("data/field_workshop_stp.json");
+  async function loadFieldWorkshopData(lang = "stp") {
+    const safeLang = LANG_RE.test(String(lang || "").trim())
+      ? String(lang).trim().toLowerCase()
+      : "stp";
+    const cat = await loadCatalog().catch(() => null);
+    if (Array.isArray(cat?.workshop_langs) && !cat.workshop_langs.includes(safeLang)) {
+      return null;
+    }
+    const val = await getJson(`data/field_workshop_${safeLang}.json`);
     if (val) hydratedFieldWorkshopData = val;
     return val;
   }
@@ -1250,7 +1242,7 @@ export function createDataLayer({ source, cacheLimit = 32 } = {}) {
     const mine = generation;
     const isCurrent = () => mine === generation;
     const result = loadChapter(state);
-    const enrichedPromise = result.then((chapterRes) => {
+    const enrichedPromise = result.then(async (chapterRes) => {
       const versesMap = {};
       if (Array.isArray(chapterRes.verses)) {
         for (const v of chapterRes.verses) {
@@ -1259,9 +1251,25 @@ export function createDataLayer({ source, cacheLimit = 32 } = {}) {
           }
         }
       }
+      let matrixPayload = null;
+      if (chapterRes.status === STATUS.READY && isCurrent() && state?.book && state?.chapter) {
+        try {
+          const matRes = await loadChapterMatrix(state.book, state.chapter);
+          if (matRes && matRes.status === STATUS.READY && Array.isArray(matRes.rows)) {
+            matrixPayload = {
+              rows: matRes.rows,
+              columns: matRes.columns || null,
+              attribution: matRes.attribution || "",
+            };
+          }
+        } catch {
+          matrixPayload = null;
+        }
+      }
       return {
         ...chapterRes,
         stale: !isCurrent(),
+        matrix: matrixPayload,
         chapter:
           chapterRes.status === STATUS.READY
             ? {

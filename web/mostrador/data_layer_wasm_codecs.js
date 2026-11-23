@@ -105,14 +105,17 @@ export function decodeZstdFrameInPlayerWasm(wasmMod, frameBytes, decompressedHin
   }
   const inLen = frameBytes.byteLength;
   const inPtr = allocWasmBuffer(exports, inLen);
-  let outCap = Math.max(65536, Number(decompressedHint) > 0 ? Number(decompressedHint) + 1024 : inLen * 8);
+  let outCap = Math.min(
+    16 * 1024 * 1024,
+    Math.max(65536, Number(decompressedHint) > 0 ? Number(decompressedHint) + 1024 : inLen * 8),
+  );
   let outPtr = allocWasmBuffer(exports, outCap);
   try {
     new Uint8Array(exports.memory.buffer, inPtr, inLen).set(frameBytes);
     let written = exports.decode_ekpack_zstd_frame_in_place(inPtr, inLen, outPtr, outCap);
     while (written === -3 && outCap < 16 * 1024 * 1024) {
       freeWasmBuffer(exports, outPtr, outCap);
-      outCap *= 4;
+      outCap = Math.min(16 * 1024 * 1024, outCap * 4);
       outPtr = allocWasmBuffer(exports, outCap);
       new Uint8Array(exports.memory.buffer, inPtr, inLen).set(frameBytes);
       written = exports.decode_ekpack_zstd_frame_in_place(inPtr, inLen, outPtr, outCap);
@@ -880,7 +883,7 @@ const CANONICAL_24_METROLOGY_UNITS = Object.freeze([
   { unit_id: "MET-01", term_es: "Codo (Ammah)", si_equivalence: "~45 cm", everyday_isomorphism: "2 cuartas de mano adulta (del codo a la punta del dedo)", sample_ref: "GEN.6.15", strong_code: "H0520" },
   { unit_id: "MET-02", term_es: "Palmo menor (Tefaj)", si_equivalence: "~7.5 cm", everyday_isomorphism: "Ancho de 4 dedos juntos de la mano", sample_ref: "EXO.25.25", strong_code: "H2947" },
   { unit_id: "MET-03", term_es: "Palmo mayor (Zeret)", si_equivalence: "~22.5 cm", everyday_isomorphism: "1 cuarta abierta desde el pulgar hasta el meñique", sample_ref: "EXO.28.16", strong_code: "H2239" },
-  { unit_id: "MET-04", term_es: "Caña de medir (Qaneh)", si_equivalence: "~3.1 m", everyday_isomorphism: "Altura de un techo alto de casa o 6 codos largos", sample_ref: "EZE.40.5", strong_code: "H7070" },
+  { unit_id: "MET-04", term_es: "Caña de medir (Qaneh)", si_equivalence: "~3.1 m", everyday_isomorphism: "Altura de un techo alto de casa o 6 codos largos", sample_ref: "EZK.40.5", strong_code: "H7070" },
   { unit_id: "MET-05", term_es: "Estadio (Stadion)", si_equivalence: "~185 m", everyday_isomorphism: "Casi 2 cuadras de calle caminadas a paso firme", sample_ref: "LUK.24.13", strong_code: "G4712" },
   { unit_id: "MET-06", term_es: "Milla romana (Milion)", si_equivalence: "~1.48 km", everyday_isomorphism: "15 minutos caminando por vereda llana (1,000 pasos dobles)", sample_ref: "MAT.5.41", strong_code: "G3400" },
   { unit_id: "MET-07", term_es: "Camino de sábado", si_equivalence: "~1.1 km", everyday_isomorphism: "Caminata tranquila de 12 minutos desde la aldea", sample_ref: "ACT.1.12", strong_code: "G4521" },

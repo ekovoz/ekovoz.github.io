@@ -1,5 +1,5 @@
 // ============================================================================
-// web/mostrador/drawer_study.js — Gaveta 1 (Estudio 14-Col, Rosetta NSM-65 & Calibración WFST/Diacrónica)
+// web/mostrador/drawer_study.js — Gaveta 1 (Estudio 15-Col, Rosetta NSM-65 & Calibración WFST/Diacrónica)
 // Decisiones D1-R41, D2-R41, D3-R41, D8-R41 · Costura Limpia ∂(C)=0
 // ============================================================================
 
@@ -10,6 +10,7 @@ import {
   renderChapterDiachronicAuditCardHtml,
   renderUnifiedDiachronicContextHtml,
 } from "./diachronic_register.js";
+import { renderBranchAndTypologyInspectorHtml } from "./dosis.js";
 import {
   decodeSdbhHierarchicalCode,
   highlightStudyCardByStrongId,
@@ -48,7 +49,7 @@ function renderAnnotationAndBlindCalibrationCardHtml({
 } = {}) {
   const isEn = String(uiLocale || "es").trim().toLowerCase().startsWith("en");
   const canonicalVerses = Number(BIBLE_CONSTANTS?.CANONICAL_VERSES_COUNT || 31102);
-  const canonicalCols = Number(BIBLE_CONSTANTS?.MATRIX_COLUMNS_COUNT || 14);
+  const canonicalCols = Number(BIBLE_CONSTANTS?.MATRIX_TIER0_DESCRIPTORS_COUNT || BIBLE_CONSTANTS?.MATRIX_COLUMNS_COUNT || 15);
   const sampleSdbh = sampleRow?.c11_semantic_domain
     ? decodeSdbhHierarchicalCode(sampleRow.c11_semantic_domain, uiLocale).label
     : "";
@@ -94,19 +95,19 @@ function renderAnnotationAndBlindCalibrationCardHtml({
 
     parts.push(
       `<section class="calibration-mass-conservation-card" data-annotation-mass-conservation="true" data-total-tokens="${totalTokens}" data-total-residuals="${totalResiduals}" data-canonical-verses="${canonicalVerses}" data-matrix-columns="${canonicalCols}" data-index-sha256="${escHtml(indexSha.slice(0, 16))}" data-residuals-sha256="${escHtml(residualsSha.slice(0, 16))}" style="margin-top:0.5rem;padding:0.55rem 0.7rem;border-radius:8px;border:1px solid var(--card-border);background:var(--card-bg);font-size:0.76rem;">` +
-        `<div style="display:flex;flex-wrap:wrap;gap:0.4rem;align-items:center;justify-content:space-between;margin-bottom:0.35rem;">` +
-        `<strong>⚖️ ${isEn ? "Lexical Mass Conservation" : "Conservación de Masa Léxica"} (${otTokens.toLocaleString("en-US")} ${isEn ? "OT" : "AT"} + ${ntTokens.toLocaleString("en-US")} NT = ${totalTokens.toLocaleString("en-US")} tokens · ${canonicalVerses.toLocaleString("en-US")} vv. · ${canonicalCols} col.)</strong>` +
-        `<span class="uls-badge" data-thresholds-pass="${gatePass}">${gatePass ? (isEn ? "✅ Gates OK" : "✅ Umbrales OK") : "⚠️"} · TAGNT-ES ${ntSpanRatio}% (≥${minNtSpan}%) · OT-Unann ${otUnannRatio}% (≤${maxOtUnann}%) · NT-Unann ${ntUnannRatio}% (≤${maxNtUnann}%) · Ketiv ${otKetivRatio}% (≤${maxOtKetiv}%)</span>` +
-        `</div>` +
-        (sampleSdbh || sampleNsm
-          ? `<div class="hig-tech-meta" style="margin-bottom:0.3rem;color:var(--text-secondary);">${sampleSdbh ? `<span>SDBH: ${escHtml(sampleSdbh)}</span>` : ""}${sampleSdbh && sampleNsm ? " · " : ""}${sampleNsm ? `<span>NSM-65: ${escHtml(sampleNsm)}</span>` : ""}</div>`
-          : "") +
-        `<div style="display:flex;flex-wrap:wrap;gap:0.25rem;margin-bottom:0.35rem;">` +
-        `<span style="font-weight:600;">${isEn ? `5 Residual Classes (${totalResiduals.toLocaleString("en-US")}):` : `5 Clases Residuales (${totalResiduals.toLocaleString("en-US")}):`}</span> ${residualBadges}` +
-        `</div>` +
-        `<div style="display:flex;flex-wrap:wrap;gap:0.25rem;color:var(--text-secondary);">` +
-        `<span style="font-weight:600;">${isEn ? `${sources.length} Open Sources:` : `${sources.length} Fuentes Abiertas:`}</span> ${sourceBadges}` +
-        `</div>` +
+      `<div style="display:flex;flex-wrap:wrap;gap:0.4rem;align-items:center;justify-content:space-between;margin-bottom:0.35rem;">` +
+      `<strong>⚖️ ${isEn ? "Lexical Mass Conservation" : "Conservación de Masa Léxica"} (${otTokens.toLocaleString("en-US")} ${isEn ? "OT" : "AT"} + ${ntTokens.toLocaleString("en-US")} NT = ${totalTokens.toLocaleString("en-US")} tokens · ${canonicalVerses.toLocaleString("en-US")} vv. · ${canonicalCols} col.)</strong>` +
+      `<span class="uls-badge" data-thresholds-pass="${gatePass}">${gatePass ? (isEn ? "✅ Gates OK" : "✅ Umbrales OK") : "⚠️"} · TAGNT-ES ${ntSpanRatio}% (≥${minNtSpan}%) · OT-Unann ${otUnannRatio}% (≤${maxOtUnann}%) · NT-Unann ${ntUnannRatio}% (≤${maxNtUnann}%) · Ketiv ${otKetivRatio}% (≤${maxOtKetiv}%)</span>` +
+      `</div>` +
+      (sampleSdbh || sampleNsm
+        ? `<div class="hig-tech-meta" style="margin-bottom:0.3rem;color:var(--text-secondary);">${sampleSdbh ? `<span>SDBH: ${escHtml(sampleSdbh)}</span>` : ""}${sampleSdbh && sampleNsm ? " · " : ""}${sampleNsm ? `<span>NSM-65: ${escHtml(sampleNsm)}</span>` : ""}</div>`
+        : "") +
+      `<div style="display:flex;flex-wrap:wrap;gap:0.25rem;margin-bottom:0.35rem;">` +
+      `<span style="font-weight:600;">${isEn ? `5 Residual Classes (${totalResiduals.toLocaleString("en-US")}):` : `5 Clases Residuales (${totalResiduals.toLocaleString("en-US")}):`}</span> ${residualBadges}` +
+      `</div>` +
+      `<div style="display:flex;flex-wrap:wrap;gap:0.25rem;color:var(--text-secondary);">` +
+      `<span style="font-weight:600;">${isEn ? `${sources.length} Open Sources:` : `${sources.length} Fuentes Abiertas:`}</span> ${sourceBadges}` +
+      `</div>` +
       `</section>`,
     );
   }
@@ -162,11 +163,11 @@ function renderAnnotationAndBlindCalibrationCardHtml({
 
     parts.push(
       `<section class="blind-calibration-chrf-card" data-blind-calibration-matrix="true" data-langs-count="${byLang.size}" data-books-count="${booksOrder.length}" style="margin-top:0.5rem;padding:0.55rem 0.7rem;border-radius:8px;border:1px solid var(--card-border);background:var(--card-bg);font-size:0.75rem;overflow-x:auto;">` +
-        `<strong style="display:block;margin-bottom:0.3rem;">🎯 ${isEn ? `Blind Calibration Matrix chrF++ (${byLang.size} Languages × 4 Passages)` : `Matriz de Calibración Ciega chrF++ (${byLang.size} Lenguas × 4 Pasajes)`}</strong>` +
-        `<table style="width:100%;border-collapse:collapse;">` +
-        `<thead><tr><th style="padding:0.25rem 0.4rem;text-align:left;border-bottom:1px solid var(--card-border);">${isEn ? "Lang / Family" : "Lengua / Familia"}</th>${headerCells}</tr></thead>` +
-        `<tbody>${bodyRows}</tbody>` +
-        `</table>` +
+      `<strong style="display:block;margin-bottom:0.3rem;">🎯 ${isEn ? `Blind Calibration Matrix chrF++ (${byLang.size} Languages × 4 Passages)` : `Matriz de Calibración Ciega chrF++ (${byLang.size} Lenguas × 4 Pasajes)`}</strong>` +
+      `<table style="width:100%;border-collapse:collapse;">` +
+      `<thead><tr><th style="padding:0.25rem 0.4rem;text-align:left;border-bottom:1px solid var(--card-border);">${isEn ? "Lang / Family" : "Lengua / Familia"}</th>${headerCells}</tr></thead>` +
+      `<tbody>${bodyRows}</tbody>` +
+      `</table>` +
       `</section>`,
     );
   }
@@ -222,9 +223,9 @@ export function hydrateWasmManifestStatus(wasmManifest = null) {
     wasmManifest?.modules && typeof wasmManifest.modules === "object"
       ? wasmManifest.modules
       : {
-          ekovoz_player_wasm: { path: "wasm/ekovoz_player_wasm.wasm" },
-          qr_stream_receiver_wasm: { path: "wasm/qr_stream_receiver_wasm.wasm" },
-        };
+        ekovoz_player_wasm: { path: "wasm/ekovoz_player_wasm.wasm" },
+        qr_stream_receiver_wasm: { path: "wasm/qr_stream_receiver_wasm.wasm" },
+      };
   return {
     modules,
     hasPlayerWasm: Boolean(modules.ekovoz_player_wasm),
@@ -307,7 +308,7 @@ export function mountCardHtmlIntoHost(hostEl, fullCardHtml) {
 
 /**
  * Sincroniza un código Strong activo en la Gaveta 1 (`#bibleEasyDrawerPanel`):
- * resalta la tarjeta de la Matriz 14-Col, actualiza `#rosettaSearchInput` y filtra `#rosettaExplorerResultsRows` (`D2-R38`).
+ * resalta la tarjeta de la Matriz 15-Col, actualiza `#rosettaSearchInput` y filtra `#rosettaExplorerResultsRows` (`D2-R38`).
  */
 export function syncActiveStrongInStudyDrawer(
   strongId,
@@ -364,7 +365,7 @@ export function syncActiveStrongInStudyDrawer(
 }
 
 /**
- * Hidrata la Gaveta 1 (Estudio 14-Col + Rosetta + Calibración WFST/Diacrónica) (`D3-R41` / `D10-R38` / `D2-R38`).
+ * Hidrata la Gaveta 1 (Estudio 15-Col + Rosetta + Calibración WFST/Diacrónica) (`D3-R41` / `D10-R38` / `D2-R38`).
  */
 export async function hydrateStudyDrawerPanel(ctx = {}) {
   const {
@@ -640,10 +641,6 @@ export async function hydrateStudyDrawerPanel(ctx = {}) {
             state.activeStrongId = String(propStrong).toUpperCase();
           }
           await transitionSheet("field", targetDoc);
-          const strongInp = getEl("improveStrongInput", targetDoc);
-          if (strongInp && state.activeStrongId) {
-            strongInp.value = state.activeStrongId;
-          }
           return;
         }
         const slotBtn = e?.target?.closest
@@ -751,6 +748,32 @@ export async function hydrateStudyDrawerPanel(ctx = {}) {
           state.orthographyProfile = nextProf;
           await hydrateStudyDrawerPanel(ctx);
         }
+      });
+    }
+  }
+
+  const branchPanel = getEl("bibleBranchAndTypologyPanel", targetDoc);
+  if (branchPanel) {
+    branchPanel.innerHTML = renderBranchAndTypologyInspectorHtml({
+      lang: state.lang,
+      activeBranchId: state.activeBranchId || "",
+      activeTypologyId: state.activeTypologyId || "",
+      uiLocale: state.uiLocale || "es",
+    });
+    const branchSel = getEl("branchProfileSelect", targetDoc);
+    if (branchSel && typeof branchSel.addEventListener === "function" && !branchSel._branchSelBound) {
+      branchSel._branchSelBound = true;
+      branchSel.addEventListener("change", (e) => {
+        state.activeBranchId = String(e?.target?.value || branchSel.value || "");
+        hydrateStudyDrawerPanel(ctx);
+      });
+    }
+    const typoSel = getEl("typologySheetSelect", targetDoc);
+    if (typoSel && typeof typoSel.addEventListener === "function" && !typoSel._typoSelBound) {
+      typoSel._typoSelBound = true;
+      typoSel.addEventListener("change", (e) => {
+        state.activeTypologyId = String(e?.target?.value || typoSel.value || "");
+        hydrateStudyDrawerPanel(ctx);
       });
     }
   }

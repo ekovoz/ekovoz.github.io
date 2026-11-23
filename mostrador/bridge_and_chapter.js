@@ -4,24 +4,17 @@
 // Extracted via LCOM4 Clean Seam (D87 / D6-A++ · ARB-EKOVOZ-62, ∂_mut(C) = 0)
 // ============================================================================
 
-import {
-  FELICES_PLATE_TO_BIBLE_COORDINATE,
-  getActivePlateIndex,
-  resolvePlateForBibleCoordinate,
-} from "../i18n_ui.js";
+import { BIBLE_CONSTANTS } from "../bible_constants.js";
 import { STATUS } from "./data_layer.js";
 import {
   applySpanish21DiachronicRegister,
   computeAnalyticalRegisterMetrics,
 } from "./diachronic_register.js";
 import { detectContextualCulturalGlossesForVerse } from "./estudio.js";
-import {
-  EVANGELIOS_MACRO_THREADS_AND_ECHOES,
-  FELICES_12_DICHAS_COORDINATE_MAP,
-  FELICES_28_PLATES_MAP,
-  parseCanonicalOtEchoRef,
-  resolveMasoreticPericopeBreaks,
-} from "./evangelios.js";
+import { resolveMasoreticPericopeBreaks } from "./evangelios.js";
+import { CROSS_WORK_BRIDGE_TABLE, projectCrossWorkCoordinate } from "./cross_work_bridge.js";
+
+export { CROSS_WORK_BRIDGE_TABLE, projectCrossWorkCoordinate };
 import { formatLocalizedNumeralWeb, isRtlLocale } from "./i18n.js";
 import { lookupIso639MacroRegionO1 } from "./lang_funnel.js";
 import {
@@ -63,222 +56,6 @@ export const MOSTRADOR_DOM_BINDINGS = {
   "#btnOpenFieldWorkshopSheet": "transitionSheet:field",
   "#btnOpenShareAndAuditSheet": "transitionSheet:share",
 };
-
-/**
- * Tabla biyectiva entre las 3 Obras Soberanas (`biblia`, `felices`, `evangelios`, `D5-E+` · `ARB-EKOVOZ-61`).
- */
-export const CROSS_WORK_BRIDGE_TABLE = {
-  beatitudesToBible: [
-    { beatitudeIndex: 0, plateIndex: 1, book: "MAT", chapter: 5, verse: 3, evangeliosWeek: "s08", evangeliosQuarter: "T1" },
-    { beatitudeIndex: 1, plateIndex: 3, book: "MAT", chapter: 5, verse: 3, evangeliosWeek: "s08", evangeliosQuarter: "T1" },
-    { beatitudeIndex: 2, plateIndex: 5, book: "MAT", chapter: 5, verse: 4, evangeliosWeek: "s08", evangeliosQuarter: "T1" },
-    { beatitudeIndex: 3, plateIndex: 7, book: "MAT", chapter: 5, verse: 5, evangeliosWeek: "s08", evangeliosQuarter: "T1" },
-    { beatitudeIndex: 4, plateIndex: 9, book: "MAT", chapter: 5, verse: 6, evangeliosWeek: "s08", evangeliosQuarter: "T1" },
-    { beatitudeIndex: 5, plateIndex: 11, book: "MAT", chapter: 5, verse: 7, evangeliosWeek: "s08", evangeliosQuarter: "T1" },
-    { beatitudeIndex: 6, plateIndex: 13, book: "MAT", chapter: 5, verse: 8, evangeliosWeek: "s08", evangeliosQuarter: "T1" },
-    { beatitudeIndex: 7, plateIndex: 15, book: "MAT", chapter: 5, verse: 9, evangeliosWeek: "s08", evangeliosQuarter: "T1" },
-    { beatitudeIndex: 8, plateIndex: 17, book: "MAT", chapter: 5, verse: 10, evangeliosWeek: "s08", evangeliosQuarter: "T1" },
-    { beatitudeIndex: 9, plateIndex: 19, book: "MAT", chapter: 5, verse: 11, evangeliosWeek: "s08", evangeliosQuarter: "T1" },
-    { beatitudeIndex: 10, plateIndex: 24, book: "MAT", chapter: 5, verse: 12, evangeliosWeek: "s08", evangeliosQuarter: "T1" },
-    { beatitudeIndex: 11, plateIndex: 25, book: "MAT", chapter: 5, verse: 1, evangeliosWeek: "s08", evangeliosQuarter: "T1" },
-  ],
-  evangeliosAnchors: {
-    "JHN.1": { weekId: "s01", quarter: "T1", book: "JHN", chapter: 1, verse: 1 },
-    "MAT.5": { weekId: "s08", quarter: "T1", book: "MAT", chapter: 5, verse: 3 },
-    "MRK.4": { weekId: "s14", quarter: "T2", book: "MRK", chapter: 4, verse: 35 },
-    "LUK.15": { weekId: "s27", quarter: "T3", book: "LUK", chapter: 15, verse: 11 },
-    "JHN.20": { weekId: "s40", quarter: "T4", book: "JHN", chapter: 20, verse: 19 },
-  },
-};
-
-/**
- * Proyecta sin pérdida la coordenada activa al conmutar entre `biblia`, `felices` y `evangelios`
- * aceptando tanto firma de objeto único como firma posicional de 3 argumentos (`D52 / 1C+` · `ARB-EKOVOZ-64`).
- */
-export function projectCrossWorkCoordinate(
-  fromWorkOrObj = "biblia",
-  toWorkArg = "biblia",
-  currentStateArg = {},
-) {
-  const isObjCall =
-    fromWorkOrObj !== null &&
-    typeof fromWorkOrObj === "object" &&
-    !Array.isArray(fromWorkOrObj);
-  const currentState = isObjCall ? fromWorkOrObj : currentStateArg || {};
-  const rawFrom = isObjCall ? fromWorkOrObj.fromWork : fromWorkOrObj;
-  const rawTo = isObjCall ? fromWorkOrObj.toWork : toWorkArg;
-
-  const src = ["biblia", "felices", "evangelios"].includes(String(rawFrom || "").toLowerCase())
-    ? String(rawFrom).toLowerCase()
-    : "biblia";
-  const dst = ["biblia", "felices", "evangelios"].includes(String(rawTo || "").toLowerCase())
-    ? String(rawTo).toLowerCase()
-    : "biblia";
-
-  let book = String(currentState.book || "JHN").toUpperCase();
-  let chapter = Math.max(1, Number(currentState.chapter) || 1);
-  let verse = Math.max(1, Number(currentState.verse) || 1);
-  let plateIndex = Math.max(
-    1,
-    Math.min(
-      28,
-      Number(
-        currentState.plateIndex ??
-          currentState.felicesPlate ??
-          getActivePlateIndex() ??
-          24,
-      ) || 24,
-    ),
-  );
-  let felicesDicha = Math.max(
-    1,
-    Math.min(12, Number(currentState.dichaIndex ?? currentState.felicesDicha) || 11),
-  );
-  const rawWeekInput = String(
-    currentState.evangeliosWeekId || currentState.weekId || "s01",
-  ).trim().toLowerCase();
-  const weekNumMatch = rawWeekInput.match(/^s?0*(\d{1,2})$/);
-  let evangeliosWeek = weekNumMatch
-    ? `s${String(Math.max(1, Math.min(52, Number(weekNumMatch[1]) || 1))).padStart(2, "0")}`
-    : "s01";
-
-  const deriveQuarterForWeek = (wId) => {
-    const m = String(wId || "s01").match(/^s?0*(\d{1,2})$/);
-    const n = m ? Number(m[1]) || 1 : 1;
-    if (n <= 13) return "T1";
-    if (n <= 26) return "T2";
-    if (n <= 39) return "T3";
-    return "T4";
-  };
-  let evangeliosQuarter = String(
-    currentState.evangeliosQuarter || deriveQuarterForWeek(evangeliosWeek),
-  );
-
-  if (src === "felices") {
-    if (currentState.dichaIndex !== undefined || currentState.felicesDicha !== undefined) {
-      const dCoord = FELICES_12_DICHAS_COORDINATE_MAP[felicesDicha];
-      if (dCoord) {
-        book = dCoord.book;
-        chapter = dCoord.chapter;
-        verse = dCoord.verse;
-        plateIndex = resolvePlateForBibleCoordinate(book, chapter, verse);
-      }
-    } else if (currentState.beatitudeIndex !== undefined) {
-      const bRow = CROSS_WORK_BRIDGE_TABLE.beatitudesToBible.find(
-        (r) => r.beatitudeIndex === Number(currentState.beatitudeIndex),
-      );
-      if (bRow) {
-        book = bRow.book;
-        chapter = bRow.chapter;
-        verse = bRow.verse;
-        plateIndex = bRow.plateIndex;
-        evangeliosWeek = bRow.evangeliosWeek;
-        evangeliosQuarter = bRow.evangeliosQuarter;
-        felicesDicha = Math.max(1, Math.min(12, bRow.beatitudeIndex + 1));
-      }
-    } else {
-      const compiledPlate = FELICES_28_PLATES_MAP[plateIndex];
-      const pCoord = FELICES_PLATE_TO_BIBLE_COORDINATE[plateIndex];
-      if (compiledPlate && (compiledPlate.anchorRef || compiledPlate.book)) {
-        const parsedP = parseCanonicalOtEchoRef(
-          compiledPlate.anchorRef || `${compiledPlate.book}.${compiledPlate.chapter || 1}.${compiledPlate.verse || 1}`,
-        );
-        book = parsedP.book;
-        chapter = parsedP.chapter;
-        verse = parsedP.verse;
-      } else if (pCoord) {
-        book = pCoord.book;
-        chapter = pCoord.chapter;
-        verse = pCoord.verse;
-        felicesDicha = Math.max(1, Math.min(12, (Number(pCoord.beatitudeIndex) || 0) + 1));
-      }
-    }
-    const evAnchor = CROSS_WORK_BRIDGE_TABLE.evangeliosAnchors[`${book}.${chapter}`];
-    if (evAnchor) {
-      evangeliosWeek = evAnchor.weekId;
-      evangeliosQuarter = evAnchor.quarter;
-    }
-  } else if (src === "biblia") {
-    if ((book === "MAT" && chapter === 5) || (book === "PSA" && chapter === 1)) {
-      plateIndex = resolvePlateForBibleCoordinate(book, chapter, verse);
-      const pCoord = FELICES_PLATE_TO_BIBLE_COORDINATE[plateIndex];
-      if (pCoord) {
-        felicesDicha = Math.max(1, Math.min(12, (Number(pCoord.beatitudeIndex) || 0) + 1));
-      }
-    } else {
-      const matchedDicha = Object.entries(FELICES_12_DICHAS_COORDINATE_MAP).find(
-        ([, d]) => d.book === book && Number(d.chapter) === chapter,
-      );
-      if (matchedDicha) {
-        felicesDicha = Number(matchedDicha[0]) || 1;
-      } else if (dst === "felices") {
-        const pCoord = FELICES_PLATE_TO_BIBLE_COORDINATE[plateIndex] || {
-          book: "MAT",
-          chapter: 5,
-          verse: 3,
-          beatitudeIndex: 1,
-        };
-        book = pCoord.book;
-        chapter = pCoord.chapter;
-        verse = pCoord.verse;
-        felicesDicha = Math.max(1, Math.min(12, (Number(pCoord.beatitudeIndex) || 0) + 1));
-      }
-    }
-    const evAnchor = CROSS_WORK_BRIDGE_TABLE.evangeliosAnchors[`${book}.${chapter}`];
-    if (evAnchor) {
-      evangeliosWeek = evAnchor.weekId;
-      evangeliosQuarter = evAnchor.quarter;
-    } else {
-      const weekEntry = Object.values(EVANGELIOS_MACRO_THREADS_AND_ECHOES).find(
-        (w) => w && w.book === book && Number(w.chapter) === chapter,
-      );
-      if (weekEntry && weekEntry.weekId) {
-        evangeliosWeek = weekEntry.weekId;
-        evangeliosQuarter = deriveQuarterForWeek(evangeliosWeek);
-      }
-    }
-  } else if (src === "evangelios") {
-    const matchAnchor = Object.values(CROSS_WORK_BRIDGE_TABLE.evangeliosAnchors).find(
-      (a) => a.weekId === evangeliosWeek,
-    );
-    const weekMeta = EVANGELIOS_MACRO_THREADS_AND_ECHOES[evangeliosWeek];
-    if (matchAnchor) {
-      book = matchAnchor.book;
-      chapter = matchAnchor.chapter;
-      verse = matchAnchor.verse;
-      evangeliosQuarter = matchAnchor.quarter;
-    } else if (weekMeta && (weekMeta.anchorOsis || weekMeta.book)) {
-      const parsedW = parseCanonicalOtEchoRef(
-        weekMeta.anchorOsis || `${weekMeta.book}.${weekMeta.chapter || 1}.1`,
-      );
-      book = parsedW.book;
-      chapter = parsedW.chapter;
-      verse = parsedW.verse;
-      evangeliosQuarter = deriveQuarterForWeek(evangeliosWeek);
-    }
-    if (dst === "felices") {
-      plateIndex = resolvePlateForBibleCoordinate(book, chapter, verse);
-      const pCoord = FELICES_PLATE_TO_BIBLE_COORDINATE[plateIndex];
-      if (pCoord) {
-        felicesDicha = Math.max(1, Math.min(12, (Number(pCoord.beatitudeIndex) || 0) + 1));
-      }
-    }
-  }
-
-  return {
-    fromWork: src,
-    toWork: dst,
-    book,
-    chapter,
-    verse,
-    plateIndex,
-    felicesPlate: plateIndex,
-    felicesDicha,
-    evangeliosWeekId: evangeliosWeek,
-    weekId: evangeliosWeek,
-    evangeliosQuarter,
-  };
-}
 
 export const HAREL_SHEET_MAP = {
   study: {
@@ -383,6 +160,24 @@ export function toUnicodeSuperscript(numStr) {
     .join("");
 }
 
+export const STP_AT_ABSTENTION_MARKER =
+  "⟦— stp AT: sin raíz O'dam atestiguada · ver puente es⟧";
+
+function isStpAtAbstentionVerse(rawText) {
+  const s = String(rawText ?? "").trim();
+  return s === STP_AT_ABSTENTION_MARKER || s.includes("⟦— stp AT:");
+}
+
+function renderStpAbstentionPillHtml(osis = "", bridgeCode = "") {
+  const bridgeAttr = bridgeCode
+    ? ` data-bridge-lang="${escapeHtml(bridgeCode)}"`
+    : "";
+  const bridgeNote = bridgeCode
+    ? ` <span class="stp-abstention-bridge-ref">→ ${escapeHtml(String(bridgeCode).toUpperCase())}</span>`
+    : "";
+  return `<span class="stp-abstention-pill" data-epistemic-state="abstention-zero-roots" data-abstention-marker="true" data-osis="${escapeHtml(osis)}"${bridgeAttr}>⏸ ${escapeHtml(STP_AT_ABSTENTION_MARKER)}${bridgeNote}</span>`;
+}
+
 /**
  * Transducción ortográfica contextual WFST real (`D1-B+`, paridad con `crates/ekovoz-core/src/orthography.rs`):
  * Preserva préstamos bíblicos (`Cristo`, `kilo`), aplica mapa confesional bengalí (`bn-BD` ↔ `bn-IN`) sin
@@ -464,8 +259,8 @@ const VERIFIED_EKPACK_HUMAN_20 = new Set([
 ]);
 
 const CANONICAL_66_BOOKS_ORDER = [
-  "GEN","EXO","LEV","NUM","DEU","JOS","JDG","RUT","1SA","2SA","1KI","2KI","1CH","2CH","EZR","NEH","EST","JOB","PSA","PRO","ECC","SNG","ISA","JER","LAM","EZK","DAN","HOS","JOL","AMO","OBA","JON","MIC","NAM","HAB","ZEP","HAG","ZEC","MAL",
-  "MAT","MRK","LUK","JHN","ACT","ROM","1CO","2CO","GAL","EPH","PHP","COL","1TH","2TH","1TI","2TI","TIT","PHM","HEB","JAS","1PE","2PE","1JN","2JN","3JN","JUD","REV",
+  "GEN", "EXO", "LEV", "NUM", "DEU", "JOS", "JDG", "RUT", "1SA", "2SA", "1KI", "2KI", "1CH", "2CH", "EZR", "NEH", "EST", "JOB", "PSA", "PRO", "ECC", "SNG", "ISA", "JER", "LAM", "EZK", "DAN", "HOS", "JOL", "AMO", "OBA", "JON", "MIC", "NAM", "HAB", "ZEP", "HAG", "ZEC", "MAL",
+  "MAT", "MRK", "LUK", "JHN", "ACT", "ROM", "1CO", "2CO", "GAL", "EPH", "PHP", "COL", "1TH", "2TH", "1TI", "2TI", "TIT", "PHM", "HEB", "JAS", "1PE", "2PE", "1JN", "2JN", "3JN", "JUD", "REV",
 ];
 const CANONICAL_66_BOOK_INDEX = new Map(CANONICAL_66_BOOKS_ORDER.map((c, idx) => [c, idx]));
 
@@ -542,9 +337,9 @@ export function deriveEpistemicSeal(navResult, catalogEntry = null) {
   }
   const provTier = String(
     navResult.provenance?.sovereign_tier ||
-      navResult.chapter?.provenance?.sovereign_tier ||
-      catalogEntry?.sovereign_tier ||
-      "",
+    navResult.chapter?.provenance?.sovereign_tier ||
+    catalogEntry?.sovereign_tier ||
+    "",
   ).toLowerCase();
   if (
     provTier === "tier0_autograph_witness" ||
@@ -768,8 +563,8 @@ export function renderDiglossicParallelBridge({
   const cleanBook = String(book || "GEN").trim().toUpperCase();
   const cleanChap = Number(chapter) || 1;
   const ntBooks = new Set([
-    "MAT","MRK","LUK","JHN","ACT","ROM","1CO","2CO","GAL","EPH","PHP","COL",
-    "1TH","2TH","1TI","2TI","TIT","PHM","HEB","JAS","1PE","2PE","1JN","2JN","3JN","JUD","REV",
+    "MAT", "MRK", "LUK", "JHN", "ACT", "ROM", "1CO", "2CO", "GAL", "EPH", "PHP", "COL",
+    "1TH", "2TH", "1TI", "2TI", "TIT", "PHM", "HEB", "JAS", "1PE", "2PE", "1JN", "2JN", "3JN", "JUD", "REV",
   ]);
   const isNt = ntBooks.has(cleanBook);
   const bridgeSpec = resolveRegionalBridgeLanguage21({ macroRegion, bridgeLang, lang });
@@ -804,7 +599,9 @@ export function renderDiglossicParallelBridge({
       const matTxt = String((maternalVerses || {})[String(vNum)] || "").trim();
       const brTxt = String((bridgeVerses || {})[String(vNum)] || "").trim();
       let leftCellHtml = "";
-      if (isHumanMaternalPortion && matTxt) {
+      if (String(lang || "").toLowerCase() === "stp" && !isNt && isStpAtAbstentionVerse(matTxt)) {
+        leftCellHtml = `<div class="diglossic-maternal-abstention" data-maternal-stratum="ABSTENTION_ZERO_ROOTS"><sup>${vNum}</sup> ${renderStpAbstentionPillHtml(osis, bridgeSpec.code)}</div>`;
+      } else if (isHumanMaternalPortion && matTxt) {
         leftCellHtml = `<div class="diglossic-maternal-human" data-maternal-stratum="HUMAN_VERIFIED"><sup>${vNum}</sup> ${escapeHtml(matTxt)}</div>`;
       } else {
         const vRows = gmisByVerse.get(vNum) || [];
@@ -895,18 +692,24 @@ export function renderChapterPreviewHtml(
       const supNum = toUnicodeSuperscript(locNum);
       const isSelected = vNum === selectedVerse;
       const osis = `${book}.${chapter}.${vNum}`;
-      const primaryBodyHtml = isSelected
-        ? renderInteractiveVerseTokensHtml(rawPrimary, {
+      const isStpAbstention =
+        String(lang || "").toLowerCase() === "stp" && isStpAtAbstentionVerse(rawPrimary);
+      const primaryBodyHtml = isStpAbstention
+        ? renderStpAbstentionPillHtml(osis)
+        : isSelected
+          ? renderInteractiveVerseTokensHtml(rawPrimary, {
             verseNum: vNum,
             osis,
             reverseMap: options.reverseMap || null,
             tokenStrongPairs: options.tokenStrongPairs || [],
           })
-        : escapeHtml(rawPrimary);
+          : escapeHtml(rawPrimary);
+      const matPct = Number(BIBLE_CONSTANTS?.BILINGUAL_MATERNAL_WIDTH_PCT) || 62;
+      const brgPct = Number(BIBLE_CONSTANTS?.BILINGUAL_BRIDGE_WIDTH_PCT) || 38;
       rowsHtml.push(
         `<div class="mostrador-diptych-row" data-verse="${vNum}" data-osis="${escapeHtml(
           osis
-        )}" style="display:grid;grid-template-columns:minmax(0,58fr) minmax(0,42fr);gap:14px;padding:6px 0;border-bottom:1px solid rgba(28,25,23,0.08);"><span class="mostrador-verse bible-verse-line${isSelected ? " is-selected" : ""
+        )}" style="display:grid;grid-template-columns:minmax(0,${matPct}fr) minmax(0,${brgPct}fr);gap:14px;padding:6px 0;border-bottom:1px solid rgba(28,25,23,0.08);"><span class="mostrador-verse bible-verse-line${isSelected ? " is-selected" : ""
         }" data-verse="${vNum}" data-osis="${escapeHtml(
           osis
         )}"><sup class="bible-v-sup"${supHiddenAttr}>${escapeHtml(
@@ -974,14 +777,18 @@ export function renderChapterPreviewHtml(
     const isSelected = vNum === selectedVerse;
     const osis = `${book}.${chapter}.${vNum}`;
 
-    const renderedBody = isSelected
-      ? renderInteractiveVerseTokensHtml(rawText, {
+    const isStpAbstention =
+      String(lang || "").toLowerCase() === "stp" && isStpAtAbstentionVerse(rawText);
+    const renderedBody = isStpAbstention
+      ? renderStpAbstentionPillHtml(osis)
+      : isSelected
+        ? renderInteractiveVerseTokensHtml(rawText, {
           verseNum: vNum,
           osis,
           reverseMap: reverseMapTarget,
           tokenStrongPairs: options.tokenStrongPairs || [],
         })
-      : escapeHtml(rawText);
+        : escapeHtml(rawText);
     const dropcapClass = vNum === 1 ? " bible-chapter-dropcap" : "";
 
     currentSpans.push(
@@ -1017,21 +824,21 @@ export function renderChapterPreviewHtml(
   const contextualGlossBannerHtml =
     contextualGlosses.length > 0
       ? `<aside id="activeVerseCulturalGlossBanner" class="cultural-gloss-canvas-banner" data-cultural-gloss-count="${contextualGlosses.length}" style="margin-top:0.55rem;padding:0.4rem 0.65rem;border-radius:8px;border:1px solid var(--card-border);background:var(--bg-secondary);font-size:0.78rem;line-height:1.4;">` +
-        contextualGlosses
-          .map(
-            (g) =>
-              `<span data-cultural-gloss-term="${escapeHtml(g.term)}">🏺 <strong>${escapeHtml(g.term)}</strong>: ${escapeHtml(g.nsm_gloss || "")}</span>`,
-          )
-          .join(" · ") +
-        `</aside>`
+      contextualGlosses
+        .map(
+          (g) =>
+            `<span data-cultural-gloss-term="${escapeHtml(g.term)}">🏺 <strong>${escapeHtml(g.term)}</strong>: ${escapeHtml(g.nsm_gloss || "")}</span>`,
+        )
+        .join(" · ") +
+      `</aside>`
       : "";
   const diglossicHtml = options.diglossicBridge
     ? renderDiglossicParallelBridge({
-        lang,
-        book,
-        chapter,
-        ...(typeof options.diglossicBridge === "object" ? options.diglossicBridge : {}),
-      })
+      lang,
+      book,
+      chapter,
+      ...(typeof options.diglossicBridge === "object" ? options.diglossicBridge : {}),
+    })
     : "";
 
   return `<article class="bible-trimodal-chapter${isPoetic ? " mostrador-poetic-stichometry" : ""

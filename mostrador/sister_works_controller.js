@@ -23,6 +23,8 @@ import {
   resolvePericopeHeaderForVerse,
   shouldShowEvangeliosBridgeLine,
 } from "./evangelios.js";
+import { BIBLE_CONSTANTS } from "../bible_constants.js";
+import { buildCssPagedMediaPrintHtml } from "./bimodal_tanda_print.js";
 import { parseBiblicalCoordinateReference } from "./reference.js";
 
 /**
@@ -234,7 +236,10 @@ export function renderEvangeliosStageCardHtml(
     `<header data-pericope-header="${escapeHtml(pericopeHdr?.title || "")}" data-plate-slug="${escapeHtml(activeEntry.plate_id || "")}" data-total-plates="${totalPlates}" data-canonical-gospel-verses="${gospelVersesCount}" style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:0.4rem;margin-bottom:0.5rem;">` +
     `<div><strong>${weekWord} ${activeEntry.week}/${totalPlates} (${escapeHtml(activeEntry.quarter)}) · ${escapeHtml(labelTitle)} — ${escapeHtml(activeEntry.reference || "")}</strong> ` +
     `<span class="uls-badge" data-evangelios-corpus-counts="true" style="font-size:0.72rem;">${totalPlates} ${isEn ? "plates" : "láminas"} · ${gospelVersesCount.toLocaleString("en-US")} vv.</span>${overlayBadgesHtml}</div>` +
+    `<div style="display:flex;flex-wrap:wrap;align-items:center;gap:0.35rem;">` +
     `<button type="button" class="uls-chip" data-evangelios-ref="${escapeHtml(activeEntry.reference)}" style="min-height:48px;padding:0.35rem 0.75rem;font-size:0.8rem;">📖 ${openBibleLabel}: ${escapeHtml(activeEntry.reference)}</button>` +
+    `<button type="button" id="btnPrintEvangeliosPlate" class="uls-chip" data-action="evangelios-print-pdf" data-week-id="${escapeHtml(activeEntry.id || "s01")}" style="min-height:48px;padding:0.35rem 0.75rem;font-size:0.8rem;">🖨️ ${isEn ? "Print Gospel Plate (PDF)" : "Imprimir Evangelios (PDF)"}</button>` +
+    `</div>` +
     `</header>` +
     `<p style="margin:0 0 0.45rem 0;font-size:0.82rem;color:var(--accent-amber);"><strong>🕊️ ${gestureLabel}:</strong> ${escapeHtml(activeEntry.gesture || "")}</p>` +
     `<blockquote style="margin:0 0 0.45rem 0;font-size:0.95rem;line-height:1.5;">${escapeHtml(overlayProj.text)}</blockquote>` +
@@ -247,6 +252,7 @@ export function renderEvangeliosStageCardHtml(
       passageRef: activeEntry.reference,
       lang: activeEvLang,
       uiLocale,
+      gestureText: activeEntry.gesture || "",
     })
   );
 }
@@ -371,6 +377,59 @@ export function bindSisterWorksStageEvents(ctx = {}) {
   const hydrateEvangeliosSection = async (quarterFilter = state.evangeliosQuarter || "T1", weekId = state.evangeliosWeekId || "") => {
     const evSec = getEl("evangeliosSovereignSection", targetDoc);
     if (!evSec) return null;
+    const activeCorpusLang = String(state.effectiveCorpusLang || state.lang || "es").trim() || "es";
+    state.evangeliosLang = activeCorpusLang;
+    const evLangSelSync = getEl("evangeliosLangSelect", targetDoc);
+    if (evLangSelSync) {
+      evLangSelSync.hidden = true;
+      if (evLangSelSync.style) evLangSelSync.style.display = "none";
+      evLangSelSync.value = activeCorpusLang;
+    }
+    const evGlobalBadge = getEl("evangeliosGlobalLangBadge", targetDoc);
+    if (evGlobalBadge) {
+      evGlobalBadge.hidden = false;
+      if (evGlobalBadge.style) evGlobalBadge.style.display = "inline-flex";
+      evGlobalBadge.textContent = `🌍 ${activeCorpusLang.toUpperCase()} · 7,164`;
+    }
+    if (typeof evSec.addEventListener === "function" && !evSec._evPrintBound) {
+      evSec._evPrintBound = true;
+      evSec.addEventListener("click", (ev) => {
+        const printBtn = ev?.target?.closest
+          ? ev.target.closest('[data-action="evangelios-print-pdf"]')
+          : ev?.target?.getAttribute?.("data-action") === "evangelios-print-pdf"
+            ? ev.target
+            : null;
+        if (!printBtn) return;
+        const wk = printBtn.getAttribute?.("data-week-id") || state.evangeliosWeekId || "s01";
+        const curLang = String(state.lang || state.evangeliosLang || "es").trim() || "es";
+        const activeQuote = evSec.querySelector?.("blockquote")?.textContent || `${state.book} ${state.chapter}:${state.verse}`;
+        const printHtml = buildCssPagedMediaPrintHtml({
+          lang: curLang,
+          book: state.book || "MRK",
+          chapter: state.chapter || 1,
+          verse: state.verse || 1,
+          verses: [{ ref: `${state.book || "MRK"} ${state.chapter || 1}:${state.verse || 1}`, text: activeQuote }],
+          columns: 1,
+          fontPt: 11.0,
+          paper: state.paperFormat || "a4",
+        });
+        state.lastEvangeliosPrintHtml = printHtml;
+        printBtn.setAttribute?.("data-print-week", wk);
+        printBtn.setAttribute?.("data-print-ready", "true");
+        if (typeof targetDoc?.createElement === "function") {
+          try {
+            const dl = targetDoc.createElement("a");
+            if (dl) {
+              dl.href = `data:text/html;charset=utf-8,${encodeURIComponent(printHtml)}`;
+              dl.download = `evangelios-${curLang}-${wk}.html`;
+              dl.click?.();
+            }
+          } catch {
+            // Non-fatal in headless DOM
+          }
+        }
+      });
+    }
     if (!state.pericopesAndGlossesLoaded && typeof dataLayer.loadPericopesAndGlosses === "function") {
       state.pericopesAndGlossesLoaded = true;
       try {
@@ -397,7 +456,6 @@ export function bindSisterWorksStageEvents(ctx = {}) {
         ? await dataLayer.loadEvangeliosCorpus()
         : null;
     if (!corpus || !Array.isArray(corpus.entries)) return null;
-    state.evangeliosCorpus = corpus;
     const evLangSel = getEl("evangeliosLangSelect", targetDoc);
     const fallbackEvLang = evLangSel?.value || state.evangeliosLang || state.lang || "es";
     const resolvedEv = resolveEvangeliosActiveSelection({
@@ -583,7 +641,11 @@ export function bindSisterWorksStageEvents(ctx = {}) {
   const evLangSelect = getEl("evangeliosLangSelect", targetDoc);
   if (evLangSelect && typeof evLangSelect.addEventListener === "function") {
     evLangSelect.addEventListener("change", async (e) => {
-      state.evangeliosLang = e?.target?.value || evLangSelect.value || "es";
+      const nextLang = e?.target?.value || evLangSelect.value || "es";
+      state.evangeliosLang = nextLang;
+      if (typeof navigate === "function") {
+        await navigate({ lang: nextLang }, targetDoc);
+      }
       await hydrateEvangeliosSection(state.evangeliosQuarter || "T1", state.evangeliosWeekId || "s01");
     });
   }
@@ -684,7 +746,8 @@ export function bindFelicesStageEvents(ctx = {}) {
   const felPlateSel = getEl("felicesPlateSelect", targetDoc);
   if (felPlateSel && typeof felPlateSel.addEventListener === "function") {
     felPlateSel.addEventListener("change", (e) => {
-      const pIdx = Math.max(1, Math.min(28, Number(e?.target?.value || felPlateSel.value) || 24));
+      const maxPlates = Number(BIBLE_CONSTANTS?.FELICES_PLATES_COUNT) || 27;
+      const pIdx = Math.max(1, Math.min(maxPlates, Number(e?.target?.value || felPlateSel.value) || 24));
       setActivePlateIndex(pIdx, targetDoc);
     });
   }

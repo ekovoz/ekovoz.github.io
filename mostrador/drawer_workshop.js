@@ -4,13 +4,6 @@
 // ============================================================================
 
 import {
-  normalizeRootNotesEntries,
-  renderCrdtWalAndLockP2AuditCardHtml,
-  renderFieldWorkshopCensus7164Html,
-  renderMasterCensus7164CardHtml,
-  resolveAtomicBatchForPassage,
-} from "./drawer_workshop_cards.js";
-import {
   CASCADE_SEMILATTICE_PRIORITY,
   evaluateBetaDawidSkeneSprt,
   exportSignedEcoPatchV2Artifact,
@@ -23,6 +16,13 @@ import {
   resolvePrimaryStrongForVerse,
 } from "./drawer_study.js";
 import {
+  normalizeRootNotesEntries,
+  renderCrdtWalAndLockP2AuditCardHtml,
+  renderFieldWorkshopCensus7164Html,
+  renderMasterCensus7164CardHtml,
+  resolveAtomicBatchForPassage,
+} from "./drawer_workshop_cards.js";
+import {
   applySuggestedImprovement,
   buildPatchPayload,
   computeWalSnapshotRollbackPreview,
@@ -31,6 +31,10 @@ import {
   renderStpLexiconExplorerHtml,
   renderStpLexiconResultsRowsHtml,
 } from "./mejorar.js";
+import {
+  validateAllEightLocksPda,
+  verifyLock8PredicativeAndNegation,
+} from "./mejorar_locks_pda.js";
 import { computeEcoPackCrc32Hex } from "./offline_mesh.js";
 import { parseBiblicalCoordinateReference } from "./reference.js";
 import {
@@ -43,6 +47,7 @@ import {
   projectChapterWithLiveOverlays,
   resolveOverlayEntryForOsis,
   resolveVerseWithOverlay,
+  signLocalWorkshopPayload,
 } from "./workshop_overlay_store.js";
 
 export {
@@ -63,9 +68,108 @@ export {
   renderMasterCensus7164CardHtml,
   resolveAtomicBatchForPassage,
   resolveOverlayEntryForOsis,
-  resolveVerseWithOverlay,
+  resolveVerseWithOverlay
 };
 export const HAREL_WORKSHOP_SUBTABS = ["patch", "ladder", "audit"];
+
+const COMBINING_DIACRITICS_REGEX = /[\u0300-\u036f\u0591-\u05c7\u064b-\u065f\u0670]/g;
+
+function foldConsonants(s) {
+  const clean = String(s || "")
+    .normalize("NFKC")
+    .normalize("NFD")
+    .replace(COMBINING_DIACRITICS_REGEX, "")
+    .normalize("NFC")
+    .toLowerCase()
+    .replace(/[^\p{L}\p{N}]/gu, "");
+  return /^[a-z0-9]+$/.test(clean) ? clean.replace(/[aeiou]/g, "") : clean;
+}
+
+function findSurfaceAnchorToken(surfaceStr, rowCandidates, allowCognateMatch) {
+  const raw = String(surfaceStr || "");
+  const rawLow = raw.toLowerCase();
+  for (const cand of rowCandidates) {
+    const clean = String(cand || "").trim();
+    const minLen = /^[a-z0-9]+$/i.test(clean) ? 3 : 2;
+    if (clean.length >= minLen && rawLow.includes(clean.toLowerCase())) {
+      return clean;
+    }
+  }
+  if (!allowCognateMatch || !raw) return "";
+  const surfWords = raw.split(/[\s,.;:!?()«»“”"'‖]+/).filter((w) => w.length >= 2);
+  for (const cand of rowCandidates) {
+    const candSkel = foldConsonants(cand);
+    const minLen = /^[a-z0-9]+$/.test(candSkel) ? 3 : 2;
+    if (candSkel.length < minLen) continue;
+    for (const sw of surfWords) {
+      const swSkel = foldConsonants(sw);
+      if (swSkel.length >= minLen && (swSkel === candSkel || swSkel.includes(candSkel) || candSkel.includes(swSkel))) {
+        return sw;
+      }
+    }
+  }
+  return "";
+}
+
+function deriveVerseLockAnchors(state, oldSurfStr = "") {
+  const verseNum = Number(state?.verse);
+  const rawRows = Array.isArray(state?.lastNavResult?.matrix?.rows)
+    ? state.lastNavResult.matrix.rows
+    : [];
+  const verseMatrixRows = rawRows.filter((r) => {
+    if (!r) return false;
+    const vVal = Array.isArray(r) ? r[0] : (r.verse ?? r.v);
+    return Number(vVal) === verseNum;
+  });
+  const derivedProperNouns = [];
+  let derivedAgent = "";
+  let derivedPatient = "";
+  const activeLang = String(state?.lang || "").toLowerCase();
+  const isVernacularBridge = activeLang !== "es" && activeLang !== "en";
+  for (const r of verseMatrixRows) {
+    const isArr = Array.isArray(r);
+    const morphTag = String(isArr ? (r[4] ?? "") : (r.morph ?? r.c06_morph ?? ""));
+    const domLn = String(isArr ? (r[5] ?? "") : (r.domain ?? r.c07 ?? ""));
+    const realiaC14 = String(isArr ? (r[12] ?? "") : (r.realia ?? r.c14 ?? r.realia_c14 ?? ""));
+    const glossCandidates = [
+      String(isArr ? (r[1] ?? "") : (r.surface ?? r.c03_surface ?? "")).trim(),
+      String(isArr ? (r[6] ?? "") : (r.gloss_en ?? r.c08_gloss_en ?? "")).trim(),
+      String(isArr ? (r[7] ?? "") : (r.gloss_es ?? r.c09_gloss_es ?? "")).trim(),
+      String(isArr ? (r[14] ?? "") : (r.translit ?? r.c06_translit ?? "")).trim(),
+    ].filter(Boolean);
+    const isProperRow =
+      /(?:^|[\/\-H])Np\b|\b(?:NP|PRI|PROP)\b/.test(morphTag) ||
+      /\bLN:93\./i.test(domLn) ||
+      /\b(?:ONO-[A-Z0-9-]+|PER-[0-9]+|LOC-[0-9]+|ONOMASTICON:PROPER_DESIGNATOR)\b/i.test(realiaC14);
+    const matchedTok = findSurfaceAnchorToken(
+      oldSurfStr,
+      glossCandidates,
+      isVernacularBridge && isProperRow,
+    );
+    if (matchedTok) {
+      if (isProperRow && !derivedProperNouns.includes(matchedTok)) {
+        derivedProperNouns.push(matchedTok);
+      }
+      const clauseCol = isArr ? (r[8] ?? "") : (r.clause ?? r.c10_clause ?? "");
+      const pragCol = isArr ? (r[10] ?? "") : (r.prag ?? r.c12_prag ?? "");
+      const roleTag = `${clauseCol} ${pragCol}`.toUpperCase();
+      if (!derivedAgent && /\b(?:SUBJ|AG|A0|A0_AGENT)\b/.test(roleTag)) {
+        derivedAgent = matchedTok;
+      } else if (!derivedPatient && /\b(?:OBJ|PAT|A1|A1_PATIENT)\b/.test(roleTag)) {
+        derivedPatient = matchedTok;
+      }
+    }
+  }
+  const expectedProperNouns =
+    Array.isArray(state?.expectedProperNouns) && state.expectedProperNouns.length > 0
+      ? state.expectedProperNouns
+      : derivedProperNouns;
+  return {
+    expectedProperNouns,
+    expectedAgent: state?.expectedAgent || derivedAgent,
+    expectedPatient: state?.expectedPatient || derivedPatient,
+  };
+}
 
 /**
  * Hidrata la Gaveta 3 (Taller de Campo + Escalera CELF 250 + Auditoría CRDT/Censo) (`D4-R41` / `D3-R38` / `D10-R38`).
@@ -109,12 +213,15 @@ export async function hydrateImproveDrawerPanel(ctx = {}) {
     }
   }
   if (!state.formulaicIndexHydrated && typeof dataLayer?.loadJson === "function") {
-    state.formulaicIndexHydrated = true;
-    Promise.resolve(dataLayer.loadJson("data/formulaic_index.json"))
-      .then((fj) => {
-        if (fj) hydrateFormulaicParallelsIndex(fj);
-      })
-      .catch(() => {});
+    try {
+      const fj = await dataLayer.loadJson("data/formulaic_index.json");
+      if (fj) {
+        hydrateFormulaicParallelsIndex(fj);
+        state.formulaicIndexHydrated = true;
+      }
+    } catch {
+      // Non-fatal
+    }
   }
   const activeStrongId = await resolvePrimaryStrongForVerse(state, dataLayer);
   state.activeStrongId = activeStrongId;
@@ -123,17 +230,16 @@ export async function hydrateImproveDrawerPanel(ctx = {}) {
       ? await dataLayer.loadElicitationLadder250()
       : [];
   state.celfLadder250 = ladder250;
+  const fieldWorkshopActiveLang = String(state.lang || "stp").trim().toLowerCase() || "stp";
   if (typeof dataLayer.loadFieldWorkshopData === "function") {
-    const activeLangCode = String(state.lang || "stp").trim().toLowerCase() || "stp";
-    let fwData = await dataLayer.loadFieldWorkshopData(activeLangCode);
-    if (!fwData && activeLangCode !== "stp") {
-      fwData = await dataLayer.loadFieldWorkshopData("stp");
-    }
+    const fwData = await dataLayer.loadFieldWorkshopData(fieldWorkshopActiveLang);
     if (fwData) {
       hydrateFieldWorkshopData(fwData, ladder250);
       state.topUncertaintyQueue = Array.isArray(fwData.top_uncertainty_queue)
         ? fwData.top_uncertainty_queue
         : [];
+    } else {
+      state.topUncertaintyQueue = [];
     }
   }
   const persistedOverlays = await loadLiveCascadeOverlaysIdb(state.lang).catch(() => []);
@@ -152,6 +258,7 @@ export async function hydrateImproveDrawerPanel(ctx = {}) {
   const i18nInstance = typeof getI18n === "function" ? getI18n() : null;
   const tFn = i18nInstance ? (k, p) => i18nInstance.t(k, p) : undefined;
   const cascadeEl = getEl("cascadeImpactPreviewList", targetDoc);
+  const lockAnchors = deriveVerseLockAnchors(state, currentVerseText);
   const html = mod.renderImproveDrawerHtml({
     kind: "verse",
     lang: state.lang,
@@ -162,8 +269,13 @@ export async function hydrateImproveDrawerPanel(ctx = {}) {
     strongId: activeStrongId,
     currentVerseText,
     currentSurface: currentVerseText,
+    proposedSurface: "",
+    expectedProperNouns: lockAnchors.expectedProperNouns,
+    expectedAgent: lockAnchors.expectedAgent,
+    expectedPatient: lockAnchors.expectedPatient,
     level: state.cascadeLevel || "L2",
     includeInlineSeedPanel: !Boolean(cascadeEl),
+    includeEightLocksBar: true,
     i18n: i18nInstance,
     t: tFn,
   });
@@ -172,6 +284,8 @@ export async function hydrateImproveDrawerPanel(ctx = {}) {
     getEl("bibleFieldWorkshopSheet", targetDoc);
   if (container) {
     container.innerHTML = html;
+    container.setAttribute?.("data-field-workshop-lang", fieldWorkshopActiveLang);
+    container.removeAttribute?.("data-field-workshop-fallback");
   }
 
   if (cascadeEl && typeof mod.renderCascadeAndLadderHtml === "function") {
@@ -192,16 +306,23 @@ export async function hydrateImproveDrawerPanel(ctx = {}) {
   }
 
   const lexHost = getEl("stpLexiconExplorerHost", targetDoc);
+  const isStpLang = String(state.lang || "").toLowerCase() === "stp";
   if (lexHost) {
-    const renderLexFn =
-      typeof mod.renderStpLexiconExplorerHtml === "function"
-        ? mod.renderStpLexiconExplorerHtml
-        : renderStpLexiconExplorerHtml;
-    lexHost.innerHTML = renderLexFn({
-      query: state.stpLexiconQuery || "",
-      activeWave: state.activeOtWave || 0,
-      limit: 24,
-    });
+    if (isStpLang) {
+      lexHost.hidden = false;
+      const renderLexFn =
+        typeof mod.renderStpLexiconExplorerHtml === "function"
+          ? mod.renderStpLexiconExplorerHtml
+          : renderStpLexiconExplorerHtml;
+      lexHost.innerHTML = renderLexFn({
+        query: state.stpLexiconQuery || "",
+        activeWave: state.activeOtWave || 0,
+        limit: 24,
+      });
+    } else {
+      lexHost.hidden = true;
+      lexHost.innerHTML = "";
+    }
   }
 
   const tallerEl = getEl("tallerArtifactsCatalog", targetDoc);
@@ -274,6 +395,8 @@ export function bindImproveFormControlsInDrawer(mod, ctx = {}) {
     const selectedLevel = levelSel?.value || state.cascadeLevel || "L2";
     state.cascadeLevel = selectedLevel;
     const osis = `${state.book}.${state.chapter}.${state.verse}`;
+    const currentOldSurf = oldInput?.value || "";
+    const currentNewSurf = newInput?.value || "";
     const patchBuilder = typeof mod.buildPatchPayload === "function" ? mod.buildPatchPayload : buildPatchPayload;
     const patch = patchBuilder({
       kind: kindSel?.value || "verse",
@@ -282,10 +405,39 @@ export function bindImproveFormControlsInDrawer(mod, ctx = {}) {
       locale: state.uiLocale,
       ref: osis,
       strongId: state.activeStrongId || "H0430",
-      oldSurface: oldInput?.value || "",
-      newSurface: newInput?.value || "",
+      oldSurface: currentOldSurf,
+      newSurface: currentNewSurf,
       note: noteInput?.value || "",
     });
+    const lockAnchors = deriveVerseLockAnchors(state, currentOldSurf);
+    const lockOpts = {
+      oldSurface: currentOldSurf,
+      newSurface: currentNewSurf,
+      expectedProperNouns: lockAnchors.expectedProperNouns,
+      expectedAgent: lockAnchors.expectedAgent,
+      expectedPatient: lockAnchors.expectedPatient,
+    };
+    const eightLocksReport = validateAllEightLocksPda(lockOpts);
+    const lock8Result = verifyLock8PredicativeAndNegation(lockOpts);
+    const isEnLocale = String(state.uiLocale || "es").trim().toLowerCase().startsWith("en");
+    const drawerEl = targetDoc?.querySelector?.(".improve-drawer");
+    if (drawerEl && typeof drawerEl.setAttribute === "function") {
+      drawerEl.setAttribute("data-lock8-status", lock8Result.status);
+      drawerEl.setAttribute("data-eight-locks-status", eightLocksReport.status);
+    }
+    const lock8BadgeEl = targetDoc?.querySelector?.('[data-lock8-badge="true"]');
+    if (lock8BadgeEl) {
+      lock8BadgeEl.textContent = `🔒 ${isEnLocale ? "Lock 8 (MACULA A0/A1 + Jespersen):" : "Candado 8 (MACULA A0/A1 + Jespersen):"} ${lock8Result.status}`;
+    }
+    const eightLocksBarEl = targetDoc?.querySelector?.('[data-eight-locks-bar="true"]');
+    if (eightLocksBarEl) {
+      eightLocksBarEl.innerHTML = eightLocksReport.locks
+        .map(
+          (lk) =>
+            `<span class="uls-badge" data-lock-id="${lk.id}" data-lock-passed="${lk.passed}" style="font-size:0.72rem;padding:0.15rem 0.45rem;">${lk.passed ? "✅" : "⛔"} ${lk.label}</span>`,
+        )
+        .join(" ");
+    }
     if (previewCode) {
       previewCode.textContent = `${patch.payloadLine}\n\n${patch.json}`;
       if (typeof previewCode.setAttribute === "function") {
@@ -311,7 +463,15 @@ export function bindImproveFormControlsInDrawer(mod, ctx = {}) {
     }
     const lexHostEl = getEl("stpLexiconExplorerHost", targetDoc);
     const lexRowsEl = getEl("stpLexiconResultsRows", targetDoc);
-    if (lexRowsEl) {
+    const isStpActive = String(state.lang || "").toLowerCase() === "stp";
+    if (!isStpActive) {
+      if (lexRowsEl) lexRowsEl.innerHTML = "";
+      if (lexHostEl) {
+        lexHostEl.hidden = true;
+        lexHostEl.innerHTML = "";
+      }
+    } else if (lexRowsEl) {
+      if (lexHostEl) lexHostEl.hidden = false;
       const renderRowsFn =
         typeof mod.renderStpLexiconResultsRowsHtml === "function"
           ? mod.renderStpLexiconResultsRowsHtml
@@ -322,6 +482,7 @@ export function bindImproveFormControlsInDrawer(mod, ctx = {}) {
         limit: 24,
       });
     } else if (lexHostEl) {
+      lexHostEl.hidden = false;
       withPreservedInputFocus(targetDoc, () => {
         lexHostEl.innerHTML =
           typeof mod.renderStpLexiconExplorerHtml === "function"
@@ -421,7 +582,7 @@ export function bindImproveFormControlsInDrawer(mod, ctx = {}) {
 
   if (downloadBtn && typeof downloadBtn.addEventListener === "function" && !downloadBtn._downloadPatchBound) {
     downloadBtn._downloadPatchBound = true;
-    downloadBtn.addEventListener("click", () => {
+    downloadBtn.addEventListener("click", async () => {
       const patch = (state.refreshPatchPreview || refreshPatchPreview)();
       const osis = `${state.book}.${state.chapter}.${state.verse}`;
       const liveList = Array.isArray(state.liveCascadeOverlays) ? state.liveCascadeOverlays : [];
@@ -443,47 +604,82 @@ export function bindImproveFormControlsInDrawer(mod, ctx = {}) {
           note_pure_text: noteInput?.value || "",
           votes: Array.isArray(state.pendingCommunityVotes) ? state.pendingCommunityVotes : [],
         };
-      const preExport = exportSignedEcoPatchV2Artifact({
-        cascadeResult: state.lastAppliedCascade || {
-          patchId: activeOverlay.patch_id,
-          lang: state.lang || "stp",
-          level: activeOverlay.cascade_level,
-          ekpackOverlayEntry: activeOverlay,
-          votes: Array.isArray(activeOverlay.votes)
-            ? activeOverlay.votes
-            : Array.isArray(state.pendingCommunityVotes)
-              ? state.pendingCommunityVotes
-              : [],
-        },
-        signatureHex: state.pendingCascadeSignatureHex || "",
-        publicKeyHex: state.pendingCascadePublicKeyHex || "",
+      const votesList = Array.isArray(activeOverlay.votes)
+        ? activeOverlay.votes
+        : Array.isArray(state.pendingCommunityVotes)
+          ? state.pendingCommunityVotes
+          : [];
+      const ds = evaluateBetaDawidSkeneSprt(votesList);
+      const quorumStatus =
+        ds.distinctReviewersCount >= 2 &&
+        (ds.promotedToCanonicalWal === true || ds.editorialStatus === "COMMUNITY_VALIDATED")
+          ? "quorum_verified"
+          : "draft_local_signed_needs_quorum";
+      const baseCascadeArg = state.lastAppliedCascade || {
+        patchId: activeOverlay.patch_id,
+        lang: state.lang || "stp",
+        level: activeOverlay.cascade_level,
+        ekpackOverlayEntry: activeOverlay,
+        votes: votesList,
+      };
+      let sigHex = activeOverlay.signatureHex || state.pendingCascadeSignatureHex || "";
+      let pubHex = activeOverlay.publicKeyHex || state.pendingCascadePublicKeyHex || "";
+      let authorityTier = activeOverlay.authorityTier || OVERLAY_AUTHORITY_LOCAL_SELF_SIGNED;
+      if (!sigHex || !pubHex) {
+        const preDraft = exportSignedEcoPatchV2Artifact({
+          cascadeResult: baseCascadeArg,
+          signatureHex: "",
+          publicKeyHex: "",
+          crc32Hex: "",
+        });
+        try {
+          const signed = await signLocalWorkshopPayload(preDraft.json || patch.json);
+          sigHex = signed.signatureHex;
+          pubHex = signed.publicKeyHex;
+          authorityTier = signed.authorityTier || OVERLAY_AUTHORITY_LOCAL_SELF_SIGNED;
+        } catch {
+          downloadBtn.setAttribute?.("data-ecopatch-v2-error", "WEBCRYPTO_ED25519_UNAVAILABLE");
+          const vStatusEl = getEl("improveCommunityVotesStatus", targetDoc);
+          if (vStatusEl) {
+            vStatusEl.textContent =
+              "⛔ WebCrypto Ed25519 no disponible: no se puede exportar parche sin firma criptográfica.";
+          }
+          return;
+        }
+      }
+      const baseExport = exportSignedEcoPatchV2Artifact({
+        cascadeResult: baseCascadeArg,
+        signatureHex: sigHex,
+        publicKeyHex: pubHex,
         crc32Hex: "",
       });
-      const computedCrc = computeEcoPackCrc32Hex(new TextEncoder().encode(preExport.json || ""));
-      const exported = exportSignedEcoPatchV2Artifact({
-        cascadeResult: state.lastAppliedCascade || {
-          patchId: activeOverlay.patch_id,
-          lang: state.lang || "stp",
-          level: activeOverlay.cascade_level,
-          ekpackOverlayEntry: activeOverlay,
-          votes: Array.isArray(activeOverlay.votes)
-            ? activeOverlay.votes
-            : Array.isArray(state.pendingCommunityVotes)
-              ? state.pendingCommunityVotes
-              : [],
-        },
-        signatureHex: state.pendingCascadeSignatureHex || "",
-        publicKeyHex: state.pendingCascadePublicKeyHex || "",
-        crc32Hex: computedCrc,
-      });
-      const finalFilename = exported.filename || patch.filename || `${state.lang || "stp"}.eco.patch.json`;
+      const finalArtifact = {
+        ...baseExport.artifact,
+        authority_tier: authorityTier,
+        quorum_status: quorumStatus,
+        crc32_hex: "",
+      };
+      finalArtifact.crc32_hex = computeEcoPackCrc32Hex(
+        new TextEncoder().encode(JSON.stringify(finalArtifact)),
+      );
+      const finalJson = JSON.stringify(finalArtifact, null, 2);
+      const finalFilename = baseExport.filename || patch.filename || `${state.lang || "stp"}.eco.patch.json`;
       if (typeof downloadBtn.setAttribute === "function") {
         downloadBtn.setAttribute("data-last-download-filename", finalFilename);
-        downloadBtn.setAttribute("data-ecopatch-v2-crc32", exported.artifact.crc32_hex);
+        downloadBtn.setAttribute("data-ecopatch-v2-crc32", finalArtifact.crc32_hex);
+        downloadBtn.setAttribute("data-ecopatch-authority-tier", authorityTier);
+        downloadBtn.setAttribute("data-ecopatch-quorum-status", quorumStatus);
         downloadBtn.setAttribute("data-last-downloaded-hash", patch.contentHash);
       }
+      if (quorumStatus !== "quorum_verified") {
+        const vStatusEl = getEl("improveCommunityVotesStatus", targetDoc);
+        if (vStatusEl) {
+          vStatusEl.textContent =
+            "⚠️ Borrador firmado localmente: requiere quórum comunitario (>= 2 revisores) antes de promoción canónica.";
+        }
+      }
       if (typeof Blob !== "undefined" && typeof URL !== "undefined" && URL.createObjectURL && targetDoc?.createElement) {
-        const blob = new Blob([exported.json || patch.json], { type: "application/json" });
+        const blob = new Blob([finalJson || patch.json], { type: "application/json" });
         const url = URL.createObjectURL(blob);
         const a = targetDoc.createElement("a");
         if (a) {
@@ -517,7 +713,7 @@ export function bindImproveFormControlsInDrawer(mod, ctx = {}) {
     if (!Array.isArray(state.pendingCommunityVotes)) state.pendingCommunityVotes = [];
     const idx = state.pendingCommunityVotes.length + 1;
     const revId = String(voteReviewerInput?.value || `hablante_${idx}`).trim() || `hablante_${idx}`;
-    const passedGold = Boolean(voteGoldChk ? voteGoldChk.checked !== false : true);
+    const passedGold = Boolean(voteGoldChk?.checked === true);
     state.pendingCommunityVotes.push({
       reviewerId: revId,
       approved: Boolean(approvedFlag),
@@ -560,37 +756,6 @@ export function bindImproveFormControlsInDrawer(mod, ctx = {}) {
   }
   renderCommunityVotesStatus();
 
-  const foldConsonants = (s) =>
-    String(s || "")
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
-      .toLowerCase()
-      .replace(/[^a-z0-9]/g, "")
-      .replace(/[aeiou]/g, "");
-  const findSurfaceAnchorToken = (surfaceStr, rowCandidates, allowCognateMatch) => {
-    const raw = String(surfaceStr || "");
-    const rawLow = raw.toLowerCase();
-    for (const cand of rowCandidates) {
-      const clean = String(cand || "").trim();
-      if (clean.length >= 3 && rawLow.includes(clean.toLowerCase())) {
-        return clean;
-      }
-    }
-    if (!allowCognateMatch || !raw) return "";
-    const surfWords = raw.split(/[\s,.;:!?()«»“”"'‖]+/).filter((w) => w.length >= 3);
-    for (const cand of rowCandidates) {
-      const candSkel = foldConsonants(cand);
-      if (candSkel.length < 3) continue;
-      for (const sw of surfWords) {
-        const swSkel = foldConsonants(sw);
-        if (swSkel.length >= 3 && (swSkel === candSkel || swSkel.includes(candSkel) || candSkel.includes(swSkel))) {
-          return sw;
-        }
-      }
-    }
-    return "";
-  };
-
   const applyBtn = getEl("btnApplySuggestedImprovement", targetDoc);
   if (applyBtn && typeof applyBtn.addEventListener === "function" && !applyBtn._applySuggestedBound) {
     applyBtn._applySuggestedBound = true;
@@ -625,49 +790,13 @@ export function bindImproveFormControlsInDrawer(mod, ctx = {}) {
         }
       }
       const oldSurfStr = oldInput?.value || "";
-      const verseMatrixRows = Array.isArray(state.lastNavResult?.matrix?.rows)
-        ? state.lastNavResult.matrix.rows.filter((r) => Array.isArray(r) && Number(r[0]) === Number(state.verse))
-        : [];
-      const derivedProperNouns = [];
-      let derivedAgent = "";
-      let derivedPatient = "";
-      const activeLang = String(state.lang || "").toLowerCase();
-      const isVernacularBridge = activeLang !== "es" && activeLang !== "en";
-      for (const r of verseMatrixRows) {
-        const morphTag = String(r[4] || "");
-        const glossCandidates = [
-          String(r[6] || "").trim(),
-          String(r[7] || "").trim(),
-          String(r[14] || "").trim(),
-        ].filter(Boolean);
-        const isProperRow = /(?:^|[\/\-H])Np\b|\b(?:NP|PRI|PROP)\b/.test(morphTag);
-        const matchedTok = findSurfaceAnchorToken(
-          oldSurfStr,
-          glossCandidates,
-          isVernacularBridge && isProperRow,
-        );
-        if (matchedTok) {
-          if (isProperRow && !derivedProperNouns.includes(matchedTok)) {
-            derivedProperNouns.push(matchedTok);
-          }
-          const roleTag = `${r[8] || ""} ${r[10] || ""}`.toUpperCase();
-          if (!derivedAgent && /\b(?:SUBJ|AG|A0|A0_AGENT)\b/.test(roleTag)) {
-            derivedAgent = matchedTok;
-          } else if (!derivedPatient && /\b(?:OBJ|PAT|A1|A1_PATIENT)\b/.test(roleTag)) {
-            derivedPatient = matchedTok;
-          }
-        }
-      }
+      const lockAnchors = deriveVerseLockAnchors(state, oldSurfStr);
       const communityVotes = Array.isArray(state.pendingCommunityVotes) ? state.pendingCommunityVotes : [];
       const dsVerdict = evaluateBetaDawidSkeneSprt(communityVotes);
       if (typeof applyBtn.setAttribute === "function") {
         applyBtn.setAttribute("data-ds-sprt-status", dsVerdict.editorialStatus);
       }
       renderCommunityVotesStatus();
-      const explicitProperNouns =
-        Array.isArray(state.expectedProperNouns) && state.expectedProperNouns.length > 0
-          ? state.expectedProperNouns
-          : derivedProperNouns;
       const payloadArgs = {
         lang: state.lang || "stp",
         level: levelSel?.value || state.cascadeLevel || "L2",
@@ -676,9 +805,9 @@ export function bindImproveFormControlsInDrawer(mod, ctx = {}) {
         oldSurface: oldSurfStr,
         note: noteInput?.value || "",
         votes: communityVotes,
-        expectedProperNouns: explicitProperNouns,
-        expectedAgent: state.expectedAgent || derivedAgent,
-        expectedPatient: state.expectedPatient || derivedPatient,
+        expectedProperNouns: lockAnchors.expectedProperNouns,
+        expectedAgent: lockAnchors.expectedAgent,
+        expectedPatient: lockAnchors.expectedPatient,
         existingOverlayEntries: Array.isArray(state.liveCascadeOverlays) ? state.liveCascadeOverlays : [],
         signature: state.pendingCascadeSignatureHex || "",
         publicKey: state.pendingCascadePublicKeyHex || "",
@@ -698,6 +827,12 @@ export function bindImproveFormControlsInDrawer(mod, ctx = {}) {
       if (receipt?.cascade?.accepted === true && receipt?.cascade?.promotedToCanonicalWal === true) {
         const idbRes = await persistSignedCascadeOverlayIdb(receipt);
         if (idbRes.persisted || idbRes.ed25519Verified) {
+          if (idbRes.signatureHex) {
+            state.pendingCascadeSignatureHex = idbRes.signatureHex;
+          }
+          if (idbRes.publicKeyHex) {
+            state.pendingCascadePublicKeyHex = idbRes.publicKeyHex;
+          }
           const authorityTier = idbRes.authorityTier || OVERLAY_AUTHORITY_LOCAL_SELF_SIGNED;
           const authorityLabel =
             idbRes.authorityLabel || "Borrador local firmado en este dispositivo";
@@ -705,7 +840,8 @@ export function bindImproveFormControlsInDrawer(mod, ctx = {}) {
             ...e,
             authorityTier,
             authorityLabel,
-            publicKeyHex: idbRes.publicKeyHex || "",
+            signatureHex: idbRes.signatureHex || state.pendingCascadeSignatureHex || "",
+            publicKeyHex: idbRes.publicKeyHex || state.pendingCascadePublicKeyHex || "",
           }));
           state.liveCascadeOverlays = nextOverlays;
           applyOverlayEntriesToLiveState(state, nextOverlays);
@@ -761,18 +897,28 @@ export function bindImproveFormControlsInDrawer(mod, ctx = {}) {
     walRestoreBtn._walRestoreBound = true;
     walRestoreBtn.addEventListener("click", () => {
       const preview = updateWalSnapshotPreviewDom();
-      if (preview && preview.surfaceStp) {
+      const activeLang = String(state.lang || "stp").trim().toLowerCase() || "stp";
+      const previewLang = String(
+        preview?.lang || preview?.lang_code || (preview?.surfaceStp ? "stp" : ""),
+      ).trim().toLowerCase();
+      const restoredSurface =
+        activeLang === "stp"
+          ? String(preview?.surfaceStp || preview?.new_surface || preview?.surface || "")
+          : previewLang === activeLang
+            ? String(preview?.new_surface || preview?.surface || "")
+            : "";
+      if (preview && restoredSurface) {
         if (newInput) {
-          newInput.value = preview.surfaceStp;
+          newInput.value = restoredSurface;
         }
         const restoredEntry = {
           patch_id: preview.patchId || "PATCH-WAL-RESTORED",
-          lang_code: String(state.lang || "stp").toLowerCase(),
+          lang_code: activeLang,
           cascade_level: preview.level || "L2",
           semilattice_priority: CASCADE_SEMILATTICE_PRIORITY.L1_DIRECT,
           target_ref: preview.ref || `${String(state.book || "GEN").toUpperCase()}.${state.chapter || 1}.${state.verse || 1}`,
           strong_id: preview.strongId || preview.strong || "H0430",
-          new_surface: preview.surfaceStp,
+          new_surface: restoredSurface,
           authorityTier: OVERLAY_AUTHORITY_LOCAL_SELF_SIGNED,
           savedAtIso: new Date().toISOString(),
         };
@@ -782,7 +928,10 @@ export function bindImproveFormControlsInDrawer(mod, ctx = {}) {
         ];
         applyOverlayEntriesToLiveState(state, [restoredEntry]);
         if (typeof walRestoreBtn.setAttribute === "function") {
-          walRestoreBtn.setAttribute("data-restored-surface-stp", preview.surfaceStp);
+          walRestoreBtn.setAttribute(
+            activeLang === "stp" ? "data-restored-surface-stp" : "data-restored-surface",
+            restoredSurface,
+          );
         }
       }
       if (preview && (preview.strong || preview.strongId)) {

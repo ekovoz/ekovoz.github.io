@@ -55,18 +55,6 @@ export function dlog(x) {
   return exp * LN2 + lnM;
 }
 
-export function splitmix32(seed) {
-  let a = seed >>> 0;
-  return function nextRandom() {
-    a = (a + 0x9e3779b9) >>> 0;
-    let t = a ^ (a >>> 16);
-    t = Math.imul(t, 0x21f0aaad);
-    t = t ^ (t >>> 15);
-    t = Math.imul(t, 0x735a2d97);
-    return ((t ^ (t >>> 15)) >>> 0) / 4294967296;
-  };
-}
-
 export function solitonCdf(K, c = 0.1, delta = 0.05) {
   const k = Math.max(1, Math.floor(Number(K) || 1));
   if (k === 1) {
@@ -127,7 +115,7 @@ function sampleDegree(cdf, rng) {
 export function sampleDropletIndices(K, seed, cdf = null) {
   const k = Math.max(1, Math.floor(Number(K) || 1));
   const dist = cdf && cdf.length === k + 1 ? cdf : solitonCdf(k);
-  const rng = splitmix32(seed >>> 0);
+  const rng = splitmix64(seed >>> 0);
   const degree = Math.min(k, sampleDegree(dist, rng));
 
   const chosen = [];
@@ -414,7 +402,7 @@ export class LTDecoder {
 
 /**
  * Envolvente compatible con las firmas históricas de `bible_reader.js` (`encodeLubyTransformDroplets`),
- * respaldada por la distribución Solitón robusta (`solitonCdf` + `splitmix32`).
+ * respaldada por la distribución Solitón robusta (`solitonCdf` + `splitmix64`).
  */
 export function encodeLubyTransformDroplets(blocks, options = {}) {
   const list = Array.isArray(blocks) || blocks instanceof Uint8Array ? Array.from(blocks) : [];
@@ -525,14 +513,21 @@ import {
   computeNyquistSafeFpsViaWasm,
   computeRaptorQSyndromeFallback,
   decodeEcoBinaryPacket,
+  deriveWasmFountainSourceIndices,
   encodeCornerToggleMarker,
   encodeEco1BinaryPacket,
   encodeEcomMetadataPacket,
+  encodeWasmFountainPackets,
   extractCornerToggleBit,
   runWasmPeelingSession,
+  splitmix64,
+  splitmix64Next,
   validateNyquistOpticalFps,
   whitenBlockXor,
 } from "./optical_wasm_bridge.js";
+
+export const MAX_ECO_GRID_29_PAYLOAD_BYTES = 4096;
+export const MAX_OPTICAL_AIRGAP_PAYLOAD_BYTES = 4096;
 
 export {
   NYQUIST_DEFAULT_FPS,
@@ -542,6 +537,7 @@ export {
   computeNyquistSafeFpsViaWasm,
   computeSaddleStitchImpositionPlan,
   crc16Ccitt,
+  deriveWasmFountainSourceIndices,
   encodeCornerToggleMarker,
   encodeDropletToMatrixGrid,
   encodeEco1BinaryPacket,
@@ -550,6 +546,8 @@ export {
   rasterizeMatrixGridToLuma8,
   renderDropletMatrixSvgOrCanvas,
   rsGf256ComputeParity4,
+  splitmix64,
+  splitmix64Next,
   validateNyquistOpticalFps,
   verifyManifestAndMerkleAudit,
   whitenBlockXor
@@ -578,6 +576,8 @@ export class QrStreamSession {
     this.packetsAccepted = 0;
     this.duplicateFramesDropped = 0;
     this.metadata = null;
+    this._wasmTransferKey = null;
+    this._wasmSolvedBytes = null;
   }
 
   ingestPacket(packetBytes) {
@@ -586,12 +586,18 @@ export class QrStreamSession {
 
     if (parsed.magic === "ECOM") {
       this.metadata = parsed.meta;
-      if (this.packetsAccepted === 0 && parsed.meta) {
-        this.streamId = parsed.streamId || this.streamId;
-        this.totalChunks = Math.max(1, Number(parsed.meta.totalChunks) || this.totalChunks);
-        this.blockSize = Math.max(1, Number(parsed.meta.blockSize) || this.blockSize);
-        this.totalBytes = Math.max(1, Number(parsed.meta.totalBytes) || this.totalBytes);
-        this.decoder = new LTDecoder(this.totalChunks, this.blockSize, this.totalBytes);
+      if (parsed.meta) {
+        const metaBytes = Number(parsed.meta.totalBytes);
+        if (Number.isFinite(metaBytes) && metaBytes > 0) {
+          this.totalBytes = metaBytes;
+          if (this.decoder) this.decoder.totalBytes = metaBytes;
+        }
+        if (this.packetsAccepted === 0) {
+          this.streamId = parsed.streamId || this.streamId;
+          this.totalChunks = Math.max(1, Number(parsed.meta.totalChunks) || this.totalChunks);
+          this.blockSize = Math.max(1, Number(parsed.meta.blockSize) || this.blockSize);
+          this.decoder = new LTDecoder(this.totalChunks, this.blockSize, this.totalBytes);
+        }
       }
       return { accepted: true, kind: "ECOM", meta: parsed.meta };
     }
@@ -625,13 +631,26 @@ export class QrStreamSession {
   }
 
   isComplete() {
-    return this.decoder.isComplete();
+    return Boolean(this._wasmSolvedBytes) || this.decoder.isComplete();
   }
 
   finalizeStream() {
-    if (!this.isComplete()) return null;
+    if (this._wasmSolvedBytes instanceof Uint8Array) {
+      return this.totalBytes > 0 && this._wasmSolvedBytes.byteLength > this.totalBytes
+        ? this._wasmSolvedBytes.subarray(0, this.totalBytes)
+        : this._wasmSolvedBytes;
+    }
+    if (!this.decoder.isComplete()) return null;
     return this.decoder.reconstructBytes();
   }
+}
+
+function indicesMatchExact(a, b) {
+  if (!Array.isArray(a) || !Array.isArray(b) || a.length !== b.length) return false;
+  for (let i = 0; i < a.length; i += 1) {
+    if (a[i] !== b[i]) return false;
+  }
+  return true;
 }
 
 export function decodeQrStreamViaWasmBridge(frames = [], wasmModule = null, existingSession = null) {
@@ -650,9 +669,15 @@ export function decodeQrStreamViaWasmBridge(frames = [], wasmModule = null, exis
     exports.memory.buffer instanceof ArrayBuffer &&
     typeof exports.decode_optical_frame_in_place === "function",
   );
+  const canWasmPeel = Boolean(
+    hasLinearMemory &&
+    typeof exports.reset_lt_fountain_session === "function" &&
+    typeof exports.peel_lt_fountain_packet_in_place === "function",
+  );
   const linearMemoryChecksums = [];
   const session = existingSession instanceof QrStreamSession ? existingSession : new QrStreamSession();
   const frameList = Array.isArray(frames) ? frames : [];
+
   for (let idx = 0; idx < frameList.length; idx += 1) {
     const frameBytes = frameList[idx];
     if (hasLinearMemory && frameBytes instanceof Uint8Array && frameBytes.byteLength > 0) {
@@ -668,12 +693,63 @@ export function decodeQrStreamViaWasmBridge(frames = [], wasmModule = null, exis
         exports.free_frame_buffer(ptr, frameBytes.byteLength);
       }
     }
-    session.ingestPacket(frameBytes);
+
+    const ingestRes = session.ingestPacket(frameBytes);
+    if (canWasmPeel && ingestRes?.accepted && ingestRes.kind === "ECO1" && !session._wasmSolvedBytes) {
+      const parsed = decodeEcoBinaryPacket(frameBytes);
+      if (parsed.valid && parsed.magic === "ECO1") {
+        const expectedWasmIndices = deriveWasmFountainSourceIndices(
+          parsed.streamId,
+          parsed.seq,
+          parsed.totalChunks,
+        );
+        if (parsed.seq < parsed.totalChunks || indicesMatchExact(parsed.indices, expectedWasmIndices)) {
+          const transferKey = `${parsed.streamId}:${parsed.totalChunks}`;
+          if (session._wasmTransferKey !== transferKey) {
+            exports.reset_lt_fountain_session(BigInt(parsed.streamId >>> 0), parsed.totalChunks);
+            session._wasmTransferKey = transferKey;
+          }
+          const xorLen = parsed.payloadBytes.byteLength;
+          const outCap = Math.max(64, parsed.totalChunks * xorLen);
+          const xorPtr =
+            typeof exports.wasm_alloc === "function"
+              ? exports.wasm_alloc(xorLen) >>> 0
+              : 1024;
+          const outPtr =
+            typeof exports.wasm_alloc === "function"
+              ? exports.wasm_alloc(outCap) >>> 0
+              : 2048;
+          try {
+            new Uint8Array(exports.memory.buffer, xorPtr, xorLen).set(parsed.payloadBytes);
+            const rc = exports.peel_lt_fountain_packet_in_place(
+              BigInt(parsed.streamId >>> 0),
+              parsed.seq,
+              parsed.totalChunks,
+              session.totalBytes || outCap,
+              xorPtr,
+              xorLen,
+              outPtr,
+              outCap,
+            );
+            if (rc > 0) {
+              session._wasmSolvedBytes = new Uint8Array(exports.memory.buffer, outPtr, rc).slice();
+            }
+          } finally {
+            if (typeof exports.wasm_free === "function") {
+              exports.wasm_free(xorPtr, xorLen);
+              exports.wasm_free(outPtr, outCap);
+            }
+          }
+        }
+      }
+    }
   }
-  const jsReconstructed = session.finalizeStream();
+
+  const reconstructedBytes = session.finalizeStream();
   if (wasmReady && frameList.length === 0 && typeof exports.reset_lt_fountain_session === "function") {
     exports.reset_lt_fountain_session(2026n, 4);
   }
+  const wasmSolved = Boolean(session._wasmSolvedBytes instanceof Uint8Array);
   return {
     ok: true,
     engine: wasmReady ? "wasm-linear-memory" : "js-fallback",
@@ -685,8 +761,9 @@ export function decodeQrStreamViaWasmBridge(frames = [], wasmModule = null, exis
     packetsAccepted: session.packetsAccepted,
     duplicateFramesDropped: session.duplicateFramesDropped,
     complete: session.isComplete(),
-    reconstructedBytes: jsReconstructed,
-    wasmPeelVerified: Boolean(hasLinearMemory && jsReconstructed && linearMemoryChecksums.length > 0),
+    reconstructedBytes,
+    wasmDirectPeelSolved: wasmSolved,
+    wasmPeelVerified: Boolean(hasLinearMemory && (wasmSolved || (reconstructedBytes && linearMemoryChecksums.length > 0))),
     session,
     decoder: session.decoder,
   };
@@ -707,12 +784,25 @@ export function runOpticalReceiverBurstSession(
   );
   const payloadBytes = new TextEncoder().encode(cleanText);
   const cleanBlockSize = Math.max(8, Math.min(256, Number(blockSize) || 16));
-  const ltEncoder = new LTEncoder(payloadBytes, cleanBlockSize);
-  const totalChunks = ltEncoder.K;
+  const totalChunks = Math.max(
+    1,
+    Math.min(50, Math.ceil(payloadBytes.byteLength / cleanBlockSize)),
+  );
+  const effectiveBlockSize = Math.max(
+    1,
+    Math.ceil(payloadBytes.byteLength / totalChunks),
+  );
+  const repairCount = Math.max(12, Math.ceil(totalChunks * 1.5));
+  const txFountainPackets = encodeWasmFountainPackets(
+    2026,
+    payloadBytes,
+    totalChunks,
+    repairCount,
+  );
   const session = new QrStreamSession({
     streamId: 2026,
     totalChunks,
-    blockSize: cleanBlockSize,
+    blockSize: effectiveBlockSize,
     totalBytes: payloadBytes.byteLength,
   });
 
@@ -721,30 +811,41 @@ export function runOpticalReceiverBurstSession(
     seq: 0,
     totalBytes: payloadBytes.byteLength,
     totalChunks,
-    blockSize: cleanBlockSize,
+    blockSize: effectiveBlockSize,
     filename: "verse.eco",
   });
   session.ingestPacket(ecomPkt);
 
   const dropSet = new Set(Array.isArray(simulatedDrops) ? simulatedDrops.map(Number) : [1]);
-  const maxDroplets = Math.max(totalChunks + 12, totalChunks * 3);
   let duplicateInjected = false;
   let lastAcceptedPacket = ecomPkt;
+  const receivedWasmPackets = [];
 
-  for (let step = 0; step < maxDroplets && !session.isComplete(); step += 1) {
-    const droplet = ltEncoder.nextDroplet();
+  for (let step = 0; step < txFountainPackets.length && (!session.isComplete() || receivedWasmPackets.length < totalChunks + dropSet.size + 4); step += 1) {
+    const pkt = txFountainPackets[step];
     if (dropSet.has(step)) {
       continue;
     }
     const eco1Pkt = encodeEco1BinaryPacket({
       streamId: 2026,
-      seq: droplet.seq,
+      seq: pkt.packetId,
       totalChunks,
-      degree: droplet.degree,
-      indices: droplet.indices,
-      payloadBytes: droplet.data,
+      degree: pkt.sourceIndices.length,
+      indices: pkt.sourceIndices,
+      payloadBytes: pkt.xorPayload,
     });
-    session.ingestPacket(eco1Pkt);
+    const decodedRx = decodeEcoBinaryPacket(eco1Pkt);
+    const ingestRes = session.ingestPacket(eco1Pkt);
+    if (ingestRes.accepted && decodedRx.valid) {
+      receivedWasmPackets.push({
+        packetId: decodedRx.seq,
+        kBlocks: totalChunks,
+        blockSize: effectiveBlockSize,
+        originalByteLen: payloadBytes.byteLength,
+        sourceIndices: decodedRx.indices,
+        xorPayload: decodedRx.payloadBytes,
+      });
+    }
     lastAcceptedPacket = eco1Pkt;
     if (!duplicateInjected) {
       session.ingestPacket(eco1Pkt);
@@ -791,9 +892,9 @@ export function runOpticalReceiverBurstSession(
     wasmPeelRecoveredBytes = runWasmPeelingSession(
       exports,
       2026,
-      payloadBytes,
-      Math.min(50, totalChunks),
-      dropSet,
+      receivedWasmPackets,
+      totalChunks,
+      null,
     );
     wasmLinearVerified = true;
   }
@@ -804,10 +905,11 @@ export function runOpticalReceiverBurstSession(
 
   return {
     complete: Boolean(wasmPeelRecoveredBytes) || session.isComplete(),
-    totalChunks: Math.min(50, totalChunks),
+    totalChunks,
     packetsAccepted: session.packetsAccepted,
     duplicateFramesDropped: session.duplicateFramesDropped,
     simulatedDropsCount: dropSet.size,
+    singlePassEncoding: true,
     reconstructedBytes: finalBytes,
     reconstructedText: finalText,
     payloadMatches: finalText === cleanText,

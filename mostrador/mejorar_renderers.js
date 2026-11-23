@@ -7,28 +7,28 @@ import {
   renderMasterCensus7164CardHtml,
 } from "./drawer_hydrators.js";
 import {
-  CASCADE_LEVELS,
   CANONICAL_5_OT_TRANSLATION_WAVES,
-  FIELD_WORKSHOP_STP_LEXICON,
-  STRONG_CONCORDANCE_COUNTS,
-  KEY_TERMS_GLOSSARY,
-  UNCERTAINTY_QUEUE_60,
-  EXTERNAL_AUDIT_8_LOCKS,
-  TIER3A_CONTINUUMS,
-  FLOOR_1_SENTENCE_SPEC,
+  CASCADE_LEVELS,
   CRDT_WAL_SEMILATTICE,
+  EXTERNAL_AUDIT_8_LOCKS,
+  FIELD_WORKSHOP_STP_LEXICON,
+  FLOOR_1_SENTENCE_SPEC,
+  KEY_TERMS_GLOSSARY,
+  MASTER_CENSUS_SUMMARY,
   PATCH_JOURNAL_LOCK_P2,
   ROOT_NOTES_STP,
   STP_LEDGER_SUMMARY,
-  MASTER_CENSUS_SUMMARY,
+  STRONG_CONCORDANCE_COUNTS,
   TALLER_CC0_ARTIFACTS,
-  sanitizePipeField,
-  verifyLock8PredicativeAndNegation,
-  validateAllEightLocksPda,
-  computeSisterWorksCascade,
-  selectTopEntropyVerseQueue,
-  buildPatchPayload,
+  TIER3A_CONTINUUMS,
+  UNCERTAINTY_QUEUE_60,
   buildElicitationSeedPayload,
+  buildPatchPayload,
+  computeSisterWorksCascade,
+  sanitizePipeField,
+  selectTopEntropyVerseQueue,
+  validateAllEightLocksPda,
+  verifyLock8PredicativeAndNegation,
 } from "./mejorar_locks_pda.js";
 
 export const IMPROVE_I18N_FALLBACKS = {
@@ -79,6 +79,11 @@ export function renderImproveDrawerHtml({
   strongId = "",
   currentVerseText = "",
   currentSurface = "",
+  proposedSurface = "",
+  newSurface = "",
+  expectedProperNouns = [],
+  expectedAgent = "",
+  expectedPatient = "",
   elicitationRank = 1,
   level = "L2",
   includeInlineSeedPanel = true,
@@ -86,6 +91,12 @@ export function renderImproveDrawerHtml({
 } = {}) {
   const resolvedRef = sanitizePipeField(ref || osis || "GEN.1.1").toUpperCase();
   const resolvedVerseText = String(currentVerseText || currentSurface || "");
+  const resolvedProposedSurface = String(proposedSurface || newSurface || "");
+  const selectedLevel = ["L1", "L2", "L3", "L4", "L5"].includes(
+    String(level || "").trim().toUpperCase(),
+  )
+    ? String(level).trim().toUpperCase()
+    : "L2";
   const isNewTestament =
     /^(MAT|MRK|MAR|LUK|JHN|ACT|ROM|1CO|2CO|GAL|EPH|PHP|COL|1TH|2TH|1TI|2TI|TIT|PHM|HEB|JAS|1PE|2PE|1JN|2JN|3JN|JUD|REV)\b/i.test(
       resolvedRef,
@@ -109,11 +120,11 @@ export function renderImproveDrawerHtml({
     kind: "verse",
     lang,
     locale,
-    level,
+    level: selectedLevel,
     ref: resolvedRef,
     strongId: resolvedStrong,
     oldSurface: resolvedVerseText,
-    newSurface: resolvedVerseText,
+    newSurface: resolvedProposedSurface,
   });
   const seed250 = buildElicitationSeedPayload({
     lang,
@@ -121,27 +132,32 @@ export function renderImproveDrawerHtml({
     rank: elicitationRank,
     verseId: resolvedRef,
     strongIds: [resolvedStrong],
-    responseText: resolvedVerseText,
+    responseText: resolvedProposedSurface,
   });
-  const eightLocksReport = validateAllEightLocksPda({
+  const lockOpts = {
     oldSurface: patch.old_surface,
     newSurface: patch.new_surface,
-  });
+    expectedProperNouns,
+    expectedAgent,
+    expectedPatient,
+  };
+  const eightLocksReport = validateAllEightLocksPda(lockOpts);
   const eightLocksPillsHtml = eightLocksReport.locks
     .map(
       (lk) =>
         `<span class="uls-badge" data-lock-id="${lk.id}" data-lock-passed="${lk.passed}" style="font-size:0.72rem;padding:0.15rem 0.45rem;">${lk.passed ? "✅" : "⛔"} ${lk.label}</span>`,
     )
     .join(" ");
+  const lock8Result = verifyLock8PredicativeAndNegation(lockOpts);
 
   return (
-    `<section class="improve-drawer" data-lang="${patch.lang}" data-ref="${patch.ref}" data-strong-id="${patch.strong_id}" data-audio-bytes="0" data-lock8-status="${verifyLock8PredicativeAndNegation({ oldSurface: patch.old_surface, newSurface: patch.new_surface }).status}" data-eight-locks-status="${eightLocksReport.status}">` +
+    `<section class="improve-drawer" data-lang="${patch.lang}" data-ref="${patch.ref}" data-strong-id="${patch.strong_id}" data-audio-bytes="0" data-lock8-status="${lock8Result.status}" data-eight-locks-status="${eightLocksReport.status}">` +
     `<header style="margin-bottom:0.65rem;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:0.4rem;">` +
     `<div>` +
     `<h4 style="margin:0;" data-i18n="improve.title">${t("improve.title")}</h4>` +
     `<p style="margin:0.25rem 0 0 0;font-size:0.84rem;color:var(--text-secondary);" data-i18n="improve.subtitle">${t("improve.subtitle")}</p>` +
     `</div>` +
-    `<span class="uls-badge" data-lock8-badge="true">🔒 ${isEn ? "Lock 8 (MACULA A0/A1 + Jespersen):" : "Candado 8 (MACULA A0/A1 + Jespersen):"} ${verifyLock8PredicativeAndNegation({ oldSurface: patch.old_surface, newSurface: patch.new_surface }).status}</span>` +
+    `<span class="uls-badge" data-lock8-badge="true">🔒 ${isEn ? "Lock 8 (MACULA A0/A1 + Jespersen):" : "Candado 8 (MACULA A0/A1 + Jespersen):"} ${lock8Result.status}</span>` +
     `</header>` +
     (includeEightLocksBar
       ? `<div class="eight-locks-pda-bar" data-eight-locks-bar="true" style="display:flex;flex-wrap:wrap;gap:0.3rem;margin-bottom:0.55rem;">${eightLocksPillsHtml}</div>`
@@ -157,11 +173,12 @@ export function renderImproveDrawerHtml({
     `<label style="font-size:0.84rem;">` +
     `<span data-i18n="improve.level_label">${t("improve.level_label")}</span> ` +
     `<select id="improveLevelSelect" style="width:100%;box-sizing:border-box;min-height:48px;padding:0.4rem;">` +
-    `<option value="L1">${t("improve.level.L1")}</option>` +
-    `<option value="L2" selected>${t("improve.level.L2")}</option>` +
-    `<option value="L3">${t("improve.level.L3")}</option>` +
-    `<option value="L4">${t("improve.level.L4")}</option>` +
-    `<option value="L5">${t("improve.level.L5")}</option>` +
+    ["L1", "L2", "L3", "L4", "L5"]
+      .map(
+        (lv) =>
+          `<option value="${lv}"${selectedLevel === lv ? " selected" : ""}>${t(`improve.level.${lv}`)}</option>`,
+      )
+      .join("") +
     `</select>` +
     `</label>` +
     `<label style="font-size:0.84rem;">` +
@@ -182,15 +199,17 @@ export function renderImproveDrawerHtml({
     `</details>` +
     (includeInlineSeedPanel
       ? `<div class="celf250-ladder-panel" data-celf250-ladder="true" data-celf250-rank="${seed250.rank}" style="padding:0.6rem;border-radius:8px;border:1px solid var(--card-border);">` +
-        `<strong style="font-size:0.82rem;">🧬 ${isEn ? `Active CELF-250 Ladder (#${seed250.rank}/250 · 30 Hours · 0 Bytes Audio)` : `Escalera Activa CELF-250 (#${seed250.rank}/250 · 30 Horas · 0 Bytes Audio)`}</strong>` +
-        `<pre id="celf250SeedOutput" style="margin:0.35rem 0 0 0;font-size:0.75rem;overflow-x:auto;">${seed250.payloadLine}</pre>` +
-        `</div>`
+      `<strong style="font-size:0.82rem;">🧬 ${isEn ? `Active CELF-250 Ladder (#${seed250.rank}/250 · 30 Hours · 0 Bytes Audio)` : `Escalera Activa CELF-250 (#${seed250.rank}/250 · 30 Horas · 0 Bytes Audio)`}</strong>` +
+      `<details class="hig-tech-receipt-details"><summary>${isEn ? "🧾 Machine seed payload (CELF-250)" : "🧾 Payload semilla CELF-250"}</summary>` +
+      `<pre id="celf250SeedOutput" style="margin:0.35rem 0 0 0;font-size:0.75rem;overflow-x:auto;">${seed250.payloadLine}</pre>` +
+      `</details>` +
+      `</div>`
       : "") +
     `<details id="improveCommunityVotesDetails" class="hig-tech-meta">` +
     `<summary>${isEn ? "🗳️ Community consensus votes (Dawid-Skene + SPRT)" : "🗳️ Votos de consenso comunitario (Dawid-Skene + SPRT)"}</summary>` +
     `<div style="display:grid;gap:0.45rem;margin-top:0.45rem;">` +
     `<label style="font-size:0.8rem;">${isEn ? "Reviewer ID" : "ID revisor"} <input id="improveVoteReviewerIdInput" type="text" placeholder="hablante_1" style="width:100%;min-height:40px;padding:0.35rem;"></label>` +
-    `<label style="font-size:0.8rem;display:flex;align-items:center;gap:0.4rem;"><input id="improveVoteGoldSeedsCheck" type="checkbox" checked> <span>${isEn ? "Passed 2 Gold Seeds" : "Aprobó 2 semillas de oro"}</span></label>` +
+    `<label style="font-size:0.8rem;display:flex;align-items:center;gap:0.4rem;"><input id="improveVoteGoldSeedsCheck" type="checkbox"> <span>${isEn ? "Passed 2 Gold Seeds" : "Aprobó 2 semillas de oro"}</span></label>` +
     `<div style="display:flex;flex-wrap:wrap;gap:0.4rem;">` +
     `<button type="button" id="btnAddCommunityVoteApprove" class="uls-chip">👍 ${isEn ? "Approve vote" : "Voto aprobar"}</button>` +
     `<button type="button" id="btnAddCommunityVoteReject" class="uls-chip">👎 ${isEn ? "Reject vote" : "Voto rechazar"}</button>` +
@@ -234,11 +253,11 @@ export function renderStpDraftCheckHtml({
     otQueue.length > 0
       ? otQueue
       : [
-          { verse_id: "GEN.1.1", semantic_uncertainty_u: 0.842, token_count: 7, surface: "[H9003+H7225] [H1254] [H0430] — Andamiaje Taller Tier 2" },
-          { verse_id: "EXO.3.14", semantic_uncertainty_u: 0.831, token_count: 7, surface: "[H1961] [H0834] [H1961] — Andamiaje Taller Tier 2" },
-          { verse_id: "PSA.23.1", semantic_uncertainty_u: 0.815, token_count: 4, surface: "[H3068] [H7462] [H3808] [H2637] — Andamiaje Taller Tier 2" },
-          { verse_id: "ISA.53.5", semantic_uncertainty_u: 0.809, token_count: 14, surface: "[H2490] [H6588] [H1792] [H7965] — Andamiaje Taller Tier 2" },
-        ];
+        { verse_id: "GEN.1.1", semantic_uncertainty_u: 0.842, token_count: 7, surface: "[H9003+H7225] [H1254] [H0430] — Andamiaje Taller Tier 2" },
+        { verse_id: "EXO.3.14", semantic_uncertainty_u: 0.831, token_count: 7, surface: "[H1961] [H0834] [H1961] — Andamiaje Taller Tier 2" },
+        { verse_id: "PSA.23.1", semantic_uncertainty_u: 0.815, token_count: 4, surface: "[H3068] [H7462] [H3808] [H2637] — Andamiaje Taller Tier 2" },
+        { verse_id: "ISA.53.5", semantic_uncertainty_u: 0.809, token_count: 14, surface: "[H2490] [H6588] [H1792] [H7965] — Andamiaje Taller Tier 2" },
+      ];
   const queueRowsHtml = effectiveOtQueue
     .map((r) => {
       const osis = esc(String(r.verse_id || r.ref || "GEN.1.1").toUpperCase());
@@ -311,11 +330,11 @@ export function renderCascadeAndLadderHtml({
         ? rawList.filter((it) => it.rung === activeRung)
         : rawList
       : [
-          { rank: 1, verse_id: "GEN.1.1", rung: "Rung1SwadeshAndNsm65", marginal_gain_bits: 48.2 },
-          { rank: 2, verse_id: "JHN.1.1", rung: "Rung1SwadeshAndNsm65", marginal_gain_bits: 44.5 },
-          { rank: 3, verse_id: "PSA.23.1", rung: "Rung2MorphosyntaxAndTamValence", marginal_gain_bits: 41.0 },
-          { rank: 4, verse_id: "ROM.1.16", rung: "Rung3TheologicalKinshipAndNarratives", marginal_gain_bits: 38.7 },
-        ];
+        { rank: 1, verse_id: "GEN.1.1", rung: "Rung1SwadeshAndNsm65", marginal_gain_bits: 48.2 },
+        { rank: 2, verse_id: "JHN.1.1", rung: "Rung1SwadeshAndNsm65", marginal_gain_bits: 44.5 },
+        { rank: 3, verse_id: "PSA.23.1", rung: "Rung2MorphosyntaxAndTamValence", marginal_gain_bits: 41.0 },
+        { rank: 4, verse_id: "ROM.1.16", rung: "Rung3TheologicalKinshipAndNarratives", marginal_gain_bits: 38.7 },
+      ];
   const waveNum = Number(activeOtWave) || 0;
   const activeWaveObj =
     waveNum >= 1
@@ -328,11 +347,11 @@ export function renderCascadeAndLadderHtml({
   const waveFiltered =
     waveBooksSet && waveBooksSet.size > 0
       ? baseList.filter((it) => {
-          const bCode = String(it.verse_id || it.ref || "GEN.1.1")
-            .split(".")[0]
-            .toUpperCase();
-          return waveBooksSet.has(bCode);
-        })
+        const bCode = String(it.verse_id || it.ref || "GEN.1.1")
+          .split(".")[0]
+          .toUpperCase();
+        return waveBooksSet.has(bCode);
+      })
       : baseList;
   const filteredList = waveFiltered.length > 0 ? waveFiltered : baseList;
 
@@ -449,10 +468,10 @@ export function renderCascadeAndLadderHtml({
   const crdtWalAndLockP2Html =
     includeWalCard === true
       ? renderCrdtWalAndLockP2AuditCardHtml({
-          crdt_wal_semilattice: CRDT_WAL_SEMILATTICE,
-          patch_journal_lock_p2: PATCH_JOURNAL_LOCK_P2,
-          root_notes_stp: ROOT_NOTES_STP,
-        })
+        crdt_wal_semilattice: CRDT_WAL_SEMILATTICE,
+        patch_journal_lock_p2: PATCH_JOURNAL_LOCK_P2,
+        root_notes_stp: ROOT_NOTES_STP,
+      })
       : "";
 
   const seed250 = buildElicitationSeedPayload({
@@ -466,7 +485,9 @@ export function renderCascadeAndLadderHtml({
   const seedPanelHtml =
     `<div class="celf250-ladder-panel" data-celf250-ladder="true" data-celf250-rank="${seed250.rank}" style="margin-bottom:0.5rem;padding:0.55rem;border-radius:8px;border:1px solid var(--card-border);background:var(--bg-secondary);">` +
     `<strong style="font-size:0.8rem;">🧬 ${isEn ? `Active CELF-250 Seed (#${seed250.rank}/250 · 30 Hours · 0 Bytes Audio)` : `Semilla Activa CELF-250 (#${seed250.rank}/250 · 30 Horas · 0 Bytes Audio)`}</strong>` +
+    `<details class="hig-tech-receipt-details"><summary>${isEn ? "🧾 View CELF-250 seed payload" : "🧾 Ver payload CELF-250"}</summary>` +
     `<pre id="celf250SeedOutput" style="margin:0.3rem 0 0 0;font-size:0.74rem;overflow-x:auto;">${seed250.payloadLine}</pre>` +
+    `</details>` +
     `</div>`;
 
   return (
@@ -492,7 +513,7 @@ export function renderCascadeAndLadderHtml({
 }
 
 const DEFAULT_STP_LEXICON_SEED = [
-  { strong: "H0430", gloss_es: "Dios / Creador", stp_surface: "Jawatan Dios", stp_vso_classifier_phrase: "gu Jawatan Dios", typology_rule: "VSO_HEAD_INITIAL_GB130_1_GB070_1", wave: 1, occurrences: 2602 },
+  { strong: "H0430", gloss_es: "Dios / Creador", stp_surface: "Jawatan Dios", stp_vso_classifier_phrase: "gu Jawatan Dios", typology_rule: "VSO_HEAD_INITIAL_GB130_1_GB070_1", wave: 1, occurrences: 2576 },
   { strong: "H7225", gloss_es: "principio / origen", stp_surface: "na pai' dhuuk", stp_vso_classifier_phrase: "na pai' dhuuk", typology_rule: "VSO_HEAD_INITIAL_GB130_1_GB070_1", wave: 1, occurrences: 51 },
   { strong: "H1254", gloss_es: "crear / formar", stp_surface: "jix duu", stp_vso_classifier_phrase: "jix duu", typology_rule: "VSO_HEAD_INITIAL_GB130_1_GB070_1", wave: 1, occurrences: 54 },
   { strong: "H0776", gloss_es: "tierra / mundo", stp_surface: "oidha'", stp_vso_classifier_phrase: "gu oidha'", typology_rule: "VSO_HEAD_INITIAL_GB130_1_GB070_1", wave: 1, occurrences: 2505 },
@@ -559,11 +580,11 @@ export function renderStpLexiconResultsRowsHtml({
       const tierCategory = String(entry.tier_category || "ASJP_SWADESH_110");
       const inlineRootNote = String(
         matchedRootNote?.note ||
-          matchedRootNote?.note_pure_text ||
-          entry.note ||
-          entry.cultural_note ||
-          entry.semantic_note ||
-          `Morfología VSO cabeza-inicial (Willett 1991 · ${tierCategory})`,
+        matchedRootNote?.note_pure_text ||
+        entry.note ||
+        entry.cultural_note ||
+        entry.semantic_note ||
+        "Morfología VSO cabeza-inicial (Willett 1991)",
       );
       return (
         `<button type="button" class="uls-chip stp-lexicon-entry-btn" ` +
@@ -572,6 +593,7 @@ export function renderStpLexiconResultsRowsHtml({
         `data-lex-gloss="${esc(glossEs)}" ` +
         `data-vso-phrase="${esc(vsoPhrase)}" ` +
         `data-typology-rule="${esc(typoRule)}" ` +
+        `data-tier-category="${esc(tierCategory)}" ` +
         `style="min-height:48px;padding:0.35rem 0.65rem;font-size:0.76rem;text-align:left;display:inline-flex;flex-direction:column;align-items:flex-start;gap:0.12rem;">` +
         `<span><strong>${esc(strongCode)}</strong> · ${esc(stpSurf)} <small style="opacity:0.82;">(${esc(glossEs)} · VSO: ${esc(vsoPhrase)} · ${occ} vv.)</small></span>` +
         `<span class="stp-inline-root-note" data-root-note="true" data-root-note-source="${matchedRootNote ? "ledger" : "typology"}" style="font-size:0.71rem;color:var(--text-secondary);">📒 ${esc(inlineRootNote)}</span>` +
@@ -672,7 +694,7 @@ function buildDynamicTallerKitHref(langCode, art) {
       art.id === "01_diccionario"
         ? `strong_id\tlemma_bridge_es\tlang_target\tgloss_seed\nH0430\tDios\t${safeLang}\t[COMPLETAR_${safeLang.toUpperCase()}]\nH0776\ttierra\t${safeLang}\t[COMPLETAR_${safeLang.toUpperCase()}]\nG3056\tPalabra\t${safeLang}\t[COMPLETAR_${safeLang.toUpperCase()}]\n`
         : art.id === "02_concordancia"
-          ? `strong_id\toccurrences_canon\tsample_refs\tlang_code\nH0430\t2602\tGEN.1.1,PSA.23.1\t${safeLang}\nH3068\t6828\tGEN.2.4,PSA.23.1\t${safeLang}\nG2316\t1317\tJHN.1.1,MAT.5.8\t${safeLang}\n`
+          ? `strong_id\toccurrences_canon\tsample_refs\tlang_code\nH0430\t2576\tGEN.1.1,PSA.23.1\t${safeLang}\nH3068\t6828\tGEN.2.4,PSA.23.1\t${safeLang}\nG2316\t1317\tJHN.1.1,MAT.5.8\t${safeLang}\n`
           : `rank\tverse_id\trung\tlang_code\tresponse_surface\n1\tGEN.1.1\tRung1SwadeshAndNsm65\t${safeLang}\t\n2\tGEN.3.1\tRung1SwadeshAndNsm65\t${safeLang}\t\n3\tMAT.5.3\tRung2MorphosyntaxAndTamValence\t${safeLang}\t\n`;
   } else if (art.file.endsWith(".toml")) {
     mime = "application/toml;charset=utf-8";
@@ -718,11 +740,36 @@ export function renderTallerArtifactsCatalogHtml(langOrOpts = "es") {
   const censusHtml = includeCensusCard
     ? renderMasterCensus7164CardHtml(customMasterCensus, customStpLedger)
     : "";
-  const eightLocksReport = validateAllEightLocksPda({
-    oldSurface: "En el principio creó Dios los cielos y la tierra.",
-    newSurface: "En el principio creó Dios los cielos y la tierra.",
-  });
-  const eightLocksPillsHtml = eightLocksReport.locks
+  const customOldSurface =
+    typeof langOrOpts === "object" && langOrOpts !== null && typeof langOrOpts.oldSurface === "string"
+      ? langOrOpts.oldSurface
+      : "";
+  const customNewSurface =
+    typeof langOrOpts === "object" && langOrOpts !== null && typeof langOrOpts.newSurface === "string"
+      ? langOrOpts.newSurface
+      : "";
+  const locksList =
+    customOldSurface || customNewSurface
+      ? validateAllEightLocksPda({
+        oldSurface: customOldSurface,
+        newSurface: customNewSurface,
+        expectedProperNouns: Array.isArray(langOrOpts?.expectedProperNouns)
+          ? langOrOpts.expectedProperNouns
+          : [],
+        expectedAgent: langOrOpts?.expectedAgent || "",
+        expectedPatient: langOrOpts?.expectedPatient || "",
+      }).locks
+      : [
+        { id: "P1", label: "P1 · Cero Omisión", passed: EXTERNAL_AUDIT_8_LOCKS?.lock_1_zero_omission_pass !== false },
+        { id: "P2", label: "P2 · Cotas Gale-Church", passed: EXTERNAL_AUDIT_8_LOCKS?.lock_2_gale_church_bounds_pass !== false },
+        { id: "P3", label: "P3 · PDA Comillas", passed: EXTERNAL_AUDIT_8_LOCKS?.lock_3_pda_quote_balance_pass !== false },
+        { id: "P4", label: "P4 · Anti-Calco MDD", passed: EXTERNAL_AUDIT_8_LOCKS?.lock_4_anti_calque_mdd_pass !== false },
+        { id: "P5", label: "P5 · Versificación KJV", passed: EXTERNAL_AUDIT_8_LOCKS?.lock_5_versification_kjv_pass !== false },
+        { id: "P6", label: "P6 · Términos Clave Rosetta", passed: EXTERNAL_AUDIT_8_LOCKS?.lock_6_rosetta_key_terms_pass !== false },
+        { id: "P7", label: "P7 · Registro AoA", passed: EXTERNAL_AUDIT_8_LOCKS?.lock_7_register_aoa_pass !== false },
+        { id: "P8", label: "P8 · Ortografía Fonotáctica", passed: EXTERNAL_AUDIT_8_LOCKS?.lock_8_phonotactic_orthography_pass !== false },
+      ];
+  const eightLocksPillsHtml = locksList
     .map(
       (lk) =>
         `<span class="uls-badge" data-lock-id="${lk.id}" data-lock-passed="${lk.passed}" style="font-size:0.72rem;padding:0.15rem 0.45rem;">${lk.passed ? "✅" : "⛔"} ${lk.label}</span>`,

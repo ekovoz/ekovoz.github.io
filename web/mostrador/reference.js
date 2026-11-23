@@ -175,6 +175,21 @@ export const ROSETTA_66_BOOKS = Object.freeze([
 
 export const normalizeBookAliasToken = normalizeBookToken;
 
+const EXTRA_COMMON_BOOK_ALIASES = {
+  GEN: ["gn", "gen"], EXO: ["ex", "exo"], LEV: ["lv", "lev"], NUM: ["nm", "num"], DEU: ["dt", "deu"],
+  JOS: ["js", "jos"], JDG: ["jc", "jue", "jdg"], RUT: ["rt"], "1SA": ["1s", "1sm"], "2SA": ["2s", "2sm"],
+  "1KI": ["1r", "1re"], "2KI": ["2r", "2re"], "1CH": ["1cr"], "2CH": ["2cr"], EZR: ["esd"], NEH: ["ne"],
+  EST: ["et"], JOB: ["jb"], PSA: ["sal", "sl", "ps"], PRO: ["pr", "prv"], ECC: ["ec"], SNG: ["cnt", "ct"],
+  ISA: ["is"], JER: ["jr"], LAM: ["lm"], EZK: ["ez"], DAN: ["dn"], HOS: ["os"], JOL: ["jl"], AMO: ["am"],
+  OBA: ["abd", "ob"], JON: ["jon"], MIC: ["mi", "mq"], NAM: ["na"], HAB: ["hab"], ZEP: ["sof"], HAG: ["hag"],
+  ZEC: ["zac"], MAL: ["ml", "mal"], MAT: ["mt", "mat"], MRK: ["mc", "mr", "mk"], LUK: ["lc", "lk", "lu"],
+  JHN: ["jn", "jh"], ACT: ["hch", "hech", "ac"], ROM: ["rm", "ro"], "1CO": ["1co"], "2CO": ["2co"],
+  GAL: ["ga", "gl"], EPH: ["ef", "eph"], PHP: ["fil", "flp", "php"], COL: ["col"], "1TH": ["1ts"],
+  "2TH": ["2ts"], "1TI": ["1tm", "1ti"], "2TI": ["2tm", "2ti"], TIT: ["tt", "tit"], PHM: ["flm", "phm"],
+  HEB: ["heb", "hb"], JAS: ["stg", "st", "jas"], "1PE": ["1p", "1pe"], "2PE": ["2p", "2pe"],
+  "1JN": ["1jn", "1jo"], "2JN": ["2jn", "2jo"], "3JN": ["3jn", "3jo"], JUD: ["jud", "jd"], REV: ["ap", "apoc"],
+};
+
 const DEFAULT_BOOK_RESOLVER = createReferenceResolver([
   {
     books: ROSETTA_66_BOOKS.map((b) => ({
@@ -183,7 +198,7 @@ const DEFAULT_BOOK_RESOLVER = createReferenceResolver([
       name: b.en,
       abbr: b.code.toLowerCase(),
       chapters: b.chapters,
-      aliases: [b.es, b.en.slice(0, 3), b.es.slice(0, 3)],
+      aliases: [b.es, b.en.slice(0, 3), b.es.slice(0, 3), ...(EXTRA_COMMON_BOOK_ALIASES[b.code] || [])],
     })),
   },
 ]);
@@ -235,3 +250,187 @@ export function parseBiblicalCoordinateReference(input, verseCounts = null) {
   return null;
 }
 
+
+/**
+ * Hidrata los 24 idiomas/paquetes `.ekpack` desde `packs_manifest.json` u `offline_packs_catalog.json`
+ * preservando rutas Same-Origin (`/packs/<lang>.ekpack` para remotos y `/data/packs/` o `/packs/`).
+ */
+export function hydratePackLanguagesFromManifest(packsManifest = null) {
+  const rawPacks = Array.isArray(packsManifest)
+    ? packsManifest
+    : Array.isArray(packsManifest?.packs)
+      ? packsManifest.packs
+      : [];
+  const availableList = Array.isArray(packsManifest?.available_pack_langs)
+    ? packsManifest.available_pack_langs
+    : [];
+  const seen = new Set();
+  const packs = [];
+  const seedLangs = new Set(["es", "en", "stp", "he", "grc"]);
+
+  for (const p of rawPacks) {
+    const cleanLang = String(p?.lang || "").trim();
+    if (!cleanLang || seen.has(cleanLang)) continue;
+    seen.add(cleanLang);
+    const sameOriginUrl = String(
+      p?.sameOriginShardUrl || `/packs/${cleanLang}.ekpack`,
+    ).trim();
+    const rawRel = String(p?.ekpackUrl || p?.url || "").trim();
+    const fallbackUrl = seedLangs.has(cleanLang)
+      ? `/${(rawRel || `data/packs/${cleanLang}.ekpack`).replace(/^\/+/, "")}`
+      : `/packs/${cleanLang}.ekpack`;
+    packs.push({
+      lang: cleanLang,
+      file: String(p?.ekpackFile || p?.file || `${cleanLang}.ekpack`).trim(),
+      url: sameOriginUrl || fallbackUrl,
+      sameOriginPackUrl: `/packs/${cleanLang}.ekpack`,
+      bytes: Number(p?.bytes || p?.ekpackBytes) || 0,
+      verses: Number(p?.canonicalVersesPresent || p?.verses) || 0,
+      sha256: String(p?.ekpackSha256 || p?.sha256 || "").trim(),
+      ebibleId: String(p?.ebibleId || "").trim(),
+      sovereignTier: String(p?.sovereignTier || "").trim(),
+    });
+  }
+
+  for (const code of availableList) {
+    const cleanLang = String(code || "").trim();
+    if (!cleanLang || seen.has(cleanLang)) continue;
+    seen.add(cleanLang);
+    packs.push({
+      lang: cleanLang,
+      file: `${cleanLang}.ekpack`,
+      url: `/packs/${cleanLang}.ekpack`,
+      sameOriginPackUrl: `/packs/${cleanLang}.ekpack`,
+      bytes: 0,
+      verses: 0,
+      sha256: "",
+      ebibleId: "",
+      sovereignTier: "",
+    });
+  }
+
+  return {
+    totalPacks: packs.length,
+    langs: packs.map((p) => p.lang),
+    packs,
+  };
+}
+
+/**
+ * Búsqueda unificada tipo Spotlight sobre citas bíblicas, códigos Strong (`H####`/`G####`),
+ * `canon_lexicon.json` (Los Felices / índices multilingües) y versículos del capítulo cargado.
+ */
+export function searchSpotlightCorpus({
+  query = "",
+  canonLexicon = null,
+  loadedVerses = null,
+  book = "GEN",
+  chapter = 1,
+  lang = "es",
+  limit = 12,
+} = {}) {
+  const rawQuery = String(query || "").trim();
+  if (!rawQuery) return [];
+  const maxItems = Math.max(1, Math.min(50, Number(limit) || 12));
+  const normQuery = normalizeBookToken(asciiDigits(rawQuery));
+  const cleanBook = String(book || "GEN").trim().toUpperCase() || "GEN";
+  const cleanChap = Math.max(1, Number(chapter) || 1);
+  const results = [];
+  const seenKeys = new Set();
+
+  const pushUnique = (item) => {
+    const key = `${item.kind}:${item.book}:${item.chapter}:${item.verse}:${item.strongId || item.term || ""}`;
+    if (seenKeys.has(key)) return;
+    seenKeys.add(key);
+    results.push(item);
+  };
+
+  const parsedCitation = parseBiblicalCoordinateReference(rawQuery);
+  if (parsedCitation && parsedCitation.bookCode) {
+    pushUnique({
+      kind: "citation",
+      label: `${parsedCitation.bookCode} ${parsedCitation.chapter}:${parsedCitation.verse}`,
+      book: parsedCitation.bookCode,
+      chapter: parsedCitation.chapter || 1,
+      verse: parsedCitation.verse || 1,
+      work: "biblia",
+      score: 100,
+    });
+  }
+
+  const strongMatches = rawQuery.match(/\b[HG]\d{1,5}\b/gi) || [];
+  for (const sToken of strongMatches) {
+    const sid = sToken.toUpperCase();
+    pushUnique({
+      kind: "strong",
+      strongId: sid,
+      label: `Strong ${sid}`,
+      book: cleanBook,
+      chapter: cleanChap,
+      verse: 1,
+      work: "biblia",
+      score: 95,
+    });
+  }
+
+  if (canonLexicon && typeof canonLexicon === "object" && normQuery.length >= 2) {
+    const felicesDict = canonLexicon.felices;
+    if (felicesDict && typeof felicesDict === "object") {
+      const cleanLang = String(lang || "es").trim().toLowerCase();
+      const langOrder = Array.from(
+        new Set([cleanLang, cleanLang.split("-")[0], "es", "en", ...Object.keys(felicesDict)]),
+      );
+      for (const lKey of langOrder) {
+        const termsMap = felicesDict[lKey];
+        if (!termsMap || typeof termsMap !== "object") continue;
+        for (const [term, plateVal] of Object.entries(termsMap)) {
+          const normTerm = normalizeBookToken(term);
+          if (!normTerm) continue;
+          if (normTerm.includes(normQuery) || normQuery.includes(normTerm)) {
+            const plates = Array.isArray(plateVal)
+              ? plateVal.map((n) => Number(n)).filter((n) => n >= 1)
+              : [Number(plateVal) || 1];
+            pushUnique({
+              kind: "lexicon",
+              term,
+              lexiconLang: lKey,
+              plates,
+              label: `${term} (${lKey}) → Felices #${plates.join(",")}`,
+              work: "felices",
+              book: "MAT",
+              chapter: 5,
+              verse: 3,
+              score: normTerm === normQuery ? 90 : 80,
+            });
+          }
+        }
+      }
+    }
+  }
+
+  if (loadedVerses && typeof loadedVerses === "object" && normQuery.length >= 2) {
+    const entries = Array.isArray(loadedVerses)
+      ? loadedVerses
+      : Object.entries(loadedVerses);
+    for (const [vKey, vText] of entries) {
+      const vNum = Math.max(1, Number(vKey) || 1);
+      const rawText = String(vText || "");
+      const normText = normalizeBookToken(rawText);
+      if (normText && normText.includes(normQuery)) {
+        pushUnique({
+          kind: "verse",
+          label: `${cleanBook} ${cleanChap}:${vNum}`,
+          snippet: rawText.slice(0, 120),
+          work: "biblia",
+          book: cleanBook,
+          chapter: cleanChap,
+          verse: vNum,
+          score: 70,
+        });
+      }
+    }
+  }
+
+  results.sort((a, b) => (b.score || 0) - (a.score || 0));
+  return results.slice(0, maxItems);
+}

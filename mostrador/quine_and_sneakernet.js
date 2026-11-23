@@ -91,7 +91,19 @@ function resolveQuineFontHint(langCode, explicitHint = "") {
 export function buildQuineHtml(lang = "es", title = "Ekovoz Offline Quine", options = {}) {
   const cleanLang = String(lang || "es").replace(/[^a-zA-Z0-9-]/g, "") || "es";
   const dirAttr = options.dir || (isRtlQuineLang(cleanLang) ? "rtl" : "ltr");
-  const fontHint = resolveQuineFontHint(cleanLang, options.fontHint).replace(/"/g, "'");
+  const rawFontHint = resolveQuineFontHint(cleanLang, options.fontHint).replace(/"/g, "'");
+  const embeddedFontB64 =
+    String(options.embeddedFontBase64 || "").replace(/[^A-Za-z0-9+/=]/g, "") ||
+    (options.embeddedFontBytes instanceof Uint8Array && options.embeddedFontBytes.byteLength > 64
+      ? bytesToBase64(options.embeddedFontBytes)
+      : "");
+  const embeddedFontFam =
+    String(options.embeddedFontFamily || "EkovozVaultedScript").replace(/[^a-zA-Z0-9 _-]/g, "").trim() ||
+    "EkovozVaultedScript";
+  const fontHint = embeddedFontB64 ? `'${embeddedFontFam}', ${rawFontHint}` : rawFontHint;
+  const embeddedFontCss = embeddedFontB64
+    ? `@font-face{font-family:'${embeddedFontFam}';src:url('data:font/ttf;base64,${embeddedFontB64}') format('truetype');font-display:swap;}`
+    : "";
   const safeTitle = escapeHtmlBasic(title || "Ekovoz Offline Quine");
   const book = String(options.book || "GEN").replace(/[^A-Z0-9]/gi, "").toUpperCase() || "GEN";
   const chapter = Math.max(1, Number(options.chapter) || 1);
@@ -132,8 +144,8 @@ export function buildQuineHtml(lang = "es", title = "Ekovoz Offline Quine", opti
   return (
     `<!DOCTYPE html><html lang="${escapeHtmlBasic(cleanLang)}" dir="${dirAttr}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">` +
     `<title>${safeTitle} (${escapeHtmlBasic(cleanLang.toUpperCase())})</title>` +
-    `<style>body{font-family:${fontHint};max-width:46rem;margin:2rem auto;padding:0 1rem;line-height:1.65;background:#faf8f5;color:#1c1917}header{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;justify-content:space-between;margin-bottom:1rem}button,select{min-height:44px;padding:.45rem .85rem;border-radius:8px;border:1px solid #78716c;background:#fff;cursor:pointer}</style>` +
-    `</head><body data-quine-lang="${escapeHtmlBasic(cleanLang)}" data-quine-dir="${dirAttr}" data-quine-font-hint="${escapeHtmlBasic(fontHint)}" data-quine-initial-book="${escapeHtmlBasic(book)}" data-quine-initial-chapter="${chapter}" data-kleene-quine="true" data-quine-books="${bookCount}" data-book-count="${bookCount}">` +
+    `<style>${embeddedFontCss}body{font-family:${fontHint};max-width:46rem;margin:2rem auto;padding:0 1rem;line-height:1.65;background:#faf8f5;color:#1c1917}header{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;justify-content:space-between;margin-bottom:1rem}button,select{min-height:44px;padding:.45rem .85rem;border-radius:8px;border:1px solid #78716c;background:#fff;cursor:pointer}</style>` +
+    `</head><body data-quine-lang="${escapeHtmlBasic(cleanLang)}" data-quine-dir="${dirAttr}" data-quine-font-hint="${escapeHtmlBasic(fontHint)}" data-quine-embedded-font="${embeddedFontB64 ? "true" : "false"}" data-quine-initial-book="${escapeHtmlBasic(book)}" data-quine-initial-chapter="${chapter}" data-kleene-quine="true" data-quine-books="${bookCount}" data-book-count="${bookCount}">` +
     `<header><div><h1 id="quineHeading" style="margin:0;font-size:1.25rem;">${safeTitle} (${escapeHtmlBasic(cleanLang.toUpperCase())}) · ${book} ${chapter}</h1>` +
     `<small data-quine-codec="${escapeHtmlBasic(corpusEncoding)}" data-quine-font-hint="${escapeHtmlBasic(fontHint)}">${bookCount} libro(s) · 0 fetch · DecompressionStream("deflate-raw")</small></div>` +
     `<div style="display:flex;gap:.4rem;flex-wrap:wrap;"><select id="quineBookSelect" aria-label="Libro"></select><select id="quineChapterSelect" aria-label="Capítulo"></select>` +
@@ -224,15 +236,28 @@ export async function buildFullCorpusDeflateQuineHtml(
         let packedSymbols = new Uint8Array([0, 0]);
         if (hdr.frame0Offset >= 0 && hdr.frame0ByteLen >= 12) {
           const f0Env = packBytes.subarray(hdr.frame0Offset, hdr.frame0Offset + hdr.frame0ByteLen);
-          const actualF0Len = new DataView(f0Env.buffer, f0Env.byteOffset, 4).getUint32(0, true);
-          if (f0Env.byteLength >= 8 + actualF0Len) {
+          const hasEv3 =
+            f0Env.byteLength >= 183 &&
+            f0Env[0] === 0x45 &&
+            f0Env[1] === 0x56 &&
+            f0Env[2] === 0x33 &&
+            f0Env[3] === 0x01;
+          const envOff = hasEv3 ? 171 : 0;
+          const actualF0Len = new DataView(f0Env.buffer, f0Env.byteOffset + envOff, 4).getUint32(
+            0,
+            true,
+          );
+          if (f0Env.byteLength >= envOff + 8 + actualF0Len) {
             const symZstdLen = new DataView(
               f0Env.buffer,
-              f0Env.byteOffset + 4 + actualF0Len,
+              f0Env.byteOffset + envOff + 4 + actualF0Len,
               4,
             ).getUint32(0, true);
-            if (symZstdLen > 0 && 8 + actualF0Len + symZstdLen <= f0Env.byteLength) {
-              packedSymbols = f0Env.subarray(8 + actualF0Len, 8 + actualF0Len + symZstdLen);
+            if (symZstdLen > 0 && envOff + 8 + actualF0Len + symZstdLen <= f0Env.byteLength) {
+              packedSymbols = f0Env.subarray(
+                envOff + 8 + actualF0Len,
+                envOff + 8 + actualF0Len + symZstdLen,
+              );
             }
           }
         }
@@ -421,6 +446,9 @@ export async function buildFullCorpusDeflateQuineHtml(
     book,
     chapter,
     fontHint: opts.fontHint,
+    embeddedFontBytes: opts.embeddedFontBytes || null,
+    embeddedFontBase64: opts.embeddedFontBase64 || "",
+    embeddedFontFamily: opts.embeddedFontFamily || "",
     verses: seedVersesMap,
     compressedCorpusB64: compressed.base64,
     corpusEncoding: compressed.encoding,
@@ -432,8 +460,10 @@ export function createSneakernetCodecs({
   manifestList,
   defaultPubKeyHex,
   computeCrc32HexFn,
+  computeSha256HexSyncFn = null,
   verifyEd25519SyncFn,
   probeBoundsFn,
+  extractMetaZstdSliceNoWasmFn = null,
 }) {
   function exportSneakernetBundleJson({
     lang = "es",
@@ -460,6 +490,12 @@ export function createSneakernetCodecs({
     }
     const hexPayload = hexChars.join("");
     const crc32Hex = computeCrc32HexFn(bytes);
+    const computedSha =
+      typeof computeSha256HexSyncFn === "function" ? computeSha256HexSyncFn(bytes) : "";
+    const normalizedSha =
+      /^[0-9a-f]{64}$/i.test(String(sha256 || "").trim())
+        ? String(sha256).trim().toLowerCase()
+        : computedSha || manifestEntry.sha256;
     return JSON.stringify(
       {
         schema: "ekovoz.sneakernet.ekpack.v2",
@@ -468,7 +504,7 @@ export function createSneakernetCodecs({
         file: manifestEntry.file || `${cleanLang}.ekpack`,
         bytes: bytes.byteLength,
         crc32Hex,
-        sha256: sha256 || manifestEntry.sha256,
+        sha256: normalizedSha,
         ed25519PublicKeyHex: manifestEntry.ed25519PublicKeyHex || defaultPubKeyHex,
         signingMessage: manifestEntry.signingMessage,
         ed25519SignatureHex: manifestEntry.ed25519SignatureHex,
@@ -479,7 +515,7 @@ export function createSneakernetCodecs({
     );
   }
 
-  function importSneakernetBundleJson(bundleJsonString) {
+  function importSneakernetBundleJson(bundleJsonString, wasmPlayerMod = null) {
     const parsed = JSON.parse(String(bundleJsonString || "{}"));
     const rawHex = String(parsed.payloadHex || "").trim();
     const cleanHex = rawHex.length % 2 === 0 ? rawHex : rawHex.slice(0, -1);
@@ -489,30 +525,98 @@ export function createSneakernetCodecs({
       bytes[i] = parseInt(cleanHex.slice(i * 2, i * 2 + 2), 16) || 0;
     }
     const computedCrc = computeCrc32HexFn(bytes);
-    const crcMatch = !parsed.crc32Hex || computedCrc === String(parsed.crc32Hex).toLowerCase();
+    const declaredCrc = String(parsed.crc32Hex || "").trim().toLowerCase();
+    const crcMatch = /^[0-9a-f]{8}$/.test(declaredCrc) && computedCrc === declaredCrc;
+    const declaredSha = String(parsed.sha256 || "").trim().toLowerCase();
+    const computedSha =
+      typeof computeSha256HexSyncFn === "function" ? computeSha256HexSyncFn(bytes) : "";
+    const shaMatch =
+      !declaredSha ||
+      !computedSha ||
+      (/^[0-9a-f]{64}$/.test(declaredSha) && computedSha === declaredSha);
     const pinnedPubKey = String(defaultPubKeyHex || "").trim().toLowerCase();
     const bundlePubKey = String(parsed.ed25519PublicKeyHex || "").trim().toLowerCase();
-    const keyPinned = Boolean(pinnedPubKey) && (!parsed.ed25519PublicKeyHex || bundlePubKey === pinnedPubKey);
+    const keyPinned = Boolean(pinnedPubKey) && bundlePubKey === pinnedPubKey;
     const sigHex = String(parsed.ed25519SignatureHex || "").trim();
-    const sigTarget = parsed.signingMessage ? parsed.signingMessage : bytes;
-    const edOk = Boolean(
-      keyPinned &&
-      sigHex &&
-      verifyEd25519SyncFn(sigTarget, sigHex, pinnedPubKey),
-    );
-    const probe = probeBoundsFn(bytes, 0, parsed.lang || "es");
-    const isValid = Boolean(crcMatch && edOk && bytes.byteLength > 0);
+    const probe = probeBoundsFn(bytes, 0, parsed.lang || "es", "", wasmPlayerMod);
+    const hasContainerMagic =
+      bytes.byteLength >= 4 &&
+      new DataView(bytes.buffer, bytes.byteOffset, 4).getUint32(0, true) >>> 0 === 0x8f92eab1;
+    let sigBoundToPayload = false;
+    let edOk = false;
+    if (keyPinned && sigHex && bytes.byteLength > 0) {
+      if (hasContainerMagic) {
+        if (probe?.engine === "EKPACK_SEEKABLE_ZSTD_MYTE_O1") {
+          const containerMsg = String(probe?.signingMessage || "");
+          const msgMatches = !parsed.signingMessage || parsed.signingMessage === containerMsg;
+          edOk = Boolean(
+            probe?.ed25519Verified &&
+            probe?.symSha256Verified &&
+            verifyEd25519SyncFn(containerMsg, sigHex, pinnedPubKey),
+          );
+          sigBoundToPayload = Boolean(probe?.verified && edOk && msgMatches && shaMatch);
+        } else if (probe?.engine === "EKPACK_CRYPTO_AUTH_FAILED") {
+          edOk = false;
+          sigBoundToPayload = false;
+        } else {
+          // Fallback síncrono sin WASM: prioriza EV3\x01 pre-Zstd; conserva V2 legacy solo para vectores sintéticos
+          const metaInfo =
+            typeof extractMetaZstdSliceNoWasmFn === "function"
+              ? extractMetaZstdSliceNoWasmFn(bytes)
+              : null;
+          const ev3 = metaInfo?.ev3 || null;
+          const cleanLang = String(parsed.lang || "es").trim().toLowerCase();
+          if (ev3) {
+            const msgMatches = !parsed.signingMessage || parsed.signingMessage === ev3.signingMessageEv3Hex;
+            const edSigOk = Boolean(
+              !ev3.isDevTest &&
+              ev3.langCode.toLowerCase() === cleanLang &&
+              metaInfo.preamble.totalFileBytes === bytes.byteLength &&
+              msgMatches &&
+              sigHex.toLowerCase() === ev3.signatureHex.toLowerCase() &&
+              verifyEd25519SyncFn(ev3.signingPayload219, sigHex, pinnedPubKey),
+            );
+            edOk = edSigOk;
+            sigBoundToPayload = Boolean(edOk && shaMatch);
+          } else {
+            const sigMsg = String(parsed.signingMessage || "").trim();
+            const msgMatch = sigMsg.match(
+              /^EKPACK-V2-MANIFEST:([^:]+):2:([0-9a-f]{64}):([0-9a-f]{64}):([0-9a-f]{64})$/i,
+            );
+            const msgLangMatches = Boolean(msgMatch && msgMatch[1].toLowerCase() === cleanLang);
+            const expectedMetaSha = msgMatch ? msgMatch[4].toLowerCase() : "";
+            const actualMetaSha =
+              metaInfo?.metaZstdSlice && typeof computeSha256HexSyncFn === "function"
+                ? computeSha256HexSyncFn(metaInfo.metaZstdSlice)
+                : "";
+            const metaBound = Boolean(
+              metaInfo &&
+              metaInfo.preamble.totalFileBytes === bytes.byteLength &&
+              expectedMetaSha &&
+              actualMetaSha === expectedMetaSha,
+            );
+            const edSigOk = Boolean(sigMsg && verifyEd25519SyncFn(sigMsg, sigHex, pinnedPubKey));
+            edOk = Boolean(edSigOk && metaBound && msgLangMatches);
+            sigBoundToPayload = Boolean(edOk && shaMatch);
+          }
+        }
+      } else {
+        edOk = Boolean(verifyEd25519SyncFn(bytes, sigHex, pinnedPubKey));
+        sigBoundToPayload = Boolean(edOk && shaMatch);
+      }
+    }
+    const isValid = Boolean(crcMatch && sigBoundToPayload && bytes.byteLength > 0);
     return {
       valid: isValid,
       verified: isValid,
-      ed25519Verified: edOk,
+      ed25519Verified: Boolean(edOk && sigBoundToPayload),
       lang: String(parsed.lang || "es"),
       bytes: bytes.byteLength,
       payloadHex: cleanHex,
       payloadBytes: bytes,
       crc32Hex: computedCrc,
-      sha256: String(parsed.sha256 || ""),
-      randomAccessUs: probe.randomAccessUs,
+      sha256: computedSha || declaredSha,
+      randomAccessUs: isValid ? probe.randomAccessUs : null,
     };
   }
 

@@ -71,15 +71,21 @@ import {
   renderCascadeAndLadderHtml, renderImproveDrawerHtml, renderStpLexiconExplorerHtml,
   renderStpLexiconResultsRowsHtml, renderTallerArtifactsCatalogHtml, selectTopEntropyVerseQueue, verifyLock8PredicativeAndNegation,
 } from "./mostrador/mejorar.js";
-import { dispenseMostradorDose1, renderMostradorViewportFromState, updateMostradorDoseLinks } from "./mostrador/mostrador_viewport_dose1.js";
+import {
+  dispenseMostradorDose1,
+  renderMostradorViewportFromState,
+  resolveVerifiedBookCount,
+  updateMostradorDoseLinks,
+  updateMostradorSealDom,
+} from "./mostrador/mostrador_viewport_dose1.js";
 import {
   CANONICAL_ECO_PACKS_MANIFEST, STORED_ECO_PACKS, computeEcoPackCrc32Hex, exportSneakernetBundleJson, hydrateEcoPacksManifest,
-  importSneakernetBundleJson, probeEcoPackRandomAccessBounds, renderOfflineMeshEcoCardHtml, triggerOptInOfflinePackDownload,
+  ensureVaultHydrated, importSneakernetBundleJson, probeEcoPackRandomAccessBounds, renderOfflineMeshEcoCardHtml, triggerOptInOfflinePackDownload,
   verifyAndStoreEcoPack,
 } from "./mostrador/offline_mesh.js";
 import {
   LTDecoder, LTEncoder, OPTICAL_CADENCE_PRESETS, computeNyquistSafeFpsViaWasm, createRelayEncoderFromDecoded, decodeLubyTransformPeeling,
-  dlog, encodeLubyTransformDroplets, renderOpticalReceiverRxPanelHtml, runOpticalReceiverBurstSession, solitonCdf, splitmix32,
+  dlog, encodeLubyTransformDroplets, renderOpticalReceiverRxPanelHtml, runOpticalReceiverBurstSession, solitonCdf, splitmix64,
   whitenBlockXor,
 } from "./mostrador/optical_lt.js";
 import { bindOralPorticoToggleEvent } from "./mostrador/oral_portico_wasm.js";
@@ -88,7 +94,8 @@ import {
   resolveScriptioContinuaCodeForLang, segmentScriptioContinuaSyllables, transduceOrthographyWeb, transduceVerseWithReverseMap,
 } from "./mostrador/orthography_wfst.js";
 import { countPdfPages, extractPdfPages } from "./mostrador/pdf_pages.js";
-import { syncStickyDrawerContextHeader } from "./mostrador/projection_contract.js";
+import { syncStickyDrawerContextHeader, projectStoreAttributesToDom } from "./mostrador/projection_contract.js";
+import { createEkovozStore } from "./mostrador/state_store.js";
 import {
   ROSETTA_66_BOOKS, createReferenceResolver, normalizeBookAliasToken, parseBiblicalCoordinateReference, resolveBookCodeByAliasOrName,
 } from "./mostrador/reference.js";
@@ -105,7 +112,7 @@ export {
   planDose2,
   planDose3, probeEcoPackRandomAccessBounds, projectCrossWorkCoordinate, propagateCascadeL1ToL5, refOfOrdinal, renderAnalyticalThermometerHtml, renderBranchAndTypologyInspectorHtml, renderCascadeAndLadderHtml, renderChapterDiachronicAuditCardHtml, renderChapterPericopesRibbonHtml, renderChapterPreviewHtml, renderCrdtWalAndLockP2AuditCardHtml, renderDiglossicParallelBridge, renderEvangeliosPlateActionsHtml, renderEvangeliosStageCardHtml, renderFelicesSocraticWonderCardHtml, renderImpositionAndLayoutPreviewHtml, renderImproveDrawerHtml, renderInteractiveVerseTokensHtml, renderLeipzig4LineGmisHtml, renderMasterCensus7164CardHtml, renderMultiSignatureAndPocketRefugeHtml, renderOfflineMeshEcoCardHtml, renderOpticalReceiverRxPanelHtml, renderPhilologyRosettaExplorerHtml, renderPhilologyRosettaInspectorHtml, renderPhilologyRosettaResultsRowsHtml, renderPhotocopyResilienceAndSocialCardHtml, renderStpLexiconExplorerHtml, renderStpLexiconResultsRowsHtml, renderStudy14ColDrawerHtml,
   renderStudyStrataCards, renderTallerArtifactsCatalogHtml, renderUnifiedDiachronicContextHtml, resolveBicanonicalDivergence, resolveBookCodeByAliasOrName, resolveCanonicalBlockForPassage, resolveCanonicalOrthoProfileId, resolveEffectiveCorpusTarget, resolveEvangeliosActiveSelection, resolveEvangeliosMacroThreadAndEcho, resolveFelicesDichaCoordinate, resolveFelicesPlate, resolveLocalizedBookMeta, resolveMasoreticPericopeBreaks, resolveOrthoFamilyKey, resolveOverlayEntryForOsis, resolvePlateForBibleCoordinate, resolvePrintEditionPdfAssetUrl, resolveRegionalBridgeLanguage21, resolveScriptioContinuaCodeForLang, resolveVerseWithOverlay, runOpticalReceiverBurstSession, searchLanguages, searchPhilologyRosettaIndex, segmentScriptioContinuaSyllables, selectTopEntropyVerseQueue, serializeMostradorRouteQuery, setPaperFormat, simulateFifthGenPhotocopySauvolaBilateral, simulateThirdGenPhotocopySauvola, solitonCdf,
-  splitmix32, stealthNeutralFilenameWeb, suggestLayer0Languages, summarizeChapterDiachronicTransformations, syncActiveStrongInStudyDrawer, syncDiachronicRegisterOrthogonality, syncFelicesWithCorpusLang, syncI18nUiFromState, syncPrintDrawerControlsFromEditionProfile, syncSisterWorksTabsDom, toUnicodeSuperscript, transduceOrthographyWeb, transduceVerseWithReverseMap, triggerOptInOfflinePackDownload, typesetTandaPdfBytes, updateUI, verifyAndStoreEcoPack, verifyArtifactProjectionClosure, verifyLock8PredicativeAndNegation, verifyVplDomScopeContainment, whitenBlockXor
+  splitmix64, stealthNeutralFilenameWeb, suggestLayer0Languages, summarizeChapterDiachronicTransformations, syncActiveStrongInStudyDrawer, syncDiachronicRegisterOrthogonality, syncFelicesWithCorpusLang, syncI18nUiFromState, syncPrintDrawerControlsFromEditionProfile, syncSisterWorksTabsDom, toUnicodeSuperscript, transduceOrthographyWeb, transduceVerseWithReverseMap, triggerOptInOfflinePackDownload, typesetTandaPdfBytes, updateUI, verifyAndStoreEcoPack, verifyArtifactProjectionClosure, verifyLock8PredicativeAndNegation, verifyVplDomScopeContainment, whitenBlockXor
 };
 
 /**
@@ -139,7 +146,15 @@ export function createMostradorController(options = {}) {
     rollMode: options.rollMode || "chapter",
     oralPorticoActive: Boolean(options.oralPorticoActive),
     orthographyProfile: options.orthographyProfile || "inali",
+    activeWork: options.activeWork || "biblia",
+    activeModal: null,
     activeSheet: null,
+    surfaceMode: options.surfaceMode || "reader",
+    appearanceTheme: options.appearanceTheme || "light",
+    fontFamily: options.fontFamily || "serif",
+    fontScale: Number(options.fontScale) || 1.0,
+    stealthMode: Boolean(options.stealthMode),
+    corpusLang: options.lang || "es",
     status: STATUS.IDLE,
     seal: "seal.unavailable",
     lastNavResult: null,
@@ -153,6 +168,7 @@ export function createMostradorController(options = {}) {
     pendingCommunityVotes: Array.isArray(options.pendingCommunityVotes) ? options.pendingCommunityVotes : [],
     pendingExpectedCrc32Hex: String(options.pendingExpectedCrc32Hex || ""),
   };
+  const store = createEkovozStore(state, { backingState: state });
 
   let i18nInstance = options.i18n || null;
   let studyModulePromise = null;
@@ -179,40 +195,7 @@ export function createMostradorController(options = {}) {
   }
 
   function updateSealDom(sealKey, targetDoc = doc) {
-    const effectiveSealKey = sealKey || state.seal || "seal.unavailable";
-    state.seal = effectiveSealKey;
-    const sealEl = getEl("epistemicStatusSeal", targetDoc);
-    if (sealEl) {
-      const corpusLang = String(state.effectiveCorpusLang || state.lang || "").trim().toLowerCase();
-      const displayKey =
-        effectiveSealKey === "seal.verified" && (corpusLang === "stp" || corpusLang === "st")
-          ? "seal.verified_nt"
-          : effectiveSealKey;
-      sealEl.setAttribute("data-seal", effectiveSealKey);
-      sealEl.setAttribute("data-i18n", displayKey);
-      const rawLabel = i18nInstance ? i18nInstance.t(displayKey) : displayKey;
-      const isEn = String(state.uiLocale || "en").toLowerCase().startsWith("en");
-      const fallbackHuman =
-        displayKey === "seal.verified_nt"
-          ? isEn
-            ? "Verified text · 27 New Testament Books"
-            : "Texto verificado · 27 Libros del Nuevo Testamento"
-          : effectiveSealKey === "seal.verified"
-            ? isEn
-              ? "Verified text · 66 Canonical Books"
-              : "Texto verificado · 66 Libros Canónicos"
-            : effectiveSealKey === "seal.draft_review"
-              ? isEn
-                ? "Workshop draft & verified portion · Tiers 2–4 (L1–L5 review)"
-                : "Borrador de taller y porción verificada · Tiers 2–4 (revisión L1–L5)"
-              : isEn
-                ? "GMIS 4-line interlinear scaffold + 21st-Century Bridge"
-                : "Andamiaje interlineal GMIS 4 líneas + Puente Siglo XXI";
-      sealEl.textContent =
-        !rawLabel || rawLabel === effectiveSealKey || rawLabel.startsWith("seal.")
-          ? fallbackHuman
-          : rawLabel;
-    }
+    updateMostradorSealDom({ sealKey, state, i18nInstance, getEl, targetDoc });
   }
 
   function syncOrthographyPillsVisibility(targetDoc = doc) {
@@ -361,6 +344,7 @@ export function createMostradorController(options = {}) {
   }
 
   function syncActiveChromeProjection(targetDoc = doc) {
+    projectStoreAttributesToDom(state, targetDoc);
     const hasMountedSheetPanels = Object.values(HAREL_SHEET_MAP).some((cfg) =>
       Boolean(getEl(cfg.panelId, targetDoc)),
     );
@@ -606,6 +590,7 @@ export function createMostradorController(options = {}) {
     }
 
     const sealKey = deriveEpistemicSeal(res, catalogEntry);
+    state.activeCatalogEntry = catalogEntry;
     updateSealDom(sealKey, targetDoc);
 
     const isStpNtVerified = (normCorpusLang === "stp" || normCorpusLang === "st") && sealKey === "seal.verified";
@@ -968,6 +953,7 @@ export function createMostradorController(options = {}) {
     });
     const stageCtx = {
       state,
+      store,
       dataLayer,
       targetDoc,
       getEl,
@@ -1004,6 +990,7 @@ export function createMostradorController(options = {}) {
 
   return {
     state,
+    store,
     dataLayer,
     get i18n() {
       return i18nInstance;
@@ -1017,6 +1004,9 @@ export function createMostradorController(options = {}) {
     transitionSheet,
     countVisibleSheets,
     setUiLocale,
+    setSurfaceMode: (mode, d = doc) => commitState({ surfaceMode: mode === "studio" ? "studio" : "reader" }, { doc: d, syncUrl: false }),
+    setAppearanceTheme: (theme, d = doc) => commitState({ appearanceTheme: ["light", "sepia", "dark"].includes(theme) ? theme : "light" }, { doc: d, syncUrl: false }),
+    setStealthMode: (enabled, d = doc) => commitState({ stealthMode: Boolean(enabled) }, { doc: d, syncUrl: false }),
     bindDomEvents,
     hydrateStudyDrawer,
     hydrateImproveDrawer,
@@ -1030,6 +1020,23 @@ export function createMostradorController(options = {}) {
   };
 }
 
+function registerSovereignServiceWorker(win = typeof window !== "undefined" ? window : null) {
+  try {
+    const swApi = win?.navigator?.serviceWorker;
+    const proto = String(win?.location?.protocol || "").toLowerCase();
+    if (
+      swApi &&
+      typeof swApi.register === "function" &&
+      (proto === "https:" || proto === "http:")
+    ) {
+      return swApi.register("/sw.js", { scope: "/" }).catch(() => null);
+    }
+  } catch {
+    // Registro SW omitido en entornos sin origen HTTP(S)
+  }
+  return Promise.resolve(null);
+}
+
 /**
  * Browser bootstrap when running in a real window environment.
  */
@@ -1038,6 +1045,8 @@ export async function bootBrowserMostrador(
   options = {},
 ) {
   if (!win || !win.document) return null;
+  registerSovereignServiceWorker(win);
+  ensureVaultHydrated().catch(() => { });
   try {
     const EPOCH = "ekovoz-r41";
     if (win.localStorage && win.localStorage.getItem("ekovoz_cache_epoch") !== EPOCH) {
@@ -1079,6 +1088,7 @@ export async function bootBrowserMostrador(
     chapter: parsedRef.chapter || 1,
     verse: parsedRef.verse || 1,
     paperFormat: route.format || "a4",
+    surfaceMode: new URLSearchParams(String(win.location?.search || "").replace(/^\?/, "")).get("mode") === "studio" ? "studio" : (options.surfaceMode || "reader"),
   });
 
   controller.state.activeWork = route.work || "biblia";
@@ -1102,11 +1112,16 @@ export async function bootBrowserMostrador(
 
   win.EkovozMostrador = controller;
   win.EkovozStore = {
-    get activeSheet() {
-      return controller.state.activeSheet;
-    },
-    transitionSheet: (s) => controller.transitionSheet(s, doc),
-    countVisibleSheets: () => controller.countVisibleSheets(doc),
+    get activeSheet() { return controller.state.activeSheet; },
+    get activeModal() { return controller.state.activeModal; },
+    get surfaceMode() { return controller.state.surfaceMode; },
+    get appearanceTheme() { return controller.state.appearanceTheme; },
+    get fontFamily() { return controller.state.fontFamily; },
+    get fontScale() { return controller.state.fontScale; },
+    get stealthMode() { return controller.state.stealthMode; },
+    ...controller.store,
+    setSurfaceMode: controller.setSurfaceMode, setAppearanceTheme: controller.setAppearanceTheme, setStealthMode: controller.setStealthMode,
+    transitionSheet: (s) => controller.transitionSheet(s, doc), countVisibleSheets: () => controller.countVisibleSheets(doc),
   };
 
   win.selectSovereignBibleLang = async function selectSovereignBibleLang(langCode) {

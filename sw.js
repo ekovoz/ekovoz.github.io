@@ -1,23 +1,47 @@
-// Ekovoz Service Worker (v46.0.0 — Bóveda Soberana ekovoz-mostrador-v46, supersede ekovoz-mostrador-v20..v45, D3-V2G / ARB-EKOVOZ-95)
-// Cero precarga invasiva sin consentimiento del usuario y CERO peticiones fantasma `/data/text/*.json` (DEBRIS-V2G-05 erradicado).
-// Los contenedores `.ekpack` y fuentes `.ttf.zst` residen verificados por Ed25519 en IndexedDB (`ekovoz_vault_v2`).
+// Ekovoz Service Worker clásico (v48.0.0 — Bóveda Soberana ekovoz-mostrador-v48, supersede ekovoz-mostrador-v20..v47, D2-V2LD / ARB-EKOVOZ-115)
+// Cero sentencias ESM `export`/`import` para registro clásico universal; lógica pura espejo de `web/mostrador/sw_routing_core.js`.
+// Opt-in persistido en CacheStorage para sobrevivir la suspensión efímera de 30s; fallback HTML restringido a `mode === "navigate"`.
 
-export const CACHE_NAME = "ekovoz-mostrador-v46";
+const CACHE_NAME = "ekovoz-mostrador-v48";
+const OPT_IN_META_KEY = "/__ekovoz_meta/offline-opt-in";
 
-export const SHELL_CORE_ASSETS = [
+const SUPPORTED_BOOK_NAMES_LANGS = new Set([
+  "ar",
+  "bn",
+  "en",
+  "es-1909",
+  "es",
+  "fa",
+  "fr",
+  "grc",
+  "he",
+  "hi",
+  "id",
+  "ja",
+  "pt",
+  "ru",
+  "stp",
+  "ur",
+  "zh-Hans",
+]);
+
+const SHELL_CORE_ASSETS = [
   "/",
   "/index.html",
   "/mostrador.css",
   "/bible_constants.js",
   "/mostrador.js",
+  "/sw.js",
   "/i18n_ui.js",
   "/mostrador/bridge_and_chapter.js",
   "/mostrador/canonical_versification.js",
+  "/mostrador/chrome_static_i18n.js",
   "/mostrador/diglossic_chapter_renderer.js",
   "/mostrador/drawer_hydrators.js",
   "/mostrador/drawer_study.js",
   "/mostrador/drawer_print.js",
   "/mostrador/drawer_workshop.js",
+  "/mostrador/drawer_workshop_cards.js",
   "/mostrador/workshop_overlay_store.js",
   "/mostrador/drawer_share.js",
   "/mostrador/drawer_share_optical_controller.js",
@@ -29,45 +53,87 @@ export const SHELL_CORE_ASSETS = [
   "/mostrador/pdf_pages.js",
   "/mostrador/dosis.js",
   "/mostrador/dosis_editions_catalog.js",
+  "/mostrador/dosis_profiles_schema.js",
+  "/mostrador/ekovoz_typeset_worker.wasm",
   "/mostrador/evangelios.js",
   "/mostrador/orthography_wfst.js",
   "/mostrador/diachronic_register.js",
   "/mostrador/reference.js",
   "/mostrador/lang_funnel.js",
+  "/mostrador/mejorar.js",
+  "/mostrador/mejorar_locks_pda.js",
+  "/mostrador/mejorar_renderers.js",
+  "/mostrador/mostrador_viewport_dose1.js",
+  "/mostrador/ekpack_binary_codec.js",
+  "/mostrador/offline_font_bundle.js",
+  "/mostrador/offline_mesh.js",
   "/mostrador/optical_lt.js",
   "/mostrador/optical_grid_codec.js",
   "/mostrador/optical_wasm_bridge.js",
   "/mostrador/oral_portico_wasm.js",
   "/mostrador/estudio.js",
   "/mostrador/estudio_rosetta_and_realia.js",
-  "/mostrador/mejorar.js",
-  "/mostrador/mejorar_locks_pda.js",
-  "/mostrador/mejorar_renderers.js",
-  "/mostrador/mostrador_viewport_dose1.js",
-  "/mostrador/offline_mesh.js",
+  "/mostrador/estudio_schemas.js",
   "/mostrador/quine_and_sneakernet.js",
+  "/mostrador/cross_work_bridge.js",
+  "/mostrador/braille_brf_codec.js",
   "/mostrador/projection_contract.js",
   "/mostrador/sauvola_canvas_oracle.js",
   "/mostrador/sister_works_controller.js",
   "/mostrador/stage_dom_bindings.js",
-  "/mostrador/estudio_schemas.js",
+  "/mostrador/state_store.js",
+  "/mostrador/sw_routing_core.js",
   "/mostrador/cascade_l1_l5.js",
   "/mostrador/tanda_print_worker.js",
   "/mostrador/bimodal_tanda_print.js",
+  "/mostrador/vault_indexeddb.js",
   "/wasm/ekovoz_player_wasm.wasm",
   "/wasm/qr_stream_receiver_wasm.wasm",
+  "/wasm/wasm_manifest.json",
   "/i18n/index.json",
   "/i18n/en.json",
   "/i18n/es.json",
   "/assets/fonts/CharisSIL-Regular.ttf",
   "/assets/fonts/CharisSIL-Bold-Subset.ttf",
-  "/data/catalog.json",
-  "/data/offline_packs_catalog.json",
+  "/assets/fonts/Cardo-Hebrew-Biblical.ttf",
+  "/assets/fonts/EBGaramond-Greek-Biblical.ttf",
+  "/canon_lexicon.json",
+  "/downloads_manifest.json",
   "/manifest.webmanifest",
+  "/data/annotation_index_report.json",
+  "/data/blind_calibration_report.json",
+  "/data/catalog.json",
+  "/data/diachronic_register_es.json",
+  "/data/editorial_profiles.json",
+  "/data/elicitation_ladder_250.json",
+  "/data/evangelios/corpus.json",
+  "/data/field_workshop_stp.json",
+  "/data/fonts_zst_manifest.json",
+  "/data/formulaic_index.json",
+  "/data/master_census_summary.json",
+  "/data/offline_packs_catalog.json",
+  "/data/packs/packs_manifest.json",
+  "/data/pericopes_and_glosses.json",
+  "/data/book_names/ar.json",
+  "/data/book_names/bn.json",
+  "/data/book_names/en.json",
+  "/data/book_names/es-1909.json",
+  "/data/book_names/es.json",
+  "/data/book_names/fa.json",
+  "/data/book_names/fr.json",
+  "/data/book_names/grc.json",
+  "/data/book_names/he.json",
+  "/data/book_names/hi.json",
+  "/data/book_names/id.json",
+  "/data/book_names/ja.json",
+  "/data/book_names/pt.json",
+  "/data/book_names/ru.json",
+  "/data/book_names/stp.json",
+  "/data/book_names/ur.json",
+  "/data/book_names/zh-Hans.json",
 ];
 
-const SUPPORTED_BOOK_NAMES_LANGS = new Set(["es", "en", "stp", "he", "grc"]);
-export const KNOWN_I18N_CATALOG_FILES = Object.freeze({
+const KNOWN_I18N_CATALOG_FILES = Object.freeze({
   ar: "ar.json",
   bn: "bn.json",
   "bn-bd": "bn-BD.json",
@@ -87,57 +153,58 @@ export const KNOWN_I18N_CATALOG_FILES = Object.freeze({
   ur: "ur.json",
   "zh-hans": "zh-Hans.json",
 });
-let _offlineOptInEnabled = false;
 
-export function setOfflineOptInState(enabled) {
+let _offlineOptInEnabled = null;
+
+function setOfflineOptInState(enabled) {
   _offlineOptInEnabled = Boolean(enabled);
   return _offlineOptInEnabled;
 }
 
-export function serializeFieldFeedbackPatchL1L5({
-  langCode = "es",
-  cascadeLevel = "L1",
-  targetRefOrLemma = "GEN.1.1",
-  oldSurface = "",
-  newSurface = "",
-  notePureText = "",
-} = {}) {
+function serializeFieldFeedbackPatchL1L5(opts) {
+  const o = opts || {};
   return {
-    lang_code: String(langCode || "es"),
-    cascade_level: String(cascadeLevel || "L1"),
-    target: String(targetRefOrLemma || "GEN.1.1"),
-    old_surface: String(oldSurface || ""),
-    new_surface: String(newSurface || ""),
-    note_pure_text: String(notePureText || ""),
+    lang_code: String(o.langCode || "es"),
+    cascade_level: String(o.cascadeLevel || "L1"),
+    target: String(o.targetRefOrLemma || "GEN.1.1"),
+    old_surface: String(o.oldSurface || ""),
+    new_surface: String(o.newSurface || ""),
+    note_pure_text: String(o.notePureText || ""),
     audio_bytes: 0,
     jpg_bytes: 0,
   };
 }
 
-export function isFullBibleOrWorkPdfUrl(rawUrl) {
+function isFullBibleOrWorkPdfUrl(rawUrl) {
   const path = String(rawUrl || "").split("?")[0].toLowerCase();
   if (!path.endsWith(".pdf")) return false;
   if (path.includes("/data/blocks/")) return false;
   return true;
 }
 
-export function classifyRequestRoute(rawUrl, options = {}) {
-  const optIn = Boolean(options.offlineOptIn ?? _offlineOptInEnabled);
-  const hasRangeHeader = Boolean(options.hasRangeHeader);
+function isCacheableResponse(resp) {
+  return Boolean(resp && resp.status === 200 && resp.type !== "opaque");
+}
+
+function shouldFallbackToIndexHtml(request) {
+  return Boolean(request && request.mode === "navigate");
+}
+
+function classifyRequestRoute(rawUrl, options) {
+  const opts = options || {};
+  const optIn = Boolean(opts.offlineOptIn ?? _offlineOptInEnabled);
+  const hasRangeHeader = Boolean(opts.hasRangeHeader);
   const path = String(rawUrl || "").split("?")[0];
 
+  if (path === OPT_IN_META_KEY) {
+    return "network-only";
+  }
   if (isFullBibleOrWorkPdfUrl(path)) {
     return "bypass-full-pdf";
   }
-
-  if (hasRangeHeader) {
+  if (hasRangeHeader || !optIn) {
     return "network-only";
   }
-
-  if (!optIn) {
-    return "network-only";
-  }
-
   if (
     path === "/" ||
     path.endsWith("/index.html") ||
@@ -148,38 +215,109 @@ export function classifyRequestRoute(rawUrl, options = {}) {
   ) {
     return "network-first";
   }
-
+  if (path.startsWith("/packs/fonts/") && (path.endsWith(".ttf.zst") || path.endsWith(".ekfonts"))) {
+    return "cache-first";
+  }
   if (
     path.startsWith("/data/") ||
     path.includes("/wasm/") ||
+    path.endsWith(".wasm") ||
     path.includes("/assets/fonts/") ||
-    path.includes("/packs/")
+    path.startsWith("/packs/") ||
+    path.endsWith(".json")
   ) {
     return "cache-first";
   }
-
   return "network-first";
 }
 
-/**
- * Construye la lista exacta del App Shell real bajo Opt-In (`D3-V2G`):
- * CERO URLs inexistentes `/data/text/<lang>/<BOOK>.json` (`DEBRIS-V2G-05` eliminado).
- */
-export function buildOptInAssetList({
-  uiLocale = "en",
-  lang = "es",
-} = {}) {
+const ACTIVE_LANG_FONT_ZST_MAP = {
+  ar: "NotoNaskhArabic-Regular.ttf.zst",
+  arb: "NotoNaskhArabic-Regular.ttf.zst",
+  fa: "NotoNaskhArabic-Regular.ttf.zst",
+  ur: "NotoNastaliqUrdu-Regular.ttf.zst",
+  syr: "NotoSansSyriac-Regular.ttf.zst",
+  he: "Cardo-Regular.ttf.zst",
+  grc: "EBGaramond-Regular.ttf.zst",
+  el: "EBGaramond-Regular.ttf.zst",
+  ru: "NotoSans-Regular.ttf.zst",
+  hi: "NotoSansDevanagari-Regular.ttf.zst",
+  bn: "NotoSansBengali-Regular.ttf.zst",
+  ta: "NotoSansTamil-Regular.ttf.zst",
+  te: "NotoSansTelugu-Regular.ttf.zst",
+  ja: "NotoSansJP-Regular.ttf.zst",
+  ko: "NotoSansKR-Regular.ttf.zst",
+  "zh-hans": "NotoSansSC-Regular.ttf.zst",
+  "zh-hant": "NotoSansTC-Regular.ttf.zst",
+  "zh-tw": "NotoSansTC-Regular.ttf.zst",
+  th: "NotoSansThai-Regular.ttf.zst",
+  am: "NotoSansEthiopic-Regular.ttf.zst",
+  my: "NotoSansMyanmar-Regular.ttf.zst",
+  km: "NotoSansKhmer-Regular.ttf.zst",
+};
+
+function buildOptInAssetList(opts) {
+  const o = opts || {};
   const urls = new Set(SHELL_CORE_ASSETS);
-  const cleanUi = String(uiLocale || "en").trim().toLowerCase();
+  const cleanUi = String(o.uiLocale || "en").trim().toLowerCase();
   const exactI18nFile = KNOWN_I18N_CATALOG_FILES[cleanUi];
   if (exactI18nFile && exactI18nFile !== "en.json") {
     urls.add(`/i18n/${exactI18nFile}`);
   }
-  const cleanLang = String(lang || "es").trim().toLowerCase();
-  if (SUPPORTED_BOOK_NAMES_LANGS.has(cleanLang)) {
-    urls.add(`/data/book_names/${cleanLang}.json`);
+  const cleanLang = String(o.lang || "es").trim();
+  const lowerLang = cleanLang.toLowerCase();
+  const matchedBookLang = Array.from(SUPPORTED_BOOK_NAMES_LANGS).find(
+    (code) => code.toLowerCase() === lowerLang,
+  );
+  if (matchedBookLang) {
+    urls.add(`/data/book_names/${matchedBookLang}.json`);
+  }
+  const activeZst =
+    ACTIVE_LANG_FONT_ZST_MAP[lowerLang] ||
+    ACTIVE_LANG_FONT_ZST_MAP[lowerLang.split("-")[0]] ||
+    "";
+  if (activeZst) {
+    urls.add(`/packs/fonts/${activeZst}`);
+  }
+  for (const extraFile of Array.isArray(o.fontZstFiles) ? o.fontZstFiles : []) {
+    const cleanFile = String(extraFile || "").trim().replace(/^\/+/, "");
+    if (cleanFile) {
+      urls.add(cleanFile.startsWith("packs/") ? `/${cleanFile}` : `/packs/fonts/${cleanFile}`);
+    }
   }
   return Array.from(urls);
+}
+
+async function persistOptInFlagToCacheStorage(enabled) {
+  setOfflineOptInState(enabled);
+  if (typeof caches === "undefined") return;
+  try {
+    const cache = await caches.open(CACHE_NAME);
+    if (enabled) {
+      await cache.put(
+        OPT_IN_META_KEY,
+        new Response("1", { status: 200, headers: { "Content-Type": "text/plain" } }),
+      );
+    } else {
+      await cache.delete(OPT_IN_META_KEY);
+    }
+  } catch {
+    // CacheStorage no disponible
+  }
+}
+
+async function resolvePersistentOptInState() {
+  if (_offlineOptInEnabled !== null) return _offlineOptInEnabled;
+  if (typeof caches === "undefined") return false;
+  try {
+    const cache = await caches.open(CACHE_NAME);
+    const marker = await cache.match(OPT_IN_META_KEY);
+    const active = Boolean(marker && marker.status === 200);
+    _offlineOptInEnabled = active;
+    return active;
+  } catch {
+    return false;
+  }
 }
 
 if (typeof self !== "undefined" && typeof self.addEventListener === "function") {
@@ -194,9 +332,7 @@ if (typeof self !== "undefined" && typeof self.addEventListener === "function") 
       caches
         .keys()
         .then((names) =>
-          Promise.all(
-            names.filter((n) => n !== CACHE_NAME).map((n) => caches.delete(n)),
-          ),
+          Promise.all(names.filter((n) => n !== CACHE_NAME).map((n) => caches.delete(n))),
         )
         .then(() => (self.clients && self.clients.claim ? self.clients.claim() : undefined)),
     );
@@ -204,21 +340,33 @@ if (typeof self !== "undefined" && typeof self.addEventListener === "function") 
 
   self.addEventListener("message", (event) => {
     const data = event?.data || {};
-    if (data.type === "EKOVOZ_OFFLINE_OPT_IN") {
-      _offlineOptInEnabled = true;
+    if (data.type === "SKIP_WAITING" && typeof self.skipWaiting === "function") {
+      self.skipWaiting();
+    } else if (data.type === "EKOVOZ_OFFLINE_OPT_IN") {
       const assets = buildOptInAssetList({
         uiLocale: data.uiLocale || "en",
         lang: data.lang || "es",
       });
       event.waitUntil(
-        caches.open(CACHE_NAME).then(async (cache) => {
-          await Promise.all(
-            assets.map((assetUrl) => cache.add(assetUrl).catch(() => undefined)),
-          );
-        }),
+        persistOptInFlagToCacheStorage(true).then(() =>
+          caches.open(CACHE_NAME).then(async (cache) => {
+            await Promise.all(
+              assets.map(async (assetUrl) => {
+                try {
+                  const res = await fetch(assetUrl, { cache: "no-cache" });
+                  if (isCacheableResponse(res)) {
+                    await cache.put(assetUrl, res);
+                  }
+                } catch {
+                  // No abortar precache completo ante fallo individual
+                }
+              }),
+            );
+          }),
+        ),
       );
     } else if (data.type === "EKOVOZ_OFFLINE_CLEAR") {
-      _offlineOptInEnabled = false;
+      setOfflineOptInState(false);
       event.waitUntil(caches.delete(CACHE_NAME));
     } else if (data.type === "EKOVOZ_SERIALIZE_FIELD_PATCH_L1_L5") {
       const serialized = serializeFieldFeedbackPatchL1L5(data.payload || {});
@@ -234,44 +382,55 @@ if (typeof self !== "undefined" && typeof self.addEventListener === "function") 
   self.addEventListener("fetch", (event) => {
     if (event.request.method !== "GET") return;
     const urlObj = new URL(event.request.url);
+    if (typeof self.location !== "undefined" && urlObj.origin !== self.location.origin) {
+      return;
+    }
     const hasRangeHeader = Boolean(event.request.headers && event.request.headers.get("Range"));
-    const route = classifyRequestRoute(urlObj.pathname, {
-      offlineOptIn: _offlineOptInEnabled,
-      hasRangeHeader,
-    });
-
-    if (route === "bypass-full-pdf" || route === "network-only") {
+    if (hasRangeHeader || isFullBibleOrWorkPdfUrl(urlObj.pathname)) {
       return;
     }
 
-    if (route === "network-first") {
-      event.respondWith(
-        fetch(event.request)
-          .then((resp) => {
-            if (resp && resp.status === 200) {
-              const clone = resp.clone();
-              caches.open(CACHE_NAME).then((c) => c.put(event.request, clone));
-            }
-            return resp;
-          })
-          .catch(() => caches.match(event.request).then((r) => r || caches.match("/index.html"))),
-      );
-      return;
-    }
-
-    if (route === "cache-first") {
-      event.respondWith(
-        caches.match(event.request).then((cached) => {
+    event.respondWith(
+      (async () => {
+        const optInActive = await resolvePersistentOptInState();
+        const route = classifyRequestRoute(urlObj.pathname, {
+          offlineOptIn: optInActive,
+          hasRangeHeader,
+        });
+        if (route === "bypass-full-pdf" || route === "network-only") {
+          return fetch(event.request);
+        }
+        if (route === "cache-first") {
+          const cached = await caches.match(event.request);
           if (cached) return cached;
-          return fetch(event.request).then((resp) => {
-            if (resp && resp.status === 200) {
+          try {
+            const resp = await fetch(event.request);
+            if (isCacheableResponse(resp)) {
               const clone = resp.clone();
-              caches.open(CACHE_NAME).then((c) => c.put(event.request, clone));
+              caches.open(CACHE_NAME).then((c) => c.put(event.request, clone)).catch(() => { });
             }
             return resp;
-          });
-        }),
-      );
-    }
+          } catch {
+            return new Response("Offline", { status: 503, headers: { "Content-Type": "text/plain" } });
+          }
+        }
+        try {
+          const resp = await fetch(event.request);
+          if (isCacheableResponse(resp)) {
+            const clone = resp.clone();
+            caches.open(CACHE_NAME).then((c) => c.put(event.request, clone)).catch(() => { });
+          }
+          return resp;
+        } catch {
+          const cached = await caches.match(event.request);
+          if (cached) return cached;
+          if (shouldFallbackToIndexHtml(event.request)) {
+            const shellFallback = await caches.match("/index.html");
+            if (shellFallback) return shellFallback;
+          }
+          return new Response("Offline", { status: 503, headers: { "Content-Type": "text/plain" } });
+        }
+      })(),
+    );
   });
 }

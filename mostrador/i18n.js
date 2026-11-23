@@ -559,7 +559,7 @@ export function localizeWorkChromeLabels(locale = DEFAULT_LOCALE) {
         clasico: "🏛️ Clásico · μ=64.2 · Base histórica",
         ninos: "🌱 Niños · AoA ≤ 8.5a · Lectura guiada",
         facil: "🤝 Lectura fácil · NSM-65 · Claridad máxima",
-        original: "📜 Matriz original · WLC / SRGNT · 14 col",
+        original: "📜 Matriz original · WLC / SRGNT · 15 col",
       },
     };
   }
@@ -596,7 +596,7 @@ export function localizeWorkChromeLabels(locale = DEFAULT_LOCALE) {
         clasico: "🏛️ Clássico · μ=64.2 · Base histórica",
         ninos: "🌱 Crianças · AoA ≤ 8.5a · Leitura guiada",
         facil: "🤝 Leitura fácil · NSM-65 · Clareza máxima",
-        original: "📜 Matriz original · WLC / SRGNT · 14 col",
+        original: "📜 Matriz original · WLC / SRGNT · 15 col",
       },
     };
   }
@@ -633,7 +633,7 @@ export function localizeWorkChromeLabels(locale = DEFAULT_LOCALE) {
         clasico: "🏛️ Classique · μ=64.2 · Base historique",
         ninos: "🌱 Enfants · AoA ≤ 8.5a · Lecture guidée",
         facil: "🤝 Lecture facile · NSM-65 · Clarté maximale",
-        original: "📜 Matrice originale · WLC / SRGNT · 14 col",
+        original: "📜 Matrice originale · WLC / SRGNT · 15 col",
       },
     };
   }
@@ -669,7 +669,7 @@ export function localizeWorkChromeLabels(locale = DEFAULT_LOCALE) {
       clasico: "🏛️ Classic · μ=64.2 · Historical baseline",
       ninos: "🌱 Children · AoA ≤ 8.5y · Guided reading",
       facil: "🤝 Easy read · NSM-65 · Maximum clarity",
-      original: "📜 Original matrix · WLC / SRGNT · 14 col",
+      original: "📜 Original matrix · WLC / SRGNT · 15 col",
     },
   };
 }

@@ -28,9 +28,12 @@ import {
 } from "./lang_funnel.js";
 import {
   ROSETTA_66_BOOKS,
+  hydratePackLanguagesFromManifest,
   parseBiblicalCoordinateReference,
+  searchSpotlightCorpus,
 } from "./reference.js";
 import { syncSisterWorksTabsDom } from "./sister_works_controller.js";
+import { createNativeDialogController } from "./state_store.js";
 
 /**
  * Conecta los listeners declarativos del escenario principal sobre `targetDoc` con contexto inyectado.
@@ -68,12 +71,15 @@ export function bindStageDomEvents(ctx = {}) {
   if (stickyLangBtn && typeof stickyLangBtn.addEventListener === "function" && !stickyLangBtn._stickyLangBound) {
     stickyLangBtn._stickyLangBound = true;
     stickyLangBtn.addEventListener("click", () => {
+      const corpusBtn = getEl("sovereignCorpusLangBtn", targetDoc);
+      if (corpusBtn && typeof corpusBtn.click === "function") {
+        corpusBtn.click();
+        return;
+      }
       const langDrawer = getEl("bibleLanguageAndRegisterDrawer", targetDoc);
       if (langDrawer) {
         langDrawer.open = !langDrawer.open;
       }
-      const corpusBtn = getEl("sovereignCorpusLangBtn", targetDoc);
-      corpusBtn?.click?.();
     });
   }
   const stickyJumpBtn = getEl("btnStickyJumpToCanvas", targetDoc);
@@ -140,45 +146,28 @@ export function bindStageDomEvents(ctx = {}) {
   const compassModal = getEl("bibleCoordinateCompassModal", targetDoc);
   const closeCompassBtn = getEl("btnCloseCompassModal", targetDoc);
   const compassGrid = getEl("bibleCoordinateCompassGrid", targetDoc);
-  let compassPriorFocusEl = null;
+
+  const compassDialogCtrl = createNativeDialogController(compassModal, {
+    modalId: "compass",
+    openerFallback: compassBtn,
+    targetDoc,
+    store: ctx.store || state.store || null,
+  });
 
   const closeCompassModalDialog = () => {
-    if (!compassModal) return;
-    if (typeof compassModal.close === "function") {
-      try {
-        compassModal.close();
-      } catch {
-        compassModal.open = false;
-      }
-    } else {
-      compassModal.open = false;
-    }
-    compassModal.removeAttribute?.("open");
-    if (compassPriorFocusEl && typeof compassPriorFocusEl.focus === "function") {
-      compassPriorFocusEl.focus();
-      compassPriorFocusEl = null;
-    }
+    compassDialogCtrl.close();
+    state.activeModal = null;
   };
 
   if (compassBtn && typeof compassBtn.addEventListener === "function") {
     compassBtn.addEventListener("click", () => {
       hydrateCompassGrid(targetDoc);
       if (compassModal) {
-        const isOpen = Boolean(compassModal.open);
-        if (isOpen) {
+        if (compassDialogCtrl.isOpen()) {
           closeCompassModalDialog();
         } else {
-          compassPriorFocusEl = targetDoc?.activeElement || compassBtn;
-          if (typeof compassModal.showModal === "function") {
-            try {
-              compassModal.showModal();
-            } catch {
-              compassModal.open = true;
-            }
-          } else {
-            compassModal.open = true;
-            compassModal.setAttribute?.("open", "");
-          }
+          compassDialogCtrl.open(compassBtn);
+          state.activeModal = "compass";
         }
       }
     });
@@ -239,10 +228,8 @@ export function bindStageDomEvents(ctx = {}) {
         }
         if (e?.altKey) {
           await transitionSheet("field", targetDoc);
-          const oldInp = getEl("improveOldValueInput", targetDoc);
+          const oldInp = getEl("improveOldSurfaceInput", targetDoc);
           if (oldInp && wordSurface) oldInp.value = wordSurface;
-          const strongInp = getEl("improveStrongInput", targetDoc);
-          if (strongInp && state.activeStrongId) strongInp.value = state.activeStrongId;
         } else {
           await transitionSheet("study", targetDoc);
           if (state.activeStrongId) {
@@ -345,21 +332,47 @@ export function bindStageDomEvents(ctx = {}) {
     });
   }
 
+  const boundCorpusBtns = new Set();
   for (const [btnId, corpusLang] of [
     ["quickLangEs", "es"],
     ["quickLangEs1909", "es-1909"],
     ["quickLangEn", "en"],
+    ["quickLangPt", "pt"],
+    ["quickLangFr", "fr"],
     ["quickLangStp", "stp"],
     ["quickLangHe", "he"],
     ["quickLangGrc", "grc"],
+    ["quickLangAr", "ar"],
+    ["quickLangFa", "fa"],
+    ["quickLangUr", "ur"],
+    ["quickLangHi", "hi"],
+    ["quickLangBn", "bn"],
+    ["quickLangId", "id"],
+    ["quickLangRu", "ru"],
+    ["quickLangZhHans", "zh-Hans"],
   ]) {
     const qBtn = getEl(btnId, targetDoc);
     if (qBtn && typeof qBtn.addEventListener === "function") {
+      boundCorpusBtns.add(qBtn);
       qBtn.addEventListener("click", async () => {
-        const reg = corpusLang === "es-1909" ? "clasica" : state.register;
-        await navigate({ lang: corpusLang, register: reg }, targetDoc);
+        const targetLang = qBtn.getAttribute?.("data-corpus-lang") || corpusLang;
+        const reg = targetLang === "es-1909" ? "clasica" : state.register;
+        await navigate({ lang: targetLang, register: reg }, targetDoc);
       });
     }
+  }
+  const corpusPillsHost = getEl("bibleVerifiedCorpusPills", targetDoc);
+  if (corpusPillsHost && typeof corpusPillsHost.addEventListener === "function") {
+    corpusPillsHost.addEventListener("click", async (e) => {
+      const btn = typeof e?.target?.closest === "function"
+        ? e.target.closest("[data-corpus-lang]")
+        : e?.target;
+      if (!btn || boundCorpusBtns.has(btn)) return;
+      const targetLang = btn.getAttribute?.("data-corpus-lang");
+      if (!targetLang) return;
+      const reg = targetLang === "es-1909" ? "clasica" : state.register;
+      await navigate({ lang: targetLang, register: reg }, targetDoc);
+    });
   }
 
   const btnRegInter = getEl("btnRegIntergeneracional", targetDoc);
@@ -452,6 +465,86 @@ export function bindStageDomEvents(ctx = {}) {
     });
   }
 
+  const appearanceBtn = getEl("btnAppearanceMenu", targetDoc);
+  const appearancePopover = getEl("appearancePopover", targetDoc);
+  if (appearanceBtn && typeof appearanceBtn.addEventListener === "function") {
+    appearanceBtn.addEventListener("click", () => {
+      if (!appearancePopover) return;
+      const nextHidden = !appearancePopover.hidden;
+      appearancePopover.hidden = nextHidden;
+      appearanceBtn.setAttribute("aria-expanded", nextHidden ? "false" : "true");
+      state.activeModal = nextHidden ? null : "appearance";
+    });
+  }
+
+  const applyStorePatchAndProject = (patch = {}, domain = "appearance") => {
+    const targetStore = ctx.store || state.store;
+    if (targetStore && typeof targetStore.setState === "function") {
+      targetStore.setState(patch, domain);
+    } else {
+      Object.assign(state, patch);
+    }
+    if (typeof ctx.syncActiveChromeProjection === "function") {
+      ctx.syncActiveChromeProjection(targetDoc);
+    } else if (targetDoc?.documentElement?.setAttribute) {
+      if (state.surfaceMode) targetDoc.documentElement.setAttribute("data-surface-mode", state.surfaceMode);
+      if (state.appearanceTheme) targetDoc.documentElement.setAttribute("data-theme", state.appearanceTheme);
+      if (state.fontFamily) targetDoc.documentElement.setAttribute("data-font-family", state.fontFamily);
+      targetDoc.documentElement.style?.setProperty?.("--bible-font-scale", String(state.fontScale || 1.0));
+    }
+  };
+
+  for (const [themeBtnId, themeKey] of [
+    ["btnThemeLight", "light"],
+    ["btnThemeSepia", "sepia"],
+    ["btnThemeDark", "dark"],
+  ]) {
+    const tThemeBtn = getEl(themeBtnId, targetDoc);
+    if (tThemeBtn && typeof tThemeBtn.addEventListener === "function") {
+      tThemeBtn.addEventListener("click", () => {
+        applyStorePatchAndProject({ appearanceTheme: themeKey }, "appearance");
+        for (const [id, key] of [["btnThemeLight", "light"], ["btnThemeSepia", "sepia"], ["btnThemeDark", "dark"]]) {
+          getEl(id, targetDoc)?.setAttribute?.("aria-pressed", key === themeKey ? "true" : "false");
+        }
+      });
+    }
+  }
+
+  for (const [fontBtnId, fontKey] of [
+    ["btnFontSerif", "serif"],
+    ["btnFontSans", "sans"],
+  ]) {
+    const fBtn = getEl(fontBtnId, targetDoc);
+    if (fBtn && typeof fBtn.addEventListener === "function") {
+      fBtn.addEventListener("click", () => {
+        applyStorePatchAndProject({ fontFamily: fontKey }, "appearance");
+        getEl("btnFontSerif", targetDoc)?.setAttribute?.("aria-pressed", fontKey === "serif" ? "true" : "false");
+        getEl("btnFontSans", targetDoc)?.setAttribute?.("aria-pressed", fontKey === "sans" ? "true" : "false");
+      });
+    }
+  }
+
+  for (const [scaleBtnId, delta] of [["btnScaleDown", -0.1], ["btnScaleUp", 0.1]]) {
+    const sBtn = getEl(scaleBtnId, targetDoc);
+    if (sBtn && typeof sBtn.addEventListener === "function") {
+      sBtn.addEventListener("click", () => {
+        const cur = Number(state.fontScale) || 1.0;
+        const nextScale = Number(Math.max(0.85, Math.min(1.5, cur + delta)).toFixed(2));
+        applyStorePatchAndProject({ fontScale: nextScale }, "appearance");
+      });
+    }
+  }
+
+  const surfaceBtn = getEl("btnToggleSurfaceMode", targetDoc);
+  if (surfaceBtn && typeof surfaceBtn.addEventListener === "function") {
+    surfaceBtn.addEventListener("click", () => {
+      const nextMode = state.surfaceMode === "studio" ? "reader" : "studio";
+      applyStorePatchAndProject({ surfaceMode: nextMode }, "surface");
+      surfaceBtn.setAttribute("aria-pressed", nextMode === "studio" ? "true" : "false");
+      surfaceBtn.textContent = nextMode === "studio" ? "📖 Reader" : "🎛️ Studio";
+    });
+  }
+
   const corpusLangBtn = getEl("sovereignCorpusLangBtn", targetDoc);
   const corpusDrawer = getEl("bibleLanguageAndRegisterDrawer", targetDoc);
   if (corpusLangBtn && typeof corpusLangBtn.addEventListener === "function") {
@@ -475,19 +568,159 @@ export function bindStageDomEvents(ctx = {}) {
 
   const refInput = getEl("mostradorRefInput", targetDoc);
   const refBtn = getEl("btnGoReference", targetDoc);
+  const spotlightHost = getEl("spotlightSearchResults", targetDoc);
+
+  if (dataLayer && !state._packs24HydratedFromManifest) {
+    state._packs24HydratedFromManifest = true;
+    const loadPacksMeta =
+      typeof dataLayer.loadOfflinePacksCatalog === "function"
+        ? dataLayer.loadOfflinePacksCatalog()
+        : typeof dataLayer.loadJson === "function"
+          ? dataLayer.loadJson("data/packs/packs_manifest.json")
+          : null;
+    if (loadPacksMeta) {
+      Promise.resolve(loadPacksMeta)
+        .then((manifestData) => {
+          if (!manifestData) return;
+          const hydrated = hydratePackLanguagesFromManifest(manifestData);
+          state.hydratedPacks24 = hydrated.packs;
+          state.availablePackLangs24 = hydrated.langs;
+          const packLangSel = getEl("bibleSelectLang", targetDoc);
+          if (packLangSel && typeof packLangSel.setAttribute === "function") {
+            packLangSel.setAttribute("data-hydrated-packs-count", String(hydrated.totalPacks));
+          }
+          if (packLangSel && Array.isArray(hydrated.packs) && typeof targetDoc?.createElement === "function") {
+            const existingVals = new Set(
+              Array.from(packLangSel.options || []).map((o) => String(o?.value || "").trim()),
+            );
+            for (const p of hydrated.packs) {
+              if (!p.lang || existingVals.has(p.lang)) continue;
+              const opt = targetDoc.createElement("option");
+              opt.value = p.lang;
+              opt.textContent = `${p.lang.toUpperCase()} (.ekpack)`;
+              if (typeof opt.setAttribute === "function") {
+                opt.setAttribute("data-pack-url", p.sameOriginPackUrl);
+              }
+              if (typeof packLangSel.appendChild === "function") {
+                packLangSel.appendChild(opt);
+              }
+            }
+          }
+        })
+        .catch(() => { });
+    }
+  }
+
+  const executeSpotlightMatch = async (match) => {
+    if (!match) return false;
+    closeCompassModalDialog();
+    if (match.kind === "lexicon" && match.work === "felices" && typeof ctx.switchWork === "function") {
+      state.activePlateIndex = Number(match.plates?.[0]) || 1;
+      await ctx.switchWork("felices", targetDoc);
+      return true;
+    }
+    if (match.strongId) {
+      state.activeStrongId = match.strongId;
+    }
+    await navigate(
+      {
+        book: match.book || state.book || "GEN",
+        chapter: match.chapter || 1,
+        verse: match.verse || 1,
+      },
+      targetDoc,
+    );
+    hydrateBookAndChapterSelectors(targetDoc);
+    return true;
+  };
+
+  const renderSpotlightResults = async (rawQuery) => {
+    const qStr = String(rawQuery || "").trim();
+    if (!qStr) {
+      if (spotlightHost) {
+        spotlightHost.hidden = true;
+        spotlightHost.innerHTML = "";
+      }
+      return [];
+    }
+    if (!state.canonLexicon && typeof dataLayer?.loadJson === "function") {
+      try {
+        state.canonLexicon = await dataLayer.loadJson("canon_lexicon.json");
+      } catch {
+        state.canonLexicon = null;
+      }
+    }
+    const matches = searchSpotlightCorpus({
+      query: qStr,
+      canonLexicon: state.canonLexicon || null,
+      loadedVerses: state.lastNavResult?.chapter?.verses || null,
+      book: state.book || "GEN",
+      chapter: state.chapter || 1,
+      lang: state.lang || "es",
+      limit: 8,
+    });
+    if (spotlightHost) {
+      if (matches.length === 0) {
+        spotlightHost.hidden = true;
+        spotlightHost.innerHTML = "";
+      } else {
+        spotlightHost.hidden = false;
+        spotlightHost.innerHTML = matches
+          .map(
+            (m, idx) =>
+              `<button type="button" class="uls-chip" role="option" data-spotlight-idx="${idx}" data-spotlight-kind="${m.kind}" data-spotlight-book="${m.book || ""}" data-spotlight-chapter="${m.chapter || 1}" data-spotlight-verse="${m.verse || 1}" style="justify-content:flex-start;text-align:left;min-height:44px;width:100%;font-size:0.78rem;">` +
+              `🔎 <strong>${m.label}</strong>${m.snippet ? ` — ${m.snippet.replace(/[<>&"]/g, " ")}` : ""}</button>`,
+          )
+          .join("");
+        spotlightHost._lastMatches = matches;
+      }
+    }
+    return matches;
+  };
+
+  if (spotlightHost && typeof spotlightHost.addEventListener === "function") {
+    spotlightHost.addEventListener("click", async (e) => {
+      const optEl = e?.target?.closest
+        ? e.target.closest("[data-spotlight-idx]")
+        : e?.target?.getAttribute?.("data-spotlight-idx") != null
+          ? e.target
+          : null;
+      const idx = Number(optEl?.getAttribute?.("data-spotlight-idx"));
+      const list = Array.isArray(spotlightHost._lastMatches) ? spotlightHost._lastMatches : [];
+      if (Number.isInteger(idx) && list[idx]) {
+        await executeSpotlightMatch(list[idx]);
+      }
+    });
+  }
+
+  if (refInput && typeof refInput.addEventListener === "function") {
+    refInput.addEventListener("input", () => {
+      renderSpotlightResults(refInput.value);
+    });
+    refInput.addEventListener("keydown", async (e) => {
+      if (e?.key === "Enter") {
+        const matches = await renderSpotlightResults(refInput.value);
+        if (matches.length > 0) await executeSpotlightMatch(matches[0]);
+      }
+    });
+  }
+
   if (refBtn && typeof refBtn.addEventListener === "function") {
     refBtn.addEventListener("click", async () => {
-      const parsed = parseBiblicalCoordinateReference(refInput ? refInput.value : "");
+      const qVal = refInput ? refInput.value : "";
+      const parsed = parseBiblicalCoordinateReference(qVal);
       if (parsed && parsed.bookCode) {
-        if (compassModal) {
-          compassModal.hidden = true;
-          if (compassModal.style) compassModal.style.display = "none";
-        }
+        closeCompassModalDialog();
         await navigate(
           { book: parsed.bookCode, chapter: parsed.chapter || 1, verse: parsed.verse || 1 },
           targetDoc,
         );
         hydrateBookAndChapterSelectors(targetDoc);
+        return;
+      }
+      const matches = await renderSpotlightResults(qVal);
+      if (matches.length > 0) {
+        await executeSpotlightMatch(matches[0]);
       }
     });
   }

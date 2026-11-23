@@ -6,7 +6,9 @@
 import {
   CASCADE_SEMILATTICE_PRIORITY,
   projectChapterThroughCascadeSemilattice,
+  replaceAllWholeToken,
 } from "./cascade_l1_l5.js";
+import { SOVEREIGN_ED25519_PUBLIC_KEY_HEX } from "./ed25519_field_math.js";
 import { computeEcoPackCrc32Hex, computeSha256HexWebCrypto } from "./offline_mesh.js";
 
 function escHtml(val) {
@@ -32,8 +34,6 @@ function bytesToHexWorkshop(bytes) {
 }
 
 let cachedLocalWorkshopKeyPairPromise = null;
-const CANONICAL_MAINTAINER_ED25519_PUBKEY_HEX =
-  "eb08398e334092817873f33e922316b4024f5eb1c0fa7d7fb3fcbfdb33ea27f7";
 
 export const OVERLAY_AUTHORITY_LOCAL_SELF_SIGNED = "LOCAL_WORKSHOP_SELF_SIGNED";
 export const OVERLAY_AUTHORITY_MAINTAINER_ED25519 = "VERIFIED_MAINTAINER_ED25519";
@@ -41,7 +41,7 @@ export const OVERLAY_AUTHORITY_MAINTAINER_ED25519 = "VERIFIED_MAINTAINER_ED25519
 function classifyOverlayAuthorityTier(publicKeyHex, isLocalKey = false, maintainerPubHex = "") {
   const cleanPub = String(publicKeyHex || "").trim().toLowerCase();
   const rootMaintainer = String(
-    maintainerPubHex || CANONICAL_MAINTAINER_ED25519_PUBKEY_HEX,
+    maintainerPubHex || SOVEREIGN_ED25519_PUBLIC_KEY_HEX,
   )
     .trim()
     .toLowerCase();
@@ -66,15 +66,35 @@ async function getOrCreateLocalWorkshopEd25519KeyPair(subtle) {
   return cachedLocalWorkshopKeyPairPromise;
 }
 
+export async function signLocalWorkshopPayload(payloadInput, options = {}) {
+  const subtle = options.subtle || globalThis.crypto?.subtle || null;
+  if (!subtle || typeof subtle.generateKey !== "function" || typeof subtle.sign !== "function") {
+    throw new Error("WEBCRYPTO_ED25519_UNAVAILABLE");
+  }
+  const bytes =
+    payloadInput instanceof Uint8Array
+      ? payloadInput
+      : new TextEncoder().encode(String(payloadInput ?? ""));
+  const localKp = await getOrCreateLocalWorkshopEd25519KeyPair(subtle);
+  const sigBuf = await subtle.sign({ name: "Ed25519" }, localKp.privateKey, bytes);
+  return {
+    signatureHex: bytesToHexWorkshop(new Uint8Array(sigBuf)),
+    publicKeyHex: localKp.publicKeyHex,
+    authorityTier: OVERLAY_AUTHORITY_LOCAL_SELF_SIGNED,
+  };
+}
+
 function openCascadeOverlayIdb(idbFactory) {
   return new Promise((resolve, reject) => {
     let settled = false;
     const timer = setTimeout(() => {
       if (!settled) {
         settled = true;
-        reject(new Error("IDB open timeout"));
+        const err = new Error("IDB open timeout");
+        err.code = "IDB_TIMEOUT";
+        reject(err);
       }
-    }, 250);
+    }, 1500);
     const req = idbFactory.open("ekovoz_cascade_overlays_v2", 1);
     req.onupgradeneeded = () => {
       const db = req.result;
@@ -127,7 +147,10 @@ export async function persistSignedCascadeOverlayIdb(receipt, options = {}) {
   const explicitCrc = String(options.expectedCrc32Hex || receipt.expectedCrc32Hex || "")
     .trim()
     .toLowerCase();
-  if (explicitCrc && explicitCrc !== computedCrc32Hex.toLowerCase()) {
+  if (!/^[0-9a-f]{8}$/.test(explicitCrc)) {
+    return { persisted: false, reason: "ERR_MISSING_EXPECTED_CRC32", computedCrc32Hex, computedSha256Hex };
+  }
+  if (explicitCrc !== computedCrc32Hex.toLowerCase()) {
     return { persisted: false, reason: "CRC32_MISMATCH", computedCrc32Hex, computedSha256Hex };
   }
   const explicitSha = String(options.expectedSha256Hex || receipt.expectedSha256Hex || "")
@@ -195,9 +218,12 @@ export async function persistSignedCascadeOverlayIdb(receipt, options = {}) {
       reason: "INDEXEDDB_UNAVAILABLE",
       crc32Hex: computedCrc32Hex,
       sha256Hex: computedSha256Hex,
+      sigVersion,
       ed25519Verified: true,
       authorityTier,
       authorityLabel,
+      signatureHex,
+      publicKeyHex,
     };
   }
 
@@ -311,6 +337,30 @@ export async function loadLiveCascadeOverlaysIdb(lang = "stp", options = {}) {
   return verified;
 }
 
+const IDB_TIMEOUT_SENTINEL = Symbol("idb-timeout");
+
+/**
+ * Distingue parches léxicos/onomásticos `L2`/`L3` a nivel token de reescrituras `L1` (o `L2` de versículo completo)
+ * para no sobrescribir todo el versículo con un solo vocablo al hidratar o resolver un overlay.
+ */
+function isTokenScopedCascadeOverlay(entry, baseText = "") {
+  const lvl = String(entry?.cascade_level || "").trim().toUpperCase();
+  if ((lvl !== "L2" && lvl !== "L3") || entry?.replaces_whole_verse === true) {
+    return false;
+  }
+  if (entry?.token_scoped === true) return true;
+  const oldSurf = String(entry?.old_surface || "").trim();
+  const newSurf = String(entry?.new_surface || "").trim();
+  if (!oldSurf || !newSurf) return false;
+  const oldWords = oldSurf.split(/\s+/).filter(Boolean).length;
+  const newWords = newSurf.split(/\s+/).filter(Boolean).length;
+  if (oldWords <= 3 && newWords <= 4 && !/[.!?]$/.test(newSurf)) {
+    return true;
+  }
+  const cleanBase = String(baseText || "").trim();
+  return Boolean(cleanBase && cleanBase.length > newSurf.length * 1.3 && cleanBase.includes(oldSurf));
+}
+
 export function applyOverlayEntriesToLiveState(state, entries = []) {
   if (!state || !Array.isArray(entries) || entries.length === 0) return 0;
   let appliedCount = 0;
@@ -357,22 +407,52 @@ export function applyOverlayEntriesToLiveState(state, entries = []) {
       cleanOsis.startsWith(activeBookChap) &&
       state.lastNavResult?.chapter?.verses
     ) {
+      const ch = state.lastNavResult.chapter;
+      if (!ch._immutableBaseVerses) {
+        if (Array.isArray(ch.verses)) {
+          const baseMap = {};
+          for (const vObj of ch.verses) {
+            if (vObj && typeof vObj === "object") {
+              baseMap[String(vObj.start ?? vObj.verse ?? "")] = String(vObj.text || "");
+            }
+          }
+          ch._immutableBaseVerses = baseMap;
+        } else {
+          ch._immutableBaseVerses = { ...ch.verses };
+        }
+      }
+      if (!ch._immutableRawVerses && Array.isArray(ch.rawVerses)) {
+        const rawMap = {};
+        for (const vObj of ch.rawVerses) {
+          if (vObj && typeof vObj === "object") {
+            rawMap[String(vObj.start ?? vObj.verse ?? "")] = String(vObj.text || "");
+          }
+        }
+        ch._immutableRawVerses = rawMap;
+      }
       const vNumStr = cleanOsis.slice(activeBookChap.length);
       const vNumInt = Number(vNumStr);
-      const newSurf = state.verifiedOverlaysByOsis[mapKey].new_surface;
-      if (Array.isArray(state.lastNavResult.chapter.verses)) {
-        for (const vObj of state.lastNavResult.chapter.verses) {
+      const stored = state.verifiedOverlaysByOsis[mapKey];
+      const applyValue = (baseText) =>
+        isTokenScopedCascadeOverlay(stored, baseText)
+          ? replaceAllWholeToken(baseText, stored.old_surface, stored.new_surface)
+          : stored.new_surface;
+      if (Array.isArray(ch.verses)) {
+        for (const vObj of ch.verses) {
           if (vObj && Number(vObj.start ?? vObj.verse) === vNumInt) {
-            vObj.text = newSurf;
+            const origText = ch._immutableBaseVerses[String(vObj.start ?? vObj.verse ?? "")] ?? vObj.text;
+            vObj.text = applyValue(origText);
           }
         }
       } else {
-        state.lastNavResult.chapter.verses[vNumStr] = newSurf;
+        const origText = ch._immutableBaseVerses[vNumStr] ?? ch.verses[vNumStr];
+        ch.verses[vNumStr] = applyValue(origText);
       }
-      if (Array.isArray(state.lastNavResult.chapter.rawVerses)) {
-        for (const vObj of state.lastNavResult.chapter.rawVerses) {
+      if (Array.isArray(ch.rawVerses)) {
+        for (const vObj of ch.rawVerses) {
           if (vObj && Number(vObj.start ?? vObj.verse) === vNumInt) {
-            vObj.text = newSurf;
+            const origRaw = ch._immutableRawVerses?.[String(vObj.start ?? vObj.verse ?? "")] ?? vObj.text;
+            vObj.text = applyValue(origRaw);
           }
         }
       }
@@ -398,6 +478,9 @@ export function resolveOverlayEntryForOsis(state, lang = "es", osis = "") {
 export function resolveVerseWithOverlay(state, lang = "es", osis = "", baseText = "") {
   const entry = resolveOverlayEntryForOsis(state, lang, osis);
   if (entry && typeof entry.new_surface === "string" && entry.new_surface.trim().length > 0) {
+    if (isTokenScopedCascadeOverlay(entry, baseText)) {
+      return baseText ? replaceAllWholeToken(baseText, entry.old_surface, entry.new_surface) : "";
+    }
     return entry.new_surface;
   }
   return baseText;
@@ -408,11 +491,32 @@ export async function ensureStateOverlaysHydrated(state, targetLang = "") {
   const lang = String(targetLang || state.lang || "es").trim().toLowerCase();
   if (state.hydratedOverlayLang !== lang) {
     state.hydratedOverlayLang = lang;
+    const t0 = typeof performance !== "undefined" && performance.now ? performance.now() : Date.now();
+    let raceTimer = null;
     const idbOverlays = await Promise.race([
-      loadLiveCascadeOverlaysIdb(lang).catch(() => []),
-      new Promise((r) => setTimeout(() => r([]), 120)),
-    ]);
-    if (idbOverlays.length > 0) {
+      loadLiveCascadeOverlaysIdb(lang).catch((err) =>
+        err?.code === "IDB_TIMEOUT" ? IDB_TIMEOUT_SENTINEL : [],
+      ),
+      new Promise((r) => {
+        raceTimer = setTimeout(() => r(IDB_TIMEOUT_SENTINEL), 1500);
+      }),
+    ]).finally(() => {
+      if (raceTimer !== null) clearTimeout(raceTimer);
+    });
+    const now = typeof performance !== "undefined" && performance.now ? performance.now() : Date.now();
+    const timedOut = idbOverlays === IDB_TIMEOUT_SENTINEL;
+    state.idbOverlayHydrationTelemetry = {
+      lang,
+      elapsedMs: Math.round((now - t0) * 100) / 100,
+      timeoutBudgetMs: 1500,
+      timedOut,
+      loadedCount: Array.isArray(idbOverlays) ? idbOverlays.length : 0,
+    };
+    if (timedOut) {
+      state.hydratedOverlayLang = "";
+      return;
+    }
+    if (Array.isArray(idbOverlays) && idbOverlays.length > 0) {
       state.liveCascadeOverlays = idbOverlays;
       applyOverlayEntriesToLiveState(state, idbOverlays);
     }
@@ -429,30 +533,48 @@ export function projectChapterWithLiveOverlays(state, effectiveLang, rawChapter)
   if (!rawChapter || typeof rawChapter !== "object") {
     return { chapterForRender: null, bannerHtml: "", activeAuthority: "" };
   }
+  const sourceVerses = rawChapter._immutableBaseVerses || rawChapter.verses || [];
   const rawVerses = rawChapter.verses || [];
   const baseVerseMap = {};
-  if (Array.isArray(rawVerses)) {
-    for (const vItem of rawVerses) {
+  if (Array.isArray(sourceVerses)) {
+    for (const vItem of sourceVerses) {
       if (vItem && typeof vItem === "object") {
         baseVerseMap[String(vItem.start ?? vItem.verse ?? "")] = String(vItem.text || "");
       }
     }
   } else {
-    Object.assign(baseVerseMap, rawVerses);
+    Object.assign(baseVerseMap, sourceVerses);
   }
   const activeBook = String(state?.book || "GEN").toUpperCase();
   const activeChap = Number(state?.chapter) || 1;
   const semilatticeProjectedMap =
     Array.isArray(state?.liveCascadeOverlays) && state.liveCascadeOverlays.length > 0
       ? projectChapterThroughCascadeSemilattice({
-          verses: baseVerseMap,
-          matrixRows: state?.lastNavResult?.matrix?.rows || [],
-          overlays: state.liveCascadeOverlays,
-          lang: effectiveLang,
-          book: activeBook,
-          chapter: activeChap,
-        })
+        verses: baseVerseMap,
+        matrixRows: state?.lastNavResult?.matrix?.rows || [],
+        overlays: state.liveCascadeOverlays,
+        lang: effectiveLang,
+        book: activeBook,
+        chapter: activeChap,
+      })
       : baseVerseMap;
+
+  const projectTextIdempotent = (vKey, osisKey, ovEntry) => {
+    const baseText = String(baseVerseMap[vKey] ?? "");
+    const afterSemi = semilatticeProjectedMap[vKey] ?? baseText;
+    if (ovEntry && !isTokenScopedCascadeOverlay(ovEntry, baseText)) {
+      return typeof ovEntry.new_surface === "string" && ovEntry.new_surface.trim().length > 0
+        ? ovEntry.new_surface
+        : afterSemi;
+    }
+    if (afterSemi !== baseText) {
+      if (!ovEntry || !ovEntry.new_surface || afterSemi.includes(ovEntry.new_surface)) {
+        return afterSemi;
+      }
+      return resolveVerseWithOverlay(state, effectiveLang, osisKey, afterSemi);
+    }
+    return resolveVerseWithOverlay(state, effectiveLang, osisKey, baseText);
+  };
 
   const badges = [];
   let projectedVerses;
@@ -462,8 +584,7 @@ export function projectChapterWithLiveOverlays(state, effectiveLang, rawChapter)
       const vKey = String(vItem.start ?? vItem.verse ?? "");
       const osisKey = `${activeBook}.${activeChap}.${vKey}`;
       const ovEntry = resolveOverlayEntryForOsis(state, effectiveLang, osisKey);
-      const baseCandidate = semilatticeProjectedMap[vKey] ?? (vItem.text || "");
-      const projectedText = resolveVerseWithOverlay(state, effectiveLang, osisKey, baseCandidate);
+      const projectedText = projectTextIdempotent(vKey, osisKey, ovEntry);
       if (ovEntry) {
         const auth = ovEntry.authorityTier || OVERLAY_AUTHORITY_LOCAL_SELF_SIGNED;
         badges.push(
@@ -474,16 +595,10 @@ export function projectChapterWithLiveOverlays(state, effectiveLang, rawChapter)
     });
   } else {
     projectedVerses = {};
-    for (const [vKey, vText] of Object.entries(rawVerses)) {
+    for (const vKey of Object.keys(rawVerses)) {
       const osisKey = `${activeBook}.${activeChap}.${vKey}`;
       const ovEntry = resolveOverlayEntryForOsis(state, effectiveLang, osisKey);
-      const baseCandidate = semilatticeProjectedMap[vKey] ?? vText;
-      projectedVerses[vKey] = resolveVerseWithOverlay(
-        state,
-        effectiveLang,
-        osisKey,
-        baseCandidate,
-      );
+      projectedVerses[vKey] = projectTextIdempotent(vKey, osisKey, ovEntry);
       if (ovEntry) {
         const auth = ovEntry.authorityTier || OVERLAY_AUTHORITY_LOCAL_SELF_SIGNED;
         badges.push(
@@ -505,13 +620,13 @@ export function projectChapterWithLiveOverlays(state, effectiveLang, rawChapter)
       : "";
   const projectedRawVerses = Array.isArray(rawChapter.rawVerses)
     ? rawChapter.rawVerses.map((vItem) => {
-        if (!vItem || typeof vItem !== "object") return vItem;
-        const vKey = String(vItem.start ?? vItem.verse ?? "");
-        const osisKey = `${activeBook}.${activeChap}.${vKey}`;
-        const baseCandidate = semilatticeProjectedMap[vKey] ?? (vItem.text || "");
-        const projectedText = resolveVerseWithOverlay(state, effectiveLang, osisKey, baseCandidate);
-        return projectedText === vItem.text ? vItem : { ...vItem, text: projectedText };
-      })
+      if (!vItem || typeof vItem !== "object") return vItem;
+      const vKey = String(vItem.start ?? vItem.verse ?? "");
+      const osisKey = `${activeBook}.${activeChap}.${vKey}`;
+      const baseCandidate = semilatticeProjectedMap[vKey] ?? (vItem.text || "");
+      const projectedText = resolveVerseWithOverlay(state, effectiveLang, osisKey, baseCandidate);
+      return projectedText === vItem.text ? vItem : { ...vItem, text: projectedText };
+    })
     : rawChapter.rawVerses;
 
   return {

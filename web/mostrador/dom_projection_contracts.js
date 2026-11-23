@@ -168,6 +168,54 @@ export const ARTIFACT_PROJECTION_SCHEMA = [
     targetSelectors: ["#bibleAnalyticalThermometerPanel", "#wfstAndScriptioContinuaHost"],
     domSlots: ["#bibleAnalyticalThermometerPanel", "#wfstAndScriptioContinuaHost"],
   },
+  {
+    artifact: "web/data/catalog.json",
+    requiredKeys: [
+      "book_order",
+      "languages",
+      "verse_counts",
+      "ekpack_languages_21",
+      "workshop_langs",
+      "tier3_portion_languages",
+    ],
+    targetSelectors: ["#bibleSelectBook", "#bibleSelectLang"],
+    domSlots: ["#bibleSelectBook", "#bibleSelectLang"],
+  },
+  {
+    artifact: "web/data/master_census_summary.json",
+    requiredKeys: [
+      "canonical_books",
+      "canonical_chapters",
+      "canonical_verses",
+      "canonical_blocks",
+      "macro_regions_12",
+      "stp_ledger_summary",
+      "total_living_languages",
+    ],
+    targetSelectors: ["#bibleShareAndAuditSheet", "#editorialAuditStatusPanel"],
+    domSlots: ["#bibleShareAndAuditSheet", "#editorialAuditStatusPanel"],
+  },
+  {
+    artifact: "web/data/offline_packs_catalog.json",
+    requiredKeys: [
+      "available_pack_langs",
+      "pack_mounts",
+      "packs",
+    ],
+    targetSelectors: ["#bibleShareAndAuditSheet", "#offlinePacksCatalogPanel"],
+    domSlots: ["#bibleShareAndAuditSheet", "#offlinePacksCatalogPanel"],
+  },
+  {
+    artifact: "web/data/fonts_zst_manifest.json",
+    requiredKeys: [
+      "bundleBytes",
+      "codec",
+      "fonts",
+      "mount",
+    ],
+    targetSelectors: ["#bibleShareAndAuditSheet", "#tanda-offline-font-notice"],
+    domSlots: ["#bibleShareAndAuditSheet", "#tanda-offline-font-notice"],
+  },
 ];
 
 /**

@@ -86,6 +86,7 @@ handler = "planDose3"
 test_file = "mostrador/dosis.test.mjs"
 test_name = "dose2_and_dose3_from_real_index_and_manifest"
 
+# Contrato de capacidades UI (`study_14col_drawer` conserva ID estable mientras proyecta 15 cols `col01..col15_translit`)
 [capability.study_14col_drawer]
 surface = "public-ui"
 selector = "#btnRegEstudio"
@@ -422,6 +423,78 @@ module = "mostrador/evangelios.js"
 handler = "renderFelicesSocraticWonderCardHtml"
 test_file = "mostrador/tribunal_packs_crypto.test.mjs"
 test_name = "D1_to_D10_A_plus_ARB_EKOVOZ_61_triple_provenance_closure_and_full_backend_ui_parity"
+
+[capability.surface_mode_reader_studio_toggle]
+surface = "public-ui"
+selector = "#btnToggleSurfaceMode"
+module = "mostrador/projection_contract.js"
+handler = "projectStoreAttributesToDom"
+test_file = "mostrador/state_store_v3ux.test.mjs"
+test_name = "SLICE_EKO_V3UX_06_07_sticky_lang_single_toggle_and_store_dom_projection"
+
+[capability.appearance_popover_typography_theme]
+surface = "public-ui"
+selector = "#btnAppearanceMenu"
+module = "mostrador/stage_dom_bindings.js"
+handler = "bindStageDomEvents"
+test_file = "mostrador/state_store_v3ux.test.mjs"
+test_name = "SLICE_EKO_V3UX_06_07_sticky_lang_single_toggle_and_store_dom_projection"
+
+[capability.appearance_theme_sepia_dark_control]
+surface = "public-ui"
+selector = "#btnThemeSepia"
+module = "mostrador/state_store.js"
+handler = "createEkovozStore"
+test_file = "mostrador/state_store_v3ux.test.mjs"
+test_name = "SLICE_EKO_V3UX_05_store_ownership_registry_and_glitch_free_batch"
+
+[capability.spotlight_corpus_24_packs_search]
+surface = "public-ui"
+selector = "#bibleVerifiedCorpusPills"
+module = "mostrador/reference.js"
+handler = "hydratePackLanguagesFromManifest"
+test_file = "mostrador/reference.test.mjs"
+test_name = "SLICE_EKO_V3UX_13_hydrates_24_ekpacks_and_searches_spotlight_corpus"
+
+[capability.offline_fonts_vault_ekfonts_34]
+surface = "public-ui"
+selector = "#editorialFontPackVaultPanel"
+module = "mostrador/offline_font_bundle.js"
+handler = "summarizeOfflineFontsVaultCatalog"
+test_file = "mostrador/typeset_multiscript_v2ld.test.mjs"
+test_name = "SLICE_EKO_V3UX_14_fonts_vault_catalog_34_and_opengraph_1200x630_in_share"
+
+[capability.opengraph_social_svg_in_share]
+surface = "public-ui"
+selector = "#stationeryCardPanel"
+module = "mostrador/drawer_print.js"
+handler = "buildOpenGraphSocialCardSvg1200x630"
+test_file = "mostrador/typeset_multiscript_v2ld.test.mjs"
+test_name = "SLICE_EKO_V3UX_14_fonts_vault_catalog_34_and_opengraph_1200x630_in_share"
+
+[capability.stealth_pack_neutral_filenames]
+surface = "public-ui"
+selector = "#chkStealthPackMode"
+module = "mostrador/bimodal_tanda_print.js"
+handler = "resolveLocalPrintArtifactFallback"
+test_file = "mostrador/dosis_editions_v2i.test.mjs"
+test_name = "SLICE_EKO_V3UX_15_stealth_mode_css_paged_media_and_local_dist_fallback"
+
+[capability.css_paged_media_direct_print]
+surface = "public-ui"
+selector = "#btnPrintCssPagedMedia"
+module = "mostrador/bimodal_tanda_print.js"
+handler = "buildCssPagedMediaPrintHtml"
+test_file = "mostrador/dosis_editions_v2i.test.mjs"
+test_name = "SLICE_EKO_V3UX_15_stealth_mode_css_paged_media_and_local_dist_fallback"
+
+[capability.evangelios_unified_header_and_print]
+surface = "public-ui"
+selector = "#evangeliosGlobalLangBadge"
+module = "mostrador/sister_works_controller.js"
+handler = "renderEvangeliosStageCardHtml"
+test_file = "mostrador/felices_i18n.test.mjs"
+test_name = "SLICE_EKO_V3UX_16_felices_27_plates_plate24_dicha11_evangelios_print_and_overlay"
 
 
 

@@ -15,6 +15,16 @@ import {
   typesetTandaPdfBytes,
 } from "./bimodal_tanda_print.js";
 import {
+  computeFoliationLayout,
+  computeKindlePrintBudget,
+  hydrateEditorialProfiles,
+  renderBranchAndTypologyInspectorHtml,
+  renderImpositionAndLayoutPreviewHtml,
+  renderMultiSignatureAndPocketRefugeHtml,
+  resolveEditionGeometrySpec,
+  resolvePrintEditionPdfAssetUrl,
+} from "./dosis_editions_catalog.js";
+import {
   buildRelativePdfAssetUrl,
   CANONICAL_12_BRANCH_PROFILES,
   CANONICAL_14_PLUS_2_EDITIONS_CATALOG,
@@ -22,26 +32,19 @@ import {
   CANONICAL_16_TYPOLOGY_PROFILES,
   CANONICAL_80_BLOCKS_CATALOG,
   CANONICAL_9_TOML_PROFILES,
-  computeFoliationLayout,
-  computeKindlePrintBudget,
   computeMultiSignatureImposition,
   FIELD_PDFS_REGISTRY,
-  hydrateEditorialProfiles,
   POCKET_REFUGE_4_SHEETS_SPEC,
   PRECOMPILED_PDF_LANGS,
-  renderBranchAndTypologyInspectorHtml,
-  renderImpositionAndLayoutPreviewHtml,
-  renderMultiSignatureAndPocketRefugeHtml,
   resolveCanonicalBlockCode,
   resolveCanonicalBlockForPassage,
-  resolveEditionGeometrySpec,
   resolvePrecompiledDiskLang,
-  resolvePrintEditionPdfAssetUrl,
   VERIFIED_TEXT_BIBLE_LANGS,
-} from "./dosis_editions_catalog.js";
+} from "./dosis_profiles_schema.js";
 import {
   evaluateOpticalSauvolaPhotocopyOracle,
   rasterizeTrueTypeGlyphsFromSfntBytes,
+  resolveOracleSpecimenDefaults,
 } from "./sauvola_canvas_oracle.js";
 const CANONICAL_66_USFM = [
   "GEN", "EXO", "LEV", "NUM", "DEU", "JOS", "JDG", "RUT", "1SA", "2SA", "1KI", "2KI", "1CH", "2CH", "EZR", "NEH", "EST", "JOB", "PSA", "PRO", "ECC", "SNG",
@@ -381,10 +384,10 @@ function buildCanonical16MacroTandasCatalog() {
       endBook: lastBlk.endBook,
       endChapter: lastBlk.endChapter,
       rangeLabel,
-      logicalPagesCount: imp.paddedTotalPages,
+      logicalPagesCount: Number(imp.totalPages ?? imp.paddedTotalPages) || 32,
       signatureCount: imp.signatureCount,
       maxSheetsPerSignature: 8,
-      spreads4nCount: imp.paddedTotalPages / 2,
+      spreads4nCount: (Number(imp.totalPages ?? imp.paddedTotalPages) || 32) / 2,
       maxCreepMm: imp.maxCreepMm,
       creepWithinBound: imp.creepWithinBound,
       workerRamSafeUnder14Mb: true,
@@ -562,15 +565,19 @@ export function syncDose2AndDose3LinksForActiveLang({
     ? state.dose3WorkerPdfBytes
     : bimodalDose3.pdfBytes;
 
-  const dose2Href = state.dose2ObjectUrl || encodePdfBytesToDataUri(dose2Bytes);
-  const dose3Href = state.dose3ObjectUrl || encodePdfBytesToDataUri(dose3Bytes);
+  const dose2Href =
+    state.dose2ObjectUrl ||
+    (dose2Bytes instanceof Uint8Array && dose2Bytes.byteLength > 0 ? encodePdfBytesToDataUri(dose2Bytes) : "#");
+  const dose3Href =
+    state.dose3ObjectUrl ||
+    (dose3Bytes instanceof Uint8Array && dose3Bytes.byteLength > 0 ? encodePdfBytesToDataUri(dose3Bytes) : "#");
   const dose2Planned = planDose2(blockCode, lang, edition);
 
   if (linkDose2) {
     linkDose2.href = dose2Href;
     linkDose2.setAttribute?.("href", dose2Href);
     linkDose2.setAttribute?.("download", `ekovoz-${lang}-${book.toLowerCase()}-${activeCols}col-${activeFontPt}pt.pdf`);
-    linkDose2.setAttribute?.("data-dose-mode", "bimodal-tanda");
+    linkDose2.setAttribute?.("data-dose-mode", dose2Href === "#" ? "wasm-on-demand" : "bimodal-tanda");
     linkDose2.setAttribute?.("data-tanda-scope", Array.isArray(state.fullBookVerses) ? "full-book" : "chapter-seed");
     linkDose2.setAttribute?.("data-worker-url", bimodalDose2.workerUrl || dose2Planned.url);
     linkDose2.setAttribute?.("data-block-code", blockCode);
@@ -582,19 +589,32 @@ export function syncDose2AndDose3LinksForActiveLang({
       : `📚 2. Imprimir/Descargar Libro en Tanda PDF (${lang.toUpperCase()} · ${book} · ${activeCols}col)`;
   }
   if (linkDose3) {
+    const isFullBible16 = Boolean(state._dose3Streamed16Of16);
+    const dose3Scope = isFullBible16
+      ? "full-bible-16-tandas"
+      : Array.isArray(state.bibleTandaVerses)
+        ? "bible-tanda-50p"
+        : "book-seed";
+    const dose3Download = isFullBible16
+      ? `ekovoz-${lang}-biblia-completa-${activeCols}col.pdf`
+      : `ekovoz-${lang}-${activeMacroTanda.macroTandaId.toLowerCase()}-${activeCols}col.pdf`;
     linkDose3.href = dose3Href;
     linkDose3.setAttribute?.("href", dose3Href);
-    linkDose3.setAttribute?.("download", `ekovoz-${lang}-${activeMacroTanda.macroTandaId.toLowerCase()}-${activeCols}col.pdf`);
-    linkDose3.setAttribute?.("data-dose-mode", "bimodal-tanda");
-    linkDose3.setAttribute?.("data-tanda-scope", Array.isArray(state.bibleTandaVerses) ? "bible-tanda-50p" : "book-seed");
-    linkDose3.setAttribute?.("data-macro-tanda", activeMacroTanda.macroTandaId);
+    linkDose3.setAttribute?.("download", dose3Download);
+    linkDose3.setAttribute?.("data-dose-mode", dose3Href === "#" ? "wasm-on-demand" : "bimodal-tanda");
+    linkDose3.setAttribute?.("data-tanda-scope", dose3Scope);
+    linkDose3.setAttribute?.("data-macro-tanda", isFullBible16 ? "ALL-16" : activeMacroTanda.macroTandaId);
     linkDose3.setAttribute?.("data-worker-url", bimodalDose3.workerUrl);
     linkDose3.setAttribute?.("data-columns", String(activeCols));
     linkDose3.setAttribute?.("data-font-pt", String(activeFontPt));
     linkDose3.setAttribute?.("data-lang", lang);
-    linkDose3.textContent = isEn
-      ? `🏛️ 3. Download Macro-Tanda ${activeMacroTanda.macroTandaId} (${activeMacroTanda.blockCodes[0]}–${activeMacroTanda.blockCodes[4]} · ${lang.toUpperCase()})`
-      : `🏛️ 3. Descargar Macro-Tanda ${activeMacroTanda.macroTandaId} (${activeMacroTanda.blockCodes[0]}–${activeMacroTanda.blockCodes[4]} · ${lang.toUpperCase()})`;
+    linkDose3.textContent = isFullBible16
+      ? isEn
+        ? `🏛️ 3. Download Full Bible PDF (16/16 Macro-Tandas · ${lang.toUpperCase()})`
+        : `🏛️ 3. Descargar Biblia Completa PDF (16/16 Macro-Tandas · ${lang.toUpperCase()})`
+      : isEn
+        ? `🏛️ 3. Download Macro-Tanda ${activeMacroTanda.macroTandaId} (${activeMacroTanda.blockCodes[0]}–${activeMacroTanda.blockCodes[4]} · ${lang.toUpperCase()})`
+        : `🏛️ 3. Descargar Macro-Tanda ${activeMacroTanda.macroTandaId} (${activeMacroTanda.blockCodes[0]}–${activeMacroTanda.blockCodes[4]} · ${lang.toUpperCase()})`;
   }
   return {
     mode: "bimodal-tanda",
@@ -843,14 +863,18 @@ export function simulateThirdGenPhotocopySauvola({
   k = 0.2,
   R = 128,
   ttfBytes = null,
+  lang = "es",
+  text = "",
 } = {}) {
   const cleanStroke = Number(strokePt) || 0.85;
   const cleanK = Number(k) || 0.2;
   const cleanR = Number(R) || 128;
   const minStrokePt = 0.75;
+  const specimenText =
+    String(text || "").trim() || resolveOracleSpecimenDefaults(lang, "").sampleText || "En el principio";
   const sfntProbe =
     ttfBytes instanceof Uint8Array && ttfBytes.byteLength >= 64
-      ? rasterizeTrueTypeGlyphsFromSfntBytes(ttfBytes, "eo", { dpi: 300 })
+      ? rasterizeTrueTypeGlyphsFromSfntBytes(ttfBytes, specimenText, { dpi: 300, lang })
       : null;
   const oracle = evaluateOpticalSauvolaPhotocopyOracle({
     genIndex: 3,
@@ -858,6 +882,8 @@ export function simulateThirdGenPhotocopySauvola({
     dpi: 300,
     strokePt: cleanStroke,
     R: cleanR,
+    lang,
+    text: specimenText,
     ttfBytes: sfntProbe ? ttfBytes : null,
   });
   const survives3rdGen =
@@ -866,6 +892,8 @@ export function simulateThirdGenPhotocopySauvola({
 
   return {
     algorithm: "Sauvola-Integral-2000",
+    lang,
+    text: specimenText,
     k: cleanK,
     R: cleanR,
     threshold: oracle.meanThreshold,

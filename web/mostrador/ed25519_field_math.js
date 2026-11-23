@@ -5,7 +5,7 @@
 // ============================================================================
 
 export const SOVEREIGN_ED25519_PUBLIC_KEY_HEX =
-  "5f7a02cab91d9022730752855ea280e6d8a6a6e18ac3724dd65c20583a327720";
+  "732d4addac0c02806e2ef0812aec10099d336277fe974af788b07dd5f0e9c195";
 
 const ED25519_P = (1n << 255n) - 19n;
 const ED25519_L = (1n << 252n) + 27742317777372353535851937790883648493n;
@@ -223,7 +223,16 @@ function hexToFixedBytes(hexOrBytes, expectedBytes) {
 
 function normalizePayloadBytes(payloadStringOrBytes) {
   if (payloadStringOrBytes instanceof Uint8Array) return payloadStringOrBytes;
-  return new TextEncoder().encode(String(payloadStringOrBytes ?? ""));
+  const text = String(payloadStringOrBytes ?? "");
+  if (text.startsWith("EV3HEX:")) {
+    const hexPart = text.slice(7);
+    if (hexPart.length === 0 || (hexPart.length & 1) !== 0) {
+      return new TextEncoder().encode("ERR_MALFORMED_EV3HEX");
+    }
+    const decoded = hexToFixedBytes(hexPart, hexPart.length >>> 1);
+    return decoded || new TextEncoder().encode("ERR_MALFORMED_EV3HEX");
+  }
+  return new TextEncoder().encode(text);
 }
 
 function verifyViaWasmCompact(pkBytes, msgBytes, sigBytes, wasmPlayerMod) {
@@ -344,3 +353,4 @@ export async function verifyEd25519ManifestSignatureWebCrypto(
 }
 
 export { verifyEd25519ManifestSignatureWebCrypto as verifyEd25519ManifestSignatureAsync };
+

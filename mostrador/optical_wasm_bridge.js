@@ -116,17 +116,25 @@ export function encodeEcomMetadataPacket({
   blockSize = 512,
   sha256Hex = "",
   filename = "shard.eco",
+  compact = false,
 } = {}) {
-  const jsonBytes = new TextEncoder().encode(
-    JSON.stringify({
+  const cleanSha = String(sha256Hex || "").toLowerCase();
+  const payloadObj = compact
+    ? {
+      n: Number(totalBytes) || 0,
+      k: Math.max(1, Number(totalChunks) || 1),
+      b: Math.max(1, Number(blockSize) || 512),
+      ...(cleanSha ? { h: cleanSha.slice(0, 8) } : {}),
+    }
+    : {
       streamId: Number(streamId) >>> 0,
       totalBytes: Number(totalBytes) || 0,
       totalChunks: Math.max(1, Number(totalChunks) || 1),
       blockSize: Math.max(1, Number(blockSize) || 512),
-      sha256Hex: String(sha256Hex || "").toLowerCase(),
+      sha256Hex: cleanSha,
       filename: String(filename || "shard.eco"),
-    }),
-  );
+    };
+  const jsonBytes = new TextEncoder().encode(JSON.stringify(payloadObj));
   const buf = new Uint8Array(16 + jsonBytes.length);
   const view = new DataView(buf.buffer);
   buf.set([0x45, 0x43, 0x4f, 0x4d, 0x01, encodeCornerToggleMarker(seq)]);
@@ -161,7 +169,18 @@ export function decodeEcoBinaryPacket(packetBytes) {
   const streamId = view.getUint32(6, false);
   if (magic === "ECOM") {
     const jsonLen = view.getUint16(10, false);
-    const meta = JSON.parse(new TextDecoder().decode(packetBytes.subarray(12, 12 + jsonLen)));
+    const rawMeta = JSON.parse(new TextDecoder().decode(packetBytes.subarray(12, 12 + jsonLen)));
+    const meta =
+      rawMeta && rawMeta.n !== undefined
+        ? {
+          streamId,
+          totalBytes: Number(rawMeta.n) || 0,
+          totalChunks: Math.max(1, Number(rawMeta.k) || 1),
+          blockSize: Math.max(1, Number(rawMeta.b) || 12),
+          sha256Hex: String(rawMeta.h || ""),
+          filename: String(rawMeta.f || "shard.eco"),
+        }
+        : rawMeta;
     return { valid: true, magic: "ECOM", version, cornerMarker, cornerBit, streamId, meta };
   }
   const seq = view.getUint32(10, false);
@@ -194,7 +213,7 @@ export function decodeEcoBinaryPacket(packetBytes) {
 }
 
 const U64_MASK = 0xffffffffffffffffn;
-function splitmix64Next(box) {
+export function splitmix64Next(box) {
   box.s = (box.s + 0x9e3779b97f4a7c15n) & U64_MASK;
   let z = box.s;
   z = ((z ^ (z >> 30n)) * 0xbf58476d1ce4e5b9n) & U64_MASK;
@@ -202,7 +221,43 @@ function splitmix64Next(box) {
   return (z ^ (z >> 31n)) & U64_MASK;
 }
 
-function encodeWasmFountainPackets(transferId, payloadBytes, kBlocks, repairCount) {
+/** PRNG determinista `splitmix64` de `64` bits bit-a-bit compatible con `qr_stream_receiver_wasm`. */
+export function splitmix64(seed = 0) {
+  const box = { s: BigInt.asUintN(64, BigInt(Math.trunc(Number(seed) || 0))) };
+  return function nextRandom() {
+    const z = splitmix64Next(box);
+    return Number((z >> 12n) & 0xfffffffffffffn) / 4503599627370496;
+  };
+}
+
+/** Deriva los índices fuente idénticos a `derive_fountain_source_bitset` en WASM (`D5-V2LE`). */
+export function deriveWasmFountainSourceIndices(transferId, packetId, kBlocks) {
+  const k = Math.max(1, Math.min(50, kBlocks | 0));
+  const pid = Math.max(0, packetId | 0);
+  if (pid < k) return [pid];
+  const tid = BigInt(transferId) & U64_MASK;
+  const rep = pid - k;
+  const box = {
+    s:
+      (((tid + 0x9e3779b97f4a7c15n) & U64_MASK) ^
+        ((BigInt(pid & 0xffff) * 0xd1b54a32d192ed03n) & U64_MASK)) &
+      U64_MASK,
+  };
+  const r = Number(splitmix64Next(box) % 100n);
+  const deg =
+    k <= 3
+      ? k
+      : r < 30
+        ? Math.min(3, k)
+        : r < 65
+          ? Math.min(k, Math.max(4, Math.floor(k / 3)))
+          : Math.min(k, Math.max(5, Math.floor(k / 2)));
+  const chosen = new Set([(rep * 2) % k, (rep * 2 + 1) % k, (rep * 3 + 2) % k]);
+  while (chosen.size < deg) chosen.add(Number(splitmix64Next(box) % BigInt(k)));
+  return Array.from(chosen).sort((a, b) => a - b);
+}
+
+export function encodeWasmFountainPackets(transferId, payloadBytes, kBlocks, repairCount) {
   const k = Math.max(1, Math.min(50, kBlocks | 0));
   const blockSize = Math.max(1, Math.ceil(payloadBytes.byteLength / k));
   const srcBlocks = Array.from({ length: k }, (_, i) => {
@@ -215,44 +270,25 @@ function encodeWasmFountainPackets(transferId, payloadBytes, kBlocks, repairCoun
   const total = k + Math.max(0, repairCount | 0);
   const packets = [];
   for (let pid = 0; pid < total; pid += 1) {
-    let indices = [pid];
-    if (pid >= k) {
-      const rep = pid - k;
-      const box = {
-        s:
-          (((tid + 0x9e3779b97f4a7c15n) & U64_MASK) ^
-            ((BigInt(pid & 0xffff) * 0xd1b54a32d192ed03n) & U64_MASK)) &
-          U64_MASK,
-      };
-      const r = Number(splitmix64Next(box) % 100n);
-      const deg =
-        k <= 3
-          ? k
-          : r < 30
-            ? Math.min(3, k)
-            : r < 65
-              ? Math.min(k, Math.max(4, Math.floor(k / 3)))
-              : Math.min(k, Math.max(5, Math.floor(k / 2)));
-      const chosen = new Set([(rep * 2) % k, (rep * 2 + 1) % k, (rep * 3 + 2) % k]);
-      while (chosen.size < deg) chosen.add(Number(splitmix64Next(box) % BigInt(k)));
-      indices = Array.from(chosen).sort((a, b) => a - b);
-    }
+    const sourceIndices = deriveWasmFountainSourceIndices(tid, pid, k);
     const xorPayload = new Uint8Array(blockSize);
-    for (const si of indices) {
+    for (const si of sourceIndices) {
       const s = srcBlocks[si];
       for (let b = 0; b < blockSize; b += 1) xorPayload[b] ^= s[b];
     }
     packets.push({
       packetId: pid,
       kBlocks: k,
+      blockSize,
       originalByteLen: payloadBytes.byteLength,
+      sourceIndices,
       xorPayload,
     });
   }
   return packets;
 }
 
-export function runWasmPeelingSession(exports, transferId, payloadBytes, kBlocks, dropSet) {
+export function runWasmPeelingSession(exports, transferId, payloadOrPackets, kBlocks, dropSet) {
   if (
     !exports?.memory ||
     typeof exports.reset_lt_fountain_session !== "function" ||
@@ -263,7 +299,10 @@ export function runWasmPeelingSession(exports, transferId, payloadBytes, kBlocks
   const k = Math.max(1, Math.min(50, kBlocks | 0));
   const tid = BigInt(transferId);
   exports.reset_lt_fountain_session(tid, k);
-  const pkts = encodeWasmFountainPackets(tid, payloadBytes, k, Math.max(8, Math.ceil(k * 0.75)));
+  const pkts = Array.isArray(payloadOrPackets)
+    ? payloadOrPackets
+    : encodeWasmFountainPackets(tid, payloadOrPackets, k, Math.max(8, Math.ceil(k * 0.75)));
+  if (pkts.length === 0) return null;
   const blkLen = pkts[0].xorPayload.byteLength;
   const outCap = Math.max(64, k * blkLen);
   const xorPtr = typeof exports.wasm_alloc === "function" ? exports.wasm_alloc(blkLen) : 1024;

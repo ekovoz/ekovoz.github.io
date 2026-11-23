@@ -36,26 +36,6 @@ function normalizeVerseEntriesForTanda({ book = "GEN", chapter = 1, verse = 1, t
   return [{ ref: `${book} ${chapter}:${verse}`, text: `${book} ${chapter}:${verse}` }];
 }
 
-function wrapGreedyLines(paragraph, cpl) {
-  const words = String(paragraph || "").trim().split(/\s+/).filter(Boolean);
-  if (words.length === 0) return [];
-  const limit = Math.max(20, cpl);
-  const lines = [];
-  let cur = "";
-  for (const w of words) {
-    if (!cur) {
-      cur = w;
-    } else if (cur.length + 1 + w.length <= limit) {
-      cur += ` ${w}`;
-    } else {
-      lines.push(cur);
-      cur = w;
-    }
-  }
-  if (cur) lines.push(cur);
-  return lines;
-}
-
 function escapePrintHtml(s) {
   return String(s ?? "")
     .replace(/&/g, "&amp;")
@@ -79,7 +59,7 @@ function extractMetaFederationBase(doc = null) {
 }
 
 /**
- * Resuelve determinísticamente la URL de un activo en un shard federado (`editions-01`, `packs-01..07`)
+ * Resuelve determinísticamente la URL de un activo en un shard federado opcional (`packs-mirror`, etc.)
  * leyendo `globalThis.EKOVOZ_FEDERATION_BASE_URL` o `<meta name="ekovoz-federation-base">` (`D3-V2D`, `GAP-01`).
  */
 export function resolveFederatedAssetUrl(shardName, subPath = "", doc = null, options = {}) {
@@ -103,14 +83,14 @@ export function resolveFederatedAssetUrl(shardName, subPath = "", doc = null, op
   return options.dotSlashPrefix ? `./${joinedRel}` : joinedRel;
 }
 
-/** Devuelve el veredicto memoizado de alcanzabilidad del shard `editions-01/` (`true`, `false` o `null`). */
+/** Devuelve el veredicto memoizado de alcanzabilidad del shard opcional de federación (`true`, `false` o `null`). */
 export function getCachedFederationReachability() {
   return cachedFederationReachable;
 }
 
 /**
  * Ejecuta como máximo `1` sonda `HEAD` por sesión con timeout estricto de `800 ms` (`RFC 8305` Happy Eyeballs)
- * sobre `editions-01/fonts/fonts_federation_manifest.json`, memoizando el resultado para no romper jamás el
+ * cuando existe base de federación externa configurada, memoizando el resultado para no romper jamás el
  * *User Activation Gesture* en clics posteriores (`D3-V2D`, `ARB-EKOVOZ-88`).
  */
 export async function probeFederationShardReachabilityOnce({
@@ -186,9 +166,9 @@ export async function probeFederationShardReachabilityOnce({
 }
 
 /**
- * Resuelve en cascada Same-Origin / Federada la ruta de fuentes y ediciones precompiladas (`D1B+` + `D3-V2D`):
+ * Resuelve en cascada Same-Origin la ruta de fuentes y síntesis tipográfica (`D1B+` + `D3-V2D`):
  * 1. Núcleo tipográfico Tier-0 offline empacado en `./assets/fonts/` (`CharisSIL-Regular.ttf`, `Cardo-Hebrew-Biblical.ttf`, `EBGaramond-Greek-Biblical.ttf`).
- * 2. Shards federados en `editions-01/fonts/<Font>.ttf` (vía `resolveFederatedAssetUrl`).
+ * 2. Cierres locales en `./packs/fonts/<Font>.ttf.zst` almacenados en `ekovoz_vault_v2` IndexedDB.
  * 3. Síntesis viva en `tanda_print_worker.js` o `@media print` cuando offline o `web/` aislado.
  */
 export function resolveSameOriginFontAndPdfCascade({
@@ -227,8 +207,20 @@ export function resolveSameOriginFontAndPdfCascade({
 
 /**
  * Construye una hoja completa `@media print` CSS Paged Media (Carril A de la Impresora Bimodal)
- * con `@font-face` Same-Origin (`./assets/fonts/` + `./editions-01/fonts/`) y el 100% de los versículos sin truncamiento.
+ * con `@font-face` Same-Origin (`./assets/fonts/` + `./packs/fonts/*.ttf.zst`) y el 100% de los versículos sin truncamiento.
  */
+function bytesToBase64Print(u8) {
+  if (!(u8 instanceof Uint8Array) || u8.byteLength === 0) return "";
+  if (typeof Buffer !== "undefined") {
+    return Buffer.from(u8.buffer, u8.byteOffset, u8.byteLength).toString("base64");
+  }
+  let bin = "";
+  for (let i = 0; i < u8.byteLength; i += 0x8000) {
+    bin += String.fromCharCode(...u8.subarray(i, i + 0x8000));
+  }
+  return typeof btoa === "function" ? btoa(bin) : "";
+}
+
 export function buildCssPagedMediaPrintHtml({
   lang = "es",
   book = "GEN",
@@ -241,6 +233,8 @@ export function buildCssPagedMediaPrintHtml({
   paper = "a4",
   duplex = true,
   dir = "ltr",
+  vaultedFontBytes = null,
+  vaultedFontBase64 = "",
 } = {}) {
   const entries = normalizeVerseEntriesForTanda({ book, chapter, verse, text, verses });
   const cleanCols = Math.max(1, Math.min(3, Number(columns) || 2));
@@ -248,8 +242,12 @@ export function buildCssPagedMediaPrintHtml({
   const cssPageSize = String(paper || "a4").toLowerCase().includes("letter") ? "letter" : "A4";
   const spineMm = duplex ? "16mm" : "20mm";
   const cascade = resolveSameOriginFontAndPdfCascade({ lang });
-  const primaryFontSrc = cascade.fontUrlsCascade
-    .map((u) => `url("${escapePrintHtml(u)}") format("truetype")`)
+  const inlineB64 = String(vaultedFontBase64 || "").trim() || bytesToBase64Print(vaultedFontBytes);
+  const cascadeUrls = inlineB64
+    ? [`data:font/ttf;base64,${inlineB64}`, ...cascade.fontUrlsCascade]
+    : cascade.fontUrlsCascade;
+  const primaryFontSrc = cascadeUrls
+    .map((u) => `url("${u.startsWith("data:") ? u : escapePrintHtml(u)}") format("truetype")`)
     .join(", ");
   const boldFontSrc = cascade.boldFontUrlsCascade
     .map((u) => `url("${escapePrintHtml(u)}") format("truetype")`)
@@ -262,7 +260,7 @@ export function buildCssPagedMediaPrintHtml({
     .map((e) => `<p class="v"><sup class="vn">${escapePrintHtml(e.ref.split(":").pop() || "")}</sup> ${escapePrintHtml(e.text)}</p>`)
     .join("\n");
   return `<!doctype html>
-<html lang="${escapePrintHtml(lang)}" dir="${dir === "rtl" ? "rtl" : "ltr"}" data-sovereign-font="${escapePrintHtml(cascade.fontFile)}">
+<html lang="${escapePrintHtml(lang)}" dir="${dir === "rtl" ? "rtl" : "ltr"}" data-sovereign-font="${escapePrintHtml(cascade.fontFile)}" data-vaulted-font-bridge="${inlineB64 ? "true" : "false"}">
 <head>
 <meta charset="utf-8">
 <title>${escapePrintHtml(`${book} ${chapter} (${lang})`)}</title>
@@ -291,194 +289,6 @@ ${versesHtml}
 </html>`;
 }
 
-function hersheyGlyphStrokeOps(ch) {
-  const code = ch.codePointAt(0) || 32;
-  if (ch === " ") return { width: 260, ops: "260 0 0 0 0 0 d1\n" };
-  if ("iIl1|!.,:;'\"".includes(ch)) {
-    return {
-      width: 240,
-      ops: "240 0 40 0 200 700 d1 55 w 120 70 m 120 620 l S\n",
-    };
-  }
-  if ("mMwW".includes(ch) || code >= 0x4e00) {
-    return {
-      width: 720,
-      ops: "720 0 40 0 680 700 d1 52 w 60 640 m 180 80 l 360 500 l 540 80 l 660 640 l S\n",
-    };
-  }
-  const topY = ch === ch.toLowerCase() && ch !== ch.toUpperCase() ? 470 : 650;
-  const midY = Math.round(topY * 0.52);
-  const slant = ((code * 37) % 90) - 45;
-  const w = 480 + ((code * 13) % 80);
-  return {
-    width: w,
-    ops: `${w} 0 35 0 ${w - 35} ${topY + 40} d1 48 w 70 65 m ${110 + Math.max(0, slant)} ${topY} l ${w - 85} ${topY} l ${w - 75} 65 l 85 ${midY} m ${w - 95} ${midY} l S\n`,
-  };
-}
-
-function buildDistinctHersheyStrokeFallbackPdf({
-  lines = ["Ekovoz Tanda"],
-  columns = 2,
-  paper = "a4",
-  isRtl = false,
-  fontPt = 9.5,
-  maxPages = 0,
-  editionMode = 0,
-} = {}) {
-  const cols = editionMode === 2 || editionMode === 16 ? 1 : Math.max(1, Math.min(3, Number(columns) || 2));
-  const cleanPt = Math.max(7.5, Math.min(20.0, Number(fontPt) || 9.5));
-  const pLower = String(paper || "a4").toLowerCase();
-  const isLandscape = pLower.includes("landscape") || pLower.includes("apaisado");
-  let baseW = 595.28;
-  let baseH = 841.89;
-  if (pLower.includes("a3")) {
-    baseW = 841.89;
-    baseH = 1190.55;
-  } else if (pLower.includes("folio") || pLower.includes("oficio")) {
-    baseW = 612;
-    baseH = 936;
-  } else if (pLower.includes("letter") || pLower.includes("carta")) {
-    baseW = 612;
-    baseH = 792;
-  }
-  const pageW = isLandscape ? baseH : baseW;
-  const pageH = isLandscape ? baseW : baseH;
-  const marginLeft = 40;
-  const marginRight = editionMode === 2 || editionMode === 16 ? 127.56 : 40;
-  const marginY = 44;
-  const gutter = 14;
-  const colW = Math.max(120, pageW - marginLeft - marginRight - gutter * (cols - 1)) / cols;
-  const lineH = Math.max(10, Math.round(cleanPt * 1.36));
-  const linesPerCol = Math.max(14, Math.floor((pageH - marginY * 2) / lineH));
-  const linesPerPage = linesPerCol * cols;
-  const rawPageCount = Math.max(1, Math.ceil(lines.length / linesPerPage));
-  const pageCount = Number(maxPages) > 0 ? Math.min(Number(maxPages), rawPageCount) : rawPageCount;
-
-  const glyphCodeByChar = new Map();
-  const charByGlyphCode = [];
-  for (const ln of lines) {
-    for (const ch of Array.from(String(ln || ""))) {
-      if (!glyphCodeByChar.has(ch) && charByGlyphCode.length < 223) {
-        const code = 32 + charByGlyphCode.length;
-        glyphCodeByChar.set(ch, code);
-        charByGlyphCode.push(ch);
-      }
-    }
-  }
-  if (charByGlyphCode.length === 0) {
-    glyphCodeByChar.set(" ", 32);
-    charByGlyphCode.push(" ");
-  }
-
-  const encodeHex = (ln) => {
-    let hex = "<";
-    for (const ch of Array.from(String(ln || ""))) {
-      const code = glyphCodeByChar.get(ch) ?? 32;
-      hex += code.toString(16).toUpperCase().padStart(2, "0");
-    }
-    return `${hex}>`;
-  };
-
-  const pageStreams = [];
-  for (let p = 0; p < pageCount; p += 1) {
-    const slice = lines.slice(p * linesPerPage, (p + 1) * linesPerPage);
-    let st = "";
-    if (editionMode === 2 || editionMode === 16) {
-      const noteX0 = (pageW - marginRight + 10).toFixed(1);
-      const noteX1 = (pageW - 18).toFixed(1);
-      st += "0.85 w ";
-      for (let r = 0; r < linesPerCol; r += 2) {
-        const gy = (pageH - marginY - r * lineH - 2).toFixed(1);
-        st += `${noteX0} ${gy} m ${noteX1} ${gy} l S `;
-      }
-      st += "\n";
-    }
-    for (let i = 0; i < slice.length; i += 1) {
-      const rawCol = Math.floor(i / linesPerCol);
-      const effCol = isRtl ? cols - 1 - rawCol : rawCol;
-      const row = i % linesPerCol;
-      const x = (marginLeft + effCol * (colW + gutter)).toFixed(1);
-      const y = (pageH - marginY - row * lineH).toFixed(1);
-      st += `BT /F1 ${cleanPt.toFixed(1)} Tf ${x} ${y} Td ${encodeHex(slice[i])} Tj ET\n`;
-    }
-    pageStreams.push(st);
-  }
-
-  const glyphSpecs = charByGlyphCode.map((ch) => hersheyGlyphStrokeOps(ch));
-  const differences = charByGlyphCode.map((_, idx) => `/g${idx}`).join(" ");
-  const widths = glyphSpecs.map((g) => g.width).join(" ");
-  const firstGlyphObjId = 5;
-  const charProcsEntries = charByGlyphCode.map((_, idx) => `/g${idx} ${firstGlyphObjId + idx} 0 R`);
-
-  const bfChars = charByGlyphCode
-    .map((ch, idx) => {
-      const codeHex = (32 + idx).toString(16).toUpperCase().padStart(2, "0");
-      let u16Hex = "";
-      for (let k = 0; k < ch.length; k += 1) {
-        u16Hex += ch.charCodeAt(k).toString(16).toUpperCase().padStart(4, "0");
-      }
-      return `<${codeHex}> <${u16Hex || "0020"}>`;
-    })
-    .join("\n");
-  const cmap = `/CIDInit /ProcSet findresource begin\n12 dict begin\nbegincmap\n/CIDSystemInfo << /Registry (Adobe) /Ordering (UCS) /Supplement 0 >> def\n/CMapName /EkovozHersheyUTF16 def\n/CMapType 2 def\n1 begincodespacerange\n<00> <FF>\nendcodespacerange\n${charByGlyphCode.length} beginbfchar\n${bfChars}\nendbfchar\nendcmap\nCMapName currentdict /CMap defineresource pop\nend\nend\n`;
-
-  const firstPageObjId = firstGlyphObjId + glyphSpecs.length;
-  const totalObjs = firstPageObjId - 1 + pageCount * 2;
-  const offsets = new Array(totalObjs + 1).fill(0);
-  const chunks = [];
-  let cursor = 0;
-  const enc = new TextEncoder();
-  const pushStr = (s) => {
-    const b = enc.encode(s);
-    chunks.push(b);
-    cursor += b.byteLength;
-  };
-  const writeObj = (id, body) => {
-    offsets[id] = cursor;
-    pushStr(`${id} 0 obj\n${body}\nendobj\n`);
-  };
-
-  pushStr("%PDF-1.7\n");
-  writeObj(1, "<< /Type /Catalog /Pages 2 0 R >>");
-  const kids = Array.from({ length: pageCount }, (_, i) => `${firstPageObjId + i * 2} 0 R`).join(" ");
-  writeObj(2, `<< /Type /Pages /Kids [ ${kids} ] /Count ${pageCount} >>`);
-  writeObj(
-    3,
-    `<< /Type /Font /Subtype /Type3 /FontBBox [0 0 740 720] /FontMatrix [0.001 0 0 0.001 0 0] /CharProcs << ${charProcsEntries.join(" ")} >> /Encoding << /Type /Encoding /Differences [ 32 ${differences} ] >> /FirstChar 32 /LastChar ${31 + charByGlyphCode.length} /Widths [ ${widths} ] /ToUnicode 4 0 R >>`,
-  );
-  writeObj(4, `<< /Length ${enc.encode(cmap).byteLength} >>\nstream\n${cmap}endstream`);
-  for (let idx = 0; idx < glyphSpecs.length; idx += 1) {
-    const ops = glyphSpecs[idx].ops;
-    writeObj(firstGlyphObjId + idx, `<< /Length ${enc.encode(ops).byteLength} >>\nstream\n${ops}endstream`);
-  }
-
-  for (let i = 0; i < pageCount; i += 1) {
-    const pageId = firstPageObjId + i * 2;
-    const contentId = firstPageObjId + 1 + i * 2;
-    writeObj(
-      pageId,
-      `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${pageW.toFixed(2)} ${pageH.toFixed(2)}] /Resources << /Font << /F1 3 0 R >> >> /Contents ${contentId} 0 R >>`,
-    );
-    const stLen = enc.encode(pageStreams[i]).byteLength;
-    writeObj(contentId, `<< /Length ${stLen} >>\nstream\n${pageStreams[i]}endstream`);
-  }
-
-  const xrefOff = cursor;
-  let xref = `xref\n0 ${totalObjs + 1}\n0000000000 65535 f \n`;
-  for (let id = 1; id <= totalObjs; id += 1) {
-    xref += `${String(offsets[id]).padStart(10, "0")} 00000 n \n`;
-  }
-  xref += `trailer\n<< /Size ${totalObjs + 1} /Root 1 0 R >>\nstartxref\n${xrefOff}\n%%EOF\n`;
-  pushStr(xref);
-
-  const out = new Uint8Array(cursor);
-  let pos = 0;
-  for (const c of chunks) {
-    out.set(c, pos);
-    pos += c.byteLength;
-  }
-  return out;
-}
 export function typesetTandaPdfBytes({
   tandaId = "TANDA-01",
   lang = "es",
@@ -493,11 +303,15 @@ export function typesetTandaPdfBytes({
   fontPt = 9.5,
   paper = "a4",
   paperFormat = "",
+  orientation = "",
   dir = "ltr",
+  booklet4n = false,
   maxPages = 0,
   editionMode = 0,
   wasmBytes = null,
   fontBytes = null,
+  bridgeFontBytes = null,
+  boldFontBytes = null,
 } = {}) {
   const effectivePaper = paperFormat || paper || "a4";
   const entries = normalizeVerseEntriesForTanda({ book, chapter, verse, text, verses, versesMap });
@@ -511,35 +325,38 @@ export function typesetTandaPdfBytes({
     editionMode,
     columns,
     paper: effectivePaper,
+    orientation,
     dir,
+    booklet4n,
     fontPt,
     maxPages: maxPages || 200,
     wasmBytes,
     fontBytes,
+    bridgeFontBytes,
+    boldFontBytes,
   });
   if (wasmPdf && wasmPdf.byteLength > 0) {
     return wasmPdf;
   }
 
-  const cols = editionMode === 2 || editionMode === 16 ? 1 : Math.max(1, Math.min(3, Number(columns) || 2));
-  const cleanPt = Math.max(7.5, Math.min(20.0, Number(fontPt) || 9.5));
-  const isLetter = String(effectivePaper).toLowerCase().includes("letter");
-  const pageW = isLetter ? 612 : 595;
-  const colW = Math.max(120, pageW - (editionMode === 2 || editionMode === 16 ? 168 : 80) - 14 * (cols - 1)) / cols;
-  const cpl = Math.max(20, Math.min(86, Math.round(colW / (cleanPt * 0.5))));
-  const wrapped = [];
-  for (const para of rawParagraphs) {
-    for (const ln of wrapGreedyLines(para, cpl)) wrapped.push(ln);
-  }
-  return buildDistinctHersheyStrokeFallbackPdf({
-    lines: wrapped.length > 0 ? wrapped : [headerLine],
-    columns: cols,
+  const err = new Error(
+    `ERR_WASM_TYPESET_REQUIRED: OpenType/WASM StreamingPdfSession (wasmBytes + fontBytes) es obligatorio para PDF '${lang}' (${effectivePaper}); el fallback Type3 Hershey fue purgado (DEB-V2LB-04).`,
+  );
+  err.code = "ERR_WASM_TYPESET_REQUIRED";
+  err.fallbackRecommendation = "css-paged-media";
+  err.printHtml = buildCssPagedMediaPrintHtml({
+    lang,
+    book,
+    chapter,
+    verse,
+    text,
+    verses: entries,
+    columns,
+    fontPt,
     paper: effectivePaper,
-    isRtl: String(dir || "ltr").toLowerCase() === "rtl",
-    fontPt: cleanPt,
-    maxPages,
-    editionMode,
+    dir,
   });
+  throw err;
 }
 
 /**
@@ -592,13 +409,14 @@ export async function dispatchTandaWorkerJob(payload = {}, onProgress = () => { 
 
 /**
  * Planificador Soberano de Impresora Bimodal en Cliente (`D8-A+`, `SLICE-V2R-16`):
- * - Carril A (`dose === 1`, `<= 12` págs): `@media print` CSS Paged Media + Tanda PDF `%PDF-1.7` íntegra (`0` truncamiento).
+ * - Carril A (`dose === 1`, `<= 12` págs): `@media print` CSS Paged Media + Tanda PDF `/FontFile2` WASM.
  * - Carril B (`dose === 2` Libro o `dose === 3` Tanda Biblia `<= 50` págs): composición vía `Web Worker` + `ekovoz_typeset_worker.wasm`.
  */
 export function planBimodalClientPrint(opts = {}) {
   const {
     dose = 1,
     lang = "es",
+    script = "",
     book = "GEN",
     chapter = 1,
     verse = 1,
@@ -610,12 +428,51 @@ export function planBimodalClientPrint(opts = {}) {
     columns = 2,
     fontPt = 9.5,
     paper = "a4",
+    orientation = "",
     dir = "ltr",
+    booklet4n = false,
+    editionMode = 0,
+    wasmBytes = null,
+    fontBytes = null,
+    bridgeFontBytes = null,
+    boldFontBytes = null,
   } = opts;
   const cleanLang = String(lang || "es").trim().toLowerCase() || "es";
   const precompiledLang = resolvePrecompiledDiskLang(cleanLang);
   const entries = normalizeVerseEntriesForTanda({ book, chapter, verse, text, verses, versesMap });
   const emittedChars = entries.reduce((acc, e) => acc + e.text.length, 0);
+
+  const tryWasmTypeset = (tandaId, maxPages) => {
+    try {
+      const bytes = typesetTandaPdfBytes({
+        tandaId,
+        lang: cleanLang,
+        script,
+        book,
+        chapter,
+        verse,
+        verses: entries,
+        columns,
+        fontPt,
+        paper,
+        orientation,
+        dir,
+        booklet4n,
+        maxPages,
+        editionMode,
+        wasmBytes,
+        fontBytes,
+        bridgeFontBytes,
+        boldFontBytes,
+      });
+      return { pdfBytes: bytes, wasmRequired: false };
+    } catch (err) {
+      if (err && err.code === "ERR_WASM_TYPESET_REQUIRED") {
+        return { pdfBytes: new Uint8Array(), wasmRequired: true };
+      }
+      throw err;
+    }
+  };
 
   if (Number(dose) === 1) {
     const maxPagesLaneA = Math.max(1, Math.min(6, (Number(sheets) || 1) * (duplex ? 2 : 1)));
@@ -632,19 +489,7 @@ export function planBimodalClientPrint(opts = {}) {
       duplex,
       dir,
     });
-    const pdfBytes = typesetTandaPdfBytes({
-      tandaId: "DOSIS1-TANDA",
-      lang: cleanLang,
-      book,
-      chapter,
-      verse,
-      verses: entries,
-      columns,
-      fontPt,
-      paper,
-      dir,
-      maxPages: maxPagesLaneA,
-    });
+    const { pdfBytes, wasmRequired } = tryWasmTypeset("DOSIS1-TANDA", maxPagesLaneA);
     return {
       lane: "A",
       mode: precompiledLang ? "lane_a_precompiled_or_css" : "lane_a_css_and_tanda",
@@ -656,23 +501,13 @@ export function planBimodalClientPrint(opts = {}) {
       maxPages: 12,
       printHtml,
       pdfBytes,
+      wasmRequired,
+      fallbackRecommendation: wasmRequired ? "css-paged-media" : null,
     };
   }
 
   const maxPagesPerTanda = 50;
-  const pdfBytes = typesetTandaPdfBytes({
-    tandaId: `DOSIS${dose}-TANDA-01`,
-    lang: cleanLang,
-    book,
-    chapter,
-    verse,
-    verses: entries,
-    columns,
-    fontPt,
-    paper,
-    dir,
-    maxPages: maxPagesPerTanda,
-  });
+  const { pdfBytes, wasmRequired } = tryWasmTypeset(`DOSIS${dose}-TANDA-01`, maxPagesPerTanda);
   return {
     lane: "B",
     mode: "lane_b_worker_tanda",
@@ -685,5 +520,100 @@ export function planBimodalClientPrint(opts = {}) {
     maxPagesPerTanda,
     peakRamCeilingBytes: 14 * 1024 * 1024,
     pdfBytes,
+    wasmRequired,
+    fallbackRecommendation: wasmRequired ? "worker-wasm-async" : null,
+  };
+}
+
+/**
+ * Resuelve un fallback local determinista (Worker WASM o CSS Paged Media `@media print`)
+ * cuando el entorno no sirve un PDF precompilado en `dist/` o la liga actual apunta a `#`.
+ */
+export function resolveLocalPrintArtifactFallback({
+  href = "",
+  distAvailable = false,
+  lang = "es",
+  book = "GEN",
+  chapter = 1,
+  verse = 1,
+  text = "",
+  verses = null,
+  versesMap = null,
+  columns = 2,
+  fontPt = 10.0,
+  paper = "a4",
+  duplex = true,
+  dir = "ltr",
+  stealthMode = false,
+  blockNumber = 1,
+  stealthFilename = "",
+  workerUrl = "./mostrador/tanda_print_worker.js",
+} = {}) {
+  const cleanHref = String(href || "").trim();
+  const cleanLang = String(lang || "es").trim().toLowerCase() || "es";
+  const pointsToDist = /(?:^|\/)dist\//i.test(cleanHref);
+  const hasInlineOrBlob =
+    cleanHref.startsWith("data:") || cleanHref.startsWith("blob:");
+  const paddedBlock = String(Math.max(1, Math.min(80, Number(blockNumber) || 1))).padStart(2, "0");
+  const resolvedFilename = stealthFilename
+    ? String(stealthFilename)
+    : stealthMode
+      ? `notas_estudio_${paddedBlock}.html`
+      : `ekovoz-${cleanLang}-${String(book || "GEN").toLowerCase()}-${Number(chapter) || 1}.html`;
+
+  if (hasInlineOrBlob || (distAvailable && cleanHref && !cleanHref.startsWith("#"))) {
+    return {
+      isFallback: false,
+      mode: "direct-artifact",
+      href: cleanHref,
+      filename: stealthMode ? resolvedFilename : "",
+      printHtml: "",
+      workerUrl,
+      stealthMode: Boolean(stealthMode),
+    };
+  }
+
+  if (!cleanHref || cleanHref.startsWith("#") || pointsToDist || !distAvailable) {
+    const entries = normalizeVerseEntriesForTanda({
+      book,
+      chapter,
+      verse,
+      text,
+      verses,
+      versesMap,
+    });
+    const printHtml = buildCssPagedMediaPrintHtml({
+      lang: cleanLang,
+      book,
+      chapter,
+      verse,
+      text,
+      verses: entries,
+      columns,
+      fontPt,
+      paper,
+      duplex,
+      dir,
+    });
+    return {
+      isFallback: true,
+      mode: "css-paged-media",
+      fallbackTarget: "worker-or-css-paged-media",
+      href: `data:text/html;charset=utf-8,${encodeURIComponent(printHtml)}`,
+      filename: resolvedFilename,
+      printHtml,
+      workerUrl,
+      stealthMode: Boolean(stealthMode),
+    };
+  }
+
+  return {
+    isFallback: false,
+    mode: "direct-artifact",
+    href: cleanHref,
+    filename: resolvedFilename,
+    printHtml: "",
+    workerUrl,
+    stealthMode: Boolean(stealthMode),
   };
 }

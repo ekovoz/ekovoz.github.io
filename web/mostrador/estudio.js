@@ -1,6 +1,6 @@
 import { renderDiglossicParallelBridge, resolveRegionalBridgeLanguage21 } from "./bridge_and_chapter.js";
 export { renderDiglossicParallelBridge, resolveRegionalBridgeLanguage21 };
-// Gaveta bajo demanda: Estudio Palabra por Palabra de 14 Columnas (C01..C14), Realia, NSM y Atribución CC BY 4.0.
+// Gaveta bajo demanda: Estudio Palabra por Palabra de 15 Columnas (col01..col15), Realia, NSM y Atribución CC BY 4.0.
 // Ekovoz Mostrador Ronda 20 — Cero dependencias de Node.js, cero relleno sintético.
 
 import { MATRIX_ROW_COLUMNS } from "./data_layer.js";
@@ -229,10 +229,10 @@ export function humanizeSemanticTagChain(rawTag, uiLocale = "es") {
 }
 
 /**
- * Humaniza las columnas técnicas de la Matriz de 14 Columnas (`D4-R39` / `D2-R45`),
+ * Humaniza las columnas técnicas de la Matriz de 15 Columnas (`col01..col15`, `D4-R39` / `D2-R45`),
  * decodificando taxonomías `SDBH` de 12 dígitos, separando insignias `[Hxxxx]` y traduciendo `NSM-65`.
  */
-export function formatHumanReadable14ColFields(row = {}, uiLocale = "es") {
+export function formatHumanReadable15ColFields(row = {}, uiLocale = "es") {
   const isEn = !String(uiLocale || "es").trim().toLowerCase().startsWith("es");
   const rawRole = String(row.c09_macula_role || "").trim();
   const rawClause = String(row.c10_clause_id || "").trim();
@@ -328,7 +328,7 @@ export function renderStudy14ColDrawerHtml(matrixShard, options = {}) {
   const wordCardsHtml = normalizedRows
     .map((r) => {
       const maculaFrame = classifyMaculaArgumentRole(r.c09_macula_role, r.c08_morph_code);
-      const human = formatHumanReadable14ColFields(r, uiLocale);
+      const human = formatHumanReadable15ColFields(r, uiLocale);
       const isStrongSelected =
         Boolean(activeStrongTarget) &&
         String(r.c07_strong_id || "").trim().toUpperCase() === activeStrongTarget;
@@ -376,7 +376,7 @@ export function renderStudy14ColDrawerHtml(matrixShard, options = {}) {
       nsmEntries
         .map(
           (n) =>
-            `<li data-nsm-strong="${escapeHtml(n.strong_id)}"><code>${escapeHtml(n.strong_id)}</code> <strong>${escapeHtml(n.lemma)}</strong> (${escapeHtml(n.gloss)}): ${escapeHtml(formatHumanReadable14ColFields({ c13_nsm_65: n.nsm_explication }, uiLocale).nsmHuman)}</li>`,
+            `<li data-nsm-strong="${escapeHtml(n.strong_id)}"><code>${escapeHtml(n.strong_id)}</code> <strong>${escapeHtml(n.lemma)}</strong> (${escapeHtml(n.gloss)}): ${escapeHtml(formatHumanReadable15ColFields({ c13_nsm_65: n.nsm_explication }, uiLocale).nsmHuman)}</li>`,
         )
         .join("") +
       `</ul></div>`
@@ -391,7 +391,7 @@ export function renderStudy14ColDrawerHtml(matrixShard, options = {}) {
         .map((re) => {
           const rId = re.id || re.term_id || re.title || re.surface_es || "realia";
           const rTitle = re.title || `${re.surface_es || ""} (${re.lemma_original || re.strong_code || ""})`.trim();
-          const rExp = formatHumanReadable14ColFields({ c13_nsm_65: re.explanation || re.footnote_gloss_es || re.nsm_65_decomposition || "" }, uiLocale).nsmHuman;
+          const rExp = formatHumanReadable15ColFields({ c13_nsm_65: re.explanation || re.footnote_gloss_es || re.nsm_65_decomposition || "" }, uiLocale).nsmHuman;
           return `<li data-realia-id="${escapeHtml(rId)}"><strong>${escapeHtml(rTitle)}:</strong> ${escapeHtml(rExp)}</li>`;
         })
         .join("") +
@@ -509,7 +509,7 @@ export function renderStudyStrataCards(matrixShard, options = {}) {
       nsmItems
         .map(
           (r) =>
-            `<li data-nsm-strong="${escapeHtml(r.c07_strong_id)}"><code>${escapeHtml(r.c07_strong_id)}</code> <strong>${escapeHtml(r.c05_orig_text)}</strong> (${escapeHtml(r.c12_gloss_es)}) → <span style="color:var(--accent-amber);font-weight:600;">${escapeHtml(formatHumanReadable14ColFields(r, uiLocale).nsmHuman)}</span></li>`
+            `<li data-nsm-strong="${escapeHtml(r.c07_strong_id)}"><code>${escapeHtml(r.c07_strong_id)}</code> <strong>${escapeHtml(r.c05_orig_text)}</strong> (${escapeHtml(r.c12_gloss_es)}) → <span style="color:var(--accent-amber);font-weight:600;">${escapeHtml(formatHumanReadable15ColFields(r, uiLocale).nsmHuman)}</span></li>`
         )
         .join("") +
       `</ul>`
@@ -575,7 +575,7 @@ export function renderStudyStrataCards(matrixShard, options = {}) {
         const rTitle =
           re.title ||
           `${re.surface_es || re.term_es || ""} (${re.lemma_original || re.original_lemma || re.strong_code || ""})`.trim();
-        const rExp = formatHumanReadable14ColFields({ c13_nsm_65: re.explanation || re.footnote_gloss_es || re.nsm_65_decomposition || re.nsm_65_explanation || "" }, uiLocale).nsmHuman;
+        const rExp = formatHumanReadable15ColFields({ c13_nsm_65: re.explanation || re.footnote_gloss_es || re.nsm_65_decomposition || re.nsm_65_explanation || "" }, uiLocale).nsmHuman;
         return `<li data-realia-id="${escapeHtml(rId)}"><strong>${escapeHtml(rTitle)}:</strong> ${escapeHtml(rExp)}</li>`;
       })
       .join("") +
@@ -678,7 +678,7 @@ export function renderLeipzig4LineGmisHtml(matrixShard, options = {}) {
             `<code>${escapeHtml(w.c07_strong_id)}</code> · <span>${escapeHtml(w.c08_morph_code)}</span> · <span>${escapeHtml(w.c09_macula_role)}</span>` +
             `</div>` +
             `<div class="gmis-line-3" data-gmis-line="3" style="font-size:0.76rem;color:var(--accent-amber);">` +
-            `NSM-65: ${escapeHtml(formatHumanReadable14ColFields(w, uiLocale).nsmHuman)}` +
+            `NSM-65: ${escapeHtml(formatHumanReadable15ColFields(w, uiLocale).nsmHuman)}` +
             `</div>` +
             `<div class="gmis-line-4" data-gmis-line="4" style="font-size:0.8rem;display:flex;align-items:center;justify-content:space-between;gap:0.35rem;">` +
             `<span class="gmis-bridge-gloss">${escapeHtml(w.c12_gloss_es)}</span>` +

@@ -75,7 +75,7 @@
     <link rel="stylesheet" href="./mostrador.css">
 </head>
 
-<body>
+<body data-surface-mode="reader" data-theme="light" data-font-family="serif" data-stealth-mode="false">
     <header id="sovereignTopBar"
         style="max-width: 760px; margin: 0 auto 0.45rem auto; padding: 0.45rem 0.75rem; border: 1px solid var(--card-border); border-radius: 12px; background: var(--card-bg); display: flex; flex-direction: column; gap: 0.35rem;">
         <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.4rem;">
@@ -132,7 +132,29 @@
                     <option value="ur">اردو</option>
                     <option value="fa">فارسی</option>
                 </select>
+                <button type="button" class="uls-chip" id="btnAppearanceMenu" aria-expanded="false"
+                    aria-controls="appearancePopover" aria-label="Appearance settings"
+                    style="padding: 0.3rem 0.6rem; font-weight: 700;">Aa</button>
+                <button type="button" class="uls-chip" id="btnToggleSurfaceMode" aria-pressed="false"
+                    aria-label="Switch Reading or Pro Studio mode" style="padding: 0.3rem 0.6rem;">🎛️ Studio</button>
             </div>
+        </div>
+        <div id="appearancePopover" hidden role="region" aria-label="Typography and Theme"
+            style="padding: 0.5rem 0.65rem; border: 1px solid var(--card-border); border-radius: 12px; background: var(--bg-secondary); display: flex; flex-wrap: wrap; align-items: center; gap: 0.35rem;">
+            <button type="button" id="btnThemeLight" class="uls-chip" aria-pressed="true"
+                style="padding: 0.25rem 0.55rem;">☀️ Día</button>
+            <button type="button" id="btnThemeSepia" class="uls-chip" aria-pressed="false"
+                style="padding: 0.25rem 0.55rem;">📜 Sepia</button>
+            <button type="button" id="btnThemeDark" class="uls-chip" aria-pressed="false"
+                style="padding: 0.25rem 0.55rem;">🌙 Noche</button>
+            <button type="button" id="btnFontSerif" class="uls-chip" aria-pressed="true"
+                style="padding: 0.25rem 0.55rem;">Serif</button>
+            <button type="button" id="btnFontSans" class="uls-chip" aria-pressed="false"
+                style="padding: 0.25rem 0.55rem;">Sans</button>
+            <button type="button" id="btnScaleDown" class="uls-chip" aria-label="Decrease text size"
+                style="padding: 0.25rem 0.55rem;">A-</button>
+            <button type="button" id="btnScaleUp" class="uls-chip" aria-label="Increase text size"
+                style="padding: 0.25rem 0.55rem;">A+</button>
         </div>
         <!-- Global Orthogonal Corpus Language Funnel (6 Complete Bibles + 7,164 Funnel) & 8 Life Trails (D2-A+) -->
         <details class="advanced-editorial-drawer" id="bibleLanguageAndRegisterDrawer" style="margin-top: 0.25rem;">
@@ -354,7 +376,7 @@
                     <button type="button" id="btnRegBilingue" class="uls-chip" data-register="bilingue"
                         data-i18n="mostrador.register.bilingual"
                         style="white-space: nowrap; padding: 0.2rem 0.45rem; font-size: 0.74rem;">👥 Side-by-side
-                        bilingual (58/42)</button>
+                        bilingual (62/38)</button>
                     <button type="button" id="toggleRollMode" class="uls-chip"
                         data-i18n="mostrador.register.roll_toggle"
                         style="white-space: nowrap; padding: 0.2rem 0.45rem; font-size: 0.74rem;">📄 Page view ↔
@@ -365,7 +387,7 @@
                 </div>
                 <button type="button" id="btnRegEstudio" class="uls-chip" data-study-shortcut="true"
                     data-i18n="mostrador.register.study" hidden aria-hidden="true" tabindex="-1">🔬 Word-by-word study
-                    (14 Columns)</button>
+                    (15 Columns)</button>
             </div>
         </div>
 
@@ -380,6 +402,9 @@
                     style="flex: 1; min-height: 48px; padding: 0.45rem 0.75rem; border-radius: 10px; border: 1px solid var(--select-border); background: var(--select-bg); color: var(--text-primary);">
                 <button type="button" id="btnGoReference" class="uls-chip"
                     data-i18n="mostrador.step2.open_compass">Go</button>
+            </div>
+            <div id="spotlightSearchResults" role="listbox" aria-label="Spotlight Corpus Results" hidden
+                style="display:flex;flex-direction:column;gap:0.25rem;margin-bottom:0.65rem;max-height:220px;overflow-y:auto;">
             </div>
             <div style="display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 0.75rem;">
                 <select id="bibleSelectBook" aria-label="Bible Book (66 Books)">
@@ -523,7 +548,7 @@
                     </div>
                 </details>
             </div>
-            <!-- Socratic Wonder Pedagogical Card for 28 Plates (D9-A+) -->
+            <!-- Socratic Wonder Pedagogical Card for 27 Plates (D9-A+ / D7-V3UX) -->
             <aside id="felicesSocraticWonderCard" class="socratic-wonder-card" aria-live="polite"
                 style="margin: 0.65rem 0; padding: 0.65rem 0.85rem; border-radius: 12px; border: 1px solid var(--card-border); background: var(--bg-secondary); font-size: 0.86rem; line-height: 1.45;">
             </aside>
@@ -588,8 +613,8 @@
             <h2 id="evangeliosMainHeading" style="font-size:0.88rem;line-height:1.15;margin:0;">🌅 Los Evangelios · 52
                 Láminas</h2>
             <div style="display:flex;flex-wrap:nowrap;align-items:center;gap:0.25rem;">
-                <select id="evangeliosLangSelect" aria-label="Idioma de Los Evangelios"
-                    style="min-height:48px;padding:0.2rem 0.45rem;border-radius:10px;border:1px solid var(--select-border);background:var(--select-bg);color:var(--text-primary);font-size:0.78rem;">
+                <select id="evangeliosLangSelect" aria-label="Idioma de Los Evangelios" hidden
+                    style="display:none;min-height:48px;padding:0.2rem 0.45rem;border-radius:10px;border:1px solid var(--select-border);background:var(--select-bg);color:var(--text-primary);font-size:0.78rem;">
                     <option value="es" selected>🇲🇽 Español (es)</option>
                     <option value="en">🇺🇸 English (en)</option>
                     <option value="pt">🇧🇷 Português (pt)</option>
@@ -598,8 +623,10 @@
                     <option value="gn">🇵🇾 Avañe'ẽ Guaraní (gn)</option>
                     <option value="stp">🏔️ O'dam Tepehuano (stp)</option>
                 </select>
-                <span class="uls-badge" id="evangeliosGlobalLangBadge" data-unified-header="true" hidden
-                    style="display:none;white-space:nowrap;">🌍 Global Bar</span>
+                <span class="uls-badge" id="evangeliosGlobalLangBadge" data-unified-header="true" role="button"
+                    tabindex="0"
+                    style="display:inline-flex;align-items:center;min-height:48px;padding:0.2rem 0.55rem;cursor:pointer;white-space:nowrap;">🌍
+                    ES · 7,164</span>
             </div>
         </div>
         <div id="evangeliosQuarterTabs" role="tablist" aria-label="Liturgical Quarters"
@@ -649,30 +676,30 @@
             <button type="button" id="bibleEasyDrawer" class="uls-chip" data-open="false" aria-expanded="false"
                 aria-controls="bibleEasyDrawerPanel"
                 style="padding:0.25rem 0.45rem;font-size:0.76rem;line-height:1.15;"><strong
-                    data-i18n="mostrador.door.study">💡 1. Word-by-Word Study (14 Columns)</strong><span
-                    class="uls-badge hig-tech-meta" hidden>14 Col</span></button>
+                    data-i18n="mostrador.door.study">💡 1. Word-by-Word Study (15 Columns)</strong><span
+                    class="uls-badge hig-tech-meta" hidden>15 Col</span></button>
             <button type="button" id="btnOpenPrintEditionsSheet" class="uls-chip" data-open="false"
                 aria-expanded="false" aria-controls="biblePrintEditionsSheet"
                 style="padding:0.25rem 0.45rem;font-size:0.76rem;line-height:1.15;"><strong
                     data-i18n="mostrador.door.print">🖨️ 2. Print &amp; 14 PDF Editions</strong></button>
-            <button type="button" id="btnOpenFieldWorkshopSheet" class="uls-chip" data-open="false"
+            <button type="button" id="btnOpenFieldWorkshopSheet" class="uls-chip studio-only-control" data-open="false"
                 aria-expanded="false" aria-controls="bibleFieldWorkshopSheet"
                 style="padding:0.25rem 0.45rem;font-size:0.76rem;line-height:1.15;"><strong
                     data-i18n="mostrador.door.improve">🌱 3. Suggest Improvement</strong></button>
-            <button type="button" id="btnOpenShareAndAuditSheet" class="uls-chip" data-open="false"
+            <button type="button" id="btnOpenShareAndAuditSheet" class="uls-chip studio-only-control" data-open="false"
                 aria-expanded="false" aria-controls="bibleShareAndAuditSheet"
                 style="padding:0.25rem 0.45rem;font-size:0.76rem;line-height:1.15;"><strong
                     data-i18n="mostrador.door.share">📲 4. Share Offline &amp; QR</strong></button>
         </nav>
 
-        <!-- Drawer 1: 14-Column Word-by-Word Study (Lazy-loaded via estudio.js) -->
+        <!-- Drawer 1: 15-Column Word-by-Word Study (Lazy-loaded via estudio.js) -->
         <section id="bibleEasyDrawerPanel" class="apple-sheet" data-sheet="study" data-strong-id="G3056" hidden>
-            <h3 style="font-size: 1rem; margin-bottom: 0.5rem;" data-i18n="study.title">14-Column Word-by-Word Study
+            <h3 style="font-size: 1rem; margin-bottom: 0.5rem;" data-i18n="study.title">15-Column Word-by-Word Study
                 &amp; Biblical World</h3>
             <nav id="studyHarelSubtabsBar" role="tablist" aria-label="Word Study and Philology Subtabs"
                 style="display:flex;flex-wrap:wrap;gap:0.35rem;margin-bottom:0.6rem;">
                 <button type="button" id="btnStudySubtabWords" class="uls-chip" role="tab" data-study-subtab-btn="words"
-                    data-i18n="study.subtab.words" aria-selected="true" aria-pressed="true">🔤 1. Words (14-Col) &amp;
+                    data-i18n="study.subtab.words" aria-selected="true" aria-pressed="true">🔤 1. Words (15-Col) &amp;
                     Lexicon</button>
                 <button type="button" id="btnStudySubtabRosetta" class="uls-chip" role="tab"
                     data-study-subtab-btn="rosetta" data-i18n="study.subtab.diachronic" aria-selected="false"
@@ -723,6 +750,8 @@
                     substitutions in this chapter</summary>
                 <div id="diachronicRegisterAuditPanel" style="margin-top:0.35rem;font-size:0.82rem;"></div>
             </details>
+            <div id="bibleBranchAndTypologyPanel" data-study-subtab-panel="calibrate" hidden
+                style="margin-top: 0.6rem; font-size: 0.85rem;"></div>
         </section>
 
         <!-- Drawer 2: Print Settings & 14 Canonical PDF Editions -->
@@ -776,6 +805,17 @@
                         data-i18n="dose.3.cta">📚 Full Bible</a>
                 </div>
             </div>
+            <div data-print-subtab-panel="doses"
+                style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:0.5rem;margin-bottom:0.65rem;">
+                <label
+                    style="display:inline-flex;align-items:center;gap:0.4rem;font-size:0.8rem;min-height:44px;cursor:pointer;">
+                    <input type="checkbox" id="chkStealthPackMode">
+                    <span>🥷 Stealth Filename Mode (Neutral Study Filenames)</span>
+                </label>
+                <button type="button" id="btnPrintCssPagedMedia" class="uls-chip"
+                    style="min-height:48px;padding:0.35rem 0.75rem;font-size:0.8rem;">🖨️ Print via CSS Paged Media
+                    (@media print)</button>
+            </div>
             <div id="tanda-offline-font-notice" class="tanda-offline-notice" role="status" hidden></div>
             <div id="bibleEditionsCatalogGrid" data-print-subtab-panel="doses"
                 style="display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 0.65rem; margin-bottom: 0.85rem;">
@@ -827,23 +867,21 @@
                 style="margin-bottom: 0.65rem; font-size: 0.82rem;"></div>
             <div id="duplexAssistantPanel" data-print-subtab-panel="imposition"
                 style="margin-bottom: 0.75rem; font-size: 0.85rem;"></div>
-            <div data-print-subtab-panel="stationery"
-                style="display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; margin-bottom: 0.65rem;">
-                <button type="button" id="btnSimulatePhotocopy3Gen" class="uls-chip"
-                    data-i18n="print.btn.photocopy3gen">🔬 Test Photocopy Legibility (3rd
-                    Gen)</button>
-                <details class="hig-tech-receipt-details">
-                    <summary id="photocopyTechReceiptSummary" data-i18n="print.photocopyReceiptSummary"
-                        style="cursor:pointer;">🔬 Optical &amp; typographic
-                        receipt</summary>
+            <details id="printPhotocopyStressDetails" class="hig-tech-receipt-details"
+                data-print-subtab-panel="stationery" style="margin-bottom: 0.65rem;">
+                <summary id="photocopyTechReceiptSummary" data-i18n="print.photocopyReceiptSummary"
+                    style="cursor:pointer;">🔬 Optical &amp; typographic
+                    receipt</summary>
+                <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; margin-top: 0.5rem;">
+                    <button type="button" id="btnSimulatePhotocopy3Gen" class="uls-chip"
+                        data-i18n="print.btn.photocopy3gen">🔬 Test Photocopy Legibility (3rd
+                        Gen)</button>
                     <span id="biblePhotocopySimBadge" class="uls-badge" data-euler-delta="0"
                         data-min-stroke-pt="0.75">Sauvola R=128 · ≥0.75 pt · Δχ=0</span>
-                </details>
-            </div>
-            <div id="bibleBranchAndTypologyPanel" data-print-subtab-panel="stationery"
-                style="margin-bottom: 0.75rem; font-size: 0.85rem;"></div>
-            <div id="editorialGraphicsPhotocopyHost" data-print-subtab-panel="stationery"
-                style="margin-bottom: 0.75rem; font-size: 0.85rem;"></div>
+                </div>
+                <div id="editorialGraphicsPhotocopyHost" data-print-subtab-panel="stationery"
+                    style="margin-top: 0.65rem; margin-bottom: 0.25rem; font-size: 0.85rem;"></div>
+            </details>
             <div id="stationeryCardPanel" data-print-subtab-panel="stationery"
                 style="margin-bottom: 0.75rem; font-size: 0.85rem;"></div>
         </section>
@@ -919,6 +957,8 @@
             <video id="bibleOpticalCameraVideo" data-dosis-subtab-panel="pdf" hidden playsinline muted
                 style="max-width: 240px; border-radius: 10px; border: 1px solid var(--card-border); margin-bottom: 0.5rem;"></video>
             <div id="offlinePacksCatalogPanel" data-dosis-subtab-panel="mesh" style="margin-bottom: 0.75rem;"></div>
+            <div id="editorialFontPackVaultPanel" data-dosis-subtab-panel="mesh" style="margin-bottom: 0.75rem;"></div>
+            <div id="shareOpenGraphCardPanel" data-dosis-subtab-panel="mesh" style="margin-bottom: 0.75rem;"></div>
             <div id="bibleOpticalQrStreamPanel" data-dosis-subtab-panel="pdf" hidden style="margin-bottom: 0.75rem;">
             </div>
             <div id="opticalReceiverRxPanel" data-dosis-subtab-panel="pdf" hidden style="margin-bottom: 0.75rem;"></div>

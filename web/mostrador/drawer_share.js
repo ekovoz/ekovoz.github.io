@@ -10,14 +10,12 @@ import {
   verifyArtifactProjectionClosure,
 } from "./data_layer.js";
 import { lookupPericopeConstructiveReceipt } from "./diachronic_register.js";
-import { computeKindlePrintBudget, renderImpositionAndLayoutPreviewHtml } from "./dosis_editions_catalog.js";
 import {
   bindOpticalCameraAndCadenceController,
   hydrateOpticalTxAndRxPanels,
   stopQrBeamAutoCadenceTimer,
 } from "./drawer_share_optical_controller.js";
 import { applyHarelSubtabSelection } from "./drawer_study.js";
-import { isRtlLocale } from "./i18n.js";
 import { validateAllEightLocksPda } from "./mejorar.js";
 import {
   CANONICAL_ECO_PACKS_MANIFEST,
@@ -31,7 +29,7 @@ import {
   exportBundleAsFile,
   hydrateEcoPacksManifest,
   importBundleFromFile,
-  listPacksFromIndexedDb,
+  listPacksFromIndexedDbAsync,
   loadPackFromIndexedDb,
   parseEkpackContainerJs,
   parseEkpackPreamble32Js,
@@ -44,33 +42,36 @@ import {
   verifyEd25519ManifestSignatureWebCrypto
 } from "./offline_mesh.js";
 import {
-  computeSaddleStitchImpositionPlan,
+  MAX_ECO_GRID_29_PAYLOAD_BYTES,
+  MAX_OPTICAL_AIRGAP_PAYLOAD_BYTES,
   createRelayEncoderFromDecoded,
   verifyManifestAndMerkleAudit,
 } from "./optical_lt.js";
 
+import {
+  effectiveThreatClassWeb,
+  resolveCanonicalBlockCode,
+  stealthNeutralFilenameWeb,
+} from "./dosis.js";
+import { buildOpenGraphSocialCardSvg1200x630 } from "./drawer_print.js";
+import {
+  mountOfflineFontNoticeWithLocalImporter,
+  summarizeOfflineFontsVaultCatalog,
+} from "./offline_font_bundle.js";
+
 export const HAREL_DOSIS_SUBTABS = ["pdf", "mesh", "graphics"];
-export const MAX_ECO_GRID_29_PAYLOAD_BYTES = 4096;
-export const MAX_OPTICAL_AIRGAP_PAYLOAD_BYTES = 16384;
+export {
+  MAX_ECO_GRID_29_PAYLOAD_BYTES,
+  MAX_OPTICAL_AIRGAP_PAYLOAD_BYTES
+};
 
 /**
- * Compuerta bimodal honesta de Shannon/Nyquist (`D10-V2K+`):
- * - Cargas `<= 4 KB` (`ECO-GRID 29×29` a `12 B/cuadro × 6.5 fps = 78 B/s`): canal óptico compacto en silencio RF.
- * - Cargas `<= 16 KB` (`QR >= v10`): ráfaga óptica extendida con verificación CRC32 + GF(2).
- * - Cargas `> 16 KB` (`.ekpack` completos o capítulos largos): transferencia directa de archivo o HTML Quine en `1 s`.
+ * Compuerta bimodal honesta de Shannon/Nyquist (`D5-V2LE`):
+ * - Cargas `<= 4 KB` (`ECO-GRID 29×29` a `12 B/cuadro × 6.5 fps = 78 B/s <= 80 B/s`): canal óptico en silencio RF.
+ * - Cargas `> 4 KB`: transferencia directa de archivo o HTML Quine auto-contenida (retirada promesa inexistente `qr-v10`).
  */
 export function selectBimodalAirgapChannel(payloadByteLength) {
   const bytes = Math.max(0, Number(payloadByteLength) || 0);
-  if (bytes > MAX_OPTICAL_AIRGAP_PAYLOAD_BYTES) {
-    return {
-      mode: "native-file-share",
-      opticalProfile: "file-or-quine-html",
-      maxOpticalBytes: MAX_OPTICAL_AIRGAP_PAYLOAD_BYTES,
-      maxEcoGrid29Bytes: MAX_ECO_GRID_29_PAYLOAD_BYTES,
-      payloadBytes: bytes,
-      estimatedSecondsAt6_5Fps: 1.0,
-    };
-  }
   if (bytes <= MAX_ECO_GRID_29_PAYLOAD_BYTES) {
     const ecoGridBytesPerSec = 12 * 6.5;
     return {
@@ -82,14 +83,13 @@ export function selectBimodalAirgapChannel(payloadByteLength) {
       estimatedSecondsAt6_5Fps: Number((bytes / ecoGridBytesPerSec).toFixed(2)),
     };
   }
-  const qrV10BytesPerSec = 1850;
   return {
-    mode: "optical-qr-camera",
-    opticalProfile: "qr-v10-high-density",
-    maxOpticalBytes: MAX_OPTICAL_AIRGAP_PAYLOAD_BYTES,
-    throughputBytesPerSec: qrV10BytesPerSec,
+    mode: "native-file-share",
+    opticalProfile: "file-or-quine-html",
+    maxOpticalBytes: MAX_ECO_GRID_29_PAYLOAD_BYTES,
+    maxEcoGrid29Bytes: MAX_ECO_GRID_29_PAYLOAD_BYTES,
     payloadBytes: bytes,
-    estimatedSecondsAt6_5Fps: Number((bytes / qrV10BytesPerSec).toFixed(2)),
+    estimatedSecondsAt6_5Fps: 1.0,
   };
 }
 
@@ -125,30 +125,40 @@ function resolveSignedPackReceipt(langCode = "es", state = null, dataLayer = nul
     : Array.isArray(layerManifest?.packs)
       ? layerManifest.packs
       : [];
+  const manifestProvided =
+    Boolean(state?.packManifestLoaded) ||
+    statePacks.length > 0 ||
+    layerPacks.length > 0;
   const sources = [...statePacks, ...layerPacks, ...CANONICAL_ECO_PACKS_MANIFEST];
   const hasSig = (p) =>
     p &&
     String(p.ed25519SignatureHex || "").trim().length > 0 &&
     String(p.signingMessage || "").trim().length > 0;
   const exactSigned = sources.find((p) => String(p?.lang || "").toLowerCase() === clean && hasSig(p));
-  if (exactSigned) return exactSigned;
+  if (exactSigned) return { ...exactSigned, _manifestProvided: manifestProvided };
   const baseSigned = sources.find((p) => String(p?.lang || "").toLowerCase() === base && hasSig(p));
-  if (baseSigned) return baseSigned;
+  if (baseSigned) return { ...baseSigned, _manifestProvided: manifestProvided };
   const stored = STORED_ECO_PACKS.get(clean) || STORED_ECO_PACKS.get(base) || null;
   if (stored?.hdr) {
+    const signingMessage =
+      stored.hdr.ev3_signing_message || buildEkpackSigningMessageV2(stored.hdr);
     return {
       ...stored,
       lang: clean,
-      signingMessage: buildEkpackSigningMessageV2(stored.hdr),
+      signingMessage,
       ed25519SignatureHex: String(stored.hdr.ed25519_signature_hex || stored.signatureHex || ""),
       ed25519PublicKeyHex: String(stored.hdr.ed25519_public_key_hex || SOVEREIGN_ED25519_PUBLIC_KEY_HEX),
+      _manifestProvided: manifestProvided,
     };
   }
-  return (
+  const fallback =
     sources.find((p) => String(p?.lang || "").toLowerCase() === clean) ||
     sources.find((p) => String(p?.lang || "").toLowerCase() === base) ||
-    CANONICAL_ECO_PACKS_MANIFEST[0]
-  );
+    CANONICAL_ECO_PACKS_MANIFEST[0];
+  return {
+    ...(fallback || { lang: clean }),
+    _manifestProvided: manifestProvided,
+  };
 }
 
 function renderEditorialAuditAttestationHtml({
@@ -161,9 +171,10 @@ function renderEditorialAuditAttestationHtml({
   uiLocale = "es",
 } = {}) {
   const isEn = String(uiLocale || "es").trim().toLowerCase().startsWith("en");
+  const normalizedSurface = String(verseSurface || "").normalize("NFC");
   const eightLocksReport = validateAllEightLocksPda({
-    oldSurface: verseSurface,
-    newSurface: verseSurface,
+    oldSurface: normalizedSurface,
+    newSurface: normalizedSurface,
   });
   const eightLocksPillsHtml = eightLocksReport.locks
     .map(
@@ -202,11 +213,15 @@ function renderEditorialAuditAttestationHtml({
   const nyquistMs = Number(rt.wasm_and_optical_abi?.interval_ms) || 150;
   const bilateralDims = Array.isArray(rt.bilateral_filter_dims) ? rt.bilateral_filter_dims.join("x") : "4x4";
 
+  const isVerifiedSig = ed25519Verified === true;
+  const ed25519GateAttr = String(isVerifiedSig);
+  const ed25519BadgeText = isVerifiedSig ? "✅ Ed25519 VERIFIED" : "⛔ Ed25519 REJECTED";
+
   return (
-    `<div class="editorial-attestation-receipt" data-ed25519-verified="${Boolean(ed25519Verified)}" data-eight-locks-status="${escapeHtml(eightLocksReport.status)}" data-zero-truncation="${zeroTrunc}" data-living-languages="${totalLangs}" data-rust-surface-score="${surfaceScore}" style="padding:0.6rem 0.75rem;border-radius:10px;border:1px solid var(--card-border);background:var(--card-bg);font-size:0.76rem;display:flex;flex-direction:column;gap:0.45rem;">` +
+    `<div class="editorial-attestation-receipt" data-ed25519-verified="${ed25519GateAttr}" data-eight-locks-status="${escapeHtml(eightLocksReport.status)}" data-zero-truncation="${zeroTrunc}" data-living-languages="${totalLangs}" data-rust-surface-score="${surfaceScore}" style="padding:0.6rem 0.75rem;border-radius:10px;border:1px solid var(--card-border);background:var(--card-bg);font-size:0.76rem;display:flex;flex-direction:column;gap:0.45rem;">` +
     `<div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:0.35rem;">` +
     `<strong>🛡️ ${isEn ? "Sovereign Cryptographic Attestation & 8 Deterministic Locks" : "Atestación Criptográfica Soberana y 8 Candados Deterministas"}</strong>` +
-    `<span class="uls-badge" data-ed25519-gate="${Boolean(ed25519Verified)}">${ed25519Verified ? "✅ Ed25519 VERIFIED" : "⛔ Ed25519 REJECTED"} · Zero-Truncation=${zeroTrunc ? "OK" : "PENDING"}</span>` +
+    `<span class="uls-badge" data-ed25519-gate="${ed25519GateAttr}">${ed25519BadgeText} · Zero-Truncation=${zeroTrunc ? "OK" : "PENDING"}</span>` +
     `</div>` +
     `<div class="eight-locks-pda-bar" data-eight-locks-bar="true" style="display:flex;flex-wrap:wrap;gap:0.3rem;">${eightLocksPillsHtml}</div>` +
     `<div data-master-census-7keys="true" style="display:flex;flex-wrap:wrap;gap:0.3rem;">` +
@@ -262,6 +277,10 @@ export function hydrateShareAndAuditDrawerPanel(ctx = {}) {
       .then((cat) => {
         if (cat) {
           hydrateEcoPacksManifest(cat);
+          if (typeof hydrateShareAndAuditDrawer === "function" && !state._offlinePacksRehydratedOnce) {
+            state._offlinePacksRehydratedOnce = true;
+            hydrateShareAndAuditDrawer(targetDoc);
+          }
         }
       })
       .catch(() => { });
@@ -269,6 +288,28 @@ export function hydrateShareAndAuditDrawerPanel(ctx = {}) {
 
   const packsPanel = getEl("offlinePacksCatalogPanel", targetDoc);
   if (packsPanel) {
+    if (
+      !state._vaultShareHydratedOnce &&
+      !state._vaultShareHydratingPromise &&
+      typeof listPacksFromIndexedDbAsync === "function"
+    ) {
+      state._vaultShareHydratingPromise = Promise.resolve(
+        listPacksFromIndexedDbAsync({ force: !Array.isArray(state._hydratedVaultPacks) }),
+      )
+        .then((vaultPacks) => {
+          state._vaultShareHydratedOnce = true;
+          state._hydratedVaultPacks = Array.isArray(vaultPacks) ? vaultPacks : [];
+          state._vaultShareHydratingPromise = null;
+          if (typeof hydrateShareAndAuditDrawer === "function" && packsPanel.isConnected !== false) {
+            hydrateShareAndAuditDrawer(targetDoc);
+          }
+          return state._hydratedVaultPacks;
+        })
+        .catch(() => {
+          state._vaultShareHydratingPromise = null;
+          return [];
+        });
+    }
     const activeVerseText =
       state.lastNavResult?.chapter?.verses?.[String(state.verse)] ||
       "En el principio creó Dios los cielos y la tierra.";
@@ -280,6 +321,7 @@ export function hydrateShareAndAuditDrawerPanel(ctx = {}) {
       activeVerseRef: `${state.book}.${state.chapter}.${state.verse}`,
       activeVerseText,
       uiLocale: state.uiLocale || "es",
+      vaultPacks: Array.isArray(state._hydratedVaultPacks) ? state._hydratedVaultPacks : null,
     });
     const quineBtnEl = getEl("btnShareQuine", targetDoc);
     if (quineBtnEl && typeof quineBtnEl.setAttribute === "function") {
@@ -294,6 +336,92 @@ export function hydrateShareAndAuditDrawerPanel(ctx = {}) {
       ecoMeshCardHtml +
       `</div>`;
 
+    const ensureShareChildHost = (hostId) => {
+      const existing = getEl(hostId, targetDoc);
+      if (existing) return existing;
+      if (packsPanel?.parentNode && typeof targetDoc?.createElement === "function") {
+        const el = targetDoc.createElement("div");
+        el.id = hostId;
+        if (typeof el.setAttribute === "function") {
+          el.setAttribute("data-dosis-subtab-panel", "mesh");
+        }
+        if (typeof packsPanel.parentNode.appendChild === "function") {
+          packsPanel.parentNode.appendChild(el);
+        }
+        return el;
+      }
+      return null;
+    };
+
+    if (!state._fontsZstManifestRequested && typeof dataLayer?.loadJson === "function") {
+      state._fontsZstManifestRequested = true;
+      Promise.resolve(dataLayer.loadJson("data/fonts_zst_manifest.json"))
+        .then((fontsManifest) => {
+          if (fontsManifest) {
+            state.fontsZstManifest = fontsManifest;
+            if (typeof hydrateShareAndAuditDrawer === "function" && packsPanel.isConnected !== false) {
+              hydrateShareAndAuditDrawer(targetDoc);
+            }
+          }
+        })
+        .catch(() => { });
+    }
+
+    const fontVaultHost = ensureShareChildHost("editorialFontPackVaultPanel");
+    if (fontVaultHost) {
+      const fontSummary = summarizeOfflineFontsVaultCatalog(state.fontsZstManifest || null);
+      fontVaultHost.hidden = false;
+      fontVaultHost.innerHTML =
+        `<div id="ekfontsVaultSummaryCard" data-ekfonts-bundle="${escapeHtml(fontSummary.bundleFile)}" data-fonts-count="${fontSummary.totalFonts}" style="padding:0.6rem 0.75rem;border-radius:10px;border:1px solid var(--card-border);background:var(--card-bg);font-size:0.79rem;">` +
+        `<div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:0.4rem;margin-bottom:0.4rem;">` +
+        `<strong>🔤 ${isEn ? "Sovereign Font Vault (.ekfonts · 34 .ttf.zst)" : "Bóveda Tipográfica Soberana (.ekfonts · 34 .ttf.zst)"}</strong>` +
+        `<a class="uls-chip" href="${escapeHtml(fontSummary.bundleUrl)}" download="${escapeHtml(fontSummary.bundleFile)}" data-ekfonts-bundle-url="${escapeHtml(fontSummary.bundleUrl)}" style="min-height:48px;min-width:48px;display:inline-flex;align-items:center;padding:0.25rem 0.65rem;text-decoration:none;font-size:0.75rem;">📦 ${escapeHtml(fontSummary.bundleFile)} (${fontSummary.totalFonts || 34})</a>` +
+        `</div>` +
+        `<div id="shareOfflineFontImporterHost"></div>` +
+        `</div>`;
+      const importerHost = getEl("shareOfflineFontImporterHost", targetDoc);
+      if (importerHost) {
+        mountOfflineFontNoticeWithLocalImporter(
+          importerHost,
+          {
+            targetFontFile: "CharisSIL-Regular.ttf",
+            fontsManifest: fontSummary.fonts,
+          },
+          {
+            targetDoc,
+            onImported: () => hydrateShareAndAuditDrawer?.(targetDoc),
+          },
+        );
+      }
+    }
+
+    const ogHost = ensureShareChildHost("shareOpenGraphCardPanel");
+    if (ogHost) {
+      const isStealth =
+        Boolean(state.stealthMode) ||
+        effectiveThreatClassWeb(state.countryIso2 || "MX", activeLang) === "CLASS_C_STEALTH";
+      const blk = resolveCanonicalBlockCode(state.book || "GEN", state.chapter || 1, state.verse || 1);
+      const ogCard = buildOpenGraphSocialCardSvg1200x630({
+        book: state.book || "GEN",
+        chapter: state.chapter || 1,
+        verse: state.verse || 1,
+        text: activeVerseText,
+        lang: activeLang,
+        activeGen: state.photocopyGen ?? 3,
+        sauvolaK: state.sauvolaK ?? 0.25,
+      });
+      const ogFilename = isStealth
+        ? stealthNeutralFilenameWeb(blk.blockNumber || 1, "svg")
+        : `ekovoz_${String(state.book || "gen").toLowerCase()}_${Number(state.chapter) || 1}_${Number(state.verse) || 1}_1200x630.svg`;
+      ogHost.hidden = false;
+      ogHost.innerHTML =
+        `<div class="share-opengraph-card" data-social-card-dimensions="1200x630" style="padding:0.6rem 0.75rem;border-radius:10px;border:1px solid var(--card-border);background:var(--card-bg);font-size:0.79rem;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:0.5rem;">` +
+        `<span style="font-size:0.76rem;color:var(--text-secondary);">${isEn ? "OpenGraph <code>1200×630</code> Social Card ready to share offline:" : "Tarjeta OpenGraph <code>1200×630</code> lista para compartir:"}</span>` +
+        `<img src="${ogCard.svgDataUrl}" alt="OpenGraph 1200x630" style="max-width:220px;height:auto;border-radius:8px;border:1px solid var(--card-border);" />` +
+        `<a id="btnDownloadSocialCard1200x630" class="uls-chip" href="${ogCard.svgDataUrl}" download="${escapeHtml(ogFilename)}" style="min-height:48px;min-width:48px;display:inline-flex;align-items:center;padding:8px 12px;text-decoration:none;font-size:0.76rem;">🖼️ ${isEn ? "Download Social Card 1200×630 (SVG)" : "Descargar Tarjeta Social 1200×630 (SVG)"}</a>` +
+        `</div>`;
+    }
+
     const installEcoBtn = getEl("btnInstallEcoPackOffline", targetDoc);
     if (installEcoBtn && typeof installEcoBtn.addEventListener === "function" && !installEcoBtn._ecoInstallBound) {
       installEcoBtn._ecoInstallBound = true;
@@ -301,7 +429,17 @@ export function hydrateShareAndAuditDrawerPanel(ctx = {}) {
         const packBytes = await resolvePackBytesForVault(packLang, dataLayer);
         if (packBytes && packBytes.byteLength >= 32) {
           const playerWasm = dataLayer?.getHydratedWasmModule?.("ekovoz_player_wasm") || null;
-          await commitVerifiedPackToIndexedDb({ lang: packLang, packBytes }, SOVEREIGN_ED25519_PUBLIC_KEY_HEX, playerWasm);
+          const packReceipt = resolveSignedPackReceipt(packLang, state, dataLayer);
+          await commitVerifiedPackToIndexedDb(
+            {
+              lang: packLang,
+              packBytes,
+              expectedCrc32: packReceipt?.crc32Hex || "",
+              expectedSha256: packReceipt?.ekpackSha256 || packReceipt?.sha256 || "",
+            },
+            SOVEREIGN_ED25519_PUBLIC_KEY_HEX,
+            playerWasm,
+          );
         }
         hydrateShareAndAuditDrawer(targetDoc);
       });
@@ -318,9 +456,16 @@ export function hydrateShareAndAuditDrawerPanel(ctx = {}) {
         const packBytes = await resolvePackBytesForVault(packLang, dataLayer);
         let saved = await loadPackFromIndexedDb(packLang);
         if (packBytes && packBytes.byteLength >= 32) {
-          saved = await savePackToIndexedDb(packLang, { packBytes });
+          const packReceipt = resolveSignedPackReceipt(packLang, state, dataLayer);
+          saved = await savePackToIndexedDb(packLang, {
+            packBytes,
+            expectedCrc32: packReceipt?.crc32Hex || "",
+            expectedSha256: packReceipt?.ekpackSha256 || packReceipt?.sha256 || "",
+          });
         }
-        const allPacks = listPacksFromIndexedDb();
+        const allPacks = await listPacksFromIndexedDbAsync({ force: true });
+        state._hydratedVaultPacks = Array.isArray(allPacks) ? allPacks : [];
+        state._vaultShareHydratedOnce = true;
         const vaultEl = getEl("offlineIndexedDbVaultStatus", targetDoc);
         if (vaultEl) {
           vaultEl.setAttribute("data-vault-packs-count", String(allPacks.length));
@@ -341,10 +486,18 @@ export function hydrateShareAndAuditDrawerPanel(ctx = {}) {
         if (!loaded) {
           const packBytes = await resolvePackBytesForVault(packLang, dataLayer);
           if (packBytes && packBytes.byteLength >= 32) {
-            loaded = await commitVerifiedPackToIndexedDb({ lang: packLang, packBytes });
+            const packReceipt = resolveSignedPackReceipt(packLang, state, dataLayer);
+            loaded = await commitVerifiedPackToIndexedDb({
+              lang: packLang,
+              packBytes,
+              expectedCrc32: packReceipt?.crc32Hex || "",
+              expectedSha256: packReceipt?.ekpackSha256 || packReceipt?.sha256 || "",
+            });
           }
         }
-        const allPacks = listPacksFromIndexedDb();
+        const allPacks = await listPacksFromIndexedDbAsync({ force: true });
+        state._hydratedVaultPacks = Array.isArray(allPacks) ? allPacks : [];
+        state._vaultShareHydratedOnce = true;
         const vaultEl = getEl("offlineIndexedDbVaultStatus", targetDoc);
         if (vaultEl) {
           vaultEl.setAttribute("data-vault-packs-count", String(allPacks.length));
@@ -423,8 +576,14 @@ export function hydrateShareAndAuditDrawerPanel(ctx = {}) {
               .replace(/\.ekpack$/i, "")
               .trim() || packLang;
             const playerWasm = dataLayer?.getHydratedWasmModule?.("ekovoz_player_wasm") || null;
+            const fileReceipt = resolveSignedPackReceipt(nameStem, state, dataLayer);
             const committed = await commitVerifiedPackToIndexedDb(
-              { lang: nameStem, packBytes: fileBytes },
+              {
+                lang: nameStem,
+                packBytes: fileBytes,
+                expectedCrc32: fileReceipt?.crc32Hex || "",
+                expectedSha256: fileReceipt?.ekpackSha256 || fileReceipt?.sha256 || "",
+              },
               SOVEREIGN_ED25519_PUBLIC_KEY_HEX,
               playerWasm,
             );
@@ -444,7 +603,12 @@ export function hydrateShareAndAuditDrawerPanel(ctx = {}) {
           if (imported.valid && candidateBin && parseEkpackPreamble32Js(candidateBin)) {
             const playerWasm = dataLayer?.getHydratedWasmModule?.("ekovoz_player_wasm") || null;
             const committed = await commitVerifiedPackToIndexedDb(
-              { lang: imported.lang || packLang, packBytes: candidateBin },
+              {
+                lang: imported.lang || packLang,
+                packBytes: candidateBin,
+                expectedCrc32: imported.crc32Hex || "",
+                expectedSha256: imported.sha256 || "",
+              },
               SOVEREIGN_ED25519_PUBLIC_KEY_HEX,
               playerWasm,
             );
@@ -467,7 +631,12 @@ export function hydrateShareAndAuditDrawerPanel(ctx = {}) {
           if (imported.valid && candidateBin && parseEkpackPreamble32Js(candidateBin)) {
             const playerWasm = dataLayer?.getHydratedWasmModule?.("ekovoz_player_wasm") || null;
             const committed = await commitVerifiedPackToIndexedDb(
-              { lang: imported.lang || packLang, packBytes: candidateBin },
+              {
+                lang: imported.lang || packLang,
+                packBytes: candidateBin,
+                expectedCrc32: imported.crc32Hex || "",
+                expectedSha256: imported.sha256 || "",
+              },
               SOVEREIGN_ED25519_PUBLIC_KEY_HEX,
               playerWasm,
             );
@@ -526,12 +695,17 @@ export function hydrateShareAndAuditDrawerPanel(ctx = {}) {
       "GEN.1.1",
     );
     const signedPack = resolveSignedPackReceipt(activeLang, state, dataLayer);
-    const ed25519Ok = verifyEd25519ManifestSignature(
-      signedPack.signingMessage,
-      signedPack.ed25519SignatureHex,
-      signedPack.ed25519PublicKeyHex || SOVEREIGN_ED25519_PUBLIC_KEY_HEX,
-      dataLayer?.getHydratedWasmModule?.("ekovoz_player_wasm") || null,
-    );
+    const hasHydratedSig =
+      String(signedPack?.ed25519SignatureHex || "").trim().length > 0 &&
+      String(signedPack?.signingMessage || "").trim().length > 0;
+    const ed25519GateValue = hasHydratedSig
+      ? verifyEd25519ManifestSignature(
+        signedPack.signingMessage,
+        signedPack.ed25519SignatureHex,
+        signedPack.ed25519PublicKeyHex || SOVEREIGN_ED25519_PUBLIC_KEY_HEX,
+        dataLayer?.getHydratedWasmModule?.("ekovoz_player_wasm") || null,
+      ) === true
+      : false;
     const diachronicAudit =
       state.diachronicAuditPayload || dataLayer?.getHydratedDiachronicAudit?.() || null;
     const pericopeReceipt = lookupPericopeConstructiveReceipt(
@@ -540,10 +714,10 @@ export function hydrateShareAndAuditDrawerPanel(ctx = {}) {
       state.chapter || 1,
       state.verse || 1,
     );
-    auditStatusPanel.setAttribute?.("data-ed25519-verified", String(ed25519Ok));
+    auditStatusPanel.setAttribute?.("data-ed25519-verified", String(ed25519GateValue));
     auditStatusPanel.innerHTML = renderEditorialAuditAttestationHtml({
       verseSurface: activeVerseTextForQuine,
-      ed25519Verified: ed25519Ok,
+      ed25519Verified: ed25519GateValue,
       masterCensus: state.masterCensusSummary || dataLayer?.getHydratedMasterCensusSummary?.() || null,
       rustTelemetry:
         state.editorialProfiles?.rust_domain_engines_telemetry ||
@@ -593,133 +767,7 @@ export function hydrateShareAndAuditDrawerPanel(ctx = {}) {
   }
 }
 
-/**
- * Traduce los rótulos estáticos del cromo bilingüe y obras hermanas cuando cambia `uiLocale` (`D6-R41` / `D8-R38`).
- */
-export function applyStaticChromeTranslations(targetDoc, uiLocale = "es", state = null) {
-  if (!targetDoc || typeof targetDoc.getElementById !== "function") return;
-  const isEn = String(uiLocale || "es").toLowerCase().startsWith("en");
-  const getEl = (id) => targetDoc.getElementById(id);
-
-  const workTabs = getEl("sovereignWorkTabs");
-  if (workTabs && typeof workTabs.setAttribute === "function") {
-    workTabs.setAttribute(
-      "aria-label",
-      isEn ? "Three Works: The Bible, The Blessed, and 1 Gospel" : "Tres Obras: La Biblia, Los Felices y 1 Evangelio",
-    );
-  }
-  const drawerToolbar = getEl("bibleDrawerToolbar");
-  if (drawerToolbar && typeof drawerToolbar.setAttribute === "function") {
-    drawerToolbar.setAttribute(
-      "aria-label",
-      isEn ? "Reading, Printing, and Study Drawers" : "Gavetas de Lectura, Impresión y Estudio",
-    );
-  }
-  const felOpenLbl = getEl("felicesOpenInBibleLabel");
-  if (felOpenLbl) {
-    felOpenLbl.textContent = isEn ? "📖 Open in The Bible:" : "📖 Abrir en La Biblia:";
-  }
-  const btnFelOpen = getEl("btnFelicesOpenInBible");
-  if (btnFelOpen) {
-    btnFelOpen.textContent = isEn
-      ? "📖 Open passage in The Bible"
-      : "📖 Abrir pasaje en La Biblia";
-  }
-  const felDichaSel = getEl("felicesDichaSelect");
-  if (felDichaSel && felDichaSel.options) {
-    const enDichaTitles = {
-      "1": "Beatitude 1 · Mt 5:1 (Jesus Goes Up on the Mountain)",
-      "2": "Beatitude 2 · Mt 5:3 (Poor in Spirit)",
-      "3": "Beatitude 3 · Mt 5:4 (Those Who Mourn)",
-      "4": "Beatitude 4 · Mt 5:5 (The Meek)",
-      "5": "Beatitude 5 · Mt 5:6 (Hunger and Thirst for Righteousness)",
-      "6": "Beatitude 6 · Mt 5:7 (The Merciful)",
-      "7": "Beatitude 7 · Mt 5:8 (Pure in Heart)",
-      "8": "Beatitude 8 · Mt 5:9 (The Peacemakers)",
-      "9": "Beatitude 9 · Mt 5:10 (Persecuted for Righteousness)",
-      "10": "Beatitude 10 · Lk 11:28 (Hear and Keep the Word)",
-      "11": "Beatitude 11 · Mt 5:12 / Jn 20:29 (Joy of the Prophets)",
-      "12": "Beatitude 12 · Rev 22:14 (Tree of Life)",
-    };
-    const esDichaTitles = {
-      "1": "Dicha 1 · Mt 5:1 (Jesús sube al Monte)",
-      "2": "Dicha 2 · Mt 5:3 (Pobres en Espíritu)",
-      "3": "Dicha 3 · Mt 5:4 (Los que Lloran)",
-      "4": "Dicha 4 · Mt 5:5 (Los Mansos)",
-      "5": "Dicha 5 · Mt 5:6 (Hambre y Sed de Justicia)",
-      "6": "Dicha 6 · Mt 5:7 (Misericordiosos)",
-      "7": "Dicha 7 · Mt 5:8 (Limpio Corazón)",
-      "8": "Dicha 8 · Mt 5:9 (Pacificadores)",
-      "9": "Dicha 9 · Mt 5:10 (Perseguidos por la Justicia)",
-      "10": "Dicha 10 · Lc 11:28 (Oyen y Guardan la Palabra)",
-      "11": "Dicha 11 · Mt 5:12 / Jn 20:29 (Gozo de los Profetas)",
-      "12": "Dicha 12 · Ap 22:14 (Árbol de la Vida)",
-    };
-    for (const opt of Array.from(felDichaSel.options)) {
-      const k = String(opt.value || "");
-      const map = isEn ? enDichaTitles : esDichaTitles;
-      if (map[k]) opt.textContent = map[k];
-    }
-  }
-  const felPlateSel = getEl("felicesPlateSelect");
-  if (felPlateSel && felPlateSel.options) {
-    for (const opt of Array.from(felPlateSel.options)) {
-      const txt = String(opt.textContent || "");
-      opt.textContent = isEn
-        ? txt.replace(/^Lámina\b/i, "Plate").replace(/\(Sal\s+/g, "(Ps ")
-        : txt.replace(/^Plate\b/i, "Lámina").replace(/\(Ps\s+/g, "(Sal ");
-    }
-  }
-  const rosettaInp = getEl("rosettaSearchInput");
-  if (rosettaInp && typeof rosettaInp.setAttribute === "function") {
-    rosettaInp.setAttribute(
-      "placeholder",
-      isEn
-        ? "Search H7225, G3056, GEN.31.55..."
-        : "Buscar H7225, G3056, GEN.31.55...",
-    );
-  }
-  const stpLexInp = getEl("stpLexiconSearchInput");
-  if (stpLexInp && typeof stpLexInp.setAttribute === "function") {
-    stpLexInp.setAttribute(
-      "placeholder",
-      isEn
-        ? "Filter Tepehuan lexicon (H0430, Dios, Jich Xoi'kam...)"
-        : "Filtrar léxico Tepehuano (H0430, Dios, Jich Xoi'kam...)",
-    );
-  }
-  const diaSummary = getEl("diachronicSubstitutionsSummary");
-  if (diaSummary) {
-    diaSummary.textContent = isEn
-      ? "View 1909 → 21st Century substitutions in this chapter"
-      : "Ver sustituciones 1909 → Siglo XXI en este capítulo";
-  }
-  const diaLbl = getEl("diachronicAuditSummaryLabel");
-  if (diaLbl) {
-    diaLbl.textContent = isEn
-      ? "🕰️ Diachronic Substitutions (1909 ↔ 21st Century)"
-      : "🕰️ Sustituciones Diacrónicas (1909 ↔ Siglo XXI)";
-  }
-  const photoTechSummary = getEl("photocopyTechReceiptSummary");
-  if (photoTechSummary) {
-    photoTechSummary.textContent = isEn
-      ? "🔬 Optical & Typographic Verification (Kanungo-Sauvola)"
-      : "🔬 Verificación Óptica y Tipográfica (Kanungo-Sauvola)";
-  }
-  const evHeadingEl = getEl("evangeliosMainHeading");
-  if (evHeadingEl) {
-    evHeadingEl.textContent = isEn
-      ? "🌅 The Gospels · 52 Plates"
-      : "🌅 Los Evangelios · 52 Láminas";
-  }
-  const evWeekLblEl = getEl("evangeliosWeekSelectLabel");
-  if (evWeekLblEl) {
-    evWeekLblEl.textContent = isEn ? "Week:" : "Semana:";
-  }
-  if (state && typeof state.hydrateEvangeliosSection === "function" && state.activeWork === "evangelios") {
-    state.hydrateEvangeliosSection(state.evangeliosQuarter || "T1", state.evangeliosWeekId || "s01");
-  }
-}
+export { applyStaticChromeTranslations } from "./chrome_static_i18n.js";
 
 /**
  * Enlaza las acciones de la Gaveta 4 (Quine, enlace directo, Ed25519/Merkle, imposición, márgenes, cadencia óptica,
@@ -818,7 +866,8 @@ export function bindShareDrawerActionEvents(ctx = {}) {
           await verifyAndStoreEcoPack({
             lang: packLang,
             packBytes: binaryPack,
-            expectedSha256: signedPack.sha256 || "",
+            expectedCrc32: signedPack.crc32Hex || "",
+            expectedSha256: signedPack.ekpackSha256 || signedPack.sha256 || "",
             signatureHex: signedPack.ed25519SignatureHex,
             signingMessage: signedPack.signingMessage,
             publicKeyHex: signedPack.ed25519PublicKeyHex || SOVEREIGN_ED25519_PUBLIC_KEY_HEX,
@@ -848,65 +897,6 @@ export function bindShareDrawerActionEvents(ctx = {}) {
           `SHA-256=<code>${escapeHtml(receipt.sampleSha256.slice(0, 16))}…</code></div>` +
           baseAttestation;
       }
-    } else if (shareBtnId === "btnCalculateImposition") {
-      state.activePrintPreviewMode = "imposition";
-      const imp = computeSaddleStitchImpositionPlan({
-        totalPages: 16,
-        paperThicknessMm: 0.09,
-        rtl: isRtlLocale(state.lang),
-      });
-      const sheetsSummary = imp.sheets
-        .map((s) => `P${s.sheetIndex}[F:${s.front[0]}-${s.front[1]} / V:${s.back[0]}-${s.back[1]} · creep +${s.creepMm}mm]`)
-        .join(" · ");
-      const receiptHtml =
-        `<div class="audit-receipt" data-action="calculate-imposition" data-integrity="${imp.integrityVerified}" data-rtl="${imp.rtl}">` +
-        `📐 <strong>Imposición Saddle-Stitch 4n (${imp.paddedPages} págs · ${imp.sheetCount} pliegos · ${imp.rtl ? "RTL Lomo Invertido" : "LTR"}):</strong> ` +
-        `Suma constante=${imp.folioSumConstant} · Creep máx=${imp.maxCreepMm}mm · ${escapeHtml(sheetsSummary)}</div>`;
-      if (statusPanel) {
-        statusPanel.setAttribute("data-audit-action", "calculate-imposition");
-        statusPanel.innerHTML = receiptHtml;
-      }
-      const impHost = getEl("impositionBookletPreviewHost", targetDoc);
-      if (impHost) {
-        impHost.setAttribute("data-audit-action", "calculate-imposition");
-        impHost.innerHTML =
-          renderImpositionAndLayoutPreviewHtml({
-            mode: "imposition",
-            paper: state.paperFormat || "a4",
-            pageCount: 16,
-            columns: state.columns || 2,
-            fontPt: state.fontSizePt || 9.5,
-            dir: isRtlLocale(state.lang) ? "rtl" : "ltr",
-          }) + receiptHtml;
-      }
-    } else if (shareBtnId === "btnCalculateLayout") {
-      state.activePrintPreviewMode = "layout";
-      const budget = computeKindlePrintBudget({
-        fontPt: state.fontSizePt || 9.5,
-        columns: state.columns || 2,
-        orientation: state.orientation || "landscape",
-        paper: state.paperFormat || "a4",
-      });
-      const receiptHtml =
-        `<div class="audit-receipt" data-action="calculate-layout" data-cpl="${budget.cpl}">` +
-        `📏 <strong>Invariante Geométrico A4/Letter Verificado:</strong> ${escapeHtml(budget.summaryText)} (8 Candados Tipográficos en verde).</div>`;
-      if (statusPanel) {
-        statusPanel.setAttribute("data-audit-action", "calculate-layout");
-        statusPanel.innerHTML = receiptHtml;
-      }
-      const impHost = getEl("impositionBookletPreviewHost", targetDoc);
-      if (impHost) {
-        impHost.setAttribute("data-audit-action", "calculate-layout");
-        impHost.innerHTML =
-          renderImpositionAndLayoutPreviewHtml({
-            mode: "layout",
-            paper: state.paperFormat || "a4",
-            pageCount: 16,
-            columns: state.columns || 2,
-            fontPt: state.fontSizePt || 9.5,
-            dir: isRtlLocale(state.lang) ? "rtl" : "ltr",
-          }) + receiptHtml;
-      }
     }
   };
 
@@ -914,8 +904,6 @@ export function bindShareDrawerActionEvents(ctx = {}) {
     "btnShareQuine",
     "btnCopyDirectShareLink",
     "btnVerifyEd25519Signature",
-    "btnCalculateImposition",
-    "btnCalculateLayout",
   ]) {
     const sBtn = getEl(shareBtnId, targetDoc);
     if (sBtn && typeof sBtn.addEventListener === "function") {

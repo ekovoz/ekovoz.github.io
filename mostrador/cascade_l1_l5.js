@@ -616,7 +616,7 @@ function escapeRegexLiteral(s) {
   return String(s).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
-function replaceAllWholeToken(text, needle, replacement) {
+export function replaceAllWholeToken(text, needle, replacement) {
   const src = String(text || "");
   const oldTok = String(needle || "").trim();
   const newTok = String(replacement || "").trim();
@@ -667,16 +667,28 @@ export function projectChapterThroughCascadeSemilattice({
     }
     const morph = String(isArr ? (row[MATRIX_15COL_INDEX.MORPH_C06] ?? "") : (row.morph ?? row.c06_morph ?? "")).trim();
     const domLn = String(isArr ? (row[MATRIX_15COL_INDEX.DOMAIN_LN_C07] ?? "") : (row.domain ?? row.c07 ?? "")).trim();
+    const realiaC14 = String(
+      isArr ? (row[MATRIX_15COL_INDEX.REALIA_C14] ?? "") : (row.realia ?? row.c14 ?? row.realia_c14 ?? ""),
+    ).trim();
     const onoExplicit = String(isArr ? "" : (row.onomasticon ?? row.c13_onomasticon ?? "")).trim();
+    const realiaOnoMatches = realiaC14.match(/\b(?:ONO-[A-Z0-9-]+|PER-[0-9]+|LOC-[0-9]+)\b/gi) || [];
     const isProperOrOnomastic =
       /(?:^|[\/\-H])Np\b|\b(?:NP|PRI|PROP)\b/.test(morph) ||
-      /\b(?:LN:93\.|SDBH:)/i.test(domLn) ||
+      /\bLN:93\./i.test(domLn) ||
+      /\bSDBH:[^;|\s]*(?:Names-of-People|Names-of-Locations|Proper)\b/i.test(domLn) ||
+      realiaOnoMatches.length > 0 ||
+      /\bONOMASTICON:PROPER_DESIGNATOR\b/i.test(realiaC14) ||
       (onoExplicit && onoExplicit !== "-" && onoExplicit !== "0");
     if (isProperOrOnomastic) {
       if (!onomasticonByVerse.has(vKey)) onomasticonByVerse.set(vKey, new Set());
       const vOnoSet = onomasticonByVerse.get(vKey);
       if (onoExplicit && onoExplicit !== "-" && onoExplicit !== "0") {
         vOnoSet.add(onoExplicit.toUpperCase());
+      }
+      for (const mOno of realiaOnoMatches) {
+        const up = mOno.toUpperCase();
+        vOnoSet.add(up);
+        vOnoSet.add(`C13:${up}`);
       }
       for (const subSt of rowStrongTokens) {
         vOnoSet.add(subSt);
@@ -731,7 +743,10 @@ export function projectChapterThroughCascadeSemilattice({
         vOnomasticon &&
         ((reqOno && vOnomasticon.has(reqOno)) || (normalizedOno && vOnomasticon.has(normalizedOno))),
       );
-      if (matchesStrong || matchesOno) {
+      const matchesStrongOnlyFallback = Boolean(
+        !reqOno && reqStrong && vStrongs && vStrongs.has(reqStrong) && vOnomasticon && vOnomasticon.size > 0,
+      );
+      if (matchesOno || matchesStrongOnlyFallback) {
         text = replaceAllWholeToken(text, r2.old_surface, r2.new_surface);
       }
     }
@@ -756,6 +771,7 @@ export function exportSignedEcoPatchV2Artifact({
     : Array.isArray(cascadeResult?.votes)
       ? cascadeResult.votes
       : [];
+  const resolvedRef = entry.target_ref || "GEN.1.1";
   const artifact = {
     schema: "ekovoz.eco.patch.v2",
     patch_id: entry.patch_id || cascadeResult?.patchId || "PATCH-UNKNOWN",
@@ -772,7 +788,8 @@ export function exportSignedEcoPatchV2Artifact({
     ),
     content_hash_hex: String(entry.content_hash_hex || ""),
     votes: artifactVotes,
-    target_ref: entry.target_ref || "GEN.1.1",
+    ref: resolvedRef,
+    target_ref: resolvedRef,
     strong_id: entry.strong_id || "",
     onomasticon_c13_id: entry.onomasticon_c13_id || "",
     old_surface: entry.old_surface || "",

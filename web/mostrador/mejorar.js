@@ -7,6 +7,7 @@ import {
   propagateCascadeL1ToL5,
 } from "./cascade_l1_l5.js";
 import { validateAllEightLocksPda } from "./mejorar_locks_pda.js";
+import { computeEcoPackCrc32Hex } from "./offline_mesh.js";
 
 export {
   buildElicitationSeedPayload, buildPatchPayload, CANONICAL_5_OT_TRANSLATION_WAVES, computeSisterWorksCascade, computeWalSnapshotRollbackPreview, CRDT_WAL_SEMILATTICE, detectLlmMetatextLeak, EXTERNAL_AUDIT_8_LOCKS, FIELD_WORKSHOP_STP_LEXICON, foldCrdtWalSemilattice,
@@ -21,7 +22,7 @@ export {
 export {
   evaluateBetaDawidSkeneSprt,
   hydrateFormulaicParallelsIndex,
-  propagateCascadeL1ToL5,
+  propagateCascadeL1ToL5
 };
 
 /**
@@ -92,14 +93,30 @@ export function applySuggestedImprovement(targetDoc, buttonEl = null, onRefresh 
       validateLocksFn: validateAllEightLocksPda,
     })
     : null;
+  const overlayPrimary =
+    cascade?.ekpackOverlayEntry || cascade?.foldedOverlayEntries?.[0] || null;
+  let computedCrc32Hex = String(extraPayload.expectedCrc32Hex || "").trim();
+  if (!computedCrc32Hex && overlayPrimary) {
+    const canonicalOverlayPayload = JSON.stringify({
+      patch_id: overlayPrimary.patch_id,
+      lang_code: overlayPrimary.lang_code,
+      cascade_level: overlayPrimary.cascade_level,
+      target_ref: overlayPrimary.target_ref,
+      new_surface: overlayPrimary.new_surface,
+      content_hash_hex: overlayPrimary.content_hash_hex,
+    });
+    computedCrc32Hex = computeEcoPackCrc32Hex(
+      new TextEncoder().encode(canonicalOverlayPayload),
+    );
+  }
   const patch = typeof onRefresh === "function" ? onRefresh() : null;
   return {
     applied: Boolean(
       surfaceVal.length > 0 &&
-        (!cascade ||
-          (cascade.status !== "VETO_EIGHT_LOCKS" &&
-            cascade.status !== "REJECTED_INVALID_LEVEL" &&
-            cascade.status !== "REJECTED_EMPTY_SURFACE")),
+      (!cascade ||
+        (cascade.status !== "VETO_EIGHT_LOCKS" &&
+          cascade.status !== "REJECTED_INVALID_LEVEL" &&
+          cascade.status !== "REJECTED_EMPTY_SURFACE")),
     ),
     lang: langVal,
     level: levelVal,
@@ -108,7 +125,7 @@ export function applySuggestedImprovement(targetDoc, buttonEl = null, onRefresh 
     surface: surfaceVal,
     signatureHex: extraPayload.signature || extraPayload.signatureHex || "",
     publicKeyHex: extraPayload.publicKey || extraPayload.publicKeyHex || "",
-    expectedCrc32Hex: extraPayload.expectedCrc32Hex || "",
+    expectedCrc32Hex: computedCrc32Hex,
     patch,
     cascade,
   };

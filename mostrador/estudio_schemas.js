@@ -4,7 +4,7 @@
 // ============================================================================
 
 /**
- * Glosario bilingüe de etiquetas semánticas compiladas en la Matriz 14-Col (`D2-R44` / `DEB-R44-04`):
+ * Glosario bilingüe de etiquetas semánticas compiladas en la Matriz 15-Col (`D2-R44` / `DEB-R44-04`):
  * roles MACULA, evidencialidad, voz/foco y dominios léxicos SDBH, para que la UI nunca muestre jerga cruda.
  */
 export const SEMANTIC_TAG_GLOSSARY = {
@@ -263,7 +263,7 @@ export const PHILOLOGY_ROSETTA_DEFAULT_INDEX = {
       transliteration: "ʾ-l-h",
       primary_gloss_es: "Dios, poder supremo, pacto/juramento",
       strong_members: [
-        { strong: "H0430", lemma: "אֱלֹהִים", pos: "Noun Masculine Plural (Majesty)", gloss_es: "Dios, Creador Soberano", occurrences: 2602 },
+        { strong: "H0430", lemma: "אֱלֹהִים", pos: "Noun Masculine Plural (Majesty)", gloss_es: "Dios, Creador Soberano", occurrences: 2576 },
         { strong: "H0433", lemma: "אֱלוֹהַּ", pos: "Noun Masculine Singular", gloss_es: "Dios (forma poética/arcaica)", occurrences: 57 },
         { strong: "H0410", lemma: "אֵל", pos: "Noun Masculine Singular", gloss_es: "Dios fuerte, Poderoso", occurrences: 245 },
       ],
@@ -510,7 +510,7 @@ export const CANONICAL_TSK_ECHOES = {
   MAT: ["ISA.7.14", "MIC.5.2", "PSA.22.1", "DEU.8.3"],
   JHN: ["GEN.1.1", "EXO.3.14", "PSA.36.9", "1JN.1.1"],
   ROM: ["HAB.2.4", "GEN.15.6", "PSA.32.1", "GAL.3.11"],
-  REV: ["DAN.7.13", "GEN.2.9", "ISA.65.17", "EZE.47.1"],
+  REV: ["DAN.7.13", "GEN.2.9", "ISA.65.17", "EZK.47.1"],
 };
 
 export const VERSE_SPECIFIC_TSK_ECHOES = {

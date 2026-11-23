@@ -17,8 +17,10 @@ import {
   QrStreamSession,
   decodeLubyTransformPeeling,
   decodeQrStreamViaWasmBridge,
+  deriveWasmFountainSourceIndices,
   encodeDropletToMatrixGrid,
   encodeEco1BinaryPacket,
+  encodeEcomMetadataPacket,
   encodeLubyTransformDroplets,
   renderDropletMatrixSvgOrCanvas,
   renderOpticalReceiverRxPanelHtml,
@@ -27,16 +29,26 @@ import {
 } from "./optical_lt.js";
 
 /**
- * Tamaño de bloque LT calibrado a 12 B para que toda trama `ECO1` (`23 + 2·d + 12 <= 65 B`
- * hasta grado `d <= 15`) quepa íntegra sin truncamiento dentro del codeword `ECO-GRID 29×29` (`66 B`).
+ * Tamaño de bloque LT calibrado a 12 B para que toda trama `ECO1`/`ECOM` (`<= 66 B`
+ * hasta grado `d <= 15`) quepa íntegra dentro del codeword `ECO-GRID 29×29`.
  */
 export const ECO1_MATRIX29_SAFE_BLOCK_BYTES = 12;
 const ECO1_MATRIX29_MAX_DEGREE = 15;
 
+function computeFnv1aShortDigestHex(bytes) {
+  let h = 0x811c9dc5 >>> 0;
+  for (let i = 0; i < bytes.byteLength; i += 1) {
+    h ^= bytes[i];
+    h = Math.imul(h, 0x01000193) >>> 0;
+  }
+  return h.toString(16).padStart(8, "0");
+}
+
 /**
- * Construye una trama óptica `ECO1` real sobre `ECO-GRID 29×29`, garantizando fase sistemática
- * determinista en `Frames 0..K-1` (`degree = 1`, `indices = [seq]`) seguida de cola Solitón LT
- * acotada a `d <= 15` para paridad exacta `TX === RX` con `QrStreamSession`.
+ * Construye una trama óptica `ECO-GRID 29×29`:
+ * - `0 <= seq < K`: pase sistemático `ECO1` (`degree = 1`, `indices = [seq]`).
+ * - `seq === K`: paquete de cierre/integridad **`ECOM`** (`<= 66 B`) con digest del payload (`DEBRIS-V2LE-04`).
+ * - `seq > K`: paquete de reparación LT Solitón unificado con `splitmix64` WASM (`deriveWasmFountainSourceIndices`).
  */
 export function buildEco1OpticalTxFrame(rawBytes, seqNum = 0, streamId = 1) {
   const payload =
@@ -47,33 +59,51 @@ export function buildEco1OpticalTxFrame(rawBytes, seqNum = 0, streamId = 1) {
   const encoder = new LTEncoder(payload, blockSize);
   const targetSeq = Math.max(0, Math.floor(Number(seqNum) || 0));
 
-  let droplet = encoder.nextDroplet();
-  for (let i = 0; i < targetSeq; i += 1) {
-    droplet = encoder.nextDroplet();
+  if (targetSeq === encoder.K) {
+    const packetBytes = encodeEcomMetadataPacket({
+      streamId,
+      seq: targetSeq,
+      totalBytes: payload.byteLength,
+      totalChunks: encoder.K,
+      blockSize,
+      sha256Hex: computeFnv1aShortDigestHex(payload),
+      compact: true,
+    });
+    const grid = encodeDropletToMatrixGrid({ seq: targetSeq, degree: 0, packetBytes }, 29);
+    return {
+      encoder,
+      blockSize,
+      seq: targetSeq,
+      packetKind: "ECOM",
+      isEndOfStreamEcom: true,
+      isSystematicPhase: false,
+      degree: 0,
+      indices: [],
+      packetBytes,
+      grid,
+    };
   }
 
-  let boundedIndices = Array.isArray(droplet.indices) ? droplet.indices.slice() : [0];
-  let boundedData =
-    droplet.data instanceof Uint8Array ? droplet.data : new Uint8Array(blockSize);
+  let boundedIndices;
+  const boundedData = new Uint8Array(blockSize);
   if (targetSeq < encoder.K) {
-    // Pase 1 sistemático estricto (Frames 0..K-1): grado 1 exacto sobre el bloque `targetSeq`
     boundedIndices = [targetSeq];
-    boundedData = encoder.blocks[targetSeq].slice();
-  } else if (boundedIndices.length > ECO1_MATRIX29_MAX_DEGREE) {
-    boundedIndices = boundedIndices.slice(0, ECO1_MATRIX29_MAX_DEGREE);
-    const recomputed = new Uint8Array(blockSize);
+    boundedData.set(encoder.blocks[targetSeq]);
+  } else {
+    const repairPid = targetSeq - 1;
+    const rawIdx = deriveWasmFountainSourceIndices(streamId, repairPid, encoder.K);
+    boundedIndices = rawIdx.length > ECO1_MATRIX29_MAX_DEGREE ? rawIdx.slice(0, ECO1_MATRIX29_MAX_DEGREE) : rawIdx;
     for (const idx of boundedIndices) {
       const blk = encoder.blocks[idx];
       if (blk) {
-        for (let j = 0; j < blockSize; j += 1) recomputed[j] ^= blk[j];
+        for (let j = 0; j < blockSize; j += 1) boundedData[j] ^= blk[j];
       }
     }
-    boundedData = recomputed;
   }
 
   const packetBytes = encodeEco1BinaryPacket({
     streamId,
-    seq: targetSeq,
+    seq: targetSeq < encoder.K ? targetSeq : targetSeq - 1,
     totalChunks: encoder.K,
     degree: boundedIndices.length,
     indices: boundedIndices,
@@ -95,6 +125,8 @@ export function buildEco1OpticalTxFrame(rawBytes, seqNum = 0, streamId = 1) {
     encoder,
     blockSize,
     seq: targetSeq,
+    packetKind: "ECO1",
+    isEndOfStreamEcom: false,
     isSystematicPhase: targetSeq < encoder.K,
     degree: boundedIndices.length,
     indices: boundedIndices,
@@ -104,15 +136,44 @@ export function buildEco1OpticalTxFrame(rawBytes, seqNum = 0, streamId = 1) {
 }
 
 /**
- * Detiene limpiamente el temporizador automático de emisión `QRBeam` si está activo.
+ * Detiene limpiamente el bucle `requestAnimationFrame` de emisión `QRBeam` si está activo.
  */
 export function stopQrBeamAutoCadenceTimer(state) {
   if (!state) return;
-  if (state.qrBeamAutoIntervalId) {
-    clearInterval(state.qrBeamAutoIntervalId);
-    state.qrBeamAutoIntervalId = null;
+  if (state.qrBeamAutoRafId) {
+    if (typeof globalThis.cancelAnimationFrame === "function") {
+      try {
+        globalThis.cancelAnimationFrame(state.qrBeamAutoRafId);
+      } catch {
+        // Non-fatal
+      }
+    }
+    try {
+      clearTimeout(state.qrBeamAutoRafId);
+    } catch {
+      // Non-fatal
+    }
+    state.qrBeamAutoRafId = null;
   }
   state.qrBeamAutoPlaying = false;
+}
+
+function drawGridOntoOpticalCanvas(canvasEl, grid) {
+  if (!canvasEl || typeof canvasEl.getContext !== "function" || !grid?.cells) return;
+  const ctx = canvasEl.getContext("2d");
+  if (!ctx) return;
+  const n = grid.gridSize || 29;
+  const mod = Math.max(2, Math.floor((canvasEl.width || 174) / (n + 2)));
+  ctx.fillStyle = "#ffffff";
+  ctx.fillRect(0, 0, canvasEl.width || (n + 2) * mod, canvasEl.height || (n + 2) * mod);
+  ctx.fillStyle = "#111111";
+  for (let r = 0; r < n; r += 1) {
+    for (let c = 0; c < n; c += 1) {
+      if (grid.cells[r * n + c]) {
+        ctx.fillRect((c + 1) * mod, (r + 1) * mod, mod, mod);
+      }
+    }
+  }
 }
 
 /**
@@ -144,7 +205,7 @@ export function hydrateOpticalTxAndRxPanels({
     );
     const seqNum = Number(state.qrFrameSeq) || 0;
     const txFrame = buildEco1OpticalTxFrame(rawBytes, seqNum, 1);
-    const { encoder, grid, packetBytes, isSystematicPhase } = txFrame;
+    const { encoder, grid, packetBytes, isSystematicPhase, isEndOfStreamEcom } = txFrame;
     const svgMarkup = renderDropletMatrixSvgOrCanvas(grid, null);
     const activeCadenceKey = String(state.opticalCadenceFps || "6.67") === "10" ? "10" : "6.67";
     const cadencePreset =
@@ -166,33 +227,57 @@ export function hydrateOpticalTxAndRxPanels({
       ltRecoveredBytes.length === kLt &&
       ltRecoveredBytes.every((val, idx) => val !== null && val === rawBytes[idx]);
     const isPlaying = Boolean(state.qrBeamAutoPlaying);
-    const phaseLabel = isSystematicPhase
-      ? isEn
-        ? `Systematic ${grid.seq + 1}/${encoder.K}`
-        : `Sistemático ${grid.seq + 1}/${encoder.K}`
-      : isEn
-        ? `LT Soliton #${grid.seq}`
-        : `Solitón LT #${grid.seq}`;
+    const formatPhaseLabel = (tf) =>
+      tf.isEndOfStreamEcom
+        ? (isEn ? "ECOM Integrity EOF" : "Fin de Trama ECOM")
+        : tf.isSystematicPhase
+          ? (isEn ? `Systematic ${tf.grid.seq + 1}/${tf.encoder.K}` : `Sistemático ${tf.grid.seq + 1}/${tf.encoder.K}`)
+          : (isEn ? `LT SplitMix64 #${tf.grid.seq}` : `Solitón SplitMix64 #${tf.grid.seq}`);
+    const phaseLabel = formatPhaseLabel(txFrame);
 
     qrPanel.innerHTML =
-      `<div class="mostrador-qrbeam-stream" data-fps="${activeCadenceKey}" data-nyquist-safe="${Boolean(nyquistCheck?.valid ?? nyquistCheck?.nyquistSafe)}" data-lt-peeling-decoded="${ltComplete}" data-eco1-bytes="${packetBytes.byteLength}" data-systematic-phase="${isSystematicPhase}" data-frame-interval-ms="${cadencePreset.intervalMs}" data-total-blocks="${encoder.K}" data-seq="${grid.seq}" data-degree="${grid.degree}" data-parity="${grid.parityBit}" style="padding:0.65rem;border-radius:10px;border:1px solid var(--card-border);background:var(--bg-secondary);">` +
+      `<div id="qrBeamStreamRoot" class="mostrador-qrbeam-stream" data-fps="${activeCadenceKey}" data-nyquist-safe="${Boolean(nyquistCheck?.valid ?? nyquistCheck?.nyquistSafe)}" data-lt-peeling-decoded="${ltComplete}" data-eco1-bytes="${packetBytes.byteLength}" data-packet-kind="${txFrame.packetKind}" data-systematic-phase="${isSystematicPhase}" data-ecom-frame="${isEndOfStreamEcom}" data-frame-interval-ms="${cadencePreset.intervalMs}" data-total-blocks="${encoder.K}" data-seq="${grid.seq}" data-degree="${grid.degree}" data-parity="${grid.parityBit}" style="padding:0.65rem;border-radius:10px;border:1px solid var(--card-border);background:var(--bg-secondary);">` +
       `<div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:0.4rem;margin-bottom:0.45rem;">` +
-      `<strong>📡 QRBeam ECO1 (${activeCadenceKey} fps · ${cadencePreset.intervalMs} ms · ${phaseLabel} · ${isEn ? "Parity" : "Paridad"} ${grid.parityBit})</strong>` +
+      `<strong>📡 QRBeam ECO1/ECOM (<span id="opticalFrameCounter" data-seq="${grid.seq}" data-packet-kind="${txFrame.packetKind}">${activeCadenceKey} fps · ${phaseLabel} · ${isEn ? "Parity" : "Paridad"} ${grid.parityBit}</span>)</strong>` +
       `<div style="display:inline-flex;gap:0.35rem;flex-wrap:wrap;">` +
       `<button type="button" id="btnToggleQrBeamAutoPlay" class="uls-chip" style="min-height:48px;padding:0.35rem 0.7rem;font-size:0.78rem;">${isPlaying ? (isEn ? "⏸ Pause Beam" : "⏸ Pausar Emisión") : isEn ? "▶ Auto Beam" : "▶ Emisión Continua"}</button>` +
       `<button type="button" id="btnNextQrBeamFrame" class="uls-chip" style="min-height:48px;padding:0.35rem 0.7rem;font-size:0.78rem;">⏭ ${isEn ? "Next Droplet" : "Siguiente Droplet"} (#${grid.seq + 1})</button>` +
       `</div></div>` +
       `<div style="display:flex;flex-wrap:wrap;gap:0.75rem;align-items:center;">` +
-      `<div class="qrbeam-matrix-host">${svgMarkup}</div>` +
-      `<p style="margin:0;font-size:0.81rem;flex:1;min-width:180px;">${isEn ? `ECO1 binary frame (${packetBytes.byteLength} B ≤ 66 B): Systematic Pass 1 (Frames 0..${encoder.K - 1}, degree=1) + XOR whitening <code>whitenBlockXor</code> + Luby Transform Soliton tail.` : `Trama binaria ECO1 (${packetBytes.byteLength} B ≤ 66 B): Pase 1 sistemático (Frames 0..${encoder.K - 1}, grado=1) + blanqueo XOR <code>whitenBlockXor</code> + cola Solitón Luby Transform.`}</p>` +
+      `<div id="qrBeamMatrixHost" class="qrbeam-matrix-host">${svgMarkup}<canvas id="qrBeamMatrixCanvas" width="174" height="174" aria-hidden="true" style="display:none;"></canvas></div>` +
+      `<p style="margin:0;font-size:0.81rem;flex:1;min-width:180px;">${isEn ? `ECO-GRID 29×29 (${packetBytes.byteLength} B ≤ 66 B): Systematic Pass (0..${encoder.K - 1}) + ECOM digest trailer + SplitMix64 LT repair tail.` : `ECO-GRID 29×29 (${packetBytes.byteLength} B ≤ 66 B): Pase sistemático (0..${encoder.K - 1}) + cierre ECOM + cola LT SplitMix64.`}</p>` +
       `</div></div>`;
+
+    const paintGranularOpticalFrame = (nextSeq) => {
+      state.qrFrameSeq = nextSeq;
+      const cycleMod = encoder.K + Math.max(4, Math.ceil(encoder.K * 0.5)) + 1;
+      const effSeq = nextSeq % cycleMod;
+      const nextTx = buildEco1OpticalTxFrame(rawBytes, effSeq, 1);
+      const matrixHost = getEl("qrBeamMatrixHost", targetDoc);
+      const canvasEl = getEl("qrBeamMatrixCanvas", targetDoc);
+      if (matrixHost) {
+        matrixHost.innerHTML = renderDropletMatrixSvgOrCanvas(nextTx.grid, null);
+      }
+      if (canvasEl) drawGridOntoOpticalCanvas(canvasEl, nextTx.grid);
+      const counterEl = getEl("opticalFrameCounter", targetDoc);
+      if (counterEl) {
+        counterEl.textContent = `${activeCadenceKey} fps · ${formatPhaseLabel(nextTx)} · ${isEn ? "Parity" : "Paridad"} ${nextTx.grid.parityBit}`;
+        counterEl.setAttribute?.("data-seq", String(nextTx.grid.seq));
+        counterEl.setAttribute?.("data-packet-kind", nextTx.packetKind);
+      }
+      const rootEl = getEl("qrBeamStreamRoot", targetDoc);
+      if (rootEl) {
+        rootEl.setAttribute?.("data-seq", String(nextTx.grid.seq));
+        rootEl.setAttribute?.("data-packet-kind", nextTx.packetKind);
+      }
+      return nextTx;
+    };
 
     const nextFrameBtn = getEl("btnNextQrBeamFrame", targetDoc);
     if (nextFrameBtn && typeof nextFrameBtn.addEventListener === "function" && !nextFrameBtn._qrNextBound) {
       nextFrameBtn._qrNextBound = true;
       nextFrameBtn.addEventListener("click", () => {
-        state.qrFrameSeq = (Number(state.qrFrameSeq) || 0) + 1;
-        rehydrateDrawer(targetDoc);
+        paintGranularOpticalFrame((Number(state.qrFrameSeq) || 0) + 1);
       });
     }
 
@@ -202,24 +287,36 @@ export function hydrateOpticalTxAndRxPanels({
       autoBtn.addEventListener("click", () => {
         if (state.qrBeamAutoPlaying) {
           stopQrBeamAutoCadenceTimer(state);
-          rehydrateDrawer(targetDoc);
+          autoBtn.textContent = isEn ? "▶ Auto Beam" : "▶ Emisión Continua";
           return;
         }
         stopQrBeamAutoCadenceTimer(state);
         state.qrBeamAutoPlaying = true;
-        const intervalMs = Math.max(100, Number(cadencePreset.intervalMs) || 150);
-        state.qrBeamAutoIntervalId = setInterval(() => {
+        autoBtn.textContent = isEn ? "⏸ Pause Beam" : "⏸ Pausar Emisión";
+        const frameIntervalMs = Math.max(134, Math.min(167, Number(cadencePreset.intervalMs) || 150));
+        let lastFrameTs = 0;
+        const scheduleRaf =
+          typeof globalThis.requestAnimationFrame === "function"
+            ? (cb) => globalThis.requestAnimationFrame(cb)
+            : (cb) => {
+              const id = setTimeout(() => cb(Date.now()), frameIntervalMs);
+              if (typeof id?.unref === "function") id.unref();
+              return id;
+            };
+        const onRafTick = (nowMs) => {
           if (!state.qrBeamAutoPlaying) {
             stopQrBeamAutoCadenceTimer(state);
             return;
           }
-          state.qrFrameSeq = (Number(state.qrFrameSeq) || 0) + 1;
-          rehydrateDrawer(targetDoc);
-        }, intervalMs);
-        if (typeof state.qrBeamAutoIntervalId?.unref === "function") {
-          state.qrBeamAutoIntervalId.unref();
-        }
-        rehydrateDrawer(targetDoc);
+          if (!lastFrameTs || nowMs - lastFrameTs >= frameIntervalMs) {
+            lastFrameTs = nowMs;
+            paintGranularOpticalFrame((Number(state.qrFrameSeq) || 0) + 1);
+          }
+          if (state.qrBeamAutoPlaying) {
+            state.qrBeamAutoRafId = scheduleRaf(onRafTick);
+          }
+        };
+        state.qrBeamAutoRafId = scheduleRaf(onRafTick);
       });
     }
   }

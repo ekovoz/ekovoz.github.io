@@ -1,4 +1,8 @@
 {
+  "bundleBytes": 5553019,
+  "bundleFile": "ekovoz_fonts_bundle_v1.ekfonts",
+  "bundleSha256": "95722797a13b2d132cf9237620b314151da28ea1ee272ecbad5bff68c44df105",
+  "bundleUrl": "/packs/fonts/ekovoz_fonts_bundle_v1.ekfonts",
   "codec": "RFC8878_ZSTD_LEVEL_22",
   "fonts": [
     {
@@ -7,9 +11,9 @@
       "rawSha256": "bcb81f376f1c3892c7026dabf2beafbd1a7ee8ae95d132ee7d4ff7d7c3988261",
       "subsettedBiblical": false,
       "url": "packs/fonts/Cardo-Regular.ttf.zst",
-      "zstBytes": 189917,
+      "zstBytes": 189920,
       "zstFile": "Cardo-Regular.ttf.zst",
-      "zstSha256": "cbbe09aa334016aff18fb3cb221596f4825cc920d00c582eae133a9bd16e3577"
+      "zstSha256": "bef35b898954ae359af8b44ed0ad0fbb221b7f3056a9b88f290cca6430e0604d"
     },
     {
       "file": "CharisSIL-Bold.ttf",
@@ -17,9 +21,9 @@
       "rawSha256": "968b864a931777ff1b686abde4ec236e5eb0c44138fc69c8d25f2d57f91d7796",
       "subsettedBiblical": false,
       "url": "packs/fonts/CharisSIL-Bold.ttf.zst",
-      "zstBytes": 340683,
+      "zstBytes": 340711,
       "zstFile": "CharisSIL-Bold.ttf.zst",
-      "zstSha256": "50071622908e95076507a41678037f1b5e61f52d765f5a2d816f8f7c4241695a"
+      "zstSha256": "074d5b19f525cfa034540fb16cf595a86a96bfedaf54bc0075ab605b2c6a42c5"
     },
     {
       "file": "CharisSIL-Regular.ttf",
@@ -27,9 +31,9 @@
       "rawSha256": "346337374aa347d64ee015b26d441f1970d8631914e2f3941b00e1c4761e28c5",
       "subsettedBiblical": false,
       "url": "packs/fonts/CharisSIL-Regular.ttf.zst",
-      "zstBytes": 317132,
+      "zstBytes": 317122,
       "zstFile": "CharisSIL-Regular.ttf.zst",
-      "zstSha256": "a21dba0f1943a0c5b217ef60a4c166be5749908ae1dbc396aac1db9ecb275b78"
+      "zstSha256": "c82db84b6f3d8b952c59c042363369c089546acff6d1c630b934eae058f76c40"
     },
     {
       "file": "EBGaramond-Regular.ttf",
@@ -37,9 +41,9 @@
       "rawSha256": "ef9512f92f6d579e5dc75af59a5a4b1b8b47d2eda89e00b954d44520e5369027",
       "subsettedBiblical": false,
       "url": "packs/fonts/EBGaramond-Regular.ttf.zst",
-      "zstBytes": 344965,
+      "zstBytes": 345051,
       "zstFile": "EBGaramond-Regular.ttf.zst",
-      "zstSha256": "13644b195b4505d1c9cc7136e20996534680fec5043feec1ff4a3e5882fa0710"
+      "zstSha256": "d99ee40fa13f2fabff84604431078f152b9b5a6184ea340ece6dcb124a23c43c"
     },
     {
       "file": "NotoNaskhArabic-Regular.ttf",
@@ -47,9 +51,9 @@
       "rawSha256": "2f4b88e6ee50fa82c617e2d1d4ba18281cb1c6cd71c3af3ec64970c23995db4b",
       "subsettedBiblical": false,
       "url": "packs/fonts/NotoNaskhArabic-Regular.ttf.zst",
-      "zstBytes": 75889,
+      "zstBytes": 75891,
       "zstFile": "NotoNaskhArabic-Regular.ttf.zst",
-      "zstSha256": "1b9fe24c3585607b3e852a22f000732e7d7c401ee4e221aa2f361473321c65ca"
+      "zstSha256": "67727d62d852dc0eef65202d921b977236e818c26d4649a300e6eec4b5406034"
     },
     {
       "file": "NotoNastaliqUrdu-Regular.ttf",
@@ -57,9 +61,9 @@
       "rawSha256": "98a4787f34eb6fde57fb9a1121a8f216301196ab0da98ea110cad581be8abbcd",
       "subsettedBiblical": false,
       "url": "packs/fonts/NotoNastaliqUrdu-Regular.ttf.zst",
-      "zstBytes": 311254,
+      "zstBytes": 311284,
       "zstFile": "NotoNastaliqUrdu-Regular.ttf.zst",
-      "zstSha256": "1b2bcad74a87f42d8aae103629b2c4b16d340467cbe7d27627c861fd40568dc5"
+      "zstSha256": "4fc1a8a93ff04f9bf761d9790e2205bb2f9cbf363c47cd0863cae446d5342a53"
     },
     {
       "file": "NotoSans-Regular.ttf",
@@ -67,9 +71,9 @@
       "rawSha256": "b85c38ecea8a7cfb39c24e395a4007474fa5a4fc864f6ee33309eb4948d232d5",
       "subsettedBiblical": false,
       "url": "packs/fonts/NotoSans-Regular.ttf.zst",
-      "zstBytes": 238794,
+      "zstBytes": 238810,
       "zstFile": "NotoSans-Regular.ttf.zst",
-      "zstSha256": "808a7ea57479a78e3d415c23e540f30523fd30dc50e6b2e1e856396a7e840b82"
+      "zstSha256": "83db8b2af3864eac8f6cbfea85b8eeef2645faeaab2d7fad34b32fc1fe4ca284"
     },
     {
       "file": "NotoSansArabic-Regular.ttf",
@@ -77,9 +81,9 @@
       "rawSha256": "ceea25b464a656dc3b26849bab9356740401af62aedf1bfa8b7f0d9b75925b1b",
       "subsettedBiblical": false,
       "url": "packs/fonts/NotoSansArabic-Regular.ttf.zst",
-      "zstBytes": 91797,
+      "zstBytes": 91800,
       "zstFile": "NotoSansArabic-Regular.ttf.zst",
-      "zstSha256": "cd93ed6df0c89a22d5ec829461212a08363fb38b7a704c8cab6f0a275f132ce6"
+      "zstSha256": "1f3a9c9b5c0a1d5e8914f6869251d7bce278687a39d41298f28a8d64f16a844a"
     },
     {
       "file": "NotoSansBengali-Regular.ttf",
@@ -87,9 +91,9 @@
       "rawSha256": "dcd42978094e584a849c84a51450eeac40c8826057d566ea6d4b9627a403a05a",
       "subsettedBiblical": false,
       "url": "packs/fonts/NotoSansBengali-Regular.ttf.zst",
-      "zstBytes": 276814,
+      "zstBytes": 276832,
       "zstFile": "NotoSansBengali-Regular.ttf.zst",
-      "zstSha256": "3ffdbcbdd688bc92a31b94744bcd23599d195111eac8d6f1c89f75d28ac62ef8"
+      "zstSha256": "f073dadfff560e821786ef69091c169db87d1f05909131ff42dad57db4264113"
     },
     {
       "file": "NotoSansDevanagari-Regular.ttf",
@@ -97,9 +101,9 @@
       "rawSha256": "385e78e6359a9d88a0f243d53b1209d7548361ba2194e2b9ec779bcaa7e8949d",
       "subsettedBiblical": false,
       "url": "packs/fonts/NotoSansDevanagari-Regular.ttf.zst",
-      "zstBytes": 84038,
+      "zstBytes": 84041,
       "zstFile": "NotoSansDevanagari-Regular.ttf.zst",
-      "zstSha256": "ab9f8e4b961b5f9f39c65f9e3a7545aac4d4ce4b0d0d1a7ef2f5ca38737fa861"
+      "zstSha256": "b11afb143c208f29a1e1f21b7018f9847b6404f08d136dc6f43ffe8b625b0e55"
     },
     {
       "file": "NotoSansEthiopic-Regular.ttf",
@@ -107,9 +111,9 @@
       "rawSha256": "f6f7fc379db9438959a2b0527e7a2cf36ea9c84626d56ec444fff37fc24c3c10",
       "subsettedBiblical": false,
       "url": "packs/fonts/NotoSansEthiopic-Regular.ttf.zst",
-      "zstBytes": 119438,
+      "zstBytes": 119443,
       "zstFile": "NotoSansEthiopic-Regular.ttf.zst",
-      "zstSha256": "62867624bbef655c02b3beaadb8ef72084fe7a32d44e3aedb7782ae1a2c8cc27"
+      "zstSha256": "cc3ba1f164bf0ab07203eb75bd18c0ac0a6a97efdce75ec375eadaadaef192fb"
     },
     {
       "file": "NotoSansGujarati-Regular.ttf",
@@ -117,9 +121,9 @@
       "rawSha256": "9b5a7aaeeb649a2e75a49d8b006a1f87db1b61c0df3b001609f4e0725d88dbf6",
       "subsettedBiblical": false,
       "url": "packs/fonts/NotoSansGujarati-Regular.ttf.zst",
-      "zstBytes": 69151,
+      "zstBytes": 69154,
       "zstFile": "NotoSansGujarati-Regular.ttf.zst",
-      "zstSha256": "a5657dd2902ba308c53fee72ea42e98f4ab7b989f1cdc953c8483d315c21fbb1"
+      "zstSha256": "f82cb75312a964773080e66ca0dfea0d274aefba17f67fc0abcbffdeb75789b7"
     },
     {
       "file": "NotoSansGurmukhi-Regular.ttf",
@@ -129,7 +133,7 @@
       "url": "packs/fonts/NotoSansGurmukhi-Regular.ttf.zst",
       "zstBytes": 27095,
       "zstFile": "NotoSansGurmukhi-Regular.ttf.zst",
-      "zstSha256": "8b4e042d7b8fd931c35dafca9445a603e6260133e487e7ff7b6af577bdc5e6b0"
+      "zstSha256": "3ce1391e7f089913d0334e904bcd177571f630f18f1537a7a78551f618dbb626"
     },
     {
       "file": "NotoSansHebrew-Regular.ttf",
@@ -137,9 +141,9 @@
       "rawSha256": "cdefaf8efd47045f6820928eba84db5bed7557539328952b5f828315485e02ee",
       "subsettedBiblical": false,
       "url": "packs/fonts/NotoSansHebrew-Regular.ttf.zst",
-      "zstBytes": 12851,
+      "zstBytes": 12857,
       "zstFile": "NotoSansHebrew-Regular.ttf.zst",
-      "zstSha256": "c885f56fad48000e03f71e48a7108a92905d5e01207b80a3f203b048551b8f77"
+      "zstSha256": "5486728d69e36d5d2ac9f270f7cfffc35f9dc4172c9240391386ff3ccf1d0a76"
     },
     {
       "file": "NotoSansJP-Regular.ttf",
@@ -147,9 +151,9 @@
       "rawSha256": "45807457f803030f20fa4e74508b7d3051fe3e6a6d0146bc0ffed3e2c5721147",
       "subsettedBiblical": true,
       "url": "packs/fonts/NotoSansJP-Regular.ttf.zst",
-      "zstBytes": 508120,
+      "zstBytes": 508123,
       "zstFile": "NotoSansJP-Regular.ttf.zst",
-      "zstSha256": "3d9aace0d2dd3bbf401d727881894e50fe2a87a24cbc53b90e34ee764d94e37c"
+      "zstSha256": "1847cfe3215bd1cc562bd5f8a926240656712afe2a9420508eaf5773d7e7a7b0"
     },
     {
       "file": "NotoSansKR-Regular.ttf",
@@ -157,9 +161,9 @@
       "rawSha256": "44cf08bab2dc3a2c1d6b5eceac6a94930c351e82ea9d3ceebed25c4abf2abb09",
       "subsettedBiblical": true,
       "url": "packs/fonts/NotoSansKR-Regular.ttf.zst",
-      "zstBytes": 128471,
+      "zstBytes": 128474,
       "zstFile": "NotoSansKR-Regular.ttf.zst",
-      "zstSha256": "02efdfe53f5863e223e8d4fae5b41115051b5bc892cf7937e5e65222fae64830"
+      "zstSha256": "d4d18f8f4935ee29469450ad7afcd96540250e9623564971a081d05fee8fa2eb"
     },
     {
       "file": "NotoSansKannada-Regular.ttf",
@@ -167,9 +171,9 @@
       "rawSha256": "9ad74dc64838c6855b96f671fc08e425a58921b9d0c71712ea79c328a27e6e38",
       "subsettedBiblical": false,
       "url": "packs/fonts/NotoSansKannada-Regular.ttf.zst",
-      "zstBytes": 64924,
+      "zstBytes": 64927,
       "zstFile": "NotoSansKannada-Regular.ttf.zst",
-      "zstSha256": "65d870abb6e25c8973e6d433e9db27eb3c607020b545006f2cf7a087f15abe67"
+      "zstSha256": "59de63ae86ac23228266be20f4b4304df5a1888c1cb14465c14ae3368c73607d"
     },
     {
       "file": "NotoSansKhmer-Regular.ttf",
@@ -177,9 +181,9 @@
       "rawSha256": "e66675f2082788f0511a714bef5a1748928294b38c8e286a96ea73a864b5e605",
       "subsettedBiblical": false,
       "url": "packs/fonts/NotoSansKhmer-Regular.ttf.zst",
-      "zstBytes": 42208,
+      "zstBytes": 42211,
       "zstFile": "NotoSansKhmer-Regular.ttf.zst",
-      "zstSha256": "8eaf0cffa0e0375cff8a068c5c871fac8ece2d3dcb32167526edd5b895445cab"
+      "zstSha256": "88878e48e483f461a5523a9d7ed02d9daea283c8f236c09a37d538c3a51b9eaa"
     },
     {
       "file": "NotoSansLao-Regular.ttf",
@@ -189,7 +193,7 @@
       "url": "packs/fonts/NotoSansLao-Regular.ttf.zst",
       "zstBytes": 17031,
       "zstFile": "NotoSansLao-Regular.ttf.zst",
-      "zstSha256": "06b3e856ed9bf2b736bc46b990c42c6e774b23aed7d7bafcbc21862a65fb3059"
+      "zstSha256": "b6c6cda186cb64ffe83fd46f3d5468bc3bc8e1786fd3abd5adf7fdb525fedcc1"
     },
     {
       "file": "NotoSansMalayalam-Regular.ttf",
@@ -197,9 +201,9 @@
       "rawSha256": "c08de7fa8d032a5d6a4d120fb82c78cec60b362a4e73fa26360d89759ff2a7f9",
       "subsettedBiblical": false,
       "url": "packs/fonts/NotoSansMalayalam-Regular.ttf.zst",
-      "zstBytes": 50555,
+      "zstBytes": 50558,
       "zstFile": "NotoSansMalayalam-Regular.ttf.zst",
-      "zstSha256": "243151058e4c6daecceac007c856025d900c7f8e8b0bb3562e5a78e68fcdedc3"
+      "zstSha256": "00d18976acfd7c9b80f4375553edc157edcb6eac8b5355d8b29ed0f81de8ce9b"
     },
     {
       "file": "NotoSansMyanmar-Regular.ttf",
@@ -207,9 +211,9 @@
       "rawSha256": "fafce4db400bc0b214907ccdbfb0ad2f18a57bfefd08c8a571830b84088cf2fc",
       "subsettedBiblical": false,
       "url": "packs/fonts/NotoSansMyanmar-Regular.ttf.zst",
-      "zstBytes": 81263,
+      "zstBytes": 81270,
       "zstFile": "NotoSansMyanmar-Regular.ttf.zst",
-      "zstSha256": "57882b3d0275961190b8c4ab26a30534b5f6f993fa9ca9c98507b718acf425dc"
+      "zstSha256": "56ce51edc9642f6e0be0bae9eac9e04ea797ce2e5a76b4cbc3da06909353127d"
     },
     {
       "file": "NotoSansOriya-Regular.ttf",
@@ -217,9 +221,9 @@
       "rawSha256": "a16645d056017927406546aa78e4ce15e782fd8783467267b75450453d007415",
       "subsettedBiblical": false,
       "url": "packs/fonts/NotoSansOriya-Regular.ttf.zst",
-      "zstBytes": 49656,
+      "zstBytes": 49655,
       "zstFile": "NotoSansOriya-Regular.ttf.zst",
-      "zstSha256": "b3fef8aaa5cc8acc41e0b14b02060ef63cc659861a0a57f7eecd94433edfa2a8"
+      "zstSha256": "5cdec0f3125894833848d8560f52998806ed03d27240ff44153d0997729f24c0"
     },
     {
       "file": "NotoSansSC-Regular.ttf",
@@ -227,9 +231,9 @@
       "rawSha256": "b481939877e65c58477374ee2913977d6e146ea02e70facd9759c512840a04d9",
       "subsettedBiblical": true,
       "url": "packs/fonts/NotoSansSC-Regular.ttf.zst",
-      "zstBytes": 648441,
+      "zstBytes": 648444,
       "zstFile": "NotoSansSC-Regular.ttf.zst",
-      "zstSha256": "1a447728df03fa5c007de8e11e16a193e69482276dbb627f24d674bbc766eee1"
+      "zstSha256": "dfb485484399595f91c97c55a4722e6df4eb33283d28a908bc411746414132b2"
     },
     {
       "file": "NotoSansSinhala-Regular.ttf",
@@ -237,9 +241,9 @@
       "rawSha256": "9e32612d47004552f3125e78648a9e2e7899a216ccd3cefbb93a9b5f4c809feb",
       "subsettedBiblical": false,
       "url": "packs/fonts/NotoSansSinhala-Regular.ttf.zst",
-      "zstBytes": 61228,
+      "zstBytes": 61231,
       "zstFile": "NotoSansSinhala-Regular.ttf.zst",
-      "zstSha256": "99c8dfecf9fc186123424fa85873dd3291a44ae5975db7c1de7cf3511ffb35b4"
+      "zstSha256": "ae74a6ee301ff390fb5229cfa7e592dcb462209ededd5e0ea695de80f3e9847f"
     },
     {
       "file": "NotoSansSyriac-Regular.ttf",
@@ -247,9 +251,9 @@
       "rawSha256": "4440929bf1a47bb50179e8d8495641d208c63d607355e451f29ea2d3e5343290",
       "subsettedBiblical": false,
       "url": "packs/fonts/NotoSansSyriac-Regular.ttf.zst",
-      "zstBytes": 29052,
+      "zstBytes": 29055,
       "zstFile": "NotoSansSyriac-Regular.ttf.zst",
-      "zstSha256": "8a4b1310cab5a63122ff964ccadc0964d27a404948c652e8fb25ab7952a04c22"
+      "zstSha256": "6b7515177a3b5eeeee27a9fff0d5d1401561fa02754cca791587b22b8acef79b"
     },
     {
       "file": "NotoSansTC-Regular.ttf",
@@ -257,9 +261,9 @@
       "rawSha256": "f3ac088a53abd12c93710f463b4803492061a1b6dfba6c240f5189f986088261",
       "subsettedBiblical": true,
       "url": "packs/fonts/NotoSansTC-Regular.ttf.zst",
-      "zstBytes": 586938,
+      "zstBytes": 586941,
       "zstFile": "NotoSansTC-Regular.ttf.zst",
-      "zstSha256": "8f793ba9fe54ec59de67ccfa41bd605ffbf4a9fe458656415a3b1029c4f11552"
+      "zstSha256": "ddd0c3e45dcc2bac932ee046ef15afe86df805a4a0b42c8c7d7a3004bf7df1c9"
     },
     {
       "file": "NotoSansTamil-Regular.ttf",
@@ -267,9 +271,9 @@
       "rawSha256": "3c0a186feb3c63c7f6d63e1511dcdc144e745ae09b98e217c83f3e317974f6f9",
       "subsettedBiblical": false,
       "url": "packs/fonts/NotoSansTamil-Regular.ttf.zst",
-      "zstBytes": 34605,
+      "zstBytes": 34608,
       "zstFile": "NotoSansTamil-Regular.ttf.zst",
-      "zstSha256": "749bbdfa913c9dd35f89b0ddb3453a5aa9ebcfd18c6f4706750858a3b793b17f"
+      "zstSha256": "0b949552061b13169931ace4e08cbc82ff2ab031b47b6e6613729db85b5095de"
     },
     {
       "file": "NotoSansTelugu-Regular.ttf",
@@ -277,9 +281,9 @@
       "rawSha256": "b274780b69d1d23fe84b55e809a152cb2ac5306d33864b1f87622f6971871aae",
       "subsettedBiblical": false,
       "url": "packs/fonts/NotoSansTelugu-Regular.ttf.zst",
-      "zstBytes": 80960,
+      "zstBytes": 80963,
       "zstFile": "NotoSansTelugu-Regular.ttf.zst",
-      "zstSha256": "cbc33dc9b743b6f5ea97f4f6f5941ad2bd2fe6f6da13fd1db6a665895247c9f2"
+      "zstSha256": "c84c1b8a50212a4d5f993d40d6d961eb8c460c2ffba550da2864fb53a87fbd92"
     },
     {
       "file": "NotoSansThaana-Regular.ttf",
@@ -287,9 +291,9 @@
       "rawSha256": "7543935bdcef770c9d3dd54222651b29040e5ec82f3bc58542392b2c7a9cbd3c",
       "subsettedBiblical": false,
       "url": "packs/fonts/NotoSansThaana-Regular.ttf.zst",
-      "zstBytes": 14833,
+      "zstBytes": 14837,
       "zstFile": "NotoSansThaana-Regular.ttf.zst",
-      "zstSha256": "960e6e17e7ae5e8d85334d71aa4f1b3e1ef1e6523027125c71e03b479522b3f4"
+      "zstSha256": "52aa59b946d5a0de04f94e5907979942213cb800eaf813d0b4bb6d05d94b14f6"
     },
     {
       "file": "NotoSansThai-Regular.ttf",
@@ -297,9 +301,9 @@
       "rawSha256": "61cf814eec46b294d6ea4401ac295d0cecd5207bd2331dcc5a15e7301d30ee44",
       "subsettedBiblical": false,
       "url": "packs/fonts/NotoSansThai-Regular.ttf.zst",
-      "zstBytes": 18337,
+      "zstBytes": 18339,
       "zstFile": "NotoSansThai-Regular.ttf.zst",
-      "zstSha256": "f0ca7567f75463809881ac355f117a31fe154f54a4858b55fda60fbb3755e05d"
+      "zstSha256": "dd42e48f6e2775d1766e23184423cf0b861a1e3683ba9cb098869077deccb1a5"
     },
     {
       "file": "NotoSansTifinagh-Regular.ttf",
@@ -307,9 +311,9 @@
       "rawSha256": "b08755bdee9835ebbca1095460e36a9e2f3ae396919fd0fa2377d9b4a3388f7e",
       "subsettedBiblical": false,
       "url": "packs/fonts/NotoSansTifinagh-Regular.ttf.zst",
-      "zstBytes": 53444,
+      "zstBytes": 53447,
       "zstFile": "NotoSansTifinagh-Regular.ttf.zst",
-      "zstSha256": "80acbeecc6226c421b0578f4d557fc9cd2a91b5473281f81310bb127fc4e20e5"
+      "zstSha256": "58c76050301df8f298a0e77fa08addb5a978af6af10af37fd0a1e88e237116eb"
     },
     {
       "file": "NotoSerifArmenian-Regular.ttf",
@@ -317,9 +321,9 @@
       "rawSha256": "9354b74384d093d59f9a4ad958e188808d58b6f15debeaab18e07bc432f8ce0c",
       "subsettedBiblical": false,
       "url": "packs/fonts/NotoSerifArmenian-Regular.ttf.zst",
-      "zstBytes": 157133,
+      "zstBytes": 157135,
       "zstFile": "NotoSerifArmenian-Regular.ttf.zst",
-      "zstSha256": "a58f2e6e9a9d5450185f0ff5a892cca8e566dc45a831e570acd2a13195479ed4"
+      "zstSha256": "561a47eb2d3ad73558f9b6e8df75744dcc4af92b7606e6c25658a2507791a432"
     },
     {
       "file": "NotoSerifGeorgian-Regular.ttf",
@@ -327,9 +331,9 @@
       "rawSha256": "a13a90c44a612ab80f79032d3edbbc7f6757f0c6b1613dba1a92f38077cccc57",
       "subsettedBiblical": false,
       "url": "packs/fonts/NotoSerifGeorgian-Regular.ttf.zst",
-      "zstBytes": 218655,
+      "zstBytes": 218660,
       "zstFile": "NotoSerifGeorgian-Regular.ttf.zst",
-      "zstSha256": "7a2083b3a82d54389d62dc5061163bd0693882039ac745cc49ea3069e2b1529f"
+      "zstSha256": "05f38e8881c4ede9b80c5bcfec4456d7b11f86ef416b9fcc34b967417d7c6a77"
     },
     {
       "file": "NotoSerifTibetan-Regular.ttf",
@@ -337,9 +341,9 @@
       "rawSha256": "ee97bf3dc56e813651db734c9f35f8f1d41e7e31acf5f7d893e64ad22b292446",
       "subsettedBiblical": false,
       "url": "packs/fonts/NotoSerifTibetan-Regular.ttf.zst",
-      "zstBytes": 197133,
+      "zstBytes": 197136,
       "zstFile": "NotoSerifTibetan-Regular.ttf.zst",
-      "zstSha256": "c34fad040a06f2614df41a541dd391465ec31b61a5f79832d3118d50afcb5315"
+      "zstSha256": "aee67253a4f4a74dd626c2f980be58d27309dadeecd9fbf66e1d82dd7e8da6b5"
     }
   ],
   "mount": "packs/fonts",
@@ -347,5 +351,5 @@
   "tier0_offline_bundle_bytes": 825864,
   "total_fonts": 34,
   "total_raw_bytes": 12175164,
-  "total_zst_bytes": 5542805
+  "total_zst_bytes": 5543056
 }
