@@ -94,3 +94,132 @@ export function canonicalOrdinalOf(book, chapter, verse) {
 export function canonicalRefOfOrdinal(ordinal) {
   return refOfOrdinal(Number(ordinal), CANONICAL_VERSIFICATION);
 }
+
+const UBS_TRADITIONS_META = Object.freeze({
+  ORG: Object.freeze({ code: "ORG", nameEs: "Texto Original (WLC/BHS · SBLGNT)", nameEn: "Original Text (WLC/BHS · SBLGNT)" }),
+  LXX: Object.freeze({ code: "LXX", nameEs: "Septuaginta Griega (LXX)", nameEn: "Greek Septuagint (LXX)" }),
+  VUL: Object.freeze({ code: "VUL", nameEs: "Vulgata Latina (VUL)", nameEn: "Latin Vulgate (VUL)" }),
+  RSC: Object.freeze({ code: "RSC", nameEs: "Sinodal Eslava / Conservadora (RSC)", nameEn: "Slavonic / Synodal Conservative (RSC)" }),
+  RSO: Object.freeze({ code: "RSO", nameEs: "Sinodal Oriental / Ortodoxa (RSO)", nameEn: "Eastern Orthodox Synodal (RSO)" }),
+  ENG: Object.freeze({ code: "ENG", nameEs: "Occidental / Estándar Inglés (ENG)", nameEn: "Western / English Standard (ENG)" }),
+});
+
+function formatTradRef(book, ch, v) {
+  return `${book}.${Math.max(1, ch)}.${Math.max(1, v)}`;
+}
+
+/**
+ * Compara coordenadas de capítulo/versículo a través de las 6 tradiciones bicanónicas UBS
+ * (`ORG`, `LXX`, `VUL`, `RSC`, `RSO`, `ENG`) usando las reglas canónicas `ubsicap_*`.
+ */
+export function compareUbsSixTraditions(book = "GEN", chapter = 1, verse = 1, uiLocale = "es") {
+  const b = String(book || "GEN").trim().toUpperCase();
+  const c = Math.max(1, Number(chapter) || 1);
+  const v = Math.max(1, Number(verse) || 1);
+  const isEn = String(uiLocale || "es").trim().toLowerCase().startsWith("en");
+  const baseRef = formatTradRef(b, c, v);
+
+  let org = { ch: c, v, note: "" };
+  let lxx = { ch: c, v, note: "" };
+  let vul = { ch: c, v, note: "" };
+  let rsc = { ch: c, v, note: "" };
+  let rso = { ch: c, v, note: "" };
+  const eng = { ch: c, v, note: "" };
+  let regime = "ALIGNED_CANONICAL";
+
+  if (b === "PSA") {
+    if (c >= 10 && c <= 113) {
+      regime = "VRS-PSA-LXX-VUL-009-113";
+      lxx = { ch: c - 1, v: c === 10 ? v + 21 : v, note: "LXX Ps 9-10 united" };
+      vul = { ch: c - 1, v: c === 10 ? v + 21 : v, note: "Vulgate follows LXX numbering" };
+      rsc = { ch: c - 1, v: c === 10 ? v + 21 : v, note: "RSC Synodal follows LXX" };
+      rso = { ch: c - 1, v: c === 10 ? v + 21 : v, note: "RSO follows LXX (-1)" };
+    }
+    if (c >= 3 && c <= 149 && c !== 117 && c !== 119) {
+      const hasSuperscriptionShift = [3, 4, 5, 6, 7, 8, 9, 12, 13, 18, 19, 20, 21, 22, 30, 31, 34, 36, 38, 39, 40, 41, 42, 44, 45, 46, 47, 48, 49, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 67, 68, 69, 70, 75, 76, 77, 80, 81, 83, 84, 85, 88, 89, 92, 102, 108, 140, 142].includes(c);
+      if (hasSuperscriptionShift) {
+        const delta = c === 51 || c === 52 || c === 54 || c === 60 ? 2 : 1;
+        regime = regime === "ALIGNED_CANONICAL" ? "VRS-PSA-MT-SUPERSCRIPTION" : `${regime}+MT_SUPERSCRIPTION`;
+        org = { ch: c, v: v + delta, note: `MT counts superscription (${delta} vv.)` };
+        if (c >= 10 && c <= 113) {
+          rso = { ch: c - 1, v: (c === 10 ? v + 21 : v) + delta, note: "RSO includes superscription & LXX -1" };
+        }
+      }
+    }
+  } else if (b === "GEN" && ((c === 31 && v === 55) || c === 32)) {
+    regime = "VRS-GEN-31-32-MT";
+    org = c === 31 ? { ch: 32, v: 1, note: "MT Gn 32:1" } : { ch: 32, v: v + 1, note: "MT +1v" };
+    vul = { ch: 31, v: 55, note: "Vulgate aligned to MT split in ch. 32" };
+  } else if (b === "EXO" && ((c === 21 && v >= 37) || (c === 22 && v <= 4))) {
+    regime = "VRS-EXO-21-22-COVENANT";
+    org = c === 22 && v === 1 ? { ch: 21, v: 37, note: "MT Ex 21:37" } : { ch: 22, v: Math.max(1, v - 1), note: "MT -1v" };
+  } else if (b === "JON" && ((c === 1 && v === 17) || c === 2)) {
+    regime = "VRS-JON-1-2-MT";
+    org = c === 1 ? { ch: 2, v: 1, note: "MT Jonah 2:1" } : { ch: 2, v: v + 1, note: "MT +1v" };
+    lxx = c === 1 ? { ch: 2, v: 1, note: "LXX Jonah 2:1" } : { ch: 2, v: v + 1, note: "LXX +1v" };
+    vul = c === 1 ? { ch: 2, v: 1, note: "Vulgate Jonah 2:1" } : { ch: 2, v: v + 1, note: "VUL +1v" };
+    rsc = { ch: c === 1 ? 2 : 2, v: c === 1 ? 1 : v + 1, note: "Synodal follows MT/LXX" };
+    rso = { ch: c === 1 ? 2 : 2, v: c === 1 ? 1 : v + 1, note: "RSO follows MT/LXX" };
+  } else if (b === "JOL" && c >= 2 && ((c === 2 && v >= 28) || c === 3)) {
+    regime = "VRS-JOL-MT-CH3-4";
+    if (c === 2 && v >= 28) {
+      org = { ch: 3, v: v - 27, note: "MT Joel 3:1-5" };
+      lxx = { ch: 3, v: v - 27, note: "LXX Joel 3" };
+      vul = { ch: 2, v, note: "VUL keeps ch. 2" };
+    } else if (c === 3) {
+      org = { ch: 4, v, note: "MT Joel 4" };
+      lxx = { ch: 4, v, note: "LXX Joel 4" };
+      rso = { ch: 3, v, note: "RSO matches 3-ch Joel" };
+    }
+  } else if (b === "MAL" && c === 4) {
+    regime = "VRS-MAL-MT-VUL-CH3-4";
+    org = { ch: 3, v: v + 18, note: "MT Mal 3:19-24" };
+    lxx = { ch: 3, v: v + 18, note: "LXX Mal 3:19-24" };
+    vul = { ch: 4, v, note: "VUL Mal 4:1-6" };
+    rsc = { ch: 4, v, note: "RSC Mal 4" };
+    rso = { ch: 4, v, note: "RSO Mal 4" };
+  } else if (b === "ISA" && ((c === 8 && v === 23) || (c === 9 && v <= 7))) {
+    regime = "VRS-ISA-8-9-MT";
+    org = c === 9 && v === 1 ? { ch: 8, v: 23, note: "MT Isa 8:23" } : { ch: 9, v: Math.max(1, v - 1), note: "MT -1v" };
+  } else if (b === "ROM" && c === 16 && v >= 25) {
+    regime = "VRS-UBSICAP-ROM16-14";
+    rso = { ch: 14, v: v - 1, note: "Byzantine/RSO doxology at Rom 14:24-26" };
+    rsc = { ch: 14, v: v - 1, note: "Slavonic/RSC doxology at Rom 14:24-26" };
+  }
+
+  const rawByCode = { ORG: org, LXX: lxx, VUL: vul, RSC: rsc, RSO: rso, ENG: eng };
+  const traditions = {};
+  const uniqueRefs = new Set();
+  for (const [code, coords] of Object.entries(rawByCode)) {
+    const r = formatTradRef(b, coords.ch, coords.v);
+    uniqueRefs.add(r);
+    traditions[code] = {
+      code,
+      label: isEn ? UBS_TRADITIONS_META[code].nameEn : UBS_TRADITIONS_META[code].nameEs,
+      ref: r,
+      chapter: coords.ch,
+      verse: coords.v,
+      divergesFromEng: r !== baseRef,
+      note: coords.note || (isEn ? "Canonical match with ENG" : "Coincide con estándar ENG"),
+    };
+  }
+  const hasDivergence = uniqueRefs.size > 1 || regime !== "ALIGNED_CANONICAL";
+  const summary = hasDivergence
+    ? isEn
+      ? `Divergence (${regime}): ORG=${traditions.ORG.ref} · LXX=${traditions.LXX.ref} · VUL=${traditions.VUL.ref} · RSO=${traditions.RSO.ref} · ENG=${traditions.ENG.ref}`
+      : `Divergencia (${regime}): ORG=${traditions.ORG.ref} · LXX=${traditions.LXX.ref} · VUL=${traditions.VUL.ref} · RSO=${traditions.RSO.ref} · ENG=${traditions.ENG.ref}`
+    : isEn
+      ? `Aligned across all 6 UBS traditions (${baseRef})`
+      : `Alineado en las 6 tradiciones UBS (${baseRef})`;
+
+  return {
+    ref: baseRef,
+    book: b,
+    chapter: c,
+    verse: v,
+    regime,
+    hasDivergence,
+    summary,
+    traditions,
+  };
+}

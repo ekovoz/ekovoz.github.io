@@ -242,7 +242,7 @@ export function planDose2(locatedOrBlockId, lang = "es", edition = "2col-a4") {
   };
 }
 
-export function encodePdfBytesToDataUri(bytes) {
+function encodePdfBytesToDataUri(bytes) {
   let binary = "";
   const chunk = 8192;
   for (let i = 0; i < bytes.byteLength; i += chunk) {
@@ -453,15 +453,15 @@ export function renderCanonical16MacroTandasSelectorHtml({
   }).join("");
 
   return (
-    `<div id="macroTandas16Dose3Panel" class="macro-tandas-16-card" data-macro-tandas-count="16" data-canonical-blocks-covered="80" data-active-macro-tanda="${activeMt.macroTandaId}" data-max-sheets-signature="${activeMt.maxSheetsPerSignature}" data-creep-mm="${activeMt.maxCreepMm}" data-spreads-4n="${activeMt.spreads4nCount}" style="margin-top:0.55rem;padding:0.65rem;border-radius:10px;border:1px solid var(--card-border);background:var(--card-bg);font-size:0.8rem;">` +
-    `<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.35rem;margin-bottom:0.35rem;">` +
+    `<div id="macroTandas16Dose3Panel" class="macro-tandas-16-card" data-macro-tandas-count="16" data-canonical-blocks-covered="80" data-active-macro-tanda="${activeMt.macroTandaId}" data-max-sheets-signature="${activeMt.maxSheetsPerSignature}" data-creep-mm="${activeMt.maxCreepMm}" data-spreads-4n="${activeMt.spreads4nCount}">` +
+    `<div class="ek-row-between ek-mb-sm">` +
     `<strong>🏛️ ${isEn ? "Dose 3 · 16 Canonical Macro-Tandas (80 Blocks, M≤8 Sewable Signatures)" : "Dosis 3 · 16 Macro-Tandas Canónicas (80 Bloques, Cuadernillos M≤8 Hojas)"}</strong>` +
     `<span class="uls-badge" data-macro-tanda-creep="${activeMt.maxCreepMm}">4N: ${activeMt.spreads4nCount} ${isEn ? "spreads" : "pliegos"} · creep ${activeMt.maxCreepMm} mm · &lt;14 MiB Worker</span>` +
     `</div>` +
-    `<div style="display:flex;align-items:center;flex-wrap:wrap;gap:0.45rem;">` +
-    `<label for="macroTanda16Select" style="font-weight:600;">${isEn ? "Macro-Tanda (1–16):" : "Macro-Tanda (1–16):"}</label>` +
-    `<select id="macroTanda16Select" data-action="select-macro-tanda-16" aria-label="${isEn ? "Select Canonical Macro-Tanda (1 to 16)" : "Seleccionar Macro-Tanda Canónica (1 a 16)"}" style="min-height:48px;flex:1;min-width:220px;">${optionsHtml}</select>` +
-    `<button type="button" id="btnGenerateAll16MacroTandas" class="uls-chip" data-action="generate-sequential-16-macro-tandas" data-lang="${lang}" data-cols="${Number(columns) || 2}" data-font-pt="${Number(fontPt) || 9.5}" style="min-height:48px;min-width:48px;padding:8px 12px;cursor:pointer;font-weight:600;">⚡ ${isEn ? "Synthesize All 16 Tandas (Worker)" : "Generar las 16 Tandas en Secuencia (Worker)"}</button>` +
+    `<div class="ek-row-wrap">` +
+    `<label for="macroTanda16Select" class="ek-semibold">${isEn ? "Macro-Tanda (1–16):" : "Macro-Tanda (1–16):"}</label>` +
+    `<select id="macroTanda16Select" data-action="select-macro-tanda-16" aria-label="${isEn ? "Select Canonical Macro-Tanda (1 to 16)" : "Seleccionar Macro-Tanda Canónica (1 a 16)"}">${optionsHtml}</select>` +
+    `<button type="button" id="btnGenerateAll16MacroTandas" class="uls-chip eco-action-btn ek-semibold" data-action="generate-sequential-16-macro-tandas" data-lang="${lang}" data-cols="${Number(columns) || 2}" data-font-pt="${Number(fontPt) || 9.5}">⚡ ${isEn ? "Synthesize All 16 Tandas (Worker)" : "Generar las 16 Tandas en Secuencia (Worker)"}</button>` +
     `</div>` +
     `</div>`
   );

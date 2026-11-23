@@ -161,27 +161,27 @@ export function renderOralPorticoWasmConsole({
     `data-pause-period-ms="${prosody.pausePeriodSelahMs}" ` +
     `data-audio-crc16="${escapeHtml(prosody.crc16Hex)}" ` +
     `data-wasm-backed="${prosody.wasmBacked}">` +
-    `<div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:0.45rem;margin-bottom:0.4rem;">` +
+    `<div class="ek-row-between ek-mb-sm">` +
     `<strong>🗣️ Escucha Guiada (${escapeHtml(`${state.book} ${state.chapter}:${state.verse}`)}) <small class="uls-badge hig-tech-meta">Pórtico Prosódico WASM · 0 Bytes Audio · ${prosody.wpm} WPM (~${prosody.targetBitsPerSec} bits/s) · CRC-16=${escapeHtml(prosody.crc16Hex)}</small></strong>` +
-    `<div style="display:inline-flex;flex-wrap:wrap;gap:0.4rem;align-items:center;font-size:0.78rem;">` +
-    `<button type="button" id="btnPlayPauseOralPorticoCadence" class="uls-chip" style="min-height:40px;padding:0.2rem 0.6rem;">${isPlaying ? "⏸ Pausar" : "▶ Guiar Versículo"}</button>` +
+    `<div class="ek-flex-wrap-inline">` +
+    `<button type="button" id="btnPlayPauseOralPorticoCadence" class="uls-chip oral-portico-cadence-btn">${isPlaying ? "⏸ Pausar" : "▶ Guiar Versículo"}</button>` +
     `<label for="audioCadenceWpmSelect">Cadencia: ` +
-    `<select id="audioCadenceWpmSelect" style="min-height:48px;padding:0.2rem 0.4rem;">` +
+    `<select id="audioCadenceWpmSelect">` +
     [90, 120, 135, 150, 160]
       .map((w) => `<option value="${w}"${w === prosody.wpm ? " selected" : ""}>${w} WPM</option>`)
       .join("") +
     `</select></label>` +
     `<label for="audioElapsedRange">Cursor (ms): ` +
-    `<input id="audioElapsedRange" type="range" min="0" max="${prosody.totalMs}" step="250" value="${prosody.elapsedMs}" style="vertical-align:middle;">` +
+    `<input id="audioElapsedRange" type="range" min="0" max="${prosody.totalMs}" step="250" value="${prosody.elapsedMs}">` +
     `</label>` +
     `</div></div>` +
-    `<div class="oral-portico-secondary" style="display:flex;flex-wrap:wrap;gap:0.35rem;margin-bottom:0.35rem;font-size:0.75rem;">` +
+    `<div class="oral-portico-secondary">` +
     `<span class="uls-badge" data-prosodic-pause="comma">τ₁ Coma: ${prosody.pauseCommaMs} ms</span>` +
     `<span class="uls-badge" data-prosodic-pause="semicolon">τ₂ Punto y coma: ${prosody.pauseSemicolonMs} ms</span>` +
     `<span class="uls-badge" data-prosodic-pause="period">τ₃ Punto / Selah: ${prosody.pausePeriodSelahMs} ms</span>` +
     `<span class="uls-badge" data-prosodic-cursor="true">Sílaba #${prosody.activeSyllableIndex + 1}/${prosody.syllables.length}: «${escapeHtml(prosody.activeSyllable)}»</span>` +
     `</div>` +
-    `<div class="prosody-syllable-strip oral-portico-secondary" style="display:flex;flex-wrap:wrap;gap:0.25rem;font-size:0.76rem;">${syllablesHtml}</div>` +
+    `<div class="prosody-syllable-strip oral-portico-secondary">${syllablesHtml}</div>` +
     `</div>`;
 
   oralBanner._porticoMountKey = mountKey;

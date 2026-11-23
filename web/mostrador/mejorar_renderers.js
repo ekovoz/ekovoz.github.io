@@ -145,34 +145,34 @@ export function renderImproveDrawerHtml({
   const eightLocksPillsHtml = eightLocksReport.locks
     .map(
       (lk) =>
-        `<span class="uls-badge" data-lock-id="${lk.id}" data-lock-passed="${lk.passed}" style="font-size:0.72rem;padding:0.15rem 0.45rem;">${lk.passed ? "✅" : "⛔"} ${lk.label}</span>`,
+        `<span class="uls-badge ek-badge-compact" data-lock-id="${lk.id}" data-lock-passed="${lk.passed}">${lk.passed ? "✅" : "⛔"} ${lk.label}</span>`,
     )
     .join(" ");
   const lock8Result = verifyLock8PredicativeAndNegation(lockOpts);
 
   return (
     `<section class="improve-drawer" data-lang="${patch.lang}" data-ref="${patch.ref}" data-strong-id="${patch.strong_id}" data-audio-bytes="0" data-lock8-status="${lock8Result.status}" data-eight-locks-status="${eightLocksReport.status}">` +
-    `<header style="margin-bottom:0.65rem;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:0.4rem;">` +
+    `<header class="ek-row-between ek-mb-sm">` +
     `<div>` +
-    `<h4 style="margin:0;" data-i18n="improve.title">${t("improve.title")}</h4>` +
-    `<p style="margin:0.25rem 0 0 0;font-size:0.84rem;color:var(--text-secondary);" data-i18n="improve.subtitle">${t("improve.subtitle")}</p>` +
+    `<h4 class="ek-m-0" data-i18n="improve.title">${t("improve.title")}</h4>` +
+    `<p class="ek-subtitle" data-i18n="improve.subtitle">${t("improve.subtitle")}</p>` +
     `</div>` +
-    `<span class="uls-badge" data-lock8-badge="true">🔒 ${isEn ? "Lock 8 (MACULA A0/A1 + Jespersen):" : "Candado 8 (MACULA A0/A1 + Jespersen):"} ${lock8Result.status}</span>` +
+    `<span class="uls-badge" data-lock8-badge="true">🔒 ${isEn ? `Grammar check: ${lock8Result.status} <details class="tech-details"><summary>Technical details</summary><code>Lock 8 (MACULA A0/A1 + Jespersen)</code></details>` : `Verificación gramatical: ${lock8Result.status} <details class="tech-details"><summary>Detalles técnicos</summary><code>Candado 8 (MACULA A0/A1 + Jespersen)</code></details>`}</span>` +
     `</header>` +
     (includeEightLocksBar
-      ? `<div class="eight-locks-pda-bar" data-eight-locks-bar="true" style="display:flex;flex-wrap:wrap;gap:0.3rem;margin-bottom:0.55rem;">${eightLocksPillsHtml}</div>`
+      ? `<div class="eight-locks-pda-bar" data-eight-locks-bar="true">${eightLocksPillsHtml}</div>`
       : "") +
-    `<div style="display:grid;gap:0.55rem;">` +
-    `<label style="font-size:0.84rem;">` +
+    `<div class="ek-stack">` +
+    `<label class="ek-label">` +
     `<span data-i18n="improve.kind_label">${t("improve.kind_label")}</span> ` +
-    `<select id="improveKindSelect" style="width:100%;box-sizing:border-box;min-height:48px;padding:0.4rem;">` +
+    `<select id="improveKindSelect" class="ek-input">` +
     `<option value="verse" data-i18n="improve.kind_verse">${t("improve.kind_verse")} (${patch.ref} · ${patch.strong_id})</option>` +
     `<option value="ui-string" data-i18n="improve.kind_ui">${t("improve.kind_ui")} (${locale})</option>` +
     `</select>` +
     `</label>` +
-    `<label style="font-size:0.84rem;">` +
+    `<label class="ek-label">` +
     `<span data-i18n="improve.level_label">${t("improve.level_label")}</span> ` +
-    `<select id="improveLevelSelect" style="width:100%;box-sizing:border-box;min-height:48px;padding:0.4rem;">` +
+    `<select id="improveLevelSelect" class="ek-input">` +
     ["L1", "L2", "L3", "L4", "L5"]
       .map(
         (lv) =>
@@ -181,47 +181,47 @@ export function renderImproveDrawerHtml({
       .join("") +
     `</select>` +
     `</label>` +
-    `<label style="font-size:0.84rem;">` +
+    `<label class="ek-label">` +
     `<span data-i18n="improve.current">${t("improve.current")}</span>` +
-    `<input id="improveOldSurfaceInput" type="text" value="${patch.old_surface.replace(/"/g, "&quot;")}" style="width:100%;min-height:48px;padding:0.4rem;">` +
+    `<input id="improveOldSurfaceInput" class="ek-input" type="text" value="${patch.old_surface.replace(/"/g, "&quot;")}">` +
     `</label>` +
-    `<label style="font-size:0.84rem;">` +
+    `<label class="ek-label">` +
     `<span data-i18n="improve.proposed">${t("improve.proposed")}</span>` +
-    `<input id="improveNewSurfaceInput" type="text" value="${patch.new_surface.replace(/"/g, "&quot;")}" style="width:100%;min-height:48px;padding:0.4rem;">` +
+    `<input id="improveNewSurfaceInput" class="ek-input" type="text" value="${patch.new_surface.replace(/"/g, "&quot;")}">` +
     `</label>` +
-    `<label style="font-size:0.84rem;">` +
+    `<label class="ek-label">` +
     `<span data-i18n="improve.note">${t("improve.note")}</span>` +
-    `<input id="improveNoteInput" type="text" value="" style="width:100%;min-height:48px;padding:0.4rem;">` +
+    `<input id="improveNoteInput" class="ek-input" type="text" value="">` +
     `</label>` +
     `<details id="improvePatchTechReceiptDetails" class="hig-tech-meta hig-tech-receipt-details">` +
     `<summary>${isEn ? "🧾 View JSONL / SHA-256 cryptographic receipt" : "🧾 Ver recibo criptográfico JSONL / SHA-256"}</summary>` +
-    `<pre id="improvePatchOutput" style="padding:0.6rem;border-radius:8px;background:var(--bg-secondary);font-size:0.78rem;overflow-x:auto;">${patch.payloadLine}</pre>` +
+    `<pre id="improvePatchOutput" class="ek-pre">${patch.payloadLine}</pre>` +
     `</details>` +
     (includeInlineSeedPanel
-      ? `<div class="celf250-ladder-panel" data-celf250-ladder="true" data-celf250-rank="${seed250.rank}" style="padding:0.6rem;border-radius:8px;border:1px solid var(--card-border);">` +
-      `<strong style="font-size:0.82rem;">🧬 ${isEn ? `Active CELF-250 Ladder (#${seed250.rank}/250 · 30 Hours · 0 Bytes Audio)` : `Escalera Activa CELF-250 (#${seed250.rank}/250 · 30 Horas · 0 Bytes Audio)`}</strong>` +
-      `<details class="hig-tech-receipt-details"><summary>${isEn ? "🧾 Machine seed payload (CELF-250)" : "🧾 Payload semilla CELF-250"}</summary>` +
-      `<pre id="celf250SeedOutput" style="margin:0.35rem 0 0 0;font-size:0.75rem;overflow-x:auto;">${seed250.payloadLine}</pre>` +
+      ? `<div class="celf250-ladder-panel ek-card-muted" data-celf250-ladder="true" data-celf250-rank="${seed250.rank}">` +
+      `<strong class="ek-title-sm">🧬 ${isEn ? `Community Progress Step #${seed250.rank}/250` : `Paso de Revisión Comunitaria #${seed250.rank}/250`}</strong>` +
+      `<details class="hig-tech-receipt-details"><summary>${isEn ? "🧾 Technical seed payload (CELF-250)" : "🧾 Detalles técnicos de semilla (CELF-250)"}</summary>` +
+      `<pre id="celf250SeedOutput" class="ek-pre-compact">${seed250.payloadLine}</pre>` +
       `</details>` +
       `</div>`
       : "") +
     `<details id="improveCommunityVotesDetails" class="hig-tech-meta">` +
     `<summary>${isEn ? "🗳️ Community consensus votes (Dawid-Skene + SPRT)" : "🗳️ Votos de consenso comunitario (Dawid-Skene + SPRT)"}</summary>` +
-    `<div style="display:grid;gap:0.45rem;margin-top:0.45rem;">` +
-    `<label style="font-size:0.8rem;">${isEn ? "Reviewer ID" : "ID revisor"} <input id="improveVoteReviewerIdInput" type="text" placeholder="hablante_1" style="width:100%;min-height:40px;padding:0.35rem;"></label>` +
-    `<label style="font-size:0.8rem;display:flex;align-items:center;gap:0.4rem;"><input id="improveVoteGoldSeedsCheck" type="checkbox"> <span>${isEn ? "Passed 2 Gold Seeds" : "Aprobó 2 semillas de oro"}</span></label>` +
-    `<div style="display:flex;flex-wrap:wrap;gap:0.4rem;">` +
-    `<button type="button" id="btnAddCommunityVoteApprove" class="uls-chip">👍 ${isEn ? "Approve vote" : "Voto aprobar"}</button>` +
-    `<button type="button" id="btnAddCommunityVoteReject" class="uls-chip">👎 ${isEn ? "Reject vote" : "Voto rechazar"}</button>` +
-    `<input type="file" id="inputImportCommunityVotesJson" accept=".json,application/json" aria-label="Import Community Votes JSON">` +
+    `<div class="ek-stack-sm ek-mt-sm">` +
+    `<label class="ek-label-sm">${isEn ? "Reviewer ID" : "ID revisor"} <input id="improveVoteReviewerIdInput" class="ek-input" type="text" placeholder="hablante_1"></label>` +
+    `<label class="ek-label-sm ek-row"><input id="improveVoteGoldSeedsCheck" type="checkbox"> <span>${isEn ? "Passed 2 Gold Seeds" : "Aprobó 2 semillas de oro"}</span></label>` +
+    `<div class="ek-row-wrap">` +
+    `<button type="button" id="btnAddCommunityVoteApprove" class="uls-chip" data-i18n="improve.vote_approve">👍 ${isEn ? "Approve vote" : "Voto aprobar"}</button>` +
+    `<button type="button" id="btnAddCommunityVoteReject" class="uls-chip" data-i18n="improve.vote_reject">👎 ${isEn ? "Reject vote" : "Voto rechazar"}</button>` +
+    `<input type="file" id="inputImportCommunityVotesJson" class="ek-input" accept=".json,application/json" aria-label="Import Community Votes JSON">` +
     `</div>` +
-    `<output id="improveCommunityVotesStatus" style="font-size:0.78rem;"></output>` +
+    `<output id="improveCommunityVotesStatus" class="ek-meta"></output>` +
     `</div>` +
     `</details>` +
-    `<div style="display:flex;flex-wrap:wrap;gap:0.5rem;">` +
-    `<button type="button" id="btnApplySuggestedImprovement" class="uls-chip apply-improvement" data-apply-improvement="true" data-lang="${patch.lang}" data-ref="${patch.ref}" data-strong-id="${patch.strong_id}" data-proposed-surface="${patch.new_surface.replace(/"/g, "&quot;")}" style="min-height:48px;">✅ ${isEn ? "Apply improvement to cascade" : "Aplicar mejora a la cascada"}</button>` +
-    `<button type="button" id="btnCopyPatchPayload" class="uls-chip" style="min-height:48px;" data-i18n="improve.copy_patch">${t("improve.copy_patch")}</button>` +
-    `<button type="button" id="btnDownloadPatchFile" class="uls-chip" style="min-height:48px;" data-i18n="improve.download_patch">${t("improve.download_patch")}</button>` +
+    `<div class="ek-row-wrap">` +
+    `<button type="button" id="btnApplySuggestedImprovement" class="uls-chip apply-improvement" data-i18n="improve.apply_cascade" data-apply-improvement="true" data-lang="${patch.lang}" data-ref="${patch.ref}" data-strong-id="${patch.strong_id}" data-proposed-surface="${patch.new_surface.replace(/"/g, "&quot;")}">✅ ${isEn ? "Apply improvement to cascade" : "Aplicar mejora a la cascada"}</button>` +
+    `<button type="button" id="btnCopyPatchPayload" class="uls-chip ek-btn-fitts" data-i18n="improve.copy_patch">${t("improve.copy_patch")}</button>` +
+    `<button type="button" id="btnDownloadPatchFile" class="uls-chip ek-btn-fitts" data-i18n="improve.download_patch">${t("improve.download_patch")}</button>` +
     `</div>` +
     `</div>` +
     `</section>`
@@ -367,12 +367,12 @@ export function renderCascadeAndLadderHtml({
   const nextEntropyItem = entropyQueue[0] || { ref: "GEN.1.1", shannon_entropy: 2.45, marginal_gain_bits: 48.2 };
 
   const rungFilterHtml =
-    `<div class="celf-rung-filter-bar" role="group" aria-label="${isEn ? "Filter by CELF-250 Rung" : "Filtro por Peldaño CELF-250"}" style="display:flex;flex-wrap:wrap;gap:0.35rem;margin-bottom:0.5rem;">` +
-    `<button type="button" id="btnNextHighEntropyVerse" class="uls-chip" data-next-entropy-ref="${nextEntropyItem.ref}" data-shannon-entropy="${nextEntropyItem.shannon_entropy}" style="min-height:48px;padding:0.35rem 0.75rem;font-size:0.78rem;font-weight:700;">⚡ ${isEn ? "Next high uncertainty" : "Siguiente alta incertidumbre"}: ${nextEntropyItem.ref} (H=${nextEntropyItem.shannon_entropy}b)</button>` +
+    `<div class="celf-rung-filter-bar ek-row-wrap ek-mb-sm" role="group" aria-label="${isEn ? "Filter by CELF-250 Rung" : "Filtro por Peldaño CELF-250"}">` +
+    `<button type="button" id="btnNextHighEntropyVerse" class="uls-chip ek-btn-fitts" data-next-entropy-ref="${nextEntropyItem.ref}" data-shannon-entropy="${nextEntropyItem.shannon_entropy}">⚡ ${isEn ? "Next high uncertainty" : "Siguiente alta incertidumbre"}: ${nextEntropyItem.ref} (H=${nextEntropyItem.shannon_entropy}b)</button>` +
     Object.entries(CELF_RUNG_LABELS)
       .map(
         ([rungKey, label]) =>
-          `<button type="button" class="uls-chip celf-rung-filter-btn" data-celf-rung-filter="${rungKey}" aria-pressed="${activeRung === rungKey ? "true" : "false"}" style="min-height:48px;padding:0.35rem 0.65rem;font-size:0.76rem;">${isEn && rungKey === "ALL" ? "All (250)" : label}</button>`,
+          `<button type="button" class="uls-chip celf-rung-filter-btn ek-btn-fitts" data-celf-rung-filter="${rungKey}" aria-pressed="${activeRung === rungKey ? "true" : "false"}">${isEn && rungKey === "ALL" ? "All (250)" : label}</button>`,
       )
       .join("") +
     `</div>`;
@@ -385,7 +385,7 @@ export function renderCascadeAndLadderHtml({
       const gainBits = Number(item.marginal_gain_bits ?? item.marginal_gain ?? 0);
       const gainBadge = gainBits > 0 ? ` · +${gainBits.toFixed(1)}b` : "";
       return (
-        `<button type="button" class="uls-chip mostrador-celf-rung-btn" data-ladder-ref="${refStr}" data-ladder-rank="${rankNum}" data-ladder-rung="${rungName}" style="min-height:48px;padding:0.35rem 0.65rem;font-size:0.79rem;">` +
+        `<button type="button" class="uls-chip mostrador-celf-rung-btn ek-btn-fitts" data-ladder-ref="${refStr}" data-ladder-rank="${rankNum}" data-ladder-rung="${rungName}">` +
         `#${rankNum} · ${refStr} (${rungName}${gainBadge})` +
         `</button>`
       );
@@ -398,11 +398,11 @@ export function renderCascadeAndLadderHtml({
     level: cleanLevel,
   });
   const sisterCascadeHtml =
-    `<div class="sister-works-cascade-bar" data-sister-works-cascade="true" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:0.4rem;margin-bottom:0.55rem;font-size:0.77rem;">` +
+    `<div class="sister-works-cascade-bar ek-auto-grid ek-mb-sm" data-sister-works-cascade="true">` +
     sisterCascade.sisterWorks
       .map(
         (sw) =>
-          `<div data-sister-work="${sw.workId}" style="padding:0.4rem 0.55rem;border-radius:8px;border:1px solid var(--card-border);">` +
+          `<div class="ek-subcard" data-sister-work="${sw.workId}">` +
           `<strong>${sw.workLabel}</strong><br>` +
           `<span>${sw.ConcordantOccurrences} ${isEn ? "occurrences" : "ocurrencias"} · ${sw.sampleTargets.slice(0, 2).join(", ")}</span>` +
           `</div>`,
@@ -411,35 +411,35 @@ export function renderCascadeAndLadderHtml({
     `</div>`;
 
   const otWavesHtml =
-    `<div class="ot-translation-waves-bar" data-ot-waves="5" data-active-ot-wave="${waveNum}" style="display:flex;flex-wrap:wrap;gap:0.35rem;margin-top:0.55rem;font-size:0.75rem;">` +
-    `<button type="button" class="uls-chip ot-wave-filter-btn" data-ot-wave="0" aria-pressed="${waveNum === 0 ? "true" : "false"}" style="min-height:48px;padding:0.25rem 0.55rem;font-size:0.74rem;">${isEn ? "All Waves" : "Todas las Ondas"}</button>` +
+    `<div class="ot-translation-waves-bar ek-row-wrap ek-mt-sm" data-ot-waves="5" data-active-ot-wave="${waveNum}">` +
+    `<button type="button" class="uls-chip ot-wave-filter-btn ek-btn-fitts" data-ot-wave="0" aria-pressed="${waveNum === 0 ? "true" : "false"}">${isEn ? "All Waves" : "Todas las Ondas"}</button>` +
     CANONICAL_5_OT_TRANSLATION_WAVES.map(
       (w) =>
-        `<button type="button" class="uls-chip ot-wave-filter-btn" data-ot-wave="${w.wave}" data-uncertainty-bits="${w.meanUncertaintyBits}" aria-pressed="${waveNum === Number(w.wave) ? "true" : "false"}" style="min-height:48px;padding:0.25rem 0.55rem;font-size:0.74rem;">${w.title} (U=${w.meanUncertaintyBits}b)</button>`,
+        `<button type="button" class="uls-chip ot-wave-filter-btn ek-btn-fitts" data-ot-wave="${w.wave}" data-uncertainty-bits="${w.meanUncertaintyBits}" aria-pressed="${waveNum === Number(w.wave) ? "true" : "false"}">${w.title} (U=${w.meanUncertaintyBits}b)</button>`,
     ).join(" ") +
     `</div>`;
 
   const extAudit = EXTERNAL_AUDIT_8_LOCKS || {};
   const externalAuditHtml =
-    `<div id="externalAudit8LocksPanel" data-external-audit-8-locks="true" data-all-8-locks-passed="${Boolean(extAudit.all_8_locks_passed)}" style="margin-top:0.55rem;padding:0.45rem 0.6rem;border-radius:8px;border:1px solid var(--card-border);background:var(--bg-secondary);font-size:0.75rem;">` +
-    `<div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:0.35rem;">` +
+    `<div id="externalAudit8LocksPanel" class="ek-card-muted ek-mt-sm" data-external-audit-8-locks="true" data-all-8-locks-passed="${Boolean(extAudit.all_8_locks_passed)}">` +
+    `<div class="ek-row-between">` +
     `<strong>🛡️ ${isEn ? "External 8-Lock Audit" : "Auditoría Externa de 8 Candados"} (${sanitizePipeField(extAudit.detected_format || "DOCX_OOXML")} · ${sanitizePipeField(extAudit.detected_tradition || "ProtestantKjv")})</strong>` +
-    `<span class="uls-badge" style="font-size:0.71rem;">${extAudit.all_8_locks_passed !== false ? "✅ 8/8 PASS" : "⛔ VETO"} · Rosetta Key Terms: ${Number(extAudit.rosetta_key_terms_extracted || 552)} · Onomasticon: ${Number(extAudit.rosetta_onomasticon_rules || 3100)}</span>` +
+    `<span class="uls-badge ek-badge-compact">${extAudit.all_8_locks_passed !== false ? "✅ 8/8 PASS" : "⛔ VETO"} · Rosetta Key Terms: ${Number(extAudit.rosetta_key_terms_extracted || 552)} · Onomasticon: ${Number(extAudit.rosetta_onomasticon_rules || 3100)}</span>` +
     `</div>` +
     `</div>`;
 
   const uqSlice = UNCERTAINTY_QUEUE_60.slice(0, 8);
   const uncertaintyQueueHtml =
-    `<div id="uncertaintyQueue60Panel" data-uncertainty-queue-total="${UNCERTAINTY_QUEUE_60.length}" style="margin-top:0.55rem;padding:0.45rem 0.6rem;border-radius:8px;border:1px solid var(--card-border);background:var(--bg-secondary);">` +
-    `<strong style="font-size:0.76rem;display:block;margin-bottom:0.3rem;">🎯 ${isEn ? "Top-60 Semantic Uncertainty Queue (D4-A+ · Dawid-Skene + Entropy U)" : "Cola de Incertidumbre Semántica Top-60 (D4-A+ · Dawid-Skene + Entropía U)"}</strong>` +
-    `<div style="display:flex;flex-wrap:wrap;gap:0.35rem;">` +
+    `<div id="uncertaintyQueue60Panel" class="ek-card-muted ek-mt-sm" data-uncertainty-queue-total="${UNCERTAINTY_QUEUE_60.length}">` +
+    `<strong class="ek-title-sm">🎯 ${isEn ? "Top-60 Semantic Uncertainty Queue (D4-A+ · Dawid-Skene + Entropy U)" : "Cola de Incertidumbre Semántica Top-60 (D4-A+ · Dawid-Skene + Entropía U)"}</strong>` +
+    `<div class="ek-row-wrap">` +
     uqSlice
       .map((uItem, idx) => {
         const uRef = sanitizePipeField(uItem.verse_id || uItem.ref || "ACT.5.8").toUpperCase();
         const uRank = Number(uItem.rank) || idx + 1;
         const uScore = Number(uItem.semantic_uncertainty_u ?? uItem.shannon_entropy ?? 0.75).toFixed(3);
         return (
-          `<button type="button" class="uls-chip uncertainty-queue-btn" data-jump-osis="${uRef}" data-uncertainty-rank="${uRank}" data-uncertainty-u="${uScore}" style="min-height:48px;padding:0.25rem 0.55rem;font-size:0.73rem;">` +
+          `<button type="button" class="uls-chip uncertainty-queue-btn ek-btn-fitts" data-jump-osis="${uRef}" data-uncertainty-rank="${uRank}" data-uncertainty-u="${uScore}">` +
           `#${uRank} · ${uRef} (U=${uScore})` +
           `</button>`
         );
@@ -449,12 +449,12 @@ export function renderCascadeAndLadderHtml({
     `</div>`;
 
   const tier3aHtml =
-    `<div id="tier3aDialectContinuumPanel" data-tier3a-continuums="${TIER3A_CONTINUUMS.length}" data-floor-1-sentence="${Number(FLOOR_1_SENTENCE_SPEC.single_sentence_unlocked_floor || 291)}" data-reference-tier1="${sanitizePipeField(FLOOR_1_SENTENCE_SPEC.reference_tier1 || "spa_rv1909")}" data-total-sentences="${Number(FLOOR_1_SENTENCE_SPEC.total_sentences || 250)}" style="margin-top:0.55rem;padding:0.45rem 0.6rem;border-radius:8px;border:1px solid var(--card-border);background:var(--bg-secondary);font-size:0.75rem;">` +
-    `<strong style="display:block;margin-bottom:0.25rem;">🌐 ${isEn ? "Tier 3A Dialect Continuums (ASJP Swadesh-40 LDND ≤ 0.28) · 1-Sentence Floor:" : "Continuos Dialectales Tier 3A (ASJP Swadesh-40 LDND ≤ 0.28) · Piso de 1 Oración:"} ${sanitizePipeField(FLOOR_1_SENTENCE_SPEC.floor_1_sentence_spec)}</strong>` +
-    `<div style="display:flex;flex-wrap:wrap;gap:0.35rem;">` +
+    `<div id="tier3aDialectContinuumPanel" class="ek-card-muted ek-mt-sm" data-tier3a-continuums="${TIER3A_CONTINUUMS.length}" data-floor-1-sentence="${Number(FLOOR_1_SENTENCE_SPEC.single_sentence_unlocked_floor || 291)}" data-reference-tier1="${sanitizePipeField(FLOOR_1_SENTENCE_SPEC.reference_tier1 || "spa_rv1909")}" data-total-sentences="${Number(FLOOR_1_SENTENCE_SPEC.total_sentences || 250)}">` +
+    `<strong class="ek-title-sm">🌐 ${isEn ? "Tier 3A Dialect Continuums (ASJP Swadesh-40 LDND ≤ 0.28) · 1-Sentence Floor:" : "Continuos Dialectales Tier 3A (ASJP Swadesh-40 LDND ≤ 0.28) · Piso de 1 Oración:"} ${sanitizePipeField(FLOOR_1_SENTENCE_SPEC.floor_1_sentence_spec)}</strong>` +
+    `<div class="ek-row-wrap">` +
     TIER3A_CONTINUUMS.map(
       (tc) =>
-        `<span class="uls-badge" data-donor-lang="${sanitizePipeField(tc.donor_lang)}" data-target-lang="${sanitizePipeField(tc.target_lang)}" data-asjp-ldnd="${Number(tc.asjp_ldnd || 0).toFixed(4)}" style="font-size:0.72rem;padding:0.2rem 0.45rem;">` +
+        `<span class="uls-badge ek-badge-compact" data-donor-lang="${sanitizePipeField(tc.donor_lang)}" data-target-lang="${sanitizePipeField(tc.target_lang)}" data-asjp-ldnd="${Number(tc.asjp_ldnd || 0).toFixed(4)}">` +
         `${sanitizePipeField(tc.donor_lang)} → ${sanitizePipeField(tc.target_lang)} (LDND=${Number(tc.asjp_ldnd || 0).toFixed(4)} · ${sanitizePipeField(tc.sample_projected_cognates || "")})` +
         `</span>`,
     ).join("") +
@@ -483,28 +483,30 @@ export function renderCascadeAndLadderHtml({
     responseText: "",
   });
   const seedPanelHtml =
-    `<div class="celf250-ladder-panel" data-celf250-ladder="true" data-celf250-rank="${seed250.rank}" style="margin-bottom:0.5rem;padding:0.55rem;border-radius:8px;border:1px solid var(--card-border);background:var(--bg-secondary);">` +
-    `<strong style="font-size:0.8rem;">🧬 ${isEn ? `Active CELF-250 Seed (#${seed250.rank}/250 · 30 Hours · 0 Bytes Audio)` : `Semilla Activa CELF-250 (#${seed250.rank}/250 · 30 Horas · 0 Bytes Audio)`}</strong>` +
-    `<details class="hig-tech-receipt-details"><summary>${isEn ? "🧾 View CELF-250 seed payload" : "🧾 Ver payload CELF-250"}</summary>` +
-    `<pre id="celf250SeedOutput" style="margin:0.3rem 0 0 0;font-size:0.74rem;overflow-x:auto;">${seed250.payloadLine}</pre>` +
+    `<div class="celf250-ladder-panel ek-card-muted ek-mb-sm" data-celf250-ladder="true" data-celf250-rank="${seed250.rank}">` +
+    `<strong class="ek-title-sm">🧬 ${isEn ? `Community Progress Step #${seed250.rank}/250` : `Paso de Revisión Comunitaria #${seed250.rank}/250`}</strong>` +
+    `<details class="hig-tech-receipt-details tech-details"><summary>${isEn ? "🧾 Technical seed payload (CELF-250)" : "🧾 Detalles técnicos de semilla (CELF-250)"}</summary>` +
+    `<pre id="celf250SeedOutput" class="ek-pre-compact">${seed250.payloadLine}</pre>` +
     `</details>` +
     `</div>`;
 
   return (
-    `<div class="cascade-impact-box" data-cascade-level="${cleanLevel}" data-cascade-lang="${cleanLang}" data-celf-total="${totalCount}" data-active-ot-wave="${waveNum}" style="padding:0.65rem;border-radius:10px;border:1px solid var(--card-border);background:var(--card-bg);">` +
-    `<strong style="font-size:0.84rem;display:block;margin-bottom:0.3rem;">🌊 ${isEn ? `Deterministic Cascade ${cleanLevel} · CELF-250 Ladder (${totalCount} rungs · ${sanitizePipeField(strongId)} in ${resolvedRef} → Bible + Gospels + Beatitudes)` : `Cascada Determinista ${cleanLevel} · Escalera CELF-250 (${totalCount} peldaños · ${sanitizePipeField(strongId)} en ${resolvedRef} → Biblia + Evangelios + Felices)`}</strong>` +
-    `<p style="margin:0 0 0.45rem 0;font-size:0.8rem;color:var(--text-secondary);">` +
-    `${isEn ? `When refining this root in <code>${cleanLang}</code>, the engine propagates the improvement across all concordant occurrences with Dawid-Skene + SPRT Bayesian quarantine (0 Bytes Audio). Tap any rung to jump to the diagnostic verse:` : `Al corregir esta raíz en <code>${cleanLang}</code>, el motor propaga la mejora a todas las ocurrencias concordantes con cuarentena bayesiana Dawid-Skene + SPRT (0 Bytes Audio). Pulsa cualquier peldaño para saltar al versículo diagnóstico:`}` +
+    `<div class="cascade-impact-box ek-card" data-cascade-level="${cleanLevel}" data-cascade-lang="${cleanLang}" data-celf-total="${totalCount}" data-active-ot-wave="${waveNum}">` +
+    `<strong class="ek-title-sm">🌊 ${isEn ? `Cascade Propagation ${cleanLevel} (${totalCount} steps · ${sanitizePipeField(strongId)} in ${resolvedRef})` : `Propagación de Mejora ${cleanLevel} (${totalCount} pasos · ${sanitizePipeField(strongId)} en ${resolvedRef})`}</strong>` +
+    `<p class="ek-subtitle ek-mb-sm">` +
+    `${isEn ? `Refining this root in <code>${cleanLang}</code> updates matching verses across Bible, Gospels, and Beatitudes. Tap any step to inspect:` : `Al corregir esta raíz en <code>${cleanLang}</code>, el ajuste se propaga a Biblia, Evangelios y Felices. Pulsa un paso para revisarlo:`}` +
     `</p>` +
+    `<details class="tech-details ek-mb-sm"><summary>${isEn ? "Technical details (CELF-250 · Dawid-Skene + SPRT)" : "Detalles técnicos (CELF-250 · Dawid-Skene + SPRT)"}</summary>` +
+    `<p class="ek-meta ek-mt-xs">CELF-250 (${totalCount} peldaños · Dawid-Skene + SPRT · 0 Bytes Audio)</p></details>` +
     seedPanelHtml +
     sisterCascadeHtml +
     rungFilterHtml +
-    `<div style="display:flex;flex-wrap:wrap;gap:0.4rem;">${ladderButtons}</div>` +
+    `<div class="ek-row-wrap">${ladderButtons}</div>` +
     otWavesHtml +
     externalAuditHtml +
     uncertaintyQueueHtml +
     tier3aHtml +
-    `<div style="margin-top:0.55rem;display:grid;gap:0.5rem;">` +
+    `<div class="ek-stack ek-mt-sm">` +
     masterCensusAndLedgerHtml +
     crdtWalAndLockP2Html +
     `</div>` +
@@ -587,16 +589,15 @@ export function renderStpLexiconResultsRowsHtml({
         "Morfología VSO cabeza-inicial (Willett 1991)",
       );
       return (
-        `<button type="button" class="uls-chip stp-lexicon-entry-btn" ` +
+        `<button type="button" class="uls-chip stp-lexicon-entry-btn ek-btn-stack" ` +
         `data-lex-strong="${esc(strongCode)}" ` +
         `data-lex-surface="${esc(stpSurf)}" ` +
         `data-lex-gloss="${esc(glossEs)}" ` +
         `data-vso-phrase="${esc(vsoPhrase)}" ` +
         `data-typology-rule="${esc(typoRule)}" ` +
-        `data-tier-category="${esc(tierCategory)}" ` +
-        `style="min-height:48px;padding:0.35rem 0.65rem;font-size:0.76rem;text-align:left;display:inline-flex;flex-direction:column;align-items:flex-start;gap:0.12rem;">` +
-        `<span><strong>${esc(strongCode)}</strong> · ${esc(stpSurf)} <small style="opacity:0.82;">(${esc(glossEs)} · VSO: ${esc(vsoPhrase)} · ${occ} vv.)</small></span>` +
-        `<span class="stp-inline-root-note" data-root-note="true" data-root-note-source="${matchedRootNote ? "ledger" : "typology"}" style="font-size:0.71rem;color:var(--text-secondary);">📒 ${esc(inlineRootNote)}</span>` +
+        `data-tier-category="${esc(tierCategory)}">` +
+        `<span><strong>${esc(strongCode)}</strong> · ${esc(stpSurf)} <small class="ek-opacity-muted">(${esc(glossEs)} · VSO: ${esc(vsoPhrase)} · ${occ} vv.)</small></span>` +
+        `<span class="stp-inline-root-note" data-root-note="true" data-root-note-source="${matchedRootNote ? "ledger" : "typology"}">📒 ${esc(inlineRootNote)}</span>` +
         `</button>`
       );
     })
@@ -640,9 +641,9 @@ export function renderStpLexiconExplorerHtml({
   const itemsHtml = renderStpLexiconResultsRowsHtml({ query, activeWave, limit });
   const topKeyTerms = KEY_TERMS_GLOSSARY.filter((kt) => Number(kt.g2_score || 0) >= 15.13).slice(0, 8);
   const dunningGlossaryHtml =
-    `<div id="dunningKeyTermsGlossaryPanel" data-key-terms-total="${KEY_TERMS_GLOSSARY.length}" style="margin-top:0.55rem;padding-top:0.45rem;border-top:1px solid var(--card-border);">` +
-    `<strong style="font-size:0.77rem;display:block;margin-bottom:0.3rem;">📊 Glosario de Términos Clave Dunning G² ≥ 15.13 (${KEY_TERMS_GLOSSARY.length} anclas · 1-Tap Inyección)</strong>` +
-    `<div style="display:flex;flex-wrap:wrap;gap:0.35rem;">` +
+    `<div id="dunningKeyTermsGlossaryPanel" class="ek-divider-top" data-key-terms-total="${KEY_TERMS_GLOSSARY.length}">` +
+    `<strong class="ek-title-sm">📊 Glosario de Términos Clave Dunning G² ≥ 15.13 (${KEY_TERMS_GLOSSARY.length} anclas · 1-Tap Inyección)</strong>` +
+    `<div class="ek-row-wrap">` +
     topKeyTerms
       .map((kt) => {
         const surf = String(kt.vernacular_stp || "");
@@ -650,7 +651,7 @@ export function renderStpLexiconExplorerHtml({
         const g2 = Number(kt.g2_score || 15.13).toFixed(1);
         const lemma = String(kt.source_lemma || kt.term_id || "KT");
         return (
-          `<button type="button" class="uls-chip dunning-key-term-btn" data-inject-surface="${esc(surf)}" data-dunning-g2="${esc(g2)}" data-source-lemma="${esc(lemma)}" style="min-height:48px;padding:0.25rem 0.55rem;font-size:0.74rem;">` +
+          `<button type="button" class="uls-chip dunning-key-term-btn ek-btn-fitts" data-inject-surface="${esc(surf)}" data-dunning-g2="${esc(g2)}" data-source-lemma="${esc(lemma)}">` +
           `<strong>${esc(surf)}</strong> (${esc(bridge)} · G²=${esc(g2)})` +
           `</button>`
         );
@@ -660,16 +661,15 @@ export function renderStpLexiconExplorerHtml({
     `</div>`;
 
   return (
-    `<div id="stpLexiconExplorerPanel" class="stp-lexicon-explorer" ` +
+    `<div id="stpLexiconExplorerPanel" class="stp-lexicon-explorer ek-card-muted" ` +
     `data-lexicon-total="${pool.length}" ` +
     `data-lexicon-shown="${shown.length}" ` +
-    `data-active-ot-wave="${waveNum}" ` +
-    `style="padding:0.65rem;border-radius:10px;border:1px solid var(--card-border);background:var(--bg-secondary);">` +
-    `<div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:0.45rem;margin-bottom:0.45rem;">` +
-    `<strong style="font-size:0.83rem;">📘 Explorador Léxico O'dam (${pool.length} raíces Strong ↔ Glosa Español ↔ Superficie stp)</strong>` +
-    `<input id="stpLexiconSearchInput" type="search" value="${esc(query)}" placeholder="Buscar Strong (H0430), glosa o término O'dam..." aria-label="Buscar en léxico O'dam de 600 términos" style="min-width:220px;min-height:48px;padding:0.25rem 0.55rem;font-size:0.78rem;">` +
+    `data-active-ot-wave="${waveNum}">` +
+    `<div class="ek-row-between ek-mb-sm">` +
+    `<strong class="ek-title-sm">📘 Explorador Léxico O'dam (${pool.length} raíces Strong ↔ Glosa Español ↔ Superficie stp)</strong>` +
+    `<input id="stpLexiconSearchInput" class="ek-input-compact" type="search" value="${esc(query)}" placeholder="Buscar Strong (H0430), glosa o término O'dam..." aria-label="Buscar en léxico O'dam de 600 términos">` +
     `</div>` +
-    `<div id="stpLexiconResultsRows" data-stp-lexicon-results="true" style="display:flex;flex-wrap:wrap;gap:0.35rem;">${itemsHtml}</div>` +
+    `<div id="stpLexiconResultsRows" class="ek-row-wrap" data-stp-lexicon-results="true">${itemsHtml}</div>` +
     dunningGlossaryHtml +
     `</div>`
   );
@@ -772,20 +772,20 @@ export function renderTallerArtifactsCatalogHtml(langOrOpts = "es") {
   const eightLocksPillsHtml = locksList
     .map(
       (lk) =>
-        `<span class="uls-badge" data-lock-id="${lk.id}" data-lock-passed="${lk.passed}" style="font-size:0.72rem;padding:0.15rem 0.45rem;">${lk.passed ? "✅" : "⛔"} ${lk.label}</span>`,
+        `<span class="uls-badge ek-badge-compact" data-lock-id="${lk.id}" data-lock-passed="${lk.passed}">${lk.passed ? "✅" : "⛔"} ${lk.label}</span>`,
     )
     .join(" ");
   return (
     (includeEightLocksBar
-      ? `<div class="eight-locks-pda-bar" data-eight-locks-bar="true" style="grid-column:1 / -1;width:100%;display:flex;flex-wrap:wrap;gap:0.3rem;margin-bottom:0.55rem;">${eightLocksPillsHtml}</div>`
+      ? `<div class="eight-locks-pda-bar" data-eight-locks-bar="true">${eightLocksPillsHtml}</div>`
       : "") +
-    `<div class="taller-artifacts-grid" data-taller-lang="${cleanLang}" style="grid-column:1 / -1;width:100%;display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:0.45rem;margin-bottom:0.6rem;">` +
+    `<div class="taller-artifacts-grid ek-span-full ek-auto-grid ek-mb-sm" data-taller-lang="${cleanLang}">` +
     TALLER_CC0_ARTIFACTS.map((art) => {
       const kit = buildDynamicTallerKitHref(cleanLang, art);
-      return `<a class="uls-chip taller-artifact-link" data-taller-artifact="${art.id}" data-taller-dynamic="${kit.isDynamic}" href="${kit.href}" download="${kit.downloadName}" style="min-height:48px;display:inline-flex;align-items:center;padding:0.4rem 0.65rem;text-decoration:none;font-size:0.8rem;">${art.label}</a>`;
+      return `<a class="uls-chip taller-artifact-link ek-btn-link" data-taller-artifact="${art.id}" data-taller-dynamic="${kit.isDynamic}" href="${kit.href}" download="${kit.downloadName}">${art.label}</a>`;
     }).join("") +
     `</div>` +
-    `<div class="taller-fullwidth-audit-stack" style="grid-column:1 / -1;width:100%;display:grid;grid-template-columns:minmax(0,1fr);gap:0.55rem;">` +
+    `<div class="taller-fullwidth-audit-stack ek-span-full ek-stack">` +
     walAuditHtml +
     censusHtml +
     `</div>`

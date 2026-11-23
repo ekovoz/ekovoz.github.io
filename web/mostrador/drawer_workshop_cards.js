@@ -166,7 +166,7 @@ export function renderFieldWorkshopCensus7164Html(
       const rCount = Number(reg.languages ?? reg.total_languages ?? reg.language_count ?? 597);
       const rSub = Number(reg.subclades ?? reg.subclades_covered ?? 0);
       return (
-        `<span class="uls-badge" data-census-macro-region="${escHtml(rId)}" data-region-languages="${rCount}" style="font-size:0.72rem;padding:0.2rem 0.45rem;">` +
+        `<span class="uls-badge ek-badge-compact" data-census-macro-region="${escHtml(rId)}" data-region-languages="${rCount}">` +
         `<strong>${escHtml(rId)}</strong>: ${escHtml(rName)} (${rCount}${rSub ? ` · ${rSub} subclados` : ""})` +
         `</span>`
       );
@@ -176,14 +176,14 @@ export function renderFieldWorkshopCensus7164Html(
   const tiersHtml = tiers4
     .map(
       (t) =>
-        `<span class="uls-chip" data-sovereign-tier="${escHtml(t.tier)}" data-tier-count="${t.count}" style="font-size:0.72rem;padding:0.2rem 0.45rem;">` +
+        `<span class="uls-chip ek-badge-compact" data-sovereign-tier="${escHtml(t.tier)}" data-tier-count="${t.count}">` +
         `<strong>${escHtml(t.label || t.tier)}</strong>: ${Number(t.count).toLocaleString("en-US")}` +
         `</span>`,
     )
     .join(" ");
 
   return (
-    `<div id="masterCensus7164InspectorCard" class="master-census-7164-card" ` +
+    `<div id="masterCensus7164InspectorCard" class="master-census-7164-card ek-card ek-span-full" ` +
     `data-total-world-languages="${totalLangs}" ` +
     `data-glottolog-subclades="${totalSubclades}" ` +
     `data-macro-regions="${totalRegions}" ` +
@@ -191,19 +191,21 @@ export function renderFieldWorkshopCensus7164Html(
     `data-stp-canon-verses="${totalVerses}" ` +
     `data-active-atomic-batch="${escHtml(batchInfo.batchId)}" ` +
     `data-formulaic-reduction-pct="${formulaicPct}" ` +
-    `data-formulaic-unique-templates="${formulaicUnique}" ` +
-    `style="grid-column:1 / -1;width:100%;box-sizing:border-box;padding:0.65rem;border-radius:10px;border:1px solid var(--card-border);background:var(--card-bg);font-size:0.79rem;">` +
-    `<div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:0.4rem;margin-bottom:0.4rem;">` +
-    `<strong>🌍 Relación Maestra y Censo Soberano (${totalLangs.toLocaleString("en-US")} Lenguas · ${totalSubclades} Subclados Glottolog · ${totalRegions} Macro-Regiones R01–R12)</strong>` +
-    `<span class="uls-badge" data-stp-ledger-badge="true">📦 Lote Activo <code>${escHtml(batchInfo.batchId)}</code> (${batchInfo.batchNumber}/${atomicBatches.toLocaleString("en-US")} · vv. ${batchInfo.startOrdinal}–${batchInfo.endOrdinal} de ${totalVerses.toLocaleString("en-US")})</span>` +
+    `data-formulaic-unique-templates="${formulaicUnique}">` +
+    `<div class="ek-row-between ek-mb-sm">` +
+    `<strong>🌍 Relación Maestra Universal (${totalLangs.toLocaleString("en-US")} Lenguas · ${totalRegions} Regiones)</strong>` +
+    `<span class="uls-badge" data-stp-ledger-badge="true">📦 Lote ${batchInfo.batchNumber}/${atomicBatches.toLocaleString("en-US")} · vv. ${batchInfo.startOrdinal}–${batchInfo.endOrdinal}</span>` +
     `</div>` +
-    `<div style="display:flex;flex-wrap:wrap;gap:0.35rem;margin-bottom:0.4rem;">${tiersHtml}</div>` +
-    `<div style="display:flex;flex-wrap:wrap;gap:0.35rem;margin-bottom:0.4rem;color:var(--text-secondary);">` +
-    `<span class="uls-chip" style="font-size:0.73rem;padding:0.2rem 0.5rem;">Entropía Formulaica η_dedup: <strong>${formulaicPct}%</strong> (${formulaicUnique.toLocaleString("en-US")} plantillas únicas / ${Number(ledger.formulaic_verses_deduplicated ?? ledger.total_deduplicated_formulaic_verses ?? 4482)} vv. deduplicados)</span>` +
-    `<span class="uls-chip" style="font-size:0.73rem;padding:0.2rem 0.5rem;">Onomástico: <strong>${Number(ledger.onomasticon_transliterated_entries ?? ledger.preinjected_onomasticon_count ?? 3100)}</strong></span>` +
-    `<span class="uls-chip" style="font-size:0.73rem;padding:0.2rem 0.5rem;">Citas AT→NT congeladas: <strong>${Number(ledger.frozen_ot_in_nt_quotes ?? ledger.frozen_ot_in_nt_quotes_count ?? 282)}</strong></span>` +
+    `<details class="tech-details">` +
+    `<summary>Detalles técnicos del censo (${totalSubclades} subclados Glottolog · ${atomicBatches.toLocaleString("en-US")} lotes)</summary>` +
+    `<div class="ek-row-wrap ek-my-sm">${tiersHtml}</div>` +
+    `<div class="ek-row-wrap ek-mb-sm ek-text-secondary">` +
+    `<span class="uls-chip ek-badge-compact">Lote <code>${escHtml(batchInfo.batchId)}</code> de ${totalVerses.toLocaleString("en-US")} vv. · Entropía Formulaica η_dedup: <strong>${formulaicPct}%</strong> (${formulaicUnique.toLocaleString("en-US")} plantillas únicas / ${Number(ledger.formulaic_verses_deduplicated ?? ledger.total_deduplicated_formulaic_verses ?? 4482)} vv.)</span>` +
+    `<span class="uls-chip ek-badge-compact">Onomástico: <strong>${Number(ledger.onomasticon_transliterated_entries ?? ledger.preinjected_onomasticon_count ?? 3100)}</strong></span>` +
+    `<span class="uls-chip ek-badge-compact">Citas AT→NT congeladas: <strong>${Number(ledger.frozen_ot_in_nt_quotes ?? ledger.frozen_ot_in_nt_quotes_count ?? 282)}</strong></span>` +
     `</div>` +
-    `<div style="display:flex;flex-wrap:wrap;gap:0.3rem;">${regionBadgesHtml}</div>` +
+    `<div class="ek-row-wrap">${regionBadgesHtml}</div>` +
+    `</details>` +
     `</div>`
   );
 }
@@ -270,7 +272,7 @@ export function renderCrdtWalAndLockP2AuditCardHtml(workshopArtifact = null) {
       const lvl = p.level || p.cascade_level || "L2";
       const ref = p.ref || p.verse_id || p.target_ref || "GEN.1.1";
       return (
-        `<span class="uls-chip" data-crdt-patch-id="${escHtml(pid)}" style="font-size:0.73rem;padding:0.2rem 0.5rem;">` +
+        `<span class="uls-chip ek-badge-compact" data-crdt-patch-id="${escHtml(pid)}">` +
         `✅ <code>${escHtml(pid)}</code> (${escHtml(lvl)} · ${escHtml(ref)})` +
         `</span>`
       );
@@ -289,15 +291,15 @@ export function renderCrdtWalAndLockP2AuditCardHtml(workshopArtifact = null) {
   const rootNotesPillsHtml = rootNotes
     .map(
       (rn) =>
-        `<span class="uls-badge" data-root-note-strong="${escHtml(rn.strong_id)}" data-root-note="${escHtml(rn.note || "")}" style="font-size:0.71rem;padding:0.15rem 0.45rem;">` +
+        `<span class="uls-badge ek-badge-micro" data-root-note-strong="${escHtml(rn.strong_id)}" data-root-note="${escHtml(rn.note || "")}">` +
         `<strong>${escHtml(rn.strong_id)}</strong> ${escHtml(rn.surface_stp || "")} (${escHtml(rn.ref || "GEN.1.1")}) — ${escHtml(rn.note || "")}` +
         `</span>`,
     )
     .join(" ");
   const rootNotesDetailsHtml = rootNotes.length
-    ? `<details id="rootNotesStpFullNotes" class="hig-tech-receipt-details" style="width:100%;margin-top:0.3rem;">` +
+    ? `<details id="rootNotesStpFullNotes" class="hig-tech-receipt-details ek-w-full ek-mt-sm">` +
     `<summary>📖 Notas exegéticas de las ${rootNotes.length} raíces</summary>` +
-    `<ul style="margin:0.3rem 0 0;padding-left:1.1rem;">` +
+    `<ul class="ek-list-compact">` +
     rootNotes
       .map(
         (rn) =>
@@ -311,29 +313,28 @@ export function renderCrdtWalAndLockP2AuditCardHtml(workshopArtifact = null) {
   const rollbackStatus = lockP2.status || "ROLLED_BACK";
 
   return (
-    `<div id="crdtWalAndLockP2AuditCard" class="crdt-wal-lock-p2-card" ` +
+    `<div id="crdtWalAndLockP2AuditCard" class="crdt-wal-lock-p2-card ek-card ek-span-full" ` +
     `data-wal-raw-lines="${rawLines}" ` +
     `data-wal-canonical-patches="${canonicalCount}" ` +
     `data-wal-snapshots-count="${snapshots10.length}" ` +
     `data-root-notes-count="${rootNotes.length}" ` +
     `data-lock-p2-rollback-id="${escHtml(rollbackId)}" ` +
-    `data-lock-p2-status="${escHtml(rollbackStatus)}" ` +
-    `style="grid-column:1 / -1;width:100%;box-sizing:border-box;padding:0.65rem;border-radius:10px;border:1px solid var(--card-border);background:var(--card-bg);font-size:0.79rem;">` +
-    `<div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:0.4rem;margin-bottom:0.4rem;">` +
-    `<strong>🪵 Semirretículo CRDT WAL (<code>stp.wal.jsonl</code>: ${rawLines} eventos → ${canonicalCount} parches canónicos idempotentes)</strong>` +
-    `<span class="uls-badge" data-lock-p2-veto-badge="true">🛑 Rollback Atómico Candado P2: ${escHtml(rollbackId)} (${escHtml(rollbackStatus)} · Comilla Desbalanceada)</span>` +
+    `data-lock-p2-status="${escHtml(rollbackStatus)}">` +
+    `<div class="ek-row-between ek-mb-sm">` +
+    `<strong>🪵 Historial comunitario (${rawLines} eventos → ${canonicalCount} cambios consolidados)</strong>` +
+    `<span class="uls-badge" data-lock-p2-veto-badge="true">🛑 Reversión segura (${escHtml(rollbackId)} · ${escHtml(rollbackStatus)})</span>` +
     `</div>` +
-    `<div style="display:flex;flex-wrap:wrap;gap:0.35rem;margin-bottom:0.4rem;">${patchesPills}</div>` +
-    `<div style="display:grid;gap:0.4rem;margin-bottom:0.4rem;">` +
-    `<label for="selectWalRollbackSnapshot" style="font-size:0.75rem;font-weight:600;">⏱️ Punto de Restauración WAL (10 Snapshots SHA-256):</label>` +
-    `<select id="selectWalRollbackSnapshot" data-wal-snapshots-count="${snapshots10.length}" style="width:100%;box-sizing:border-box;min-height:48px;min-width:48px;padding:8px 12px;font-size:0.75rem;border-radius:6px;">${snapshotOptionsHtml}</select>` +
-    `<button type="button" id="btnRestoreWalSnapshot" class="uls-chip" data-action="restore-wal-snapshot" style="min-height:48px;padding:0.35rem 0.7rem;font-size:0.75rem;justify-self:start;">🔄 Previsualizar / Restaurar Snapshot</button>` +
+    `<div class="ek-row-wrap ek-mb-sm">${patchesPills}</div>` +
+    `<div class="ek-stack-sm ek-mb-sm">` +
+    `<label for="selectWalRollbackSnapshot" class="ek-label-sm">⏱️ Punto de restauración (${snapshots10.length} copias verificadas):</label>` +
+    `<select id="selectWalRollbackSnapshot" class="ek-input" data-wal-snapshots-count="${snapshots10.length}">${snapshotOptionsHtml}</select>` +
+    `<button type="button" id="btnRestoreWalSnapshot" class="uls-chip ek-btn-fitts ek-self-start" data-action="restore-wal-snapshot">🔄 Previsualizar / Restaurar copia</button>` +
     `</div>` +
-    `<div id="walSnapshotRollbackPreviewBox" data-wal-preview-active="true" style="margin-bottom:0.4rem;padding:0.35rem 0.55rem;border-radius:6px;border:1px dashed var(--card-border);background:var(--bg-secondary);font-size:0.74rem;color:var(--text-secondary);">` +
-    `Snapshot activo: <code>${escHtml(snapshots10[0]?.patch_id || "PATCH-STP-L2-0001")}</code> (${escHtml(snapshots10[0]?.target_ref || "GEN.1.1")}) · Guardia P2 lista para restauración atómica.` +
+    `<div id="walSnapshotRollbackPreviewBox" class="ek-box-dashed ek-mb-sm" data-wal-preview-active="true">` +
+    `Copia activa: <code>${escHtml(snapshots10[0]?.patch_id || "PATCH-STP-L2-0001")}</code> (${escHtml(snapshots10[0]?.target_ref || "GEN.1.1")}) · Protección lista para restauración atómica.` +
     `</div>` +
-    `<div style="font-size:0.75rem;color:var(--text-secondary);display:flex;flex-wrap:wrap;align-items:center;gap:0.3rem;">` +
-    `<span>📒 Ledger de Notas de Raíz (<code>root_notes_stp.json</code>): <strong>${rootNotes.length}</strong> raíces verificadas:</span> ${rootNotesPillsHtml}` +
+    `<div class="ek-row-wrap ek-text-secondary" data-tech-key="root_notes_stp">` +
+    `<span>📒 Notas de raíces verificadas: <strong>${rootNotes.length}</strong> raíces:</span> ${rootNotesPillsHtml}` +
     rootNotesDetailsHtml +
     `</div>` +
     `</div>`

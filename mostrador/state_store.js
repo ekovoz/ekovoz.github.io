@@ -23,6 +23,8 @@ export const STORE_DOMAIN_OWNERS = Object.freeze({
   evangeliosWeekId: "work",
   evangeliosQuarter: "work",
   activeSheet: "sheet",
+  activeSubtabBySheet: "sheet",
+  mobileSheetOpen: "sheet",
   activeModal: "modal",
   surfaceMode: "surface",
   appearanceTheme: "appearance",
@@ -36,6 +38,9 @@ export const STORE_DOMAIN_OWNERS = Object.freeze({
   duplex: "print",
   orientation: "print",
   sheets: "print",
+  printConfig: "print",
+  activeBranchId: "print",
+  activeTypologyId: "print",
   activeStrongId: "study",
 });
 
@@ -46,7 +51,27 @@ export const VALID_ACTIVE_MODALS = Object.freeze([
   "plate",
   "appearance",
   "spotlight",
+  "support",
 ]);
+
+export const DEFAULT_SUBTABS_BY_SHEET = Object.freeze({
+  study: "words",
+  print: "doses",
+  field: "patch",
+  share: "mesh",
+});
+
+const DEFAULT_PRINT_CONFIG = Object.freeze({
+  edition: "02_2col_pastoral",
+  paperFormat: "a4",
+  orientation: "portrait",
+  columns: 2,
+  fontSizePt: 10.5,
+  duplex: true,
+  foliationMode: "saddle_stitch",
+  activeBranchId: null,
+  activeTypologyId: null,
+});
 
 /**
  * Single-writer-per-domain registry preventing cross-module state fights.
@@ -88,11 +113,16 @@ export function createEkovozStore(initialState = {}, options = {}) {
     activeWork: "biblia",
     activeModal: null,
     activeSheet: null,
+    activeSubtabBySheet: DEFAULT_SUBTABS_BY_SHEET,
+    mobileSheetOpen: false,
     surfaceMode: "reader",
     appearanceTheme: "light",
     fontFamily: "serif",
     fontScale: 1.0,
     stealthMode: false,
+    printConfig: DEFAULT_PRINT_CONFIG,
+    activeBranchId: null,
+    activeTypologyId: null,
     corpusLang: initialState.lang || state.lang || "es",
     uiLocale: initialState.uiLocale || state.uiLocale || "en",
   };
@@ -291,4 +321,121 @@ export function createNativeDialogController(
     isOpen: isCurrentlyOpen,
     getOpener: () => storedOpener,
   };
+}
+
+/**
+ * Pure glitch-free domain actions for sheet, work, and surface mode transitions (D1-R4 / SLICE-R4-01).
+ */
+function normalizeSheetId(rawSheetName) {
+  if (!rawSheetName) return null;
+  const clean = String(rawSheetName).trim().toLowerCase();
+  if (clean === "improve" || clean === "workshop") return "field";
+  if (clean === "dosis") return "share";
+  if (["study", "print", "field", "share"].includes(clean)) return clean;
+  return null;
+}
+
+export function isMobileSheetViewport(win = globalThis?.window) {
+  if (!win) return false;
+  if (typeof win.matchMedia === "function") {
+    return Boolean(win.matchMedia("(max-width: 1023px)").matches);
+  }
+  if (typeof win.innerWidth === "number") {
+    return win.innerWidth < 1024;
+  }
+  return false;
+}
+
+export function openSheet(store, rawSheetName, opts = {}) {
+  if (!store || typeof store.setState !== "function") return null;
+  const normalized = normalizeSheetId(rawSheetName);
+  if (!normalized) return closeSheet(store);
+  const mobileOpen =
+    typeof opts?.mobileSheetOpen === "boolean"
+      ? opts.mobileSheetOpen
+      : isMobileSheetViewport(opts?.window || globalThis?.window);
+  store.setState({ activeSheet: normalized, mobileSheetOpen: mobileOpen }, "sheet");
+  return normalized;
+}
+
+export function closeSheet(store) {
+  if (!store || typeof store.setState !== "function") return null;
+  store.setState({ activeSheet: null, mobileSheetOpen: false }, "sheet");
+  return null;
+}
+
+export function toggleSheet(store, rawSheetName) {
+  if (!store || typeof store.getState !== "function" || typeof store.setState !== "function") {
+    return null;
+  }
+  const normalized = normalizeSheetId(rawSheetName);
+  if (!normalized) return closeSheet(store);
+  const current = store.getState()?.activeSheet || null;
+  return current === normalized ? closeSheet(store) : openSheet(store, normalized);
+}
+
+export function setActiveWork(store, workId) {
+  if (!store || typeof store.setState !== "function") return "biblia";
+  const cleanWork = ["biblia", "felices", "evangelios"].includes(workId) ? workId : "biblia";
+  store.batch?.(({ setState }) => {
+    setState({ activeWork: cleanWork }, "work");
+    if (cleanWork !== "biblia") {
+      setState({ activeSheet: null, mobileSheetOpen: false }, "sheet");
+    }
+  });
+  if (typeof store.batch !== "function") {
+    store.setState({ activeWork: cleanWork }, "work");
+  }
+  return cleanWork;
+}
+
+export function setSurfaceMode(store, mode) {
+  if (!store || typeof store.setState !== "function") return "reader";
+  const cleanMode = mode === "studio" ? "studio" : "reader";
+  store.setState({ surfaceMode: cleanMode }, "surface");
+  return cleanMode;
+}
+
+/**
+ * Pure glitch-free transition for sheet subtabs stored on EkovozStore.
+ */
+export function setSheetSubtab(store, sheetId, subtabId) {
+  if (!store || typeof store.getState !== "function" || typeof store.setState !== "function") {
+    return null;
+  }
+  const normalizedSheet = sheetId === "improve" ? "field" : sheetId === "dosis" ? "share" : sheetId === "workshop" ? "field" : String(sheetId || "study");
+  const cur = store.getState().activeSubtabBySheet || DEFAULT_SUBTABS_BY_SHEET;
+  const cleanSubtab = String(subtabId || "").trim();
+  if (!cleanSubtab || cur[normalizedSheet] === cleanSubtab) return cur;
+  const next = Object.freeze({ ...cur, [normalizedSheet]: cleanSubtab });
+  store.setState({ activeSubtabBySheet: next }, "sheet");
+  return next;
+}
+
+/**
+ * Pure glitch-free update for consolidated printConfig and mirrored scalar print keys.
+ */
+export function updatePrintConfig(store, patch = {}) {
+  if (!store || typeof store.getState !== "function" || typeof store.setState !== "function") {
+    return null;
+  }
+  const st = store.getState();
+  const base = st.printConfig || {
+    edition: st.edition || DEFAULT_PRINT_CONFIG.edition,
+    paperFormat: st.paperFormat || DEFAULT_PRINT_CONFIG.paperFormat,
+    orientation: st.orientation || DEFAULT_PRINT_CONFIG.orientation,
+    columns: Number(st.columns) || DEFAULT_PRINT_CONFIG.columns,
+    fontSizePt: Number(st.fontSizePt) || DEFAULT_PRINT_CONFIG.fontSizePt,
+    duplex: st.duplex !== false,
+    foliationMode: st.foliationMode || DEFAULT_PRINT_CONFIG.foliationMode,
+    activeBranchId: st.activeBranchId ?? null,
+    activeTypologyId: st.activeTypologyId ?? null,
+  };
+  const nextCfg = Object.freeze({ ...base, ...patch });
+  const topPatch = { printConfig: nextCfg };
+  for (const key of ["edition", "paperFormat", "orientation", "columns", "fontSizePt", "duplex", "activeBranchId", "activeTypologyId"]) {
+    if (key in patch) topPatch[key] = patch[key];
+  }
+  store.setState(topPatch, "print");
+  return nextCfg;
 }

@@ -5,7 +5,7 @@
 // fallback /index.html estricto a mode=navigate, 0 respuestas opaque).
 // ============================================================================
 
-export const CACHE_NAME = "ekovoz-mostrador-v48";
+export const CACHE_NAME = "ekovoz-mostrador-v49";
 export const OPT_IN_META_KEY = "/__ekovoz_meta/offline-opt-in";
 
 export const SUPPORTED_BOOK_NAMES_LANGS = new Set([
@@ -81,15 +81,23 @@ export const SHELL_CORE_ASSETS = [
   "/mostrador/cross_work_bridge.js",
   "/mostrador/braille_brf_codec.js",
   "/mostrador/projection_contract.js",
+  "/mostrador/provenance_and_support_panel.js",
   "/mostrador/sauvola_canvas_oracle.js",
+  "/mostrador/felices_stage_controller.js",
   "/mostrador/sister_works_controller.js",
+  "/mostrador/social_and_photocopy_cards.js",
+  "/mostrador/print_config_projector.js",
   "/mostrador/stage_dom_bindings.js",
   "/mostrador/state_store.js",
+  "/mostrador/stealth_filename.js",
+  "/mostrador/study_onomasticon_and_ubs.js",
+  "/mostrador/surface_compositor.js",
   "/mostrador/sw_routing_core.js",
   "/mostrador/cascade_l1_l5.js",
   "/mostrador/tanda_print_worker.js",
   "/mostrador/bimodal_tanda_print.js",
   "/mostrador/vault_indexeddb.js",
+  "/mostrador/vault_manager_panel.js",
   "/wasm/ekovoz_player_wasm.wasm",
   "/wasm/qr_stream_receiver_wasm.wasm",
   "/wasm/wasm_manifest.json",
@@ -115,6 +123,7 @@ export const SHELL_CORE_ASSETS = [
   "/data/formulaic_index.json",
   "/data/master_census_summary.json",
   "/data/offline_packs_catalog.json",
+  "/data/onomasticon_3657.json.zst",
   "/data/packs/packs_manifest.json",
   "/data/pericopes_and_glosses.json",
   "/data/book_names/ar.json",

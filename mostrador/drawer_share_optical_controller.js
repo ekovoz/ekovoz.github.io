@@ -236,16 +236,16 @@ export function hydrateOpticalTxAndRxPanels({
     const phaseLabel = formatPhaseLabel(txFrame);
 
     qrPanel.innerHTML =
-      `<div id="qrBeamStreamRoot" class="mostrador-qrbeam-stream" data-fps="${activeCadenceKey}" data-nyquist-safe="${Boolean(nyquistCheck?.valid ?? nyquistCheck?.nyquistSafe)}" data-lt-peeling-decoded="${ltComplete}" data-eco1-bytes="${packetBytes.byteLength}" data-packet-kind="${txFrame.packetKind}" data-systematic-phase="${isSystematicPhase}" data-ecom-frame="${isEndOfStreamEcom}" data-frame-interval-ms="${cadencePreset.intervalMs}" data-total-blocks="${encoder.K}" data-seq="${grid.seq}" data-degree="${grid.degree}" data-parity="${grid.parityBit}" style="padding:0.65rem;border-radius:10px;border:1px solid var(--card-border);background:var(--bg-secondary);">` +
-      `<div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:0.4rem;margin-bottom:0.45rem;">` +
+      `<div id="qrBeamStreamRoot" class="mostrador-qrbeam-stream" data-fps="${activeCadenceKey}" data-nyquist-safe="${Boolean(nyquistCheck?.valid ?? nyquistCheck?.nyquistSafe)}" data-lt-peeling-decoded="${ltComplete}" data-eco1-bytes="${packetBytes.byteLength}" data-packet-kind="${txFrame.packetKind}" data-systematic-phase="${isSystematicPhase}" data-ecom-frame="${isEndOfStreamEcom}" data-frame-interval-ms="${cadencePreset.intervalMs}" data-total-blocks="${encoder.K}" data-seq="${grid.seq}" data-degree="${grid.degree}" data-parity="${grid.parityBit}">` +
+      `<div class="ek-row-between ek-mb-sm">` +
       `<strong>📡 QRBeam ECO1/ECOM (<span id="opticalFrameCounter" data-seq="${grid.seq}" data-packet-kind="${txFrame.packetKind}">${activeCadenceKey} fps · ${phaseLabel} · ${isEn ? "Parity" : "Paridad"} ${grid.parityBit}</span>)</strong>` +
-      `<div style="display:inline-flex;gap:0.35rem;flex-wrap:wrap;">` +
-      `<button type="button" id="btnToggleQrBeamAutoPlay" class="uls-chip" style="min-height:48px;padding:0.35rem 0.7rem;font-size:0.78rem;">${isPlaying ? (isEn ? "⏸ Pause Beam" : "⏸ Pausar Emisión") : isEn ? "▶ Auto Beam" : "▶ Emisión Continua"}</button>` +
-      `<button type="button" id="btnNextQrBeamFrame" class="uls-chip" style="min-height:48px;padding:0.35rem 0.7rem;font-size:0.78rem;">⏭ ${isEn ? "Next Droplet" : "Siguiente Droplet"} (#${grid.seq + 1})</button>` +
+      `<div class="ek-flex-wrap-inline">` +
+      `<button type="button" id="btnToggleQrBeamAutoPlay" class="uls-chip qrbeam-btn">${isPlaying ? (isEn ? "⏸ Pause Beam" : "⏸ Pausar Emisión") : isEn ? "▶ Auto Beam" : "▶ Emisión Continua"}</button>` +
+      `<button type="button" id="btnNextQrBeamFrame" class="uls-chip qrbeam-btn">⏭ ${isEn ? "Next Droplet" : "Siguiente Droplet"} (#${grid.seq + 1})</button>` +
       `</div></div>` +
-      `<div style="display:flex;flex-wrap:wrap;gap:0.75rem;align-items:center;">` +
-      `<div id="qrBeamMatrixHost" class="qrbeam-matrix-host">${svgMarkup}<canvas id="qrBeamMatrixCanvas" width="174" height="174" aria-hidden="true" style="display:none;"></canvas></div>` +
-      `<p style="margin:0;font-size:0.81rem;flex:1;min-width:180px;">${isEn ? `ECO-GRID 29×29 (${packetBytes.byteLength} B ≤ 66 B): Systematic Pass (0..${encoder.K - 1}) + ECOM digest trailer + SplitMix64 LT repair tail.` : `ECO-GRID 29×29 (${packetBytes.byteLength} B ≤ 66 B): Pase sistemático (0..${encoder.K - 1}) + cierre ECOM + cola LT SplitMix64.`}</p>` +
+      `<div class="ek-row-gap-lg">` +
+      `<div id="qrBeamMatrixHost" class="qrbeam-matrix-host">${svgMarkup}<canvas id="qrBeamMatrixCanvas" width="174" height="174" aria-hidden="true"></canvas></div>` +
+      `<p class="qrbeam-desc">${isEn ? `ECO-GRID 29×29 (${packetBytes.byteLength} B ≤ 66 B): Systematic Pass (0..${encoder.K - 1}) + ECOM digest trailer + SplitMix64 LT repair tail.` : `ECO-GRID 29×29 (${packetBytes.byteLength} B ≤ 66 B): Pase sistemático (0..${encoder.K - 1}) + cierre ECOM + cola LT SplitMix64.`}</p>` +
       `</div></div>`;
 
     const paintGranularOpticalFrame = (nextSeq) => {
@@ -422,13 +422,16 @@ export function bindOpticalCameraAndCadenceController({
   camRxBtn.addEventListener("click", async () => {
     const statusPanel = statusPanelGetter();
     const videoEl = videoElGetter();
+    const idleEl = targetDoc?.getElementById?.("opticalCameraIdlePlaceholder") || null;
     const willOpen = videoEl ? Boolean(videoEl.hidden) : !state.opticalCameraActive;
     state.opticalCameraActive = willOpen;
     if (videoEl) videoEl.hidden = !willOpen;
+    if (idleEl) idleEl.hidden = willOpen;
 
     const stopOpticalCameraSession = () => {
       state.opticalCameraActive = false;
       if (videoEl) videoEl.hidden = true;
+      if (idleEl) idleEl.hidden = false;
       if (
         state.activeCameraMediaStream &&
         typeof state.activeCameraMediaStream.getTracks === "function"

@@ -16,8 +16,7 @@ import {
 } from "./mostrador/bridge_and_chapter.js";
 import {
   ARTIFACT_PROJECTION_SCHEMA, MOSTRADOR_DOM_SCOPE_CONTRACTS, STATUS, computeProsodyAndSyllableAlignmentInWasm, createDataLayer,
-  createFetchSource, loadNsmRealiaLexicon, projectNsmRealiaLexicon3NF, resolveLocalizedBookMeta,
-  verifyArtifactProjectionClosure, verifyVplDomScopeContainment,
+  createFetchSource, loadNsmRealiaLexicon, projectNsmRealiaLexicon3NF, resolveLocalizedBookMeta, verifyArtifactProjectionClosure, verifyVplDomScopeContainment,
 } from "./mostrador/data_layer.js";
 import {
   applySpanish21DiachronicRegister, computeAnalyticalRegisterMetrics, hasDiachronicVariants, hydrateDiachronicRegister,
@@ -30,8 +29,7 @@ import {
   CANONICAL_80_BLOCKS_CATALOG, CANONICAL_9_TOML_PROFILES, POCKET_REFUGE_4_SHEETS_SPEC, PRECOMPILED_PDF_LANGS, VERIFIED_TEXT_BIBLE_LANGS,
   buildCssPagedMediaPrintHtml, computeFoliationLayout, computeKindlePrintBudget, computeMultiSignatureImposition, doseFilename,
   effectiveThreatClassWeb, listAll14PrintEditionsForLang, listCatalogEditionsForLang, locateVersePage, normalizeEditionSlug, ordinalOf,
-  planBimodalClientPrint,
-  planDose1, planDose2, planDose3, refOfOrdinal, renderBranchAndTypologyInspectorHtml, renderImpositionAndLayoutPreviewHtml,
+  planBimodalClientPrint, planDose1, planDose2, planDose3, refOfOrdinal, renderBranchAndTypologyInspectorHtml, renderImpositionAndLayoutPreviewHtml,
   renderMultiSignatureAndPocketRefugeHtml, resolveCanonicalBlockForPassage, resolvePrintEditionPdfAssetUrl,
   simulateFifthGenPhotocopySauvolaBilateral, simulateThirdGenPhotocopySauvola, stealthNeutralFilenameWeb,
   syncPrintDrawerControlsFromEditionProfile, typesetTandaPdfBytes,
@@ -56,28 +54,15 @@ import {
   parseCanonicalOtEchoRef, renderChapterPericopesRibbonHtml, renderEvangeliosPlateActionsHtml, renderFelicesSocraticWonderCardHtml,
   resolveEvangeliosMacroThreadAndEcho, resolveFelicesDichaCoordinate, resolveFelicesPlate, resolveMasoreticPericopeBreaks,
 } from "./mostrador/evangelios.js";
-import {
-  applyToDom, createI18n, formatLocalizedNumeralWeb, isRtlLocale, localizeWorkChromeLabels, negotiate,
-} from "./mostrador/i18n.js";
-import {
-  GEOGRAPHIC_MACRO_REGIONS, indexRegionShards, listCountriesInRegion, listLanguagesInCountry, listMacroRegions, lookupIso639MacroRegionO1, searchLanguages,
-  suggestLayer0Languages,
-} from "./mostrador/lang_funnel.js";
+import { applyToDom, createI18n, formatLocalizedNumeralWeb, isRtlLocale, localizeWorkChromeLabels, negotiate } from "./mostrador/i18n.js";
+import { GEOGRAPHIC_MACRO_REGIONS, indexRegionShards, listCountriesInRegion, listLanguagesInCountry, listMacroRegions, lookupIso639MacroRegionO1, searchLanguages, suggestLayer0Languages } from "./mostrador/lang_funnel.js";
 import {
   CRDT_WAL_SEMILATTICE, FIELD_WORKSHOP_STP_LEXICON, IMPROVE_I18N_FALLBACKS, IMPROVE_I18N_FALLBACKS_ES, MASTER_CENSUS_SUMMARY,
   PATCH_JOURNAL_LOCK_P2, ROOT_NOTES_STP, STP_LEDGER_SUMMARY, applySuggestedImprovement, buildElicitationSeedPayload,
-  foldCrdtWalSemilattice,
-  propagateCascadeL1ToL5,
-  renderCascadeAndLadderHtml, renderImproveDrawerHtml, renderStpLexiconExplorerHtml,
+  foldCrdtWalSemilattice, propagateCascadeL1ToL5, renderCascadeAndLadderHtml, renderImproveDrawerHtml, renderStpLexiconExplorerHtml,
   renderStpLexiconResultsRowsHtml, renderTallerArtifactsCatalogHtml, selectTopEntropyVerseQueue, verifyLock8PredicativeAndNegation,
 } from "./mostrador/mejorar.js";
-import {
-  dispenseMostradorDose1,
-  renderMostradorViewportFromState,
-  resolveVerifiedBookCount,
-  updateMostradorDoseLinks,
-  updateMostradorSealDom,
-} from "./mostrador/mostrador_viewport_dose1.js";
+import { dispenseMostradorDose1, renderMostradorViewportFromState, resolveVerifiedBookCount, updateMostradorDoseLinks, updateMostradorSealDom } from "./mostrador/mostrador_viewport_dose1.js";
 import {
   CANONICAL_ECO_PACKS_MANIFEST, STORED_ECO_PACKS, computeEcoPackCrc32Hex, exportSneakernetBundleJson, hydrateEcoPacksManifest,
   ensureVaultHydrated, importSneakernetBundleJson, probeEcoPackRandomAccessBounds, renderOfflineMeshEcoCardHtml, triggerOptInOfflinePackDownload,
@@ -95,12 +80,16 @@ import {
 } from "./mostrador/orthography_wfst.js";
 import { countPdfPages, extractPdfPages } from "./mostrador/pdf_pages.js";
 import { syncStickyDrawerContextHeader, projectStoreAttributesToDom } from "./mostrador/projection_contract.js";
-import { createEkovozStore } from "./mostrador/state_store.js";
+import {
+  closeSheet, createEkovozStore, openSheet, setSurfaceMode, toggleSheet,
+} from "./mostrador/state_store.js";
+import { createSurfaceCompositor, projectSurfaceLayoutFromState } from "./mostrador/surface_compositor.js";
 import {
   ROSETTA_66_BOOKS, createReferenceResolver, normalizeBookAliasToken, parseBiblicalCoordinateReference, resolveBookCodeByAliasOrName,
 } from "./mostrador/reference.js";
+import { bindFelicesStageEvents } from "./mostrador/felices_stage_controller.js";
 import {
-  bindFelicesStageEvents, bindSisterWorksStageEvents, buildEvangeliosWeekOptionsHtml, renderEvangeliosStageCardHtml,
+  bindSisterWorksStageEvents, buildEvangeliosWeekOptionsHtml, renderEvangeliosStageCardHtml,
   resolveEvangeliosActiveSelection, syncSisterWorksTabsDom,
 } from "./mostrador/sister_works_controller.js";
 import { bindStageDomEvents } from "./mostrador/stage_dom_bindings.js";
@@ -149,6 +138,8 @@ export function createMostradorController(options = {}) {
     activeWork: options.activeWork || "biblia",
     activeModal: null,
     activeSheet: null,
+    mobileSheetOpen: false,
+    userTouchedSheet: false,
     surfaceMode: options.surfaceMode || "reader",
     appearanceTheme: options.appearanceTheme || "light",
     fontFamily: options.fontFamily || "serif",
@@ -228,13 +219,13 @@ export function createMostradorController(options = {}) {
       const locMeta = resolveLocalizedBookMeta(state.localizedBookNames, b.code, b);
       const title = locMeta.name || (state.lang.startsWith("es") ? b.es || b.en : b.en);
       const nsmSub = locMeta.nsmSubtitle || "";
-      return `<button type="button" class="uls-chip" data-compass-book="${escapeHtml(
+      return `<button type="button" class="uls-chip compass-book-cell" data-compass-book="${escapeHtml(
         b.code
       )}" data-nsm-subtitle="${escapeHtml(nsmSub)}" title="${escapeHtml(
         nsmSub ? `${title} — ${nsmSub}` : title
-      )}"${active} style="min-width:48px;min-height:48px;display:flex;flex-direction:column;align-items:center;justify-content:center;"><strong>${escapeHtml(
+      )}"${active}><strong>${escapeHtml(
         b.code
-      )}</strong><small style="font-size:0.7rem;opacity:0.85;">${escapeHtml(
+      )}</strong><small class="compass-book-title">${escapeHtml(
         title.slice(0, 10)
       )}</small></button>`;
     });
@@ -503,12 +494,13 @@ export function createMostradorController(options = {}) {
       evLangSel.value = state.lang;
       state.evangeliosLang = state.lang;
     }
-    if (state.activeWork === "felices") {
+    if (state.activeWork === "felices" && !state.explicitPlateRequested) {
       state.activePlateIndex = resolvePlateForBibleCoordinate(
         state.book,
         state.chapter,
         state.verse,
         state.activePlateIndex,
+        { explicitPlateRequested: Boolean(state.explicitPlateRequested) },
       );
     }
     syncI18nUiFromState(state, targetDoc);
@@ -796,90 +788,41 @@ export function createMostradorController(options = {}) {
     return hydrateShareAndAuditDrawerPanel(buildDrawerHydratorContext(targetDoc));
   }
 
-  async function transitionSheet(rawSheetName, targetDoc = doc) {
-    const normalized = rawSheetName === "improve" ? "field" : rawSheetName;
-    const vp = getEl("bibleVerseViewport", targetDoc);
-    const drawersHost = getEl("sovereignGlobalDrawersHost", targetDoc);
-    const hideOpticalVideoIfOutsidePdfSubtab = () => {
-      const videoEl = getEl("bibleOpticalCameraVideo", targetDoc);
-      if (videoEl) videoEl.hidden = true;
-    };
+  async function transitionSheet(rawSheetName, targetDoc = doc, { mode = "toggle", fromUser = false } = {}) {
+    if (fromUser) state.userTouchedSheet = true;
+    const normalized = rawSheetName === "improve" ? "field" : rawSheetName === "workshop" ? "field" : rawSheetName === "dosis" ? "share" : rawSheetName;
     if (!normalized || !HAREL_SHEET_MAP[normalized]) {
-      state.activeSheet = null;
-      if (vp) vp.setAttribute("data-inspector-open", "false");
-      hideOpticalVideoIfOutsidePdfSubtab();
-      for (const cfg of Object.values(HAREL_SHEET_MAP)) {
-        const panel = getEl(cfg.panelId, targetDoc);
-        const btn = getEl(cfg.buttonId, targetDoc);
-        if (panel) panel.hidden = true;
-        if (btn) {
-          btn.setAttribute("data-open", "false");
-          btn.setAttribute("aria-expanded", "false");
-          btn.setAttribute("aria-pressed", "false");
-        }
-      }
-      if (drawersHost && state.activeWork && state.activeWork !== "biblia") {
-        drawersHost.hidden = true;
-        if (drawersHost.style) drawersHost.style.display = "none";
-      }
+      closeSheet(store);
       syncActiveChromeProjection(targetDoc);
+      projectSurfaceLayoutFromState(state, targetDoc, getEl);
+      syncUrlFromState(targetDoc, { push: false });
       return null;
     }
 
-    const willOpen = state.activeSheet !== normalized;
-    state.activeSheet = willOpen ? normalized : null;
-    if (drawersHost) {
-      if (willOpen || !state.activeWork || state.activeWork === "biblia") {
-        drawersHost.hidden = false;
-        if (drawersHost.style) drawersHost.style.display = "";
-      } else {
-        drawersHost.hidden = true;
-        if (drawersHost.style) drawersHost.style.display = "none";
-      }
-    }
-    if (vp) {
-      vp.setAttribute("data-inspector-open", willOpen ? "true" : "false");
-    }
-    if (!willOpen || normalized !== "share") {
-      hideOpticalVideoIfOutsidePdfSubtab();
-    }
+    const prevSheet = state.activeSheet || null;
+    const nextSheet =
+      mode === "open"
+        ? openSheet(store, normalized)
+        : mode === "close"
+          ? closeSheet(store)
+          : toggleSheet(store, normalized);
+    const willOpen = Boolean(nextSheet);
 
-    let openedPanelEl = null;
-    for (const [key, cfg] of Object.entries(HAREL_SHEET_MAP)) {
-      const isOpen = willOpen && key === normalized;
-      const panel = getEl(cfg.panelId, targetDoc);
-      const btn = getEl(cfg.buttonId, targetDoc);
-      if (panel) {
-        panel.hidden = !isOpen;
-        if (isOpen) openedPanelEl = panel;
-      }
-      if (btn) {
-        btn.setAttribute("data-open", isOpen ? "true" : "false");
-        btn.setAttribute("aria-expanded", isOpen ? "true" : "false");
-        btn.setAttribute("aria-pressed", isOpen ? "true" : "false");
-      }
-    }
-
-    if (willOpen && normalized === "study") {
+    if (willOpen && nextSheet === "study") {
       await hydrateStudyDrawer(targetDoc);
-    } else if (willOpen && normalized === "field") {
+    } else if (willOpen && nextSheet === "field") {
       await hydrateImproveDrawer(targetDoc);
-    } else if (willOpen && normalized === "print") {
+    } else if (willOpen && nextSheet === "print") {
       await updateDoseLinks(targetDoc);
       await hydratePrintDrawerPanels(targetDoc);
-    } else if (willOpen && normalized === "share") {
+    } else if (willOpen && nextSheet === "share") {
       hydrateShareAndAuditDrawer(targetDoc);
     }
 
-    if (openedPanelEl && typeof openedPanelEl.scrollIntoView === "function") {
-      try {
-        openedPanelEl.scrollIntoView({ behavior: "smooth", block: "nearest" });
-      } catch {
-        // Non-fatal in headless DOM environments
-      }
+    if (willOpen && prevSheet !== nextSheet) {
+      syncActiveChromeProjection(targetDoc);
     }
-
-    syncActiveChromeProjection(targetDoc);
+    projectSurfaceLayoutFromState(state, targetDoc, getEl);
     syncUrlFromState(targetDoc, { push: false });
     return state.activeSheet;
   }
@@ -985,6 +928,18 @@ export function createMostradorController(options = {}) {
     stageCtx.hydrateEvangeliosSection = hydrateEvangeliosSection;
     bindStageDomEvents(stageCtx);
     bindFelicesStageEvents(stageCtx);
+    createSurfaceCompositor({
+      store,
+      state,
+      doc: targetDoc,
+      getEl,
+      onSubtabChange: (sheetKey) => {
+        if (sheetKey === "study") hydrateStudyDrawer(targetDoc);
+        else if (sheetKey === "field") hydrateImproveDrawer(targetDoc);
+        else if (sheetKey === "print") hydratePrintDrawerPanels(targetDoc);
+        else if (sheetKey === "share") hydrateShareAndAuditDrawer(targetDoc);
+      },
+    });
     syncLifeTrailsActiveState(targetDoc);
   }
 
@@ -1004,7 +959,10 @@ export function createMostradorController(options = {}) {
     transitionSheet,
     countVisibleSheets,
     setUiLocale,
-    setSurfaceMode: (mode, d = doc) => commitState({ surfaceMode: mode === "studio" ? "studio" : "reader" }, { doc: d, syncUrl: false }),
+    setSurfaceMode: (mode, d = doc) => {
+      setSurfaceMode(store, mode);
+      return commitState({}, { doc: d, syncUrl: false });
+    },
     setAppearanceTheme: (theme, d = doc) => commitState({ appearanceTheme: ["light", "sepia", "dark"].includes(theme) ? theme : "light" }, { doc: d, syncUrl: false }),
     setStealthMode: (enabled, d = doc) => commitState({ stealthMode: Boolean(enabled) }, { doc: d, syncUrl: false }),
     bindDomEvents,
@@ -1095,6 +1053,7 @@ export async function bootBrowserMostrador(
   if (route.reg) controller.state.register = route.reg;
   if (route.ortho) controller.state.orthographyProfile = route.ortho;
   if (route.format) controller.state.paperFormat = route.format;
+  controller.state.explicitPlateRequested = route.plate !== null;
   if (route.plate !== null) {
     controller.state.activePlateIndex = route.plate;
     setActivePlateIndex(route.plate, doc);
@@ -1149,8 +1108,12 @@ export async function bootBrowserMostrador(
     await controller.state.switchWork(route.work, doc);
   }
 
-  if (route.sheet) {
-    await controller.transitionSheet(route.sheet, doc);
+  if (!controller.state.userTouchedSheet) {
+    if (route.sheet) {
+      await controller.transitionSheet(route.sheet, doc, { mode: "open" });
+    } else if (controller.state.surfaceMode === "studio" && controller.state.activeWork === "biblia") {
+      await controller.transitionSheet("study", doc, { mode: "open" });
+    }
   }
 
   if (typeof win.addEventListener === "function") {
@@ -1166,6 +1129,7 @@ export async function bootBrowserMostrador(
         chapter: controller.state.chapter,
         verse: controller.state.verse,
       };
+      controller.state.explicitPlateRequested = popRoute.plate !== null;
       if (popRoute.plate !== null) controller.state.activePlateIndex = popRoute.plate;
       if (popRoute.dicha !== null) controller.state.activeDichaIndex = popRoute.dicha;
       if (popRoute.week !== null) controller.state.evangeliosWeekId = popRoute.week;

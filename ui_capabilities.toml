@@ -488,13 +488,141 @@ handler = "buildCssPagedMediaPrintHtml"
 test_file = "mostrador/dosis_editions_v2i.test.mjs"
 test_name = "SLICE_EKO_V3UX_15_stealth_mode_css_paged_media_and_local_dist_fallback"
 
+[capability.felices_multilingual_svg_plates]
+surface = "public-ui"
+selector = "#focalPlateFrame"
+module = "mostrador/felices_stage_controller.js"
+handler = "renderLocalizedFelicesPlateCardHtml"
+test_file = "mostrador/felices_i18n.test.mjs"
+test_name = "SLICE_R3_03_04_bn_bd_localized_svg_plate_spanish_label_and_dicha_consistency"
+
 [capability.evangelios_unified_header_and_print]
 surface = "public-ui"
 selector = "#evangeliosGlobalLangBadge"
 module = "mostrador/sister_works_controller.js"
 handler = "renderEvangeliosStageCardHtml"
-test_file = "mostrador/felices_i18n.test.mjs"
-test_name = "SLICE_EKO_V3UX_16_felices_27_plates_plate24_dicha11_evangelios_print_and_overlay"
+test_file = "mostrador/evangelios.test.mjs"
+test_name = "R45_SLICE_178_all_52_evangelios_plates_bijective_and_zero_raw_slugs"
+
+[capability.onomasticon_explorer]
+surface = "public-ui"
+selector = "#studyOnomasticonExplorerHost"
+module = "mostrador/study_onomasticon_and_ubs.js"
+handler = "hydrateOnomasticonAndUbsPanels"
+test_file = "mostrador/estudio.test.mjs"
+test_name = "SLICE_R2_B02_B03_B04_ubs_6_traditions_and_onomasticon_explorer_zero_inline_styles"
+
+[capability.ubs_six_traditions_comparator]
+surface = "public-ui"
+selector = "#studyUbsComparatorHost"
+module = "mostrador/study_onomasticon_and_ubs.js"
+handler = "renderUbsSixTraditionsComparatorHtml"
+test_file = "mostrador/estudio.test.mjs"
+test_name = "SLICE_R2_B02_B03_B04_ubs_6_traditions_and_onomasticon_explorer_zero_inline_styles"
+
+[capability.vault_storage_manager]
+surface = "public-ui"
+selector = "#vaultStorageManagerHost"
+module = "mostrador/vault_manager_panel.js"
+handler = "hydrateVaultStorageManagerPanel"
+test_file = "mostrador/vault_idb_v2ld.test.mjs"
+test_name = "SLICE_R2_B05_B06_B08_vault_delete_quota_chunk_progress_and_24_pack_manager"
+
+[capability.editorial_provenance_card]
+surface = "public-ui"
+selector = "#editorialProvenanceCardHost"
+module = "mostrador/provenance_and_support_panel.js"
+handler = "renderEditorialProvenanceCardHtml"
+test_file = "mostrador/tribunal_packs_crypto.test.mjs"
+test_name = "SLICE_R2_B07_B08_provenance_integrity_card_and_support_contact_honeypot_dialog"
+
+[capability.support_contact_dialog]
+surface = "public-ui"
+selector = "#footerContactBtn"
+module = "mostrador/provenance_and_support_panel.js"
+handler = "bindSupportContactDialog"
+test_file = "mostrador/tribunal_packs_crypto.test.mjs"
+test_name = "SLICE_R2_B07_B08_provenance_integrity_card_and_support_contact_honeypot_dialog"
+
+[capability.cli_compile]
+surface = "editor-cli"
+cli_subcommand = "compile"
+reason = "Compilador completo de PDFs/imposición Typst en disco; exclusivo de ekovoz-cli."
+
+[capability.cli_verify_canon]
+surface = "editor-cli"
+cli_subcommand = "verify-canon"
+reason = "Auditoría estructural del canon y artefactos en disco; exclusivo de ekovoz-cli."
+
+[capability.cli_pack]
+surface = "editor-cli"
+cli_subcommand = "pack"
+reason = "Empaquetador batch de archivos .eco/.ekpack; exclusivo de ekovoz-cli."
+
+[capability.cli_new_lang]
+surface = "editor-cli"
+cli_subcommand = "new-lang"
+reason = "Generador de andamiaje de idioma en filesystem local; exclusivo de ekovoz-cli."
+
+[capability.cli_new_work]
+surface = "editor-cli"
+cli_subcommand = "new-work"
+reason = "Generador de nueva obra en obras/<work_id>; exclusivo de ekovoz-cli."
+
+[capability.cli_audit_external]
+surface = "editor-cli"
+cli_subcommand = "audit-external"
+reason = "Auditoría forense USFM externo con 8 candados y Versification Sniffing; exclusivo de ekovoz-cli."
+
+[capability.cli_apply_patch]
+surface = "editor-cli"
+cli_subcommand = "apply-patch"
+reason = "Escritura directa al ledger CRDT .wal.jsonl en disco; exclusivo de ekovoz-cli."
+
+[capability.cli_export_taller]
+surface = "editor-cli"
+cli_subcommand = "export-taller"
+reason = "Materialización por lotes CC0-1.0 en dist/taller; exclusivo de ekovoz-cli."
+
+[capability.cli_fetch_sources]
+surface = "editor-cli"
+cli_subcommand = "fetch-sources"
+reason = "Sincronización de tablas e índices en polyglot_matrix/; exclusivo de ekovoz-cli."
+
+[capability.cli_build_matrix]
+surface = "editor-cli"
+cli_subcommand = "build-matrix"
+reason = "Constructor de Matriz Original 15-col sobre 66 libros; exclusivo de ekovoz-cli."
+
+[capability.cli_stealth_pack]
+surface = "editor-cli"
+cli_subcommand = "stealth-pack"
+reason = "Empaquetador Clase C con nombres neutros de los 80 bloques; exclusivo de ekovoz-cli."
+
+[capability.cli_verify_pack]
+surface = "editor-cli"
+cli_subcommand = "verify-pack"
+reason = "Verificador criptográfico/preimage Ed25519 en disco; exclusivo de ekovoz-cli."
+
+[capability.cli_modernize_audit]
+surface = "editor-cli"
+cli_subcommand = "modernize-audit"
+reason = "Triaje de legibilidad intergeneracional por lotes USFM; exclusivo de ekovoz-cli."
+
+[capability.cli_elicit_session]
+surface = "editor-cli"
+cli_subcommand = "elicit-session"
+reason = "Generador offline de sesiones socráticas de 15 escenas; exclusivo de ekovoz-cli."
+
+[capability.cli_apply_cascade]
+surface = "editor-cli"
+cli_subcommand = "apply-cascade"
+reason = "Mutación transaccional L1-L5 con rollback SHA-256 sobre .usfm; exclusivo de ekovoz-cli."
+
+[capability.cli_sync_js_constants]
+surface = "editor-cli"
+cli_subcommand = "sync-js-constants"
+reason = "Generador de constantes compartidas Rust->JS ESM en build time; exclusivo de ekovoz-cli."
 
 
 

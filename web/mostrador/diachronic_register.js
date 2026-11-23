@@ -781,9 +781,9 @@ export function renderChapterDiachronicWitnessesHtml({
   const rows = summary.witnesses
     .map(
       (w) =>
-        `<div class="diachronic-witness-item" data-diachronic-witness-ref="${w.osisRef}" data-delta-aoa="${w.deltaAoaYears}" data-delta-mdd="${w.deltaMdd}" style="padding:0.2rem 0;border-bottom:1px dashed var(--card-border);">` +
+        `<div class="diachronic-witness-item" data-diachronic-witness-ref="${w.osisRef}" data-delta-aoa="${w.deltaAoaYears}" data-delta-mdd="${w.deltaMdd}">` +
         `<strong>${w.osisRef}</strong> (${w.appliedTiers.join("+")} · ΔAoA=${w.deltaAoaYears}a · ΔMDD=${w.deltaMdd}): ` +
-        `<span style="opacity:0.8;text-decoration:line-through;">${w.text1909.slice(0, 65)}</span> → ` +
+        `<span class="ek-strike">${w.text1909.slice(0, 65)}</span> → ` +
         `<strong>${w.text2026.slice(0, 65)}</strong>` +
         `</div>`,
     )
@@ -831,10 +831,10 @@ export function renderAnalyticalThermometerHtml({
     .join(" · ");
 
   const inlineDetailsHtml = includeInlineSubstitutionsDetails
-    ? `<details id="diachronicSubstitutionsDetails" class="diachronic-substitutions-details" style="width:100%;font-size:0.74rem;color:var(--text-secondary);">` +
-      `<summary style="cursor:pointer;">Ver sustituciones 1909 → Siglo XXI en este capítulo (Tier 1/2/3 · 66 vectores · ΔAoA=${summary.deltaAoaChapter}a · ΔMDD=${summary.deltaMddChapter})</summary>` +
-      `<div style="margin-top:0.25rem;">Léxico: ${tier1Sample} | Enclíticos: ${tier3Sample}</div>` +
-      `<div id="diachronicRegisterAuditPanel" style="margin-top:0.35rem;font-size:0.82rem;">` +
+    ? `<details id="diachronicSubstitutionsDetails" class="diachronic-substitutions-details">` +
+      `<summary>Ver sustituciones 1909 → Siglo XXI en este capítulo (Tier 1/2/3 · 66 vectores · ΔAoA=${summary.deltaAoaChapter}a · ΔMDD=${summary.deltaMddChapter})</summary>` +
+      `<div class="ek-mt-xs">Léxico: ${tier1Sample} | Enclíticos: ${tier3Sample}</div>` +
+      `<div id="diachronicRegisterAuditPanel" class="ek-mt-sm">` +
       renderChapterDiachronicAuditCardHtml({ verses: textList, bookCode, chapter: Number(String(osisRef).split(".")[1]) || 1, uiLocale }) +
       `</div>` +
       `</details>`
@@ -853,13 +853,12 @@ export function renderAnalyticalThermometerHtml({
     `data-tier3-count="${summary.tier3EncliticCount}" ` +
     `data-book-vector-code="${summary.bookCode}" ` +
     `data-core-rules-max-aoa="${maxAoaRule}" ` +
-    `data-total-verses-audited="${totalAudited}" ` +
-    `style="padding:0.45rem 0.65rem;border-radius:8px;border:1px solid var(--card-border);background:var(--bg-secondary);display:flex;flex-wrap:wrap;gap:0.45rem;align-items:center;justify-content:space-between;">` +
+    `data-total-verses-audited="${totalAudited}">` +
     `<div>` +
-    `<strong style="font-size:0.78rem;">🌡️ ${isEn ? "Intergenerational Thermometer" : "Termómetro Intergeneracional"} (${summary.bookCode} · ${metrics.passesAllGates ? (isEn ? "✅ 4 Gates OK" : "✅ 4 Candados OK") : (isEn ? "⚠️ Review" : "⚠️ Revisión")} · ${totalAudited} vv.)</strong> ` +
-    `<span style="font-size:0.75rem;color:var(--text-secondary);">AoA=${metrics.aoaYears}a (≤${maxAoaRule}a) · Prev=${metrics.lexicalPrevalence} (≥${minPrevRule}) · MDD=${metrics.mdd} (≤${maxMddRule}) · Eipen L=${metrics.eipenL} (${isEn ? "Book" : "Libro"}=${bookEipen})</span>` +
+    `<strong>🌡️ ${isEn ? "Intergenerational Thermometer" : "Termómetro Intergeneracional"} (${summary.bookCode} · ${metrics.passesAllGates ? (isEn ? "✅ 4 Gates OK" : "✅ 4 Candados OK") : (isEn ? "⚠️ Review" : "⚠️ Revisión")} · ${totalAudited} vv.)</strong> ` +
+    `<span class="ek-text-secondary">AoA=${metrics.aoaYears}a (≤${maxAoaRule}a) · Prev=${metrics.lexicalPrevalence} (≥${minPrevRule}) · MDD=${metrics.mdd} (≤${maxMddRule}) · Eipen L=${metrics.eipenL} (${isEn ? "Book" : "Libro"}=${bookEipen})</span>` +
     `</div>` +
-    `<div style="display:inline-flex;flex-wrap:wrap;gap:0.3rem;font-size:0.73rem;">` +
+    `<div class="ek-flex-wrap-inline">` +
     `<span class="uls-badge" data-diachronic-tier="1">Tier 1 ${isEn ? "Lexicon" : "Léxico"} (${summary.tierCatalogSizes.tier1Rules} ${isEn ? "rules" : "reglas"} · ${summary.tier1LexicalCount} ${isEn ? "hits" : "aplic."})</span>` +
     `<span class="uls-badge" data-diachronic-tier="2">Tier 2 ${isEn ? "Morphology" : "Morfología"} (${summary.tierCatalogSizes.tier2Rules} ${isEn ? "rules" : "reglas"} · ${summary.tier2MorphologicalCount} ${isEn ? "hits" : "aplic."})</span>` +
     `<span class="uls-badge" data-diachronic-tier="3">Tier 3 ${isEn ? "Enclitics" : "Enclíticos"} (${summary.tierCatalogSizes.tier3Rules} ${isEn ? "rules" : "reglas"} · ${summary.tier3EncliticCount} ${isEn ? "hits" : "aplic."})</span>` +
@@ -943,28 +942,27 @@ export function renderChapterDiachronicAuditCardHtml({
     `data-total-transformations="${summary.totalTransformations}" ` +
     `data-delta-aoa="${summary.deltaAoaChapter}" ` +
     `data-delta-mdd="${summary.deltaMddChapter}" ` +
-    `data-catalog-total="${catalog.length}" ` +
-    `style="padding:0.45rem 0.65rem;border-radius:8px;border:1px solid var(--card-border);background:var(--card-bg);font-size:0.76rem;display:flex;flex-wrap:wrap;gap:0.4rem;align-items:center;justify-content:space-between;">` +
+    `data-catalog-total="${catalog.length}">` +
     `<strong>📊 Auditoría Diacrónica (${summary.bookCode} ${Number(chapter) || 1} · ${summary.versesInspected} vv. · ${summary.totalTransformations} transformaciones 1909→2026 · ΔAoA=${summary.deltaAoaChapter}a · ΔMDD=${summary.deltaMddChapter})</strong>` +
-    `<div style="display:inline-flex;flex-wrap:wrap;gap:0.3rem;">` +
+    `<div class="ek-flex-wrap-inline">` +
     `<span class="uls-badge" data-audit-tier="1">Tier 1 Léxico: ${summary.tier1LexicalCount}/${summary.tierCatalogSizes.tier1Rules}</span>` +
     `<span class="uls-badge" data-audit-tier="2">Tier 2 Morfología: ${summary.tier2MorphologicalCount}/${summary.tierCatalogSizes.tier2Rules}</span>` +
     `<span class="uls-badge" data-audit-tier="3">Tier 3 Enclíticos: ${summary.tier3EncliticCount}/${summary.tierCatalogSizes.tier3Rules}</span>` +
     `<span class="uls-badge" data-audit-book-eipen="${bookEipen}">Vector ${summary.bookCode}: AoA ${bookAoa}a (≤${maxAoa}a) · Prev ${(bookPrev * 100).toFixed(1)}% (≥${(minPrev * 100).toFixed(0)}%) · MDD ${bookMdd} (≤${maxMdd}) · Eipen-L ${bookEipen} (≥${minEipen})</span>` +
     `</div>` +
-    `<div style="width:100%;margin-top:0.25rem;">${witnessesHtml}</div>` +
-    `<details id="diachronicAll156RulesExplorer" style="width:100%;margin-top:0.3rem;">` +
-    `<summary style="cursor:pointer;font-size:0.74rem;font-weight:600;">🔎 Explorar catálogo completo de reglas diacrónicas (${catalog.length} sustituciones FST en 3 capas)</summary>` +
-    `<div style="margin-top:0.35rem;display:flex;flex-wrap:wrap;gap:0.35rem;align-items:center;">` +
-    `<input type="search" id="diachronicSubstitutionsSearchInput" placeholder="Buscar término 1909 o Siglo XXI..." value="${searchQuery}" style="flex:1;min-width:160px;min-height:48px;padding:0.45rem 0.65rem;border-radius:8px;border:1px solid var(--select-border);background:var(--select-bg);color:var(--text-primary);font-size:0.75rem;">` +
-    `<select id="diachronicTierFilterSelect" aria-label="Filtrar por capa diacrónica" style="min-height:48px;min-width:48px;padding:0.45rem 0.65rem;border-radius:8px;border:1px solid var(--select-border);background:var(--select-bg);color:var(--text-primary);font-size:0.75rem;">` +
+    `<div class="ek-w-full ek-mt-xs">${witnessesHtml}</div>` +
+    `<details id="diachronicAll156RulesExplorer">` +
+    `<summary>🔎 Explorar catálogo completo de reglas diacrónicas (${catalog.length} sustituciones FST en 3 capas)</summary>` +
+    `<div class="ek-row-wrap ek-mt-sm">` +
+    `<input type="search" id="diachronicSubstitutionsSearchInput" class="ek-search-pill" placeholder="Buscar término 1909 o Siglo XXI..." value="${searchQuery}">` +
+    `<select id="diachronicTierFilterSelect" class="ek-select-pill" aria-label="Filtrar por capa diacrónica">` +
     `<option value="0"${activeTier === 0 ? " selected" : ""}>Todas las capas (${catalog.length})</option>` +
     `<option value="1"${activeTier === 1 ? " selected" : ""}>Tier 1 · Léxico (${summary.tierCatalogSizes.tier1Rules})</option>` +
     `<option value="2"${activeTier === 2 ? " selected" : ""}>Tier 2 · Morfología (${summary.tierCatalogSizes.tier2Rules})</option>` +
     `<option value="3"${activeTier === 3 ? " selected" : ""}>Tier 3 · Enclíticos (${summary.tierCatalogSizes.tier3Rules})</option>` +
     `</select>` +
     `</div>` +
-    `<div id="diachronicSubstitutionsResultsList" data-shown-rules="${filteredCatalog.length}" style="margin-top:0.35rem;display:flex;flex-wrap:wrap;gap:0.25rem;">${allChipsHtml}</div>` +
+    `<div id="diachronicSubstitutionsResultsList" class="ek-row-wrap ek-gap-xs ek-mt-sm" data-shown-rules="${filteredCatalog.length}">${allChipsHtml}</div>` +
     `</details>` +
     `</div>`
   );

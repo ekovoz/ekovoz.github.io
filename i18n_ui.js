@@ -1,4 +1,5 @@
 import { resolveOverlayEntryForOsis, resolveVerseWithOverlay } from "./mostrador/drawer_workshop.js";
+import { renderLocalizedFelicesPlateCardHtml } from "./mostrador/felices_stage_controller.js";
 import {
   FELICES_PLATE_TO_BIBLE_COORDINATE,
   parseInitialRouteAndLocale,
@@ -14,7 +15,7 @@ const FC = FELICES_PLATE_TO_BIBLE_COORDINATE, uC = new Map(), fC = new Map(), pL
 export const getActivePlateIndex = () => pIdx;
 export function setActivePlateIndex(i, d = D()) { pIdx = clp(i, N, 1); updateFocalPlate(d); return pIdx; }
 export function registerPlateCoordinateListener(fn) { onC = typeof fn === "function" ? fn : null; }
-export const resolvePlateForBibleCoordinate = (b = "MAT", ch = 5, v = 3, cur = pIdx) => resolveFelicesPlateCoord(b, ch, v, cur);
+export const resolvePlateForBibleCoordinate = (b = "MAT", ch = 5, v = 3, cur = pIdx, opts = {}) => resolveFelicesPlateCoord(b, ch, v, cur, opts);
 export const serializeMostradorRouteQuery = (st = {}) => serializeRouteCore(st, pIdx);
 export function resolveDistLangSlug(l) { const r = S(l, "en"); return r === "zh-Hans" || r === "zh" ? "zh" : r.startsWith("bn") ? "bn" : LANGUAGE_PACKS.find(p => p.code === r)?.code || "en"; }
 export function getPlateUrl(i = pIdx) { return `/assets/felices/plates/${String(clp(i, N)).padStart(2, "0")}.jpg`; }
@@ -40,8 +41,17 @@ export function updateDownloadLinks(doc = D(), lO = "") {
 export function setPaperFormat(f, d = D()) { pFmt = f === "letter" ? "letter" : "a4"; if (!d) return pFmt; for (const [id, on] of [["toggleA4", pFmt === "a4"], ["toggleCarta", pFmt !== "a4"]]) { const b = $(d, id), s = String(on); b?.classList?.toggle?.("active", on); sA(b, "aria-checked", s); sA(b, "aria-pressed", s); } updateDownloadLinks(d); return pFmt; }
 export function updateFocalPlate(d = D(), lO = "", n = true, uO = "", st = stRef) {
   if (!d) return; const l = gL(d, lO), uL = uO || l, isEs = L(uL).startsWith("es"), isEn = !isEs, pW = resolveFelicesStrings(uL).plateLabel || (isEn ? "Plate" : "Lámina"), lb = `${pW} ${pIdx} / ${N}`, u = getPlateUrl(pIdx).slice(1), c = FC[pIdx] || FC[24], os = `${c.book}.${c.chapter}.${c.verse}`, tx = resolveFelicesPlateVerse(pIdx, l, {}, st), ov = resolveOverlayEntryForOsis(st, l, os), dI = clp((c.beatitudeIndex || 0) + 1, 12);
-  const im = $(d, "focalPlateImg"), id = $(d, "plateIndexText"), vE = $(d, "focalPlateVerse"), cI = $(d, "carouselImg"), cC = $(d, "carouselCaption"), wC = $(d, "felicesSocraticWonderCard");
-  if (im) { im.src = u; im.alt = lb; } if (id) { id.textContent = lb; sA(id, "data-osis-ref", os); } if (vE) { vE.textContent = tx; sA(vE, "data-osis-ref", os); sA(vE, "data-overlay-authority", ov?.authorityTier || ""); } if (cI) cI.src = u; if (cC) cC.textContent = tx; if (wC) wC.innerHTML = renderFelicesSocraticWonderCardHtml(pIdx, uL);
+  const im = $(d, "focalPlateImg"), id = $(d, "plateIndexText"), vE = $(d, "focalPlateVerse"), cI = $(d, "carouselImg"), cC = $(d, "carouselCaption"), wC = $(d, "felicesSocraticWonderCard"), fFr = $(d, "focalPlateFrame");
+  const isEsCorpus = L(l).startsWith("es");
+  let locHost = $(d, "focalPlateLocalizedArt");
+  if (!locHost && fFr && typeof d.createElement === "function") { locHost = d.createElement("div"); locHost.id = "focalPlateLocalizedArt"; locHost.className = "felices-localized-plate-host"; fFr.insertBefore?.(locHost, im?.nextSibling || null); }
+  if (im) { im.src = u; im.alt = lb; im.hidden = !isEsCorpus; if (im.style) im.style.display = isEsCorpus ? "" : "none"; }
+  if (locHost) {
+    locHost.hidden = isEsCorpus;
+    if (locHost.style) locHost.style.display = isEsCorpus ? "none" : "block";
+    if (!isEsCorpus) locHost.innerHTML = renderLocalizedFelicesPlateCardHtml({ plateIndex: pIdx, totalPlates: N, lang: l, uiLocale: uL, verseText: tx, refLabel: `${c.book} ${c.chapter}:${c.verse}`, dir: LANGUAGE_PACKS.find(p => p.code === l || p.code === pLc(l))?.dir || "ltr" });
+  }
+  if (id) { id.textContent = lb; sA(id, "data-osis-ref", os); } if (vE) { vE.textContent = tx; sA(vE, "data-osis-ref", os); sA(vE, "data-overlay-authority", ov?.authorityTier || ""); } if (cI) cI.src = u; if (cC) cC.textContent = tx; if (wC) wC.innerHTML = renderFelicesSocraticWonderCardHtml(pIdx, uL);
   sIdx = pIdx <= 11 ? 0 : pIdx <= 23 ? 1 : 2; for (let j = 0; j < 3; j++)$(d, `termPill_${j + 1}`)?.classList?.toggle("active", j === sIdx);
   for (const [k, v] of [["felicesPlateSelect", `${pIdx}`], ["felicesDichaSelect", `${dI}`], ["felicesLangSelect", l]]) { const e = $(d, k); if (e && e.value !== v) e.value = v; }
   for (const o of $(d, "felicesPlateSelect")?.options || []) { const t = S(o.textContent); o.textContent = isEn ? t.replace(/^Lámina\b/, "Plate").replace(/\(Sal\b/, "(Ps") : t.replace(/^Plate\b/, "Lámina").replace(/\(Ps\b/, "(Sal"); }
@@ -55,7 +65,7 @@ export const nextSlide = nextPlate;
 export const prevSlide = prevPlate;
 export function openActivePlateZoom(d = D()) { if (!d) return; const l = gL(d), mI = $(d, "plateModalImg"), mC = $(d, "plateModalCaption"); if (mI) mI.src = getPlateUrl(pIdx).slice(1); if (mC) mC.textContent = resolveFelicesPlateVerse(pIdx, l); openModal("plateModal", d); }
 export const printActivePlate = (w = typeof window !== "undefined" ? window : null) => w?.print?.();
-export function shareResource(d = D(), st = null) { const c = FC[pIdx] || FC[24], u = serializeMostradorRouteQuery(st || { work: "felices", ui: d?.documentElement?.lang || "en", lang: gL(d, "es"), plate: pIdx, ref: `${c.book}.${c.chapter}.${c.verse}`, format: pFmt }); if (typeof navigator !== "undefined") navigator.clipboard?.writeText?.(u)?.catch?.(() => { }); const t = $(d, "toastNotification"); if (t) { t.textContent = `Link copied (${c.book} ${c.chapter}:${c.verse})`; t.classList?.add?.("show"); } return u; }
+export function shareResource(d = D(), st = null) { const c = FC[pIdx] || FC[24], uL = S(st?.uiLocale || d?.documentElement?.lang || "es", "es"), u = serializeMostradorRouteQuery(st || { work: "felices", ui: uL, lang: gL(d, "es"), plate: pIdx, ref: `${c.book}.${c.chapter}.${c.verse}`, format: pFmt }); if (typeof navigator !== "undefined") navigator.clipboard?.writeText?.(u)?.catch?.(() => { }); const t = $(d, "toastNotification"); if (t) { const msg = resolveFelicesStrings(uL).linkCopied || (L(uL).startsWith("es") ? "Enlace copiado" : "Link copied"); t.textContent = `${msg} (${c.book} ${c.chapter}:${c.verse})`; t.classList?.add?.("show"); } return u; }
 export const setSlide = (i = 0, d = D()) => { const n = Number(i) || 0; pIdx = n >= 3 && n <= N ? clp(n, N) : [1, 12, 24][((n % 3) + 3) % 3]; updateFocalPlate(d); return sIdx; };
 export function applyAriaLabelsToDom(r, d = {}) { const m = d.messages || d || {}; for (const e of r?.querySelectorAll?.("[data-i18n-aria-label]") || []) { const v = m[e.getAttribute("data-i18n-aria-label") || ""]; if (typeof v === "string" && v.trim()) { sA(e, "aria-label", v); sA(e, "title", v); } } }
 const MD = new Set(["previewModal", "plateModal"]);

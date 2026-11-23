@@ -1,6 +1,8 @@
 // web/mostrador/evangelios.js — Acciones de Impresión, Estudio, Perícopas Masoréticas (Petuhah פ / Setumah ס),
 // Hilos Macro-Narrativos (52 semanas), Ecos AT->NT y las 12 Dichas Soberanas (`D4-R+`, `D7-B+`, `D8-B+`).
 
+import { ROSETTA_66_BOOKS } from "./reference.js";
+
 export const MASORETIC_AND_GOSPEL_PERICOPE_MAP = {
   "GEN.1": [
     { beforeVerse: 1, kind: "petuhah", marker: "פ", title: "Proemio Cósmico y Día Primero (Luz)" },
@@ -96,8 +98,8 @@ export const FELICES_12_DICHAS_COORDINATE_MAP = {
   7: { book: "MAT", chapter: 5, verse: 8, title: "Dicha 7 · Los de Limpio Corazón (Verán a Dios)", title_en: "Saying 7 · The Pure in Heart (Shall See God)" },
   8: { book: "MAT", chapter: 5, verse: 9, title: "Dicha 8 · Los Pacificadores (Hijos de Dios)", title_en: "Saying 8 · The Peacemakers (Children of God)" },
   9: { book: "MAT", chapter: 5, verse: 10, title: "Dicha 9 · Perseguidos por Causa de la Justicia", title_en: "Saying 9 · Persecuted for Righteousness' Sake" },
-  10: { book: "LUK", chapter: 11, verse: 28, title: "Dicha 10 · Los que Oyen la Palabra de Dios y la Guardan", title_en: "Saying 10 · Those Who Hear God's Word and Keep It" },
-  11: { book: "MAT", chapter: 5, verse: 12, title: "Dicha 11 · Gozaos y Alegraos (Galardón en los Cielos)", title_en: "Saying 11 · Rejoice and Be Glad (Reward in Heaven)" },
+  10: { book: "MAT", chapter: 5, verse: 11, title: "Dicha 10 · Insultados y perseguidos por causa de Jesús (Mt 5:11)", title_en: "Saying 10 · Insulted and Persecuted for Jesus' Sake (Matt 5:11)" },
+  11: { book: "MAT", chapter: 5, verse: 12, title: "Dicha 11 · Alégrense y celebren (Mt 5:12 · Galardón en los Cielos)", title_en: "Saying 11 · Rejoice and Be Glad (Matt 5:12 · Reward in Heaven)" },
   12: { book: "REV", chapter: 22, verse: 14, title: "Dicha 12 · Los que Lavan sus Ropas (Árbol de la Vida)", title_en: "Saying 12 · Those Who Wash Their Robes (Tree of Life)" },
 };
 
@@ -437,6 +439,31 @@ function escapeHtml(val) {
 /**
  * Extrae una referencia OSIS canónica `{ book, chapter, verse, refCode }` desde una cita de Eco AT (`D56 / 5C+`).
  */
+const CITATION_ALIASES = {
+  MC: "MRK", MT: "MAT", LC: "LUK", JN: "JHN", SAL: "PSA", PS: "PSA",
+  GN: "GEN", EX: "EXO", LV: "LEV", NM: "NUM", DT: "DEU", IS: "ISA",
+  JR: "JER", EZ: "EZK", DN: "DAN", HCH: "ACT", RM: "ROM", AP: "REV",
+};
+
+/** Convierte una referencia OSIS o abreviada (`MC 1:16-20`, `MRK.1.16`) en cita humana localizada (`Marcos 1:16–20`). */
+export function formatReadableCitation(osisRef, locale = "es") {
+  const raw = String(osisRef || "").trim();
+  if (!raw) return "";
+  const isEs = String(locale || "es").trim().toLowerCase().startsWith("es");
+  const m = raw.match(/^([1-3]?\s*[A-Za-zÁÉÍÓÚáéíóúñÑ]+)[.\s]+(\d+)(?:[:.](\d+(?:[-–]\d+)?))?(.*)$/);
+  if (!m) return raw;
+  const rawBook = m[1].replace(/\s+/g, "").toUpperCase();
+  const code = CITATION_ALIASES[rawBook] || rawBook;
+  const bookMeta = ROSETTA_66_BOOKS.find(
+    (b) => b.code === code || b.es.toUpperCase() === rawBook || b.en.toUpperCase() === rawBook,
+  );
+  const bookName = bookMeta ? (isEs ? bookMeta.es : bookMeta.en) : m[1].trim();
+  const chap = m[2];
+  const verse = m[3] ? `:${m[3].replace(/-/g, "–")}` : "";
+  const tail = m[4] || "";
+  return `${bookName} ${chap}${verse}${tail}`;
+}
+
 export function parseCanonicalOtEchoRef(echoStr = "") {
   const raw = String(echoStr || "").trim();
   const dotMatch = raw.match(/\b([1-3]?[A-Za-z]{2,3})\.(\d+)(?:\.(\d+))?/);
@@ -490,20 +517,18 @@ export function renderEvangeliosPlateActionsHtml({
     enrichment.chapter || parsedPassage.chapter,
     parsedPassage.verse || 1,
   );
-  const bridgeLine = formatEvangeliosBridgeLine(
-    enrichment.title || openingHeader?.title || "",
-    cleanLang,
-    effectiveUi,
-  );
+  const bridgeLine = shouldShowEvangeliosBridgeLine(cleanLang)
+    ? formatEvangeliosBridgeLine(enrichment.title || openingHeader?.title || "", cleanLang, effectiveUi)
+    : "";
 
   const echoesHtml = (enrichment.otEchoes || [])
     .map((ec) => {
       const parsedEcho = parseCanonicalOtEchoRef(ec);
+      const humanEcho = formatReadableCitation(ec, effectiveUi);
       return (
         `<button type="button" class="uls-chip ot-echo-jump-chip" ` +
-        `data-ot-echo="${escapeHtml(ec)}" data-ot-echo-ref="${escapeHtml(parsedEcho.refCode)}" ` +
-        `style="min-height:48px;min-width:48px;padding:0.35rem 0.65rem;font-size:0.76rem;display:inline-flex;align-items:center;">` +
-        `📜 ${isEnUi ? "OT Echo" : "Eco AT"}: ${escapeHtml(ec)}</button>`
+        `data-ot-echo="${escapeHtml(ec)}" data-ot-echo-ref="${escapeHtml(parsedEcho.refCode)}">` +
+        `📜 ${isEnUi ? "OT Echo" : "Eco AT"}: ${escapeHtml(humanEcho)}</button>`
       );
     })
     .join(" ");
@@ -519,7 +544,7 @@ export function renderEvangeliosPlateActionsHtml({
             beforeVerse: parsedPassage.verse || 1,
             kind: "petuhah",
             marker: "פ",
-            title: enrichment.title || (isEnUi ? `Pericope Opening (${bookKey})` : `Apertura de Perícopa (${bookKey})`),
+            title: isEnUi ? `Pericope Opening (${bookKey})` : `Apertura de Perícopa (${bookKey})`,
           },
         ];
 
@@ -538,8 +563,7 @@ export function renderEvangeliosPlateActionsHtml({
         const pRef = `${enrichment.book || parsedPassage.book}.${enrichment.chapter || parsedPassage.chapter}.${vStart}`;
         return (
           `<button type="button" class="uls-chip evangelios-pericope-chip" ` +
-          `data-pericope-block="${idx + 1}" data-pericope-verse="${vStart}" data-pericope-ref="${escapeHtml(pRef)}" ` +
-          `style="min-height:48px;min-width:48px;padding:0.3rem 0.65rem;font-size:0.76rem;display:inline-flex;align-items:center;">` +
+          `data-pericope-block="${idx + 1}" data-pericope-verse="${vStart}" data-pericope-ref="${escapeHtml(pRef)}">` +
           `פ v.${vStart} · ${escapeHtml(cleanStr)}</button>`
         );
       }
@@ -554,8 +578,7 @@ export function renderEvangeliosPlateActionsHtml({
       const marker = pb.marker || (pb.kind === "setumah" ? "ס" : "פ");
       return (
         `<button type="button" class="uls-chip evangelios-pericope-chip" ` +
-        `data-pericope-block="${idx + 1}" data-pericope-verse="${vStart}" data-pericope-ref="${escapeHtml(pRef)}" ` +
-        `style="min-height:48px;min-width:48px;padding:0.3rem 0.65rem;font-size:0.76rem;display:inline-flex;align-items:center;">` +
+        `data-pericope-block="${idx + 1}" data-pericope-verse="${vStart}" data-pericope-ref="${escapeHtml(pRef)}">` +
         `${escapeHtml(marker)} v.${vStart} · ${escapeHtml(label)}</button>`
       );
     })
@@ -573,22 +596,22 @@ export function renderEvangeliosPlateActionsHtml({
   const questionsHtml = rawQuestions
     .map(
       (q, qIdx) =>
-        `<li data-evangelios-question="${qIdx + 1}" style="margin-bottom:0.2rem;">${escapeHtml(q)}</li>`,
+        `<li data-evangelios-question="${qIdx + 1}">${escapeHtml(q)}</li>`,
     )
     .join("");
 
   return (
-    `<div class="evangelios-exegesis-enrichment" data-week="${escapeHtml(cleanWeek)}" data-lang="${escapeHtml(cleanLang)}" data-ui-locale="${escapeHtml(effectiveUi)}" data-macro-thread="${escapeHtml(enrichment.macroThread)}" style="margin-top:0.55rem;padding:0.65rem;border-radius:8px;border:1px solid var(--card-border);background:var(--card-bg);font-size:0.8rem;display:flex;flex-direction:column;gap:0.45rem;">` +
-    `<div style="font-weight:700;">🧵 ${escapeHtml(enrichment.macroThread)}</div>` +
-    (bridgeLine ? `<div class="evangelios-bridge-line" style="font-size:0.76rem;color:var(--text-secondary);">${escapeHtml(bridgeLine)}</div>` : "") +
-    `<div class="evangelios-ot-echoes-bar" style="display:flex;flex-wrap:wrap;gap:0.35rem;">${echoesHtml}</div>` +
-    `<div data-realia-gloss="true" style="color:var(--text-secondary);">🏺 <strong>${isEnUi ? "Cultural Realia Gloss:" : "Glosa Cultural Realia:"}</strong> ${escapeHtml(enrichment.culturalRealia)}</div>` +
-    `<div id="evangeliosPericopeBlocksList" data-evangelios-pericopes="true" style="display:flex;flex-wrap:wrap;gap:0.35rem;align-items:center;">` +
-    `<strong style="font-size:0.76rem;color:var(--text-secondary);">📑 ${isEnUi ? "Pericope Blocks:" : "Bloques de Perícopa:"}</strong> ${pericopesHtml}` +
+    `<div class="evangelios-exegesis-enrichment" data-week="${escapeHtml(cleanWeek)}" data-lang="${escapeHtml(cleanLang)}" data-ui-locale="${escapeHtml(effectiveUi)}" data-macro-thread="${escapeHtml(enrichment.macroThread)}">` +
+    `<div class="evangelios-macro-title">🧵 ${escapeHtml(enrichment.macroThread)}</div>` +
+    (bridgeLine ? `<div class="evangelios-bridge-line">${escapeHtml(bridgeLine)}</div>` : "") +
+    `<div class="evangelios-ot-echoes-bar">${echoesHtml}</div>` +
+    `<div data-realia-gloss="true" class="evangelios-realia-gloss">🏺 <strong>${isEnUi ? "Cultural Context:" : "Contexto Cultural:"}</strong> ${escapeHtml(enrichment.culturalRealia)}</div>` +
+    `<div id="evangeliosPericopeBlocksList" data-evangelios-pericopes="true" class="evangelios-pericopes-bar">` +
+    `<strong>📑 ${isEnUi ? "Sections:" : "Secciones:"}</strong> ${pericopesHtml}` +
     `</div>` +
-    `<div id="evangeliosQuestionsList" data-evangelios-questions="true" style="border-top:1px dashed var(--card-border);padding-top:0.4rem;">` +
-    `<strong style="font-size:0.78rem;display:block;margin-bottom:0.2rem;">🌅 ${isEnUi ? "Dawn Contemplative Questions:" : "Preguntas Contemplativas de Alborada:"}</strong>` +
-    `<ol style="margin:0;padding-left:1.2rem;color:var(--text-secondary);">${questionsHtml}</ol>` +
+    `<div id="evangeliosQuestionsList" data-evangelios-questions="true" class="evangelios-questions-box">` +
+    `<strong>🌅 ${isEnUi ? "Dawn Reflection Questions:" : "Preguntas para el Amanecer:"}</strong>` +
+    `<ol class="evangelios-questions-list">${questionsHtml}</ol>` +
     `</div>` +
     `</div>`
   );
@@ -628,8 +651,7 @@ export function renderChapterPericopesRibbonHtml(bookCode = "GEN", chapterNum = 
         `data-pericope-verse="${vStart}" ` +
         `data-synoptic-jump="${escapeHtml(synoptic)}" ` +
         `data-pericope-kind="${escapeHtml(pb.kind || "petuhah")}" ` +
-        `data-ui-lang="${escapeHtml(uiLang)}" ` +
-        `style="min-height:48px;min-width:48px;padding:0.25rem 0.65rem;font-size:0.75rem;display:inline-flex;align-items:center;gap:0.3rem;white-space:nowrap;">` +
+        `data-ui-lang="${escapeHtml(uiLang)}">` +
         `<strong>${escapeHtml(marker)} v.${vStart}</strong> · <span>${escapeHtml(title)}</span>` +
         `</button>`
       );
@@ -686,17 +708,17 @@ export function renderFelicesSocraticWonderCardHtml(plateIndex = 1, uiLang = "es
   const questionsHtml = questions
     .map(
       (q, qIdx) =>
-        `<li data-socratic-question="${qIdx + 1}" style="margin-bottom:0.2rem;">${escapeHtml(q)}</li>`,
+        `<li data-socratic-question="${qIdx + 1}" class="felices-wonder-question-item">${escapeHtml(q)}</li>`,
     )
     .join("");
 
   return (
     `<div class="felices-socratic-wonder-inner" data-plate-number="${pNum}" data-plate-type="${escapeHtml(typeStr)}" data-ui-lang="${escapeHtml(uiLang)}">` +
-    `<div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:0.4rem;margin-bottom:0.35rem;">` +
-    `<strong style="font-size:0.84rem;">✨ ${escapeHtml(titleStr)}</strong>` +
-    `<button type="button" class="uls-chip felices-wonder-cite-btn" data-wonder-cite="${escapeHtml(citaStr)}" style="min-height:48px;padding:0.2rem 0.6rem;font-size:0.74rem;">📖 ${escapeHtml(citaStr)} (${escapeHtml(typeStr)})</button>` +
+    `<div class="felices-wonder-header">` +
+    `<strong class="felices-wonder-title">✨ ${escapeHtml(titleStr)}</strong>` +
+    `<button type="button" class="uls-chip felices-wonder-cite-btn" data-wonder-cite="${escapeHtml(citaStr)}">📖 ${escapeHtml(citaStr)} (${escapeHtml(typeStr)})</button>` +
     `</div>` +
-    `<ol style="margin:0;padding-left:1.25rem;font-size:0.79rem;color:var(--text-secondary);">${questionsHtml}</ol>` +
+    `<ol class="felices-wonder-list">${questionsHtml}</ol>` +
     `</div>`
   );
 }
@@ -717,23 +739,25 @@ export const FELICES_PLATE_TO_BIBLE_COORDINATE = Object.fromEntries(
       ? {
         book: "MAT",
         chapter: 5,
-        verse: i < 4 ? 3 : Math.min(12, (i >> 1) + 2),
+        verse: i < 2 ? 1 : i < 4 ? 3 : Math.min(12, (i >> 1) + 2),
         beatitudeIndex: Math.min(10, i >> 1),
       }
       : i < 26
         ? { book: "MAT", chapter: 5, verse: 1, beatitudeIndex: 0 }
-        : { book: "MAT", chapter: 5, verse: 12, beatitudeIndex: 11 },
+        : { book: "REV", chapter: 22, verse: 14, beatitudeIndex: 11 },
   ]),
 );
 
-export function resolveFelicesPlateCoord(b = "MAT", ch = 5, v = 3, cur = 24) {
+export function resolveFelicesPlateCoord(b = "MAT", ch = 5, v = 3, cur = 24, opts = {}) {
+  const k = clampFelicesNum(cur, FELICES_N, 24);
+  if (opts?.explicitPlateRequested) return k;
   const B = trimFelicesStr(b, "MAT").toUpperCase();
   const C = Number(ch) || 1;
   const V = Number(v) || 1;
-  const k = clampFelicesNum(cur, FELICES_N, 24);
   const x = FELICES_PLATE_TO_BIBLE_COORDINATE[k];
-  if (x && x.book === B && x.chapter === C && x.verse === V) return k;
   if (B === "MAT" && C === 5 && V === 1) return k === 26 ? 26 : 25;
+  if (x && x.book === B && x.chapter === C && x.verse === V) return k;
+  if (B === "REV" && C === 22 && V === 14) return 27;
   if (B === "MAT" && C === 5) {
     for (const [p, y] of Object.entries(FELICES_PLATE_TO_BIBLE_COORDINATE)) {
       if (y.book === B && y.chapter === 5 && y.verse === V) return Number(p);

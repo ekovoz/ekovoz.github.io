@@ -662,13 +662,13 @@ export function renderWfstAndScriptioContinuaInspectorHtml({
 
   const reverseHtml = reversePairs.length > 0
     ? reversePairs
-        .slice(0, 12)
-        .map(
-          (p) =>
-            `<span class="uls-badge" data-canonical-token="${p.canonical}" data-reverse-strong-id="${p.strongId || ""}">${p.surface} ⇄ ${p.canonical}${p.strongId ? ` (${p.strongId})` : ""}</span>`
-        )
-        .join(" ")
-    : `<span style="font-size:0.74rem;color:var(--text-secondary);">${isEn ? "100% bijective to canonical base" : "100% biyectivo hacia base canónica"} (${resolvedProfileId})</span>`;
+      .slice(0, 12)
+      .map(
+        (p) =>
+          `<span class="uls-badge" data-canonical-token="${p.canonical}" data-reverse-strong-id="${p.strongId || ""}">${p.surface} ⇄ ${p.canonical}${p.strongId ? ` (${p.strongId})` : ""}</span>`
+      )
+      .join(" ")
+    : `<span class="ek-meta">${isEn ? "100% bijective to canonical base" : "100% biyectivo hacia base canónica"} (${resolvedProfileId})</span>`;
 
   const whitelistHtml = whitelist
     .slice(0, 10)
@@ -677,7 +677,7 @@ export function renderWfstAndScriptioContinuaInspectorHtml({
 
   const scriptioBadges = SCRIPTIO_CONTINUA_7_SCRIPTS.map(
     (sc) =>
-      `<span class="uls-badge" data-scriptio-continua-script="${sc}" style="${sc === activeScript ? "border-color:var(--accent-amber);font-weight:700;" : ""}">${sc}</span>`
+      `<span class="uls-badge wfst-scriptio-badge${sc === activeScript ? " is-active" : ""}" data-scriptio-continua-script="${sc}">${sc}</span>`
   ).join(" ");
 
   return (
@@ -686,18 +686,20 @@ export function renderWfstAndScriptioContinuaInspectorHtml({
     `data-ortho-profile="${resolvedProfileId}" ` +
     `data-available-profiles="${profileIds.join(",")}" ` +
     `data-protected-loanwords-count="${whitelist.length}" ` +
-    `data-zwsp-boundaries="${zwspCount}" ` +
-    `style="margin-top:0.35rem;padding:0.45rem 0.65rem;border-radius:8px;border:1px solid var(--card-border);background:var(--bg-secondary);font-size:0.76rem;display:flex;flex-direction:column;gap:0.3rem;">` +
-    `<div style="display:flex;flex-wrap:wrap;justify-content:space-between;gap:0.35rem;align-items:center;">` +
-    `<strong>🔤 ${isEn ? "WFST Transducer" : "Transductor WFST"} (${activeProfile.label || resolvedProfileId}) · ${isEn ? "Reverse Strong Map" : "Mapa Inverso a Strong"}</strong>` +
-    `<select id="wfstInspectorProfileSelect" aria-label="${isEn ? "WFST Orthography Profile" : "Perfil Ortográfico WFST"}" style="min-height:48px;min-width:48px;padding:0.3rem 0.55rem;border-radius:8px;border:1px solid var(--select-border);background:var(--select-bg);color:var(--text-primary);font-size:0.75rem;">${profileOptionsHtml}</select>` +
-    `<span class="uls-badge">${isEn ? "Protected loanwords" : "Préstamos protegidos"}: ${whitelist.length} · U+200B: ${zwspCount}</span>` +
+    `data-zwsp-boundaries="${zwspCount}">` +
+    `<div class="ek-row-between">` +
+    `<strong>🔤 ${isEn ? "Orthography Variant" : "Variante Ortográfica"} (${activeProfile.label || resolvedProfileId})</strong>` +
+    `<select id="wfstInspectorProfileSelect" class="ek-select-pill" aria-label="${isEn ? "Orthography Profile" : "Perfil Ortográfico"}">${profileOptionsHtml}</select>` +
+    `<span class="uls-badge">${isEn ? "Protected loanwords" : "Préstamos protegidos"}: ${whitelist.length}</span>` +
     `</div>` +
-    `<div style="display:flex;flex-wrap:wrap;gap:0.25rem;align-items:center;"><strong>${isEn ? "Reverse mapping:" : "Mapeo inverso:"}</strong> ${reverseHtml}</div>` +
+    `<details class="tech-details">` +
+    `<summary>${isEn ? "Technical orthography details (WFST · Reverse Strong Map)" : "Detalles técnicos de ortografía (WFST · Mapa Strong)"}</summary>` +
+    `<div class="ek-row-wrap ek-gap-xs ek-mt-sm"><strong>${isEn ? "Reverse mapping:" : "Mapeo inverso:"}</strong> ${reverseHtml} · U+200B: ${zwspCount}</div>` +
     (whitelist.length > 0
-      ? `<div style="display:flex;flex-wrap:wrap;gap:0.25rem;align-items:center;"><strong>${isEn ? "Protected loanwords:" : "Préstamos teológicos intactos:"}</strong> ${whitelistHtml}</div>`
+      ? `<div class="ek-row-wrap ek-gap-xs ek-mt-xs"><strong>${isEn ? "Protected loanwords:" : "Préstamos teológicos intactos:"}</strong> ${whitelistHtml}</div>`
       : "") +
-    `<div style="display:flex;flex-wrap:wrap;gap:0.25rem;align-items:center;"><strong>${isEn ? "7 Scriptio Continua segmenters (U+200B):" : "7 segmentadores Scriptio Continua (U+200B):"}</strong> ${scriptioBadges}</div>` +
+    `<div class="ek-row-wrap ek-gap-xs ek-mt-xs"><strong>${isEn ? "7 Scriptio Continua segmenters (U+200B):" : "7 segmentadores Scriptio Continua (U+200B):"}</strong> ${scriptioBadges}</div>` +
+    `</details>` +
     `</div>`
   );
 }

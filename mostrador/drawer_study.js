@@ -27,7 +27,9 @@ import {
   listOrthographyProfilesForLang,
   renderWfstAndScriptioContinuaInspectorHtml,
 } from "./orthography_wfst.js";
+import { applyGrambankTypologyToPrint } from "./print_config_projector.js";
 import { parseBiblicalCoordinateReference } from "./reference.js";
+import { hydrateOnomasticonAndUbsPanels } from "./study_onomasticon_and_ubs.js";
 
 export const HAREL_STUDY_SUBTABS = ["words", "rosetta", "calibrate"];
 
@@ -94,20 +96,26 @@ function renderAnnotationAndBlindCalibrationCardHtml({
     const maxOtKetiv = ((Number(thresholds.max_ot_ketiv) || 0.005) * 100).toFixed(1);
 
     parts.push(
-      `<section class="calibration-mass-conservation-card" data-annotation-mass-conservation="true" data-total-tokens="${totalTokens}" data-total-residuals="${totalResiduals}" data-canonical-verses="${canonicalVerses}" data-matrix-columns="${canonicalCols}" data-index-sha256="${escHtml(indexSha.slice(0, 16))}" data-residuals-sha256="${escHtml(residualsSha.slice(0, 16))}" style="margin-top:0.5rem;padding:0.55rem 0.7rem;border-radius:8px;border:1px solid var(--card-border);background:var(--card-bg);font-size:0.76rem;">` +
-      `<div style="display:flex;flex-wrap:wrap;gap:0.4rem;align-items:center;justify-content:space-between;margin-bottom:0.35rem;">` +
-      `<strong>⚖️ ${isEn ? "Lexical Mass Conservation" : "Conservación de Masa Léxica"} (${otTokens.toLocaleString("en-US")} ${isEn ? "OT" : "AT"} + ${ntTokens.toLocaleString("en-US")} NT = ${totalTokens.toLocaleString("en-US")} tokens · ${canonicalVerses.toLocaleString("en-US")} vv. · ${canonicalCols} col.)</strong>` +
-      `<span class="uls-badge" data-thresholds-pass="${gatePass}">${gatePass ? (isEn ? "✅ Gates OK" : "✅ Umbrales OK") : "⚠️"} · TAGNT-ES ${ntSpanRatio}% (≥${minNtSpan}%) · OT-Unann ${otUnannRatio}% (≤${maxOtUnann}%) · NT-Unann ${ntUnannRatio}% (≤${maxNtUnann}%) · Ketiv ${otKetivRatio}% (≤${maxOtKetiv}%)</span>` +
+      `<section class="calibration-mass-conservation-card" data-annotation-mass-conservation="true" data-total-tokens="${totalTokens}" data-total-residuals="${totalResiduals}" data-canonical-verses="${canonicalVerses}" data-matrix-columns="${canonicalCols}" data-index-sha256="${escHtml(indexSha.slice(0, 16))}" data-residuals-sha256="${escHtml(residualsSha.slice(0, 16))}">` +
+      `<div class="calib-card-header">` +
+      `<strong>⚖️ ${isEn ? "Lexical Concordance Coverage" : "Cobertura Léxica Completa"} (${totalTokens.toLocaleString("en-US")} tokens · ${canonicalVerses.toLocaleString("en-US")} vv.)</strong>` +
+      `<span class="uls-badge" data-thresholds-pass="${gatePass}">${gatePass ? (isEn ? "✅ Quality Verified" : "✅ Calidad Verificada") : "⚠️"}</span>` +
       `</div>` +
+      `<details class="tech-details">` +
+      `<summary>${isEn ? "Technical verification details (Mass Conservation · Residuals)" : "Detalles técnicos de verificación (Masa léxica · Residuales)"}</summary>` +
+      `<div class="ek-stack-sm ek-mt-sm">` +
+      `<span class="uls-badge">TAGNT-ES ${ntSpanRatio}% (≥${minNtSpan}%) · OT-Unann ${otUnannRatio}% (≤${maxOtUnann}%) · NT-Unann ${ntUnannRatio}% (≤${maxNtUnann}%) · Ketiv ${otKetivRatio}% (≤${maxOtKetiv}%)</span>` +
       (sampleSdbh || sampleNsm
-        ? `<div class="hig-tech-meta" style="margin-bottom:0.3rem;color:var(--text-secondary);">${sampleSdbh ? `<span>SDBH: ${escHtml(sampleSdbh)}</span>` : ""}${sampleSdbh && sampleNsm ? " · " : ""}${sampleNsm ? `<span>NSM-65: ${escHtml(sampleNsm)}</span>` : ""}</div>`
+        ? `<div class="hig-tech-meta">${sampleSdbh ? `<span>SDBH: ${escHtml(sampleSdbh)}</span>` : ""}${sampleSdbh && sampleNsm ? " · " : ""}${sampleNsm ? `<span>NSM-65: ${escHtml(sampleNsm)}</span>` : ""}</div>`
         : "") +
-      `<div style="display:flex;flex-wrap:wrap;gap:0.25rem;margin-bottom:0.35rem;">` +
-      `<span style="font-weight:600;">${isEn ? `5 Residual Classes (${totalResiduals.toLocaleString("en-US")}):` : `5 Clases Residuales (${totalResiduals.toLocaleString("en-US")}):`}</span> ${residualBadges}` +
+      `<div class="calib-badge-row">` +
+      `<span class="calib-row-label">${isEn ? `5 Residual Classes (${totalResiduals.toLocaleString("en-US")}):` : `5 Clases Residuales (${totalResiduals.toLocaleString("en-US")}):`}</span> ${residualBadges}` +
       `</div>` +
-      `<div style="display:flex;flex-wrap:wrap;gap:0.25rem;color:var(--text-secondary);">` +
-      `<span style="font-weight:600;">${isEn ? `${sources.length} Open Sources:` : `${sources.length} Fuentes Abiertas:`}</span> ${sourceBadges}` +
+      `<div class="calib-badge-row calib-sources-row">` +
+      `<span class="calib-row-label">${isEn ? `${sources.length} Open Sources:` : `${sources.length} Fuentes Abiertas:`}</span> ${sourceBadges}` +
       `</div>` +
+      `</div>` +
+      `</details>` +
       `</section>`,
     );
   }
@@ -132,7 +140,7 @@ function renderAnnotationAndBlindCalibrationCardHtml({
     const headerCells = booksOrder
       .map((bk) => {
         const isActiveCol = bk === normBook;
-        return `<th data-book-col="${bk}" data-active-book-col="${isActiveCol}" style="padding:0.25rem 0.4rem;text-align:right;border-bottom:1px solid var(--card-border);${isActiveCol ? "font-weight:800;text-decoration:underline;" : ""}">${bk}</th>`;
+        return `<th class="calib-th${isActiveCol ? " is-active-col" : ""}" data-book-col="${bk}" data-active-book-col="${isActiveCol}">${bk}</th>`;
       })
       .join("");
     const bodyRows = Array.from(byLang.values())
@@ -142,19 +150,19 @@ function renderAnnotationAndBlindCalibrationCardHtml({
           .map((bk) => {
             const cell = entry.cells.get(bk);
             const isActiveCol = bk === normBook;
-            if (!cell) return `<td style="padding:0.2rem 0.4rem;text-align:right;">—</td>`;
+            if (!cell) return `<td class="calib-td-num">—</td>`;
             const chrf = Number(cell.chrf_plus_plus || 0).toFixed(1);
             const charF2 = Number(cell.char_f2 || 0).toFixed(1);
             const wordF2 = Number(cell.word_f2 || 0).toFixed(1);
             const lr = Number(cell.length_ratio_gale_church || 1).toFixed(2);
             const mattr = Number(cell.mattr_50 || 1).toFixed(2);
             const passGate = Boolean(cell.passes_release_gate);
-            return `<td data-calib-cell="${escHtml(entry.langCode)}:${bk}" data-passes-gate="${passGate}" data-active-cell="${isActiveRow && isActiveCol}" title="charF2=${charF2} · wordF2=${wordF2} · Gale-Church=${lr} · MATTR50=${mattr}" style="padding:0.2rem 0.4rem;text-align:right;font-variant-numeric:tabular-nums;${isActiveRow && isActiveCol ? "font-weight:800;" : ""}">${chrf}${passGate ? "" : "⚠"}</td>`;
+            return `<td class="calib-td-num${isActiveRow && isActiveCol ? " is-active-cell" : ""}" data-calib-cell="${escHtml(entry.langCode)}:${bk}" data-passes-gate="${passGate}" data-active-cell="${isActiveRow && isActiveCol}" title="charF2=${charF2} · wordF2=${wordF2} · Gale-Church=${lr} · MATTR50=${mattr}">${chrf}${passGate ? "" : "⚠"}</td>`;
           })
           .join("");
         return (
-          `<tr data-calib-lang="${escHtml(entry.langCode)}" data-active-lang-row="${isActiveRow}" style="${isActiveRow ? "background:var(--bg-secondary);font-weight:700;" : ""}">` +
-          `<td style="padding:0.2rem 0.4rem;"><code>${escHtml(entry.langCode)}</code> <span style="opacity:0.75;">(${escHtml(entry.macroFamily)})</span></td>` +
+          `<tr class="${isActiveRow ? "is-active-lang-row" : ""}" data-calib-lang="${escHtml(entry.langCode)}" data-active-lang-row="${isActiveRow}">` +
+          `<td class="calib-td-lang"><code>${escHtml(entry.langCode)}</code> <span class="calib-family-tag">(${escHtml(entry.macroFamily)})</span></td>` +
           tds +
           `</tr>`
         );
@@ -162,12 +170,15 @@ function renderAnnotationAndBlindCalibrationCardHtml({
       .join("");
 
     parts.push(
-      `<section class="blind-calibration-chrf-card" data-blind-calibration-matrix="true" data-langs-count="${byLang.size}" data-books-count="${booksOrder.length}" style="margin-top:0.5rem;padding:0.55rem 0.7rem;border-radius:8px;border:1px solid var(--card-border);background:var(--card-bg);font-size:0.75rem;overflow-x:auto;">` +
-      `<strong style="display:block;margin-bottom:0.3rem;">🎯 ${isEn ? `Blind Calibration Matrix chrF++ (${byLang.size} Languages × 4 Passages)` : `Matriz de Calibración Ciega chrF++ (${byLang.size} Lenguas × 4 Pasajes)`}</strong>` +
-      `<table style="width:100%;border-collapse:collapse;">` +
-      `<thead><tr><th style="padding:0.25rem 0.4rem;text-align:left;border-bottom:1px solid var(--card-border);">${isEn ? "Lang / Family" : "Lengua / Familia"}</th>${headerCells}</tr></thead>` +
+      `<section class="blind-calibration-chrf-card" data-blind-calibration-matrix="true" data-langs-count="${byLang.size}" data-books-count="${booksOrder.length}">` +
+      `<strong class="calib-matrix-title">🎯 ${isEn ? `Cross-Language Translation Benchmark (${byLang.size} Languages × 4 Passages)` : `Calibración Comparativa (${byLang.size} Lenguas × 4 Pasajes)`}</strong>` +
+      `<details class="tech-details">` +
+      `<summary>${isEn ? "Technical matrix (chrF++ · Gale-Church · MATTR50)" : "Matriz técnica (chrF++ · Gale-Church · MATTR50)"}</summary>` +
+      `<table class="calib-matrix-table">` +
+      `<thead><tr><th class="calib-th-lang">${isEn ? "Lang / Family" : "Lengua / Familia"}</th>${headerCells}</tr></thead>` +
       `<tbody>${bodyRows}</tbody>` +
       `</table>` +
+      `</details>` +
       `</section>`,
     );
   }
@@ -714,6 +725,16 @@ export async function hydrateStudyDrawerPanel(ctx = {}) {
     if (tskCard) tskCard.innerHTML = strata.tskHtml;
   }
 
+  await hydrateOnomasticonAndUbsPanels({
+    state,
+    dataLayer,
+    targetDoc,
+    getEl,
+    navigate,
+    hydrateBookAndChapterSelectors,
+    parseBiblicalCoordinateReference,
+  });
+
   // D3-R40 + D3-R45: Hidrata el Inspector WFST Multi-Ortográfico + Scriptio Continua + Conservación de Masa Léxica y Matriz chrF++ en #wfstAndScriptioContinuaHost.
   const wfstHost = getEl("wfstAndScriptioContinuaHost", targetDoc);
   if (wfstHost) {
@@ -763,17 +784,19 @@ export async function hydrateStudyDrawerPanel(ctx = {}) {
     const branchSel = getEl("branchProfileSelect", targetDoc);
     if (branchSel && typeof branchSel.addEventListener === "function" && !branchSel._branchSelBound) {
       branchSel._branchSelBound = true;
-      branchSel.addEventListener("change", (e) => {
+      branchSel.addEventListener("change", async (e) => {
         state.activeBranchId = String(e?.target?.value || branchSel.value || "");
-        hydrateStudyDrawerPanel(ctx);
+        await applyGrambankTypologyToPrint(ctx, state.activeBranchId, state.activeTypologyId || "");
+        await hydrateStudyDrawerPanel(ctx);
       });
     }
     const typoSel = getEl("typologySheetSelect", targetDoc);
     if (typoSel && typeof typoSel.addEventListener === "function" && !typoSel._typoSelBound) {
       typoSel._typoSelBound = true;
-      typoSel.addEventListener("change", (e) => {
+      typoSel.addEventListener("change", async (e) => {
         state.activeTypologyId = String(e?.target?.value || typoSel.value || "");
-        hydrateStudyDrawerPanel(ctx);
+        await applyGrambankTypologyToPrint(ctx, state.activeBranchId || "", state.activeTypologyId);
+        await hydrateStudyDrawerPanel(ctx);
       });
     }
   }

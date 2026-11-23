@@ -1,9 +1,11 @@
 // ============================================================================
-// web/mostrador/drawer_print.js — Gaveta 2 (Imprimir, 14 Ediciones PDF, Imposición 4n & Fotocopia Sauvola)
-// Decisiones D1-R41, D4-R41, D5-R41, D6-R41 · Costura Limpia ∂(C)=0
+// web/mostrador/drawer_print.js — Gaveta 2 (Imprimir, 14+2 Ediciones PDF, Imposición 4n & Fotocopia Sauvola)
+// Slimmed LCOM4 module (D1-R2, D4-R2, D5-R2, D6-R2): delegates social/photocopy
+// cards to social_and_photocopy_cards.js, unified printConfig & direct 14+2 +
+// Grambank wiring to print_config_projector.js, and stealth naming to stealth_filename.js.
 // ============================================================================
 
-import { escapeHtml, resolveRegionalBridgeLanguage21 } from "./bridge_and_chapter.js";
+import { escapeHtml } from "./bridge_and_chapter.js";
 import {
   buildRelativePdfAssetUrl,
   CANONICAL_16_MACRO_TANDAS,
@@ -12,8 +14,6 @@ import {
   computeFoliationLayout,
   computeKindlePrintBudget,
   dispatchTandaWorkerJob,
-  effectiveThreatClassWeb,
-  encodePdfBytesToDataUri,
   hydrateEditorialProfiles,
   listAll14PrintEditionsForLang,
   normalizeEditionSlug,
@@ -28,9 +28,7 @@ import {
   resolveCanonicalBlockForPassage,
   resolveMacroTandaForBlock,
   resolveRegionalPrintDefaults,
-  simulateFifthGenPhotocopySauvolaBilateral,
   simulateThirdGenPhotocopySauvola,
-  stealthNeutralFilenameWeb,
   syncDose2AndDose3LinksForActiveLang,
   syncPrintDrawerControlsFromEditionProfile,
 } from "./dosis.js";
@@ -40,223 +38,89 @@ import {
 } from "./bimodal_tanda_print.js";
 import { computeSaddleStitchImpositionPlan } from "./optical_lt.js";
 import {
-  GOSPEL_14_PERICOPES_SPEC,
-  REFUGE_4_SHEETS_PASSAGES_SPEC,
   buildEditionRenderSpecBytes16,
-  formatCanonical80BlocksChecklistEntries,
   resolveNumericEditionId,
   transduceTextToBrailleBrfAndUnicode,
 } from "./dosis_editions_catalog.js";
 import { applyHarelSubtabSelection } from "./drawer_study.js";
 import { isRtlLocale } from "./i18n.js";
+import { mountOfflineFontNoticeWithLocalImporter } from "./offline_font_bundle.js";
 import { decodeRfc8878RawZstdFrameJs } from "./offline_mesh.js";
 import {
-  evaluateOpticalSauvolaPhotocopyOracle,
-  filterEphemeralSubpixelIslands1px,
-  resolveOracleSpecimenDefaults,
-} from "./sauvola_canvas_oracle.js";
+  applyGrambankTypologyToPrint,
+  ensureDirectEditionsAndGrambankControls,
+  filterBookEntriesRange,
+  flattenLoadedBookChapters,
+  normalizeChapterMapToEntries,
+  resolveEditionSubstrateForProfile,
+  resolveGrambankTypologyPrintPreset,
+} from "./print_config_projector.js";
+import { resolveOracleSpecimenDefaults } from "./sauvola_canvas_oracle.js";
+import {
+  buildOpenGraphSocialCardSvg1200x630,
+  formatPhotocopySimBadgeText,
+  renderEditorialGraphicsAndPrintSpecsCard,
+  renderPhotocopyResilienceAndSocialCardHtml,
+  simulateKanungoSauvolaGeneration,
+} from "./social_and_photocopy_cards.js";
+import { isStealthFilenameActive, resolveSafeDownloadFilename } from "./stealth_filename.js";
+import { updatePrintConfig } from "./state_store.js";
 import {
   encodePaperFormatCode,
   resolveFontFileForLangOrScript,
   resolveTier0AssetFontFilename,
   runWorkerTandaJob,
 } from "./tanda_print_worker.js";
-export { runWorkerTandaJob };
 
-export const HAREL_PRINT_SUBTABS = ["doses", "imposition", "stationery"];
+export {
+  HAREL_PRINT_SUBTABS_CONST as HAREL_PRINT_SUBTABS,
+  applyGrambankTypologyToPrint,
+  buildOpenGraphSocialCardSvg1200x630,
+  formatPhotocopySimBadgeText,
+  mountOfflineFontNoticeWithLocalImporter,
+  renderEditorialGraphicsAndPrintSpecsCard,
+  renderPhotocopyResilienceAndSocialCardHtml,
+  resolveEditionSubstrateForProfile,
+  resolveGrambankTypologyPrintPreset,
+  runWorkerTandaJob,
+  simulateKanungoSauvolaGeneration,
+};
 
-function escHtml(val) {
-  return String(val ?? "")
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;");
-}
+const HAREL_PRINT_SUBTABS_CONST = ["doses", "imposition", "stationery"];
 
-import { mountOfflineFontNoticeWithLocalImporter } from "./offline_font_bundle.js";
-
-/**
- * Oráculo óptico real Kanungo + Filtro Bilateral + Binarización Adaptativa Shafait-Sauvola (`Float64Array` `O(1)`/px)
- * + Bit-Quads `2×2` de Gray (`SLICE-V2C-14`, `SLICE-EKO-V2I-13`: contornos reales `ttfBytes` compuestos incluidos).
- */
-export function simulateKanungoSauvolaGeneration(genIndex = 5, sauvolaK = 0.32, dpi = 300, extraOpts = {}) {
-  const report = evaluateOpticalSauvolaPhotocopyOracle({
-    genIndex,
-    sauvolaK,
-    dpi,
-    strokePt: extraOpts?.strokePt ?? 0.85,
-    lang: extraOpts?.lang || "es",
-    text: extraOpts?.text || "",
-    ttfBytes: extraOpts?.ttfBytes instanceof Uint8Array ? extraOpts.ttfBytes : null,
-    useBrowserCanvasIfAvailable: extraOpts?.useBrowserCanvasIfAvailable ?? true,
-  });
-  if (extraOpts?.rawBinaryMask instanceof Uint8Array) {
-    report.filteredMask = filterEphemeralSubpixelIslands1px(
-      extraOpts.rawBinaryMask,
-      report.width,
-      report.height,
-    );
+function toDownloadablePdfHref(pdfInput) {
+  const parts = Array.isArray(pdfInput)
+    ? pdfInput.filter((p) => p instanceof Uint8Array && p.byteLength > 0)
+    : pdfInput instanceof Uint8Array && pdfInput.byteLength > 0
+      ? [pdfInput]
+      : [];
+  if (parts.length === 0) return "";
+  if (
+    typeof globalThis.window !== "undefined" &&
+    typeof globalThis.Blob === "function" &&
+    typeof globalThis.URL?.createObjectURL === "function"
+  ) {
+    return globalThis.URL.createObjectURL(new globalThis.Blob(parts, { type: "application/pdf" }));
   }
-  return report;
+  const total = parts.reduce((acc, p) => acc + p.byteLength, 0);
+  const combined = new Uint8Array(total);
+  let off = 0;
+  for (const p of parts) {
+    combined.set(p, off);
+    off += p.byteLength;
+  }
+  return encodePdfBytesToDataUriSafe(combined);
 }
 
-/**
- * Formatea la etiqueta viva del simulador Kanungo-Sauvola para `#biblePhotocopySimBadge` y `#photocopyActiveStatusBadge` (`D4-B+` / `SLICE-101`).
- */
-export function formatPhotocopySimBadgeText(simResult = null) {
-  const sim = simResult || simulateKanungoSauvolaGeneration(5, 0.32, 300);
-  const genLabel = sim.genIndex === 0 ? "Original 300 DPI" : `${sim.genIndex}ª Gen`;
-  return `✅ ${genLabel} · Sauvola k=${Number(sim.sauvolaK).toFixed(2)} (Contraste ${sim.contrastLabel} ≥ 7.0:1 AAA · Δχ=${sim.eulerCharacteristicDelta})`;
+function encodePdfBytesToDataUriSafe(bytes) {
+  let bin = "";
+  for (let i = 0; i < bytes.byteLength; i += 1) {
+    bin += String.fromCharCode(bytes[i]);
+  }
+  const b64 = typeof globalThis.btoa === "function" ? globalThis.btoa(bin) : Buffer.from(bytes).toString("base64");
+  return `data:application/pdf;base64,${b64}`;
 }
 
-/**
- * Renderiza el Simulador Interactivo de Resiliencia Fotocopia de 5 Generaciones (Kanungo + Sauvola + Filtro Bilateral, `editorial-graphics`)
- * y la Tarjeta OpenGraph `1200×630` SVG Data-URI (`D8-B+` / `SLICE-97`).
- */
-export function renderEditorialGraphicsAndPrintSpecsCard({
-  book = "GEN",
-  chapter = 1,
-  verse = 1,
-  text = "En el principio creó Dios los cielos y la tierra.",
-  lang = "es",
-  activeGen = 5,
-  sauvolaK = 0.32,
-  uiLocale = "es",
-  ttfBytes = null,
-} = {}) {
-  const isEn = String(uiLocale || "es").trim().toLowerCase().startsWith("en");
-  const refLabel = `${String(book || "GEN").toUpperCase()} ${Number(chapter) || 1}:${Number(verse) || 1}`;
-  const cleanText = String(text || "En el principio creó Dios los cielos y la tierra.").slice(0, 140);
-  const activeSim = simulateKanungoSauvolaGeneration(activeGen, sauvolaK, 300, {
-    lang,
-    text: cleanText,
-    ttfBytes,
-  });
-  const fifthGenBilateral = simulateFifthGenPhotocopySauvolaBilateral({
-    strokePt: 0.85,
-    k: activeSim.sauvolaK,
-    R: 128,
-  });
-  const generations = [0, 1, 2, 3, 4, 5].map((g) => {
-    const defaultK = Number((0.2 + g * 0.024).toFixed(2));
-    const sim = simulateKanungoSauvolaGeneration(
-      g,
-      g === activeSim.genIndex ? activeSim.sauvolaK : defaultK,
-      300,
-      { lang, text: cleanText, ttfBytes },
-    );
-    return {
-      gen: g,
-      label:
-        g === 0
-          ? "Original 300 DPI"
-          : g === 5
-            ? isEn
-              ? "Rural Photocopy Gen 5"
-              : "Fotocopia Rural Gen 5"
-            : isEn
-              ? `Photocopy Gen ${g}`
-              : `Fotocopy Gen ${g}`.replace("Fotocopy", "Fotocopia"),
-      contrast: sim.contrastLabel,
-      sauvolaK: sim.sauvolaK.toFixed(2),
-      active: g === activeSim.genIndex,
-    };
-  });
-
-  const genBadges = generations
-    .map(
-      (g) =>
-        `<button type="button" class="uls-chip" data-photocopy-gen="${g.gen}" data-contrast-ratio="${g.contrast}" data-sauvola-k="${g.sauvolaK}" style="min-height:48px;min-width:48px;padding:8px 12px;box-sizing:border-box;font-size:0.73rem;cursor:pointer;${g.active ? "border:2px solid var(--accent-primary);font-weight:700;" : ""}">` +
-        `🖨️ <strong>${g.label}</strong>: ${g.contrast} ≥ 7.0:1 (k=${g.sauvolaK})` +
-        `</button>`,
-    )
-    .join(" ");
-
-  const stagesBadges = activeSim.stages5
-    .map(
-      (st) =>
-        `<span class="uls-badge" data-graphics-stage="${st}" style="font-size:0.69rem;padding:0.15rem 0.4rem;">${st}</span>`,
-    )
-    .join(" ");
-
-  const svgMarkup =
-    `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">` +
-    `<rect width="1200" height="630" fill="#12161f"/>` +
-    `<rect x="48" y="48" width="1104" height="534" rx="24" fill="#181e29" stroke="#d4a359" stroke-width="3"/>` +
-    `<text x="96" y="150" fill="#d4a359" font-family="serif" font-size="38" font-weight="bold">EKOVOZ · ${escHtml(refLabel)} (${escHtml(String(lang).toUpperCase())})</text>` +
-    `<text x="96" y="280" fill="#f8fafc" font-family="serif" font-size="42">${escHtml(cleanText)}</text>` +
-    `<text x="96" y="520" fill="#94a3b8" font-family="sans-serif" font-size="26">editorial-graphics · Gen ${activeSim.genIndex} (Sauvola k=${activeSim.sauvolaK.toFixed(2)}) · Contraste ${activeSim.contrastLabel} ≥ 7.0:1 AAA · Δχ=${activeSim.eulerCharacteristicDelta}</text>` +
-    `</svg>`;
-  const svgDataUrl = `data:image/svg+xml;utf8,${encodeURIComponent(svgMarkup)}`;
-
-  return (
-    `<div id="editorialGraphicsPhotocopyPanel" class="editorial-graphics-photocopy-card" ` +
-    `data-photocopy-generations="5" ` +
-    `data-active-photocopy-gen="${activeSim.genIndex}" ` +
-    `data-sauvola-k="${activeSim.sauvolaK.toFixed(2)}" ` +
-    `data-euler-delta="${activeSim.eulerCharacteristicDelta}" ` +
-    `data-min-contrast-wcag="${activeSim.contrastRatio}" ` +
-    `data-fifth-gen-min-contrast="${fifthGenBilateral.minContrastRatio}" ` +
-    `data-social-card-dimensions="${fifthGenBilateral.socialCardDimensions}" ` +
-    `style="padding:0.65rem;border-radius:10px;border:1px solid var(--card-border);background:var(--card-bg);font-size:0.79rem;">` +
-    `<div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:0.4rem;margin-bottom:0.4rem;">` +
-    `<strong>🖼️ ${isEn ? "Sovereign Graphics Engine (<code>editorial-graphics</code> · Kanungo + Sauvola 5th-Gen Photocopy)" : "Motor Gráfico Soberano (<code>editorial-graphics</code> · Kanungo + Sauvola 5ª Generación Fotocopia)"}</strong>` +
-    `<span id="photocopyActiveStatusBadge" class="uls-badge" data-sauvola-pass="true">✅ Gen ${activeSim.genIndex} ${isEn ? "Contrast" : "Contraste"} ${activeSim.contrastLabel} ≥ 7.0:1 AAA · Δχ=${activeSim.eulerCharacteristicDelta}</span>` +
-    `</div>` +
-    `<div style="display:flex;flex-wrap:wrap;gap:0.35rem;margin-bottom:0.45rem;">${genBadges}</div>` +
-    `<div style="display:flex;flex-wrap:wrap;align-items:center;gap:0.5rem;margin-bottom:0.45rem;">` +
-    `<label for="inputSauvolaK" style="font-size:0.74rem;font-weight:600;">🎛️ ${isEn ? `Sauvola Parameter k (${activeSim.sauvolaK.toFixed(2)}):` : `Parámetro Sauvola k (${activeSim.sauvolaK.toFixed(2)}):`}</label>` +
-    `<input id="inputSauvolaK" type="range" min="0.15" max="0.40" step="0.01" value="${activeSim.sauvolaK.toFixed(2)}" style="min-height:48px;min-width:140px;box-sizing:border-box;" />` +
-    `<div style="display:flex;flex-wrap:wrap;gap:0.25rem;">${stagesBadges}</div>` +
-    `</div>` +
-    `<div style="font-size:0.74rem;color:var(--text-secondary);">` +
-    `<img alt="Kanungo-Sauvola Preview" src="${svgDataUrl}" style="max-width:260px;height:auto;border-radius:8px;border:1px solid var(--card-border);display:block;margin-bottom:0.25rem;" />` +
-    `<span>${isEn ? "Optical legibility stress specimen verified." : "Espécimen óptico de resiliencia a fotocopia verificado."}</span>` +
-    `</div>` +
-    `</div>`
-  );
-}
-
-/**
- * Construye una tarjeta OpenGraph `1200×630` SVG autónoma para la gaveta de Compartir (`SLICE-EKO-V3UX-14`).
- */
-export function buildOpenGraphSocialCardSvg1200x630({
-  book = "GEN",
-  chapter = 1,
-  verse = 1,
-  text = "En el principio creó Dios los cielos y la tierra.",
-  lang = "es",
-  activeGen = 5,
-  sauvolaK = 0.32,
-  contrastLabel = "21.00:1",
-  eulerDelta = 0,
-} = {}) {
-  const refLabel = `${String(book || "GEN").toUpperCase()} ${Number(chapter) || 1}:${Number(verse) || 1}`;
-  const cleanText = String(text || "En el principio creó Dios los cielos y la tierra.").slice(0, 140);
-  const svgMarkup =
-    `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">` +
-    `<rect width="1200" height="630" fill="#12161f"/>` +
-    `<rect x="48" y="48" width="1104" height="534" rx="24" fill="#181e29" stroke="#d4a359" stroke-width="3"/>` +
-    `<text x="96" y="150" fill="#d4a359" font-family="serif" font-size="38" font-weight="bold">EKOVOZ · ${escHtml(refLabel)} (${escHtml(String(lang).toUpperCase())})</text>` +
-    `<text x="96" y="280" fill="#f8fafc" font-family="serif" font-size="42">${escHtml(cleanText)}</text>` +
-    `<text x="96" y="520" fill="#94a3b8" font-family="sans-serif" font-size="26">editorial-graphics · Gen ${Number(activeGen) || 0} (Sauvola k=${Number(sauvolaK || 0.32).toFixed(2)}) · Contraste ${escHtml(contrastLabel)} ≥ 7.0:1 AAA · Δχ=${Number(eulerDelta) || 0}</text>` +
-    `</svg>`;
-  return {
-    width: 1200,
-    height: 630,
-    dimensions: "1200x630",
-    svgMarkup,
-    svgDataUrl: `data:image/svg+xml;utf8,${encodeURIComponent(svgMarkup)}`,
-  };
-}
-
-export function renderPhotocopyResilienceAndSocialCardHtml(opts = {}) {
-  return renderEditorialGraphicsAndPrintSpecsCard(opts);
-}
-
-/**
- * Renderizado síncrono de la Gaveta 2 (Imprimir y Ediciones) (`D4-R41` / `D5-R41` / `D10-R38`).
- */
 export function renderPrintDrawerPanelsSyncInDrawer(ctx = {}) {
   const { state, targetDoc, getEl, hydratePrintDrawerPanels } = ctx;
   const liveBlock = resolveCanonicalBlockCode(state.book, state.chapter, state.verse);
@@ -319,12 +183,9 @@ export function renderPrintDrawerPanelsSyncInDrawer(ctx = {}) {
       });
     }
   }
-  const stealthActive =
-    Boolean(state.stealthMode) ||
-    effectiveThreatClassWeb(state.countryIso2 || "MX", state.effectiveCorpusLang || state.lang || "es") ===
-      "CLASS_C_STEALTH";
-  const stealthBlk = resolveCanonicalBlockCode(state.book || "GEN", state.chapter || 1, state.verse || 1);
-  const stealthBlkNum = Number(state.activeBlockNumber) || stealthBlk.blockNumber || 1;
+
+  const stealthActive = isStealthFilenameActive(state);
+  const stealthBlkNum = Number(state.activeBlockNumber) || liveBlock.blockNumber || 1;
   const chkStealth = getEl("chkStealthPackMode", targetDoc);
   if (chkStealth) {
     chkStealth.checked = Boolean(state.stealthMode);
@@ -333,22 +194,28 @@ export function renderPrintDrawerPanelsSyncInDrawer(ctx = {}) {
       chkStealth.addEventListener("change", (ev) => {
         const nextStealth = Boolean(ev?.target?.checked ?? chkStealth.checked);
         state.stealthMode = nextStealth;
-        ctx.store?.setState?.({ stealthMode: nextStealth }, "stealth");
-        targetDoc?.documentElement?.setAttribute?.("data-stealth-mode", nextStealth ? "true" : "false");
+        if (ctx.store) {
+          ctx.store.setState({ stealthMode: nextStealth }, "stealth");
+        } else {
+          targetDoc?.documentElement?.setAttribute?.("data-stealth-mode", nextStealth ? "true" : "false");
+        }
         renderPrintDrawerPanelsSyncInDrawer(ctx);
       });
     }
   }
   if (stealthActive) {
-    const neutralPdfName = stealthNeutralFilenameWeb(stealthBlkNum, "pdf");
-    for (const lid of ["linkDose2BlockPdf", "linkDose3FullBiblePdf"]) {
+    for (const [lid, kind] of [
+      ["linkDose2BlockPdf", "dosis2"],
+      ["linkDose3FullBiblePdf", "dosis3"],
+    ]) {
       const lEl = getEl(lid, targetDoc);
       if (lEl) {
-        lEl.setAttribute?.("download", neutralPdfName);
+        lEl.setAttribute?.("download", resolveSafeDownloadFilename(state, { kind, blockNumber: stealthBlkNum }));
         lEl.setAttribute?.("data-stealth-mode", "true");
       }
     }
   }
+
   const btnPagedMedia = getEl("btnPrintCssPagedMedia", targetDoc);
   if (btnPagedMedia && typeof btnPagedMedia.addEventListener === "function" && !btnPagedMedia._pagedMediaBound) {
     btnPagedMedia._pagedMediaBound = true;
@@ -369,14 +236,7 @@ export function renderPrintDrawerPanelsSyncInDrawer(ctx = {}) {
         duplex: state.duplex !== false,
         dir: isRtlLocale(state.lang) ? "rtl" : "ltr",
       });
-      state.lastCssPagedMediaHtml = pagedHtml;
-      const curStealth =
-        Boolean(state.stealthMode) ||
-        effectiveThreatClassWeb(state.countryIso2 || "MX", state.lang || "es") === "CLASS_C_STEALTH";
-      const curBlk = resolveCanonicalBlockCode(state.book || "GEN", state.chapter || 1, state.verse || 1);
-      const dlFilename = curStealth
-        ? stealthNeutralFilenameWeb(Number(state.activeBlockNumber) || curBlk.blockNumber || 1, "html")
-        : `ekovoz-${String(state.lang || "es")}-${String(state.book || "gen").toLowerCase()}-${Number(state.chapter) || 1}-paged.html`;
+      const dlFilename = resolveSafeDownloadFilename(state, { kind: "paged_media", blockNumber: stealthBlkNum });
       btnPagedMedia.setAttribute?.("data-paged-media-ready", "true");
       btnPagedMedia.setAttribute?.("data-paged-media-filename", dlFilename);
       const dataUrl = `data:text/html;charset=utf-8,${encodeURIComponent(pagedHtml)}`;
@@ -394,6 +254,7 @@ export function renderPrintDrawerPanelsSyncInDrawer(ctx = {}) {
       }
     });
   }
+
   const isEn = String(state.uiLocale || "es").trim().toLowerCase().startsWith("en");
   const regionalDefaults = resolveRegionalPrintDefaults(state.countryIso2 || "MX", {
     lang: state.lang,
@@ -401,11 +262,16 @@ export function renderPrintDrawerPanelsSyncInDrawer(ctx = {}) {
   });
   const effectivePaper = state.paperFormat || regionalDefaults.paperFormat || regionalDefaults.paper || paperForRegion(state.countryIso2 || "MX");
   const effectiveEdition = state.edition || regionalDefaults.edition || chooseEdition(["2col-a4", "2col-letter"], effectivePaper);
+  const activeOrientation = String(state.orientation || "portrait").toLowerCase() === "landscape" ? "landscape" : "portrait";
+  state.orientation = activeOrientation;
+  const orientSel = getEl("kindleOrientationSelector", targetDoc);
+  if (orientSel) orientSel.value = activeOrientation;
   const budget = computeKindlePrintBudget({
     fontPt: state.fontSizePt || 9.5,
     columns: state.columns || 2,
-    orientation: state.orientation || "landscape",
+    orientation: activeOrientation,
     paper: effectivePaper || "a4",
+    uiLocale: state.uiLocale || "es",
   });
   const budgetOutput = getEl("kindleBudgetOutput", targetDoc);
   if (budgetOutput) {
@@ -416,6 +282,11 @@ export function renderPrintDrawerPanelsSyncInDrawer(ctx = {}) {
       budgetOutput.setAttribute("data-effective-columns", String(budget.effectiveColumns));
     }
   }
+
+  ensureDirectEditionsAndGrambankControls({
+    ...ctx,
+    onConfigChanged: () => renderPrintDrawerPanelsSyncInDrawer(ctx),
+  });
 
   for (const [btnId, tabName] of [
     ["btnPrintSubtabDoses", "doses"],
@@ -443,15 +314,7 @@ export function renderPrintDrawerPanelsSyncInDrawer(ctx = {}) {
       pageCount: 16,
       dir: isRtlLocale(state.lang) ? "rtl" : "ltr",
     });
-    const resolvedBlock = resolveCanonicalBlockForPassage(state.book, state.chapter);
-    // D6-R44: al navegar a otro libro/capítulo, el bloque canónico (1..80) se re-sincroniza con el pasaje activo;
-    // la selección manual del usuario se respeta mientras permanezca en el mismo pasaje.
-    const passageKey = `${state.book}.${state.chapter}`;
-    if (state.activeBlockPassageKey !== passageKey) {
-      state.activeBlockPassageKey = passageKey;
-      state.activeBlockNumber = resolvedBlock.blockNumber || 1;
-    }
-    const activeBlockNum = Number(state.activeBlockNumber) || resolvedBlock.blockNumber || 1;
+    const activeBlockNum = Number(state.activeBlockNumber) || liveBlock.blockNumber || 1;
     const activeMacroTanda =
       CANONICAL_16_MACRO_TANDAS[
       Math.max(1, Math.min(16, Number(state.activeMacroTandaNumber) || resolveMacroTandaForBlock(activeBlockNum).macroTandaNumber)) - 1
@@ -486,10 +349,10 @@ export function renderPrintDrawerPanelsSyncInDrawer(ctx = {}) {
       { nemethMath: Boolean(nemethCheckedAttr) },
     );
     const brfHref = `data:text/plain;charset=utf-8,${encodeURIComponent(String(brfResult?.brf || ""))}`;
-    const brfFilename = `${String(state.lang || "es")}_${String(state.book || "GEN")}_${Number(state.chapter) || 1}_ed11_b70.brf`;
+    const brfFilename = resolveSafeDownloadFilename(state, { kind: "braille_brf", blockNumber: stealthBlkNum });
     const nemethToggleHtml =
-      `<div style="display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:6px;">` +
-      `<label class="uls-chip" style="display:inline-flex;align-items:center;gap:6px;cursor:pointer;">` +
+      `<div class="braille-actions-row">` +
+      `<label class="hig-toggle-row uls-chip">` +
       `<input type="checkbox" id="chkBrailleNemethToggle" data-action="toggle-braille-nemeth" data-edition-slug="11_braille_nemeth_b70"${nemethCheckedAttr} />` +
       `<span>${escapeHtml(nemethLabel)}</span></label>` +
       `<a id="btnDownloadBrailleBrf" class="uls-chip" href="${brfHref}" download="${escapeHtml(brfFilename)}" data-edition-slug="11_braille_nemeth_b70">` +
@@ -499,7 +362,8 @@ export function renderPrintDrawerPanelsSyncInDrawer(ctx = {}) {
       slug,
     )}" data-foliation-mode="${escapeHtml(foliation.mode)}" data-binding-edge="${escapeHtml(
       foliation.bindingEdge,
-    )}"><strong>${duplexHeader}</strong><p style="margin:4px 0 0;font-size:0.84rem;">${duplexBody}</p>${nemethToggleHtml}${multiSigHtml}${macroTandas16Html}</div>`;
+    )}"><strong>${duplexHeader}</strong><p class="duplex-summary-text">${duplexBody}</p>${nemethToggleHtml}${multiSigHtml}${macroTandas16Html}</div>`;
+
     const chkNemeth = getEl("chkBrailleNemethToggle", targetDoc);
     if (chkNemeth && typeof chkNemeth.addEventListener === "function" && !chkNemeth._nemethBound) {
       chkNemeth._nemethBound = true;
@@ -515,7 +379,7 @@ export function renderPrintDrawerPanelsSyncInDrawer(ctx = {}) {
           state.activePrintProfileId = restore;
           state.edition = restore;
         }
-        hydratePrintDrawerPanels(targetDoc);
+        hydratePrintDrawerPanels?.(targetDoc);
       });
     }
     const macroSel = getEl("macroTanda16Select", targetDoc);
@@ -526,7 +390,7 @@ export function renderPrintDrawerPanelsSyncInDrawer(ctx = {}) {
         state.activeMacroTandaNumber = chosenMt;
         state.activeBlockNumber = (chosenMt - 1) * 5 + 1;
         state.generateFull66BookBible = false;
-        hydratePrintDrawerPanels(targetDoc);
+        hydratePrintDrawerPanels?.(targetDoc);
       });
     }
     const btnGenAll16 = getEl("btnGenerateAll16MacroTandas", targetDoc);
@@ -568,7 +432,7 @@ export function renderPrintDrawerPanelsSyncInDrawer(ctx = {}) {
       blockSel.addEventListener("change", (e) => {
         state.activeBlockNumber = Math.max(1, Math.min(80, Number(e?.target?.value || blockSel.value) || 1));
         state.generateFull66BookBible = false;
-        hydratePrintDrawerPanels(targetDoc);
+        hydratePrintDrawerPanels?.(targetDoc);
       });
     }
   }
@@ -668,16 +532,12 @@ export function renderPrintDrawerPanelsSyncInDrawer(ctx = {}) {
       dir: isRtlLocale(curLang) ? "rtl" : "ltr",
     });
     const postalHref = `data:text/html;charset=utf-8,${encodeURIComponent(postalHtml)}`;
-    const postalDownload = stealthActive
-      ? stealthNeutralFilenameWeb(stealthBlkNum, "html")
-      : `postal-a6-${curLang}-${String(state.book || "gen").toLowerCase()}-${Number(state.chapter) || 1}-${Number(state.verse) || 1}.html`;
+    const postalDownload = resolveSafeDownloadFilename(state, { kind: "postal_a6", blockNumber: stealthBlkNum });
     stationeryPanel.innerHTML =
-      `<div class="mostrador-stationery-card" data-osis="${escapeHtml(
-        `${state.book}.${state.chapter}.${state.verse}`,
-      )}" style="display:flex;flex-direction:column;gap:0.45rem;">` +
+      `<div class="mostrador-stationery-card" data-osis="${escapeHtml(`${state.book}.${state.chapter}.${state.verse}`)}">` +
       `<strong>${isEn ? "A6 Typographic Postcard" : "Postal tipográfica A6"} (${escapeHtml(refLabel)})</strong>` +
-      `<blockquote style="margin:4px 0 0;font-style:italic;">"${escapeHtml(verseText)}"</blockquote>` +
-      `<a id="btnDownloadStationeryPostcard" class="uls-chip" href="${postalHref}" download="${escapeHtml(postalDownload)}" style="min-height:48px;min-width:48px;align-self:flex-start;display:inline-flex;align-items:center;padding:8px 12px;text-decoration:none;font-size:0.78rem;">✉️ ${isEn ? "Download A6 Postcard (HTML)" : "Descargar Postal A6 (HTML)"}</a>` +
+      `<blockquote class="stationery-quote">"${escapeHtml(verseText)}"</blockquote>` +
+      `<a id="btnDownloadStationeryPostcard" class="uls-chip stationery-download-btn" href="${postalHref}" download="${escapeHtml(postalDownload)}">✉️ ${isEn ? "Download A6 Postcard (HTML)" : "Descargar Postal A6 (HTML)"}</a>` +
       `</div>`;
   }
 
@@ -689,6 +549,7 @@ export function renderPrintDrawerPanelsSyncInDrawer(ctx = {}) {
       pageCount: 16,
       columns: state.columns || 2,
       fontPt: state.fontSizePt || 9.5,
+      orientation: state.orientation || "portrait",
       dir: isRtlLocale(state.lang) ? "rtl" : "ltr",
       uiLocale: state.uiLocale || "es",
     });
@@ -699,6 +560,8 @@ export function renderPrintDrawerPanelsSyncInDrawer(ctx = {}) {
     btnCalcImp._printImpBound = true;
     btnCalcImp.addEventListener("click", () => {
       state.activePrintPreviewMode = "imposition";
+      const curIsEn = String(state.uiLocale || "es").trim().toLowerCase().startsWith("en");
+      const curOrientation = String(state.orientation || "portrait").toLowerCase() === "landscape" ? "landscape" : "portrait";
       const imp = computeSaddleStitchImpositionPlan({
         totalPages: 16,
         paperThicknessMm: 0.09,
@@ -709,8 +572,9 @@ export function renderPrintDrawerPanelsSyncInDrawer(ctx = {}) {
         .join(" · ");
       const receiptHtml =
         `<div class="audit-receipt" data-action="calculate-imposition" data-integrity="${imp.integrityVerified}" data-rtl="${imp.rtl}">` +
-        `📐 <strong>Imposición Saddle-Stitch 4n (${imp.paddedPages} págs · ${imp.sheetCount} pliegos · ${imp.rtl ? "RTL Lomo Invertido" : "LTR"}):</strong> ` +
-        `Suma constante=${imp.folioSumConstant} · Creep máx=${imp.maxCreepMm}mm · ${escapeHtml(sheetsSummary)}</div>`;
+        (curIsEn
+          ? `📐 <strong>4n Saddle-Stitch Imposition (${imp.paddedPages} pp · ${imp.sheetCount} sheets · ${imp.rtl ? "RTL Reversed Spine" : "LTR"}):</strong> Constant sum=${imp.folioSumConstant} · Max creep=${imp.maxCreepMm}mm · ${escapeHtml(sheetsSummary)}</div>`
+          : `📐 <strong>Imposición Saddle-Stitch 4n (${imp.paddedPages} págs · ${imp.sheetCount} pliegos · ${imp.rtl ? "RTL Lomo Invertido" : "LTR"}):</strong> Suma constante=${imp.folioSumConstant} · Creep máx=${imp.maxCreepMm}mm · ${escapeHtml(sheetsSummary)}</div>`);
       const host = getEl("impositionBookletPreviewHost", targetDoc);
       if (host) {
         host.setAttribute("data-audit-action", "calculate-imposition");
@@ -721,6 +585,7 @@ export function renderPrintDrawerPanelsSyncInDrawer(ctx = {}) {
             pageCount: 16,
             columns: state.columns || 2,
             fontPt: state.fontSizePt || 9.5,
+            orientation: curOrientation,
             dir: isRtlLocale(state.lang) ? "rtl" : "ltr",
             uiLocale: state.uiLocale || "es",
           }) + receiptHtml;
@@ -733,15 +598,20 @@ export function renderPrintDrawerPanelsSyncInDrawer(ctx = {}) {
     btnCalcLayout._printLayoutBound = true;
     btnCalcLayout.addEventListener("click", () => {
       state.activePrintPreviewMode = "layout";
-      const budget = computeKindlePrintBudget({
+      const curIsEn = String(state.uiLocale || "es").trim().toLowerCase().startsWith("en");
+      const curOrientation = String(state.orientation || "portrait").toLowerCase() === "landscape" ? "landscape" : "portrait";
+      const budgetCalc = computeKindlePrintBudget({
         fontPt: state.fontSizePt || 9.5,
         columns: state.columns || 2,
-        orientation: state.orientation || "landscape",
+        orientation: curOrientation,
         paper: state.paperFormat || "a4",
+        uiLocale: state.uiLocale || "es",
       });
       const receiptHtml =
-        `<div class="audit-receipt" data-action="calculate-layout" data-cpl="${budget.cpl}">` +
-        `📏 <strong>Invariante Geométrico A4/Letter Verificado:</strong> ${escapeHtml(budget.summaryText)} (8 Candados Tipográficos en verde).</div>`;
+        `<div class="audit-receipt" data-action="calculate-layout" data-cpl="${budgetCalc.cpl}">` +
+        (curIsEn
+          ? `📏 <strong>Verified Page Geometry:</strong> ${escapeHtml(budgetCalc.summaryText)}.</div>`
+          : `📏 <strong>Márgenes Verificados:</strong> ${escapeHtml(budgetCalc.summaryText)}.</div>`);
       const host = getEl("impositionBookletPreviewHost", targetDoc);
       if (host) {
         host.setAttribute("data-audit-action", "calculate-layout");
@@ -752,6 +622,7 @@ export function renderPrintDrawerPanelsSyncInDrawer(ctx = {}) {
             pageCount: 16,
             columns: state.columns || 2,
             fontPt: state.fontSizePt || 9.5,
+            orientation: curOrientation,
             dir: isRtlLocale(state.lang) ? "rtl" : "ltr",
             uiLocale: state.uiLocale || "es",
           }) + receiptHtml;
@@ -835,7 +706,7 @@ export function renderPrintDrawerPanelsSyncInDrawer(ctx = {}) {
           : "";
         return (
           `<a class="uls-chip print-edition-card${isSelected ? " is-selected" : ""}" aria-pressed="${isSelected ? "true" : "false"
-          }" style="text-decoration:none;" href="${escapeHtml(
+          }" href="${escapeHtml(
             resolvedHref,
           )}" data-profile-id="${escapeHtml(cardId)}" data-edition-slug="${escapeHtml(
             ed.editionSlug,
@@ -851,6 +722,7 @@ export function renderPrintDrawerPanelsSyncInDrawer(ctx = {}) {
         );
       })
       .join("");
+
     if (typeof catalogGrid.addEventListener === "function" && !catalogGrid._editionsBound) {
       catalogGrid._editionsBound = true;
       catalogGrid.addEventListener("click", async (e) => {
@@ -875,11 +747,22 @@ export function renderPrintDrawerPanelsSyncInDrawer(ctx = {}) {
         if (!isFieldCard) {
           const synced = syncPrintDrawerControlsFromEditionProfile(profId, targetDoc);
           state.activePrintProfileId = synced.profileId;
+          state.edition = synced.profileId;
           state.fontSizePt = synced.fontPt;
           state.columns = synced.columns;
           state.paperFormat = synced.paper;
           state.orientation = synced.orientation;
           state.foliationMode = synced.foliationMode;
+          if (ctx.store) {
+            updatePrintConfig(ctx.store, {
+              edition: synced.profileId,
+              fontSizePt: synced.fontPt,
+              columns: synced.columns,
+              paperFormat: synced.paper,
+              orientation: synced.orientation,
+              foliationMode: synced.foliationMode,
+            });
+          }
           cols = synced.columns;
           fontPt = synced.fontPt;
           paper = synced.paper;
@@ -935,7 +818,7 @@ export function renderPrintDrawerPanelsSyncInDrawer(ctx = {}) {
                 }
               }
               state.brfObjectUrls[cacheKey] = resolvedBrfHref;
-              const brfFilename = `ekovoz-${curLang}-${String(substrate.book || state.book || "GEN").toLowerCase()}-braille.brf`;
+              const brfFilename = resolveSafeDownloadFilename(state, { kind: "braille_brf", blockNumber: stealthBlkNum });
               cardEl.setAttribute?.("data-brf-href", resolvedBrfHref);
               cardEl.setAttribute?.("data-brf-download", brfFilename);
               if (resolvedBrfHref && typeof targetDoc?.createElement === "function") {
@@ -944,8 +827,6 @@ export function renderPrintDrawerPanelsSyncInDrawer(ctx = {}) {
                   if (brfAnchor) {
                     brfAnchor.href = resolvedBrfHref;
                     brfAnchor.download = brfFilename;
-                    brfAnchor.setAttribute?.("href", resolvedBrfHref);
-                    brfAnchor.setAttribute?.("download", brfFilename);
                     brfAnchor.click?.();
                   }
                 } catch {
@@ -1002,7 +883,7 @@ export function renderPrintDrawerPanelsSyncInDrawer(ctx = {}) {
                 paper: substrate.paper,
                 stealthMode: Boolean(state.stealthMode),
                 blockNumber: stealthBlkNum,
-                stealthFilename: stealthActive ? stealthNeutralFilenameWeb(stealthBlkNum, "html") : "",
+                stealthFilename: stealthActive ? resolveSafeDownloadFilename(state, { kind: "paged_media", blockNumber: stealthBlkNum }) : "",
               });
               if (localFb.isFallback && localFb.href) {
                 cardEl.href = localFb.href;
@@ -1024,9 +905,10 @@ export function renderPrintDrawerPanelsSyncInDrawer(ctx = {}) {
               state.editionObjectUrls[profId] = nextHref;
               cardEl.href = nextHref;
               cardEl.setAttribute?.("href", nextHref);
-              if (stealthActive) {
-                cardEl.setAttribute?.("download", stealthNeutralFilenameWeb(stealthBlkNum, "pdf"));
-              }
+              cardEl.setAttribute?.(
+                "download",
+                resolveSafeDownloadFilename(state, { kind: "edition_pdf", blockNumber: stealthBlkNum, defaultName: `${profId}-${curLang}.pdf` }),
+              );
               if (typeof cardEl.click === "function") {
                 cardEl._directSynthesizedClick = true;
                 try {
@@ -1049,7 +931,7 @@ export function renderPrintDrawerPanelsSyncInDrawer(ctx = {}) {
                 paper: substrate.paper,
                 stealthMode: Boolean(state.stealthMode),
                 blockNumber: stealthBlkNum,
-                stealthFilename: stealthActive ? stealthNeutralFilenameWeb(stealthBlkNum, "html") : "",
+                stealthFilename: stealthActive ? resolveSafeDownloadFilename(state, { kind: "paged_media", blockNumber: stealthBlkNum }) : "",
               });
               if (localFb.isFallback && localFb.href) {
                 cardEl.href = localFb.href;
@@ -1072,344 +954,6 @@ export function renderPrintDrawerPanelsSyncInDrawer(ctx = {}) {
       });
     }
   }
-}
-
-function normalizeChapterMapToEntries(bookCode, chapterNum, versesMap) {
-  if (Array.isArray(versesMap)) return versesMap;
-  if (!versesMap || typeof versesMap !== "object") return [];
-  return Object.keys(versesMap)
-    .sort((a, b) => (Number(a) || 0) - (Number(b) || 0))
-    .map((vNum) => ({ ref: `${bookCode} ${chapterNum}:${vNum}`, text: String(versesMap[vNum] ?? "") }));
-}
-
-function filterBookEntriesRange(entries, bookCode, minCh = 1, maxCh = 999, minV = 1, maxV = 999) {
-  const out = [];
-  for (const item of entries) {
-    const m = String(item?.ref || "").match(/^([A-Z0-9]+)\s+(\d+):(\d+)/i);
-    if (!m) continue;
-    if (String(m[1]).toUpperCase() !== String(bookCode).toUpperCase()) continue;
-    const ch = Number(m[2]);
-    const v = Number(m[3]);
-    if (ch < minCh || ch > maxCh) continue;
-    if (ch === minCh && v < minV) continue;
-    if (ch === maxCh && v > maxV) continue;
-    out.push(item);
-  }
-  return out;
-}
-
-export async function resolveEditionSubstrateForProfile(
-  profId,
-  {
-    state = {},
-    dataLayer = null,
-    curLang = "es",
-    activeBook = "GEN",
-    activeChapter = 1,
-    columns = 2,
-    fontPt = 9.5,
-    paper = "a4",
-    orientation = "portrait",
-    booklet4n = false,
-  } = {},
-) {
-  const id = String(profId || "02_2col_pastoral").trim();
-  const baseVerses =
-    Array.isArray(state.fullBookVerses) && state.fullBookVerses.length > 0
-      ? state.fullBookVerses
-      : normalizeChapterMapToEntries(activeBook, activeChapter, state.lastNavResult?.chapter?.verses || {});
-
-  if (id.includes("checklist_80_bloques")) {
-    return {
-      book: "GEN",
-      chapter: 1,
-      verses: formatCanonical80BlocksChecklistEntries(curLang),
-      bridgeVerses: null,
-      editionMode: 0,
-      columns: 2,
-      fontPt: 9.0,
-      paper: "a4",
-      orientation: "portrait",
-      booklet4n: false,
-      brfHref: "",
-    };
-  }
-
-  const loadBookEntries = async (langCode, bookCode) => {
-    if (typeof dataLayer?.loadBookFromEkpackRange !== "function") return [];
-    const res = await dataLayer.loadBookFromEkpackRange(langCode, bookCode);
-    return String(res?.status || "").toLowerCase() === "ready"
-      ? flattenLoadedBookChapters(bookCode, res.data?.chapters)
-      : [];
-  };
-
-  if (id.includes("refugio_4_hojas")) {
-    const bridgeLang = curLang === "es" ? "en" : "es";
-    const vernOut = [];
-    const bridgeOut = [];
-    const vernByBook = new Map();
-    const bridgeByBook = new Map();
-    for (const p of REFUGE_4_SHEETS_PASSAGES_SPEC) {
-      if (!vernByBook.has(p.book)) {
-        vernByBook.set(p.book, await loadBookEntries(curLang, p.book));
-        bridgeByBook.set(p.book, await loadBookEntries(bridgeLang, p.book));
-      }
-      for (const item of filterBookEntriesRange(vernByBook.get(p.book), p.book, p.chapter, p.chapter, p.startVerse, p.endVerse)) {
-        vernOut.push(item);
-      }
-      for (const item of filterBookEntriesRange(bridgeByBook.get(p.book), p.book, p.chapter, p.chapter, p.startVerse, p.endVerse)) {
-        bridgeOut.push(item);
-      }
-    }
-    return {
-      book: "GEN",
-      chapter: 1,
-      verses: vernOut.length > 0 ? vernOut : baseVerses,
-      bridgeVerses: bridgeOut.length > 0 ? bridgeOut : null,
-      editionMode: 15,
-      columns: 2,
-      fontPt: 8.5,
-      paper: "a4",
-      orientation: "portrait",
-      booklet4n: true,
-      brfHref: "",
-    };
-  }
-
-  if (id === "10_evangelio_14_pericopas") {
-    const gospelOut = [];
-    const gospelByBook = new Map();
-    for (const p of GOSPEL_14_PERICOPES_SPEC) {
-      if (!gospelByBook.has(p.book)) {
-        gospelByBook.set(p.book, await loadBookEntries(curLang, p.book));
-      }
-      const slice = filterBookEntriesRange(gospelByBook.get(p.book), p.book, p.chapter, p.chapter, p.startVerse, p.endVerse);
-      if (slice.length > 0) {
-        gospelOut.push({ ref: `${p.book} ${p.chapter}:${p.startVerse}`, text: `[${p.title}] ${slice[0].text}` });
-        for (let k = 1; k < slice.length; k += 1) gospelOut.push(slice[k]);
-      }
-    }
-    return {
-      book: "JHN",
-      chapter: 1,
-      verses: gospelOut.length > 0 ? gospelOut : baseVerses,
-      bridgeVerses: null,
-      editionMode: 0,
-      columns: 2,
-      fontPt: 10.0,
-      paper: "a4",
-      orientation: "portrait",
-      booklet4n: true,
-      brfHref: "",
-    };
-  }
-
-  if (id === "06_bilingue_paralela") {
-    const resolvedBridge =
-      typeof resolveRegionalBridgeLanguage21 === "function"
-        ? resolveRegionalBridgeLanguage21(curLang, state.countryIso2 || "MX")
-        : null;
-    const bridgeLang =
-      String(
-        state.lastBridgeLang ||
-        resolvedBridge?.code ||
-        (curLang === "es" ? "en" : "es"),
-      )
-        .trim() || "es";
-    let bridgeEntries = await loadBookEntries(bridgeLang, activeBook);
-    const cachedBridgeVerses = state.lastBridgeChapter?.verses || state.lastNavResult?.bridgeChapter?.verses;
-    if (bridgeEntries.length === 0 && cachedBridgeVerses) {
-      bridgeEntries = normalizeChapterMapToEntries(activeBook, activeChapter, cachedBridgeVerses);
-    }
-    return {
-      book: activeBook,
-      chapter: activeChapter,
-      verses: baseVerses,
-      bridgeVerses: bridgeEntries.length > 0 ? bridgeEntries : null,
-      editionMode: 15,
-      maternalWidthPct: 62,
-      bridgeWidthPct: 38,
-      bilingualRatio: "62/38",
-      columns: 2,
-      fontPt: 9.5,
-      paper,
-      orientation,
-      booklet4n,
-      brfHref: "",
-    };
-  }
-
-  if (id === "05_interlineal_estudio") {
-    const chapEntries = normalizeChapterMapToEntries(
-      activeBook,
-      activeChapter,
-      state.lastNavResult?.chapter?.verses || {},
-    );
-    const activeSet = chapEntries.length > 0 ? chapEntries : baseVerses;
-    let matrixRes = state.lastNavResult?.matrix || state.lastNavResult?.chapterMatrix || null;
-    if (!matrixRes && typeof dataLayer?.loadChapterMatrix === "function") {
-      try {
-        matrixRes = await dataLayer.loadChapterMatrix(activeBook, activeChapter);
-      } catch {
-        matrixRes = null;
-      }
-    }
-    const matrixRows = Array.isArray(matrixRes?.rows) ? matrixRes.rows : [];
-    const interlinearVerses = activeSet.map((entry) => {
-      const vMatch = String(entry.ref || "").match(/:(\d+)$/);
-      const vNum = Number(vMatch ? vMatch[1] : 1) || 1;
-      const tokens = matrixRows.filter((r) =>
-        Array.isArray(r) ? Number(r[0]) === vNum : Number(r?.verse ?? r?.v ?? 0) === vNum,
-      );
-      if (tokens.length === 0) {
-        const pendingLabel = curLang.startsWith("en")
-          ? "Tier-0 matrix loading"
-          : "Matriz Tier-0 cargándose";
-        return { ref: entry.ref, text: `${entry.text} ‖ (${pendingLabel})` };
-      }
-      const colsSummary = tokens
-        .map((tk, tkIdx) => {
-          const c02Pos = `w${tkIdx + 1}`;
-          const surf = Array.isArray(tk) ? tk[1] || "" : tk.surface || tk.c03 || "";
-          const lem = Array.isArray(tk) ? tk[2] || "" : tk.lemma || tk.c04 || "";
-          const strong = Array.isArray(tk) ? tk[3] || "" : tk.strong || tk.c05 || "";
-          const morph = Array.isArray(tk) ? tk[4] || "" : tk.morph || tk.c06 || "";
-          const domain = Array.isArray(tk) ? tk[5] || "" : tk.domain || tk.c07 || "";
-          const glossEn = Array.isArray(tk) ? tk[6] || "" : tk.gloss_en || tk.c08 || "";
-          const glossEs = Array.isArray(tk) ? tk[7] || "" : tk.gloss_es || tk.gloss || tk.c09 || "";
-          const gloss = glossEn && glossEs && glossEn !== glossEs
-            ? (curLang.startsWith("en") ? `${glossEn}/${glossEs}` : `${glossEs}/${glossEn}`)
-            : (glossEs || glossEn);
-          const clause = Array.isArray(tk) ? tk[8] || "" : tk.clause || tk.c10 || "";
-          const c11 = Array.isArray(tk) ? tk[9] || "" : tk.c11 || "";
-          const c12 = Array.isArray(tk) ? tk[10] || "" : tk.c12 || "";
-          const c13 = Array.isArray(tk) ? tk[11] || "" : tk.c13 || "";
-          const c14 = Array.isArray(tk) ? tk[12] || "" : tk.c14 || "";
-          const translitAscii = Array.isArray(tk) && tk[14] && tk[13] && tk[14] !== tk[13] ? tk[13] : "";
-          const translit = Array.isArray(tk) ? tk[14] || tk[13] || "" : tk.translit || tk.c15 || "";
-          const extras = [domain, clause, c11, c12, c13, c14, translitAscii, translit].filter(Boolean);
-          return extras.length > 0
-            ? `[${surf}|${lem}|${strong}|${morph}|${c02Pos}|${gloss}|${extras.join("|")}]`
-            : `[${surf}|${lem}|${strong}|${morph}|${c02Pos}|${gloss}]`;
-        })
-        .join(" ");
-      return { ref: entry.ref, text: `${entry.text} ‖ ${colsSummary}` };
-    });
-    const isNtInterlinear = /^(MAT|MRK|MAR|LUK|JHN|ACT|ROM|1CO|2CO|GAL|EPH|PHP|COL|1TH|2TH|1TI|2TI|TIT|PHM|HEB|JAS|1PE|2PE|1JN|2JN|3JN|JUD|REV)$/i.test(
-      String(activeBook || "").trim(),
-    );
-    return {
-      book: activeBook,
-      chapter: activeChapter,
-      verses: interlinearVerses,
-      bridgeVerses: null,
-      bridgeFontFile: isNtInterlinear ? "EBGaramond-Greek-Biblical.ttf" : "Cardo-Hebrew-Biblical.ttf",
-      tertiaryFontFile: isNtInterlinear ? "Cardo-Hebrew-Biblical.ttf" : "EBGaramond-Greek-Biblical.ttf",
-      editionMode: 0,
-      columns: 1,
-      fontPt: 9.0,
-      paper: "a4",
-      orientation: "portrait",
-      booklet4n: false,
-      brfAscii: "",
-      brfHref: "",
-    };
-  }
-
-  if (id === "11_braille_nemeth_b70") {
-    const braille = transduceTextToBrailleBrfAndUnicode(baseVerses, {
-      lineWidth: 40,
-      nemeth: Boolean(state?.brailleNemethEnabled),
-    });
-    const brfHref = `data:text/plain;charset=utf-8,${encodeURIComponent(braille.brfAscii)}`;
-    return {
-      book: activeBook,
-      chapter: activeChapter,
-      verses: braille.unicodeBrailleEntries.map((e) => ({
-        ref: e.ref,
-        text: `${e.unicodeBraille} — ${e.text}`,
-      })),
-      bridgeVerses: null,
-      editionMode: 0,
-      columns: 1,
-      fontPt: 16.0,
-      paper: "b70",
-      orientation: "portrait",
-      booklet4n: false,
-      brfAscii: braille.brfAscii,
-      brfHref,
-    };
-  }
-
-  return {
-    book: activeBook,
-    chapter: activeChapter,
-    verses: baseVerses,
-    bridgeVerses: null,
-    editionMode: id === "07_cuaderno_5lineas_apaisado" ? 16 : 0,
-    columns,
-    fontPt,
-    paper,
-    orientation: id === "07_cuaderno_5lineas_apaisado" ? "landscape" : orientation,
-    booklet4n,
-    brfHref: "",
-  };
-}
-
-function flattenLoadedBookChapters(bookCode, chaptersObj) {
-  if (!chaptersObj || typeof chaptersObj !== "object") return [];
-  const entries = [];
-  const isChapArray = Array.isArray(chaptersObj);
-  const chapNums = Object.keys(chaptersObj).sort((a, b) => (Number(a) || 0) - (Number(b) || 0));
-  for (const chKey of chapNums) {
-    const chDisplay = isChapArray ? Number(chKey) + 1 : chKey;
-    const chVal = chaptersObj[chKey];
-    if (Array.isArray(chVal)) {
-      for (const v of chVal) {
-        if (Array.isArray(v) && v.length >= 3 && v[2]) {
-          entries.push({ ref: `${bookCode} ${chDisplay}:${v[0] ?? 1}`, text: String(v[2]) });
-        } else if (v && v.text) {
-          entries.push({ ref: `${bookCode} ${chDisplay}:${v.start ?? v.verse ?? 1}`, text: String(v.text) });
-        }
-      }
-    } else if (chVal && typeof chVal === "object") {
-      const versesMap = chVal.verses && typeof chVal.verses === "object" ? chVal.verses : chVal;
-      const vNums = Object.keys(versesMap).sort((a, b) => (Number(a) || 0) - (Number(b) || 0));
-      for (const vKey of vNums) {
-        if (typeof versesMap[vKey] === "string") {
-          entries.push({ ref: `${bookCode} ${chDisplay}:${vKey}`, text: versesMap[vKey] });
-        }
-      }
-    }
-  }
-  return entries;
-}
-
-function toDownloadablePdfHref(pdfInput) {
-  const parts = Array.isArray(pdfInput)
-    ? pdfInput.filter((p) => p instanceof Uint8Array && p.byteLength > 0)
-    : pdfInput instanceof Uint8Array && pdfInput.byteLength > 0
-      ? [pdfInput]
-      : [];
-  if (parts.length === 0) return "";
-  if (
-    typeof globalThis.window !== "undefined" &&
-    typeof globalThis.Blob === "function" &&
-    typeof globalThis.URL?.createObjectURL === "function"
-  ) {
-    return globalThis.URL.createObjectURL(new globalThis.Blob(parts, { type: "application/pdf" }));
-  }
-  if (parts.length === 1) {
-    return encodePdfBytesToDataUri(parts[0]);
-  }
-  const total = parts.reduce((acc, p) => acc + p.byteLength, 0);
-  const merged = new Uint8Array(total);
-  let off = 0;
-  for (const p of parts) {
-    merged.set(p, off);
-    off += p.byteLength;
-  }
-  return encodePdfBytesToDataUri(merged);
 }
 
 export async function hydratePrintDrawerPanelsInDrawer(ctx = {}) {
@@ -1458,7 +1002,7 @@ export async function hydratePrintDrawerPanelsInDrawer(ctx = {}) {
           state._activePrintTtfFontFile = printFontFile;
         }
       } catch {
-        // Non-fatal in headless mocks without font asset
+        // Non-fatal
       }
     }
   }
@@ -1661,7 +1205,7 @@ export async function hydratePrintDrawerPanelsInDrawer(ctx = {}) {
         renderPrintDrawerPanelsSyncInDrawer(ctx);
       }
     } catch {
-      // Non-fatal fallback to synchronous seed tanda
+      // Non-fatal fallback
     } finally {
       state.generateFull66BookBible = false;
     }
@@ -1707,6 +1251,3 @@ export function revokePrintObjectUrls(targetState) {
   targetState.generateFull66BookBible = false;
   targetState.lastHydratedWorkerTandaKey = "";
 }
-
-export { mountOfflineFontNoticeWithLocalImporter };
-

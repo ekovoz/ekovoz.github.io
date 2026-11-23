@@ -6,9 +6,6 @@
 import { serializeMostradorRouteQuery } from "../i18n_ui.js";
 import { escapeHtml } from "./bridge_and_chapter.js";
 import { canonicalOrdinalOf } from "./canonical_versification.js";
-import {
-  verifyArtifactProjectionClosure,
-} from "./data_layer.js";
 import { lookupPericopeConstructiveReceipt } from "./diachronic_register.js";
 import {
   bindOpticalCameraAndCadenceController,
@@ -48,16 +45,15 @@ import {
   verifyManifestAndMerkleAudit,
 } from "./optical_lt.js";
 
-import {
-  effectiveThreatClassWeb,
-  resolveCanonicalBlockCode,
-  stealthNeutralFilenameWeb,
-} from "./dosis.js";
-import { buildOpenGraphSocialCardSvg1200x630 } from "./drawer_print.js";
+import { resolveCanonicalBlockCode } from "./dosis.js";
+import { buildOpenGraphSocialCardSvg1200x630 } from "./social_and_photocopy_cards.js";
+import { resolveSafeDownloadFilename } from "./stealth_filename.js";
 import {
   mountOfflineFontNoticeWithLocalImporter,
   summarizeOfflineFontsVaultCatalog,
 } from "./offline_font_bundle.js";
+import { renderEditorialProvenanceCardHtml } from "./provenance_and_support_panel.js";
+import { hydrateVaultStorageManagerPanel } from "./vault_manager_panel.js";
 
 export const HAREL_DOSIS_SUBTABS = ["pdf", "mesh", "graphics"];
 export {
@@ -179,7 +175,7 @@ function renderEditorialAuditAttestationHtml({
   const eightLocksPillsHtml = eightLocksReport.locks
     .map(
       (lk) =>
-        `<span class="uls-badge" data-lock-id="${escapeHtml(lk.id)}" data-lock-passed="${Boolean(lk.passed)}" style="font-size:0.72rem;padding:0.15rem 0.45rem;">${lk.passed ? "✅" : "⛔"} ${escapeHtml(lk.label)}</span>`,
+        `<span class="uls-badge ek-badge-compact" data-lock-id="${escapeHtml(lk.id)}" data-lock-passed="${Boolean(lk.passed)}">${lk.passed ? "✅" : "⛔"} ${escapeHtml(lk.label)}</span>`,
     )
     .join(" ");
 
@@ -217,14 +213,25 @@ function renderEditorialAuditAttestationHtml({
   const ed25519GateAttr = String(isVerifiedSig);
   const ed25519BadgeText = isVerifiedSig ? "✅ Ed25519 VERIFIED" : "⛔ Ed25519 REJECTED";
 
+  const humanAttestationTitle = isEn
+    ? "Editorial Authenticity & Integrity Check"
+    : "Verificación de Autenticidad Editorial";
+  const humanAttestationStatus = isVerifiedSig
+    ? (isEn ? "✅ Authentic editorial edition" : "✅ Edición editorial auténtica")
+    : (isEn ? "⛔ Unverified signature" : "⛔ Firma no verificada");
+
   return (
-    `<div class="editorial-attestation-receipt" data-ed25519-verified="${ed25519GateAttr}" data-eight-locks-status="${escapeHtml(eightLocksReport.status)}" data-zero-truncation="${zeroTrunc}" data-living-languages="${totalLangs}" data-rust-surface-score="${surfaceScore}" style="padding:0.6rem 0.75rem;border-radius:10px;border:1px solid var(--card-border);background:var(--card-bg);font-size:0.76rem;display:flex;flex-direction:column;gap:0.45rem;">` +
-    `<div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:0.35rem;">` +
-    `<strong>🛡️ ${isEn ? "Sovereign Cryptographic Attestation & 8 Deterministic Locks" : "Atestación Criptográfica Soberana y 8 Candados Deterministas"}</strong>` +
-    `<span class="uls-badge" data-ed25519-gate="${ed25519GateAttr}">${ed25519BadgeText} · Zero-Truncation=${zeroTrunc ? "OK" : "PENDING"}</span>` +
+    `<div class="editorial-attestation-receipt ek-card ek-stack-sm" data-ed25519-verified="${ed25519GateAttr}" data-eight-locks-status="${escapeHtml(eightLocksReport.status)}" data-zero-truncation="${zeroTrunc}" data-living-languages="${totalLangs}" data-rust-surface-score="${surfaceScore}">` +
+    `<div class="ek-row-between">` +
+    `<strong>🛡️ ${humanAttestationTitle}</strong>` +
+    `<span class="uls-badge">${humanAttestationStatus} · ${totalLangs.toLocaleString("en-US")} ${isEn ? "languages" : "lenguas"}</span>` +
     `</div>` +
-    `<div class="eight-locks-pda-bar" data-eight-locks-bar="true" style="display:flex;flex-wrap:wrap;gap:0.3rem;">${eightLocksPillsHtml}</div>` +
-    `<div data-master-census-7keys="true" style="display:flex;flex-wrap:wrap;gap:0.3rem;">` +
+    `<details class="tech-details">` +
+    `<summary>${isEn ? "Technical details & cryptographic signature" : "Detalles técnicos y firma criptográfica"}</summary>` +
+    `<div class="ek-stack-sm ek-mt-sm">` +
+    `<span class="uls-badge" data-ed25519-gate="${ed25519GateAttr}">${ed25519BadgeText} · Zero-Truncation=${zeroTrunc ? "OK" : "PENDING"}</span>` +
+    `<div class="eight-locks-pda-bar" data-eight-locks-bar="true">${eightLocksPillsHtml}</div>` +
+    `<div class="ek-row-wrap" data-master-census-7keys="true">` +
     `<span class="uls-badge" data-census-key="living_languages">🌍 ${totalLangs.toLocaleString("en-US")} ${isEn ? "langs" : "lenguas"} · ${macroRegions} ${isEn ? "regions" : "regiones"} · ${subclades} subclades</span>` +
     `<span class="uls-badge" data-census-key="canonical_canon">📖 ${books}B / ${chapters.toLocaleString("en-US")}C / ${verses.toLocaleString("en-US")}V / ${blocks} ${isEn ? "blocks" : "bloques"}</span>` +
     `<span class="uls-badge" data-census-key="crdt_wal">🔄 CRDT WAL: ${walFolded} ${isEn ? "patches" : "parches"}</span>` +
@@ -233,14 +240,16 @@ function renderEditorialAuditAttestationHtml({
     `<span class="uls-badge" data-census-key="stp_ledger_progress">🧱 STP ${escapeHtml(batchRange)} (${batchesDone}/1245)</span>` +
     `<span class="uls-badge" data-census-key="verified_disk_corpora">💿 ${diskCorpora} ${isEn ? "disk corpora" : "corpus en disco"}</span>` +
     `</div>` +
-    `<div data-rust-engines-telemetry="true" style="color:var(--text-secondary);font-size:0.73rem;">` +
+    `<div class="ek-meta" data-rust-engines-telemetry="true">` +
     `🦀 Rust Engines: CoreScore=${surfaceScore} · Fonts28=${fonts28Ok ? "OK" : "WARN"} · WFST=${wfstLen} · Bilateral=${escapeHtml(bilateralDims)} · OpticalABI=${nyquistMs}ms` +
     `</div>` +
     (pericopeReceipt
-      ? `<div data-pericope-constructive-receipt="true" style="color:var(--text-secondary);font-size:0.73rem;">` +
+      ? `<div class="ek-meta" data-pericope-constructive-receipt="true">` +
       `🧾 ${isEn ? "Constructive Pericope Receipt" : "Recibo Constructivo de Perícopa"}: <code>${escapeHtml(String(pericopeReceipt.batchId || ""))}</code> · MATTR=${Number(pericopeReceipt.mattr || 0).toFixed(3)} · SHA-256=<code>${escapeHtml(String(pericopeReceipt.sha256Prefix || ""))}</code>${ledgerBlake3Root ? ` · BLAKE3=<code>${escapeHtml(String(ledgerBlake3Root).slice(0, 12))}</code>` : ""}` +
       `</div>`
       : "") +
+    `</div>` +
+    `</details>` +
     `</div>`
   );
 }
@@ -258,14 +267,12 @@ export function hydrateShareAndAuditDrawerPanel(ctx = {}) {
     book: state.book || "GEN",
     chapter: state.chapter || 1,
     verses: chapterVersesForQuine,
+    stealthMode: Boolean(state.stealthMode),
+    countryIso2: state.countryIso2 || "MX",
   });
   const quineRelUrl = `data:text/html;charset=utf-8,${encodeURIComponent(synthesizedQuineHtml)}`;
   const packMode = "kleene-quine-zero-fetch";
-  verifyArtifactProjectionClosure({
-    htmlSource: "",
-    domBindings: [],
-    controllerCorpus: "",
-  });
+  const quineFilename = resolveSafeDownloadFilename(state, { kind: "quine_html", lang: activeLang });
 
   if (
     !state.offlinePacksCatalogLoaded &&
@@ -330,20 +337,23 @@ export function hydrateShareAndAuditDrawerPanel(ctx = {}) {
     }
     packsPanel.innerHTML =
       `<div class="mostrador-offline-packs" data-lang="${escapeHtml(activeLang)}" data-pack-mode="${packMode}" data-quine-url="${escapeHtml(quineRelUrl)}">` +
-      `<strong>${isEn ? `Sovereign Offline Pack (${escapeHtml(activeLang.toUpperCase())})` : `Paquete Offline Soberano (${escapeHtml(activeLang.toUpperCase())})`}</strong>` +
-      `<p style="margin:4px 0 6px;font-size:0.84rem;">${isEn ? `Zero telemetry · Autonomous HTML Quine (<code>DecompressionStream("deflate-raw")</code>) + SHA-256 / Merkle verification ready for USB, Bluetooth, and MicroSD.` : `Cero telemetría · Quine HTML autónomo (<code>DecompressionStream("deflate-raw")</code>) + Verificación SHA-256 / Merkle lista para USB, Bluetooth y MicroSD.`}</p>` +
-      `<a href="${escapeHtml(quineRelUrl)}" download="lector_offline_${escapeHtml(activeLang)}.html" data-quine-download="true" data-pack-mode="${packMode}" hidden style="display:none;"></a>` +
+      `<strong>${isEn ? `Offline Language Pack (${escapeHtml(activeLang.toUpperCase())})` : `Paquete Offline (${escapeHtml(activeLang.toUpperCase())})`}</strong>` +
+      `<p class="share-pack-desc">${isEn ? "Zero telemetry · Offline reader package ready for USB, Bluetooth, and MicroSD." : "Cero telemetría · Paquete de lectura sin conexión listo para USB, Bluetooth y MicroSD."}</p>` +
+      `<a href="${escapeHtml(quineRelUrl)}" download="${escapeHtml(quineFilename)}" data-quine-download="true" data-pack-mode="${packMode}" hidden></a>` +
       ecoMeshCardHtml +
       `</div>`;
 
-    const ensureShareChildHost = (hostId) => {
+    const ensureShareChildHost = (hostId, subtabName = "mesh") => {
       const existing = getEl(hostId, targetDoc);
-      if (existing) return existing;
+      if (existing) {
+        existing.setAttribute?.("data-dosis-subtab-panel", subtabName);
+        return existing;
+      }
       if (packsPanel?.parentNode && typeof targetDoc?.createElement === "function") {
         const el = targetDoc.createElement("div");
         el.id = hostId;
         if (typeof el.setAttribute === "function") {
-          el.setAttribute("data-dosis-subtab-panel", "mesh");
+          el.setAttribute("data-dosis-subtab-panel", subtabName);
         }
         if (typeof packsPanel.parentNode.appendChild === "function") {
           packsPanel.parentNode.appendChild(el);
@@ -370,12 +380,11 @@ export function hydrateShareAndAuditDrawerPanel(ctx = {}) {
     const fontVaultHost = ensureShareChildHost("editorialFontPackVaultPanel");
     if (fontVaultHost) {
       const fontSummary = summarizeOfflineFontsVaultCatalog(state.fontsZstManifest || null);
-      fontVaultHost.hidden = false;
       fontVaultHost.innerHTML =
-        `<div id="ekfontsVaultSummaryCard" data-ekfonts-bundle="${escapeHtml(fontSummary.bundleFile)}" data-fonts-count="${fontSummary.totalFonts}" style="padding:0.6rem 0.75rem;border-radius:10px;border:1px solid var(--card-border);background:var(--card-bg);font-size:0.79rem;">` +
-        `<div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:0.4rem;margin-bottom:0.4rem;">` +
-        `<strong>🔤 ${isEn ? "Sovereign Font Vault (.ekfonts · 34 .ttf.zst)" : "Bóveda Tipográfica Soberana (.ekfonts · 34 .ttf.zst)"}</strong>` +
-        `<a class="uls-chip" href="${escapeHtml(fontSummary.bundleUrl)}" download="${escapeHtml(fontSummary.bundleFile)}" data-ekfonts-bundle-url="${escapeHtml(fontSummary.bundleUrl)}" style="min-height:48px;min-width:48px;display:inline-flex;align-items:center;padding:0.25rem 0.65rem;text-decoration:none;font-size:0.75rem;">📦 ${escapeHtml(fontSummary.bundleFile)} (${fontSummary.totalFonts || 34})</a>` +
+        `<div id="ekfontsVaultSummaryCard" class="ekfonts-vault-summary-card" data-ekfonts-bundle="${escapeHtml(fontSummary.bundleFile)}" data-fonts-count="${fontSummary.totalFonts}">` +
+        `<div class="photocopy-header-row">` +
+        `<strong>🔤 ${isEn ? "Offline Typography Pack (34 fonts)" : "Paquete tipográfico sin conexión (34 fuentes)"}</strong>` +
+        `<a class="uls-chip ekfonts-download-chip" href="${escapeHtml(fontSummary.bundleUrl)}" download="${escapeHtml(fontSummary.bundleFile)}" data-tech-key="${escapeHtml(fontSummary.bundleFile)}" data-ekfonts-bundle-url="${escapeHtml(fontSummary.bundleUrl)}">📦 ${isEn ? "Download typography pack" : "Descargar paquete tipográfico"} (${fontSummary.totalFonts || 34})</a>` +
         `</div>` +
         `<div id="shareOfflineFontImporterHost"></div>` +
         `</div>`;
@@ -395,11 +404,8 @@ export function hydrateShareAndAuditDrawerPanel(ctx = {}) {
       }
     }
 
-    const ogHost = ensureShareChildHost("shareOpenGraphCardPanel");
+    const ogHost = ensureShareChildHost("shareOpenGraphCardPanel", "graphics");
     if (ogHost) {
-      const isStealth =
-        Boolean(state.stealthMode) ||
-        effectiveThreatClassWeb(state.countryIso2 || "MX", activeLang) === "CLASS_C_STEALTH";
       const blk = resolveCanonicalBlockCode(state.book || "GEN", state.chapter || 1, state.verse || 1);
       const ogCard = buildOpenGraphSocialCardSvg1200x630({
         book: state.book || "GEN",
@@ -410,15 +416,12 @@ export function hydrateShareAndAuditDrawerPanel(ctx = {}) {
         activeGen: state.photocopyGen ?? 3,
         sauvolaK: state.sauvolaK ?? 0.25,
       });
-      const ogFilename = isStealth
-        ? stealthNeutralFilenameWeb(blk.blockNumber || 1, "svg")
-        : `ekovoz_${String(state.book || "gen").toLowerCase()}_${Number(state.chapter) || 1}_${Number(state.verse) || 1}_1200x630.svg`;
-      ogHost.hidden = false;
+      const ogFilename = resolveSafeDownloadFilename(state, { kind: "opengraph_svg", blockNumber: blk.blockNumber || 1 });
       ogHost.innerHTML =
-        `<div class="share-opengraph-card" data-social-card-dimensions="1200x630" style="padding:0.6rem 0.75rem;border-radius:10px;border:1px solid var(--card-border);background:var(--card-bg);font-size:0.79rem;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:0.5rem;">` +
-        `<span style="font-size:0.76rem;color:var(--text-secondary);">${isEn ? "OpenGraph <code>1200×630</code> Social Card ready to share offline:" : "Tarjeta OpenGraph <code>1200×630</code> lista para compartir:"}</span>` +
-        `<img src="${ogCard.svgDataUrl}" alt="OpenGraph 1200x630" style="max-width:220px;height:auto;border-radius:8px;border:1px solid var(--card-border);" />` +
-        `<a id="btnDownloadSocialCard1200x630" class="uls-chip" href="${ogCard.svgDataUrl}" download="${escapeHtml(ogFilename)}" style="min-height:48px;min-width:48px;display:inline-flex;align-items:center;padding:8px 12px;text-decoration:none;font-size:0.76rem;">🖼️ ${isEn ? "Download Social Card 1200×630 (SVG)" : "Descargar Tarjeta Social 1200×630 (SVG)"}</a>` +
+        `<div class="share-opengraph-card" data-social-card-dimensions="1200x630">` +
+        `<span class="share-opengraph-caption">${isEn ? "Social Card <code>1200×630</code> ready to share offline:" : "Tarjeta Social <code>1200×630</code> lista para compartir:"}</span>` +
+        `<img class="share-opengraph-img" src="${ogCard.svgDataUrl}" alt="OpenGraph 1200x630" />` +
+        `<a id="btnDownloadSocialCard1200x630" class="uls-chip share-opengraph-dl" href="${ogCard.svgDataUrl}" download="${escapeHtml(ogFilename)}">🖼️ ${isEn ? "Download Social Card 1200×630 (SVG)" : "Descargar Tarjeta Social 1200×630 (SVG)"}</a>` +
         `</div>`;
     }
 
@@ -473,7 +476,8 @@ export function hydrateShareAndAuditDrawerPanel(ctx = {}) {
         }
         const statusPanel = getEl("editorialAuditStatusPanel", targetDoc);
         if (statusPanel) {
-          statusPanel.hidden = false;
+          statusPanel.classList?.add("is-visible");
+          statusPanel.setAttribute?.("data-status-visible", "true");
           statusPanel.textContent = `✅ Opt-In SW (${swRes.cacheName}) + IndexedDB (${saved?.file || `${packLang}.ekpack`} · CRC32 ${saved?.crc32Hex || "OK"})`;
         }
       });
@@ -505,7 +509,8 @@ export function hydrateShareAndAuditDrawerPanel(ctx = {}) {
         }
         const statusPanel = getEl("editorialAuditStatusPanel", targetDoc);
         if (statusPanel) {
-          statusPanel.hidden = false;
+          statusPanel.classList?.add("is-visible");
+          statusPanel.setAttribute?.("data-status-visible", "true");
           statusPanel.textContent = `🗄️ IndexedDB Vault (${allPacks.length}): ${loaded?.file || `${packLang}.ekpack`} (${loaded?.crc32Hex || "empty"})`;
         }
       });
@@ -519,7 +524,8 @@ export function hydrateShareAndAuditDrawerPanel(ctx = {}) {
           exportSneakernetBtn.setAttribute("data-sneakernet-error", "missing-pack-bytes");
           const statusPanel = getEl("editorialAuditStatusPanel", targetDoc);
           if (statusPanel) {
-            statusPanel.hidden = false;
+            statusPanel.classList?.add("is-visible");
+            statusPanel.setAttribute?.("data-status-visible", "true");
             statusPanel.textContent = `⛔ No hay contenedor binario ${packLang}.ekpack descargado en bóveda para exportar.`;
           }
           return;
@@ -661,8 +667,6 @@ export function hydrateShareAndAuditDrawerPanel(ctx = {}) {
         applyHarelSubtabSelection(targetDoc, "dosis", tabName);
         if (tabName !== "pdf") {
           stopQrBeamAutoCadenceTimer(state);
-          const videoEl = getEl("bibleOpticalCameraVideo", targetDoc);
-          if (videoEl) videoEl.hidden = true;
         }
       });
     }
@@ -765,6 +769,22 @@ export function hydrateShareAndAuditDrawerPanel(ctx = {}) {
       })
       .catch(() => { });
   }
+
+  void hydrateVaultStorageManagerPanel({ state, targetDoc, getEl });
+  const provHost = getEl("editorialProvenanceCardHost", targetDoc);
+  if (provHost) {
+    provHost.innerHTML = renderEditorialProvenanceCardHtml(state.editorialProvenance || null, state.uiLocale || "es");
+    if (!state.editorialProvenance && dataLayer && typeof dataLayer.loadEditorialProvenance === "function") {
+      Promise.resolve(dataLayer.loadEditorialProvenance())
+        .then((prov) => {
+          if (prov) {
+            state.editorialProvenance = prov;
+            provHost.innerHTML = renderEditorialProvenanceCardHtml(prov, state.uiLocale || "es");
+          }
+        })
+        .catch(() => { });
+    }
+  }
 }
 
 export { applyStaticChromeTranslations } from "./chrome_static_i18n.js";
@@ -779,8 +799,7 @@ export function bindShareDrawerActionEvents(ctx = {}) {
     hydrateShareAndAuditDrawer(targetDoc);
     const statusPanel = getEl("editorialAuditStatusPanel", targetDoc);
     if (statusPanel) {
-      statusPanel.hidden = false;
-      if (statusPanel.style) statusPanel.style.display = "";
+      statusPanel.setAttribute?.("data-status-visible", "true");
     }
     const packLang = String(state.lang || "es").trim() || "es";
     const osis = `${state.book}.${state.chapter}.${state.verse}`;
@@ -810,6 +829,7 @@ export function bindShareDrawerActionEvents(ctx = {}) {
         typeof Blob === "function" && typeof URL !== "undefined" && typeof URL.createObjectURL === "function"
           ? URL.createObjectURL(new Blob([quinePayload], { type: "text/html;charset=utf-8" }))
           : `data:text/html;charset=utf-8,${encodeURIComponent(quinePayload)}`;
+      const safeQuineName = resolveSafeDownloadFilename(state, { kind: "quine_html", lang: packLang });
       if (
         typeof targetDoc?.createElement === "function" &&
         typeof quineUrl === "string" &&
@@ -817,7 +837,7 @@ export function bindShareDrawerActionEvents(ctx = {}) {
       ) {
         const dlLink = targetDoc.createElement("a");
         dlLink.href = quineUrl;
-        dlLink.download = `lector_offline_${packLang}.html`;
+        dlLink.download = safeQuineName;
         if (typeof dlLink.click === "function") dlLink.click();
       }
       if (statusPanel) {
@@ -827,9 +847,9 @@ export function bindShareDrawerActionEvents(ctx = {}) {
         statusPanel.setAttribute("data-book-count", String(quineBookCount));
         statusPanel.innerHTML =
           `<div class="audit-receipt" data-action="share-quine" data-quine-lang="${escapeHtml(packLang)}" data-quine-bytes="${quinePayload.length}" data-book-count="${quineBookCount}" data-kleene-quine="true">` +
-          `✅ <strong>Quine Autónomo de Kleene Listo (${escapeHtml(packLang.toUpperCase())}):</strong> ` +
-          `<a href="${escapeHtml(quineUrl)}" download="lector_offline_${escapeHtml(packLang)}.html">Descargar lector_offline_${escapeHtml(packLang)}.html</a> ` +
-          `(${quinePayload.length} B · Punto Fijo de Kleene · ${quineBookCount} ${quineBookCount === 1 ? "libro" : "libros"} deflate-raw · 0 fetch · 100% offline).</div>`;
+          `✅ <strong>Paquete Offline Listo (${escapeHtml(packLang.toUpperCase())}):</strong> ` +
+          `<a href="${escapeHtml(quineUrl)}" download="${escapeHtml(safeQuineName)}">Descargar ${escapeHtml(safeQuineName)}</a> ` +
+          `(${quinePayload.length} B · ${quineBookCount} ${quineBookCount === 1 ? "libro" : "libros"} · 100% offline).</div>`;
       }
     } else if (shareBtnId === "btnCopyDirectShareLink") {
       const shareUrl = serializeMostradorRouteQuery(state);
@@ -958,8 +978,7 @@ export function bindShareDrawerActionEvents(ctx = {}) {
       state.lastRelayEncoder = relayEncoder;
       const statusPanel = getEl("editorialAuditStatusPanel", targetDoc);
       if (statusPanel) {
-        statusPanel.hidden = false;
-        if (statusPanel.style) statusPanel.style.display = "";
+        statusPanel.setAttribute?.("data-status-visible", "true");
         statusPanel.setAttribute("data-audit-action", "optical-relay-tx");
         statusPanel.setAttribute("data-relay-k", String(relayEncoder.K));
         statusPanel.innerHTML =

@@ -989,15 +989,14 @@ export function renderOfflineMeshEcoCardHtml({
   const packBadgesHtml = packs
     .map((p) => {
       const isSelected = p.lang === activePack.lang;
-      const shaShort = String(p.sha256 || "").slice(0, 12);
+      const kbSize = Math.max(1, Math.round(Number(p.bytes || 0) / 1024));
       return (
-        `<a class="uls-chip eco-pack-download-link" ` +
+        `<a class="uls-chip eco-pack-download-link${isSelected ? " is-selected" : ""}" ` +
         `data-eco-pack-lang="${p.lang}" ` +
         `data-eco-pack-bytes="${p.bytes}" ` +
         `data-eco-pack-sha256="${p.sha256}" ` +
-        `href="${p.url}" download="${p.file}" ` +
-        `style="min-height:48px;min-width:48px;box-sizing:border-box;display:inline-flex;align-items:center;padding:8px 12px;text-decoration:none;font-size:0.76rem;${isSelected ? "border:2px solid var(--accent-primary);font-weight:700;" : ""}">` +
-        `📦 ${p.file} (${p.bytes} B · SHA:${shaShort}… · HTTP 206)` +
+        `href="${p.url}" download="${p.file}">` +
+        `📦 ${p.file} (${kbSize} KB)` +
         `</a>`
       );
     })
@@ -1011,30 +1010,35 @@ export function renderOfflineMeshEcoCardHtml({
     `data-active-verse-ordinal="${safeOrdinal}" ` +
     `data-eco-decoder-ready="true" ` +
     `data-eco-unicode-rebase="${rebaseHex}" ` +
-    `data-ekpack-seekable="0x8F92EAB1" ` +
-    `style="padding:0.65rem;border-radius:10px;border:1px solid var(--card-border);background:var(--card-bg);font-size:0.8rem;">` +
-    `<div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:0.4rem;margin-bottom:0.45rem;">` +
-    `<strong>📡 ${isEn ? "Autonomous Seed Mesh (<code>.ekpack</code> Zstd · HTTP 206 Range · WebCrypto Ed25519 · Sneakernet P2P)" : "Malla de Semillas Autónomas (<code>.ekpack</code> Zstd · HTTP 206 Range · WebCrypto Ed25519 · Sneakernet P2P)"}</strong>` +
-    `<span id="ecoPackVerificationBadge" class="uls-badge" data-eco-verified="${storedRecord ? "true" : "ready"}">` +
-    `${storedRecord ? `✅ Two-Gate CRC32 ${storedRecord.crc32Hex} + Ed25519 RFC 8032` : isEn ? `⚡ ${packs.length} .ekpack Seeds Ready (HTTP 206 · Rebase ${rebaseHex})` : `⚡ ${packs.length} Semillas .ekpack Listas (HTTP 206 · Rebase ${rebaseHex})`}` +
+    `data-ekpack-seekable="0x8F92EAB1">` +
+    `<div class="ek-row-between ek-mb-sm">` +
+    `<strong>📡 ${isEn ? "Offline Reading Packs" : "Paquetes de Lectura sin Internet"}</strong>` +
+    `<span class="uls-badge">` +
+    `${storedRecord ? (isEn ? "✅ Verified offline pack" : "✅ Paquete verificado sin conexión") : (isEn ? `⚡ ${packs.length} offline languages ready` : `⚡ ${packs.length} idiomas listos sin conexión`)}` +
     `</span>` +
     `</div>` +
-    `<div style="font-size:0.74rem;opacity:0.88;margin-bottom:0.4rem;">` +
+    `<div class="ek-row-wrap ek-mb-sm">${packBadgesHtml}</div>` +
+    `<div class="ek-row-wrap ek-gap-md">` +
+    `<button type="button" id="btnInstallEcoPackOffline" class="uls-chip eco-action-btn ek-semibold" data-action="install-eco-pack" data-eco-lang="${activePack.lang}" data-i18n="share.mesh.install">⚡ ${isEn ? `Save ${activePack.file} for offline reading` : `Guardar ${activePack.file} sin internet`}</button>` +
+    `<button type="button" id="btnOfflineOptInSwDownload" class="uls-chip eco-action-btn" data-action="opt-in-offline-pack" data-eco-lang="${activePack.lang}" data-i18n="share.mesh.preload">📥 ${isEn ? "Preload Offline Library" : "Precargar Biblioteca Offline"}</button>` +
+    `<button type="button" id="btnOfflineListIndexedDbPacks" class="uls-chip eco-action-btn" data-action="list-indexeddb-packs" data-eco-lang="${activePack.lang}" data-i18n="share.mesh.savedList">🗄️ ${isEn ? `Saved languages (${vaultPacks.length})` : `Idiomas guardados (${vaultPacks.length})`}</button>` +
+    `<button type="button" id="btnExportSneakernetBundle" class="uls-chip eco-action-btn" data-action="export-sneakernet-bundle" data-eco-lang="${activePack.lang}" data-i18n="share.mesh.exportFile">📤 ${isEn ? "Share Offline File" : "Compartir archivo offline"}</button>` +
+    `<label for="inputImportSneakernetBundle" id="btnImportSneakernetBundle" class="uls-chip eco-action-btn eco-action-label" data-action="import-sneakernet-bundle">📥 ${isEn ? "Load Offline File" : "Cargar archivo offline"}</label>` +
+    `<input type="file" id="inputImportSneakernetBundle" accept=".ekpack,.json,.sneakernet.json" />` +
+    `</div>` +
+    `<div id="offlineIndexedDbVaultStatus" class="ek-meta ek-mt-sm" data-vault-packs-count="${vaultPacks.length}">` +
+    `🗄️ ${isEn ? "Saved offline:" : "Guardados sin conexión:"} <strong>${vaultPacks.length}</strong> ${isEn ? "packs" : "paquetes"}${vaultPacks.length > 0 ? ` (${vaultPacks.map((vp) => vp.lang).join(", ")})` : ""}` +
+    `</div>` +
+    `<details class="tech-details">` +
+    `<summary>${isEn ? "Technical details (Ed25519 · HTTP 206 · .ekpack)" : "Detalles técnicos (Ed25519 · HTTP 206 · .ekpack)"}</summary>` +
+    `<div class="ek-meta ek-opacity-muted ek-mt-sm">` +
+    `<span id="ecoPackVerificationBadge" class="uls-badge" data-eco-verified="${storedRecord ? "true" : "ready"}">` +
+    `${storedRecord ? `✅ Two-Gate CRC32 ${storedRecord.crc32Hex} + Ed25519 RFC 8032` : `⚡ HTTP 206 · Rebase ${rebaseHex}`}` +
+    `</span> · ` +
     `<span>🔍 .ekpack Frame O(1) (${activeVerseRef}): <code>${probe.versePreview}</code></span> · ` +
     frame67SummaryHtml +
     `</div>` +
-    `<div style="display:flex;flex-wrap:wrap;gap:0.4rem;margin-bottom:0.5rem;">${packBadgesHtml}</div>` +
-    `<div style="display:flex;flex-wrap:wrap;gap:0.45rem;align-items:center;">` +
-    `<button type="button" id="btnInstallEcoPackOffline" class="uls-chip" data-action="install-eco-pack" data-eco-lang="${activePack.lang}" style="min-height:48px;min-width:48px;box-sizing:border-box;padding:8px 12px;font-size:0.78rem;font-weight:600;">⚡ ${isEn ? `Install & Verify ${activePack.file} (WebCrypto Ed25519)` : `Instalar y Verificar ${activePack.file} (WebCrypto Ed25519)`}</button>` +
-    `<button type="button" id="btnOfflineOptInSwDownload" class="uls-chip" data-action="opt-in-offline-pack" data-eco-lang="${activePack.lang}" style="min-height:48px;min-width:48px;box-sizing:border-box;padding:8px 12px;font-size:0.78rem;">📥 ${isEn ? "Preload Offline Vault (Opt-In SW)" : "Precargar Bóveda Offline (Opt-In SW)"}</button>` +
-    `<button type="button" id="btnOfflineListIndexedDbPacks" class="uls-chip" data-action="list-indexeddb-packs" data-eco-lang="${activePack.lang}" style="min-height:48px;min-width:48px;box-sizing:border-box;padding:8px 12px;font-size:0.78rem;">🗄️ ${isEn ? `IndexedDB Vault (${vaultPacks.length} packs)` : `Bóveda IndexedDB (${vaultPacks.length} paquetes)`}</button>` +
-    `<button type="button" id="btnExportSneakernetBundle" class="uls-chip" data-action="export-sneakernet-bundle" data-eco-lang="${activePack.lang}" style="min-height:48px;min-width:48px;box-sizing:border-box;padding:8px 12px;font-size:0.78rem;">📤 ${isEn ? "Export Sneakernet Bundle (.sneakernet.json)" : "Exportar Bundle Sneakernet (.sneakernet.json)"}</button>` +
-    `<label for="inputImportSneakernetBundle" id="btnImportSneakernetBundle" class="uls-chip" data-action="import-sneakernet-bundle" style="min-height:48px;min-width:48px;box-sizing:border-box;display:inline-flex;align-items:center;padding:8px 12px;font-size:0.78rem;cursor:pointer;">📥 ${isEn ? "Import Sneakernet Bundle" : "Importar Bundle Sneakernet"}</label>` +
-    `<input type="file" id="inputImportSneakernetBundle" accept=".ekpack,.json,.sneakernet.json" style="display:none;" />` +
-    `</div>` +
-    `<div id="offlineIndexedDbVaultStatus" data-vault-packs-count="${vaultPacks.length}" style="margin-top:0.4rem;font-size:0.74rem;color:var(--text-secondary);">` +
-    `🗄️ ${isEn ? "IndexedDB Vault:" : "Bóveda IndexedDB:"} <strong>${vaultPacks.length}</strong> ${isEn ? "verified packs" : "paquetes verificados"}${vaultPacks.length > 0 ? ` (${vaultPacks.map((vp) => vp.lang).join(", ")})` : ""}` +
-    `</div>` +
+    `</details>` +
     `</div>`
   );
 }

@@ -1145,6 +1145,10 @@ export function createDataLayer({ source, cacheLimit = 32 } = {}) {
     return val;
   }
 
+  async function loadEditorialProvenance() {
+    return getJson("data/editorial_provenance.json");
+  }
+
   async function loadFieldWorkshopData(lang = "stp") {
     const safeLang = LANG_RE.test(String(lang || "").trim())
       ? String(lang).trim().toLowerCase()
@@ -1298,6 +1302,28 @@ export function createDataLayer({ source, cacheLimit = 32 } = {}) {
     };
   }
 
+  let hydratedOnomasticonCatalog = null;
+  const MAX_ONOMASTICON_BYTES = 2 * 1024 * 1024;
+
+  async function loadOnomasticonCatalog() {
+    if (hydratedOnomasticonCatalog) return hydratedOnomasticonCatalog;
+    const zstBytes = await loadBytes("data/onomasticon_3657.json.zst");
+    if (!zstBytes || !(zstBytes instanceof Uint8Array) || zstBytes.byteLength === 0) {
+      return null;
+    }
+    const wasmMod = await ensurePlayerWasmLoaded().catch(() => null);
+    const rawBytes =
+      wasmMod && wasmMod.status === STATUS.READY
+        ? decodeZstdFrameInPlayerWasm(wasmMod, zstBytes, MAX_ONOMASTICON_BYTES)
+        : decodeRfc8878RawZstdFrameJs(zstBytes, MAX_ONOMASTICON_BYTES);
+    if (!rawBytes || rawBytes.byteLength === 0 || rawBytes.byteLength > MAX_ONOMASTICON_BYTES) {
+      throw new Error("ONOMASTICON_ZSTD_CAP_EXCEEDED");
+    }
+    const parsed = JSON.parse(new TextDecoder("utf-8").decode(rawBytes));
+    hydratedOnomasticonCatalog = parsed;
+    return parsed;
+  }
+
   return {
     loadCatalog,
     loadManifest,
@@ -1326,11 +1352,13 @@ export function createDataLayer({ source, cacheLimit = 32 } = {}) {
     loadPericopesAndGlosses,
     loadDiachronicRegisterAudit,
     loadEditorialProfiles,
+    loadEditorialProvenance,
     loadFieldWorkshopData,
     loadMasterCensusSummary,
     loadOfflinePacksCatalog,
     loadAnnotationIndexReport,
     loadBlindCalibrationReport,
+    loadOnomasticonCatalog,
     loadWasmModule,
     bibleConstants: BIBLE_CONSTANTS,
     getHydratedRosettaIndex: () => hydratedRosettaIndex,
@@ -1342,6 +1370,7 @@ export function createDataLayer({ source, cacheLimit = 32 } = {}) {
     getHydratedOfflinePacksCatalog: () => hydratedOfflinePacksCatalog,
     getHydratedAnnotationIndexReport: () => hydratedAnnotationIndexReport,
     getHydratedBlindCalibrationReport: () => hydratedBlindCalibrationReport,
+    getHydratedOnomasticonCatalog: () => hydratedOnomasticonCatalog,
     getHydratedWasmModule: (name) => hydratedWasmModules.get(name) || null,
     decodeFrameInWasmLinearMemory,
     verifyRaptorQBlockInWasmLinearMemory,

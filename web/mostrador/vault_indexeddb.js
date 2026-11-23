@@ -239,3 +239,103 @@ export async function sliceBlobRangeBytes(packRecord, startByte, endByteInclusiv
   }
   return null;
 }
+
+export async function deleteRecordFromIndexedDb(storeName, key, idbOverride = null) {
+  const db = await openSovereignIndexedDb(idbOverride);
+  if (!db || typeof db.transaction !== "function") return false;
+  return new Promise((resolve) => {
+    let settled = false;
+    const done = (ok) => {
+      if (!settled) {
+        settled = true;
+        resolve(ok);
+      }
+    };
+    try {
+      const tx = db.transaction([storeName], "readwrite");
+      const store = tx.objectStore(storeName);
+      tx.oncomplete = () => done(true);
+      tx.onerror = () => done(false);
+      tx.onabort = () => done(false);
+      if (typeof store.delete === "function") {
+        const delReq = store.delete(key);
+        if (delReq) delReq.onerror = () => done(false);
+      } else {
+        done(false);
+      }
+    } catch {
+      resetVaultDbCache();
+      done(false);
+    }
+  });
+}
+
+export async function estimateVaultStorageQuota(storageOverride = null) {
+  const storageApi = storageOverride || globalThis?.navigator?.storage || null;
+  let usageBytes = 0;
+  let quotaBytes = 0;
+  let persisted = false;
+  if (storageApi && typeof storageApi.estimate === "function") {
+    try {
+      const est = await storageApi.estimate();
+      usageBytes = Math.max(0, Number(est?.usage) || 0);
+      quotaBytes = Math.max(0, Number(est?.quota) || 0);
+    } catch {
+      // Safe fallback when StorageManager denies or is unavailable
+    }
+  }
+  if (storageApi && typeof storageApi.persisted === "function") {
+    try {
+      persisted = Boolean(await storageApi.persisted());
+    } catch {
+      persisted = false;
+    }
+  }
+  const usagePct = quotaBytes > 0 ? Math.min(100, Number(((usageBytes / quotaBytes) * 100).toFixed(2))) : 0;
+  return { usageBytes, quotaBytes, usagePct, persisted };
+}
+
+export async function fetchPackWithChunkProgress(url, { fetchImpl = globalThis.fetch, onProgress } = {}) {
+  if (typeof fetchImpl !== "function") {
+    throw new Error("fetch_unavailable");
+  }
+  const res = await fetchImpl(url);
+  if (!res || !res.ok) {
+    throw new Error(`HTTP ${res?.status || 0}`);
+  }
+  const totalHdr = Number(res.headers?.get?.("content-length") || 0) || 0;
+  if (res.body && typeof res.body.getReader === "function") {
+    const reader = res.body.getReader();
+    const chunks = [];
+    let loaded = 0;
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      if (value) {
+        const u8 = value instanceof Uint8Array ? value : new Uint8Array(value);
+        chunks.push(u8);
+        loaded += u8.byteLength;
+        if (typeof onProgress === "function") {
+          const pct = totalHdr > 0 ? Math.min(100, Math.round((loaded / totalHdr) * 100)) : 0;
+          onProgress({ loaded, total: totalHdr, pct });
+        }
+      }
+    }
+    const merged = new Uint8Array(loaded);
+    let offset = 0;
+    for (const c of chunks) {
+      merged.set(c, offset);
+      offset += c.byteLength;
+    }
+    if (typeof onProgress === "function") {
+      onProgress({ loaded, total: totalHdr || loaded, pct: 100 });
+    }
+    return merged;
+  }
+  const ab = await res.arrayBuffer();
+  const u8 = new Uint8Array(ab);
+  if (typeof onProgress === "function") {
+    onProgress({ loaded: u8.byteLength, total: u8.byteLength, pct: 100 });
+  }
+  return u8;
+}

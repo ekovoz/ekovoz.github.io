@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ekovoz: Free Polyglot Bible &amp; Open Resources</title>
+    <title>Ekovoz — Lectura y Estudio Bíblico Políglota</title>
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link rel="alternate icon" href="favicon.ico">
     <meta name="description"
@@ -76,134 +76,135 @@
 </head>
 
 <body data-surface-mode="reader" data-theme="light" data-font-family="serif" data-stealth-mode="false">
-    <header id="sovereignTopBar"
-        style="max-width: 760px; margin: 0 auto 0.45rem auto; padding: 0.45rem 0.75rem; border: 1px solid var(--card-border); border-radius: 12px; background: var(--card-bg); display: flex; flex-direction: column; gap: 0.35rem;">
-        <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.4rem;">
-            <nav id="sovereignWorkTabs" role="tablist" aria-label="Editorial Works"
-                style="display: flex; flex-wrap: wrap; gap: 0.35rem;">
+    <header id="sovereignTopBar" class="top-bar-shell">
+        <div class="top-bar-row">
+            <nav id="sovereignWorkTabs" class="top-bar-work-tabs" role="tablist" aria-label="Editorial Works">
                 <button type="button" id="tabWorkBiblia" class="uls-chip" role="tab" aria-selected="true"
-                    aria-controls="bibleSovereignSection" data-work-tab="biblia" data-i18n="mostrador.tab.bible"
-                    style="font-weight: 700; border-width: 2px; padding: 0.3rem 0.65rem;">📖 Bible (66)</button>
+                    aria-controls="bibleSovereignSection" data-work-tab="biblia" data-i18n="mostrador.tab.bible">📖 Bible (66)</button>
                 <button type="button" id="tabWorkFelices" class="uls-chip" role="tab" aria-selected="false"
-                    aria-controls="felicesSovereignSection" data-work-tab="felices" data-i18n="mostrador.tab.felices"
-                    style="padding: 0.3rem 0.65rem;">🎨 Beatitudes</button>
+                    aria-controls="felicesSovereignSection" data-work-tab="felices" data-i18n="mostrador.tab.felices">🎨 Beatitudes</button>
                 <button type="button" id="tabWorkEvangelios" class="uls-chip" role="tab" aria-selected="false"
                     aria-controls="evangeliosSovereignSection" data-work-tab="evangelios" data-work-i18n="evangelios"
-                    data-i18n="mostrador.tab.evangelios" style="padding: 0.3rem 0.65rem;">🌅 The Gospels (52)</button>
+                    data-i18n="mostrador.tab.evangelios">🌅 The Gospels (52)</button>
             </nav>
-            <div class="language-wrapper language-region-pill-group" role="group"
-                aria-label="Language and Bible Edition"
-                style="margin: 0; display: inline-flex; flex-wrap: wrap; align-items: center; gap: 0.35rem; padding: 0; background: transparent; border: none;">
-                <button type="button" class="uls-chip" id="sovereignCorpusLangBtn" aria-expanded="false"
-                    aria-controls="bibleLanguageAndRegisterDrawer" style="padding: 0.3rem 0.65rem;">
-                    🌍 <span id="sovereignActiveCorpusLabel">Bible: Español · 7,164</span>
+            <div class="language-region-pill-group" role="group"
+                aria-label="Language and Appearance">
+                <button type="button" class="uls-chip" id="sovereignCorpusLangBtn" data-i18n-autonym="true" aria-expanded="false"
+                    aria-controls="bibleLanguageAndRegisterDrawer">
+                    🌍 <span id="sovereignActiveCorpusLabel">Censo SIL (7,164) · 18 Biblias · Español</span>
                 </button>
-                <button type="button" class="uls-trigger-btn" id="ulsTriggerBtn" aria-haspopup="listbox"
-                    aria-expanded="false" aria-controls="langSelect"
-                    style="padding: 0.3rem 0.65rem; border-radius: 9999px;">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                        stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="12" cy="12" r="10"></circle>
-                        <line x1="2" y1="12" x2="22" y2="12"></line>
-                        <path
-                            d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z">
-                        </path>
-                    </svg>
-                    <span id="ulsCurrentLang">English</span>
-                    <span class="uls-badge" id="ulsUiCountBadge">18 UI</span>
-                </button>
-                <select id="langSelect" aria-label="Language / Idioma" hidden>
-                    <option value="en" selected>English</option>
-                    <option value="es">Español</option>
-                    <option value="bn-BD">বাংলা — বাংলাদেশ (Bangladesh · ঈসা মসীহ)</option>
-                    <option value="bn-IN">বাংলা — ভারত/প্রচলিত (West Bengal · প্রভু যীশু)</option>
-                    <option value="bn">বাংলা</option>
-                    <option value="fr">Français</option>
-                    <option value="pt">Português</option>
-                    <option value="it">Italiano</option>
-                    <option value="id">Bahasa Indonesia</option>
-                    <option value="tr">Türkçe</option>
-                    <option value="ru">Русский</option>
-                    <option value="zh-Hans">简体中文</option>
-                    <option value="ja">日本語</option>
-                    <option value="ko">한국어</option>
-                    <option value="hi">हिन्दी</option>
-                    <option value="ar">العربية</option>
-                    <option value="ur">اردو</option>
-                    <option value="fa">فارسی</option>
-                </select>
-                <button type="button" class="uls-chip" id="btnAppearanceMenu" aria-expanded="false"
-                    aria-controls="appearancePopover" aria-label="Appearance settings"
-                    style="padding: 0.3rem 0.6rem; font-weight: 700;">Aa</button>
-                <button type="button" class="uls-chip" id="btnToggleSurfaceMode" aria-pressed="false"
-                    aria-label="Switch Reading or Pro Studio mode" style="padding: 0.3rem 0.6rem;">🎛️ Studio</button>
+                <button type="button" class="uls-chip" id="btnAppearanceMenu" data-i18n-autonym="true" aria-expanded="false"
+                    aria-controls="appearancePopover" aria-label="Appearance settings">Aa</button>
             </div>
         </div>
-        <div id="appearancePopover" hidden role="region" aria-label="Typography and Theme"
-            style="padding: 0.5rem 0.65rem; border: 1px solid var(--card-border); border-radius: 12px; background: var(--bg-secondary); display: flex; flex-wrap: wrap; align-items: center; gap: 0.35rem;">
-            <button type="button" id="btnThemeLight" class="uls-chip" aria-pressed="true"
-                style="padding: 0.25rem 0.55rem;">☀️ Día</button>
-            <button type="button" id="btnThemeSepia" class="uls-chip" aria-pressed="false"
-                style="padding: 0.25rem 0.55rem;">📜 Sepia</button>
-            <button type="button" id="btnThemeDark" class="uls-chip" aria-pressed="false"
-                style="padding: 0.25rem 0.55rem;">🌙 Noche</button>
-            <button type="button" id="btnFontSerif" class="uls-chip" aria-pressed="true"
-                style="padding: 0.25rem 0.55rem;">Serif</button>
-            <button type="button" id="btnFontSans" class="uls-chip" aria-pressed="false"
-                style="padding: 0.25rem 0.55rem;">Sans</button>
-            <button type="button" id="btnScaleDown" class="uls-chip" aria-label="Decrease text size"
-                style="padding: 0.25rem 0.55rem;">A-</button>
-            <button type="button" id="btnScaleUp" class="uls-chip" aria-label="Increase text size"
-                style="padding: 0.25rem 0.55rem;">A+</button>
+        <div id="appearancePopover" hidden role="region" aria-label="Typography and Theme">
+            <button type="button" id="btnThemeLight" class="uls-chip" data-i18n="top.theme.light" aria-pressed="true">☀️ Día</button>
+            <button type="button" id="btnThemeSepia" class="uls-chip" data-i18n="top.theme.sepia" aria-pressed="false">📜 Sepia</button>
+            <button type="button" id="btnThemeDark" class="uls-chip" data-i18n="top.theme.dark" aria-pressed="false">🌙 Noche</button>
+            <button type="button" id="btnFontSerif" class="uls-chip" data-i18n-autonym="true" aria-pressed="true">Serif</button>
+            <button type="button" id="btnFontSans" class="uls-chip" data-i18n-autonym="true" aria-pressed="false">Sans</button>
+            <button type="button" id="btnScaleDown" class="uls-chip" data-i18n-autonym="true" aria-label="Decrease text size">A-</button>
+            <button type="button" id="btnScaleUp" class="uls-chip" data-i18n-autonym="true" aria-label="Increase text size">A+</button>
+            <button type="button" id="btnToggleSurfaceMode" class="uls-chip" data-i18n="top.btn.studioMode" aria-pressed="false"
+                aria-label="Switch Reading or Pro Studio mode">🎛️ Studio</button>
+
+            <div id="bibleRegisterSelector" class="register-selector-group" role="group" aria-label="Reading Mode">
+                    <button type="button" id="btnRegIntergeneracional" class="uls-chip"
+                        data-register="intergeneracional" data-i18n="mostrador.register.intergenerational">🕊️ Clear
+                        contemporary reading</button>
+                    <button type="button" id="btnRegClasica" class="uls-chip" data-register="clasica"
+                        data-i18n="mostrador.register.classic">📜 Classic tradition
+                        (1909)</button>
+                    <button type="button" id="btnRegBilingue" class="uls-chip" data-register="bilingue"
+                        data-i18n="mostrador.register.bilingual">👥 Side-by-side
+                        bilingual (62/38)</button>
+                    <button type="button" id="toggleRollMode" class="uls-chip"
+                        data-i18n="mostrador.register.roll_toggle">📄 Page view ↔
+                        Continuous scroll</button>
+                    <span id="bibleStageRegisterPulseBadge" class="uls-badge" aria-live="polite">🌡️ Contemporary ·
+                        Clear reading</span>
+                </div>
+
         </div>
-        <!-- Global Orthogonal Corpus Language Funnel (6 Complete Bibles + 7,164 Funnel) & 8 Life Trails (D2-A+) -->
-        <details class="advanced-editorial-drawer" id="bibleLanguageAndRegisterDrawer" style="margin-top: 0.25rem;">
-            <summary hidden aria-hidden="true" data-i18n="mostrador.step1.title"
-                style="display: none; cursor: pointer; font-size: 0.85rem; font-weight: 600; background-color: var(--card-bg, #ffffff); color: var(--text-primary, #141210);">
-                1. Choose Bible language (7,164 languages), reading mode or life trail</summary>
-            <div style="margin-top: 0.65rem; display: flex; flex-direction: column; gap: 0.65rem;">
-                <div id="bibleVerifiedCorpusPills" role="group" aria-label="16 Complete Verified Bibles"
-                    style="display: flex; flex-wrap: wrap; gap: 0.35rem;">
-                    <button type="button" id="quickLangEs" class="uls-chip" data-corpus-lang="es">🇲🇽 Español Siglo XXI
+        <!-- Global Orthogonal Corpus Language Funnel (18 Complete Bibles + SIL 7,164 Census) & 8 Life Trails (D2-A+) -->
+        <details class="advanced-editorial-drawer advanced-editorial-drawer corpus-drawer" id="bibleLanguageAndRegisterDrawer">
+            <summary hidden aria-hidden="true" data-i18n="mostrador.step1.title">
+                1. Choose language: 18 complete Bibles or SIL Census (7,164)</summary>
+            <div>
+                <div class="ek-row-wrap ek-mb-sm">
+                    <button type="button" class="uls-trigger-btn" id="ulsTriggerBtn" data-i18n-autonym="true" aria-haspopup="listbox"
+                        aria-expanded="false" aria-controls="langSelect">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="2" y1="12" x2="22" y2="12"></line>
+                            <path
+                                d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z">
+                            </path>
+                        </svg>
+                        <span id="ulsCurrentLang">English</span>
+                        <span class="uls-badge" id="ulsUiCountBadge">18 UI</span>
+                    </button>
+                    <select id="langSelect" aria-label="Language / Idioma" hidden>
+                        <option value="en" selected>English</option>
+                        <option value="es">Español</option>
+                        <option value="bn-BD">বাংলা — বাংলাদেশ (Bangladesh · ঈসা মসীহ)</option>
+                        <option value="bn-IN">বাংলা — ভারত/প্রচলিত (West Bengal · প্রভু যীশু)</option>
+                        <option value="bn">বাংলা</option>
+                        <option value="fr">Français</option>
+                        <option value="pt">Português</option>
+                        <option value="it">Italiano</option>
+                        <option value="id">Bahasa Indonesia</option>
+                        <option value="tr">Türkçe</option>
+                        <option value="ru">Русский</option>
+                        <option value="zh-Hans">简体中文</option>
+                        <option value="ja">日本語</option>
+                        <option value="ko">한국어</option>
+                        <option value="hi">हिन्दी</option>
+                        <option value="ar">العربية</option>
+                        <option value="ur">اردو</option>
+                        <option value="fa">فارسی</option>
+                    </select>
+                </div>
+                <div id="bibleVerifiedCorpusPills" class="chip-wrap-row" role="group" aria-label="Complete Verified Bibles">
+                    <button type="button" id="quickLangEs" class="uls-chip" data-i18n-autonym="true" data-corpus-lang="es">🇲🇽 Español Siglo XXI
                         (66)</button>
-                    <button type="button" id="quickLangEs1909" class="uls-chip" data-corpus-lang="es-1909">📜 Español
+                    <button type="button" id="quickLangEs1909" class="uls-chip" data-i18n-autonym="true" data-corpus-lang="es-1909">📜 Español
                         Clásica 1909 (66)</button>
-                    <button type="button" id="quickLangEn" class="uls-chip" data-corpus-lang="en">🇺🇸 English KJV
+                    <button type="button" id="quickLangEn" class="uls-chip" data-i18n-autonym="true" data-corpus-lang="en">🇺🇸 English KJV
                         (66)</button>
-                    <button type="button" id="quickLangPt" class="uls-chip" data-corpus-lang="pt">🇧🇷 Português
+                    <button type="button" id="quickLangPt" class="uls-chip" data-i18n-autonym="true" data-corpus-lang="pt">🇧🇷 Português
                         (66)</button>
-                    <button type="button" id="quickLangFr" class="uls-chip" data-corpus-lang="fr">🇫🇷 Français
+                    <button type="button" id="quickLangFr" class="uls-chip" data-i18n-autonym="true" data-corpus-lang="fr">🇫🇷 Français
                         (66)</button>
-                    <button type="button" id="quickLangStp" class="uls-chip" data-corpus-lang="stp">🏔️ O'dam Tepehuano
+                    <button type="button" id="quickLangStp" class="uls-chip" data-i18n-autonym="true" data-corpus-lang="stp">🏔️ O'dam Tepehuano
                         (66)</button>
-                    <button type="button" id="quickLangHe" class="uls-chip" data-corpus-lang="he">🕎 עברית WLC+Delitzsch
+                    <button type="button" id="quickLangHe" class="uls-chip" data-i18n-autonym="true" data-corpus-lang="he">🕎 עברית WLC+Delitzsch
                         (66)</button>
-                    <button type="button" id="quickLangGrc" class="uls-chip" data-corpus-lang="grc">🏛️ Ἑλληνική
+                    <button type="button" id="quickLangGrc" class="uls-chip" data-i18n-autonym="true" data-corpus-lang="grc">🏛️ Ἑλληνική
                         LXX+SRGNT (66)</button>
-                    <button type="button" id="quickLangAr" class="uls-chip" data-corpus-lang="ar">🇸🇦 العربية
+                    <button type="button" id="quickLangAr" class="uls-chip" data-i18n-autonym="true" data-corpus-lang="ar">🇸🇦 العربية
                         (66)</button>
-                    <button type="button" id="quickLangFa" class="uls-chip" data-corpus-lang="fa">🇮🇷 فارسی
+                    <button type="button" id="quickLangFa" class="uls-chip" data-i18n-autonym="true" data-corpus-lang="fa">🇮🇷 فارسی
                         (66)</button>
-                    <button type="button" id="quickLangUr" class="uls-chip" data-corpus-lang="ur">🇵🇰 اردو
+                    <button type="button" id="quickLangUr" class="uls-chip" data-i18n-autonym="true" data-corpus-lang="ur">🇵🇰 اردو
                         (66)</button>
-                    <button type="button" id="quickLangHi" class="uls-chip" data-corpus-lang="hi">🇮🇳 हिन्दी
+                    <button type="button" id="quickLangHi" class="uls-chip" data-i18n-autonym="true" data-corpus-lang="hi">🇮🇳 हिन्दी
                         (66)</button>
-                    <button type="button" id="quickLangBn" class="uls-chip" data-corpus-lang="bn">🇧🇩 বাংলা
+                    <button type="button" id="quickLangBn" class="uls-chip" data-i18n-autonym="true" data-corpus-lang="bn">🇧🇩 বাংলা
                         (66)</button>
-                    <button type="button" id="quickLangId" class="uls-chip" data-corpus-lang="id">🇮🇩 Bahasa Indonesia
+                    <button type="button" id="quickLangId" class="uls-chip" data-i18n-autonym="true" data-corpus-lang="id">🇮🇩 Bahasa Indonesia
                         (66)</button>
-                    <button type="button" id="quickLangRu" class="uls-chip" data-corpus-lang="ru">🇷🇺 Русский
+                    <button type="button" id="quickLangRu" class="uls-chip" data-i18n-autonym="true" data-corpus-lang="ru">🇷🇺 Русский
                         (66)</button>
-                    <button type="button" id="quickLangZhHans" class="uls-chip" data-corpus-lang="zh-Hans">🇨🇳 简体中文
+                    <button type="button" id="quickLangZhHans" class="uls-chip" data-i18n-autonym="true" data-corpus-lang="zh-Hans">🇨🇳 简体中文
                         (66)</button>
                 </div>
-                <div style="display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center;">
-                    <input type="search" id="quickLangFilterInput"
-                        placeholder="Search 7,164 languages (ISO, autonym, country)..."
-                        style="flex: 1; min-width: 180px; min-height: 48px; padding: 0.4rem 0.7rem; border-radius: 10px; border: 1px solid var(--select-border); background: var(--select-bg); color: var(--text-primary);">
+                <div>
+                    <input type="search" id="quickLangFilterInput" class="field-search-input"
+                        placeholder="Search 7,164 languages (ISO, autonym, country)...">
                 </div>
-                <div id="bibleGeoFunnel" aria-label="Geographic 3-Tap Funnel"
-                    style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+                <div id="bibleGeoFunnel" class="geo-funnel-row" aria-label="Geographic 3-Tap Funnel">
                     <select id="bibleSelectRegion" aria-label="World Region">
                         <option value="americas-mesoamerica" data-i18n="region.americas-mesoamerica">Mesoamerica &amp;
                             North America</option>
@@ -268,123 +269,87 @@
                         <option value="kgv">Kalamang (kgv · Draft)</option>
                     </select>
                 </div>
-                <div id="bibleLifeTrails" aria-label="8 Life Trails"
-                    style="display: flex; flex-wrap: wrap; gap: 0.35rem;">
-                    <button type="button" id="btnTrailConsuelo" class="uls-chip" data-trail-id="consuelo">Comfort (Ps
+                <div id="bibleLifeTrails" class="chip-wrap-row" aria-label="8 Life Trails">
+                    <button type="button" id="btnTrailConsuelo" class="uls-chip" data-trail-id="consuelo" data-i18n="trail.consuelo">Comfort (Ps
                         23)</button>
-                    <button type="button" id="btnTrailPaz" class="uls-chip" data-trail-id="paz">Peace (Jn 14)</button>
-                    <button type="button" id="btnTrailPerdon" class="uls-chip" data-trail-id="perdon">Forgiveness (Lk
+                    <button type="button" id="btnTrailPaz" class="uls-chip" data-trail-id="paz" data-i18n="trail.paz">Peace (Jn 14)</button>
+                    <button type="button" id="btnTrailPerdon" class="uls-chip" data-trail-id="perdon" data-i18n="trail.perdon">Forgiveness (Lk
                         15)</button>
-                    <button type="button" id="btnTrailSabiduria" class="uls-chip" data-trail-id="sabiduria">Wisdom (Jas
+                    <button type="button" id="btnTrailSabiduria" class="uls-chip" data-trail-id="sabiduria" data-i18n="trail.sabiduria">Wisdom (Jas
                         1)</button>
-                    <button type="button" id="btnTrailFamilia" class="uls-chip" data-trail-id="familia">Family (1 Cor
+                    <button type="button" id="btnTrailFamilia" class="uls-chip" data-trail-id="familia" data-i18n="trail.familia">Family (1 Cor
                         13)</button>
-                    <button type="button" id="btnTrailEsperanza" class="uls-chip" data-trail-id="esperanza">Hope (Rom
+                    <button type="button" id="btnTrailEsperanza" class="uls-chip" data-trail-id="esperanza" data-i18n="trail.esperanza">Hope (Rom
                         8)</button>
-                    <button type="button" id="btnTrailOracion" class="uls-chip" data-trail-id="oracion">Prayer (Mt
+                    <button type="button" id="btnTrailOracion" class="uls-chip" data-trail-id="oracion" data-i18n="trail.oracion">Prayer (Mt
                         6)</button>
-                    <button type="button" id="btnTrailCreacion" class="uls-chip" data-trail-id="creacion">Creation (Gen
+                    <button type="button" id="btnTrailCreacion" class="uls-chip" data-trail-id="creacion" data-i18n="trail.creacion">Creation (Gen
                         1)</button>
                 </div>
             </div>
         </details>
     </header>
 
-    <section id="bibleSovereignSection" data-active-work="true" data-roll-mode="chapter" data-cowan-focal-groups="4"
-        data-audio-bytes="0" data-jpg-bytes="0"
-        style="max-width: 760px; margin: 0 auto 0.45rem auto; padding: 0.5rem 0.75rem; border: 1px solid var(--card-border); border-radius: 16px; background: var(--card-bg);">
-        <div
-            style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.3rem; margin-bottom: 0.25rem;">
-            <h2 id="bibleMainHeading" data-i18n="mostrador.heading" style="font-size: 0.92rem; margin: 0;">Polyglot
-                Bible Dispenser (66 Books)</h2>
+    <section id="bibleSovereignSection" class="bible-stage-card" data-active-work="true" data-roll-mode="chapter" data-cowan-focal-groups="4"
+        data-audio-bytes="0" data-jpg-bytes="0">
+        <div>
+            <h2 id="bibleMainHeading" data-i18n="mostrador.heading">Bible Reader (66 Books)</h2>
             <span id="epistemicStatusSeal" class="uls-badge" data-seal="seal.unavailable"
                 data-i18n="seal.unavailable">Translation not yet available</span>
         </div>
 
         <!-- Step 1: Compact Single-Row Spatial Navigation Above the Fold (y <= 116px) -->
-        <div id="bibleSpatialNav" aria-label="Book and Chapter Navigator"
-            style="display: flex; flex-wrap: nowrap; align-items: center; justify-content: space-between; gap: 0.25rem; margin-bottom: 0.25rem; max-width: 100%;">
-            <button type="button" id="btnPrevChapter" aria-label="Previous chapter"
-                data-i18n-attr="aria-label:mostrador.nav.prev"
-                style="min-width: 48px; min-height: 48px; border-radius: 10px; flex-shrink: 0;">◀</button>
-            <button type="button" id="btnOpenCompass" aria-label="Choose Book and Chapter in 2 Taps"
-                style="min-height: 48px; padding: 0.2rem 0.35rem; font-size: 0.76rem; font-weight: 700; border-radius: 10px; flex: 1 1 0%; min-width: 112px; text-align: center; line-height: 1.15;">🧭
+        <div id="bibleSpatialNav" class="spatial-nav-bar" aria-label="Book and Chapter Navigator">
+            <button type="button" id="btnPrevChapter" class="spatial-nav-btn spatial-nav-arrow" aria-label="Previous chapter"
+                data-i18n-attr="aria-label:mostrador.nav.prev">◀</button>
+            <button type="button" id="btnOpenCompass" class="spatial-nav-btn spatial-nav-compass" data-i18n-autonym="true" aria-label="Choose Book and Chapter in 2 Taps">🧭
                 43 · John [JHN] · 1:1</button>
-            <button type="button" id="btnNextChapter" aria-label="Next chapter"
-                data-i18n-attr="aria-label:mostrador.nav.next"
-                style="min-width: 48px; min-height: 48px; border-radius: 10px; flex-shrink: 0;">▶</button>
+            <button type="button" id="btnNextChapter" class="spatial-nav-btn spatial-nav-arrow" aria-label="Next chapter"
+                data-i18n-attr="aria-label:mostrador.nav.next">▶</button>
             <button type="button" id="btnToggleAudioNarakeet" class="uls-chip" data-audio-bytes="0"
                 aria-expanded="false" aria-label="Read-Aloud Portico: Listen with dignity"
                 data-i18n="mostrador.oral_portico.toggle" data-i18n-aria-label="mostrador.oral_portico.aria"
-                data-i18n-attr="aria-label:mostrador.oral_portico.aria;title:mostrador.oral_portico.aria"
-                style="min-height: 48px; padding: 0.2rem 0.4rem; font-size: 0.76rem; flex-shrink: 0; line-height: 1.15;">🗣️
+                data-i18n-attr="aria-label:mostrador.oral_portico.aria;title:mostrador.oral_portico.aria">🗣️
                 Listen</button>
         </div>
 
-        <div id="bibleOralPorticoBanner" data-audio-bytes="0" hidden
-            style="margin-bottom: 0.55rem; padding: 0.7rem 0.85rem; border-radius: 12px; border: 1px solid var(--badge-border); background: var(--badge-bg); font-size: 0.88rem; line-height: 1.45;">
+        <div id="bibleOralPorticoBanner" class="oral-portico-banner" data-audio-bytes="0" hidden>
         </div>
 
-        <div id="bibleOrthographyPills" aria-label="Script Variants" hidden
-            style="display: flex; flex-wrap: wrap; gap: 0.35rem; margin-bottom: 0.45rem;">
-            <button type="button" id="btnOrthoInali" class="uls-chip" data-ortho="INALI" data-ortho-lang="stp"
+        <div id="bibleOrthographyPills" class="chip-wrap-row ortho-pills-bar" aria-label="Script Variants" hidden>
+            <button type="button" id="btnOrthoInali" class="uls-chip" data-i18n="ortho.inali" data-ortho="INALI" data-ortho-lang="stp"
                 data-ortho-profile="INALI_2018">School orthography (INALI)</button>
-            <button type="button" id="btnOrthoTradicional" class="uls-chip" data-ortho="Tradicional"
+            <button type="button" id="btnOrthoTradicional" class="uls-chip" data-i18n="ortho.tradicional" data-ortho="Tradicional"
                 data-ortho-lang="stp" data-ortho-profile="ILV_1950">Traditional orthography</button>
-            <button type="button" id="btnOrthoFonetica" class="uls-chip" data-ortho="Fonética" data-ortho-lang="stp"
+            <button type="button" id="btnOrthoFonetica" class="uls-chip" data-i18n="ortho.fonetica" data-ortho="Fonética" data-ortho-lang="stp"
                 data-ortho-profile="FONETICA_IPA">Everyday orthography (WhatsApp)</button>
-            <button type="button" id="btnOrthoBnBd" class="uls-chip" data-ortho="bn-BD" data-ortho-lang="bn"
+            <button type="button" id="btnOrthoBnBd" class="uls-chip" data-i18n-autonym="true" data-ortho="bn-BD" data-ortho-lang="bn"
                 data-ortho-profile="bn-BD" hidden>🇧🇩 বাংলা বাংলাদেশ (bn-BD · ঈসা মসীহ)</button>
-            <button type="button" id="btnOrthoBnIn" class="uls-chip" data-ortho="bn-IN" data-ortho-lang="bn"
+            <button type="button" id="btnOrthoBnIn" class="uls-chip" data-i18n-autonym="true" data-ortho="bn-IN" data-ortho-lang="bn"
                 data-ortho-profile="bn-IN" hidden>🇮🇳 বাংলা ভারত/প্রচলিত (bn-IN · প্রভু যীশু)</button>
-            <button type="button" id="btnOrthoArbTashkeel" class="uls-chip" data-ortho="TASHKEEL_STRIPPED"
+            <button type="button" id="btnOrthoArbTashkeel" class="uls-chip" data-i18n-autonym="true" data-ortho="TASHKEEL_STRIPPED"
                 data-ortho-lang="arb" data-ortho-profile="TASHKEEL_STRIPPED" data-ortho-alt-profile="VOWELIZED"
                 hidden>🕌 العربية بدون تشكيل (Tashkeel ↔ Vocalizado)</button>
-            <button type="button" id="btnOrthoUznCyrl" class="uls-chip" data-ortho="CYRL" data-ortho-lang="uzn"
+            <button type="button" id="btnOrthoUznCyrl" class="uls-chip" data-i18n-autonym="true" data-ortho="CYRL" data-ortho-lang="uzn"
                 data-ortho-profile="CYRL" data-ortho-alt-profile="LATN" hidden>🇺🇿 Ўзбек Кирилл (CYRL ↔ LATN)</button>
-            <button type="button" id="btnOrthoTzmTfng" class="uls-chip" data-ortho="TFNG" data-ortho-lang="tzm"
+            <button type="button" id="btnOrthoTzmTfng" class="uls-chip" data-i18n-autonym="true" data-ortho="TFNG" data-ortho-lang="tzm"
                 data-ortho-profile="TFNG" data-ortho-alt-profile="LATN" hidden>ⵣ ⵜⴰⵎⴰⵣⵉⵖⵜ Tifinagh (TFNG ↔
                 LATN)</button>
         </div>
 
         <!-- External Paratextual Pericopes & Synoptic Parallels Ribbon (D5-A+ / D1-A++) -->
         <nav id="bibleChapterPericopesRibbon" class="chapter-pericopes-ribbon"
-            aria-label="Perícopas y Paralelos Sinópticos del Capítulo" hidden
-            style="display: flex; flex-wrap: nowrap; overflow-x: auto; white-space: nowrap; scrollbar-width: none; gap: 0.35rem; margin-bottom: 0.35rem;">
+            aria-label="Perícopas y Paralelos Sinópticos del Capítulo" hidden>
         </nav>
 
         <!-- Primary Focal Viewport Above the Fold (y ≈ 116px on 360x740px) -->
-        <div id="bibleVerseViewport" data-current-ref="JHN.1" data-lang="es" data-register="intergeneracional"
-            data-status="idle"
-            style="margin-top: 0.15rem; padding: 0.55rem 0.75rem; border-radius: 12px; border: 1px solid var(--card-border); line-height: 1.55; min-height: 165px;">
+        <div id="bibleVerseViewport" class="bible-verse-viewport" data-current-ref="JHN.1" data-lang="es" data-register="intergeneracional"
+            data-status="idle">
             <p class="bible-verse-line" data-i18n="mostrador.status.loading">Loading passage…</p>
         </div>
 
         <div id="stage-action">
-            <div
-                style="display: flex; flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; align-items: center; justify-content: space-between; gap: 0.25rem; margin: 0.25rem 0;">
-                <div id="bibleRegisterSelector" class="register-selector-group" role="group" aria-label="Reading Mode"
-                    style="display: flex; flex-wrap: nowrap; align-items: center; gap: 0.25rem;">
-                    <button type="button" id="btnRegIntergeneracional" class="uls-chip"
-                        data-register="intergeneracional" data-i18n="mostrador.register.intergenerational"
-                        style="white-space: nowrap; padding: 0.2rem 0.45rem; font-size: 0.74rem;">🕊️ Clear
-                        contemporary reading</button>
-                    <button type="button" id="btnRegClasica" class="uls-chip" data-register="clasica"
-                        data-i18n="mostrador.register.classic"
-                        style="white-space: nowrap; padding: 0.2rem 0.45rem; font-size: 0.74rem;">📜 Classic tradition
-                        (1909)</button>
-                    <button type="button" id="btnRegBilingue" class="uls-chip" data-register="bilingue"
-                        data-i18n="mostrador.register.bilingual"
-                        style="white-space: nowrap; padding: 0.2rem 0.45rem; font-size: 0.74rem;">👥 Side-by-side
-                        bilingual (62/38)</button>
-                    <button type="button" id="toggleRollMode" class="uls-chip"
-                        data-i18n="mostrador.register.roll_toggle"
-                        style="white-space: nowrap; padding: 0.2rem 0.45rem; font-size: 0.74rem;">📄 Page view ↔
-                        Continuous scroll</button>
-                    <span id="bibleStageRegisterPulseBadge" class="uls-badge" aria-live="polite"
-                        style="white-space: nowrap; padding: 0.2rem 0.45rem; font-size: 0.72rem;">🌡️ Contemporary ·
-                        Clear reading</span>
-                </div>
+            <div>
                 <button type="button" id="btnRegEstudio" class="uls-chip" data-study-shortcut="true"
                     data-i18n="mostrador.register.study" hidden aria-hidden="true" tabindex="-1">🔬 Word-by-word study
                     (15 Columns)</button>
@@ -394,19 +359,17 @@
         <dialog id="bibleCoordinateCompassModal" aria-label="Tactile 66-Book Compass">
             <div class="modal-header">
                 <h3 class="modal-title" data-i18n="mostrador.step2.title">2. Choose passage (66 Books)</h3>
-                <button type="button" class="modal-close" id="btnCloseCompassModal" aria-label="Close">✕</button>
+                <button type="button" class="modal-close" id="btnCloseCompassModal" data-i18n-autonym="true" aria-label="Close">✕</button>
             </div>
-            <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem; margin-bottom: 0.75rem;">
-                <input type="text" id="mostradorRefInput" data-i18n-attr="placeholder:mostrador.step2.placeholder"
-                    placeholder="Passage (e.g. Rom 1:16, Jn 3:16, Sal 23)"
-                    style="flex: 1; min-height: 48px; padding: 0.45rem 0.75rem; border-radius: 10px; border: 1px solid var(--select-border); background: var(--select-bg); color: var(--text-primary);">
+            <div>
+                <input type="text" id="mostradorRefInput" class="field-search-input" data-i18n-attr="placeholder:mostrador.step2.placeholder"
+                    placeholder="Passage (e.g. Rom 1:16, Jn 3:16, Sal 23)">
                 <button type="button" id="btnGoReference" class="uls-chip"
                     data-i18n="mostrador.step2.open_compass">Go</button>
             </div>
-            <div id="spotlightSearchResults" role="listbox" aria-label="Spotlight Corpus Results" hidden
-                style="display:flex;flex-direction:column;gap:0.25rem;margin-bottom:0.65rem;max-height:220px;overflow-y:auto;">
+            <div id="spotlightSearchResults" class="spotlight-results-list" role="listbox" aria-label="Spotlight Corpus Results" hidden>
             </div>
-            <div style="display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 0.75rem;">
+            <div>
                 <select id="bibleSelectBook" aria-label="Bible Book (66 Books)">
                     <option value="GEN">01. Genesis (GEN)</option>
                     <option value="EXO">02. Exodus (EXO)</option>
@@ -424,30 +387,23 @@
                     <option value="23">23</option>
                 </select>
             </div>
-            <div id="bibleCoordinateCompassGrid"
-                style="display: grid; grid-template-columns: repeat(auto-fill, minmax(76px, 1fr)); gap: 0.4rem; max-height: 55vh; overflow-y: auto;">
+            <div id="bibleCoordinateCompassGrid" class="compass-grid">
             </div>
         </dialog>
     </section>
 
-    <main class="container" id="felicesSovereignSection" data-active-work="false" hidden
-        style="display: none; max-width: 760px; margin: 0 auto 0.35rem auto; padding: 0.35rem 0.55rem;">
+    <main class="container" id="felicesSovereignSection" data-active-work="false" hidden>
         <section id="felicesStageDiagnostic">
-            <div
-                style="display:flex;align-items:baseline;justify-content:space-between;gap:0.35rem;flex-wrap:wrap;margin-bottom:0.2rem;">
-                <h1 id="workTitle" data-i18n="felices.title" style="font-size:0.95rem;line-height:1.15;margin:0;">The
+            <div>
+                <h1 id="workTitle" data-i18n="felices.title">The
                     Blessed of the Lord Jesus</h1>
-                <span class="category-badge" id="categoryBadge" data-i18n="felices.badge"
-                    style="margin:0;padding:0.1rem 0.4rem;font-size:0.68rem;">Public Domain Educational Resource</span>
+                <span class="category-badge" id="categoryBadge" data-i18n="felices.badge">Public Domain Educational Resource</span>
             </div>
-            <p class="subtitle" id="workDesc" data-i18n="felices.desc"
-                style="font-size:0.75rem;line-height:1.2;margin:0 0 0.25rem 0;">Beatitudes Coloring Booklet (Matthew 5)
+            <p class="subtitle" id="workDesc" data-i18n="felices.desc">Beatitudes Coloring Booklet (Matthew 5)
             </p>
-            <div id="felicesDichasAndPlatesBar"
-                style="display:flex;flex-wrap:wrap;gap:0.25rem;justify-content:center;align-items:center;margin-bottom:0.25rem;">
-                <select id="felicesLangSelect" aria-label="Idioma de Los Felices"
-                    data-i18n-attr="aria-label:felices.langSelectAria"
-                    style="min-height:48px;padding:0.35rem 0.6rem;border-radius:10px;border:1px solid var(--select-border);background:var(--select-bg);color:var(--text-primary);font-size:0.82rem;">
+            <div id="felicesDichasAndPlatesBar">
+                <select id="felicesLangSelect" hidden aria-label="Idioma de Los Felices"
+                    data-i18n-attr="aria-label:felices.langSelectAria">
                     <option value="es" selected>🇲🇽 Español (es)</option>
                     <option value="en">🇺🇸 English (en)</option>
                     <option value="pt">🇧🇷 Português (pt)</option>
@@ -467,8 +423,7 @@
                     <option value="ur">🇵🇰 اردو (ur)</option>
                     <option value="fa">🇮🇷 فارسی (fa)</option>
                 </select>
-                <select id="felicesDichaSelect" aria-label="12 Dichas de Los Felices"
-                    style="min-height:48px;padding:0.35rem 0.6rem;border-radius:10px;border:1px solid var(--select-border);background:var(--select-bg);color:var(--text-primary);font-size:0.82rem;">
+                <select id="felicesDichaSelect" aria-label="12 Dichas de Los Felices">
                     <option value="1">Dicha 1 · Mt 5:1 (Jesús sube al Monte)</option>
                     <option value="2">Dicha 2 · Mt 5:3 (Pobres en Espíritu)</option>
                     <option value="3">Dicha 3 · Mt 5:4 (Los que Lloran)</option>
@@ -478,13 +433,12 @@
                     <option value="7">Dicha 7 · Mt 5:8 (Limpio Corazón)</option>
                     <option value="8">Dicha 8 · Mt 5:9 (Pacificadores)</option>
                     <option value="9">Dicha 9 · Mt 5:10 (Perseguidos por la Justicia)</option>
-                    <option value="10">Dicha 10 · Lc 11:28 (Oyen y Guardan la Palabra)</option>
-                    <option value="11" selected>Dicha 11 · Mt 5:12 / Jn 20:29 (Gozo de los Profetas)</option>
+                    <option value="10">Dicha 10 · Mt 5:11 (Bienaventurados cuando os vituperen)</option>
+                    <option value="11" selected>Dicha 11 · Mt 5:12 (Gozo de los Profetas)</option>
                     <option value="12">Dicha 12 · Ap 22:14 (Árbol de la Vida)</option>
                 </select>
-                <select id="felicesPlateSelect" aria-label="27 Láminas de Los Felices"
-                    style="min-height:48px;padding:0.35rem 0.6rem;border-radius:10px;border:1px solid var(--select-border);background:var(--select-bg);color:var(--text-primary);font-size:0.82rem;">
-                    <option value="1">Lámina 1 / 27 (Mt 5:3)</option>
+                <select id="felicesPlateSelect" aria-label="27 Láminas de Los Felices">
+                    <option value="1">Lámina 1 / 27 (Mt 5:1)</option>
                     <option value="2">Lámina 2 / 27 (Mt 5:3)</option>
                     <option value="3">Lámina 3 / 27 (Mt 5:3)</option>
                     <option value="4">Lámina 4 / 27 (Mt 5:3)</option>
@@ -512,8 +466,7 @@
                     <option value="26">Lámina 26 / 27 (Mt 5:1b)</option>
                     <option value="27">Lámina 27 / 27 (Mt 5:12)</option>
                 </select>
-                <button type="button" id="btnFelicesOpenInBible" class="uls-chip" data-felices-osis="MAT.5.12"
-                    style="min-height:48px;padding:0.35rem 0.75rem;font-size:0.8rem;">📖 Abrir pasaje en La
+                <button type="button" id="btnFelicesOpenInBible" class="uls-chip" data-i18n="felices.open_in_bible" data-felices-osis="MAT.5.12">📖 Abrir pasaje en La
                     Biblia</button>
             </div>
             <div class="focal-viewer" id="focalViewer">
@@ -528,15 +481,14 @@
                     </div>
                 </div>
                 <div class="focal-controls">
-                    <button type="button" class="focal-btn" aria-label="Previous plate" id="btnPrevPlate"><span
-                            class="sr-only">Previous</span>◀</button>
+                    <button type="button" class="focal-btn" aria-label="Previous plate" id="btnPrevPlate" data-i18n-autonym="true"><span
+                            class="sr-only" data-i18n="felices.prevPlate">Previous</span>◀</button>
                     <div class="focal-plate-indicator"><span id="plateIndexText">Plate 24 / 27</span></div>
-                    <button type="button" class="focal-btn" aria-label="Next plate" id="btnNextPlate"><span
-                            class="sr-only">Next</span>▶</button>
+                    <button type="button" class="focal-btn" aria-label="Next plate" id="btnNextPlate" data-i18n-autonym="true"><span
+                            class="sr-only" data-i18n="felices.nextPlate">Next</span>▶</button>
                 </div>
-                <details class="advanced-editorial-drawer" style="margin-top: 0.5rem;">
-                    <summary data-i18n="felices.quickActionsSummary"
-                        style="cursor: pointer; font-size: 0.82rem; color: var(--text-primary);">Quick plate
+                <details class="advanced-editorial-drawer">
+                    <summary data-i18n="felices.quickActionsSummary">Quick plate
                         actions</summary>
                     <div class="focal-quick-actions">
                         <button type="button" class="btn-micro-action" id="btnPrintPlate"><span id="btnPrintPlateText"
@@ -549,8 +501,7 @@
                 </details>
             </div>
             <!-- Socratic Wonder Pedagogical Card for 27 Plates (D9-A+ / D7-V3UX) -->
-            <aside id="felicesSocraticWonderCard" class="socratic-wonder-card" aria-live="polite"
-                style="margin: 0.65rem 0; padding: 0.65rem 0.85rem; border-radius: 12px; border: 1px solid var(--card-border); background: var(--bg-secondary); font-size: 0.86rem; line-height: 1.45;">
+            <aside id="felicesSocraticWonderCard" class="socratic-wonder-card" aria-live="polite">
             </aside>
             <!-- Paper Format Selector ISO A4 vs US Letter (D2-A+, D8-A+) -->
             <div class="paper-toggle-wrapper" role="group" aria-label="Paper Format">
@@ -573,9 +524,9 @@
                     <span class="btn-subtitle" id="btnSubSheets" data-i18n="felices.sheetsSub">1 page per sheet · Ideal
                         for coloring</span>
                 </a>
-                <div style="display: flex; flex-direction: column; flex: 1; align-items: center;">
+                <div>
                     <a id="linkBooklet" href="dist/en/v1/mostrador/felices-en-v1-booklet.pdf"
-                        class="btn-card btn-booklet" download="felices-en-v1-booklet.pdf" style="width: 100%;">
+                        class="btn-card btn-booklet" download="felices-en-v1-booklet.pdf">
                         <div class="btn-header"><span id="btnTitleBooklet" data-i18n="felices.bookletTitle">Booklet
                                 (PDF)</span></div>
                         <span class="btn-subtitle" id="btnSubBooklet" data-i18n="felices.bookletSub">Saddle-stitch
@@ -583,20 +534,16 @@
                     </a>
                 </div>
             </div>
-            <details class="advanced-editorial-drawer" style="margin-top: 1rem;">
-                <summary data-i18n="felices.foldingGuideSummary"
-                    style="cursor: pointer; font-size: 0.84rem; color: var(--text-primary);">📖 Folding Guide,
+            <details class="advanced-editorial-drawer">
+                <summary data-i18n="felices.foldingGuideSummary">📖 Folding Guide,
                     Optical Transfer &amp; Contact</summary>
-                <div
-                    style="margin-top: 0.65rem; display: flex; flex-direction: column; align-items: center; gap: 0.5rem;">
+                <div>
                     <button type="button" class="fold-guide-trigger" id="foldGuideTrigger"
                         data-i18n="felices.foldGuideTrigger">📖 How to print and fold?</button>
                     <button type="button" class="optical-trigger" id="btnFelicesOpticalShare"><span
                             id="opticalTriggerText" data-i18n="felices.opticalBtn">Share without cables (Screen to
                             camera)</span></button>
-                    <button type="button" id="footerContactBtn" data-i18n="felices.contactBtn"
-                        style="background: none; border: none; color: var(--text-muted); cursor: pointer; text-decoration: underline;">Contact,
-                        Collaboration &amp; Support</button>
+                    
                 </div>
             </details>
             <div class="offline-badge" id="offlineBadge"><span id="offlineBadgeText"
@@ -606,15 +553,12 @@
         </section>
     </main>
 
-    <section id="evangeliosSovereignSection" class="container" data-active-work="false" hidden
-        style="display: none; max-width: 760px; margin: 0 auto 0.4rem auto; padding: 0.35rem 0.55rem; border: 1px solid var(--card-border); border-radius: 14px; background: var(--card-bg);">
-        <div
-            style="display:flex;flex-wrap:nowrap;align-items:center;justify-content:space-between;gap:0.25rem;margin-bottom:0.25rem;">
-            <h2 id="evangeliosMainHeading" style="font-size:0.88rem;line-height:1.15;margin:0;">🌅 Los Evangelios · 52
+    <section id="evangeliosSovereignSection" class="container" data-active-work="false" hidden>
+        <div>
+            <h2 id="evangeliosMainHeading">🌅 Los Evangelios · 52
                 Láminas</h2>
-            <div style="display:flex;flex-wrap:nowrap;align-items:center;gap:0.25rem;">
-                <select id="evangeliosLangSelect" aria-label="Idioma de Los Evangelios" hidden
-                    style="display:none;min-height:48px;padding:0.2rem 0.45rem;border-radius:10px;border:1px solid var(--select-border);background:var(--select-bg);color:var(--text-primary);font-size:0.78rem;">
+            <div>
+                <select id="evangeliosLangSelect" aria-label="Idioma de Los Evangelios" hidden>
                     <option value="es" selected>🇲🇽 Español (es)</option>
                     <option value="en">🇺🇸 English (en)</option>
                     <option value="pt">🇧🇷 Português (pt)</option>
@@ -624,80 +568,64 @@
                     <option value="stp">🏔️ O'dam Tepehuano (stp)</option>
                 </select>
                 <span class="uls-badge" id="evangeliosGlobalLangBadge" data-unified-header="true" role="button"
-                    tabindex="0"
-                    style="display:inline-flex;align-items:center;min-height:48px;padding:0.2rem 0.55rem;cursor:pointer;white-space:nowrap;">🌍
+                    tabindex="0">🌍
                     ES · 7,164</span>
             </div>
         </div>
-        <div id="evangeliosQuarterTabs" role="tablist" aria-label="Liturgical Quarters"
-            style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0.2rem;margin-bottom:0.25rem;">
-            <button type="button" class="uls-chip evangelios-quarter-btn" data-evangelios-quarter="T1"
-                aria-selected="true"
-                style="padding:0.15rem 0.25rem;font-size:0.72rem;min-width:48px;min-height:48px;">T1 · W1–13</button>
-            <button type="button" class="uls-chip evangelios-quarter-btn" data-evangelios-quarter="T2"
-                aria-selected="false"
-                style="padding:0.15rem 0.25rem;font-size:0.72rem;min-width:48px;min-height:48px;">T2 · W14–26</button>
-            <button type="button" class="uls-chip evangelios-quarter-btn" data-evangelios-quarter="T3"
-                aria-selected="false"
-                style="padding:0.15rem 0.25rem;font-size:0.72rem;min-width:48px;min-height:48px;">T3 · W27–39</button>
-            <button type="button" class="uls-chip evangelios-quarter-btn" data-evangelios-quarter="T4"
-                aria-selected="false"
-                style="padding:0.15rem 0.25rem;font-size:0.72rem;min-width:48px;min-height:48px;">T4 · W40–52</button>
+        <div id="evangeliosQuarterTabs" role="tablist" aria-label="Liturgical Quarters">
+            <button type="button" id="btnEvangeliosQuarterT1" class="uls-chip evangelios-quarter-btn" data-evangelios-quarter="T1" data-i18n="evangelios.quarter.t1"
+                aria-selected="true">T1 · W1–13</button>
+            <button type="button" id="btnEvangeliosQuarterT2" class="uls-chip evangelios-quarter-btn" data-evangelios-quarter="T2" data-i18n="evangelios.quarter.t2"
+                aria-selected="false">T2 · W14–26</button>
+            <button type="button" id="btnEvangeliosQuarterT3" class="uls-chip evangelios-quarter-btn" data-evangelios-quarter="T3" data-i18n="evangelios.quarter.t3"
+                aria-selected="false">T3 · W27–39</button>
+            <button type="button" id="btnEvangeliosQuarterT4" class="uls-chip evangelios-quarter-btn" data-evangelios-quarter="T4" data-i18n="evangelios.quarter.t4"
+                aria-selected="false">T4 · W40–52</button>
         </div>
-        <div style="display:flex;flex-wrap:nowrap;align-items:center;gap:0.3rem;margin-bottom:0.25rem;">
-            <label id="evangeliosWeekSelectLabel" for="evangeliosWeekSelect"
-                style="font-size:0.76rem;font-weight:600;white-space:nowrap;">Week:</label>
-            <select id="evangeliosWeekSelect" aria-label="Gospel Week"
-                style="min-height:48px;padding:0.2rem 0.4rem;flex:1;min-width:0;"></select>
+        <div>
+            <label id="evangeliosWeekSelectLabel" for="evangeliosWeekSelect">Week:</label>
+            <select id="evangeliosWeekSelect" aria-label="Gospel Week"></select>
         </div>
-        <div id="evangeliosActivePlateCard" data-evangelios-id="s01"
-            style="padding:0.55rem;border-radius:10px;border:1px solid var(--card-border);background:var(--bg-secondary);">
+        <div id="evangeliosActivePlateCard" data-evangelios-id="s01">
         </div>
     </section>
 
     <!-- Global Harel Drawers Host (Shared across La Biblia, Los Felices, and Los Evangelios · D8-B+) -->
-    <section id="sovereignGlobalDrawersHost" data-global-harel-host="true"
-        style="max-width: 760px; margin: 0 auto 1rem auto; padding: 0 0.5rem;">
+    <div id="mobileSheetBackdrop" class="mobile-sheet-backdrop" hidden></div>
+    <section id="sovereignGlobalDrawersHost" data-global-harel-host="true">
         <!-- 4 Progressive Harel XOR Doors (<= 1 sheet open at any time) -->
-        <nav id="bibleProgressiveSheetDoors" aria-label="Bible Dispenser Drawers"
-            style="position: sticky; top: 0; z-index: 30; background: var(--bg-primary); padding: 0.25rem 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.35rem; margin-top: 0.15rem;">
-            <div id="stickyDrawerContextHeader" hidden
-                style="grid-column: 1 / -1; display: flex; flex-wrap: nowrap; align-items: center; justify-content: space-between; gap: 0.35rem; padding: 0.15rem 0.4rem; border-radius: 8px; border: 1px solid var(--card-border); background: var(--bg-secondary); font-size: 0.74rem;">
-                <span id="stickyActiveVersePill" style="font-weight: 700; white-space: nowrap;">📖 JHN 1:1</span>
-                <div style="display: inline-flex; align-items: center; gap: 0.25rem;">
-                    <button type="button" id="stickyActiveLangBtn" class="uls-chip"
-                        style="min-height: 48px; min-width: 48px; padding: 0.15rem 0.45rem; font-size: 0.72rem;">🌍
+        <nav id="bibleProgressiveSheetDoors" class="inspector-doors-grid" aria-label="Biblical Tools Drawers">
+            <div id="stickyDrawerContextHeader" class="sticky-drawer-context-header" hidden>
+                <span id="stickyActiveVersePill">📖 JHN 1:1</span>
+                <div class="ek-row-wrap">
+                    <button type="button" id="stickyActiveLangBtn" class="uls-chip" data-i18n-autonym="true">🌍
                         ES</button>
-                    <button type="button" id="btnStickyJumpToCanvas" class="uls-chip"
-                        style="min-height: 48px; min-width: 48px; padding: 0.15rem 0.45rem; font-size: 0.72rem;">↑
+                    <button type="button" id="btnStickyJumpToCanvas" class="uls-chip" data-i18n="nav.jumpToCanvas">↑
                         Lienzo</button>
+                    <button type="button" id="btnCloseMobileSheet" class="uls-chip mobile-sheet-close-btn"
+                        data-i18n-autonym="true" aria-label="Cerrar panel">✕</button>
                 </div>
             </div>
             <button type="button" id="bibleEasyDrawer" class="uls-chip" data-open="false" aria-expanded="false"
-                aria-controls="bibleEasyDrawerPanel"
-                style="padding:0.25rem 0.45rem;font-size:0.76rem;line-height:1.15;"><strong
+                aria-controls="bibleEasyDrawerPanel"><strong
                     data-i18n="mostrador.door.study">💡 1. Word-by-Word Study (15 Columns)</strong><span
                     class="uls-badge hig-tech-meta" hidden>15 Col</span></button>
             <button type="button" id="btnOpenPrintEditionsSheet" class="uls-chip" data-open="false"
-                aria-expanded="false" aria-controls="biblePrintEditionsSheet"
-                style="padding:0.25rem 0.45rem;font-size:0.76rem;line-height:1.15;"><strong
+                aria-expanded="false" aria-controls="biblePrintEditionsSheet"><strong
                     data-i18n="mostrador.door.print">🖨️ 2. Print &amp; 14 PDF Editions</strong></button>
             <button type="button" id="btnOpenFieldWorkshopSheet" class="uls-chip studio-only-control" data-open="false"
-                aria-expanded="false" aria-controls="bibleFieldWorkshopSheet"
-                style="padding:0.25rem 0.45rem;font-size:0.76rem;line-height:1.15;"><strong
+                aria-expanded="false" aria-controls="bibleFieldWorkshopSheet"><strong
                     data-i18n="mostrador.door.improve">🌱 3. Suggest Improvement</strong></button>
             <button type="button" id="btnOpenShareAndAuditSheet" class="uls-chip studio-only-control" data-open="false"
-                aria-expanded="false" aria-controls="bibleShareAndAuditSheet"
-                style="padding:0.25rem 0.45rem;font-size:0.76rem;line-height:1.15;"><strong
+                aria-expanded="false" aria-controls="bibleShareAndAuditSheet"><strong
                     data-i18n="mostrador.door.share">📲 4. Share Offline &amp; QR</strong></button>
         </nav>
 
         <!-- Drawer 1: 15-Column Word-by-Word Study (Lazy-loaded via estudio.js) -->
         <section id="bibleEasyDrawerPanel" class="apple-sheet" data-sheet="study" data-strong-id="G3056" hidden>
-            <h3 style="font-size: 1rem; margin-bottom: 0.5rem;" data-i18n="study.title">15-Column Word-by-Word Study
+            <h3 data-i18n="study.title">15-Column Word-by-Word Study
                 &amp; Biblical World</h3>
-            <nav id="studyHarelSubtabsBar" role="tablist" aria-label="Word Study and Philology Subtabs"
-                style="display:flex;flex-wrap:wrap;gap:0.35rem;margin-bottom:0.6rem;">
+            <nav id="studyHarelSubtabsBar" class="subtabs-bar" role="tablist" aria-label="Word Study and Philology Subtabs">
                 <button type="button" id="btnStudySubtabWords" class="uls-chip" role="tab" data-study-subtab-btn="words"
                     data-i18n="study.subtab.words" aria-selected="true" aria-pressed="true">🔤 1. Words (15-Col) &amp;
                     Lexicon</button>
@@ -709,13 +637,13 @@
                     aria-pressed="false">📐 3. Rosetta, WFST &amp; Diachronic</button>
             </nav>
             <div data-study-subtab-panel="words">
-                <div id="leipzig14ColStratumAction" style="margin-bottom: 0.6rem;"></div>
+                <div id="leipzig14ColStratumAction"></div>
             </div>
-            <div id="nsm65StratumCard" data-study-subtab-panel="rosetta" hidden style="margin-bottom: 0.5rem;"></div>
-            <div id="philologyRosettaStaticHost" data-study-subtab-panel="calibrate" hidden class="rosetta-static-slot"
-                style="margin-bottom: 0.6rem;">
-                <select id="rosettaFilterCategorySelect" aria-label="Philology Rosetta Category"
-                    style="min-height:48px;padding:0.3rem 0.55rem;border-radius:8px;border:1px solid var(--select-border);background:var(--select-bg);color:var(--text-primary);font-size:0.78rem;margin-bottom:0.4rem;">
+            <div id="nsm65StratumCard" data-study-subtab-panel="rosetta" hidden></div>
+            <div id="studyUbsComparatorHost" data-study-subtab-panel="rosetta" hidden></div>
+            <div id="studyOnomasticonExplorerHost" data-study-subtab-panel="rosetta" hidden></div>
+            <div id="philologyRosettaStaticHost" data-study-subtab-panel="calibrate" hidden class="rosetta-static-slot">
+                <select id="rosettaFilterCategorySelect" aria-label="Philology Rosetta Category">
                     <option value="all" selected data-i18n="rosetta.filter.all">All 5 alignment classes (4,036 tokens)
                     </option>
                     <option value="roots" data-i18n="rosetta.filter.roots">1. Semitic Consonantal Roots</option>
@@ -729,37 +657,29 @@
                     <option value="divergence" data-i18n="rosetta.filter.divergence">8. Bicanonical Divergence Rules
                     </option>
                 </select>
-                <input type="search" id="rosettaSearchInput"
+                <input type="search" id="rosettaSearchInput" class="field-search-input"
                     aria-label="Search Strong ID, Consonantal Root, LXX-MT Cognate, or Bicanonical Verse"
-                    placeholder="Search H7225, G3056, GEN.31.55..."
-                    style="min-height:48px;width:100%;padding:0.4rem 0.65rem;border-radius:8px;border:1px solid var(--select-border);background:var(--select-bg);color:var(--text-primary);margin-bottom:0.4rem;">
+                    placeholder="Search H7225, G3056, GEN.31.55...">
                 <div id="rosettaExplorerResultsRows" role="region" aria-live="polite"></div>
             </div>
-            <div id="realiaMetrologyStratumCard" data-study-subtab-panel="rosetta" hidden
-                style="margin-bottom: 0.5rem; font-size: 0.88rem;"></div>
-            <div id="tskCrossRefsStratumCard" data-study-subtab-panel="rosetta" hidden
-                style="margin-bottom: 0.5rem; display: flex; flex-wrap: wrap; gap: 0.35rem;"></div>
-            <div id="bibleAnalyticalThermometerPanel" data-study-subtab-panel="calibrate" hidden
-                style="font-size: 0.82rem; margin-bottom: 0.5rem;"></div>
-            <div id="wfstAndScriptioContinuaHost" data-study-subtab-panel="calibrate" hidden
-                style="margin-bottom: 0.5rem; font-size: 0.82rem;"></div>
+            <div id="realiaMetrologyStratumCard" data-study-subtab-panel="rosetta" hidden></div>
+            <div id="tskCrossRefsStratumCard" data-study-subtab-panel="rosetta" hidden></div>
+            <div id="bibleAnalyticalThermometerPanel" data-study-subtab-panel="calibrate" hidden></div>
+            <div id="wfstAndScriptioContinuaHost" data-study-subtab-panel="calibrate" hidden></div>
             <details id="diachronicSubstitutionsDetails" open data-study-subtab-panel="calibrate" hidden
-                class="diachronic-substitutions-details" style="margin-top: 0.45rem;">
-                <summary id="diachronicSubstitutionsSummary" data-i18n="study.diachronic_summary"
-                    style="cursor:pointer;font-size:0.78rem;color:var(--text-secondary);">View 1909 → 21st Century
+                class="diachronic-substitutions-details">
+                <summary id="diachronicSubstitutionsSummary" data-i18n="study.diachronic_summary">View 1909 → 21st Century
                     substitutions in this chapter</summary>
-                <div id="diachronicRegisterAuditPanel" style="margin-top:0.35rem;font-size:0.82rem;"></div>
+                <div id="diachronicRegisterAuditPanel"></div>
             </details>
-            <div id="bibleBranchAndTypologyPanel" data-study-subtab-panel="calibrate" hidden
-                style="margin-top: 0.6rem; font-size: 0.85rem;"></div>
+            <div id="bibleBranchAndTypologyPanel" data-study-subtab-panel="calibrate" hidden></div>
         </section>
 
         <!-- Drawer 2: Print Settings & 14 Canonical PDF Editions -->
         <section id="biblePrintEditionsSheet" class="apple-sheet" data-sheet="print" hidden>
-            <h3 style="font-size: 1rem; margin-bottom: 0.5rem;" data-i18n="mostrador.door.print">🖨️ 2. Print &amp; 14
+            <h3 data-i18n="mostrador.door.print">🖨️ 2. Print &amp; 14
                 PDF Editions</h3>
-            <nav id="printDosisHarelSubtabsBar" role="tablist" aria-label="Print and Editions Subtabs"
-                style="display:flex;flex-wrap:wrap;gap:0.35rem;margin-bottom:0.6rem;">
+            <nav id="printDosisHarelSubtabsBar" class="subtabs-bar" role="tablist" aria-label="Print and Editions Subtabs">
                 <button type="button" id="btnPrintSubtabDoses" class="uls-chip" role="tab" data-print-subtab-btn="doses"
                     data-i18n="print.subtab.doses" aria-selected="true" aria-pressed="true">📄 1. Doses &amp; 14
                     Editions</button>
@@ -768,15 +688,15 @@
                     aria-pressed="false">🖨️ 2. Imposition &amp; Duplex</button>
                 <button type="button" id="btnPrintSubtabStationery" class="uls-chip" role="tab"
                     data-print-subtab-btn="stationery" data-i18n="print.subtab.stationery" aria-selected="false"
-                    aria-pressed="false">🎨 3. Stationery, Photocopy &amp; Social Card</button>
+                    aria-pressed="false">🎨 3. Stationery A6 &amp; Copy Quality</button>
             </nav>
             <!-- Post-Fixation 1-Row Tri-Column Paper Dispenser (Dose 1, Dose 2, Dose 3 · D5-R38) -->
             <div id="mostradorDoseCards" class="mostrador-dose-grid" data-print-subtab-panel="doses"
-                aria-label="Choose printable dose" style="margin-bottom: 0.7rem;">
+                aria-label="Choose printable dose">
                 <div class="dose-card" data-dose="1">
                     <div class="dose-card-meta">
                         <strong data-i18n="dose.1.title">Dose 1 · Sheets around this verse</strong>
-                        <p style="font-size: 0.78rem; color: var(--text-secondary);" data-i18n="dose.1.subtitle">1–3
+                        <p data-i18n="dose.1.subtitle">1–3
                             printable sheets with the exact pages (~35 KB)</p>
                     </div>
                     <button type="button" id="btnDose1Sheets" class="btn-modal-action dose-card-cta"
@@ -785,49 +705,42 @@
                 <div class="dose-card" data-dose="2">
                     <div class="dose-card-meta">
                         <strong data-i18n="dose.2.title">Dose 2 · Study Booklet (Block)</strong>
-                        <p style="font-size: 0.78rem; color: var(--text-secondary);" data-i18n="dose.2.subtitle">
+                        <p data-i18n="dose.2.subtitle">
                             Canonical block booklet ready to fold &amp; staple (~120 KB)</p>
                     </div>
                     <a id="linkDose2BlockPdf" href="#biblePrintEditionsSheet" download="ekovoz-es-B65.pdf"
                         class="btn-modal-secondary dose-card-cta"
-                        style="text-decoration: none; display: inline-flex; align-items: center;"
                         data-i18n="dose.2.cta">📘 Block PDF</a>
                 </div>
                 <div class="dose-card" data-dose="3">
                     <div class="dose-card-meta">
                         <strong data-i18n="dose.3.title">Dose 3 · Complete Bible (66 Books)</strong>
-                        <p style="font-size: 0.78rem; color: var(--text-secondary);" data-i18n="dose.3.subtitle">Full
+                        <p data-i18n="dose.3.subtitle">Full
                             66-book PDF with hierarchical bookmarks</p>
                     </div>
                     <a id="linkDose3FullBiblePdf" href="#biblePrintEditionsSheet" download="ekovoz-biblia-es.pdf"
                         class="btn-modal-secondary dose-card-cta"
-                        style="text-decoration: none; display: inline-flex; align-items: center;"
                         data-i18n="dose.3.cta">📚 Full Bible</a>
                 </div>
             </div>
-            <div data-print-subtab-panel="doses"
-                style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:0.5rem;margin-bottom:0.65rem;">
-                <label
-                    style="display:inline-flex;align-items:center;gap:0.4rem;font-size:0.8rem;min-height:44px;cursor:pointer;">
+            <div data-print-subtab-panel="doses">
+                <label class="hig-toggle-row">
                     <input type="checkbox" id="chkStealthPackMode">
                     <span>🥷 Stealth Filename Mode (Neutral Study Filenames)</span>
                 </label>
-                <button type="button" id="btnPrintCssPagedMedia" class="uls-chip"
-                    style="min-height:48px;padding:0.35rem 0.75rem;font-size:0.8rem;">🖨️ Print via CSS Paged Media
+                <button type="button" id="btnPrintCssPagedMedia" class="uls-chip" data-i18n="print.btn.cssPagedMedia">🖨️ Print via CSS Paged Media
                     (@media print)</button>
             </div>
             <div id="tanda-offline-font-notice" class="tanda-offline-notice" role="status" hidden></div>
-            <div id="bibleEditionsCatalogGrid" data-print-subtab-panel="doses"
-                style="display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 0.65rem; margin-bottom: 0.85rem;">
+            <div id="bibleEditionsCatalogGrid" data-print-subtab-panel="doses">
             </div>
-            <div id="bibleKindleConfigurator" data-print-subtab-panel="imposition"
-                aria-label="Paper and Sheet Count Settings"
-                style="display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem; font-size: 0.85rem;">
+            <div id="bibleKindleConfigurator" class="kindle-configurator" data-print-subtab-panel="imposition"
+                aria-label="Paper and Sheet Count Settings">
                 <label><span id="kindleFontSizeLabel" data-i18n="print.fontSizeLabel">Font size (pt):</span> <input
                         type="range" id="kindleFontSizeSlider" min="7.2" max="16" step="0.3" value="9.5"></label>
                 <select id="kindleColumnSelector" aria-label="Print Columns">
                     <option value="1" data-i18n="print.col.1">1 Column (Portrait / Pulpit)</option>
-                    <option value="2" selected data-i18n="print.col.2">2 Columns (Landscape / Open Booklet 180°)
+                    <option value="2" selected data-i18n="print.col.2">2 Columns (Pastoral / Open Booklet)
                     </option>
                     <option value="3" data-i18n="print.col.3">3 Columns (Compact)</option>
                 </select>
@@ -839,9 +752,9 @@
                     <option value="b70" data-i18n="dose.paper.b70">B70 Braille (280×292 mm · BEB Tactile)</option>
                 </select>
                 <select id="kindleOrientationSelector" aria-label="Page Orientation">
-                    <option value="landscape" selected data-i18n="print.orient.landscape">↔️ Landscape (Center Fold)
+                    <option value="portrait" selected data-i18n="print.orient.portrait">↕️ Portrait</option>
+                    <option value="landscape" data-i18n="print.orient.landscape">↔️ Landscape (Center Fold)
                     </option>
-                    <option value="portrait" data-i18n="print.orient.portrait">↕️ Portrait</option>
                 </select>
                 <select id="bibleFoliationModeSelect" aria-label="Foliation and Binding Mode">
                     <option value="saddle_stitch" selected data-i18n="print.foliation.saddle">📘 Folded Booklet
@@ -849,13 +762,12 @@
                     <option value="single_sheet_20mm" data-i18n="print.foliation.loose">📄 Loose Sheets (20 mm Binder
                         Margin + 2-Hole Punch)</option>
                 </select>
-                <label><input type="checkbox" id="kindleDuplexToggle" checked> <span
+                <label class="hig-toggle-row"><input type="checkbox" id="kindleDuplexToggle" checked> <span
                         data-i18n="dose.1.duplex_label">Double-sided printing (duplex)</span></label>
-                <output id="kindleBudgetOutput" style="font-weight: 600;">9.5pt · 2 col · Landscape · A4 (58
+                <output id="kindleBudgetOutput">9.5pt · 2 col · Portrait · A4 (58
                     cpl)</output>
             </div>
-            <div data-print-subtab-panel="imposition"
-                style="display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; margin-bottom: 0.85rem;">
+            <div data-print-subtab-panel="imposition">
                 <button type="button" id="btnCalculateImposition" class="uls-chip" data-print-tool="imposition"
                     data-i18n="print.btn.imposition">📐
                     Calculate Booklet Folding</button>
@@ -863,33 +775,27 @@
                     data-i18n="print.btn.layout">📏 Check Page
                     Margins (A4 / Letter)</button>
             </div>
-            <div id="impositionBookletPreviewHost" data-print-subtab-panel="imposition"
-                style="margin-bottom: 0.65rem; font-size: 0.82rem;"></div>
-            <div id="duplexAssistantPanel" data-print-subtab-panel="imposition"
-                style="margin-bottom: 0.75rem; font-size: 0.85rem;"></div>
+            <div id="impositionBookletPreviewHost" data-print-subtab-panel="imposition"></div>
+            <div id="duplexAssistantPanel" data-print-subtab-panel="imposition"></div>
             <details id="printPhotocopyStressDetails" class="hig-tech-receipt-details"
-                data-print-subtab-panel="stationery" style="margin-bottom: 0.65rem;">
-                <summary id="photocopyTechReceiptSummary" data-i18n="print.photocopyReceiptSummary"
-                    style="cursor:pointer;">🔬 Optical &amp; typographic
+                data-print-subtab-panel="stationery">
+                <summary id="photocopyTechReceiptSummary" data-i18n="print.photocopyReceiptSummary">🔬 Optical &amp; typographic
                     receipt</summary>
-                <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; margin-top: 0.5rem;">
+                <div>
                     <button type="button" id="btnSimulatePhotocopy3Gen" class="uls-chip"
                         data-i18n="print.btn.photocopy3gen">🔬 Test Photocopy Legibility (3rd
                         Gen)</button>
                     <span id="biblePhotocopySimBadge" class="uls-badge" data-euler-delta="0"
                         data-min-stroke-pt="0.75">Sauvola R=128 · ≥0.75 pt · Δχ=0</span>
                 </div>
-                <div id="editorialGraphicsPhotocopyHost" data-print-subtab-panel="stationery"
-                    style="margin-top: 0.65rem; margin-bottom: 0.25rem; font-size: 0.85rem;"></div>
+                <div id="editorialGraphicsPhotocopyHost" data-print-subtab-panel="stationery"></div>
             </details>
-            <div id="stationeryCardPanel" data-print-subtab-panel="stationery"
-                style="margin-bottom: 0.75rem; font-size: 0.85rem;"></div>
+            <div id="stationeryCardPanel" data-print-subtab-panel="stationery"></div>
         </section>
 
         <!-- Drawer 3: Community Review & Patch Workshop (Lazy-loaded via mejorar.js) -->
         <section id="bibleFieldWorkshopSheet" class="apple-sheet" data-sheet="field" hidden>
-            <nav id="workshopHarelSubtabsBar" role="tablist" aria-label="Field Workshop Subtabs"
-                style="display:flex;flex-wrap:wrap;gap:0.35rem;margin-bottom:0.6rem;">
+            <nav id="workshopHarelSubtabsBar" class="subtabs-bar" role="tablist" aria-label="Field Workshop Subtabs">
                 <button type="button" id="btnWorkshopSubtabPatch" class="uls-chip" role="tab"
                     data-workshop-subtab-btn="patch" data-i18n="workshop.subtab.patch" aria-selected="true"
                     aria-pressed="true">✏️ 1. Patch &amp; O'dam Lexicon</button>
@@ -900,31 +806,28 @@
                     data-workshop-subtab-btn="audit" data-i18n="workshop.subtab.audit" aria-selected="false"
                     aria-pressed="false">🛡️ 3. History, Census 7,164 &amp; CC0</button>
             </nav>
-            <div id="socraticElicitorContainer" data-workshop-subtab-panel="patch" style="margin-bottom: 0.75rem;">
+            <div id="socraticElicitorContainer" data-workshop-subtab-panel="patch">
             </div>
-            <div id="stpLexiconExplorerHost" data-workshop-subtab-panel="patch" style="margin-bottom: 0.75rem;">
-                <input type="search" id="stpLexiconSearchInput" aria-label="Search O'dam STP-600 Lexicon or Strong ID"
-                    placeholder="Search O'dam, Spanish, or Strong ID..."
-                    style="min-height:48px;width:100%;padding:0.4rem 0.65rem;border-radius:8px;border:1px solid var(--select-border);background:var(--select-bg);color:var(--text-primary);margin-bottom:0.4rem;">
+            <div id="stpLexiconExplorerHost" data-workshop-subtab-panel="patch">
+                <input type="search" id="stpLexiconSearchInput" class="field-search-input" aria-label="Search O'dam STP-600 Lexicon or Strong ID"
+                    placeholder="Search O'dam, Spanish, or Strong ID...">
                 <div id="stpLexiconResultsRows" role="region" aria-live="polite"></div>
                 <section id="dunningKeyTermsGlossaryPanel" aria-label="Dunning G2 Key Terms Glossary"></section>
             </div>
-            <div id="cascadeImpactPreviewList" data-workshop-subtab-panel="ladder" style="margin-bottom: 0.75rem;">
+            <div id="cascadeImpactPreviewList" data-workshop-subtab-panel="ladder">
                 <section id="externalAudit8LocksPanel" aria-label="8 Deterministic Audit Locks"></section>
                 <section id="uncertaintyQueue60Panel" aria-label="Top 60 Uncertainty Verse Queue"></section>
                 <section id="tier3aDialectContinuumPanel" aria-label="Tier 3A Dialect Continuums"></section>
             </div>
-            <div id="tallerArtifactsCatalog" data-workshop-subtab-panel="audit"
-                style="margin-bottom: 0.75rem; display: grid; grid-template-columns: minmax(0, 1fr); gap: 0.5rem;">
+            <div id="tallerArtifactsCatalog" class="taller-artifacts-grid" data-workshop-subtab-panel="audit">
             </div>
         </section>
 
         <!-- Drawer 4: Offline Sharing, Optical LT Fountain & Save for Offline Use -->
         <section id="bibleShareAndAuditSheet" class="apple-sheet" data-sheet="share" hidden>
-            <h3 style="font-size: 1rem; margin-bottom: 0.5rem;" data-i18n="mostrador.door.share">📲 4. Share Offline
+            <h3 data-i18n="mostrador.door.share">📲 4. Share Offline
                 &amp; QR</h3>
-            <nav id="dosisHarelSubtabsBar" role="tablist" aria-label="Offline and Optical Sharing Subtabs"
-                style="display:flex;flex-wrap:wrap;gap:0.35rem;margin-bottom:0.6rem;">
+            <nav id="dosisHarelSubtabsBar" class="subtabs-bar" role="tablist" aria-label="Offline and Optical Sharing Subtabs">
                 <button type="button" id="btnDosisSubtabMesh" class="uls-chip" role="tab" data-dosis-subtab-btn="mesh"
                     data-i18n="share.subtab.mesh" aria-selected="true" aria-pressed="true">📦 1. Offline Packs &amp;
                     Quine</button>
@@ -935,7 +838,7 @@
                     data-dosis-subtab-btn="graphics" data-i18n="share.subtab.graphics" aria-selected="false"
                     aria-pressed="false">🔐 3. Authenticity &amp; Signature Verification</button>
             </nav>
-            <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.75rem;">
+            <div>
                 <button type="button" id="btnShareQuine" class="btn-modal-action" data-dosis-subtab-panel="mesh"
                     data-i18n="mostrador.offline.save_cta">Save active language for offline use</button>
                 <button type="button" id="btnCopyDirectShareLink" class="uls-chip" data-dosis-subtab-panel="mesh"
@@ -954,16 +857,19 @@
                 <button type="button" id="btnVerifyEd25519Signature" class="uls-chip" data-dosis-subtab-panel="graphics"
                     data-i18n="share.btn.verifySig" hidden>🔐 Verify Authentic Editorial Signature</button>
             </div>
-            <video id="bibleOpticalCameraVideo" data-dosis-subtab-panel="pdf" hidden playsinline muted
-                style="max-width: 240px; border-radius: 10px; border: 1px solid var(--card-border); margin-bottom: 0.5rem;"></video>
-            <div id="offlinePacksCatalogPanel" data-dosis-subtab-panel="mesh" style="margin-bottom: 0.75rem;"></div>
-            <div id="editorialFontPackVaultPanel" data-dosis-subtab-panel="mesh" style="margin-bottom: 0.75rem;"></div>
-            <div id="shareOpenGraphCardPanel" data-dosis-subtab-panel="mesh" style="margin-bottom: 0.75rem;"></div>
-            <div id="bibleOpticalQrStreamPanel" data-dosis-subtab-panel="pdf" hidden style="margin-bottom: 0.75rem;">
+            <div id="opticalCameraViewportHost" class="optical-camera-host" data-dosis-subtab-panel="pdf" hidden>
+                <div id="opticalCameraIdlePlaceholder" class="optical-camera-idle" data-i18n="share.camera.idle">📷 Camera off. Tap «Receive with Camera» to scan QR-Beam frames offline.</div>
+                <video id="bibleOpticalCameraVideo" class="optical-camera-video" hidden playsinline muted></video>
             </div>
-            <div id="opticalReceiverRxPanel" data-dosis-subtab-panel="pdf" hidden style="margin-bottom: 0.75rem;"></div>
-            <div id="editorialAuditStatusPanel" data-dosis-subtab-panel="graphics" hidden
-                style="font-size: 0.82rem; color: var(--text-secondary);"></div>
+            <div id="offlinePacksCatalogPanel" data-dosis-subtab-panel="mesh"></div>
+            <div id="vaultStorageManagerHost" data-dosis-subtab-panel="mesh"></div>
+            <div id="editorialFontPackVaultPanel" data-dosis-subtab-panel="mesh"></div>
+            <div id="shareOpenGraphCardPanel" data-dosis-subtab-panel="graphics" hidden></div>
+            <div id="bibleOpticalQrStreamPanel" data-dosis-subtab-panel="pdf" hidden>
+            </div>
+            <div id="opticalReceiverRxPanel" data-dosis-subtab-panel="pdf" hidden></div>
+            <div id="editorialProvenanceCardHost" data-dosis-subtab-panel="graphics" hidden></div>
+            <div id="editorialAuditStatusPanel" data-dosis-subtab-panel="graphics" hidden class="ek-status-panel"></div>
         </section>
     </section>
 
@@ -971,7 +877,7 @@
         <div class="modal-header">
             <h3 class="modal-title" id="previewModalTitle" data-i18n="felices.previewModalTitle">Muestra de Láminas para
                 Colorear</h3>
-            <button class="modal-close" aria-label="Cerrar" id="previewModalCloseBtn">✕</button>
+            <button class="modal-close" aria-label="Cerrar" id="previewModalCloseBtn" data-i18n-autonym="true">✕</button>
         </div>
         <div class="carousel-view"><img id="carouselImg" src="assets/felices/plates/01.jpg" alt="Muestra de lámina">
         </div>
@@ -980,14 +886,14 @@
             <button type="button" class="carousel-btn" id="carouselPrevBtn" data-i18n="felices.carouselPrev">←
                 Anterior</button>
             <div class="carousel-dots">
-                <button type="button" class="dot active" id="termPill_1" aria-label="Lámina 1"></button>
-                <button type="button" class="dot" id="termPill_2" aria-label="Lámina 2"></button>
-                <button type="button" class="dot" id="termPill_3" aria-label="Lámina 3"></button>
+                <button type="button" class="dot active" id="termPill_1" data-i18n-autonym="true" aria-label="Lámina 1"></button>
+                <button type="button" class="dot" id="termPill_2" data-i18n-autonym="true" aria-label="Lámina 2"></button>
+                <button type="button" class="dot" id="termPill_3" data-i18n-autonym="true" aria-label="Lámina 3"></button>
             </div>
             <button type="button" class="carousel-btn" id="carouselNextBtn" data-i18n="felices.carouselNext">Siguiente
                 →</button>
         </div>
-        <div class="modal-actions" style="margin-top: 1rem;">
+        <div class="modal-actions">
             <button type="button" class="btn-modal-secondary" id="btnPreviewClose"
                 data-i18n="felices.closeBtn">Cerrar</button>
         </div>
@@ -997,14 +903,28 @@
         <div class="modal-header">
             <h3 class="modal-title" id="plateModalTitle" data-i18n="felices.plateModalTitle">Vista Previa en Alta
                 Resolución</h3>
-            <button class="modal-close" aria-label="Cerrar" id="plateModalCloseBtn">✕</button>
+            <button class="modal-close" aria-label="Cerrar" id="plateModalCloseBtn" data-i18n-autonym="true">✕</button>
         </div>
         <div class="plate-modal-view"><img id="plateModalImg" src="" alt="Lámina en alta resolución"></div>
         <p class="plate-modal-caption" id="plateModalCaption"></p>
-        <div class="modal-actions" style="margin-top: 1rem;">
+        <div class="modal-actions">
             <button type="button" class="btn-modal-secondary" id="btnPlateClose"
                 data-i18n="felices.closeBtn">Cerrar</button>
         </div>
+    </dialog>
+
+    
+    <footer id="siteGlobalFooter" class="site-footer">
+        <span class="site-footer-note" data-i18n="footer.open_license">CC0 1.0 Public Domain · Zero trackers · Offline-capable</span>
+        <button type="button" id="footerContactBtn" class="uls-chip footer-contact-btn" data-i18n="felices.contactBtn">Contact, Collaboration &amp; Support</button>
+    </footer>
+
+    <dialog id="supportContactDialog" aria-label="Report an Issue or Feedback">
+        <div class="modal-header">
+            <h3 class="modal-title" id="supportContactTitle" data-i18n="support.dialog_title">Report an Issue or Feedback</h3>
+            <button type="button" class="modal-close" id="btnCloseSupportDialog" data-i18n-autonym="true" aria-label="Cerrar">✕</button>
+        </div>
+        <div id="supportContactDialogBody" class="support-dialog-body"></div>
     </dialog>
 
     <div id="toastNotification" class="toast" role="status" aria-live="polite"></div>

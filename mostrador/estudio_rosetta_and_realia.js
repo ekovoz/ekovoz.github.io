@@ -340,7 +340,7 @@ export function renderPhilologyRosettaInspectorHtml(activeRows = [], options = {
 
   const residualClassesLine =
     `<li data-residual-classes-5="true" data-residuals-total="${totalResiduals}">` +
-    `<strong>${isEn ? `Transmission variants & notes (${totalResiduals.toLocaleString("en-US")} cases)` : `Variantes y notas de transmisión (${totalResiduals.toLocaleString("en-US")} casos)`} <span class="hig-tech-meta" style="font-size:0.72rem;color:var(--text-secondary);font-weight:400;">(<code>alignment_residuals.tsv</code>)</span>:</strong> ` +
+    `<strong>${isEn ? `Transmission variants & notes (${totalResiduals.toLocaleString("en-US")} cases)` : `Variantes y notas de transmisión (${totalResiduals.toLocaleString("en-US")} casos)`} <span class="hig-tech-meta" data-tech-key="alignment_residuals.tsv">(${isEn ? "Textual apparatus" : "Aparato textual"})</span>:</strong> ` +
     `<span class="uls-badge" data-residual-kind="KETIV_QERE">KETIV_QERE (${kqCount})</span> · ` +
     `<span class="uls-badge" data-residual-kind="VERSIFICATION">VERSIFICATION (${versCount})</span> · ` +
     `<span class="uls-badge" data-residual-kind="TR_SUPPLEMENT">TR_SUPPLEMENT (${trCount})</span> · ` +
@@ -366,7 +366,7 @@ export function renderPhilologyRosettaInspectorHtml(activeRows = [], options = {
   const oovRate = Number(annotReport.oov_rate || 0.0).toFixed(2);
   const annotationLine =
     `<li data-annotation-tokens="${totalTokens}" data-annotation-hebrew="${hebrewTokens}" data-annotation-greek="${greekTokens}" data-annotation-oov="${oovRate}">` +
-    `<strong>${isEn ? "Word-by-word morphological coverage" : "Cobertura morfológica palabra por palabra"} <span class="hig-tech-meta" style="font-size:0.72rem;color:var(--text-secondary);font-weight:400;">(<code>annotation_index_report.json</code>)</span>:</strong> ` +
+    `<strong>${isEn ? "Word-by-word morphological coverage" : "Cobertura morfológica palabra por palabra"} <span class="hig-tech-meta" data-tech-key="annotation_index_report.json">(${isEn ? "Indexed morphological corpus" : "Corpus morfológico indexado"})</span>:</strong> ` +
     `<code>${totalTokens.toLocaleString("en-US")} tokens</code> (${isEn ? "OT Hebrew/Aramaic" : "AT Hebreo/Arameo"}: <code>${hebrewTokens.toLocaleString("en-US")}</code> · ${isEn ? "NT Greek" : "NT Griego"}: <code>${greekTokens.toLocaleString("en-US")}</code> · <code>${strongEntriesCount.toLocaleString("en-US")} Strongs</code> · <code>${morphTagsCount.toLocaleString("en-US")} tags</code> · <code>OOV = ${oovRate}%</code>)` +
     `</li>`;
 
@@ -383,9 +383,9 @@ export function renderPhilologyRosettaInspectorHtml(activeRows = [], options = {
     .join(" ");
   const blindCalibrationLine =
     `<li data-blind-calibration-chrf="${escapeHtml(chrfScore)}" data-blind-calibration-langs="${calSummary.langsCount}" data-blind-calibration-rows="${calSummary.rowsCount}">` +
-    `<strong>${isEn ? `Verified fidelity across ${calSummary.langsCount} languages` : `Fidelidad verificada en ${calSummary.langsCount} lenguas`} <span class="hig-tech-meta" style="font-size:0.72rem;color:var(--text-secondary);font-weight:400;">(<code>blind_calibration_report.json</code>)</span>:</strong> ` +
+    `<strong>${isEn ? `Verified fidelity across ${calSummary.langsCount} languages` : `Fidelidad verificada en ${calSummary.langsCount} lenguas`} <span class="hig-tech-meta" data-tech-key="blind_calibration_report.json">(${isEn ? "Blind cross-lingual audit" : "Auditoría ciega multilingüe"})</span>:</strong> ` +
     `<code>${escapeHtml(chrfScore)} chrF++</code> · <strong>${calSummary.langsCount} ${isEn ? "languages" : "lenguas"}</strong> (${calSummary.rowsCount} ${isEn ? "tests" : "pruebas"} · ${calSummary.passRatePct}% ${isEn ? "passed" : "aprobadas"})` +
-    `<div id="rosettaBlindCalibration12Table" style="margin-top:0.25rem;display:flex;flex-wrap:wrap;gap:0.25rem;">${byLangPills}</div>` +
+    `<div id="rosettaBlindCalibration12Table" class="ek-row-wrap ek-gap-xs ek-mt-xs">${byLangPills}</div>` +
     `</li>`;
 
   const explorerHtml =
@@ -400,9 +400,9 @@ export function renderPhilologyRosettaInspectorHtml(activeRows = [], options = {
       });
 
   return (
-    `<div class="stratum-card philology-rosetta-stratum" data-stratum="philology-rosetta" data-ref="${escapeHtml(activeOsis)}" data-chrf-plus-plus="${escapeHtml(chrfScore)}" data-residuals-total="${totalResiduals}" data-annotation-tokens="${totalTokens}" style="margin-top:0.75rem;padding:0.65rem;border-radius:10px;border:1px solid var(--card-border);background:var(--card-bg);">` +
-    `<strong style="font-size:0.84rem;display:block;margin-bottom:0.35rem;">🧬 ${isEn ? `Philological Rosetta Inspector · Consonantal Root Family, LXX↔MT Bridge, 5 Residual Classes (${totalResiduals.toLocaleString("en-US")}), ${totalTokens.toLocaleString("en-US")} Tokens & 12-Language Calibration (${escapeHtml(book)} ${chapter}:${verse})` : `Inspector Rosetta Filológico · Familia de Raíces Consonánticas, Puente LXX↔MT, 5 Clases de Residuos (${totalResiduals.toLocaleString("en-US")}), ${totalTokens.toLocaleString("en-US")} Tokens y Calibración 12 Lenguas (${escapeHtml(book)} ${chapter}:${verse})`}</strong>` +
-    `<ul style="margin:0;padding-left:1.1rem;font-size:0.81rem;display:grid;gap:0.28rem;">` +
+    `<div class="stratum-card philology-rosetta-stratum" data-stratum="philology-rosetta" data-ref="${escapeHtml(activeOsis)}" data-chrf-plus-plus="${escapeHtml(chrfScore)}" data-residuals-total="${totalResiduals}" data-annotation-tokens="${totalTokens}">` +
+    `<strong class="ek-title-md">🧬 ${isEn ? `Philological Rosetta Inspector · Consonantal Root Family, LXX↔MT Bridge, 5 Residual Classes (${totalResiduals.toLocaleString("en-US")}), ${totalTokens.toLocaleString("en-US")} Tokens & 12-Language Calibration (${escapeHtml(book)} ${chapter}:${verse})` : `Inspector Rosetta Filológico · Familia de Raíces Consonánticas, Puente LXX↔MT, 5 Clases de Residuos (${totalResiduals.toLocaleString("en-US")}), ${totalTokens.toLocaleString("en-US")} Tokens y Calibración 12 Lenguas (${escapeHtml(book)} ${chapter}:${verse})`}</strong>` +
+    `<ul>` +
     rootsHtml +
     bridgeHtml +
     ketivQereHtml +
@@ -574,8 +574,7 @@ export function renderPhilologyRosettaResultsRowsHtml({
       (item) =>
         `<button type="button" class="uls-chip rosetta-jump-chip" ` +
         `data-rosetta-ref="${escapeHtml(item.ref)}" data-rosetta-strong="${escapeHtml(item.strong)}" data-rosetta-category="${escapeHtml(item.category)}" ` +
-        `title="${escapeHtml(item.detail)}" ` +
-        `style="min-height:48px;min-width:48px;padding:0.35rem 0.65rem;font-size:0.75rem;display:inline-flex;align-items:center;">` +
+        `title="${escapeHtml(item.detail)}">` +
         `🔎 ${escapeHtml(item.title)} → ${escapeHtml(item.ref)}</button>`,
     )
     .join(" ");
@@ -611,12 +610,12 @@ export function renderPhilologyRosettaExplorerHtml({
   const hgPairsTotal = Number(idx?.empirical_hg_pairs_total || 31102);
   const strongSeedTotal = Number(idx?.strong_lexicon_seed_total || 14298);
   return (
-    `<div id="philologyRosettaExplorerPanel" data-rosetta-explorer="true" data-rosetta-category="${escapeHtml(cleanCat)}" data-active-ref="${escapeHtml(activeRef)}" data-hg-pairs-total="${hgPairsTotal}" data-strong-seed-total="${strongSeedTotal}" style="margin-top:0.65rem;padding-top:0.55rem;border-top:1px dashed var(--card-border);">` +
-    `<div style="display:flex;flex-wrap:wrap;gap:0.4rem;align-items:center;margin-bottom:0.45rem;">` +
-    `<select id="rosettaFilterCategorySelect" aria-label="${isEn ? "Philological Rosetta Index Category" : "Categoría del Índice Rosetta Filológico"}" style="min-height:48px;padding:0.3rem 0.55rem;border-radius:8px;border:1px solid var(--select-border);background:var(--select-bg);color:var(--text-primary);font-size:0.78rem;">${catOptions}</select>` +
-    `<input type="search" id="rosettaSearchInput" value="${escapeHtml(cleanQuery)}" aria-label="${isEn ? "Search in Philological Rosetta Index" : "Buscar en Índice Rosetta Filológico"}" placeholder="${isEn ? "Search root (ברא), Strong (H7225/G3056), Ketiv/Qere or passage..." : "Buscar raíz (ברא), Strong (H7225/G3056), Ketiv/Qere o pasaje..."}" style="flex:1;min-width:180px;min-height:48px;padding:0.35rem 0.65rem;border-radius:8px;border:1px solid var(--select-border);background:var(--select-bg);color:var(--text-primary);font-size:0.78rem;">` +
+    `<div id="philologyRosettaExplorerPanel" data-rosetta-explorer="true" data-rosetta-category="${escapeHtml(cleanCat)}" data-active-ref="${escapeHtml(activeRef)}" data-hg-pairs-total="${hgPairsTotal}" data-strong-seed-total="${strongSeedTotal}">` +
+    `<div class="ek-row-wrap ek-mb-sm">` +
+    `<select id="rosettaFilterCategorySelect" class="ek-select-pill" aria-label="${isEn ? "Philological Rosetta Index Category" : "Categoría del Índice Rosetta Filológico"}">${catOptions}</select>` +
+    `<input type="search" id="rosettaSearchInput" class="ek-search-pill" value="${escapeHtml(cleanQuery)}" aria-label="${isEn ? "Search in Philological Rosetta Index" : "Buscar en Índice Rosetta Filológico"}" placeholder="${isEn ? "Search root (ברא), Strong (H7225/G3056), Ketiv/Qere or passage..." : "Buscar raíz (ברא), Strong (H7225/G3056), Ketiv/Qere o pasaje..."}">` +
     `</div>` +
-    `<div id="rosettaExplorerResultsList" data-results-count="${results.length}"><div id="rosettaExplorerResultsRows" data-rosetta-results="true" style="display:flex;flex-wrap:wrap;gap:0.35rem;">${chipsHtml}</div></div>` +
+    `<div id="rosettaExplorerResultsList" data-results-count="${results.length}"><div id="rosettaExplorerResultsRows" class="ek-row-wrap" data-rosetta-results="true">${chipsHtml}</div></div>` +
     `</div>`
   );
 }

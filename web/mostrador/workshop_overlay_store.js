@@ -588,7 +588,7 @@ export function projectChapterWithLiveOverlays(state, effectiveLang, rawChapter)
       if (ovEntry) {
         const auth = ovEntry.authorityTier || OVERLAY_AUTHORITY_LOCAL_SELF_SIGNED;
         badges.push(
-          `<span class="uls-badge cascade-authority-badge" data-overlay-authority="${escHtml(auth)}" data-overlay-osis="${escHtml(osisKey)}" style="font-size:0.72rem;margin:0.2rem 0.25rem 0.35rem 0;display:inline-block;">🔐 ${escHtml(osisKey)} · <code>${escHtml(auth)}</code> (${escHtml(ovEntry.authorityLabel || "")})</span>`,
+          `<span class="uls-badge cascade-authority-badge ek-inline-badge" data-overlay-authority="${escHtml(auth)}" data-overlay-osis="${escHtml(osisKey)}">🔐 ${escHtml(osisKey)} · <code>${escHtml(auth)}</code> (${escHtml(ovEntry.authorityLabel || "")})</span>`,
         );
       }
       return projectedText === vItem.text ? vItem : { ...vItem, text: projectedText };
@@ -602,7 +602,7 @@ export function projectChapterWithLiveOverlays(state, effectiveLang, rawChapter)
       if (ovEntry) {
         const auth = ovEntry.authorityTier || OVERLAY_AUTHORITY_LOCAL_SELF_SIGNED;
         badges.push(
-          `<span class="uls-badge cascade-authority-badge" data-overlay-authority="${escHtml(auth)}" data-overlay-osis="${escHtml(osisKey)}" style="font-size:0.72rem;margin:0.2rem 0.25rem 0.35rem 0;display:inline-block;">🔐 ${escHtml(osisKey)} · <code>${escHtml(auth)}</code> (${escHtml(ovEntry.authorityLabel || "")})</span>`,
+          `<span class="uls-badge cascade-authority-badge ek-inline-badge" data-overlay-authority="${escHtml(auth)}" data-overlay-osis="${escHtml(osisKey)}">🔐 ${escHtml(osisKey)} · <code>${escHtml(auth)}</code> (${escHtml(ovEntry.authorityLabel || "")})</span>`,
         );
       }
     }

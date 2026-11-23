@@ -278,17 +278,17 @@ export function renderBranchAndTypologyInspectorHtml({
         ? `[S: Dios] [O: los cielos y la tierra] [V: creó] · Cópula=${specimenCopula} · Neg=${specimenNeg}`
         : `[S: Dios] [V: creó] [O: los cielos y la tierra] · Cópula=${specimenCopula} · Neg=${specimenNeg}`;
   return (
-    `<div id="bibleBranchAndTypologyInspector" class="branch-typology-inspector-card" data-branch-count="${branches.length}" data-typology-count="${typologies.length}" data-active-branch="${matchedBranch.id}" data-active-typology="${matchedTypology.id}" style="padding:0.65rem;border-radius:10px;border:1px solid var(--card-border);background:var(--card-bg);font-size:0.8rem;">` +
-    `<div style="font-weight:700;margin-bottom:0.4rem;">🌐 ${isEn ? "12 Script Branches Inspector (G_01–G_12) & 16 Typological Sheets" : "Inspector de 12 Ramas de Escritura (G_01–G_12) y 16 Hojas Tipológicas"}</div>` +
-    `<div style="display:flex;flex-wrap:wrap;gap:0.45rem;margin-bottom:0.45rem;">` +
-    `<label style="flex:1;min-width:210px;">${isEn ? "Branch (12)" : "Rama (12)"}: <select id="branchProfileSelect" aria-label="${isEn ? "Typographic Branch G_01 to G_12" : "Rama Tipográfica G_01 a G_12"}" style="width:100%;min-height:48px;">${branchOptions}</select></label>` +
-    `<label style="flex:1;min-width:210px;">${isEn ? "Typology (16)" : "Tipología (16)"}: <select id="typologySheetSelect" aria-label="${isEn ? "Linguistic Typology Sheet (16)" : "Hoja de Tipología Lingüística (16)"}" style="width:100%;min-height:48px;">${typologyOptions}</select></label>` +
+    `<div id="bibleBranchAndTypologyInspector" class="branch-typology-inspector-card" data-branch-count="${branches.length}" data-typology-count="${typologies.length}" data-active-branch="${matchedBranch.id}" data-active-typology="${matchedTypology.id}">` +
+    `<div class="ek-bold ek-mb-sm">🌐 ${isEn ? "12 Script Branches Inspector (G_01–G_12) & 16 Typological Sheets" : "Inspector de 12 Ramas de Escritura (G_01–G_12) y 16 Hojas Tipológicas"}</div>` +
+    `<div class="ek-row-wrap ek-mb-sm">` +
+    `<label>${isEn ? "Branch (12)" : "Rama (12)"}: <select id="branchProfileSelect" aria-label="${isEn ? "Typographic Branch G_01 to G_12" : "Rama Tipográfica G_01 a G_12"}">${branchOptions}</select></label>` +
+    `<label>${isEn ? "Typology (16)" : "Tipología (16)"}: <select id="typologySheetSelect" aria-label="${isEn ? "Linguistic Typology Sheet (16)" : "Hoja de Tipología Lingüística (16)"}">${typologyOptions}</select></label>` +
     `</div>` +
-    `<div style="display:flex;flex-wrap:wrap;gap:0.45rem;color:var(--text-secondary);">` +
-    `<span class="uls-chip" data-branch-meta="${matchedBranch.id}" style="font-size:0.75rem;padding:0.2rem 0.5rem;">${isEn ? "Branch" : "Rama"}: <strong>${bParsed.name_es || matchedBranch.id}</strong> · ${isEn ? "Order" : "Orden"}=${bParsed.word_order || "SVO"} · ${isEn ? "Morphology" : "Morfología"}=${bParsed.morphology || "FUSIONAL"} · ${isEn ? "Alignment" : "Alineamiento"}=${bParsed.alignment || "NOM_ACC"}</span>` +
-    `<span class="uls-chip" data-typology-meta="${matchedTypology.id}" style="font-size:0.75rem;padding:0.2rem 0.5rem;">${isEn ? "Typology" : "Tipología"}: <strong>${matchedTypology.lang_code}</strong> · ${isEn ? "Order" : "Orden"}=${matchedTypology.word_order} · ${isEn ? "Clade" : "Clade"}=${matchedTypology.family_subclade} · ${isEn ? "Copula" : "Cópula"}=${matchedTypology.copula_affirmative || "∅"} · ${isEn ? "Negation" : "Negación"}=${matchedTypology.negation_preverbal || "∅"}</span>` +
+    `<div class="ek-row-wrap ek-text-secondary">` +
+    `<span class="uls-chip ek-badge-compact" data-branch-meta="${matchedBranch.id}">${isEn ? "Branch" : "Rama"}: <strong>${bParsed.name_es || matchedBranch.id}</strong> · ${isEn ? "Order" : "Orden"}=${bParsed.word_order || "SVO"} · ${isEn ? "Morphology" : "Morfología"}=${bParsed.morphology || "FUSIONAL"} · ${isEn ? "Alignment" : "Alineamiento"}=${bParsed.alignment || "NOM_ACC"}</span>` +
+    `<span class="uls-chip ek-badge-compact" data-typology-meta="${matchedTypology.id}">${isEn ? "Typology" : "Tipología"}: <strong>${matchedTypology.lang_code}</strong> · ${isEn ? "Order" : "Orden"}=${matchedTypology.word_order} · ${isEn ? "Clade" : "Clade"}=${matchedTypology.family_subclade} · ${isEn ? "Copula" : "Cópula"}=${matchedTypology.copula_affirmative || "∅"} · ${isEn ? "Negation" : "Negación"}=${matchedTypology.negation_preverbal || "∅"}</span>` +
     `</div>` +
-    `<div id="branchTypologyLiveSpecimen" data-live-specimen-branch="${matchedBranch.id}" data-live-specimen-typology="${matchedTypology.id}" data-live-specimen-order="${specimenOrder}" style="margin-top:0.45rem;padding:0.45rem 0.65rem;border-radius:8px;border:1px dashed var(--card-border);background:var(--bg-secondary);font-size:0.78rem;">` +
+    `<div id="branchTypologyLiveSpecimen" data-live-specimen-branch="${matchedBranch.id}" data-live-specimen-typology="${matchedTypology.id}" data-live-specimen-order="${specimenOrder}">` +
     `<strong>🔍 ${isEn ? `Live Morphosyntactic & Typographic Specimen (${matchedBranch.id} · ${matchedTypology.id}):` : `Especimen Morfosintáctico y Tipográfico en Vivo (${matchedBranch.id} · ${matchedTypology.id}):`}</strong> ` +
     `<code>${specimenClause}</code>` +
     `</div>` +
@@ -311,7 +311,7 @@ export function renderMultiSignatureAndPocketRefugeHtml({
     .slice(0, 5)
     .map(
       (s) =>
-        `<span class="uls-chip" data-signature-code="${s.signatureCode}" style="font-size:0.74rem;padding:0.2rem 0.5rem;">${s.signatureCode} (p.${s.startPage}–${s.endPage} · creep ${s.maxCreepMm}mm · ${isEn ? "mark" : "marca"} Y=${s.steppedCollationMarkYMm}mm)</span>`,
+        `<span class="uls-chip ek-badge-compact" data-signature-code="${s.signatureCode}">${s.signatureCode} (p.${s.startPage}–${s.endPage} · creep ${s.maxCreepMm}mm · ${isEn ? "mark" : "marca"} Y=${s.steppedCollationMarkYMm}mm)</span>`,
     )
     .join(" ");
 
@@ -321,14 +321,14 @@ export function renderMultiSignatureAndPocketRefugeHtml({
   }).join("");
 
   return (
-    `<div class="multi-signature-imposition-card" data-multi-signature="true" data-signature-count="${multiSig.signatureCount}" data-max-creep-mm="${multiSig.maxCreepMm}" data-kl-divergence="${POCKET_REFUGE_4_SHEETS_SPEC.klDivergence}" style="margin-top:0.55rem;padding:0.65rem;border-radius:10px;border:1px solid var(--card-border);background:var(--card-bg);font-size:0.8rem;">` +
-    `<div style="font-weight:700;margin-bottom:0.3rem;">📐 ${isEn ? `4n Multi-Signature Imposition (${multiSig.summary})` : `Imposición Multi-Pliego 4n (${multiSig.summary})`}</div>` +
-    `<div style="display:flex;flex-wrap:wrap;gap:0.35rem;margin-bottom:0.45rem;">${sigRows}</div>` +
-    `<div style="display:flex;align-items:center;flex-wrap:wrap;gap:0.45rem;margin-bottom:0.45rem;">` +
-    `<label for="canonicalBlockSelect" style="font-weight:600;">${isEn ? "Explore 80 Canonical Blocks:" : "Explorar 80 Bloques Canónicos:"}</label>` +
-    `<select id="canonicalBlockSelect" data-action="select-canonical-block" aria-label="${isEn ? "Select Canonical Block (1 to 80)" : "Seleccionar Bloque Canónico (1 a 80)"}" style="min-height:48px;flex:1;min-width:210px;">${blockOptionsHtml}</select>` +
+    `<div class="multi-signature-imposition-card" data-multi-signature="true" data-signature-count="${multiSig.signatureCount}" data-max-creep-mm="${multiSig.maxCreepMm}" data-kl-divergence="${POCKET_REFUGE_4_SHEETS_SPEC.klDivergence}">` +
+    `<div class="ek-bold ek-mb-sm">📐 ${isEn ? `4n Multi-Signature Imposition (${multiSig.summary})` : `Imposición Multi-Pliego 4n (${multiSig.summary})`}</div>` +
+    `<div class="ek-row-wrap ek-mb-sm">${sigRows}</div>` +
+    `<div class="ek-row-wrap ek-mb-sm">` +
+    `<label for="canonicalBlockSelect" class="ek-semibold">${isEn ? "Explore 80 Canonical Blocks:" : "Explorar 80 Bloques Canónicos:"}</label>` +
+    `<select id="canonicalBlockSelect" data-action="select-canonical-block" aria-label="${isEn ? "Select Canonical Block (1 to 80)" : "Seleccionar Bloque Canónico (1 a 80)"}">${blockOptionsHtml}</select>` +
     `</div>` +
-    `<div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:0.4rem;color:var(--text-secondary);">` +
+    `<div class="ek-row-between ek-text-secondary">` +
     `<span data-active-field-block="${blk.blockId}">📦 ${isEn ? "Active block" : "Bloque activo"}: <strong>${blk.blockId}</strong> (${blk.rangeLabel} · ${blk.title})</span>` +
     `<span data-pocket-refuge="refugio_4_hojas">🛡️ ${isEn ? `4-Sheet Pocket Refuge (16 pp · D_KL = ${POCKET_REFUGE_4_SHEETS_SPEC.klDivergence.toFixed(1)})` : `Refugio 4 Hojas (16 págs · D_KL = ${POCKET_REFUGE_4_SHEETS_SPEC.klDivergence.toFixed(1)})`}</span>` +
     `</div>` +
@@ -449,13 +449,17 @@ export function resolvePrintEditionPdfAssetUrl(
 export function computeKindlePrintBudget({
   fontPt = 9.5,
   columns = 2,
-  orientation = "landscape",
+  orientation = "portrait",
   paper = "A4",
   script = "Latn",
+  uiLocale = "es",
 } = {}) {
   const cleanPt = Math.max(7.0, Math.min(18.0, Number(fontPt) || 9.5));
   const reqCols = Math.max(1, Math.min(3, Number(columns) || 2));
-  const cleanOrientation = String(orientation || "landscape").toLowerCase() === "portrait" ? "Portrait" : "Landscape";
+  const isLandscape = String(orientation || "portrait").toLowerCase() === "landscape";
+  const cleanOrientation = isLandscape ? "Landscape" : "Portrait";
+  const isEs = !String(uiLocale || "es").trim().toLowerCase().startsWith("en");
+  const orientLabel = isEs ? (isLandscape ? "Horizontal" : "Vertical") : cleanOrientation;
   const rawPaperUpper = String(paper || "A4").toUpperCase();
   const cleanPaper = rawPaperUpper.includes("A3")
     ? "A3"
@@ -495,7 +499,8 @@ export function computeKindlePrintBudget({
   const scaleFactor = Math.pow(cleanPt / 9.5, 1.65) * (2 / effectiveColumns);
   const estimatedPages = Math.max(420, Math.round(basePages * scaleFactor));
   const clampedNote = effectiveColumns !== reqCols ? ` [clamp ${reqCols}→${effectiveColumns} col]` : "";
-  const summaryText = `${cleanPt.toFixed(1).replace(/\.0$/, "")}pt · ${effectiveColumns} col · ${cleanOrientation} · ${cleanPaper} (${cpl} cpl · ~${estimatedPages} págs)${clampedNote}`;
+  const pagesUnit = isEs ? "págs" : "pp";
+  const summaryText = `${cleanPt.toFixed(1).replace(/\.0$/, "")}pt · ${effectiveColumns} col · ${orientLabel} · ${cleanPaper} (${cpl} cpl · ~${estimatedPages} ${pagesUnit})${clampedNote}`;
 
   return {
     fontPt: cleanPt,
@@ -572,6 +577,7 @@ export function renderImpositionAndLayoutPreviewHtml({
   pageCount = 16,
   columns = 2,
   fontPt = 9.5,
+  orientation = "portrait",
   dir = "ltr",
   uiLocale = "es",
 } = {}) {
@@ -588,7 +594,13 @@ export function renderImpositionAndLayoutPreviewHtml({
     maxSheetsPerSignature: 4,
     dir,
   });
-  const budget = computeKindlePrintBudget({ fontPt, columns, paper: normPaper });
+  const budget = computeKindlePrintBudget({
+    fontPt,
+    columns,
+    orientation,
+    paper: normPaper,
+    uiLocale,
+  });
   const firstSpread =
     foliation.spreads && foliation.spreads[0]
       ? isEn
@@ -612,11 +624,11 @@ export function renderImpositionAndLayoutPreviewHtml({
   return (
     `<div class="imposition-booklet-preview-card" ` +
     `data-print-preview-mode="${mode}" ` +
+    `data-orientation="${budget.orientation.toLowerCase()}" ` +
     `data-paper="${normPaper}" ` +
     `data-spine-gutter-mm="${foliation.spineGutterMm || 9.215}" ` +
     `data-binding-margin-mm="${foliation.bindingMarginMm || 20.0}" ` +
-    `data-creep-mm="${imp.maxCreepMm}" ` +
-    `style="padding:0.45rem 0.65rem;border-radius:8px;border:1px solid var(--badge-border);background:var(--badge-bg);display:flex;flex-wrap:wrap;gap:0.4rem;align-items:center;justify-content:space-between;">` +
+    `data-creep-mm="${imp.maxCreepMm}">` +
     `<strong>${titleText}</strong>` +
     `<span>${detailText}</span>` +
     `</div>`

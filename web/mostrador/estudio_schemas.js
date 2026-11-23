@@ -403,7 +403,7 @@ export const PHILOLOGY_ROSETTA_DEFAULT_INDEX = {
   versification_eng_org: [
     { eng_range: "GEN 31:55", org_range: "GEN 32:1", tradition: "BHS_MT", delta_verses: 1, note: "El cap. 32 hebreo inicia un versículo antes." },
     { eng_range: "EXO 8:1-4", org_range: "EXO 7:26-29", tradition: "BHS_MT", delta_verses: 4, note: "Relato de las ranas inicia en Éxodo 7:26 en el Texto Masorético." },
-    { eng_range: "PSA 23:1-6", org_range: "PSA 22:1-6 (LXX) / PSA 23:1-6 (MT)", tradition: "LXX_VG_MT", delta_verses: 0, note: "Numeración de Salmos desplazada -1 en Septuaginta/Vulgata (Sal 10-147)." },
+    { eng_range: "PSA 23:1-6", org_range: "PSA 22:1-6 (LXX) / PSA 23:1-6 (MT)", tradition: "Tradiciones Septuaginta · Vulgata · Masorético", delta_verses: 0, note: "Numeración de Salmos desplazada -1 en Septuaginta/Vulgata (Sal 10-147)." },
     { eng_range: "PSA 51:1-19", org_range: "PSA 51:3-21 (MT) / PSA 50:3-21 (LXX)", tradition: "BHS_MT", delta_verses: 2, note: "El superscrito histórico ocupa los vv. 1-2 en el Texto Masorético." },
     { eng_range: "ISA 9:1-21", org_range: "ISA 8:23-9:20", tradition: "BHS_MT", delta_verses: -1, note: "Isaías 9:1 (ENG) corresponde a Isaías 8:23 (BHS MT)." },
     { eng_range: "JON 1:17", org_range: "JON 2:1", tradition: "BHS_MT", delta_verses: 1, note: "El gran pez pertenece a Jonás 2:1 en el Texto Masorético." },

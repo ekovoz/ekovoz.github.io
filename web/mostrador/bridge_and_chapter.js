@@ -621,7 +621,7 @@ export function renderDiglossicParallelBridge({
         `<sup>${vNum}</sup> ${escapeHtml(brTxt || `[Puente ${bridgeSpec.code.toUpperCase()} ${osis}]`)}` +
         `</div>`;
       return (
-        `<div class="diglossic-parallel-row" data-osis="${escapeHtml(osis)}" style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:0.75rem;padding:0.45rem 0;border-bottom:1px solid var(--card-border);">` +
+        `<div class="diglossic-parallel-row" data-osis="${escapeHtml(osis)}">` +
         leftCellHtml +
         rightCellHtml +
         `</div>`
@@ -631,7 +631,7 @@ export function renderDiglossicParallelBridge({
 
   return (
     `<section class="diglossic-parallel-bridge" data-diglossic-bridge="true" data-lang="${escapeHtml(lang)}" data-bridge-lang="${escapeHtml(bridgeSpec.code)}" data-sovereign-tier="${escapeHtml(sovereignTier)}" data-epistemic-seal="${sealCode}" data-epistemic-honesty="ZERO_SYNTHETIC_BIBLE">` +
-    `<header class="diglossic-bridge-header" style="display:flex;justify-content:space-between;gap:0.5rem;padding:0.4rem 0.6rem;border-radius:8px;background:var(--bg-secondary);font-size:0.78rem;margin-bottom:0.5rem;">` +
+    `<header class="diglossic-bridge-header">` +
     `<span><strong>Columna Materna (<code>${escapeHtml(lang)}</code>):</strong> ${isHumanMaternalPortion ? "Porción Humana Verificada" : "Andamiaje Interlineal Honesto GMIS + CELF-250 (0% Falsa Biblia)"}</span>` +
     `<span><strong>Lengua Puente Siglo XXI (<code>${escapeHtml(bridgeSpec.code)}</code>):</strong> ${escapeHtml(bridgeSpec.label)}</span>` +
     `</header>` +
@@ -655,7 +655,7 @@ export function renderChapterPreviewHtml(
     const retryLabel = i18n ? i18n.t("mostrador.action.retry") : "Retry";
     return `<div class="mostrador-status-unavailable" data-status="unavailable"><p>${escapeHtml(
       msg
-    )}</p><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;"><button type="button" id="btnRetryNavigation" class="uls-chip" data-i18n="mostrador.action.retry">${escapeHtml(
+    )}</p><div class="ek-row-wrap ek-mt-sm"><button type="button" id="btnRetryNavigation" class="uls-chip" data-i18n="mostrador.action.retry">${escapeHtml(
       retryLabel
     )}</button><button type="button" id="btnOpenCelf250FromUnavailable" class="uls-chip" data-action="open-celf250-workshop">✏️ Iniciar traducción de campo (CELF-250)</button></div></div>`;
   }
@@ -674,7 +674,7 @@ export function renderChapterPreviewHtml(
 
   const dir = isRtlLocale(lang) ? "rtl" : "ltr";
   const isPoetic = POETIC_BOOKS.has(String(book || "").toUpperCase());
-  const supHiddenAttr = rollMode === "roll" ? ' hidden style="display:none;"' : "";
+  const supHiddenAttr = rollMode === "roll" ? " hidden" : "";
 
   if (register === "bilingue" && bridgeChapterData && bridgeChapterData.verses) {
     const rowsHtml = [];
@@ -704,17 +704,15 @@ export function renderChapterPreviewHtml(
             tokenStrongPairs: options.tokenStrongPairs || [],
           })
           : escapeHtml(rawPrimary);
-      const matPct = Number(BIBLE_CONSTANTS?.BILINGUAL_MATERNAL_WIDTH_PCT) || 62;
-      const brgPct = Number(BIBLE_CONSTANTS?.BILINGUAL_BRIDGE_WIDTH_PCT) || 38;
       rowsHtml.push(
         `<div class="mostrador-diptych-row" data-verse="${vNum}" data-osis="${escapeHtml(
           osis
-        )}" style="display:grid;grid-template-columns:minmax(0,${matPct}fr) minmax(0,${brgPct}fr);gap:14px;padding:6px 0;border-bottom:1px solid rgba(28,25,23,0.08);"><span class="mostrador-verse bible-verse-line${isSelected ? " is-selected" : ""
+        )}"><span class="mostrador-verse bible-verse-line${isSelected ? " is-selected" : ""
         }" data-verse="${vNum}" data-osis="${escapeHtml(
           osis
         )}"><sup class="bible-v-sup"${supHiddenAttr}>${escapeHtml(
           supNum
-        )}</sup> ${primaryBodyHtml}</span><span class="mostrador-verse-bridge" data-verse="${vNum}" style="font-size:0.92em;color:#57534E;">${escapeHtml(
+        )}</sup> ${primaryBodyHtml}</span><span class="mostrador-verse-bridge" data-verse="${vNum}">${escapeHtml(
           rawBridge
         )}</span></div>`
       );
@@ -823,7 +821,7 @@ export function renderChapterPreviewHtml(
   const contextualGlosses = detectContextualCulturalGlossesForVerse(selectedRawVerseText);
   const contextualGlossBannerHtml =
     contextualGlosses.length > 0
-      ? `<aside id="activeVerseCulturalGlossBanner" class="cultural-gloss-canvas-banner" data-cultural-gloss-count="${contextualGlosses.length}" style="margin-top:0.55rem;padding:0.4rem 0.65rem;border-radius:8px;border:1px solid var(--card-border);background:var(--bg-secondary);font-size:0.78rem;line-height:1.4;">` +
+      ? `<aside id="activeVerseCulturalGlossBanner" class="cultural-gloss-canvas-banner" data-cultural-gloss-count="${contextualGlosses.length}">` +
       contextualGlosses
         .map(
           (g) =>

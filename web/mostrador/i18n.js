@@ -555,11 +555,11 @@ export function localizeWorkChromeLabels(locale = DEFAULT_LOCALE) {
       ],
       openInBible: "📖 Abrir Mateo 5 en Biblia",
       registerPulse: {
-        siglo21: "🌡️ Contemporáneo · μ=80.6 · ΔAoA −3.1a",
-        clasico: "🏛️ Clásico · μ=64.2 · Base histórica",
-        ninos: "🌱 Niños · AoA ≤ 8.5a · Lectura guiada",
-        facil: "🤝 Lectura fácil · NSM-65 · Claridad máxima",
-        original: "📜 Matriz original · WLC / SRGNT · 15 col",
+        siglo21: "🌡️ Contemporáneo · Lectura clara",
+        clasico: "🏛️ Clásico · Tradición histórica",
+        ninos: "🌱 Niños · Lectura guiada",
+        facil: "🤝 Lectura fácil · Claridad máxima",
+        original: "📜 Texto original · Hebreo y Griego",
       },
     };
   }
@@ -592,11 +592,11 @@ export function localizeWorkChromeLabels(locale = DEFAULT_LOCALE) {
       ],
       openInBible: "📖 Abrir Mateus 5 na Bíblia",
       registerPulse: {
-        siglo21: "🌡️ Contemporâneo · μ=80.6 · ΔAoA −3.1a",
-        clasico: "🏛️ Clássico · μ=64.2 · Base histórica",
-        ninos: "🌱 Crianças · AoA ≤ 8.5a · Leitura guiada",
-        facil: "🤝 Leitura fácil · NSM-65 · Clareza máxima",
-        original: "📜 Matriz original · WLC / SRGNT · 15 col",
+        siglo21: "🌡️ Contemporâneo · Leitura clara",
+        clasico: "🏛️ Clássico · Base histórica",
+        ninos: "🌱 Crianças · Leitura guiada",
+        facil: "🤝 Leitura fácil · Clareza máxima",
+        original: "📜 Texto original · Hebraico e Grego",
       },
     };
   }
@@ -629,11 +629,11 @@ export function localizeWorkChromeLabels(locale = DEFAULT_LOCALE) {
       ],
       openInBible: "📖 Ouvrir Matthieu 5 dans la Bible",
       registerPulse: {
-        siglo21: "🌡️ Contemporain · μ=80.6 · ΔAoA −3.1a",
-        clasico: "🏛️ Classique · μ=64.2 · Base historique",
-        ninos: "🌱 Enfants · AoA ≤ 8.5a · Lecture guidée",
-        facil: "🤝 Lecture facile · NSM-65 · Clarté maximale",
-        original: "📜 Matrice originale · WLC / SRGNT · 15 col",
+        siglo21: "🌡️ Contemporain · Lecture claire",
+        clasico: "🏛️ Classique · Base historique",
+        ninos: "🌱 Enfants · Lecture guidée",
+        facil: "🤝 Lecture facile · Clarté maximale",
+        original: "📜 Texte original · Hébreu et Grec",
       },
     };
   }
@@ -665,11 +665,11 @@ export function localizeWorkChromeLabels(locale = DEFAULT_LOCALE) {
     ],
     openInBible: "📖 Open Matthew 5 in Bible",
     registerPulse: {
-      siglo21: "🌡️ Contemporary · μ=80.6 · ΔAoA −3.1y",
-      clasico: "🏛️ Classic · μ=64.2 · Historical baseline",
-      ninos: "🌱 Children · AoA ≤ 8.5y · Guided reading",
-      facil: "🤝 Easy read · NSM-65 · Maximum clarity",
-      original: "📜 Original matrix · WLC / SRGNT · 15 col",
+      siglo21: "🌡️ Contemporary · Clear reading",
+      clasico: "🏛️ Classic · Historical baseline",
+      ninos: "🌱 Children · Guided reading",
+      facil: "🤝 Easy read · Maximum clarity",
+      original: "📜 Original text · Hebrew & Greek",
     },
   };
 }

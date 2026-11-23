@@ -3,12 +3,7 @@
 // web/mostrador/sister_works_controller.js — Controlador de Escenario para Obras Hermanas (Los Felices + 1 Evangelio)
 // ============================================================================
 
-import {
-  closeModal,
-  nextPlate, nextSlide, openActivePlateZoom, openModal, prevPlate, prevSlide,
-  printActivePlate, registerPlateCoordinateListener, resolvePlateForBibleCoordinate, setActivePlateIndex, setSlide,
-  shareResource, syncFelicesWithCorpusLang, updateDownloadLinks, updateFocalPlate, updateUI
-} from "../i18n_ui.js";
+import { buildCssPagedMediaPrintHtml, dispatchTandaWorkerJob } from "./bimodal_tanda_print.js";
 import { CROSS_WORK_BRIDGE_TABLE, escapeHtml } from "./bridge_and_chapter.js";
 import { hydrateDiachronicRegister } from "./diachronic_register.js";
 import { resolveOverlayEntryForOsis, resolveVerseWithOverlay } from "./drawer_workshop.js";
@@ -16,16 +11,16 @@ import { hydrateCulturalGlossesLexicon } from "./estudio.js";
 import {
   formatEvangeliosBridgeLine,
   formatHumanEvangeliosPlateTitle,
+  formatReadableCitation,
   hydratePericopesAndGlosses,
   renderEvangeliosPlateActionsHtml,
   resolveEvangeliosMacroThreadAndEcho,
-  resolveFelicesDichaCoordinate,
   resolvePericopeHeaderForVerse,
   shouldShowEvangeliosBridgeLine,
 } from "./evangelios.js";
-import { BIBLE_CONSTANTS } from "../bible_constants.js";
-import { buildCssPagedMediaPrintHtml } from "./bimodal_tanda_print.js";
+import { isRtlLocale } from "./i18n.js";
 import { parseBiblicalCoordinateReference } from "./reference.js";
+import { resolveSafeDownloadFilename } from "./stealth_filename.js";
 
 /**
  * Expande una referencia bíblica puntual o rango de versículos (ej. `"MAT 5:1-16"`, `"MAT.5.1-12"`, `"MAT.5.3"`)
@@ -163,6 +158,21 @@ export function resolveEvangeliosActiveSelection({
 /**
  * Construye las opciones HTML del selector semanal `#evangeliosWeekSelect` (`D8-R37` / `D8-R38` / `D4-R45`).
  */
+function formatLocalizedGospelDisplayRef(ref = "", isEn = false) {
+  return formatReadableCitation(ref, isEn ? "en" : "es");
+}
+
+function stripDuplicateEvangeliosTitleFromQuote(quoteText = "", titleText = "") {
+  const q = String(quoteText || "").trim();
+  const t = String(titleText || "").trim();
+  if (!q || !t) return q;
+  const idx = q.indexOf(" — ");
+  if (idx > 0 && q.slice(idx + 3).trim() === t) {
+    return q.slice(0, idx).trim();
+  }
+  return q === t ? "" : q;
+}
+
 export function buildEvangeliosWeekOptionsHtml(
   pool = [],
   activeEntryId = "s01",
@@ -174,8 +184,8 @@ export function buildEvangeliosWeekOptionsHtml(
   return (Array.isArray(pool) ? pool : [])
     .map((e) => {
       const sel = e.id === activeEntryId ? " selected" : "";
-      const labelTitle = formatHumanEvangeliosPlateTitle(e, activeEvLang, uiLocale);
-      return `<option value="${escapeHtml(e.id)}" data-plate-slug="${escapeHtml(e.plate_id || "")}"${sel}>${weekWord} ${e.week} (${escapeHtml(e.quarter)}) · ${escapeHtml(labelTitle)} — ${escapeHtml(e.reference)}</option>`;
+      const localizedRef = formatLocalizedGospelDisplayRef(e.reference || "", isEn);
+      return `<option value="${escapeHtml(e.id)}" data-plate-slug="${escapeHtml(e.plate_id || "")}"${sel}>${weekWord} ${e.week} (${escapeHtml(e.quarter)}) · ${escapeHtml(localizedRef)}</option>`;
     })
     .join("");
 }
@@ -202,6 +212,7 @@ export function renderEvangeliosStageCardHtml(
   const tObj = activeEntry.texts?.[activeEvLang] || activeEntry.texts?.es || {};
   const bridgeObj = activeEvLang === "es" ? activeEntry.texts?.en : activeEntry.texts?.es;
   const labelTitle = formatHumanEvangeliosPlateTitle(activeEntry, activeEvLang, uiLocale);
+  const localizedRef = formatLocalizedGospelDisplayRef(activeEntry.reference || "", isEn);
   const macroMeta = resolveEvangeliosMacroThreadAndEcho({
     plateSlug: activeEntry.plate_id || "",
     weekId: activeEntry.id || "s01",
@@ -222,29 +233,30 @@ export function renderEvangeliosStageCardHtml(
     tObj.text || "",
     macroMeta?.anchorOsis || "",
   );
+  const quoteDisplayText = stripDuplicateEvangeliosTitleFromQuote(overlayProj.text, labelTitle);
   const overlayBadgesHtml = overlayProj.matchedOverlays
     .map(
       (ov) =>
         `<span class="uls-badge evangelios-overlay-badge" data-overlay-authority="${escapeHtml(
           ov.authorityTier || "LOCAL_WORKSHOP_SELF_SIGNED",
-        )}" data-overlay-osis="${escapeHtml(ov.target_ref || "")}" style="font-size:0.72rem;margin-left:0.3rem;">🔐 ${escapeHtml(
+        )}" data-overlay-osis="${escapeHtml(ov.target_ref || "")}">🔐 ${escapeHtml(
           ov.target_ref || "",
         )} · ${escapeHtml(ov.authorityTier || "LOCAL_WORKSHOP_SELF_SIGNED")}</span>`,
     )
     .join("");
   return (
-    `<header data-pericope-header="${escapeHtml(pericopeHdr?.title || "")}" data-plate-slug="${escapeHtml(activeEntry.plate_id || "")}" data-total-plates="${totalPlates}" data-canonical-gospel-verses="${gospelVersesCount}" style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:0.4rem;margin-bottom:0.5rem;">` +
-    `<div><strong>${weekWord} ${activeEntry.week}/${totalPlates} (${escapeHtml(activeEntry.quarter)}) · ${escapeHtml(labelTitle)} — ${escapeHtml(activeEntry.reference || "")}</strong> ` +
-    `<span class="uls-badge" data-evangelios-corpus-counts="true" style="font-size:0.72rem;">${totalPlates} ${isEn ? "plates" : "láminas"} · ${gospelVersesCount.toLocaleString("en-US")} vv.</span>${overlayBadgesHtml}</div>` +
-    `<div style="display:flex;flex-wrap:wrap;align-items:center;gap:0.35rem;">` +
-    `<button type="button" class="uls-chip" data-evangelios-ref="${escapeHtml(activeEntry.reference)}" style="min-height:48px;padding:0.35rem 0.75rem;font-size:0.8rem;">📖 ${openBibleLabel}: ${escapeHtml(activeEntry.reference)}</button>` +
-    `<button type="button" id="btnPrintEvangeliosPlate" class="uls-chip" data-action="evangelios-print-pdf" data-week-id="${escapeHtml(activeEntry.id || "s01")}" style="min-height:48px;padding:0.35rem 0.75rem;font-size:0.8rem;">🖨️ ${isEn ? "Print Gospel Plate (PDF)" : "Imprimir Evangelios (PDF)"}</button>` +
+    `<header class="evangelios-stage-card-header" data-pericope-header="${escapeHtml(pericopeHdr?.title || "")}" data-plate-slug="${escapeHtml(activeEntry.plate_id || "")}" data-total-plates="${totalPlates}" data-canonical-gospel-verses="${gospelVersesCount}">` +
+    `<div><strong>${weekWord} ${activeEntry.week}/${totalPlates} · ${escapeHtml(labelTitle)}</strong> ` +
+    `<span class="uls-badge evangelios-corpus-counts-badge" data-evangelios-corpus-counts="true">${totalPlates} ${isEn ? "plates" : "láminas"} · ${gospelVersesCount.toLocaleString("en-US")} vv.</span>${overlayBadgesHtml}</div>` +
+    `<div class="evangelios-stage-card-actions">` +
+    `<button type="button" class="uls-chip evangelios-stage-action-btn" data-evangelios-ref="${escapeHtml(activeEntry.reference)}">📖 ${openBibleLabel}: ${escapeHtml(localizedRef)}</button>` +
+    `<button type="button" id="btnPrintEvangeliosPlate" class="uls-chip evangelios-stage-action-btn" data-action="evangelios-print-pdf" data-week-id="${escapeHtml(activeEntry.id || "s01")}">🖨️ ${isEn ? "Download Week PDF" : "Descargar Semana (PDF)"}</button>` +
     `</div>` +
     `</header>` +
-    `<p style="margin:0 0 0.45rem 0;font-size:0.82rem;color:var(--accent-amber);"><strong>🕊️ ${gestureLabel}:</strong> ${escapeHtml(activeEntry.gesture || "")}</p>` +
-    `<blockquote style="margin:0 0 0.45rem 0;font-size:0.95rem;line-height:1.5;">${escapeHtml(overlayProj.text)}</blockquote>` +
+    `<p class="evangelios-stage-gesture"><strong>🕊️ ${gestureLabel}:</strong> ${escapeHtml(activeEntry.gesture || "")}</p>` +
+    (quoteDisplayText ? `<blockquote class="evangelios-stage-quote">${escapeHtml(quoteDisplayText)}</blockquote>` : "") +
     (shouldShowEvangeliosBridgeLine(activeEvLang) && bridgeObj && bridgeObj.text
-      ? `<p data-formatted-bridge="${escapeHtml(formattedBridge)}" style="margin:0;font-size:0.8rem;color:var(--text-secondary);border-top:1px dashed var(--card-border);padding-top:0.4rem;"><em>${bridgeLabel}:</em> ${escapeHtml(bridgeObj.text)}</p>`
+      ? `<p class="evangelios-stage-bridge" data-formatted-bridge="${escapeHtml(formattedBridge)}"><em>${bridgeLabel}:</em> ${escapeHtml(bridgeObj.text)}</p>`
       : "") +
     renderEvangeliosPlateActionsHtml({
       weekId: activeEntry.id,
@@ -389,11 +401,12 @@ export function bindSisterWorksStageEvents(ctx = {}) {
     if (evGlobalBadge) {
       evGlobalBadge.hidden = false;
       if (evGlobalBadge.style) evGlobalBadge.style.display = "inline-flex";
-      evGlobalBadge.textContent = `🌍 ${activeCorpusLang.toUpperCase()} · 7,164`;
+      evGlobalBadge.textContent = `🌍 ${activeCorpusLang.toUpperCase()} · SIL 7,164`;
     }
+
     if (typeof evSec.addEventListener === "function" && !evSec._evPrintBound) {
       evSec._evPrintBound = true;
-      evSec.addEventListener("click", (ev) => {
+      evSec.addEventListener("click", async (ev) => {
         const printBtn = ev?.target?.closest
           ? ev.target.closest('[data-action="evangelios-print-pdf"]')
           : ev?.target?.getAttribute?.("data-action") === "evangelios-print-pdf"
@@ -403,6 +416,55 @@ export function bindSisterWorksStageEvents(ctx = {}) {
         const wk = printBtn.getAttribute?.("data-week-id") || state.evangeliosWeekId || "s01";
         const curLang = String(state.lang || state.evangeliosLang || "es").trim() || "es";
         const activeQuote = evSec.querySelector?.("blockquote")?.textContent || `${state.book} ${state.chapter}:${state.verse}`;
+        const stealthOutName = resolveSafeDownloadFilename(state, {
+          kind: "evangelios_pdf",
+          lang: curLang,
+          weekId: wk,
+        });
+        printBtn.setAttribute?.("data-print-week", wk);
+        printBtn.setAttribute?.("data-download-filename", stealthOutName);
+        let pdfBytes = null;
+        try {
+          const synth = await synthesizeEvangeliosWeekPdfBytes({
+            weekId: wk,
+            entry: {
+              id: wk,
+              reference: `${state.book || "MRK"}.${state.chapter || 1}.${state.verse || 1}`,
+              gesture: evSec.querySelector?.(".evangelios-stage-gesture")?.textContent || "",
+              texts: { [curLang]: { text: activeQuote } },
+            },
+            activeEvLang: curLang,
+            uiLocale: state.uiLocale || curLang,
+            dataLayer,
+            state,
+          });
+          pdfBytes = synth.pdfBytes;
+        } catch {
+          pdfBytes = null;
+        }
+        if (pdfBytes && pdfBytes.byteLength > 0 && typeof targetDoc?.createElement === "function") {
+          printBtn.setAttribute?.("data-print-ready", "true");
+          printBtn.setAttribute?.("data-print-format", "application/pdf");
+          try {
+            const dl = targetDoc.createElement("a");
+            if (dl) {
+              if (typeof globalThis.Blob === "function" && typeof globalThis.URL?.createObjectURL === "function") {
+                dl.href = globalThis.URL.createObjectURL(new globalThis.Blob([pdfBytes], { type: "application/pdf" }));
+              } else {
+                let bin = "";
+                for (let i = 0; i < pdfBytes.byteLength; i += 1) bin += String.fromCharCode(pdfBytes[i]);
+                const b64 = typeof globalThis.btoa === "function" ? globalThis.btoa(bin) : Buffer.from(pdfBytes).toString("base64");
+                dl.href = `data:application/pdf;base64,${b64}`;
+              }
+              dl.download = stealthOutName;
+              dl.click?.();
+            }
+          } catch {
+            // Non-fatal in headless DOM
+          }
+          return;
+        }
+        // Fallback honesto CSS Paged Media (@media print), nunca HTML disfrazado con extension .pdf (DEBRIS-R3-02)
         const printHtml = buildCssPagedMediaPrintHtml({
           lang: curLang,
           book: state.book || "MRK",
@@ -413,21 +475,10 @@ export function bindSisterWorksStageEvents(ctx = {}) {
           fontPt: 11.0,
           paper: state.paperFormat || "a4",
         });
-        state.lastEvangeliosPrintHtml = printHtml;
-        printBtn.setAttribute?.("data-print-week", wk);
-        printBtn.setAttribute?.("data-print-ready", "true");
-        if (typeof targetDoc?.createElement === "function") {
-          try {
-            const dl = targetDoc.createElement("a");
-            if (dl) {
-              dl.href = `data:text/html;charset=utf-8,${encodeURIComponent(printHtml)}`;
-              dl.download = `evangelios-${curLang}-${wk}.html`;
-              dl.click?.();
-            }
-          } catch {
-            // Non-fatal in headless DOM
-          }
-        }
+        printBtn.setAttribute?.("data-print-ready", "paged-media");
+        printBtn.setAttribute?.("data-print-format", "print-dialog");
+        printBtn.setAttribute?.("data-print-bytes", String(printHtml.length));
+        globalThis.window?.print?.();
       });
     }
     if (!state.pericopesAndGlossesLoaded && typeof dataLayer.loadPericopesAndGlosses === "function") {
@@ -653,167 +704,86 @@ export function bindSisterWorksStageEvents(ctx = {}) {
 }
 
 /**
- * Enlaza el visor focal de *Los Felices* (28 láminas, 12 dichas, carrusel, modales y puente a La Biblia) (`D9-R44`).
+ * Sintetiza el PDF binario real (`%PDF-1.4`) para la semana activa de *Los Evangelios*
+ * reutilizando el motor WASM/OpenType cliente (`dispatchTandaWorkerJob`, `0 KB` extra).
  */
-export function bindFelicesStageEvents(ctx = {}) {
-  const {
-    state,
-    targetDoc,
-    getEl,
-    navigate,
-    switchWork,
-    transitionSheet,
-    hydrateBookAndChapterSelectors,
-    updateCompassTriggerDom,
-    syncLifeTrailsActiveState,
-    syncUrlFromState,
-    hydrateStudyDrawer,
-    hydrateImproveDrawer,
-    hydratePrintDrawerPanels,
-    hydrateShareAndAuditDrawer,
-  } = ctx;
-  registerPlateCoordinateListener(async (coord) => {
-    if (!coord) return;
-    state.activePlateIndex = coord.plateIndex;
-    if (coord.dichaIndex) state.activeDichaIndex = coord.dichaIndex;
-    if (state.activeWork === "felices") {
-      if (coord.book) state.book = coord.book;
-      if (coord.chapter) state.chapter = coord.chapter;
-      if (coord.verse) state.verse = coord.verse;
-    }
-    hydrateBookAndChapterSelectors(targetDoc);
-    updateCompassTriggerDom(targetDoc);
-    syncLifeTrailsActiveState(targetDoc);
-    syncUrlFromState(targetDoc, { push: false });
-    if (state.activeSheet === "study") {
-      await hydrateStudyDrawer(targetDoc);
-    } else if (state.activeSheet === "field") {
-      await hydrateImproveDrawer(targetDoc);
-    } else if (state.activeSheet === "print") {
-      hydratePrintDrawerPanels(targetDoc);
-    } else if (state.activeSheet === "share") {
-      hydrateShareAndAuditDrawer(targetDoc);
-    }
+export async function synthesizeEvangeliosWeekPdfBytes({
+  weekId = "s01",
+  entry = null,
+  activeEvLang = "es",
+  uiLocale = "es",
+  dataLayer = null,
+  state = null,
+  wasmBytes = null,
+  fontBytes = null,
+} = {}) {
+  const curLang = String(activeEvLang || state?.lang || state?.evangeliosLang || "es").trim() || "es";
+  const macroMeta = resolveEvangeliosMacroThreadAndEcho({
+    plateSlug: entry?.plate_id || "",
+    weekId: weekId || entry?.id || "s01",
+    anchorOsis: entry?.reference || "",
   });
-
-  const focalFrame = getEl("focalPlateFrame", targetDoc);
-  if (focalFrame && typeof focalFrame.addEventListener === "function") {
-    focalFrame.addEventListener("click", () => openActivePlateZoom(targetDoc));
-  }
-  const btnOpenPreview = getEl("btnOpenPreviewCarousel", targetDoc);
-  if (btnOpenPreview && typeof btnOpenPreview.addEventListener === "function") {
-    btnOpenPreview.addEventListener("click", () => openModal("previewModal", targetDoc));
-  }
-  const btnPrevP = getEl("btnPrevPlate", targetDoc);
-  if (btnPrevP && typeof btnPrevP.addEventListener === "function") {
-    btnPrevP.addEventListener("click", () => prevPlate(targetDoc));
-  }
-  const btnNextP = getEl("btnNextPlate", targetDoc);
-  if (btnNextP && typeof btnNextP.addEventListener === "function") {
-    btnNextP.addEventListener("click", () => nextPlate(targetDoc));
-  }
-  const btnPrintP = getEl("btnPrintPlate", targetDoc);
-  if (btnPrintP && typeof btnPrintP.addEventListener === "function") {
-    btnPrintP.addEventListener("click", () => printActivePlate());
-  }
-  const btnShareW = getEl("btnShareWork", targetDoc);
-  if (btnShareW && typeof btnShareW.addEventListener === "function") {
-    btnShareW.addEventListener("click", () => shareResource(targetDoc));
-  }
-  const foldTrig = getEl("foldGuideTrigger", targetDoc);
-  if (foldTrig && typeof foldTrig.addEventListener === "function") {
-    foldTrig.addEventListener("click", () => transitionSheet("print", targetDoc));
-  }
-  const felOptShare = getEl("btnFelicesOpticalShare", targetDoc);
-  if (felOptShare && typeof felOptShare.addEventListener === "function") {
-    felOptShare.addEventListener("click", () => transitionSheet("share", targetDoc));
-  }
-  const footContact = getEl("footerContactBtn", targetDoc);
-  if (footContact && typeof footContact.addEventListener === "function") {
-    footContact.addEventListener("click", () => transitionSheet("field", targetDoc));
-  }
-  const felLangSel = getEl("felicesLangSelect", targetDoc);
-  if (felLangSel && typeof felLangSel.addEventListener === "function") {
-    felLangSel.addEventListener("change", (e) => {
-      const nextFelLang = String(e?.target?.value || felLangSel.value || "es");
-      state.lang = nextFelLang;
-      syncFelicesWithCorpusLang(nextFelLang, targetDoc);
-      updateFocalPlate(targetDoc, nextFelLang);
-      updateDownloadLinks(targetDoc, nextFelLang);
-      updateUI(targetDoc);
-    });
-  }
-  const felPlateSel = getEl("felicesPlateSelect", targetDoc);
-  if (felPlateSel && typeof felPlateSel.addEventListener === "function") {
-    felPlateSel.addEventListener("change", (e) => {
-      const maxPlates = Number(BIBLE_CONSTANTS?.FELICES_PLATES_COUNT) || 27;
-      const pIdx = Math.max(1, Math.min(maxPlates, Number(e?.target?.value || felPlateSel.value) || 24));
-      setActivePlateIndex(pIdx, targetDoc);
-    });
-  }
-  const felDichaSel = getEl("felicesDichaSelect", targetDoc);
-  if (felDichaSel && typeof felDichaSel.addEventListener === "function") {
-    felDichaSel.addEventListener("change", (e) => {
-      const dIdx = Math.max(1, Math.min(12, Number(e?.target?.value || felDichaSel.value) || 1));
-      state.activeDichaIndex = dIdx;
-      const dCoord = resolveFelicesDichaCoordinate(dIdx);
-      if (dCoord) {
-        state.book = dCoord.book;
-        state.chapter = dCoord.chapter;
-        state.verse = dCoord.verse;
-        const pIdx = resolvePlateForBibleCoordinate(dCoord.book, dCoord.chapter, dCoord.verse);
-        setActivePlateIndex(pIdx, targetDoc);
+  const refStr = String(entry?.reference || macroMeta?.anchorOsis || `${state?.book || "MRK"}.${state?.chapter || 1}.${state?.verse || 1}`);
+  const parsed = parseBiblicalCoordinateReference(refStr) || {
+    bookCode: state?.book || "MRK",
+    chapter: Number(state?.chapter) || 1,
+    verse: Number(state?.verse) || 1,
+  };
+  const book = parsed.bookCode || "MRK";
+  const chapter = Number(parsed.chapter) || 1;
+  const verse = Number(parsed.verse) || 1;
+  let chapterVerses = [];
+  if (typeof dataLayer?.loadChapter === "function") {
+    try {
+      const chRes = await dataLayer.loadChapter(curLang, book, chapter);
+      const rawVerses = chRes?.data?.verses || chRes?.verses || null;
+      if (rawVerses && typeof rawVerses === "object") {
+        chapterVerses = Object.entries(rawVerses)
+          .map(([vNum, text]) => ({
+            ref: `${book} ${chapter}:${vNum}`,
+            text: String(text || "").trim(),
+          }))
+          .filter((item) => item.text.length > 0);
       }
-    });
-  }
-  const btnFelOpenBib = getEl("btnFelicesOpenInBible", targetDoc);
-  if (btnFelOpenBib && typeof btnFelOpenBib.addEventListener === "function") {
-    btnFelOpenBib.addEventListener("click", async () => {
-      const rawOsis =
-        btnFelOpenBib.getAttribute?.("data-felices-osis") ||
-        `${state.book}.${state.chapter}.${state.verse}`;
-      const parsed = parseBiblicalCoordinateReference(rawOsis);
-      await switchWork("biblia", targetDoc);
-      if (parsed && parsed.bookCode) {
-        await navigate(
-          {
-            book: parsed.bookCode,
-            chapter: parsed.chapter || 1,
-            verse: parsed.verse || 1,
-          },
-          targetDoc,
-        );
-        hydrateBookAndChapterSelectors(targetDoc);
-      }
-    });
-  }
-  for (const [closeBtnId, modalId] of [
-    ["previewModalCloseBtn", "previewModal"],
-    ["btnPreviewClose", "previewModal"],
-    ["plateModalCloseBtn", "plateModal"],
-    ["btnPlateClose", "plateModal"],
-  ]) {
-    const cBtn = getEl(closeBtnId, targetDoc);
-    if (cBtn && typeof cBtn.addEventListener === "function") {
-      cBtn.addEventListener("click", () => closeModal(modalId, targetDoc));
+    } catch {
+      // Fall back to curated week pericope payload
     }
   }
-  const cPrev = getEl("carouselPrevBtn", targetDoc);
-  if (cPrev && typeof cPrev.addEventListener === "function") {
-    cPrev.addEventListener("click", () => prevSlide(targetDoc));
-  }
-  const cNext = getEl("carouselNextBtn", targetDoc);
-  if (cNext && typeof cNext.addEventListener === "function") {
-    cNext.addEventListener("click", () => nextSlide(targetDoc));
-  }
-  for (const [pillId, slideIdx] of [
-    ["termPill_1", 0],
-    ["termPill_2", 1],
-    ["termPill_3", 2],
-  ]) {
-    const pEl = getEl(pillId, targetDoc);
-    if (pEl && typeof pEl.addEventListener === "function") {
-      pEl.addEventListener("click", () => setSlide(slideIdx, targetDoc));
-    }
-  }
+  const titleText = entry ? formatHumanEvangeliosPlateTitle(entry, curLang, uiLocale) : macroMeta?.title || "";
+  const headerEntries = [];
+  if (titleText) headerEntries.push({ ref: formatLocalizedGospelDisplayRef(refStr, String(uiLocale).startsWith("en")), text: titleText });
+  if (entry?.gesture) headerEntries.push({ ref: "Gesto", text: entry.gesture });
+  const bodyEntries = chapterVerses.length > 0 ? chapterVerses : [{ ref: `${book} ${chapter}:${verse}`, text: entry?.texts?.[curLang]?.text || entry?.texts?.es?.text || titleText }];
+  const questionsEntries = (Array.isArray(macroMeta?.questions) ? macroMeta.questions : []).map((q, idx) => ({
+    ref: `P${idx + 1}`,
+    text: String(q || ""),
+  }));
+  const allEntries = [...headerEntries, ...bodyEntries, ...questionsEntries];
+  const workerRes = await dispatchTandaWorkerJob({
+    tandaId: `EV-${String(weekId || "s01").toUpperCase()}`,
+    lang: curLang,
+    book,
+    chapter,
+    verse,
+    verses: allEntries,
+    columns: 1,
+    fontPt: 11.0,
+    paper: state?.paperFormat || "a4",
+    paperFormat: state?.paperFormat || "a4",
+    orientation: "portrait",
+    dir: isRtlLocale(curLang) ? "rtl" : "ltr",
+    ...(wasmBytes ? { wasmBytes } : {}),
+    ...(fontBytes ? { fontBytes } : {}),
+  });
+  return {
+    pdfBytes: workerRes?.pdfBytes instanceof Uint8Array ? workerRes.pdfBytes : null,
+    book,
+    chapter,
+    verse,
+    verses: allEntries,
+    workerResult: workerRes,
+  };
 }
+
+export { bindFelicesStageEvents } from "./felices_stage_controller.js";
+

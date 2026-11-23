@@ -312,16 +312,16 @@ export function renderStudy14ColDrawerHtml(matrixShard, options = {}) {
     ? `Full chapter (${rawRows.length})`
     : `Capítulo completo (${rawRows.length})`;
   const scopeGmisLabel = isEn
-    ? `4-Line Scaffolding (GMIS)`
-    : `Andamiaje 4-Líneas (GMIS)`;
+    ? `4-Line Scaffolding`
+    : `Andamiaje en 4 Líneas`;
   const scopeBarHtml =
-    `<div class="study-scope-bar" role="group" aria-label="${isEn ? "Interlinear Matrix Scope" : "Alcance de Matriz Interlineal"}" style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:0.5rem;margin-bottom:0.65rem;">` +
-    `<span style="font-size:0.8rem;color:var(--text-secondary);font-weight:600;">${escapeHtml(book)} ${chapter}${isVerseScope || isGmisScope ? `:${activeVerseNum}` : ""} · ${wordSummaryText}</span>` +
+    `<div class="study-scope-bar" role="group" aria-label="${isEn ? "Interlinear Matrix Scope" : "Alcance de Matriz Interlineal"}">` +
+    `<span class="study-scope-summary">${escapeHtml(book)} ${chapter}${isVerseScope || isGmisScope ? `:${activeVerseNum}` : ""} · ${wordSummaryText}</span>` +
     `<span class="uls-badge bicanonical-badge" data-bicanonical-regime="${escapeHtml(bicanon.regime)}" data-bicanonical-mt="${escapeHtml(bicanon.mtRef)}" data-bicanonical-occidental="${escapeHtml(bicanon.occidentalRef)}">⚖️ ${escapeHtml(bicanon.label)}</span>` +
-    `<div style="display:inline-flex;flex-wrap:wrap;gap:0.35rem;">` +
-    `<button type="button" class="uls-chip study-scope-btn" data-study-scope="verse" aria-pressed="${isVerseScope ? "true" : "false"}" style="min-height:48px;padding:0.35rem 0.75rem;font-size:0.78rem;">${scopeVerseLabel}</button>` +
-    `<button type="button" class="uls-chip study-scope-btn" data-study-scope="chapter" aria-pressed="${isChapterScope ? "true" : "false"}" style="min-height:48px;padding:0.35rem 0.75rem;font-size:0.78rem;">${scopeChapterLabel}</button>` +
-    `<button type="button" class="uls-chip study-scope-btn" data-study-scope="gmis" aria-pressed="${isGmisScope ? "true" : "false"}" style="min-height:48px;padding:0.35rem 0.75rem;font-size:0.78rem;">${scopeGmisLabel}</button>` +
+    `<div class="study-scope-actions">` +
+    `<button type="button" class="uls-chip study-scope-btn" data-study-scope="verse" aria-pressed="${isVerseScope ? "true" : "false"}" data-i18n="study.scope.verse">${scopeVerseLabel}</button>` +
+    `<button type="button" class="uls-chip study-scope-btn" data-study-scope="chapter" aria-pressed="${isChapterScope ? "true" : "false"}" data-i18n="study.scope.chapter">${scopeChapterLabel}</button>` +
+    `<button type="button" class="uls-chip study-scope-btn" data-study-scope="gmis" aria-pressed="${isGmisScope ? "true" : "false"}" data-i18n="study.scope.gmis">${scopeGmisLabel}</button>` +
     `</div></div>`;
 
   const activeStrongTarget = String(options.activeStrongId || "").trim().toUpperCase();
@@ -333,29 +333,32 @@ export function renderStudy14ColDrawerHtml(matrixShard, options = {}) {
         Boolean(activeStrongTarget) &&
         String(r.c07_strong_id || "").trim().toUpperCase() === activeStrongTarget;
       return (
-        `<article class="leipzig-14col-card${isStrongSelected ? " is-active-strong" : ""}" tabindex="0" aria-selected="${isStrongSelected ? "true" : "false"}" data-ref="${escapeHtml(r.c02_ref)}" data-osis="${escapeHtml(r.c02_ref)}" data-word-pos="${escapeHtml(r.c04_word_pos)}" data-lemma="${escapeHtml(r.c04_lemma)}" data-strong-id="${escapeHtml(r.c07_strong_id)}" data-macula-frame="${escapeHtml(maculaFrame)}" data-pragmatic-focus="${escapeHtml(r.c12_pragmatic_focus)}" data-realia-flag="${escapeHtml(String(r.c14_realia_flag || "").replace(/\bSDBH:\d+;?/gi, "").replace(/\+sdbh:[^|;\s]+/gi, ""))}" style="content-visibility:auto;contain-intrinsic-size:0 64px;padding:0.65rem;border-radius:10px;border:1px solid ${isStrongSelected ? "var(--accent-amber, #d97706)" : "var(--card-border)"};background:var(--card-bg);display:flex;flex-direction:column;gap:0.25rem;min-width:160px;">` +
-        `<header style="display:flex;justify-content:space-between;font-size:0.74rem;color:var(--text-secondary);">` +
+        `<article class="leipzig-14col-card${isStrongSelected ? " is-active-strong" : ""}" tabindex="0" aria-selected="${isStrongSelected ? "true" : "false"}" data-ref="${escapeHtml(r.c02_ref)}" data-osis="${escapeHtml(r.c02_ref)}" data-word-pos="${escapeHtml(r.c04_word_pos)}" data-lemma="${escapeHtml(r.c04_lemma)}" data-strong-id="${escapeHtml(r.c07_strong_id)}" data-macula-frame="${escapeHtml(maculaFrame)}" data-pragmatic-focus="${escapeHtml(r.c12_pragmatic_focus)}" data-realia-flag="${escapeHtml(String(r.c14_realia_flag || "").replace(/\bSDBH:\d+;?/gi, "").replace(/\+sdbh:[^|;\s]+/gi, ""))}">` +
+        `<header class="leipzig-card-header">` +
         `<span data-col="c01_c02">${escapeHtml(r.c02_ref)} #${escapeHtml(r.c04_word_pos)} (ord ${escapeHtml(r.c01_ordinal_31102)})</span>` +
         `<span data-col="c03_source_corpus">${escapeHtml(r.c03_source_corpus)} · ${escapeHtml(maculaFrame)}</span>` +
         `</header>` +
-        `<div data-col="c05_orig_text" style="font-size:1.18rem;font-weight:700;">${escapeHtml(r.c05_orig_text)}</div>` +
-        `<div data-col="c06_translit" style="font-size:0.82rem;font-style:italic;color:var(--text-secondary);">${escapeHtml(r.c06_translit)}</div>` +
-        `<div style="font-size:0.78rem;display:flex;flex-wrap:wrap;gap:0.35rem;">` +
-        `<code data-col="c07_strong_id">${escapeHtml(r.c07_strong_id)}</code>` +
+        `<div class="leipzig-orig-text" data-col="c05_orig_text">${escapeHtml(r.c05_orig_text)}</div>` +
+        `<div class="leipzig-translit" data-col="c06_translit">${escapeHtml(r.c06_translit)}</div>` +
+        `<div data-col="c12_gloss_es" class="leipzig-primary-gloss">${escapeHtml(r.c12_gloss_es)}</div>` +
+        `<div data-col="c13_nsm_65" class="leipzig-nsm-gloss">NSM-65: ${escapeHtml(human.nsmHuman)}</div>` +
+        `<div data-col="c14_target_gloss" class="leipzig-target-gloss">${isEn ? "Target" : "Meta"}: ${escapeHtml(r.c14_target_gloss)}</div>` +
+        `<details class="tech-details leipzig-tech-morph">` +
+        `<summary>${isEn ? "Linguistic codes" : "Códigos lingüísticos"} (${escapeHtml(r.c07_strong_id)})</summary>` +
+        `<div class="leipzig-codes-row">` +
+        `<code data-col="c07_strong_id">${escapeHtml(r.c07_strong_id)}</code> ` +
         `<code data-col="c08_morph_code">${escapeHtml(r.c08_morph_code)}</code>` +
         (human.strongBadges && human.strongBadges.length > 0
-          ? `<span class="sdbh-strong-badges" data-sdbh-strongs="${escapeHtml(human.strongBadges.join("+"))}" style="font-size:0.72rem;color:var(--text-secondary);">[${escapeHtml(human.strongBadges.slice(0, 3).join(" · "))}]</span>`
+          ? ` <span class="sdbh-strong-badges" data-sdbh-strongs="${escapeHtml(human.strongBadges.join("+"))}">[${escapeHtml(human.strongBadges.slice(0, 3).join(" · "))}]</span>`
           : "") +
         `</div>` +
-        `<div style="font-size:0.76rem;color:var(--text-secondary);">` +
+        `<div class="leipzig-syntax-row">` +
         `<span data-col="c09_macula_role" data-raw-role="${escapeHtml(r.c09_macula_role)}">${isEn ? "Role" : "Función"}: ${escapeHtml(human.roleHuman)}</span> · ` +
         `<span data-col="c10_clause_id">${isEn ? "Clause" : "Cláusula"}: ${escapeHtml(human.clauseHuman)}</span> · ` +
         `<span data-col="c11_semantic_domain">${isEn ? "Domain" : "Dominio"}: ${escapeHtml(human.domainHuman)}</span>` +
         `</div>` +
-        `<div data-col="c12_gloss_es" style="font-size:0.86rem;font-weight:600;">${escapeHtml(r.c12_gloss_es)}</div>` +
-        `<div data-col="c13_nsm_65" style="font-size:0.76rem;color:var(--accent-amber);">NSM-65: ${escapeHtml(human.nsmHuman)}</div>` +
-        `<div data-col="c14_target_gloss" style="font-size:0.84rem;color:var(--accent-emerald);">${isEn ? "Target" : "Meta"}: ${escapeHtml(r.c14_target_gloss)}</div>` +
-        `<button type="button" class="uls-chip btn-propose-strong-root" data-propose-strong-id="${escapeHtml(r.c07_strong_id)}" data-osis-ref="${escapeHtml(r.c02_ref)}" style="min-height:48px;padding:0.25rem 0.55rem;font-size:0.74rem;margin-top:0.2rem;align-self:flex-start;">✍️ ${isEn ? "Improve root" : "Mejorar raíz"} (${escapeHtml(r.c07_strong_id)})</button>` +
+        `</details>` +
+        `<button type="button" class="uls-chip btn-propose-strong-root" data-propose-strong-id="${escapeHtml(r.c07_strong_id)}" data-osis-ref="${escapeHtml(r.c02_ref)}">✍️ ${isEn ? "Improve root" : "Mejorar raíz"} (${escapeHtml(r.c07_strong_id)})</button>` +
         `</article>`
       );
     })
@@ -370,9 +373,9 @@ export function renderStudy14ColDrawerHtml(matrixShard, options = {}) {
 
   const nsmHtml =
     nsmEntries.length > 0
-      ? `<div class="study-nsm-section" style="margin-top:0.75rem;">` +
+      ? `<div class="study-nsm-section">` +
       `<strong>🧭 ${isEn ? "Universal Semantic Primitives NSM-65:" : "Primitivos Universales NSM-65:"}</strong>` +
-      `<ul style="margin:0.35rem 0 0 1.1rem;font-size:0.83rem;">` +
+      `<ul class="study-list">` +
       nsmEntries
         .map(
           (n) =>
@@ -384,9 +387,9 @@ export function renderStudy14ColDrawerHtml(matrixShard, options = {}) {
 
   const realiaHtml =
     realiaEntries.length > 0 || metrologyEntries.length > 0
-      ? `<div class="study-realia-metrology-section" style="margin-top:0.75rem;">` +
+      ? `<div class="study-realia-metrology-section">` +
       `<strong>🏛️ ${isEn ? "Biblical World (Realia) & Faithful Metrology:" : "Mundo Bíblico (Realia) y Metrología Fiel:"}</strong>` +
-      `<ul style="margin:0.35rem 0 0 1.1rem;font-size:0.83rem;">` +
+      `<ul class="study-list">` +
       realiaEntries
         .map((re) => {
           const rId = re.id || re.term_id || re.title || re.surface_es || "realia";
@@ -441,12 +444,12 @@ export function renderStudy14ColDrawerHtml(matrixShard, options = {}) {
     `<section class="study-14col-drawer" data-book="${escapeHtml(book)}" data-chapter="${chapter}" data-verse="${activeVerseNum}" data-scope="${effectiveScopeAttr}" data-rows-rendered="${normalizedRows.length}">` +
     scopeBarHtml +
     gmisSectionHtml +
-    `<div class="leipzig-14col-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:0.65rem;">` +
+    `<div class="leipzig-14col-grid">` +
     wordCardsHtml +
     `</div>` +
     rosettaSummaryHtml +
     (includeInlineStrata ? nsmHtml + realiaHtml : "") +
-    `<footer class="study-attribution-footer" style="margin-top:0.85rem;padding-top:0.5rem;border-top:1px solid var(--card-border);font-size:0.76rem;color:var(--text-secondary);">` +
+    `<footer class="study-attribution-footer">` +
     `${escapeHtml(attribution)}` +
     `</footer>` +
     `</section>`
@@ -502,18 +505,18 @@ export function renderStudyStrataCards(matrixShard, options = {}) {
   }
   const nsmItems = Array.from(uniqueNsm.values()).slice(0, 8);
   const nsmHtml =
-    `<div class="stratum-card nsm65-stratum" data-stratum="nsm65" data-ref="${escapeHtml(activeOsis)}" style="padding:0.65rem;border-radius:10px;border:1px solid var(--card-border);background:var(--card-bg);">` +
-    `<strong style="font-size:0.84rem;display:block;margin-bottom:0.35rem;">🧭 ${isEn ? `Stratum 1 · Universal Semantic Primitives NSM-65 (${escapeHtml(book)} ${chapter}:${verse})` : `Estrato 1 · Primitivos Semánticos Universales NSM-65 (${escapeHtml(book)} ${chapter}:${verse})`}</strong>` +
+    `<div class="stratum-card nsm65-stratum" data-stratum="nsm65" data-ref="${escapeHtml(activeOsis)}">` +
+    `<strong class="stratum-title">🧭 ${isEn ? `Stratum 1 · Universal Semantic Primitives NSM-65 (${escapeHtml(book)} ${chapter}:${verse})` : `Estrato 1 · Primitivos Semánticos Universales NSM-65 (${escapeHtml(book)} ${chapter}:${verse})`}</strong>` +
     (nsmItems.length > 0
-      ? `<ul style="margin:0;padding-left:1.1rem;font-size:0.82rem;display:grid;gap:0.25rem;">` +
+      ? `<ul class="study-list stratum-list">` +
       nsmItems
         .map(
           (r) =>
-            `<li data-nsm-strong="${escapeHtml(r.c07_strong_id)}"><code>${escapeHtml(r.c07_strong_id)}</code> <strong>${escapeHtml(r.c05_orig_text)}</strong> (${escapeHtml(r.c12_gloss_es)}) → <span style="color:var(--accent-amber);font-weight:600;">${escapeHtml(formatHumanReadable15ColFields(r, uiLocale).nsmHuman)}</span></li>`
+            `<li data-nsm-strong="${escapeHtml(r.c07_strong_id)}"><code>${escapeHtml(r.c07_strong_id)}</code> <strong>${escapeHtml(r.c05_orig_text)}</strong> (${escapeHtml(r.c12_gloss_es)}) → <span class="nsm-human-gloss">${escapeHtml(formatHumanReadable15ColFields(r, uiLocale).nsmHuman)}</span></li>`
         )
         .join("") +
       `</ul>`
-      : `<p style="margin:0;font-size:0.81rem;color:var(--text-secondary);">∅ (${isEn ? "No NSM-65 primitives recorded for this verse" : "Sin primitivos NSM-65 registrados en este versículo"}).</p>`) +
+      : `<p class="stratum-empty-note">∅ (${isEn ? "No NSM-65 primitives recorded for this verse" : "Sin primitivos NSM-65 registrados en este versículo"}).</p>`) +
     `</div>`;
 
   const rawShardRealia = Array.isArray(shard?.realia) ? shard.realia : [];
@@ -566,9 +569,9 @@ export function renderStudyStrataCards(matrixShard, options = {}) {
 
   const hydratedCulturalMap = getHydratedCulturalGlossesMap();
   const realiaHtml =
-    `<div class="stratum-card realia-metrology-stratum" data-stratum="realia-metrology" data-ref="${escapeHtml(activeOsis)}" style="padding:0.65rem;border-radius:10px;border:1px solid var(--card-border);background:var(--card-bg);">` +
-    `<strong style="font-size:0.84rem;display:block;margin-bottom:0.35rem;">⚖️ ${isEn ? `Stratum 2 · Material Realia & 24 Everyday Metrological Units (${escapeHtml(book)} ${chapter}:${verse})` : `Estrato 2 · Realia Material y 24 Unidades Metrológicas Cotidianas (${escapeHtml(book)} ${chapter}:${verse})`}</strong>` +
-    `<ul style="margin:0;padding-left:1.1rem;font-size:0.82rem;display:grid;gap:0.25rem;">` +
+    `<div class="stratum-card realia-metrology-stratum" data-stratum="realia-metrology" data-ref="${escapeHtml(activeOsis)}">` +
+    `<strong class="stratum-title">⚖️ ${isEn ? `Stratum 2 · Material Realia & 24 Everyday Metrological Units (${escapeHtml(book)} ${chapter}:${verse})` : `Estrato 2 · Realia Material y 24 Unidades Metrológicas Cotidianas (${escapeHtml(book)} ${chapter}:${verse})`}</strong>` +
+    `<ul class="study-list stratum-list">` +
     combinedRealia
       .map((re) => {
         const rId = re.id || re.term_id || re.realia_id || re.title || re.surface_es || re.term_es || "realia";
@@ -586,13 +589,13 @@ export function renderStudyStrataCards(matrixShard, options = {}) {
       )
       .join("") +
     `</ul>` +
-    `<details id="studyCulturalGlossesCatalogAccordion" open class="cultural-glosses-accordion" style="margin-top:0.5rem;padding-top:0.4rem;border-top:1px dashed var(--card-border);">` +
-    `<summary style="cursor:pointer;font-size:0.79rem;font-weight:600;color:var(--text-primary);min-height:48px;">📚 ${isEn ? `Cultural Glosses NSM-65 (${Object.keys(hydratedCulturalMap).length} terms: Weights, Coins, Crafts & Realia)` : `Glosas Culturales NSM-65 (${Object.keys(hydratedCulturalMap).length} términos: Pesos, Monedas, Oficios y Realia)`}</summary>` +
-    `<ul style="margin:0.35rem 0 0 1.1rem;font-size:0.8rem;display:grid;gap:0.22rem;">` +
+    `<details id="studyCulturalGlossesCatalogAccordion" open class="cultural-glosses-accordion">` +
+    `<summary class="cultural-glosses-summary">📚 ${isEn ? `Cultural Glosses NSM-65 (${Object.keys(hydratedCulturalMap).length} terms: Weights, Coins, Crafts & Realia)` : `Glosas Culturales NSM-65 (${Object.keys(hydratedCulturalMap).length} términos: Pesos, Monedas, Oficios y Realia)`}</summary>` +
+    `<ul class="study-list stratum-list cultural-glosses-list">` +
     Object.values(hydratedCulturalMap)
       .map(
         (cg) =>
-          `<li data-cultural-gloss-term="${escapeHtml(cg.term)}"><strong>${escapeHtml(cg.term)}</strong> <span class="uls-badge" style="font-size:0.7rem;">${escapeHtml(cg.category)}</span>: ${escapeHtml(cg.nsm_gloss_es)}</li>`
+          `<li data-cultural-gloss-term="${escapeHtml(cg.term)}"><strong>${escapeHtml(cg.term)}</strong> <span class="uls-badge cultural-gloss-cat">${escapeHtml(cg.category)}</span>: ${escapeHtml(cg.nsm_gloss_es)}</li>`
       )
       .join("") +
     `</ul></details>` +
@@ -615,13 +618,13 @@ export function renderStudyStrataCards(matrixShard, options = {}) {
   });
   const includeInlineRosettaInTsk = Boolean(options.includeInlineRosettaInTsk);
   const tskHtml =
-    `<div class="stratum-card tsk-crossrefs-stratum" data-stratum="tsk" data-ref="${escapeHtml(activeOsis)}" data-primary-strong="${escapeHtml(firstStrong)}" style="padding:0.65rem;border-radius:10px;border:1px solid var(--card-border);background:var(--card-bg);">` +
-    `<strong style="font-size:0.84rem;display:block;margin-bottom:0.35rem;">🔗 ${isEn ? `Stratum 3 · Intertextual OT↔NT Echoes (TSK · ${escapeHtml(book)} ${chapter}:${verse} · ${escapeHtml(firstStrong)})` : `Estrato 3 · Ecos Intertextuales AT↔NT (TSK · ${escapeHtml(book)} ${chapter}:${verse} · ${escapeHtml(firstStrong)})`}</strong>` +
-    `<div style="display:flex;flex-wrap:wrap;gap:0.4rem;">` +
+    `<div class="stratum-card tsk-crossrefs-stratum" data-stratum="tsk" data-ref="${escapeHtml(activeOsis)}" data-primary-strong="${escapeHtml(firstStrong)}">` +
+    `<strong class="stratum-title">🔗 ${isEn ? `Stratum 3 · Intertextual OT↔NT Echoes (TSK · ${escapeHtml(book)} ${chapter}:${verse} · ${escapeHtml(firstStrong)})` : `Estrato 3 · Ecos Intertextuales AT↔NT (TSK · ${escapeHtml(book)} ${chapter}:${verse} · ${escapeHtml(firstStrong)})`}</strong>` +
+    `<div class="tsk-pills-row">` +
     baseTsk
       .map(
         (refStr) =>
-          `<button type="button" class="uls-chip mostrador-tsk-pill" data-tsk-ref="${escapeHtml(refStr)}" style="min-height:48px;padding:0.35rem 0.75rem;font-size:0.8rem;">📖 ${escapeHtml(refStr)}</button>`
+          `<button type="button" class="uls-chip mostrador-tsk-pill" data-tsk-ref="${escapeHtml(refStr)}">📖 ${escapeHtml(refStr)}</button>`
       )
       .join("") +
     `</div>` +
@@ -632,7 +635,7 @@ export function renderStudyStrataCards(matrixShard, options = {}) {
 }
 
 /**
- * Renderiza el Andamiaje Interlineal Soberano de 4 Líneas (GMIS, Reglas de Leipzig bdchauvette/leipzig.js)
+ * Renderiza el Andamiaje Interlineal de 4 Líneas (GMIS, Reglas de Leipzig bdchauvette/leipzig.js)
  * para lenguas de Tier 3B y Tier 4 sin fingir palabras indígenas inexistentes (DEB-R23-09).
  */
 export function renderLeipzig4LineGmisHtml(matrixShard, options = {}) {
@@ -669,38 +672,41 @@ export function renderLeipzig4LineGmisHtml(matrixShard, options = {}) {
       const unitsHtml = words
         .map((w) => {
           return (
-            `<div class="leipzig-gmis-unit" data-ref="${escapeHtml(w.c02_ref)}" data-strong-id="${escapeHtml(w.c07_strong_id)}" style="display:inline-flex;flex-direction:column;gap:0.18rem;padding:0.45rem 0.55rem;border-radius:8px;border:1px solid var(--card-border);background:var(--card-bg);min-width:135px;">` +
-            `<div class="gmis-line-1" data-gmis-line="1" style="font-weight:700;font-size:1.02rem;">` +
+            `<div class="leipzig-gmis-unit" data-ref="${escapeHtml(w.c02_ref)}" data-strong-id="${escapeHtml(w.c07_strong_id)}">` +
+            `<div class="gmis-line-1" data-gmis-line="1">` +
             `<span class="gmis-orig">${escapeHtml(w.c05_orig_text)}</span> ` +
-            `<em class="gmis-translit" style="font-size:0.78rem;color:var(--text-secondary);">${escapeHtml(w.c06_translit)}</em>` +
+            `<em class="gmis-translit">${escapeHtml(w.c06_translit)}</em>` +
             `</div>` +
-            `<div class="gmis-line-2" data-gmis-line="2" style="font-size:0.75rem;font-family:monospace;">` +
+            `<div class="gmis-line-2" data-gmis-line="2">` +
             `<code>${escapeHtml(w.c07_strong_id)}</code> · <span>${escapeHtml(w.c08_morph_code)}</span> · <span>${escapeHtml(w.c09_macula_role)}</span>` +
             `</div>` +
-            `<div class="gmis-line-3" data-gmis-line="3" style="font-size:0.76rem;color:var(--accent-amber);">` +
+            `<div class="gmis-line-3" data-gmis-line="3">` +
             `NSM-65: ${escapeHtml(formatHumanReadable15ColFields(w, uiLocale).nsmHuman)}` +
             `</div>` +
-            `<div class="gmis-line-4" data-gmis-line="4" style="font-size:0.8rem;display:flex;align-items:center;justify-content:space-between;gap:0.35rem;">` +
+            `<div class="gmis-line-4" data-gmis-line="4">` +
             `<span class="gmis-bridge-gloss">${escapeHtml(w.c12_gloss_es)}</span>` +
-            `<button type="button" class="gmis-elicitation-slot uls-chip" data-elicitation-slot="${escapeHtml(w.c07_strong_id)}" data-strong-id="${escapeHtml(w.c07_strong_id)}" data-osis-ref="${escapeHtml(w.c02_ref)}" data-jump-sheet="field" style="min-height:48px;padding:0.2rem 0.45rem;color:var(--accent-emerald);font-family:monospace;">[___]</button>` +
+            `<button type="button" class="gmis-elicitation-slot uls-chip" data-elicitation-slot="${escapeHtml(w.c07_strong_id)}" data-strong-id="${escapeHtml(w.c07_strong_id)}" data-osis-ref="${escapeHtml(w.c02_ref)}" data-jump-sheet="field">[___]</button>` +
             `</div>` +
             `</div>`
           );
         })
         .join("");
       return (
-        `<article class="gmis-verse-row" data-verse="${verseNum}" style="margin-bottom:0.85rem;">` +
-        `<div style="font-size:0.78rem;font-weight:700;margin-bottom:0.35rem;color:var(--text-secondary);">${escapeHtml(book)} ${chapter}:${verseNum} (${escapeHtml(wordOrder)})</div>` +
-        `<div class="gmis-units-wrap" style="display:flex;flex-wrap:wrap;gap:0.45rem;">${unitsHtml}</div>` +
+        `<article class="gmis-verse-row" data-verse="${verseNum}">` +
+        `<div class="gmis-verse-heading">${escapeHtml(book)} ${chapter}:${verseNum} (${escapeHtml(wordOrder)})</div>` +
+        `<div class="gmis-units-wrap">${unitsHtml}</div>` +
         `</article>`
       );
     })
     .join("");
 
   return (
-    `<section class="gmis-4line-scaffold" data-gmis-scaffold="true" data-lang="${escapeHtml(lang)}" data-book="${escapeHtml(book)}" data-chapter="${chapter}" data-word-order="${escapeHtml(wordOrder)}" style="margin-top:1rem;padding:0.9rem;border-radius:12px;border:1px dashed var(--card-border);">` +
-    `<header style="margin-bottom:0.65rem;">` +
-    `<strong>🔬 ${isEn ? "Sovereign 4-Line Interlinear Scaffolding (GMIS · Leipzig / WLC / SRGNT / NSM-65)" : "Andamiaje Interlineal Soberano de 4 Líneas (GMIS · Leipzig / WLC / SRGNT / NSM-65)"}</strong>` +
+    `<section class="gmis-4line-scaffold" data-gmis-scaffold="true" data-lang="${escapeHtml(lang)}" data-book="${escapeHtml(book)}" data-chapter="${chapter}" data-word-order="${escapeHtml(wordOrder)}">` +
+    `<header class="gmis-scaffold-header">` +
+    `<strong>🔬 ${isEn ? "4-Line Interlinear Analysis" : "Análisis Interlineal en 4 Líneas"}</strong> ` +
+    `<details class="tech-details"><summary>${isEn ? "Technical details (GMIS · WLC / SRGNT / NSM-65)" : "Detalles técnicos (GMIS · WLC / SRGNT / NSM-65)"}</summary>` +
+    `<code>GMIS · Leipzig / WLC / SRGNT / NSM-65</code>` +
+    `</details>` +
     `</header>` +
     verseBlocksHtml +
     `</section>`

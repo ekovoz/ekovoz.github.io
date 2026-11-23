@@ -43,8 +43,8 @@ export function applyStaticChromeTranslations(targetDoc, uiLocale = "es", state 
       "7": "Beatitude 7 · Mt 5:8 (Pure in Heart)",
       "8": "Beatitude 8 · Mt 5:9 (The Peacemakers)",
       "9": "Beatitude 9 · Mt 5:10 (Persecuted for Righteousness)",
-      "10": "Beatitude 10 · Lk 11:28 (Hear and Keep the Word)",
-      "11": "Beatitude 11 · Mt 5:12 / Jn 20:29 (Joy of the Prophets)",
+      "10": "Beatitude 10 · Mt 5:11 (Blessed When Reviled)",
+      "11": "Beatitude 11 · Mt 5:12 (Joy of the Prophets)",
       "12": "Beatitude 12 · Rev 22:14 (Tree of Life)",
     };
     const esDichaTitles = {
@@ -57,8 +57,8 @@ export function applyStaticChromeTranslations(targetDoc, uiLocale = "es", state 
       "7": "Dicha 7 · Mt 5:8 (Limpio Corazón)",
       "8": "Dicha 8 · Mt 5:9 (Pacificadores)",
       "9": "Dicha 9 · Mt 5:10 (Perseguidos por la Justicia)",
-      "10": "Dicha 10 · Lc 11:28 (Oyen y Guardan la Palabra)",
-      "11": "Dicha 11 · Mt 5:12 / Jn 20:29 (Gozo de los Profetas)",
+      "10": "Dicha 10 · Mt 5:11 (Bienaventurados cuando os vituperen)",
+      "11": "Dicha 11 · Mt 5:12 (Gozo de los Profetas)",
       "12": "Dicha 12 · Ap 22:14 (Árbol de la Vida)",
     };
     for (const opt of Array.from(felDichaSel.options)) {

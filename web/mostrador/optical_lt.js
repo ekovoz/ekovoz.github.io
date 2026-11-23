@@ -940,22 +940,21 @@ export function renderOpticalReceiverRxPanelHtml(report = null) {
     `data-rx-accepted="${activeReport.packetsAccepted}" ` +
     `data-rx-duplicates-dropped="${activeReport.duplicateFramesDropped}" ` +
     `data-rx-nyquist-fps="${nyq.safeFps}" ` +
-    `data-rx-raptorq-syndrome="${esc(activeReport.raptorqSyndromeHex)}" ` +
-    `style="padding:0.65rem;border-radius:10px;border:1px solid var(--card-border);background:var(--bg-secondary);">` +
-    `<div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:0.4rem;margin-bottom:0.45rem;">` +
+    `data-rx-raptorq-syndrome="${esc(activeReport.raptorqSyndromeHex)}">` +
+    `<div class="optical-rx-header">` +
     `<strong>📥 Receptor Óptico Air-Gapped (QrStreamSession · Peeling + GF(2) · Nyquist ${nyq.safeFps} fps)</strong>` +
     `<span class="uls-badge" data-rx-status-badge="true">${activeReport.complete ? "✅ Reconstruido 100%" : "⏳ Escuchando ECO1"} · K=${activeReport.totalChunks} · Aceptados=${activeReport.packetsAccepted} · Duplicados descartados=${activeReport.duplicateFramesDropped}</span>` +
     `</div>` +
-    `<div style="display:flex;flex-wrap:wrap;gap:0.5rem;align-items:center;margin-bottom:0.45rem;font-size:0.8rem;">` +
+    `<div class="optical-rx-controls">` +
     `<label for="rxShutterUsInput">Obturador CMOS (µs): ` +
-    `<input id="rxShutterUsInput" type="number" min="100" max="33000" step="500" value="${nyq.shutterUs}" style="width:5.5rem;min-height:48px;padding:0.2rem 0.4rem;">` +
+    `<input id="rxShutterUsInput" class="optical-rx-input" type="number" min="100" max="33000" step="500" value="${nyq.shutterUs}">` +
     `</label>` +
     `<label for="rxRollingReadoutMsInput">Readout rodante (ms): ` +
-    `<input id="rxRollingReadoutMsInput" type="number" min="4" max="30" step="1" value="${nyq.rollingReadoutMs}" style="width:4.5rem;min-height:48px;padding:0.2rem 0.4rem;">` +
+    `<input id="rxRollingReadoutMsInput" class="optical-rx-input" type="number" min="4" max="30" step="1" value="${nyq.rollingReadoutMs}">` +
     `</label>` +
-    `<button type="button" id="btnRunOpticalRxSession" class="uls-chip" style="min-height:48px;padding:0.3rem 0.7rem;font-size:0.78rem;">📡 Simular Ráfaga Rx (ECOM + ECO1 + Drop Recovery)</button>` +
+    `<button type="button" id="btnRunOpticalRxSession" class="uls-chip">📡 Simular Ráfaga Rx (ECOM + ECO1 + Drop Recovery)</button>` +
     `</div>` +
-    `<div style="font-size:0.78rem;color:var(--text-secondary);">` +
+    `<div class="optical-rx-telemetry">` +
     `<span>Síndrome RaptorQ ESI: <code>${esc(activeReport.raptorqSyndromeHex)}</code></span> · ` +
     `<span>Ventana Nyquist: <code>${nyq.frameIntervalMs} ms/frame (${nyq.safeFps} fps)</code></span> · ` +
     `<span data-rx-reconstructed-text="${esc(activeReport.reconstructedText)}" data-rx-luma-preview="${Number(activeReport.lumaPreviewBytes) || 0}">Payload reconstruido: <code>${esc(activeReport.reconstructedText.slice(0, 96))}</code></span>` +

@@ -26,6 +26,7 @@ import {
   listLanguagesInCountry,
   searchLanguages,
 } from "./lang_funnel.js";
+import { bindSupportContactDialog } from "./provenance_and_support_panel.js";
 import {
   ROSETTA_66_BOOKS,
   hydratePackLanguagesFromManifest,
@@ -33,7 +34,7 @@ import {
   searchSpotlightCorpus,
 } from "./reference.js";
 import { syncSisterWorksTabsDom } from "./sister_works_controller.js";
-import { createNativeDialogController } from "./state_store.js";
+import { createNativeDialogController, setActiveWork } from "./state_store.js";
 
 /**
  * Conecta los listeners declarativos del escenario principal sobre `targetDoc` con contexto inyectado.
@@ -41,6 +42,7 @@ import { createNativeDialogController } from "./state_store.js";
 export function bindStageDomEvents(ctx = {}) {
   const {
     state,
+    store,
     dataLayer,
     targetDoc,
     getEl,
@@ -541,7 +543,21 @@ export function bindStageDomEvents(ctx = {}) {
       const nextMode = state.surfaceMode === "studio" ? "reader" : "studio";
       applyStorePatchAndProject({ surfaceMode: nextMode }, "surface");
       surfaceBtn.setAttribute("aria-pressed", nextMode === "studio" ? "true" : "false");
-      surfaceBtn.textContent = nextMode === "studio" ? "📖 Reader" : "🎛️ Studio";
+      const modeKey = nextMode === "studio" ? "top.btn.readerMode" : "top.btn.studioMode";
+      surfaceBtn.setAttribute("data-i18n", modeKey);
+      const loc = String(state.uiLocale || "es").trim() || "es";
+      const isUiEn = loc.toLowerCase().startsWith("en");
+      surfaceBtn.textContent = nextMode === "studio"
+        ? (isUiEn ? "📖 Reader" : "📖 Lectura")
+        : (isUiEn ? "🎛️ Studio" : "🎛️ Taller");
+      if (typeof dataLayer?.loadUiCatalog === "function") {
+        Promise.resolve(dataLayer.loadUiCatalog(loc)).then((cat) => {
+          const msg = cat?.messages?.[modeKey];
+          if (typeof msg === "string" && msg.length > 0 && surfaceBtn.getAttribute("data-i18n") === modeKey) {
+            surfaceBtn.textContent = msg;
+          }
+        }).catch(() => { });
+      }
     });
   }
 
@@ -668,7 +684,7 @@ export function bindStageDomEvents(ctx = {}) {
         spotlightHost.innerHTML = matches
           .map(
             (m, idx) =>
-              `<button type="button" class="uls-chip" role="option" data-spotlight-idx="${idx}" data-spotlight-kind="${m.kind}" data-spotlight-book="${m.book || ""}" data-spotlight-chapter="${m.chapter || 1}" data-spotlight-verse="${m.verse || 1}" style="justify-content:flex-start;text-align:left;min-height:44px;width:100%;font-size:0.78rem;">` +
+              `<button type="button" class="uls-chip spotlight-result-chip" role="option" data-spotlight-idx="${idx}" data-spotlight-kind="${m.kind}" data-spotlight-book="${m.book || ""}" data-spotlight-chapter="${m.chapter || 1}" data-spotlight-verse="${m.verse || 1}">` +
               `🔎 <strong>${m.label}</strong>${m.snippet ? ` — ${m.snippet.replace(/[<>&"]/g, " ")}` : ""}</button>`,
           )
           .join("");
@@ -846,9 +862,13 @@ export function bindStageDomEvents(ctx = {}) {
   const switchWork = async (workId, docRef = targetDoc) => {
     const cleanWork = ["biblia", "felices", "evangelios"].includes(workId) ? workId : "biblia";
     const prevWork = state.activeWork || "biblia";
-    state.activeWork = cleanWork;
     if (cleanWork !== "biblia" && state.activeSheet) {
       await transitionSheet(null, docRef);
+    }
+    if (store) {
+      setActiveWork(store, cleanWork);
+    } else {
+      state.activeWork = cleanWork;
     }
     syncSisterWorksTabsDom(cleanWork, (id) => getEl(id, docRef));
 
@@ -923,6 +943,8 @@ export function bindStageDomEvents(ctx = {}) {
   if (tabEva && typeof tabEva.addEventListener === "function") {
     tabEva.addEventListener("click", () => switchWork("evangelios", targetDoc));
   }
+
+  bindSupportContactDialog({ state, store: ctx.store, doc: targetDoc, getEl });
 
   return switchWork;
 }

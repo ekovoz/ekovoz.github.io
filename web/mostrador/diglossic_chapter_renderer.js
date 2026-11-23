@@ -254,7 +254,7 @@ export function renderProgressiveTwoStrataDiglossicBridge({
       `</div>`;
 
     rowsHtml[i] =
-      `<div class="diglossic-parallel-row" data-verse="${vNum}" data-osis="${escapeHtml(osis)}" style="content-visibility:auto;contain-intrinsic-size:0 48px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:0.75rem;padding:0.45rem 0;border-bottom:1px solid var(--card-border);">` +
+      `<div class="diglossic-parallel-row" data-verse="${vNum}" data-osis="${escapeHtml(osis)}">` +
       leftCellHtml +
       rightCellHtml +
       `</div>`;
@@ -263,7 +263,7 @@ export function renderProgressiveTwoStrataDiglossicBridge({
   const gmisScaffoldAttr = sovereignTier === "TIER_4_GMIS_CELF250" ? ' data-gmis-scaffold="true"' : "";
   return (
     `<section class="diglossic-parallel-bridge" data-diglossic-bridge="true"${gmisScaffoldAttr} data-progressive-strata="2" data-total-verses="${verseNums.length}" data-lang="${escapeHtml(lang)}" data-bridge-lang="${escapeHtml(bridgeSpec.code)}" data-sovereign-tier="${escapeHtml(sovereignTier)}" data-epistemic-seal="${sealCode}" data-epistemic-honesty="ZERO_SYNTHETIC_BIBLE">` +
-    `<header class="diglossic-bridge-header" style="display:flex;justify-content:space-between;gap:0.5rem;padding:0.4rem 0.6rem;border-radius:8px;background:var(--bg-secondary);font-size:0.78rem;margin-bottom:0.5rem;">` +
+    `<header class="diglossic-bridge-header">` +
     `<span><strong>Columna Materna (<code>${escapeHtml(lang)}</code>):</strong> ${isHumanMaternalPortion ? "Porción Humana Verificada" : "Andamiaje Interlineal Honesto GMIS + CELF-250 (0% Falsa Biblia)"}</span>` +
     `<span><strong>Lengua Puente Siglo XXI (<code>${escapeHtml(bridgeSpec.code)}</code>):</strong> ${escapeHtml(bridgeSpec.label)}</span>` +
     `</header>` +

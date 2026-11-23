@@ -37,6 +37,7 @@ import {
 } from "./mejorar_locks_pda.js";
 import { computeEcoPackCrc32Hex } from "./offline_mesh.js";
 import { parseBiblicalCoordinateReference } from "./reference.js";
+import { projectSurfaceLayoutFromState } from "./surface_compositor.js";
 import {
   OVERLAY_AUTHORITY_LOCAL_SELF_SIGNED,
   OVERLAY_AUTHORITY_MAINTAINER_ED25519,
@@ -309,7 +310,6 @@ export async function hydrateImproveDrawerPanel(ctx = {}) {
   const isStpLang = String(state.lang || "").toLowerCase() === "stp";
   if (lexHost) {
     if (isStpLang) {
-      lexHost.hidden = false;
       const renderLexFn =
         typeof mod.renderStpLexiconExplorerHtml === "function"
           ? mod.renderStpLexiconExplorerHtml
@@ -320,7 +320,6 @@ export async function hydrateImproveDrawerPanel(ctx = {}) {
         limit: 24,
       });
     } else {
-      lexHost.hidden = true;
       lexHost.innerHTML = "";
     }
   }
@@ -369,6 +368,7 @@ export async function hydrateImproveDrawerPanel(ctx = {}) {
   }
 
   bindImproveFormControlsInDrawer(mod, ctx);
+  projectSurfaceLayoutFromState(state, targetDoc, getEl);
   return html;
 }
 
@@ -427,14 +427,16 @@ export function bindImproveFormControlsInDrawer(mod, ctx = {}) {
     }
     const lock8BadgeEl = targetDoc?.querySelector?.('[data-lock8-badge="true"]');
     if (lock8BadgeEl) {
-      lock8BadgeEl.textContent = `🔒 ${isEnLocale ? "Lock 8 (MACULA A0/A1 + Jespersen):" : "Candado 8 (MACULA A0/A1 + Jespersen):"} ${lock8Result.status}`;
+      lock8BadgeEl.innerHTML = isEnLocale
+        ? `🔒 Grammar check: ${lock8Result.status} <details class="tech-details"><summary>Technical details</summary><code>MACULA A0/A1 + Jespersen</code></details>`
+        : `🔒 Verificación gramatical: ${lock8Result.status} <details class="tech-details"><summary>Detalles técnicos</summary><code>Candado 8 (MACULA A0/A1 + Jespersen)</code></details>`;
     }
     const eightLocksBarEl = targetDoc?.querySelector?.('[data-eight-locks-bar="true"]');
     if (eightLocksBarEl) {
       eightLocksBarEl.innerHTML = eightLocksReport.locks
         .map(
           (lk) =>
-            `<span class="uls-badge" data-lock-id="${lk.id}" data-lock-passed="${lk.passed}" style="font-size:0.72rem;padding:0.15rem 0.45rem;">${lk.passed ? "✅" : "⛔"} ${lk.label}</span>`,
+            `<span class="uls-badge lock-pill-badge" data-lock-id="${lk.id}" data-lock-passed="${lk.passed}">${lk.passed ? "✅" : "⛔"} ${lk.label}</span>`,
         )
         .join(" ");
     }
@@ -467,11 +469,9 @@ export function bindImproveFormControlsInDrawer(mod, ctx = {}) {
     if (!isStpActive) {
       if (lexRowsEl) lexRowsEl.innerHTML = "";
       if (lexHostEl) {
-        lexHostEl.hidden = true;
         lexHostEl.innerHTML = "";
       }
     } else if (lexRowsEl) {
-      if (lexHostEl) lexHostEl.hidden = false;
       const renderRowsFn =
         typeof mod.renderStpLexiconResultsRowsHtml === "function"
           ? mod.renderStpLexiconResultsRowsHtml
@@ -482,7 +482,6 @@ export function bindImproveFormControlsInDrawer(mod, ctx = {}) {
         limit: 24,
       });
     } else if (lexHostEl) {
-      lexHostEl.hidden = false;
       withPreservedInputFocus(targetDoc, () => {
         lexHostEl.innerHTML =
           typeof mod.renderStpLexiconExplorerHtml === "function"
@@ -499,6 +498,7 @@ export function bindImproveFormControlsInDrawer(mod, ctx = {}) {
       });
       bindLexiconExplorerEvents(lexHostEl);
     }
+    projectSurfaceLayoutFromState(state, targetDoc, getEl);
     return patch;
   };
   state.refreshPatchPreview = refreshPatchPreview;

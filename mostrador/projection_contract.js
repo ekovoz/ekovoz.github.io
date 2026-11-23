@@ -53,10 +53,15 @@ export function projectStoreAttributesToDom(state = {}, targetDoc) {
     ? Math.max(0.85, Math.min(1.5, Number(state.fontScale)))
     : 1.0;
   const stealth = Boolean(state.stealthMode);
-  const activeModal =
-    state.activeModal && VALID_ACTIVE_MODALS.has(state.activeModal)
-      ? String(state.activeModal)
-      : "";
+  const hasValidModal = Array.isArray(VALID_ACTIVE_MODALS)
+    ? VALID_ACTIVE_MODALS.includes(state.activeModal)
+    : VALID_ACTIVE_MODALS.has(state.activeModal);
+  const activeModal = state.activeModal && hasValidModal ? String(state.activeModal) : "";
+  const activeWork = ["biblia", "felices", "evangelios"].includes(state.activeWork)
+    ? state.activeWork
+    : "biblia";
+  const activeSheet = state.activeSheet ? String(state.activeSheet) : "";
+  const mobileSheetOpen = Boolean(state.activeSheet && state.mobileSheetOpen === true);
   const storeDomains = Object.keys(STORE_DOMAIN_OWNERS).join(",");
 
   for (const el of targets) {
@@ -65,6 +70,13 @@ export function projectStoreAttributesToDom(state = {}, targetDoc) {
       el.setAttribute("data-theme", theme);
       el.setAttribute("data-font-family", fontFamily);
       el.setAttribute("data-stealth-mode", stealth ? "true" : "false");
+      el.setAttribute("data-active-work", activeWork);
+      el.setAttribute("data-mobile-sheet-open", mobileSheetOpen ? "true" : "false");
+      if (activeSheet) {
+        el.setAttribute("data-active-sheet", activeSheet);
+      } else if (typeof el.removeAttribute === "function") {
+        el.removeAttribute("data-active-sheet");
+      }
       if (activeModal) {
         el.setAttribute("data-active-modal", activeModal);
       } else if (typeof el.removeAttribute === "function") {
