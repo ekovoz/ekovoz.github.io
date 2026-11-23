@@ -183,9 +183,32 @@
     gap: 2px;
   }
 
+  .paper-option {
+    background: transparent;
+    color: var(--text-primary);
+    border: 1px solid transparent;
+    border-radius: 9999px;
+    padding: 0.4rem 0.9rem;
+    min-height: 48px;
+    cursor: pointer;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+  }
+
+  .paper-option.active,
+  .paper-option[aria-pressed="true"] {
+    background: var(--pill-active-bg);
+    color: var(--pill-active-text);
+    border-color: var(--card-border);
+  }
+
   .paper-sub {
     font-size: 0.72rem;
-    opacity: 0.75;
+    opacity: 1;
+    color: inherit;
     font-weight: 400;
   }
 
@@ -1516,10 +1539,15 @@
 
     input[type="checkbox"],
     input[type="radio"] {
-      min-height: 44px;
-      min-width: 44px;
-      width: 44px;
-      height: 44px;
+      min-height: 48px;
+      min-width: 48px;
+      width: 48px;
+      height: 48px;
+    }
+
+    input[type="range"] {
+      min-height: 48px;
+      height: 48px;
     }
   }
 
@@ -1872,6 +1900,13 @@
     padding: 0.35rem 0.55rem;
     font-size: 0.78rem;
     box-sizing: border-box;
+  }
+
+  @media (max-width: 1023px) {
+    .ek-input,
+    .ek-input-compact {
+      min-height: 48px;
+    }
   }
 
   .ek-badge-compact,
