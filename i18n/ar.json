@@ -273,6 +273,8 @@
     "share.mesh.install": "⚡ Save for offline reading",
     "share.mesh.preload": "📥 Preload Offline Library",
     "share.mesh.savedList": "🗄️ Saved languages",
-    "share.mesh.exportFile": "📤 Share Offline File"
+    "share.mesh.exportFile": "📤 Share Offline File",
+    "corpus.tab.bibles": "📖 الكتاب المقدس واللغات (24)",
+    "corpus.tab.trails": "🧭 خطط القراءة (8)"
   }
 }

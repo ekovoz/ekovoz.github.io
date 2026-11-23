@@ -4,7 +4,7 @@
 // (LCOM4 = 1, out_deg = 0). Erradica fugas INV-ERG-20 en nodos primarios.
 // ============================================================================
 
-export const HUMAN_PHILOLOGY_LABELS = Object.freeze({
+const HUMAN_PHILOLOGY_LABELS = Object.freeze({
   LXX_VG_MT: Object.freeze({
     es: "Comparación de manuscritos antiguos (Hebreo, Griego y Vulgata)",
     en: "Ancient manuscript comparison (Hebrew, Greek & Vulgate)",

@@ -273,6 +273,8 @@
     "share.mesh.install": "⚡ Guardar paquete sin internet",
     "share.mesh.preload": "📥 Precargar Biblioteca Offline",
     "share.mesh.savedList": "🗄️ Idiomas guardados",
-    "share.mesh.exportFile": "📤 Compartir archivo offline"
+    "share.mesh.exportFile": "📤 Compartir archivo offline",
+    "corpus.tab.bibles": "📖 Biblias y Lenguas (24)",
+    "corpus.tab.trails": "🧭 Planes de Lectura (8)"
   }
 }

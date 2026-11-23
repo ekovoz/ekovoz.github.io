@@ -45,7 +45,7 @@ export function formatPhotocopySimBadgeText(simResult = null) {
   return `✅ ${genLabel} · Sauvola k=${Number(sim.sauvolaK).toFixed(2)} (Contraste ${sim.contrastLabel} ≥ 7.0:1 AAA · Δχ=${sim.eulerCharacteristicDelta})`;
 }
 
-export function wrapSvgTextLines(rawText, maxCharsPerLine = 40, maxLines = 4) {
+function wrapSvgTextLines(rawText, maxCharsPerLine = 40, maxLines = 4) {
   const words = String(rawText || "").trim().split(/\s+/).filter(Boolean);
   if (words.length === 0) return [""];
   const lines = [];
