@@ -205,6 +205,22 @@ export function humanizeSemanticTagChain(rawTag, uiLocale = "es") {
       if (decoded.label) human.push(decoded.label);
       continue;
     }
+    const funcMatch = /^FUNC:([a-z0-9_-]+)$/i.exec(p);
+    if (funcMatch) {
+      const fMap = {
+        conj: ["Conjunción", "Conjunction"],
+        rel: ["Conector relativo", "Relative connector"],
+        det: ["Artículo", "Article"],
+        prep: ["Preposición", "Preposition"],
+        part: ["Partícula", "Particle"],
+        pron: ["Pronombre", "Pronoun"],
+        adv: ["Adverbio", "Adverb"],
+        interj: ["Interjección", "Interjection"],
+      };
+      const mapped = fMap[funcMatch[1].toLowerCase()];
+      human.push(mapped ? (isEn ? mapped[1] : mapped[0]) : funcMatch[1]);
+      continue;
+    }
     const key = p.toUpperCase().replace(/\s+/g, "_").replace(/^NSM_65:/, "");
     const hit = SEMANTIC_TAG_GLOSSARY[key];
     if (hit) {
@@ -325,24 +341,39 @@ export function renderStudy14ColDrawerHtml(matrixShard, options = {}) {
     `</div></div>`;
 
   const activeStrongTarget = String(options.activeStrongId || "").trim().toUpperCase();
+  const formatNsmSentenceCase = (raw) => {
+    const clean = String(raw || "").trim();
+    if (!clean || clean === "∅") return "∅";
+    if (!/[A-ZÁÉÍÓÚÜÑ]{2,}/.test(clean)) return clean;
+    const lower = clean.toLowerCase();
+    return lower.charAt(0).toUpperCase() + lower.slice(1);
+  };
+  const studyTargetLang = String(options.lang || shard?.lang || "").trim().toLowerCase();
   const wordCardsHtml = normalizedRows
     .map((r) => {
       const maculaFrame = classifyMaculaArgumentRole(r.c09_macula_role, r.c08_morph_code);
       const human = formatHumanReadable15ColFields(r, uiLocale);
+      const nsmDisplay = formatNsmSentenceCase(human.nsmHuman);
+      const rawTarget = String(r.c14_target_gloss || "").trim();
+      const suppressVisibleTarget =
+        !rawTarget ||
+        rawTarget === "∅" ||
+        rawTarget === r.c12_gloss_es ||
+        (!isEn && (studyTargetLang === "" || studyTargetLang === "es" || studyTargetLang === "es-1909" || studyTargetLang === "en"));
       const isStrongSelected =
         Boolean(activeStrongTarget) &&
         String(r.c07_strong_id || "").trim().toUpperCase() === activeStrongTarget;
       return (
         `<article class="leipzig-14col-card${isStrongSelected ? " is-active-strong" : ""}" tabindex="0" aria-selected="${isStrongSelected ? "true" : "false"}" data-ref="${escapeHtml(r.c02_ref)}" data-osis="${escapeHtml(r.c02_ref)}" data-word-pos="${escapeHtml(r.c04_word_pos)}" data-lemma="${escapeHtml(r.c04_lemma)}" data-strong-id="${escapeHtml(r.c07_strong_id)}" data-macula-frame="${escapeHtml(maculaFrame)}" data-pragmatic-focus="${escapeHtml(r.c12_pragmatic_focus)}" data-realia-flag="${escapeHtml(String(r.c14_realia_flag || "").replace(/\bSDBH:\d+;?/gi, "").replace(/\+sdbh:[^|;\s]+/gi, ""))}">` +
         `<header class="leipzig-card-header">` +
-        `<span data-col="c01_c02">${escapeHtml(r.c02_ref)} #${escapeHtml(r.c04_word_pos)}</span>` +
+        `<span data-col="c01_c02">${escapeHtml(r.c02_ref)} · ${isEn ? "Word" : "Palabra"} #${escapeHtml(r.c04_word_pos)}</span>` +
         `<span data-col="c03_source_corpus">${escapeHtml(isEn ? "Source word" : "Palabra original")}</span>` +
         `</header>` +
         `<div class="leipzig-orig-text" data-col="c05_orig_text">${escapeHtml(r.c05_orig_text)}</div>` +
         `<div class="leipzig-translit" data-col="c06_translit">${escapeHtml(r.c06_translit)}</div>` +
         `<div data-col="c12_gloss_es" class="leipzig-primary-gloss">${escapeHtml(r.c12_gloss_es)}</div>` +
-        `<div data-col="c13_nsm_65" class="leipzig-nsm-gloss">${isEn ? "Core meaning" : "Sentido básico"}: ${escapeHtml(human.nsmHuman)}</div>` +
-        `<div data-col="c14_target_gloss" class="leipzig-target-gloss">${isEn ? "Target" : "Meta"}: ${escapeHtml(r.c14_target_gloss)}</div>` +
+        `<div data-col="c13_nsm_65" class="leipzig-nsm-gloss">${isEn ? "Core meaning" : "Sentido básico"}: ${escapeHtml(nsmDisplay)}</div>` +
+        `<div data-col="c14_target_gloss" class="leipzig-target-gloss"${suppressVisibleTarget ? " hidden" : ""}>${isEn ? "Target" : "Meta"}: ${escapeHtml(rawTarget)}</div>` +
         `<details class="tech-details leipzig-tech-morph">` +
         `<summary>${isEn ? "Linguistic codes" : "Códigos lingüísticos"} (${escapeHtml(r.c07_strong_id)})</summary>` +
         `<div class="leipzig-codes-row">` +

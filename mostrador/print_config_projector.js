@@ -448,12 +448,16 @@ export function ensureDirectEditionsAndGrambankControls(ctx = {}) {
   const activeMeta =
     CANONICAL_14_PLUS_2_EDITIONS_CATALOG.find((ed) => ed.id === activeEd) ||
     CANONICAL_14_PLUS_2_EDITIONS_CATALOG[0];
+  const liveCols = Number(state.columns) || 2;
+  const livePt = Number(state.fontSizePt) || 9.5;
+  const livePaper = String(state.paperFormat || "a4").toUpperCase();
+  const baseLabel = String(activeMeta?.label || activeEd).replace(/\s*\([^)]*pt[^)]*\)\s*$/i, "").trim();
   const activeBadge =
     activeMeta?.id === "06_bilingue_paralela"
-      ? isEn ? "Ed. 15 · Bilingual Bridge 62/38" : "Ed. 15 · Puente Bilingüe 62/38"
+      ? isEn ? `Ed. 15 · Bilingual Bridge 62/38 (${liveCols} col · ${livePt}pt · ${livePaper})` : `Ed. 15 · Puente Bilingüe 62/38 (${liveCols} col · ${livePt}pt · ${livePaper})`
       : activeMeta?.id === "07_cuaderno_5lineas_apaisado"
-        ? isEn ? "Ed. 16 · Field Notebook CC0 (45 mm)" : "Ed. 16 · Cuaderno de Campo CC0 (margen 45 mm)"
-        : activeMeta?.label || activeEd;
+        ? isEn ? `Ed. 16 · Field Notebook CC0 (45 mm · ${livePaper})` : `Ed. 16 · Cuaderno de Campo CC0 (margen 45 mm · ${livePaper})`
+        : `${baseLabel} (${liveCols} col · ${livePt}pt · ${livePaper})`;
   const branchId = state.activeBranchId || CANONICAL_12_BRANCH_PROFILES[0]?.id || "G_01_latin_extended";
   const typoId = state.activeTypologyId || CANONICAL_16_TYPOLOGY_PROFILES[0]?.id || "es_typology";
   wrap.innerHTML =

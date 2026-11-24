@@ -12,7 +12,7 @@ import {
   hydrateOpticalTxAndRxPanels,
   stopQrBeamAutoCadenceTimer,
 } from "./drawer_share_optical_controller.js";
-import { applyHarelSubtabSelection } from "./drawer_study.js";
+import { bindSurfaceActions, patchStoreState } from "./dom_patch.js";
 import { validateAllEightLocksPda } from "./mejorar.js";
 import {
   CANONICAL_ECO_PACKS_MANIFEST,
@@ -660,14 +660,16 @@ export function hydrateShareAndAuditDrawerPanel(ctx = {}) {
     ["btnDosisSubtabGraphics", "graphics"],
   ]) {
     const dBtn = getEl(btnId, targetDoc);
-    if (dBtn && typeof dBtn.addEventListener === "function" && !dBtn._subtabBound) {
-      dBtn._subtabBound = true;
-      dBtn.addEventListener("click", () => {
-        applyHarelSubtabSelection(targetDoc, "dosis", tabName);
-        if (tabName !== "pdf") {
-          stopQrBeamAutoCadenceTimer(state);
-        }
-      });
+    if (dBtn) {
+      dBtn.setAttribute?.("data-action", `share-tab-${tabName}`);
+      bindSurfaceActions(dBtn, {
+        [`share-tab-${tabName}`]: () => {
+          patchStoreState(ctx, { activeSubtabBySheet: { ...(state.activeSubtabBySheet || {}), share: tabName } }, "sheet");
+          if (tabName !== "pdf") {
+            stopQrBeamAutoCadenceTimer(state);
+          }
+        },
+      }, { scope: `share-tab-${btnId}`, events: ["click"] });
     }
   }
 

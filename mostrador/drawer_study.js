@@ -23,6 +23,7 @@ import {
   translateNsm65PrimePhrase,
 } from "./estudio.js";
 import { hydratePericopesAndGlosses } from "./evangelios.js";
+import { bindSurfaceActions, patchStoreState, patchTextAndAttrs, reconcileKeyedList } from "./dom_patch.js";
 import {
   listOrthographyProfilesForLang,
   renderWfstAndScriptioContinuaInspectorHtml,
@@ -245,49 +246,6 @@ export function hydrateWasmManifestStatus(wasmManifest = null) {
 }
 
 /**
- * Controlador XOR de Sub-Pestañas de Harel (`D1-R41` / `D3-R41` / `D7-R32` / `D10-R32`):
- * Garantiza que dentro de cualquiera de las 4 Gavetas (`study`, `print`, `workshop`, `dosis`)
- * solo 1 sub-panel esté visible a la vez ($\le 4$ chunks visuales simultáneos bajo la Ley de Cowan $4 \pm 1$).
- */
-export function applyHarelSubtabSelection(
-  rootDoc,
-  groupName = "workshop",
-  activeSubtab = "patch",
-) {
-  if (!rootDoc) return { groupName, activeSubtab, toggledPanels: 0 };
-  const btnAttr = `data-${groupName}-subtab-btn`;
-  const panelAttr = `data-${groupName}-subtab-panel`;
-
-  const buttons =
-    typeof rootDoc.querySelectorAll === "function"
-      ? Array.from(rootDoc.querySelectorAll(`[${btnAttr}]`))
-      : [];
-  for (const btn of buttons) {
-    const val = btn.getAttribute(btnAttr);
-    const isSelected = val === activeSubtab;
-    btn.setAttribute("aria-selected", isSelected ? "true" : "false");
-    btn.setAttribute("aria-pressed", isSelected ? "true" : "false");
-  }
-
-  const panels =
-    typeof rootDoc.querySelectorAll === "function"
-      ? Array.from(rootDoc.querySelectorAll(`[${panelAttr}]`))
-      : [];
-  let toggledPanels = 0;
-  for (const panel of panels) {
-    const val = panel.getAttribute(panelAttr);
-    const isVisible = val === activeSubtab;
-    panel.hidden = !isVisible;
-    if (panel.style) {
-      panel.style.display = isVisible ? "" : "none";
-    }
-    toggledPanels += 1;
-  }
-
-  return { groupName, activeSubtab, toggledPanels };
-}
-
-/**
  * Monta el HTML de una tarjeta con `id` raíz dentro de su contenedor anfitrión existente
  * sin anidar un segundo `<div id="...">` duplicado (Apple HIG R36 — Decisión 4A / INV-ERG-16).
  */
@@ -384,7 +342,6 @@ export async function hydrateStudyDrawerPanel(ctx = {}) {
     dataLayer,
     targetDoc,
     getEl,
-    withPreservedInputFocus,
     getI18n,
     loadStudyModule,
     navigate,
@@ -466,9 +423,9 @@ export async function hydrateStudyDrawerPanel(ctx = {}) {
     getEl("leipzig14ColStratumAction", targetDoc) ||
     getEl("bibleEasyDrawerPanel", targetDoc);
   if (container) {
-    withPreservedInputFocus(targetDoc, () => {
+    if (targetDoc?.activeElement?.id !== "rosettaSearchInput") {
       container.innerHTML = html;
-    });
+    }
     if (state.activeStrongId) {
       syncActiveStrongInStudyDrawer(state.activeStrongId, {
         state,
@@ -521,72 +478,84 @@ export async function hydrateStudyDrawerPanel(ctx = {}) {
         });
       }
     }
-    const catSel = getEl("rosettaFilterCategorySelect", targetDoc);
-    if (catSel && typeof catSel.addEventListener === "function" && !catSel._rosettaCatBound) {
-      catSel._rosettaCatBound = true;
-      catSel.addEventListener("change", async (e) => {
-        state.rosettaCategory = String(e?.target?.value || catSel.value || "all");
-        const rowsEl = getEl("rosettaExplorerResultsRows", targetDoc);
-        if (rowsEl) {
+    const syncRosettaRows = () => {
+      const rowsEl = getEl("rosettaExplorerResultsRows", targetDoc);
+      if (rowsEl) {
+        const items = searchPhilologyRosettaIndex(
+          state.rosettaQuery || "",
+          state.rosettaCategory || "all",
+          12,
+          rosettaIndex,
+        );
+        if (typeof rowsEl.insertBefore === "function" && targetDoc?.createElement) {
+          reconcileKeyedList(
+            rowsEl,
+            items,
+            (it) => it.id,
+            (_it, _i, d) => d.createElement("button"),
+            (btn, it) => {
+              btn.type = "button";
+              btn.className = "uls-chip rosetta-jump-chip";
+              patchTextAndAttrs(btn, [
+                {
+                  text: `🔎 ${it.title} → ${it.ref}`,
+                  attrs: {
+                    "data-rosetta-ref": it.ref,
+                    "data-rosetta-strong": it.strong,
+                    "data-rosetta-category": it.category,
+                    title: it.detail,
+                  },
+                },
+              ]);
+            },
+          );
+        } else {
+          reconcileKeyedList(rowsEl, items, (it) => it.id, (it) => it);
           const renderRowsFn =
             typeof mod.renderPhilologyRosettaResultsRowsHtml === "function"
               ? mod.renderPhilologyRosettaResultsRowsHtml
               : renderPhilologyRosettaResultsRowsHtml;
           rowsEl.innerHTML = renderRowsFn({
             query: state.rosettaQuery || "",
-            category: state.rosettaCategory,
-            rosettaIndex,
-          });
-          const listEl = getEl("rosettaExplorerResultsList", targetDoc);
-          if (listEl) {
-            const items = searchPhilologyRosettaIndex(
-              state.rosettaQuery || "",
-              state.rosettaCategory,
-              12,
-              rosettaIndex,
-            );
-            listEl.setAttribute("data-results-count", String(items.length));
-          }
-        } else {
-          await hydrateStudyDrawerPanel(ctx);
-        }
-      });
-    }
-    const searchInp = getEl("rosettaSearchInput", targetDoc);
-    if (searchInp && typeof searchInp.addEventListener === "function" && !searchInp._rosettaSearchBound) {
-      searchInp._rosettaSearchBound = true;
-      const onRosettaSearch = async (e) => {
-        state.rosettaQuery = String(e?.target?.value ?? searchInp.value ?? "");
-        const rowsEl = getEl("rosettaExplorerResultsRows", targetDoc);
-        if (rowsEl) {
-          const renderRowsFn =
-            typeof mod.renderPhilologyRosettaResultsRowsHtml === "function"
-              ? mod.renderPhilologyRosettaResultsRowsHtml
-              : renderPhilologyRosettaResultsRowsHtml;
-          rowsEl.innerHTML = renderRowsFn({
-            query: state.rosettaQuery,
             category: state.rosettaCategory || "all",
             rosettaIndex,
           });
-          const listEl = getEl("rosettaExplorerResultsList", targetDoc);
-          if (listEl) {
-            const items = searchPhilologyRosettaIndex(
-              state.rosettaQuery,
-              state.rosettaCategory || "all",
-              12,
-              rosettaIndex,
-            );
-            listEl.setAttribute("data-results-count", String(items.length));
-          }
-        } else {
-          await hydrateStudyDrawerPanel(ctx);
         }
-      };
-      if (!searchInp._rosettaChangeBound) {
-        searchInp._rosettaChangeBound = true;
-        searchInp.addEventListener("change", onRosettaSearch);
-        searchInp.addEventListener("input", onRosettaSearch);
+        const listEl = getEl("rosettaExplorerResultsList", targetDoc);
+        if (listEl) {
+          patchTextAndAttrs(listEl, [{ attrs: { "data-results-count": String(items.length) } }]);
+        }
+        return true;
       }
+      return false;
+    };
+    const catSel = getEl("rosettaFilterCategorySelect", targetDoc);
+    if (catSel && typeof catSel.addEventListener === "function") {
+      catSel.setAttribute?.("data-action", "rosetta-filter-cat");
+      bindSurfaceActions(
+        catSel,
+        {
+          "rosetta-filter-cat": async (e) => {
+            patchStoreState(ctx, { rosettaCategory: String(e?.target?.value || catSel.value || "all") });
+            if (!syncRosettaRows()) await hydrateStudyDrawerPanel(ctx);
+          },
+        },
+        { scope: "rosetta-cat", events: ["change"] },
+      );
+    }
+    const searchInp = getEl("rosettaSearchInput", targetDoc);
+    if (searchInp && typeof searchInp.addEventListener === "function") {
+      searchInp.setAttribute?.("data-action", "rosetta-search");
+      bindSurfaceActions(
+        searchInp,
+        {
+          "rosetta-search": async (e) => {
+            patchStoreState(ctx, { rosettaQuery: String(e?.target?.value ?? searchInp.value ?? "") });
+            if (!syncRosettaRows()) await hydrateStudyDrawerPanel(ctx);
+          },
+        },
+        { scope: "rosetta-search", events: ["input", "change"] },
+      );
     }
     if (staticRosettaHostEl && typeof staticRosettaHostEl.addEventListener === "function" && !staticRosettaHostEl._rosettaClickBound) {
       staticRosettaHostEl._rosettaClickBound = true;
@@ -697,20 +666,6 @@ export async function hydrateStudyDrawerPanel(ctx = {}) {
           state.studyScope = nextScope;
           await hydrateStudyDrawerPanel(ctx);
         }
-      });
-    }
-  }
-
-  for (const [btnId, tabName] of [
-    ["btnStudySubtabWords", "words"],
-    ["btnStudySubtabRosetta", "rosetta"],
-    ["btnStudySubtabCalibrate", "calibrate"],
-  ]) {
-    const sBtn = getEl(btnId, targetDoc);
-    if (sBtn && typeof sBtn.addEventListener === "function" && !sBtn._studySubtabBound) {
-      sBtn._studySubtabBound = true;
-      sBtn.addEventListener("click", () => {
-        applyHarelSubtabSelection(targetDoc, "study", tabName);
       });
     }
   }

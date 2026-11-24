@@ -238,10 +238,10 @@ export function hydrateOpticalTxAndRxPanels({
     qrPanel.innerHTML =
       `<div id="qrBeamStreamRoot" class="mostrador-qrbeam-stream" data-fps="${activeCadenceKey}" data-nyquist-safe="${Boolean(nyquistCheck?.valid ?? nyquistCheck?.nyquistSafe)}" data-lt-peeling-decoded="${ltComplete}" data-eco1-bytes="${packetBytes.byteLength}" data-packet-kind="${txFrame.packetKind}" data-systematic-phase="${isSystematicPhase}" data-ecom-frame="${isEndOfStreamEcom}" data-frame-interval-ms="${cadencePreset.intervalMs}" data-total-blocks="${encoder.K}" data-seq="${grid.seq}" data-degree="${grid.degree}" data-parity="${grid.parityBit}">` +
       `<div class="ek-row-between ek-mb-sm">` +
-      `<strong>📡 QRBeam ECO1/ECOM (<span id="opticalFrameCounter" data-seq="${grid.seq}" data-packet-kind="${txFrame.packetKind}">${activeCadenceKey} fps · ${phaseLabel} · ${isEn ? "Parity" : "Paridad"} ${grid.parityBit}</span>)</strong>` +
+      `<strong>📡 ${isEn ? "Offline Optical QR" : "QR Óptico sin internet"} (<span id="opticalFrameCounter" data-seq="${grid.seq}" data-packet-kind="${txFrame.packetKind}">${activeCadenceKey} fps · ${phaseLabel} · ${isEn ? "Parity" : "Paridad"} ${grid.parityBit}</span>)</strong>` +
       `<div class="ek-flex-wrap-inline">` +
       `<button type="button" id="btnToggleQrBeamAutoPlay" class="uls-chip qrbeam-btn">${isPlaying ? (isEn ? "⏸ Pause Beam" : "⏸ Pausar Emisión") : isEn ? "▶ Auto Beam" : "▶ Emisión Continua"}</button>` +
-      `<button type="button" id="btnNextQrBeamFrame" class="uls-chip qrbeam-btn">⏭ ${isEn ? "Next Droplet" : "Siguiente Droplet"} (#${grid.seq + 1})</button>` +
+      `<button type="button" id="btnNextQrBeamFrame" class="uls-chip qrbeam-btn">⏭ ${isEn ? "Next Frame" : "Siguiente cuadro"} (#${grid.seq + 1})</button>` +
       `</div></div>` +
       `<div class="ek-row-gap-lg">` +
       `<div id="qrBeamMatrixHost" class="qrbeam-matrix-host">${svgMarkup}<canvas id="qrBeamMatrixCanvas" width="174" height="174" aria-hidden="true"></canvas></div>` +
@@ -467,7 +467,6 @@ export function bindOpticalCameraAndCadenceController({
 
     if (statusPanel) {
       statusPanel.hidden = false;
-      if (statusPanel.style) statusPanel.style.display = "";
       statusPanel.setAttribute("data-audit-action", "optical-camera-rx");
       statusPanel.setAttribute("data-wasm-bridge", "loading");
     }

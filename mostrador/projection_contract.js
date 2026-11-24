@@ -4,7 +4,7 @@
 // Frontera de mutación ∂(C) = 0 respecto del controlador: sólo lee `state` y escribe nodos DOM ya existentes.
 // ============================================================================
 
-import { STORE_DOMAIN_OWNERS, VALID_ACTIVE_MODALS } from "./state_store.js";
+import { STORE_DOMAIN_OWNERS, VALID_ACTIVE_INTENTS, VALID_ACTIVE_MODALS } from "./state_store.js";
 
 /**
  * Sincroniza `#stickyDrawerContextHeader` con el pasaje activo (`D1-R44`, `D4-R5`):
@@ -42,7 +42,15 @@ export function syncStickyDrawerContextHeader(state = {}, getEl, targetDoc) {
 export function projectStoreAttributesToDom(state = {}, targetDoc) {
   if (!targetDoc) return false;
   const targets = [targetDoc.documentElement, targetDoc.body].filter(Boolean);
-  const surfaceMode = state.surfaceMode === "studio" ? "studio" : "reader";
+  const activeIntent = VALID_ACTIVE_INTENTS.includes(state.activeIntent)
+    ? state.activeIntent
+    : state.activeSheet === "field" || state.activeSheet === "improve"
+      ? "workshop"
+      : ["study", "print", "share"].includes(state.activeSheet)
+        ? state.activeSheet
+        : state.surfaceMode === "studio"
+          ? "study"
+          : "read";
   const theme = ["light", "sepia", "dark"].includes(state.appearanceTheme) ? state.appearanceTheme : "light";
   const fontFamily = state.fontFamily === "sans" ? "sans" : "serif";
   const fontScale = Number.isFinite(Number(state.fontScale))
@@ -62,7 +70,8 @@ export function projectStoreAttributesToDom(state = {}, targetDoc) {
 
   for (const el of targets) {
     if (typeof el.setAttribute === "function") {
-      el.setAttribute("data-surface-mode", surfaceMode);
+      el.setAttribute("data-intent", activeIntent);
+      el.removeAttribute?.("data-surface-mode");
       el.setAttribute("data-theme", theme);
       el.setAttribute("data-font-family", fontFamily);
       el.setAttribute("data-stealth-mode", stealth ? "true" : "false");

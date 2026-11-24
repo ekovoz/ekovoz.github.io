@@ -40,6 +40,7 @@ test_name = "resolves_spanish_names_abbreviations_and_aliases"
 
 [capability.async_chapter_viewport]
 surface = "public-ui"
+intent = "read"
 selector = "#bibleVerseViewport"
 module = "mostrador/data_layer.js"
 handler = "createDataLayer"
@@ -56,6 +57,7 @@ test_name = "seal_derived_from_loaded_data_not_hardcoded"
 
 [capability.dose1_sheets_around_verse]
 surface = "public-ui"
+intent = "print"
 selector = "#btnDose1Sheets"
 module = "mostrador.js"
 handler = "createMostradorController"
@@ -89,6 +91,7 @@ test_name = "dose2_and_dose3_from_real_index_and_manifest"
 # Contrato de capacidades UI (`study_14col_drawer` conserva ID estable mientras proyecta 15 cols `col01..col15_translit`)
 [capability.study_14col_drawer]
 surface = "public-ui"
+intent = "study"
 selector = "#btnRegEstudio"
 module = "mostrador/estudio.js"
 handler = "renderStudy14ColDrawerHtml"
@@ -97,6 +100,7 @@ test_name = "renders_all_14_columns_for_genesis_1"
 
 [capability.community_patch_drawer]
 surface = "public-ui"
+intent = "workshop"
 selector = "#btnOpenFieldWorkshopSheet"
 module = "mostrador/mejorar.js"
 handler = "buildPatchPayload"
@@ -105,6 +109,7 @@ test_name = "patch_fields_match_patch_template_toml"
 
 [capability.optical_lt_fountain]
 surface = "public-ui"
+intent = "share"
 selector = "#btnShareQuine"
 module = "mostrador/optical_lt.js"
 handler = "LTEncoder"
@@ -424,9 +429,10 @@ handler = "renderFelicesSocraticWonderCardHtml"
 test_file = "mostrador/tribunal_packs_crypto.test.mjs"
 test_name = "D1_to_D10_A_plus_ARB_EKOVOZ_61_triple_provenance_closure_and_full_backend_ui_parity"
 
-[capability.surface_mode_reader_studio_toggle]
+[capability.intent_workshop_first_class]
 surface = "public-ui"
-selector = "#btnToggleSurfaceMode"
+intent = "workshop"
+selector = "#btnOpenFieldWorkshopSheet"
 module = "mostrador/projection_contract.js"
 handler = "projectStoreAttributesToDom"
 test_file = "mostrador/state_store_v3ux.test.mjs"

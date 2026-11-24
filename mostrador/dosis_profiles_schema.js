@@ -48,9 +48,16 @@ export const CANONICAL_14_PLUS_2_EDITIONS_CATALOG = [
   { id: "16_checklist_80_bloques", editionSlug: "checklist_80_bloques", label: "16. Checklist de 80 Bloques de Campo (PDF)", label_en: "16. 80 Canonical Field Blocks Checklist (PDF)", kind: "field_pdf", url: "obras/biblia/campo/checklist_80_bloques.pdf", bytes: 12312 },
 ];
 
+export const DEFAULT_PRINT_CONFIG = Object.freeze({
+  paperSize: "A4",
+  paperFormat: "a4",
+  fontPt: 9.5,
+  columns: 2,
+});
+
 export const CANONICAL_9_TOML_PROFILES = [
   { id: "01_1col_lectura", tomlPath: "obras/biblia/profiles/one-column-reading.toml", columns: 1, fontPt: 10.5, leadingRatio: 1.38, paperSize: "A4", impositionMode: "single_sheet_20mm", gutterMm: 20.0, cplTarget: 62 },
-  { id: "02_2col_pastoral", tomlPath: "obras/biblia/profiles/two-column-bible.toml", columns: 2, fontPt: 9.5, leadingRatio: 1.32, paperSize: "Letter", impositionMode: "single_sheet_20mm", gutterMm: 20.0, cplTarget: 48 },
+  { id: "02_2col_pastoral", tomlPath: "obras/biblia/profiles/two-column-bible.toml", columns: DEFAULT_PRINT_CONFIG.columns, fontPt: DEFAULT_PRINT_CONFIG.fontPt, leadingRatio: 1.32, paperSize: DEFAULT_PRINT_CONFIG.paperSize, impositionMode: "single_sheet_20mm", gutterMm: 20.0, cplTarget: 48 },
   { id: "03_3col_compacta", tomlPath: "obras/biblia/profiles/three-column-compact.toml", columns: 3, fontPt: 8.0, leadingRatio: 1.24, paperSize: "A4", impositionMode: "saddle_stitch", gutterMm: 9.215, cplTarget: 36 },
   { id: "04_1col_letra_grande", tomlPath: "obras/biblia/profiles/large-print.toml", columns: 1, fontPt: 13.5, leadingRatio: 1.45, paperSize: "Letter", impositionMode: "single_sheet_20mm", gutterMm: 20.0, cplTarget: 52 },
   { id: "05_interlineal_estudio", tomlPath: "obras/biblia/profiles/05_interlineal_estudio.toml", columns: 1, fontPt: 9.0, leadingRatio: 1.50, paperSize: "A4", impositionMode: "single_sheet_20mm", gutterMm: 20.0, cplTarget: 68 },

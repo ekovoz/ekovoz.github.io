@@ -24,8 +24,10 @@ export const STORE_DOMAIN_OWNERS = Object.freeze({
   evangeliosQuarter: "work",
   activeSheet: "sheet",
   activeSubtabBySheet: "sheet",
+  activeCorpusTab: "sheet",
   mobileSheetOpen: "sheet",
   activeModal: "modal",
+  activeIntent: "surface",
   surfaceMode: "surface",
   appearanceTheme: "appearance",
   fontFamily: "appearance",
@@ -43,6 +45,14 @@ export const STORE_DOMAIN_OWNERS = Object.freeze({
   activeTypologyId: "print",
   activeStrongId: "study",
 });
+
+export const VALID_ACTIVE_INTENTS = Object.freeze([
+  "read",
+  "study",
+  "print",
+  "share",
+  "workshop",
+]);
 
 export const VALID_ACTIVE_MODALS = Object.freeze([
   null,
@@ -66,7 +76,7 @@ const DEFAULT_PRINT_CONFIG = Object.freeze({
   paperFormat: "a4",
   orientation: "portrait",
   columns: 2,
-  fontSizePt: 10.5,
+  fontSizePt: 9.5,
   duplex: true,
   foliationMode: "saddle_stitch",
   activeBranchId: null,
@@ -114,7 +124,9 @@ export function createEkovozStore(initialState = {}, options = {}) {
     activeModal: null,
     activeSheet: null,
     activeSubtabBySheet: DEFAULT_SUBTABS_BY_SHEET,
+    activeCorpusTab: "bibles",
     mobileSheetOpen: false,
+    activeIntent: "read",
     surfaceMode: "reader",
     appearanceTheme: "light",
     fontFamily: "serif",
@@ -197,7 +209,7 @@ export function createEkovozStore(initialState = {}, options = {}) {
   }
 
   function subscribe(listener) {
-    if (typeof listener !== "function") return () => {};
+    if (typeof listener !== "function") return () => { };
     listeners.add(listener);
     return () => listeners.delete(listener);
   }
@@ -335,6 +347,21 @@ function normalizeSheetId(rawSheetName) {
   return null;
 }
 
+function sheetToIntentId(sheetId) {
+  if (sheetId === "field" || sheetId === "improve") return "workshop";
+  if (sheetId === "study" || sheetId === "print" || sheetId === "share") return sheetId;
+  return "read";
+}
+
+function normalizeIntentId(rawIntent) {
+  if (!rawIntent) return "read";
+  const clean = String(rawIntent).trim().toLowerCase();
+  if (clean === "field" || clean === "improve" || clean === "workshop") return "workshop";
+  if (clean === "dosis" || clean === "share") return "share";
+  if (clean === "study" || clean === "print" || clean === "read") return clean;
+  return "read";
+}
+
 export function isMobileSheetViewport(win = globalThis?.window) {
   if (!win) return false;
   if (typeof win.matchMedia === "function") {
@@ -354,14 +381,78 @@ export function openSheet(store, rawSheetName, opts = {}) {
     typeof opts?.mobileSheetOpen === "boolean"
       ? opts.mobileSheetOpen
       : isMobileSheetViewport(opts?.window || globalThis?.window);
-  store.setState({ activeSheet: normalized, mobileSheetOpen: mobileOpen }, "sheet");
+  const intent = sheetToIntentId(normalized);
+  store.batch?.(({ setState }) => {
+    setState({ activeSheet: normalized, mobileSheetOpen: mobileOpen }, "sheet");
+    setState({ activeIntent: intent }, "surface");
+  });
+  if (typeof store.batch !== "function") {
+    store.setState({ activeSheet: normalized, mobileSheetOpen: mobileOpen, activeIntent: intent }, "*");
+  }
   return normalized;
 }
 
 export function closeSheet(store) {
   if (!store || typeof store.setState !== "function") return null;
-  store.setState({ activeSheet: null, mobileSheetOpen: false }, "sheet");
+  store.batch?.(({ setState }) => {
+    setState({ activeSheet: null, mobileSheetOpen: false }, "sheet");
+    setState({ activeIntent: "read" }, "surface");
+  });
+  if (typeof store.batch !== "function") {
+    store.setState({ activeSheet: null, mobileSheetOpen: false, activeIntent: "read" }, "*");
+  }
   return null;
+}
+
+export function setActiveIntent(store, rawIntent, opts = {}) {
+  const cleanIntent = normalizeIntentId(rawIntent);
+  if (!store || typeof store.setState !== "function") return cleanIntent;
+  if (cleanIntent === "read") {
+    closeSheet(store);
+    return "read";
+  }
+  const sheetId = cleanIntent === "workshop" ? "field" : cleanIntent;
+  const mobileOpen =
+    typeof opts?.mobileSheetOpen === "boolean"
+      ? opts.mobileSheetOpen
+      : isMobileSheetViewport(opts?.window || globalThis?.window);
+  store.batch?.(({ setState }) => {
+    setState({ activeIntent: cleanIntent }, "surface");
+    setState({ activeSheet: sheetId, mobileSheetOpen: mobileOpen }, "sheet");
+  });
+  if (typeof store.batch !== "function") {
+    store.setState({ activeIntent: cleanIntent, activeSheet: sheetId, mobileSheetOpen: mobileOpen }, "*");
+  }
+  return cleanIntent;
+}
+
+/**
+ * Guarded Proxy preventing unregistered direct property mutations to store-owned keys.
+ */
+export function createGuardedStateProxy(store, { strictWrites = true } = {}) {
+  if (!store || typeof store.getState !== "function") {
+    throw new TypeError("[createGuardedStateProxy] Valid EkovozStore required");
+  }
+  return new Proxy(store.getState(), {
+    get(target, prop) {
+      return store.getState()[prop] ?? target[prop];
+    },
+    set(target, prop, value) {
+      const key = String(prop);
+      const owner = STORE_DOMAIN_OWNERS[key];
+      if (owner && strictWrites) {
+        throw new TypeError(
+          `[EkovozStore Guard] Direct write to owned state.${key} (domain="${owner}") forbidden; use store.setState()`,
+        );
+      }
+      if (owner) {
+        store.setState({ [key]: value }, owner);
+        return true;
+      }
+      target[prop] = value;
+      return true;
+    },
+  });
 }
 
 export function toggleSheet(store, rawSheetName) {
@@ -381,19 +472,13 @@ export function setActiveWork(store, workId) {
     setState({ activeWork: cleanWork }, "work");
     if (cleanWork !== "biblia") {
       setState({ activeSheet: null, mobileSheetOpen: false }, "sheet");
+      setState({ activeIntent: "read" }, "surface");
     }
   });
   if (typeof store.batch !== "function") {
     store.setState({ activeWork: cleanWork }, "work");
   }
   return cleanWork;
-}
-
-export function setSurfaceMode(store, mode) {
-  if (!store || typeof store.setState !== "function") return "reader";
-  const cleanMode = mode === "studio" ? "studio" : "reader";
-  store.setState({ surfaceMode: cleanMode }, "surface");
-  return cleanMode;
 }
 
 /**

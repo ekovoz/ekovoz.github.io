@@ -52,6 +52,7 @@ export const SHELL_CORE_ASSETS = [
   "/mostrador/human_labels.js",
   "/mostrador/data_layer.js",
   "/mostrador/data_layer_wasm_codecs.js",
+  "/mostrador/dom_patch.js",
   "/mostrador/dom_projection_contracts.js",
   "/mostrador/ed25519_field_math.js",
   "/mostrador/pdf_pages.js",

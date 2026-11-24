@@ -86,7 +86,7 @@ export function normalizeRootNotesEntries(rootNotesRaw) {
       ? String(rootNotesRaw.new_surface)
       : "Jawatan Dios";
   return [
-    { strong_id: "H0430", patch_id: "PATCH-WAL-COMMIT-R16", ref: "GEN.1.1", surface_stp: commitSurface, note: `Elohim · Creador soberano${commitNoteSuffix}` },
+    { strong_id: "H0430", patch_id: "PATCH-WAL-COMMIT-R16", ref: "GEN.1.1", surface_stp: commitSurface, note: `Elohim · Creador${commitNoteSuffix}` },
     { strong_id: "H3068", patch_id: "PATCH-WAL-COMMIT-R16", ref: "PSA.23.1", surface_stp: "Jawatan", note: "YHWH · Nombre del Pacto" },
     { strong_id: "H7307", patch_id: "PATCH-STP-L3-001", ref: "GEN.1.2", surface_stp: "Espíritu", note: "Ruach · Aliento / Espíritu" },
     { strong_id: "G0026", patch_id: "PATCH-WAL-COMMIT-R16", ref: "1CO.13.4", surface_stp: "xoi'kam", note: "Agape · Amor leal" },

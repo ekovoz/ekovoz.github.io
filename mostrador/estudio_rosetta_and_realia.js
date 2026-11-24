@@ -282,25 +282,37 @@ export function renderPhilologyRosettaInspectorHtml(activeRows = [], options = {
     }
   }
 
-  if (matchedFamilies.length === 0) {
+  const isGenesis1_1 = book === "GEN" && chapter === 1 && verse === 1;
+  if (matchedFamilies.length === 0 && isGenesis1_1) {
     matchedFamilies.push(PHILOLOGY_ROSETTA_DEFAULT_INDEX.consonantal_root_families["ברא"]);
+  } else if (matchedFamilies.length === 0 && book === "PSA") {
+    matchedFamilies.push(PHILOLOGY_ROSETTA_DEFAULT_INDEX.consonantal_root_families["רעה"] || PHILOLOGY_ROSETTA_DEFAULT_INDEX.consonantal_root_families["שׁלם"]);
   }
-  if (matchedBridges.length === 0) {
+  if (matchedBridges.length === 0 && isGenesis1_1) {
     matchedBridges.push(PHILOLOGY_ROSETTA_DEFAULT_INDEX.lxx_mt_cognate_bridge.H7225);
+  } else if (matchedBridges.length === 0 && book === "PSA") {
+    matchedBridges.push(PHILOLOGY_ROSETTA_DEFAULT_INDEX.lxx_mt_cognate_bridge.H7462 || PHILOLOGY_ROSETTA_DEFAULT_INDEX.lxx_mt_cognate_bridge.G3056);
   }
 
   const kqList = resolveKetivQereResiduals(book, chapter, verse, rosettaIndex);
   const engOrg = resolveParatextEngOrgMapping(book, chapter, verse, rosettaIndex);
+
+  const sanitizeRosettaGloss = (txt) =>
+    String(txt || "")
+      .replace(/esculpir\s+soberanamente/gi, "esculpir originariamente")
+      .replace(/dar\s+forma\s+soberana/gi, "dar forma originaria")
+      .replace(/origen\s+soberano/gi, "origen primordial")
+      .replace(/creador\s+soberano/gi, "Creador");
 
   const rootsHtml = matchedFamilies
     .map((fam) => {
       const membersPills = (fam.strong_members || [])
         .map(
           (m) =>
-            `<span class="rosetta-root-member" data-root-strong="${escapeHtml(m.strong)}"><code>${escapeHtml(m.strong)}</code> ${escapeHtml(m.lemma)} (${escapeHtml(m.gloss_es)})</span>`,
+            `<span class="rosetta-root-member" data-root-strong="${escapeHtml(m.strong)}"><code>${escapeHtml(m.strong)}</code> ${escapeHtml(m.lemma)} (${escapeHtml(sanitizeRosettaGloss(m.gloss_es))})</span>`,
         )
         .join(" · ");
-      return `<li data-consonantal-root="${escapeHtml(fam.root_consonants)}"><strong>${isEn ? "Consonantal root" : "Raíz consonántica"} ${escapeHtml(fam.root_consonants)} (${escapeHtml(fam.transliteration)}):</strong> ${escapeHtml(fam.primary_gloss_es)} → ${membersPills}</li>`;
+      return `<li data-consonantal-root="${escapeHtml(fam.root_consonants)}"><strong>${isEn ? "Consonantal root" : "Raíz consonántica"} ${escapeHtml(fam.root_consonants)} (${escapeHtml(fam.transliteration)}):</strong> ${escapeHtml(sanitizeRosettaGloss(fam.primary_gloss_es))} → ${membersPills}</li>`;
     })
     .join("");
 
@@ -309,7 +321,7 @@ export function renderPhilologyRosettaInspectorHtml(activeRows = [], options = {
       const cognates = (br.greek_cognates || [])
         .map(
           (g) =>
-            `<span data-lxx-cognate="${escapeHtml(g.greek_strong)}"><code>${escapeHtml(g.greek_strong)}</code> <strong>${escapeHtml(g.greek_lemma)}</strong> (${escapeHtml(g.gloss_es)}, PMI=${escapeHtml(g.mutual_information_pmi)}, ${isEn ? "echo" : "eco"} ${escapeHtml(g.nt_echo_ref)})</span>`,
+            `<span data-lxx-cognate="${escapeHtml(g.greek_strong)}"><code>${escapeHtml(g.greek_strong)}</code> <strong>${escapeHtml(g.greek_lemma)}</strong> (${escapeHtml(sanitizeRosettaGloss(g.gloss_es))}, PMI=${escapeHtml(g.mutual_information_pmi)}, ${isEn ? "echo" : "eco"} ${escapeHtml(g.nt_echo_ref)})</span>`,
         )
         .join(" ↔ ");
       return `<li data-mt-strong="${escapeHtml(br.hebrew_strong)}"><strong>${isEn ? "LXX↔MT Cognate Bridge" : "Puente Cognado LXX↔MT"} <code>${escapeHtml(br.hebrew_strong)}</code> (${escapeHtml(br.hebrew_lemma)}):</strong> ${cognates}</li>`;

@@ -103,8 +103,8 @@ export function applyStaticChromeTranslations(targetDoc, uiLocale = "es", state 
   const photoTechSummary = getEl("photocopyTechReceiptSummary");
   if (photoTechSummary) {
     photoTechSummary.textContent = isEn
-      ? "🔬 Optical & Typographic Verification (Kanungo-Sauvola)"
-      : "🔬 Verificación Óptica y Tipográfica (Kanungo-Sauvola)";
+      ? "🔬 Photocopy sharpness check"
+      : "🔬 Verificación de nitidez para fotocopias";
   }
   const evHeadingEl = getEl("evangeliosMainHeading");
   if (evHeadingEl) {

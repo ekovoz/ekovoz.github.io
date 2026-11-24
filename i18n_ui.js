@@ -45,10 +45,9 @@ export function updateFocalPlate(d = D(), lO = "", n = true, uO = "", st = stRef
   const isEsCorpus = L(l).startsWith("es");
   let locHost = $(d, "focalPlateLocalizedArt");
   if (!locHost && fFr && typeof d.createElement === "function") { locHost = d.createElement("div"); locHost.id = "focalPlateLocalizedArt"; locHost.className = "felices-localized-plate-host"; fFr.insertBefore?.(locHost, im?.nextSibling || null); }
-  if (im) { im.src = u; im.alt = lb; im.hidden = !isEsCorpus; if (im.style) im.style.display = isEsCorpus ? "" : "none"; }
+  if (im) { im.src = u; im.alt = lb; im.hidden = !isEsCorpus; }
   if (locHost) {
     locHost.hidden = isEsCorpus;
-    if (locHost.style) locHost.style.display = isEsCorpus ? "none" : "block";
     if (!isEsCorpus) locHost.innerHTML = renderLocalizedFelicesPlateCardHtml({ plateIndex: pIdx, totalPlates: N, lang: l, uiLocale: uL, verseText: tx, refLabel: `${c.book} ${c.chapter}:${c.verse}`, dir: LANGUAGE_PACKS.find(p => p.code === l || p.code === pLc(l))?.dir || "ltr" });
   }
   if (id) { id.textContent = lb; sA(id, "data-osis-ref", os); } if (vE) { vE.textContent = tx; sA(vE, "data-osis-ref", os); sA(vE, "data-overlay-authority", ov?.authorityTier || ""); } if (cI) cI.src = u; if (cC) cC.textContent = tx; if (wC) wC.innerHTML = renderFelicesSocraticWonderCardHtml(pIdx, uL);

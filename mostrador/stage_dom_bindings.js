@@ -18,7 +18,9 @@ import {
   lookupWordTokenStrongEntry,
   projectCrossWorkCoordinate,
 } from "./bridge_and_chapter.js";
+import { bindSurfaceActions } from "./dom_patch.js";
 import { normalizeEditionSlug } from "./dosis.js";
+import { DEFAULT_PRINT_CONFIG } from "./dosis_profiles_schema.js";
 import { syncActiveStrongInStudyDrawer } from "./drawer_hydrators.js";
 import {
   indexRegionShards,
@@ -70,12 +72,14 @@ export function bindStageDomEvents(ctx = {}) {
   if (!targetDoc || !state || typeof getEl !== "function") return null;
 
   const stickyJumpBtn = getEl("btnStickyJumpToCanvas", targetDoc);
-  if (stickyJumpBtn && typeof stickyJumpBtn.addEventListener === "function" && !stickyJumpBtn._stickyJumpBound) {
-    stickyJumpBtn._stickyJumpBound = true;
-    stickyJumpBtn.addEventListener("click", () => {
-      const vp = getEl("bibleVerseViewport", targetDoc);
-      vp?.scrollIntoView?.({ behavior: "smooth", block: "start" });
-    });
+  if (stickyJumpBtn && typeof stickyJumpBtn.addEventListener === "function") {
+    stickyJumpBtn.setAttribute?.("data-action", "jump-to-canvas");
+    bindSurfaceActions(stickyJumpBtn, {
+      "jump-to-canvas": () => {
+        const vp = getEl("bibleVerseViewport", targetDoc);
+        vp?.scrollIntoView?.({ behavior: "smooth", block: "start" });
+      },
+    }, { scope: "sticky-jump", events: ["click"] });
   }
 
   const corpusTabBibles = getEl("btnCorpusTabBibles", targetDoc);
@@ -84,18 +88,23 @@ export function bindStageDomEvents(ctx = {}) {
   const corpusPanelTrails = getEl("corpusTabPanelTrails", targetDoc);
   const switchCorpusTab = (tabName) => {
     const isTrails = tabName === "trails";
+    if (ctx.store && typeof ctx.store.setState === "function") {
+      ctx.store.setState({ activeCorpusTab: isTrails ? "trails" : "bibles" }, "sheet");
+    } else if (state && typeof state === "object") {
+      state.activeCorpusTab = isTrails ? "trails" : "bibles";
+    }
     if (corpusTabBibles) corpusTabBibles.setAttribute("aria-selected", isTrails ? "false" : "true");
     if (corpusTabTrails) corpusTabTrails.setAttribute("aria-selected", isTrails ? "true" : "false");
     if (corpusPanelBibles) corpusPanelBibles.hidden = isTrails;
     if (corpusPanelTrails) corpusPanelTrails.hidden = !isTrails;
   };
-  if (corpusTabBibles && typeof corpusTabBibles.addEventListener === "function" && !corpusTabBibles._tabBound) {
-    corpusTabBibles._tabBound = true;
-    corpusTabBibles.addEventListener("click", () => switchCorpusTab("bibles"));
+  if (corpusTabBibles) {
+    corpusTabBibles.setAttribute?.("data-action", "corpus-tab-bibles");
+    bindSurfaceActions(corpusTabBibles, { "corpus-tab-bibles": () => switchCorpusTab("bibles") }, { scope: "corpus-bibles", events: ["click"] });
   }
-  if (corpusTabTrails && typeof corpusTabTrails.addEventListener === "function" && !corpusTabTrails._tabBound) {
-    corpusTabTrails._tabBound = true;
-    corpusTabTrails.addEventListener("click", () => switchCorpusTab("trails"));
+  if (corpusTabTrails) {
+    corpusTabTrails.setAttribute?.("data-action", "corpus-tab-trails");
+    bindSurfaceActions(corpusTabTrails, { "corpus-tab-trails": () => switchCorpusTab("trails") }, { scope: "corpus-trails", events: ["click"] });
   }
 
   const bookSelect = getEl("bibleSelectBook", targetDoc);
@@ -494,7 +503,7 @@ export function bindStageDomEvents(ctx = {}) {
     if (typeof ctx.syncActiveChromeProjection === "function") {
       ctx.syncActiveChromeProjection(targetDoc);
     } else if (targetDoc?.documentElement?.setAttribute) {
-      if (state.surfaceMode) targetDoc.documentElement.setAttribute("data-surface-mode", state.surfaceMode);
+      if (state.activeIntent) targetDoc.documentElement.setAttribute("data-intent", state.activeIntent);
       if (state.appearanceTheme) targetDoc.documentElement.setAttribute("data-theme", state.appearanceTheme);
       if (state.fontFamily) targetDoc.documentElement.setAttribute("data-font-family", state.fontFamily);
       targetDoc.documentElement.style?.setProperty?.("--bible-font-scale", String(state.fontScale || 1.0));
@@ -540,30 +549,6 @@ export function bindStageDomEvents(ctx = {}) {
         applyStorePatchAndProject({ fontScale: nextScale }, "appearance");
       });
     }
-  }
-
-  const surfaceBtn = getEl("btnToggleSurfaceMode", targetDoc);
-  if (surfaceBtn && typeof surfaceBtn.addEventListener === "function") {
-    surfaceBtn.addEventListener("click", () => {
-      const nextMode = state.surfaceMode === "studio" ? "reader" : "studio";
-      applyStorePatchAndProject({ surfaceMode: nextMode }, "surface");
-      surfaceBtn.setAttribute("aria-pressed", nextMode === "studio" ? "true" : "false");
-      const modeKey = nextMode === "studio" ? "top.btn.readerMode" : "top.btn.studioMode";
-      surfaceBtn.setAttribute("data-i18n", modeKey);
-      const loc = String(state.uiLocale || "es").trim() || "es";
-      const isUiEn = loc.toLowerCase().startsWith("en");
-      surfaceBtn.textContent = nextMode === "studio"
-        ? (isUiEn ? "📖 Reader" : "📖 Lectura")
-        : (isUiEn ? "🎛️ Studio" : "🎛️ Taller");
-      if (typeof dataLayer?.loadUiCatalog === "function") {
-        Promise.resolve(dataLayer.loadUiCatalog(loc)).then((cat) => {
-          const msg = cat?.messages?.[modeKey];
-          if (typeof msg === "string" && msg.length > 0 && surfaceBtn.getAttribute("data-i18n") === modeKey) {
-            surfaceBtn.textContent = msg;
-          }
-        }).catch(() => { });
-      }
-    });
   }
 
   const corpusLangBtn = getEl("sovereignCorpusLangBtn", targetDoc);
@@ -776,7 +761,7 @@ export function bindStageDomEvents(ctx = {}) {
   const btnSimPhotocopy = getEl("btnSimulatePhotocopy3Gen", targetDoc);
 
   const syncKindlePrintConfig = async () => {
-    if (fontSlider?.value) state.fontSizePt = Number(fontSlider.value) || 10.5;
+    if (fontSlider?.value) state.fontSizePt = Number(fontSlider.value) || DEFAULT_PRINT_CONFIG.fontPt;
     if (colSel?.value) state.columns = Number(colSel.value) || 2;
     if (paperSel?.value) state.paperFormat = String(paperSel.value).toLowerCase();
     if (orientSel?.value) state.orientation = String(orientSel.value).toLowerCase();

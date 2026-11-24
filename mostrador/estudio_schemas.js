@@ -251,7 +251,7 @@ export const PHILOLOGY_ROSETTA_DEFAULT_INDEX = {
     "ברא": {
       root_consonants: "ברא",
       transliteration: "b-r-ʾ",
-      primary_gloss_es: "crear, dar forma soberana, cortar/esculpir",
+      primary_gloss_es: "crear, dar forma originaria, cortar/esculpir",
       strong_members: [
         { strong: "H1254", lemma: "בָּרָא", pos: "Verb Qal/Niphal/Piel", gloss_es: "crear (exclusivo de actividad divina en Qal)", occurrences: 54 },
         { strong: "H1254G", lemma: "בָּרָא", pos: "Verb Qal", gloss_es: "crear de la nada / inaugurar orden cósmico", occurrences: 38 },
@@ -313,7 +313,7 @@ export const PHILOLOGY_ROSETTA_DEFAULT_INDEX = {
       hebrew_strong: "H7225",
       hebrew_lemma: "רֵאשִׁית",
       greek_cognates: [
-        { greek_strong: "G0746", greek_lemma: "ἀρχή", lxx_ref: "GEN 1:1", nt_echo_ref: "JHN 1:1", mutual_information_pmi: 8.42, gloss_es: "principio, origen soberano" },
+        { greek_strong: "G0746", greek_lemma: "ἀρχή", lxx_ref: "GEN 1:1", nt_echo_ref: "JHN 1:1", mutual_information_pmi: 8.42, gloss_es: "principio, origen primordial" },
         { greek_strong: "G0536", greek_lemma: "ἀπαρχή", lxx_ref: "EXO 23:19", nt_echo_ref: "1CO 15:20", mutual_information_pmi: 7.15, gloss_es: "primicias" },
       ],
     },
@@ -351,7 +351,7 @@ export const PHILOLOGY_ROSETTA_DEFAULT_INDEX = {
       hebrew_strong: "H7225",
       hebrew_lemma: "רֵאשִׁית",
       greek_cognates: [
-        { greek_strong: "G0746", greek_lemma: "ἀρχή", lxx_ref: "GEN 1:1", nt_echo_ref: "JHN 1:1", mutual_information_pmi: 8.42, gloss_es: "principio, origen soberano" },
+        { greek_strong: "G0746", greek_lemma: "ἀρχή", lxx_ref: "GEN 1:1", nt_echo_ref: "JHN 1:1", mutual_information_pmi: 8.42, gloss_es: "principio, origen primordial" },
       ],
     },
     G3056: {

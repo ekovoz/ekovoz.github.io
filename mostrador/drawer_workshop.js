@@ -11,10 +11,8 @@ import {
   hydrateFormulaicParallelsIndex,
   projectChapterThroughCascadeSemilattice,
 } from "./cascade_l1_l5.js";
-import {
-  applyHarelSubtabSelection,
-  resolvePrimaryStrongForVerse,
-} from "./drawer_study.js";
+import { resolvePrimaryStrongForVerse } from "./drawer_study.js";
+import { bindSurfaceActions, patchStoreState } from "./dom_patch.js";
 import {
   normalizeRootNotesEntries,
   renderCrdtWalAndLockP2AuditCardHtml,
@@ -353,20 +351,6 @@ export async function hydrateImproveDrawerPanel(ctx = {}) {
       }) + sanitizedDraftHtml;
   }
 
-  for (const [btnId, tabName] of [
-    ["btnWorkshopSubtabPatch", "patch"],
-    ["btnWorkshopSubtabLadder", "ladder"],
-    ["btnWorkshopSubtabAudit", "audit"],
-  ]) {
-    const sBtn = getEl(btnId, targetDoc);
-    if (sBtn && typeof sBtn.addEventListener === "function" && !sBtn._subtabBound) {
-      sBtn._subtabBound = true;
-      sBtn.addEventListener("click", () => {
-        applyHarelSubtabSelection(targetDoc, "workshop", tabName);
-      });
-    }
-  }
-
   bindImproveFormControlsInDrawer(mod, ctx);
   projectSurfaceLayoutFromState(state, targetDoc, getEl);
   return html;
@@ -377,7 +361,6 @@ export function bindImproveFormControlsInDrawer(mod, ctx = {}) {
     state,
     targetDoc,
     getEl,
-    withPreservedInputFocus,
     navigate,
     hydrateBookAndChapterSelectors,
   } = ctx;
@@ -427,9 +410,9 @@ export function bindImproveFormControlsInDrawer(mod, ctx = {}) {
     }
     const lock8BadgeEl = targetDoc?.querySelector?.('[data-lock8-badge="true"]');
     if (lock8BadgeEl) {
-      lock8BadgeEl.innerHTML = isEnLocale
-        ? `🔒 Grammar check: ${lock8Result.status} <details class="tech-details"><summary>Technical details</summary><code>MACULA A0/A1 + Jespersen</code></details>`
-        : `🔒 Verificación gramatical: ${lock8Result.status} <details class="tech-details"><summary>Detalles técnicos</summary><code>Candado 8 (MACULA A0/A1 + Jespersen)</code></details>`;
+      lock8BadgeEl.textContent = isEnLocale
+        ? `🔒 Grammar check: ${lock8Result.status}`
+        : `🔒 Verificación gramatical: ${lock8Result.status}`;
     }
     const eightLocksBarEl = targetDoc?.querySelector?.('[data-eight-locks-bar="true"]');
     if (eightLocksBarEl) {
@@ -481,21 +464,19 @@ export function bindImproveFormControlsInDrawer(mod, ctx = {}) {
         activeWave: state.activeOtWave || 0,
         limit: 24,
       });
-    } else if (lexHostEl) {
-      withPreservedInputFocus(targetDoc, () => {
-        lexHostEl.innerHTML =
-          typeof mod.renderStpLexiconExplorerHtml === "function"
-            ? mod.renderStpLexiconExplorerHtml({
-              query: state.stpLexiconQuery || "",
-              activeWave: state.activeOtWave || 0,
-              limit: 24,
-            })
-            : renderStpLexiconExplorerHtml({
-              query: state.stpLexiconQuery || "",
-              activeWave: state.activeOtWave || 0,
-              limit: 24,
-            });
-      });
+    } else if (lexHostEl && targetDoc?.activeElement?.id !== "stpLexiconSearchInput") {
+      lexHostEl.innerHTML =
+        typeof mod.renderStpLexiconExplorerHtml === "function"
+          ? mod.renderStpLexiconExplorerHtml({
+            query: state.stpLexiconQuery || "",
+            activeWave: state.activeOtWave || 0,
+            limit: 24,
+          })
+          : renderStpLexiconExplorerHtml({
+            query: state.stpLexiconQuery || "",
+            activeWave: state.activeOtWave || 0,
+            limit: 24,
+          });
       bindLexiconExplorerEvents(lexHostEl);
     }
     projectSurfaceLayoutFromState(state, targetDoc, getEl);
@@ -506,10 +487,10 @@ export function bindImproveFormControlsInDrawer(mod, ctx = {}) {
   const bindLexiconExplorerEvents = (lexHostEl) => {
     if (!lexHostEl) return;
     const searchInput = getEl("stpLexiconSearchInput", targetDoc);
-    if (searchInput && typeof searchInput.addEventListener === "function" && !searchInput._lexSearchBound) {
-      searchInput._lexSearchBound = true;
+    if (searchInput && typeof searchInput.addEventListener === "function") {
+      searchInput.setAttribute?.("data-action", "stp-lex-search");
       const onLexSearch = (ev) => {
-        state.stpLexiconQuery = String(ev?.target?.value ?? searchInput.value ?? "");
+        patchStoreState(ctx, { stpLexiconQuery: String(ev?.target?.value ?? searchInput.value ?? "") });
         const rowsEl = getEl("stpLexiconResultsRows", targetDoc);
         if (rowsEl) {
           const renderRowsFn =
@@ -525,38 +506,36 @@ export function bindImproveFormControlsInDrawer(mod, ctx = {}) {
           (state.refreshPatchPreview || refreshPatchPreview)();
         }
       };
-      if (!searchInput._lexInputEventsBound) {
-        searchInput._lexInputEventsBound = true;
-        searchInput.addEventListener("input", onLexSearch);
-        searchInput.addEventListener("change", onLexSearch);
-      }
+      bindSurfaceActions(searchInput, { "stp-lex-search": onLexSearch }, { scope: "stp-lex-input", events: ["input", "change"] });
     }
-    if (typeof lexHostEl.addEventListener === "function" && !lexHostEl._lexBound) {
-      lexHostEl._lexBound = true;
-      lexHostEl.addEventListener("click", (ev) => {
-        const injectBtn = ev?.target?.closest
-          ? ev.target.closest("[data-inject-surface]")
-          : ev?.target?.getAttribute?.("data-inject-surface")
-            ? ev.target
-            : null;
-        if (injectBtn) {
-          const surfaceVal = injectBtn.getAttribute?.("data-inject-surface") || "";
-          if (newInput && surfaceVal) newInput.value = surfaceVal;
+    if (typeof lexHostEl.addEventListener === "function") {
+      if (!lexHostEl._lexActionBound) {
+        lexHostEl._lexActionBound = true;
+        lexHostEl.addEventListener("click", (ev) => {
+          const injectBtn = ev?.target?.closest
+            ? ev.target.closest("[data-inject-surface]")
+            : ev?.target?.getAttribute?.("data-inject-surface")
+              ? ev.target
+              : null;
+          if (injectBtn) {
+            const surfaceVal = injectBtn.getAttribute?.("data-inject-surface") || "";
+            if (newInput && surfaceVal) newInput.value = surfaceVal;
+            (state.refreshPatchPreview || refreshPatchPreview)();
+            return;
+          }
+          const entryBtn = ev?.target?.closest
+            ? ev.target.closest("[data-lex-strong]")
+            : ev?.target?.getAttribute?.("data-lex-strong")
+              ? ev.target
+              : null;
+          if (!entryBtn) return;
+          const nextStrong = entryBtn.getAttribute?.("data-lex-strong");
+          const nextSurface = entryBtn.getAttribute?.("data-lex-surface");
+          if (nextStrong) state.activeStrongId = String(nextStrong).toUpperCase();
+          if (newInput && nextSurface) newInput.value = nextSurface;
           (state.refreshPatchPreview || refreshPatchPreview)();
-          return;
-        }
-        const entryBtn = ev?.target?.closest
-          ? ev.target.closest("[data-lex-strong]")
-          : ev?.target?.getAttribute?.("data-lex-strong")
-            ? ev.target
-            : null;
-        if (!entryBtn) return;
-        const nextStrong = entryBtn.getAttribute?.("data-lex-strong");
-        const nextSurface = entryBtn.getAttribute?.("data-lex-surface");
-        if (nextStrong) state.activeStrongId = String(nextStrong).toUpperCase();
-        if (newInput && nextSurface) newInput.value = nextSurface;
-        (state.refreshPatchPreview || refreshPatchPreview)();
-      });
+        });
+      }
     }
   };
   bindLexiconExplorerEvents(getEl("stpLexiconExplorerHost", targetDoc));

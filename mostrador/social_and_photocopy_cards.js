@@ -66,7 +66,7 @@ function wrapSvgTextLines(rawText, maxCharsPerLine = 40, maxLines = 4) {
     current = word;
   }
   if (current) {
-    lines.push(truncated ? `${current.slice(0, Math.max(1, maxCharsPerLine - 1))}…` : current);
+    lines.push(truncated ? `${current.replace(/[\s.,;:!?]+$/g, "")}…` : current);
   }
   return lines.slice(0, maxLines);
 }
@@ -229,11 +229,11 @@ export function buildOpenGraphSocialCardSvg1200x630({
   const refLabel = `${String(book || "GEN").toUpperCase()} ${Number(chapter) || 1}:${Number(verse) || 1}`;
   const lines = wrapSvgTextLines(
     String(text || "En el principio creó Dios los cielos y la tierra."),
-    38,
-    4,
+    44,
+    5,
   );
   const tspans = lines
-    .map((line, idx) => `<tspan x="96" dy="${idx === 0 ? 0 : 56}">${escHtml(line)}</tspan>`)
+    .map((line, idx) => `<tspan x="96" dy="${idx === 0 ? 0 : 50}">${escHtml(line)}</tspan>`)
     .join("");
   const footerText = isEn
     ? "Ekovoz · Public Domain CC0 · Offline Multilingual Bible"
@@ -243,7 +243,7 @@ export function buildOpenGraphSocialCardSvg1200x630({
     `<rect width="1200" height="630" fill="#12161f"/>` +
     `<rect x="48" y="48" width="1104" height="534" rx="24" fill="#181e29" stroke="#d4a359" stroke-width="3"/>` +
     `<text x="96" y="135" fill="#d4a359" font-family="serif" font-size="38" font-weight="bold">EKOVOZ · ${escHtml(refLabel)} (${escHtml(String(lang).toUpperCase())})</text>` +
-    `<text x="96" y="230" fill="#f8fafc" font-family="serif" font-size="42">${tspans}</text>` +
+    `<text x="96" y="215" fill="#f8fafc" font-family="serif" font-size="38">${tspans}</text>` +
     `<text x="96" y="535" fill="#cbd5e1" font-family="sans-serif" font-size="26">${escHtml(footerText)}</text>` +
     `</svg>`;
   return {

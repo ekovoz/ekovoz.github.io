@@ -984,19 +984,19 @@
     .top-bar-work-tabs {
       width: 100%;
       max-width: 100%;
-      display: flex;
-      flex-wrap: nowrap;
-      overflow-x: auto;
-      scrollbar-width: none;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 0.25rem;
     }
 
     #sovereignWorkTabs>button {
-      flex: 0 0 auto;
-      min-width: max-content;
+      min-width: 0;
+      width: 100%;
       white-space: nowrap;
-      padding: 0.24rem 0.5rem;
-      font-size: 0.75rem;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      padding: 0.24rem 0.3rem;
+      font-size: 0.73rem;
     }
 
     #felicesDichaSelect,
@@ -1011,9 +1011,20 @@
       justify-content: space-between;
     }
 
+    .focal-plate-frame {
+      flex-direction: column;
+      height: auto;
+      aspect-ratio: auto;
+      max-height: none;
+    }
+
+    .focal-plate-frame img {
+      height: auto;
+      max-height: 300px;
+    }
+
     .focal-plate-overlay {
       position: static;
-      margin-top: 0.5rem;
       width: 100%;
     }
   }
@@ -1182,7 +1193,7 @@
     gap: 0.3rem;
   }
 
-  .inspector-doors-grid > button {
+  .inspector-doors-grid>button {
     flex: 1 1 auto;
     min-height: 44px;
     padding: 0.28rem 0.55rem;
@@ -1195,6 +1206,7 @@
   }
 
   .sticky-drawer-context-header {
+    grid-column: 1 / -1;
     flex: 1 0 100%;
     width: 100%;
     display: flex;
@@ -1272,8 +1284,35 @@
   }
 
   @media (min-width: 1024px) {
+    body[data-intent="read"] #sovereignGlobalDrawersHost {
+      position: fixed;
+      left: 50%;
+      transform: translateX(-50%);
+      bottom: 14px;
+      width: min(72ch, calc(100vw - 2rem));
+      max-width: 72ch;
+      z-index: 30;
+      margin: 0;
+      padding: 0;
+    }
 
-    body[data-surface-mode="studio"],
+    body[data-intent="read"] .site-footer {
+      padding-bottom: 5.5rem;
+    }
+
+    body[data-intent="read"] #bibleProgressiveSheetDoors {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 0.4rem;
+      padding: 0.35rem;
+      border-radius: 16px;
+      background: color-mix(in srgb, var(--card-bg) 94%, transparent);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 8px 24px rgba(28, 25, 23, 0.14);
+      border: 1px solid var(--card-border);
+    }
+
+    body[data-intent="study"],
     body:has(#bibleVerseViewport[data-inspector-open="true"]) {
       display: grid;
       grid-template-columns: minmax(0, 1fr) 400px;
@@ -1284,16 +1323,37 @@
       padding: 0.5rem 1.25rem;
     }
 
-    body[data-surface-mode="studio"] #sovereignTopBar,
+    body[data-intent="print"],
+    body[data-intent="workshop"],
+    body[data-intent="share"] {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 540px;
+      align-items: start;
+      gap: 0.85rem 1.1rem;
+      max-width: 1380px;
+      margin: 0 auto;
+      padding: 0.5rem 1.25rem;
+    }
+
+    body[data-intent="study"] #sovereignTopBar,
+    body[data-intent="print"] #sovereignTopBar,
+    body[data-intent="workshop"] #sovereignTopBar,
+    body[data-intent="share"] #sovereignTopBar,
     body:has(#bibleVerseViewport[data-inspector-open="true"]) #sovereignTopBar {
       grid-column: 1 / -1;
       max-width: 100%;
     }
 
-    body[data-surface-mode="studio"] main,
-    body[data-surface-mode="studio"] #bibleSovereignSection,
-    body[data-surface-mode="studio"] #felicesSovereignSection,
-    body[data-surface-mode="studio"] #evangeliosSovereignSection,
+    body[data-intent="study"] main,
+    body[data-intent="study"] #bibleSovereignSection,
+    body[data-intent="study"] #felicesSovereignSection,
+    body[data-intent="study"] #evangeliosSovereignSection,
+    body[data-intent="print"] main,
+    body[data-intent="print"] #bibleSovereignSection,
+    body[data-intent="workshop"] main,
+    body[data-intent="workshop"] #bibleSovereignSection,
+    body[data-intent="share"] main,
+    body[data-intent="share"] #bibleSovereignSection,
     body:has(#bibleVerseViewport[data-inspector-open="true"]) main,
     body:has(#bibleVerseViewport[data-inspector-open="true"]) #bibleSovereignSection,
     body:has(#bibleVerseViewport[data-inspector-open="true"]) #felicesSovereignSection,
@@ -1302,28 +1362,46 @@
       max-width: 100%;
     }
 
-    body[data-surface-mode="studio"] #sovereignGlobalDrawersHost,
+    body[data-intent="study"] #sovereignGlobalDrawersHost,
+    body[data-intent="print"] #sovereignGlobalDrawersHost,
+    body[data-intent="workshop"] #sovereignGlobalDrawersHost,
+    body[data-intent="share"] #sovereignGlobalDrawersHost,
     body:has(#bibleVerseViewport[data-inspector-open="true"]) #sovereignGlobalDrawersHost {
       grid-column: 2;
       grid-row: 2 / span 3;
-      width: 400px;
-      max-width: 400px;
+      width: 100%;
       margin: 0;
       padding: 0;
       height: calc(100dvh - 84px);
       display: grid;
-      grid-template-rows: auto auto 1fr;
+      grid-template-rows: auto 1fr;
       overflow: hidden;
     }
 
-    body[data-surface-mode="studio"] #sovereignGlobalDrawersHost .apple-sheet:not([hidden]),
+    body[data-intent="study"] #sovereignGlobalDrawersHost .apple-sheet:not([hidden]),
+    body[data-intent="print"] #sovereignGlobalDrawersHost .apple-sheet:not([hidden]),
+    body[data-intent="workshop"] #sovereignGlobalDrawersHost .apple-sheet:not([hidden]),
+    body[data-intent="share"] #sovereignGlobalDrawersHost .apple-sheet:not([hidden]),
     body:has(#bibleVerseViewport[data-inspector-open="true"]) #sovereignGlobalDrawersHost .apple-sheet:not([hidden]) {
       overflow-y: auto;
       min-height: 0;
       margin-top: 0;
     }
 
-    body[data-surface-mode="studio"] .site-footer,
+    body[data-intent="study"] #bibleProgressiveSheetDoors,
+    body[data-intent="print"] #bibleProgressiveSheetDoors,
+    body[data-intent="workshop"] #bibleProgressiveSheetDoors,
+    body[data-intent="share"] #bibleProgressiveSheetDoors,
+    body:has(#bibleVerseViewport[data-inspector-open="true"]) #bibleProgressiveSheetDoors {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 0.25rem;
+    }
+
+    body[data-intent="study"] .site-footer,
+    body[data-intent="print"] .site-footer,
+    body[data-intent="workshop"] .site-footer,
+    body[data-intent="share"] .site-footer,
     body:has(#bibleVerseViewport[data-inspector-open="true"]) .site-footer {
       grid-column: 1 / -1;
     }
@@ -1334,22 +1412,53 @@
   }
 
   @media (max-width: 1023px) {
+    body[data-mobile-sheet-open="false"] {
+      padding-bottom: 72px;
+    }
+
+    body[data-mobile-sheet-open="false"] #sovereignGlobalDrawersHost:not([hidden]) {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 35;
+      max-width: 100%;
+      margin: 0;
+      padding: 0.3rem 0.4rem calc(0.3rem + env(safe-area-inset-bottom, 0px));
+      background: var(--card-bg);
+      border-top: 1px solid var(--card-border);
+      box-shadow: 0 -4px 16px rgba(28, 25, 23, 0.1);
+    }
+
+    #bibleProgressiveSheetDoors {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 0.25rem;
+    }
+
+    #bibleProgressiveSheetDoors>button {
+      font-size: 0.7rem;
+      line-height: 1.15;
+      padding: 0.22rem 0.25rem;
+      min-height: 44px;
+    }
+
     body[data-mobile-sheet-open="true"] #sovereignGlobalDrawersHost {
       position: fixed;
       left: 0;
       right: 0;
       bottom: 0;
-      top: 18dvh;
+      top: 14dvh;
       max-width: 100%;
       margin: 0;
-      padding: 0.75rem;
+      padding: 0.55rem 0.65rem;
       z-index: 40;
       background: var(--card-bg);
       border-top: 2px solid var(--accent-secondary-border);
       border-radius: 18px 18px 0 0;
       box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.22);
       display: grid;
-      grid-template-rows: auto auto 1fr;
+      grid-template-rows: auto 1fr;
       overflow: hidden;
     }
 
@@ -1361,9 +1470,6 @@
 }
 
 @layer components {
-  [data-surface-mode="reader"] .studio-only-control {
-    display: none;
-  }
 
   .spatial-nav-btn,
   #btnPrevChapter,
@@ -1467,6 +1573,54 @@
     overflow-x: auto;
     white-space: pre-wrap;
     word-break: break-word;
+  }
+
+  #sovereignGlobalDrawersHost .subtabs-bar {
+    flex-wrap: wrap;
+    gap: 0.35rem;
+  }
+
+  #sovereignGlobalDrawersHost .subtabs-bar>button {
+    flex: 1 1 auto;
+    white-space: nowrap;
+    font-size: 0.78rem;
+    padding: 0.35rem 0.6rem;
+    text-align: center;
+  }
+
+  .leipzig-card-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.45rem;
+  }
+
+  .lock8-status-row {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.35rem;
+    margin-bottom: 0.45rem;
+  }
+
+  .evangelios-passage-blockquote {
+    margin: 0.6rem 0;
+    padding: 0.75rem 0.9rem;
+    border-left: 3px solid var(--accent-amber);
+    background: var(--bg-secondary);
+    border-radius: 0 10px 10px 0;
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+
+  #bibleOpticalQrStreamPanel .qrbeam-matrix-svg {
+    max-width: 240px;
+    height: auto;
+  }
+
+  .felices-localized-plate-host:not([hidden])~.focal-plate-overlay .focal-plate-verse {
+    display: none;
   }
 
   .bible-chapter-dropcap {
@@ -1755,6 +1909,7 @@
   }
 
   @media (max-width: 1023px) {
+
     input:not([type="range"]):not([type="checkbox"]):not([type="radio"]),
     select,
     textarea {
@@ -1853,12 +2008,29 @@
     gap: 0.45rem;
   }
 
-  .ek-m-0 { margin: 0; }
-  .ek-mt-xs { margin-top: 0.25rem; }
-  .ek-mt-sm { margin-top: 0.45rem; }
-  .ek-my-sm { margin: 0.4rem 0; }
-  .ek-mb-sm { margin-bottom: 0.45rem; }
-  .ek-self-start { justify-self: start; }
+  .ek-m-0 {
+    margin: 0;
+  }
+
+  .ek-mt-xs {
+    margin-top: 0.25rem;
+  }
+
+  .ek-mt-sm {
+    margin-top: 0.45rem;
+  }
+
+  .ek-my-sm {
+    margin: 0.4rem 0;
+  }
+
+  .ek-mb-sm {
+    margin-bottom: 0.45rem;
+  }
+
+  .ek-self-start {
+    justify-self: start;
+  }
 
   .ek-title-sm {
     display: block;
@@ -1903,6 +2075,7 @@
   }
 
   @media (max-width: 1023px) {
+
     .ek-input,
     .ek-input-compact {
       min-height: 48px;
@@ -2127,8 +2300,8 @@
     color: var(--text-secondary);
   }
 
-  .diachronic-substitutions-details > summary,
-  #diachronicAll156RulesExplorer > summary {
+  .diachronic-substitutions-details>summary,
+  #diachronicAll156RulesExplorer>summary {
     cursor: pointer;
     font-size: 0.74rem;
     font-weight: 600;
@@ -2361,6 +2534,7 @@
 }
 
 @layer states {
+
   .uls-chip[aria-selected="true"],
   .uls-chip[aria-pressed="true"],
   .uls-chip.is-active,

@@ -4,7 +4,7 @@
 // Extracted via LCOM4 Clean Seam (D87 / D6-A++ · ARB-EKOVOZ-62, ∂_mut(C) = 0)
 // ============================================================================
 
-import { BIBLE_CONSTANTS } from "../bible_constants.js";
+import { CROSS_WORK_BRIDGE_TABLE, projectCrossWorkCoordinate } from "./cross_work_bridge.js";
 import { STATUS } from "./data_layer.js";
 import {
   applySpanish21DiachronicRegister,
@@ -12,9 +12,6 @@ import {
 } from "./diachronic_register.js";
 import { detectContextualCulturalGlossesForVerse } from "./estudio.js";
 import { resolveMasoreticPericopeBreaks } from "./evangelios.js";
-import { CROSS_WORK_BRIDGE_TABLE, projectCrossWorkCoordinate } from "./cross_work_bridge.js";
-
-export { CROSS_WORK_BRIDGE_TABLE, projectCrossWorkCoordinate };
 import { formatLocalizedNumeralWeb, isRtlLocale } from "./i18n.js";
 import { lookupIso639MacroRegionO1 } from "./lang_funnel.js";
 import {
@@ -25,6 +22,8 @@ import {
   segmentScriptioContinuaSyllables,
   transduceOrthographyWeb,
 } from "./orthography_wfst.js";
+
+export { CROSS_WORK_BRIDGE_TABLE, projectCrossWorkCoordinate };
 
 /**
  * Mapa declarativo canónico `Selector DOM -> Handler` (`D68 / 7B+` + `D70 / 9B+` · `ARB-EKOVOZ-65`).
@@ -97,7 +96,6 @@ export function syncOrthographyPillsVisibilityInDom({ state, targetDoc, getEl })
   const familyKey = resolveOrthoFamilyKey(state.lang);
   const isMultiOrtho = Boolean(familyKey) || MULTI_ORTHO_LANGS.has(String(state.lang || "").toLowerCase());
   orthoContainer.hidden = !isMultiOrtho;
-  if (orthoContainer.style) orthoContainer.style.display = isMultiOrtho ? "flex" : "none";
   orthoContainer.setAttribute("data-ortho-visible", isMultiOrtho ? "true" : "false");
   orthoContainer.setAttribute("data-ortho-family", familyKey || "none");
 
@@ -120,7 +118,6 @@ export function syncOrthographyPillsVisibilityInDom({ state, targetDoc, getEl })
     if (!btn) continue;
     const matchesFamily = Boolean(familyKey) && spec.family === familyKey;
     btn.hidden = !matchesFamily;
-    if (btn.style) btn.style.display = matchesFamily ? "" : "none";
     const isPressed =
       matchesFamily &&
       (activeCanonProfile === spec.profile ||

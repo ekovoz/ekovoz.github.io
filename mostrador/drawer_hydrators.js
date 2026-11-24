@@ -23,7 +23,6 @@ import {
 } from "./drawer_share.js";
 import {
   HAREL_STUDY_SUBTABS,
-  applyHarelSubtabSelection,
   hydrateBookNamesSourceBadge,
   hydrateLifeTrailsFromPericopesArtifact,
   hydrateStudyDrawerPanel as hydrateStudyDrawerPanelImpl,
@@ -55,7 +54,6 @@ export {
   HAREL_PRINT_SUBTABS,
   HAREL_STUDY_SUBTABS,
   HAREL_WORKSHOP_SUBTABS,
-  applyHarelSubtabSelection,
   bindImproveFormControlsInDrawer,
   exportBundleAsFile,
   hydrateBookNamesSourceBadge,
@@ -74,7 +72,7 @@ export {
   resolveRegionalPrintDefaults,
   savePackToIndexedDb,
   simulateFifthGenPhotocopySauvolaBilateral,
-  simulateKanungoSauvolaGeneration,
+  simulateKanungoSauvolaGeneration
 };
 
 export function formatPhotocopySimBadgeText(simResult = null) {

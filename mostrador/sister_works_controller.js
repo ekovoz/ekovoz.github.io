@@ -233,7 +233,9 @@ export function renderEvangeliosStageCardHtml(
     tObj.text || "",
     macroMeta?.anchorOsis || "",
   );
-  const quoteDisplayText = stripDuplicateEvangeliosTitleFromQuote(overlayProj.text, labelTitle);
+  const rawPassageText = String(corpusMeta?.passageText || "").trim();
+  const strippedQuote = stripDuplicateEvangeliosTitleFromQuote(overlayProj.text, labelTitle);
+  const quoteDisplayText = rawPassageText || strippedQuote;
   const overlayBadgesHtml = overlayProj.matchedOverlays
     .map(
       (ov) =>
@@ -254,7 +256,7 @@ export function renderEvangeliosStageCardHtml(
     `</div>` +
     `</header>` +
     `<p class="evangelios-stage-gesture"><strong>🕊️ ${gestureLabel}:</strong> ${escapeHtml(activeEntry.gesture || "")}</p>` +
-    (quoteDisplayText ? `<blockquote class="evangelios-stage-quote">${escapeHtml(quoteDisplayText)}</blockquote>` : "") +
+    (quoteDisplayText ? `<blockquote class="evangelios-stage-quote evangelios-passage-blockquote">${escapeHtml(quoteDisplayText)}</blockquote>` : "") +
     (shouldShowEvangeliosBridgeLine(activeEvLang) && bridgeObj && bridgeObj.text
       ? `<p class="evangelios-stage-bridge" data-formatted-bridge="${escapeHtml(formattedBridge)}"><em>${bridgeLabel}:</em> ${escapeHtml(bridgeObj.text)}</p>`
       : "") +
@@ -285,7 +287,6 @@ export function syncSisterWorksTabsDom(cleanWork = "biblia", getElFn) {
   const applySec = (sec, active) => {
     if (!sec) return;
     sec.hidden = !active;
-    if (sec.style) sec.style.display = active ? "" : "none";
     if (typeof sec.setAttribute === "function") {
       sec.setAttribute("data-active-work", active ? "true" : "false");
     }
@@ -396,7 +397,6 @@ export function bindSisterWorksStageEvents(ctx = {}) {
     const evLangSelSync = getEl("evangeliosLangSelect", targetDoc);
     if (evLangSelSync) {
       evLangSelSync.hidden = true;
-      if (evLangSelSync.style) evLangSelSync.style.display = "none";
       evLangSelSync.value = activeCorpusLang;
     }
 
@@ -570,6 +570,23 @@ export function bindSisterWorksStageEvents(ctx = {}) {
       cardEl.setAttribute("data-evangelios-id", activeEntry.id);
       cardEl.setAttribute("data-evangelios-quarter", activeEntry.quarter);
       cardEl.setAttribute("data-evangelios-lang", activeEvLang);
+      let inlinePassageText = "";
+      const parsedInline = parseEvangeliosStartCoordinate(activeEntry.reference || "", coordinate);
+      if (parsedInline?.bookCode && typeof dataLayer?.loadChapter === "function") {
+        try {
+          const chData = await dataLayer.loadChapter({
+            lang: activeEvLang,
+            book: parsedInline.bookCode,
+            chapter: parsedInline.chapter || 1,
+          });
+          const vFrom = parsedInline.verse || 1;
+          const rangeMatch = /-(\d+)$/.exec(String(activeEntry.reference || "").trim());
+          const vTo = rangeMatch ? Math.max(vFrom, Number(rangeMatch[1]) || vFrom) : vFrom;
+          inlinePassageText = extractChapterVerseRange(chData, vFrom, vTo, 7).joinedText;
+        } catch (err) {
+          if (err instanceof ReferenceError || err instanceof TypeError) throw err;
+        }
+      }
       cardEl.innerHTML = renderEvangeliosStageCardHtml(
         activeEntry,
         activeEvLang,
@@ -577,6 +594,7 @@ export function bindSisterWorksStageEvents(ctx = {}) {
         {
           totalPlates,
           canonicalGospelVersesCount,
+          passageText: inlinePassageText,
         },
         state,
       );
@@ -700,6 +718,53 @@ export function bindSisterWorksStageEvents(ctx = {}) {
 }
 
 /**
+ * Normaliza la lectura de versículos desde `dataLayer.loadChapter({ lang, book, chapter })`
+ * aceptando tanto el formato canónico en arreglo `[{ start, end, text }]` como mapas `{ "1": "..." }`.
+ */
+export function extractChapterVerseRange(chData, vFrom = 1, vTo = vFrom, maxVerses = 7) {
+  const rawVerses = chData?.data?.verses ?? chData?.verses ?? null;
+  const startV = Math.max(1, Number(vFrom) || 1);
+  const endV = Math.max(startV, Number(vTo) || startV);
+  const limitV = Number.isFinite(maxVerses) ? Math.min(startV + Math.max(1, maxVerses) - 1, endV) : endV;
+  const entries = [];
+  if (Array.isArray(rawVerses)) {
+    for (const row of rawVerses) {
+      const vn = Number(row?.start ?? row?.verse ?? 0);
+      const text = String(row?.text || "").trim();
+      if (vn >= startV && vn <= limitV && text) {
+        entries.push({ verse: vn, text });
+      }
+    }
+  } else if (rawVerses && typeof rawVerses === "object") {
+    for (let vn = startV; vn <= limitV; vn += 1) {
+      const text = String(rawVerses[String(vn)] || "").trim();
+      if (text) entries.push({ verse: vn, text });
+    }
+  }
+  return {
+    entries,
+    joinedText: entries.map((e) => `${e.verse}. ${e.text}`).join(" "),
+  };
+}
+
+function parseEvangeliosStartCoordinate(refStr = "", fallbackCoord = null) {
+  const raw = String(refStr || "").trim();
+  const startOnly = raw.replace(/\s*[-–—]\s*\d+(?:[:.]\d+)?\s*$/, "").trim();
+  const parsed =
+    (startOnly ? parseBiblicalCoordinateReference(startOnly) : null) ||
+    parseBiblicalCoordinateReference(raw);
+  if (parsed?.bookCode) return parsed;
+  if (fallbackCoord?.book) {
+    return {
+      bookCode: fallbackCoord.book,
+      chapter: Number(fallbackCoord.chapter) || 1,
+      verse: Number(fallbackCoord.verse) || 1,
+    };
+  }
+  return null;
+}
+
+/**
  * Sintetiza el PDF binario real (`%PDF-1.4`) para la semana activa de *Los Evangelios*
  * reutilizando el motor WASM/OpenType cliente (`dispatchTandaWorkerJob`, `0 KB` extra).
  */
@@ -720,20 +785,27 @@ export async function synthesizeEvangeliosWeekPdfBytes({
     anchorOsis: entry?.reference || "",
   });
   const refStr = String(entry?.reference || macroMeta?.anchorOsis || `${state?.book || "MRK"}.${state?.chapter || 1}.${state?.verse || 1}`);
-  const parsed = parseBiblicalCoordinateReference(refStr) || {
-    bookCode: state?.book || "MRK",
+  const parsed = parseEvangeliosStartCoordinate(refStr, {
+    book: state?.book || "MRK",
     chapter: Number(state?.chapter) || 1,
     verse: Number(state?.verse) || 1,
-  };
-  const book = parsed.bookCode || "MRK";
-  const chapter = Number(parsed.chapter) || 1;
-  const verse = Number(parsed.verse) || 1;
+  });
+  const book = parsed?.bookCode || "MRK";
+  const chapter = Number(parsed?.chapter) || 1;
+  const verse = Number(parsed?.verse) || 1;
   let chapterVerses = [];
   if (typeof dataLayer?.loadChapter === "function") {
     try {
-      const chRes = await dataLayer.loadChapter(curLang, book, chapter);
-      const rawVerses = chRes?.data?.verses || chRes?.verses || null;
-      if (rawVerses && typeof rawVerses === "object") {
+      const chRes = await dataLayer.loadChapter({ lang: curLang, book, chapter });
+      const rawVerses = chRes?.data?.verses ?? chRes?.verses ?? null;
+      if (Array.isArray(rawVerses)) {
+        chapterVerses = rawVerses
+          .map((row) => ({
+            ref: `${book} ${chapter}:${Number(row?.start ?? row?.verse ?? 1)}`,
+            text: String(row?.text || "").trim(),
+          }))
+          .filter((item) => item.text.length > 0);
+      } else if (rawVerses && typeof rawVerses === "object") {
         chapterVerses = Object.entries(rawVerses)
           .map(([vNum, text]) => ({
             ref: `${book} ${chapter}:${vNum}`,
@@ -741,8 +813,8 @@ export async function synthesizeEvangeliosWeekPdfBytes({
           }))
           .filter((item) => item.text.length > 0);
       }
-    } catch {
-      // Fall back to curated week pericope payload
+    } catch (err) {
+      if (err instanceof ReferenceError || err instanceof TypeError) throw err;
     }
   }
   const titleText = entry ? formatHumanEvangeliosPlateTitle(entry, curLang, uiLocale) : macroMeta?.title || "";

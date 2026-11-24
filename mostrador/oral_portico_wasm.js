@@ -301,9 +301,6 @@ export function bindOralPorticoToggleEvent({
     oralBtn.setAttribute("aria-pressed", state.oralPorticoActive ? "true" : "false");
     if (oralBanner) {
       oralBanner.hidden = !state.oralPorticoActive;
-      if (oralBanner.style) {
-        oralBanner.style.display = state.oralPorticoActive ? "block" : "none";
-      }
       if (state.oralPorticoActive) {
         renderOralPorticoWasmConsole({ state, dataLayer, getEl, targetDoc });
       }

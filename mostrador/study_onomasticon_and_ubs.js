@@ -6,6 +6,7 @@
 
 import { escapeHtml } from "./bridge_and_chapter.js";
 import { compareUbsSixTraditions } from "./canonical_versification.js";
+import { bindSurfaceActions, patchTextAndAttrs } from "./dom_patch.js";
 
 const CURATED_ONOMASTICON_SEED = Object.freeze([
   { id: "ONO-0001", entity_class: "PERSON", strong: "H0085", name_es: "Abraham", name_en: "Abraham", original: "אַבְרָהָם", first_ref: "GEN.17.5", cv_skeleton: "VC.CV.CVC" },
@@ -233,10 +234,8 @@ export async function hydrateOnomasticonAndUbsPanels(ctx = {}) {
       activeTradition: state.ubsActiveTradition || "ORG",
       uiLocale,
     });
-    if (typeof ubsHost.addEventListener === "function" && !ubsHost._ubsBound) {
-      ubsHost._ubsBound = true;
-      ubsHost.addEventListener("click", (e) => {
-        const btn = e?.target?.closest ? e.target.closest("[data-ubs-tradition]") : e?.target?.getAttribute?.("data-ubs-tradition") ? e.target : null;
+    if (typeof ubsHost.addEventListener === "function") {
+      const handleUbsTradition = (_e, btn) => {
         const trad = btn?.getAttribute?.("data-ubs-tradition");
         if (!trad) return;
         state.ubsActiveTradition = trad;
@@ -247,7 +246,13 @@ export async function hydrateOnomasticonAndUbsPanels(ctx = {}) {
           activeTradition: trad,
           uiLocale: state.uiLocale || "es",
         });
-      });
+        patchTextAndAttrs(ubsHost, [{ attrs: { "data-ubs-rendered": trad } }]);
+      };
+      bindSurfaceActions(
+        ubsHost,
+        Object.fromEntries(["ORG", "LXX", "VUL", "RSC", "RSO", "ENG"].map((k) => [k, handleUbsTradition])),
+        { scope: "ubs-tradition", actionAttr: "data-ubs-tradition", events: ["click"] },
+      );
     }
   }
 

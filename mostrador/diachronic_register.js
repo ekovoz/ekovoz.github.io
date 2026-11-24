@@ -634,9 +634,6 @@ export function syncDiachronicRegisterOrthogonality(container, state) {
           : null;
     if (classicBtn) {
       classicBtn.hidden = !hasVariants;
-      if (classicBtn.style) {
-        classicBtn.style.display = hasVariants ? "" : "none";
-      }
     }
   }
   return {
@@ -832,12 +829,12 @@ export function renderAnalyticalThermometerHtml({
 
   const inlineDetailsHtml = includeInlineSubstitutionsDetails
     ? `<details id="diachronicSubstitutionsDetails" class="diachronic-substitutions-details">` +
-      `<summary>Ver sustituciones 1909 → Siglo XXI en este capítulo (Tier 1/2/3 · 66 vectores · ΔAoA=${summary.deltaAoaChapter}a · ΔMDD=${summary.deltaMddChapter})</summary>` +
-      `<div class="ek-mt-xs">Léxico: ${tier1Sample} | Enclíticos: ${tier3Sample}</div>` +
-      `<div id="diachronicRegisterAuditPanel" class="ek-mt-sm">` +
-      renderChapterDiachronicAuditCardHtml({ verses: textList, bookCode, chapter: Number(String(osisRef).split(".")[1]) || 1, uiLocale }) +
-      `</div>` +
-      `</details>`
+    `<summary>Ver sustituciones 1909 → Siglo XXI en este capítulo (Tier 1/2/3 · 66 vectores · ΔAoA=${summary.deltaAoaChapter}a · ΔMDD=${summary.deltaMddChapter})</summary>` +
+    `<div class="ek-mt-xs">Léxico: ${tier1Sample} | Enclíticos: ${tier3Sample}</div>` +
+    `<div id="diachronicRegisterAuditPanel" class="ek-mt-sm">` +
+    renderChapterDiachronicAuditCardHtml({ verses: textList, bookCode, chapter: Number(String(osisRef).split(".")[1]) || 1, uiLocale }) +
+    `</div>` +
+    `</details>`
     : "";
 
   return (

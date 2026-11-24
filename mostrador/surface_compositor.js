@@ -11,6 +11,7 @@ import {
   DEFAULT_SUBTABS_BY_SHEET,
   closeSheet,
   isMobileSheetViewport,
+  setActiveIntent,
   setSheetSubtab,
 } from "./state_store.js";
 
@@ -53,9 +54,6 @@ export function projectSubtabGroupToDom(rootDoc, groupName, activeSubtab) {
     const hasPinnedStatus = panel.getAttribute?.("data-status-visible") === "true";
     const isVisible = val === activeSubtab || hasPinnedStatus;
     panel.hidden = !isVisible;
-    if (panel.style && panel.style.display === "none" && isVisible) {
-      panel.style.display = "";
-    }
     toggledPanels += 1;
   }
   return { groupName, activeSubtab, toggledPanels };
@@ -113,7 +111,7 @@ export function projectSurfaceLayoutFromState(state = {}, rootDoc, getEl) {
 
   const drawersHost = resolveEl("sovereignGlobalDrawersHost");
   if (drawersHost) {
-    const showDrawersHost = state.surfaceMode === "studio" || hasOpenSheet || activeWork === "biblia";
+    const showDrawersHost = hasOpenSheet || activeWork === "biblia";
     drawersHost.hidden = !showDrawersHost;
     drawersHost.setAttribute?.("data-inspector-open", hasOpenSheet ? "true" : "false");
   }
@@ -131,6 +129,16 @@ export function projectSurfaceLayoutFromState(state = {}, rootDoc, getEl) {
       btn.setAttribute?.("aria-pressed", isOpen ? "true" : "false");
     }
   }
+
+  const corpusTab = state.activeCorpusTab === "trails" ? "trails" : "bibles";
+  const tabBibles = resolveEl("btnCorpusTabBibles");
+  const tabTrails = resolveEl("btnCorpusTabTrails");
+  const panelBibles = resolveEl("corpusTabPanelBibles");
+  const panelTrails = resolveEl("corpusTabPanelTrails");
+  if (tabBibles) tabBibles.setAttribute?.("aria-selected", corpusTab === "bibles" ? "true" : "false");
+  if (tabTrails) tabTrails.setAttribute?.("aria-selected", corpusTab === "trails" ? "true" : "false");
+  if (panelBibles) panelBibles.hidden = corpusTab !== "bibles";
+  if (panelTrails) panelTrails.hidden = corpusTab !== "trails";
 
   const activeSubtabs = state.activeSubtabBySheet || DEFAULT_SUBTABS_BY_SHEET;
   const isSharePdf = normalizedSheet === "share" && activeSubtabs.share === "pdf";
@@ -160,18 +168,6 @@ export function projectSurfaceLayoutFromState(state = {}, rootDoc, getEl) {
   if (closeSheetBtn) {
     const isEn = String(state.uiLocale || "es").trim().toLowerCase().startsWith("en");
     closeSheetBtn.setAttribute?.("aria-label", isEn ? "Close panel" : "Cerrar panel");
-  }
-
-  const surfaceBtn = resolveEl("btnToggleSurfaceMode");
-  if (surfaceBtn) {
-    const isStudio = state.surfaceMode === "studio";
-    const modeKey = isStudio ? "top.btn.readerMode" : "top.btn.studioMode";
-    const isEn = String(state.uiLocale || "es").trim().toLowerCase().startsWith("en");
-    surfaceBtn.setAttribute?.("aria-pressed", isStudio ? "true" : "false");
-    surfaceBtn.setAttribute?.("data-i18n", modeKey);
-    surfaceBtn.textContent = isStudio
-      ? (isEn ? "📖 Reader" : "📖 Lectura")
-      : (isEn ? "🎛️ Studio" : "🎛️ Taller");
   }
 
   syncStickyDrawerContextHeader(
@@ -208,6 +204,9 @@ export function bindEarlySubtabDelegation({ store, state, doc, onSubtabChange } 
     );
     if (triggerMatch) {
       lastSheetOpenerEl = target.closest?.(`#${triggerMatch.buttonId}`) || target;
+      if (state && typeof state === "object") {
+        state.userTouchedSheet = true;
+      }
     }
 
     if (
@@ -284,40 +283,50 @@ export function bindEarlySubtabDelegation({ store, state, doc, onSubtabChange } 
 }
 
 /**
- * Handles `?mode=studio` startup synchronously so the inspector/toolbar opens immediately above the fold.
+ * Handles `?intent=` and `?mode=studio` alias startup synchronously above the fold (`D4-R6A`).
  */
 export function applyInitialSurfaceModeFromUrl({ store, state, search = "", doc, getEl } = {}) {
   const params = new URLSearchParams(String(search || "").replace(/^\?/, ""));
+  const intentParam = params.get("intent");
   const modeParam = params.get("mode");
   const sheetParam = params.get("sheet");
   const isStudio = modeParam === "studio";
-  if (!isStudio && !sheetParam) return null;
+  if (!intentParam && !isStudio && !sheetParam) return null;
 
   const targetSheet =
-    sheetParam && HAREL_SHEET_MAP[sheetParam === "improve" ? "field" : sheetParam]
-      ? sheetParam === "improve"
+    sheetParam && HAREL_SHEET_MAP[sheetParam === "improve" || sheetParam === "workshop" ? "field" : sheetParam]
+      ? sheetParam === "improve" || sheetParam === "workshop"
         ? "field"
         : sheetParam
-      : isStudio
-        ? "study"
-        : null;
+      : intentParam === "workshop" || intentParam === "field" || intentParam === "improve"
+        ? "field"
+        : ["study", "print", "share"].includes(intentParam)
+          ? intentParam
+          : isStudio
+            ? "study"
+            : null;
+  const resolvedIntent =
+    targetSheet === "field"
+      ? "workshop"
+      : ["study", "print", "share"].includes(targetSheet)
+        ? targetSheet
+        : intentParam === "read"
+          ? "read"
+          : isStudio
+            ? "study"
+            : "read";
 
   const mobileOpen = isMobileSheetViewport(doc?.defaultView);
-  if (store && typeof store.batch === "function") {
-    store.batch(({ setState }) => {
-      if (isStudio) setState({ surfaceMode: "studio" }, "surface");
-      if (targetSheet) setState({ activeSheet: targetSheet, mobileSheetOpen: mobileOpen }, "sheet");
-    });
+  if (store && typeof store.setState === "function") {
+    setActiveIntent(store, resolvedIntent, { mobileSheetOpen: mobileOpen });
   } else if (state && typeof state === "object") {
-    if (isStudio) state.surfaceMode = "studio";
-    if (targetSheet) {
-      state.activeSheet = targetSheet;
-      state.mobileSheetOpen = mobileOpen;
-    }
+    state.activeIntent = resolvedIntent;
+    state.activeSheet = targetSheet;
+    state.mobileSheetOpen = Boolean(targetSheet && mobileOpen);
   }
   const snap = store?.getState?.() || state || {};
   projectSurfaceLayoutFromState(snap, doc, getEl);
-  return { surfaceMode: snap.surfaceMode, activeSheet: snap.activeSheet };
+  return { activeIntent: snap.activeIntent || resolvedIntent, activeSheet: snap.activeSheet };
 }
 
 /**

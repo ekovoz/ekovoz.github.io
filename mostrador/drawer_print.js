@@ -42,7 +42,7 @@ import {
   resolveNumericEditionId,
   transduceTextToBrailleBrfAndUnicode,
 } from "./dosis_editions_catalog.js";
-import { applyHarelSubtabSelection } from "./drawer_study.js";
+import { bindSurfaceActions, patchStoreState, patchTextAndAttrs } from "./dom_patch.js";
 import { isRtlLocale } from "./i18n.js";
 import { mountOfflineFontNoticeWithLocalImporter } from "./offline_font_bundle.js";
 import { decodeRfc8878RawZstdFrameJs } from "./offline_mesh.js";
@@ -189,19 +189,15 @@ export function renderPrintDrawerPanelsSyncInDrawer(ctx = {}) {
   const chkStealth = getEl("chkStealthPackMode", targetDoc);
   if (chkStealth) {
     chkStealth.checked = Boolean(state.stealthMode);
-    if (typeof chkStealth.addEventListener === "function" && !chkStealth._stealthBound) {
-      chkStealth._stealthBound = true;
-      chkStealth.addEventListener("change", (ev) => {
+    chkStealth.setAttribute?.("data-action", "toggle-stealth-mode");
+    bindSurfaceActions(chkStealth, {
+      "toggle-stealth-mode": (ev) => {
         const nextStealth = Boolean(ev?.target?.checked ?? chkStealth.checked);
-        state.stealthMode = nextStealth;
-        if (ctx.store) {
-          ctx.store.setState({ stealthMode: nextStealth }, "stealth");
-        } else {
-          targetDoc?.documentElement?.setAttribute?.("data-stealth-mode", nextStealth ? "true" : "false");
-        }
+        patchStoreState(ctx, { stealthMode: nextStealth }, "stealth");
+        targetDoc?.documentElement?.setAttribute?.("data-stealth-mode", nextStealth ? "true" : "false");
         renderPrintDrawerPanelsSyncInDrawer(ctx);
-      });
-    }
+      },
+    }, { scope: "print-stealth", events: ["change"] });
   }
   if (stealthActive) {
     for (const [lid, kind] of [
@@ -264,10 +260,52 @@ export function renderPrintDrawerPanelsSyncInDrawer(ctx = {}) {
   const effectiveEdition = state.edition || regionalDefaults.edition || chooseEdition(["2col-a4", "2col-letter"], effectivePaper);
   const activeOrientation = String(state.orientation || "portrait").toLowerCase() === "landscape" ? "landscape" : "portrait";
   state.orientation = activeOrientation;
+  const activeFontPt = Number(state.fontSizePt) || 9.5;
+  state.fontSizePt = activeFontPt;
+  const fontSliderEl = getEl("kindleFontSizeSlider", targetDoc);
+  if (fontSliderEl) fontSliderEl.value = String(activeFontPt);
+  const paperSelEl = getEl("kindlePaperFormatSelector", targetDoc);
+  if (paperSelEl) paperSelEl.value = effectivePaper;
   const orientSel = getEl("kindleOrientationSelector", targetDoc);
   if (orientSel) orientSel.value = activeOrientation;
+
+  const btnQuickBraille = getEl("btnQuickBrailleB70", targetDoc);
+  if (btnQuickBraille) {
+    const isBrailleOn = effectivePaper === "b70" || state.activePrintProfileId === "11_braille_nemeth_b70" || Boolean(state.brailleNemethEnabled);
+    btnQuickBraille.setAttribute?.("aria-pressed", isBrailleOn ? "true" : "false");
+    btnQuickBraille.setAttribute?.("data-action", "quick-braille-b70");
+    bindSurfaceActions(
+      btnQuickBraille,
+      {
+        "quick-braille-b70": () => {
+          const turningOn = !(state.paperFormat === "b70" || state.activePrintProfileId === "11_braille_nemeth_b70");
+          if (turningOn) {
+            state._prevPaperBeforeBraille = state.paperFormat || "a4";
+            state._prevPrintProfileBeforeBraille = state.activePrintProfileId || "02_2col_pastoral";
+            patchStoreState(ctx, {
+              paperFormat: "b70",
+              activePrintProfileId: "11_braille_nemeth_b70",
+              edition: "11_braille_nemeth_b70",
+              brailleNemethEnabled: true,
+            }, "print");
+          } else {
+            const restorePaper = state._prevPaperBeforeBraille || "a4";
+            const restoreProfile = state._prevPrintProfileBeforeBraille || "02_2col_pastoral";
+            patchStoreState(ctx, {
+              paperFormat: restorePaper,
+              activePrintProfileId: restoreProfile,
+              edition: restoreProfile,
+              brailleNemethEnabled: false,
+            }, "print");
+          }
+          hydratePrintDrawerPanels?.(targetDoc);
+        },
+      },
+      { scope: "quick-braille-b70", events: ["click"] },
+    );
+  }
   const budget = computeKindlePrintBudget({
-    fontPt: state.fontSizePt || 9.5,
+    fontPt: activeFontPt,
     columns: state.columns || 2,
     orientation: activeOrientation,
     paper: effectivePaper || "a4",
@@ -287,20 +325,6 @@ export function renderPrintDrawerPanelsSyncInDrawer(ctx = {}) {
     ...ctx,
     onConfigChanged: () => renderPrintDrawerPanelsSyncInDrawer(ctx),
   });
-
-  for (const [btnId, tabName] of [
-    ["btnPrintSubtabDoses", "doses"],
-    ["btnPrintSubtabImposition", "imposition"],
-    ["btnPrintSubtabStationery", "stationery"],
-  ]) {
-    const pBtn = getEl(btnId, targetDoc);
-    if (pBtn && typeof pBtn.addEventListener === "function" && !pBtn._printSubtabBound) {
-      pBtn._printSubtabBound = true;
-      pBtn.addEventListener("click", () => {
-        applyHarelSubtabSelection(targetDoc, "print", tabName);
-      });
-    }
-  }
 
   const duplexPanel = getEl("duplexAssistantPanel", targetDoc);
   if (duplexPanel) {

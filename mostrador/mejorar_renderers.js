@@ -157,11 +157,16 @@ export function renderImproveDrawerHtml({
     `<h4 class="ek-m-0" data-i18n="improve.title">${t("improve.title")}</h4>` +
     `<p class="ek-subtitle" data-i18n="improve.subtitle">${t("improve.subtitle")}</p>` +
     `</div>` +
-    `<span class="uls-badge" data-lock8-badge="true">🔒 ${isEn ? `Grammar check: ${lock8Result.status} <details class="tech-details"><summary>Technical details</summary><code>Lock 8 (MACULA A0/A1 + Jespersen)</code></details>` : `Verificación gramatical: ${lock8Result.status} <details class="tech-details"><summary>Detalles técnicos</summary><code>Candado 8 (MACULA A0/A1 + Jespersen)</code></details>`}</span>` +
-    `</header>` +
+    `<div class="lock8-status-row">` +
+    `<span class="uls-badge" data-lock8-badge="true">🔒 ${isEn ? `Grammar check: ${lock8Result.status}` : `Verificación gramatical: ${lock8Result.status}`}</span>` +
+    `<details class="tech-details"><summary>${isEn ? "Technical details" : "Detalles técnicos"}</summary>` +
+    `<code>${isEn ? "Lock 8 (MACULA A0/A1 + Jespersen)" : "Candado 8 (MACULA A0/A1 + Jespersen)"}</code>` +
     (includeEightLocksBar
       ? `<div class="eight-locks-pda-bar" data-eight-locks-bar="true">${eightLocksPillsHtml}</div>`
       : "") +
+    `</details>` +
+    `</div>` +
+    `</header>` +
     `<div class="ek-stack">` +
     `<label class="ek-label">` +
     `<span data-i18n="improve.kind_label">${t("improve.kind_label")}</span> ` +
@@ -206,7 +211,7 @@ export function renderImproveDrawerHtml({
       `</div>`
       : "") +
     `<details id="improveCommunityVotesDetails" class="hig-tech-meta">` +
-    `<summary>${isEn ? "🗳️ Community consensus votes (Dawid-Skene + SPRT)" : "🗳️ Votos de consenso comunitario (Dawid-Skene + SPRT)"}</summary>` +
+    `<summary>${isEn ? "🗳️ Community consensus votes" : "🗳️ Votos de consenso comunitario"}</summary>` +
     `<div class="ek-stack-sm ek-mt-sm">` +
     `<label class="ek-label-sm">${isEn ? "Reviewer ID" : "ID revisor"} <input id="improveVoteReviewerIdInput" class="ek-input" type="text" placeholder="hablante_1"></label>` +
     `<label class="ek-label-sm ek-row"><input id="improveVoteGoldSeedsCheck" type="checkbox"> <span>${isEn ? "Passed 2 Gold Seeds" : "Aprobó 2 semillas de oro"}</span></label>` +
@@ -423,15 +428,15 @@ export function renderCascadeAndLadderHtml({
   const externalAuditHtml =
     `<div id="externalAudit8LocksPanel" class="ek-card-muted ek-mt-sm" data-external-audit-8-locks="true" data-all-8-locks-passed="${Boolean(extAudit.all_8_locks_passed)}">` +
     `<div class="ek-row-between">` +
-    `<strong>🛡️ ${isEn ? "External 8-Lock Audit" : "Auditoría Externa de 8 Candados"} (${sanitizePipeField(extAudit.detected_format || "DOCX_OOXML")} · ${sanitizePipeField(extAudit.detected_tradition || "ProtestantKjv")})</strong>` +
-    `<span class="uls-badge ek-badge-compact">${extAudit.all_8_locks_passed !== false ? "✅ 8/8 PASS" : "⛔ VETO"} · Rosetta Key Terms: ${Number(extAudit.rosetta_key_terms_extracted || 552)} · Onomasticon: ${Number(extAudit.rosetta_onomasticon_rules || 3100)}</span>` +
+    `<strong>🛡️ ${isEn ? "External Editorial Review" : "Revisión Editorial Externa"}</strong>` +
+    `<span class="uls-badge ek-badge-compact">${extAudit.all_8_locks_passed !== false ? "✅ 8/8 PASS" : "⛔ VETO"} · ${Number(extAudit.rosetta_key_terms_extracted || 552)} ${isEn ? "key terms" : "términos"}</span>` +
     `</div>` +
     `</div>`;
 
   const uqSlice = UNCERTAINTY_QUEUE_60.slice(0, 8);
   const uncertaintyQueueHtml =
     `<div id="uncertaintyQueue60Panel" class="ek-card-muted ek-mt-sm" data-uncertainty-queue-total="${UNCERTAINTY_QUEUE_60.length}">` +
-    `<strong class="ek-title-sm">🎯 ${isEn ? "Top-60 Semantic Uncertainty Queue (D4-A+ · Dawid-Skene + Entropy U)" : "Cola de Incertidumbre Semántica Top-60 (D4-A+ · Dawid-Skene + Entropía U)"}</strong>` +
+    `<strong class="ek-title-sm">🎯 ${isEn ? "Priority Verses to Review" : "Versículos Prioritarios por Revisar"}</strong>` +
     `<div class="ek-row-wrap">` +
     uqSlice
       .map((uItem, idx) => {
@@ -440,7 +445,7 @@ export function renderCascadeAndLadderHtml({
         const uScore = Number(uItem.semantic_uncertainty_u ?? uItem.shannon_entropy ?? 0.75).toFixed(3);
         return (
           `<button type="button" class="uls-chip uncertainty-queue-btn ek-btn-fitts" data-jump-osis="${uRef}" data-uncertainty-rank="${uRank}" data-uncertainty-u="${uScore}">` +
-          `#${uRank} · ${uRef} (U=${uScore})` +
+          `#${uRank} · ${uRef}` +
           `</button>`
         );
       })
@@ -450,12 +455,12 @@ export function renderCascadeAndLadderHtml({
 
   const tier3aHtml =
     `<div id="tier3aDialectContinuumPanel" class="ek-card-muted ek-mt-sm" data-tier3a-continuums="${TIER3A_CONTINUUMS.length}" data-floor-1-sentence="${Number(FLOOR_1_SENTENCE_SPEC.single_sentence_unlocked_floor || 291)}" data-reference-tier1="${sanitizePipeField(FLOOR_1_SENTENCE_SPEC.reference_tier1 || "spa_rv1909")}" data-total-sentences="${Number(FLOOR_1_SENTENCE_SPEC.total_sentences || 250)}">` +
-    `<strong class="ek-title-sm">🌐 ${isEn ? "Tier 3A Dialect Continuums (ASJP Swadesh-40 LDND ≤ 0.28) · 1-Sentence Floor:" : "Continuos Dialectales Tier 3A (ASJP Swadesh-40 LDND ≤ 0.28) · Piso de 1 Oración:"} ${sanitizePipeField(FLOOR_1_SENTENCE_SPEC.floor_1_sentence_spec)}</strong>` +
+    `<strong class="ek-title-sm">🌐 ${isEn ? "Closely Related Languages" : "Lenguas Cercanas"}</strong>` +
     `<div class="ek-row-wrap">` +
     TIER3A_CONTINUUMS.map(
       (tc) =>
         `<span class="uls-badge ek-badge-compact" data-donor-lang="${sanitizePipeField(tc.donor_lang)}" data-target-lang="${sanitizePipeField(tc.target_lang)}" data-asjp-ldnd="${Number(tc.asjp_ldnd || 0).toFixed(4)}">` +
-        `${sanitizePipeField(tc.donor_lang)} → ${sanitizePipeField(tc.target_lang)} (LDND=${Number(tc.asjp_ldnd || 0).toFixed(4)} · ${sanitizePipeField(tc.sample_projected_cognates || "")})` +
+        `${sanitizePipeField(tc.donor_lang)} → ${sanitizePipeField(tc.target_lang)} (${sanitizePipeField(tc.sample_projected_cognates || "")})` +
         `</span>`,
     ).join("") +
     `</div>` +
@@ -496,7 +501,7 @@ export function renderCascadeAndLadderHtml({
     `<p class="ek-subtitle ek-mb-sm">` +
     `${isEn ? `Refining this root in <code>${cleanLang}</code> updates matching verses across Bible, Gospels, and Beatitudes. Tap any step to inspect:` : `Al corregir esta raíz en <code>${cleanLang}</code>, el ajuste se propaga a Biblia, Evangelios y Felices. Pulsa un paso para revisarlo:`}` +
     `</p>` +
-    `<details class="tech-details ek-mb-sm"><summary>${isEn ? "Technical details (CELF-250 · Dawid-Skene + SPRT)" : "Detalles técnicos (CELF-250 · Dawid-Skene + SPRT)"}</summary>` +
+    `<details class="tech-details ek-mb-sm"><summary>${isEn ? "Technical details" : "Detalles técnicos"}</summary>` +
     `<p class="ek-meta ek-mt-xs">CELF-250 (${totalCount} peldaños · Dawid-Skene + SPRT · 0 Bytes Audio)</p></details>` +
     seedPanelHtml +
     sisterCascadeHtml +
@@ -642,7 +647,7 @@ export function renderStpLexiconExplorerHtml({
   const topKeyTerms = KEY_TERMS_GLOSSARY.filter((kt) => Number(kt.g2_score || 0) >= 15.13).slice(0, 8);
   const dunningGlossaryHtml =
     `<div id="dunningKeyTermsGlossaryPanel" class="ek-divider-top" data-key-terms-total="${KEY_TERMS_GLOSSARY.length}">` +
-    `<strong class="ek-title-sm">📊 Glosario de Términos Clave Dunning G² ≥ 15.13 (${KEY_TERMS_GLOSSARY.length} anclas · 1-Tap Inyección)</strong>` +
+    `<strong class="ek-title-sm">📊 Términos clave frecuentes (${KEY_TERMS_GLOSSARY.length} anclas · 1 toque)</strong>` +
     `<div class="ek-row-wrap">` +
     topKeyTerms
       .map((kt) => {
@@ -652,7 +657,7 @@ export function renderStpLexiconExplorerHtml({
         const lemma = String(kt.source_lemma || kt.term_id || "KT");
         return (
           `<button type="button" class="uls-chip dunning-key-term-btn ek-btn-fitts" data-inject-surface="${esc(surf)}" data-dunning-g2="${esc(g2)}" data-source-lemma="${esc(lemma)}">` +
-          `<strong>${esc(surf)}</strong> (${esc(bridge)} · G²=${esc(g2)})` +
+          `<strong>${esc(surf)}</strong> (${esc(bridge)})` +
           `</button>`
         );
       })
@@ -777,7 +782,7 @@ export function renderTallerArtifactsCatalogHtml(langOrOpts = "es") {
     .join(" ");
   return (
     (includeEightLocksBar
-      ? `<div class="eight-locks-pda-bar" data-eight-locks-bar="true">${eightLocksPillsHtml}</div>`
+      ? `<details class="tech-details ek-mb-sm"><summary>Detalles técnicos de validación</summary><div class="eight-locks-pda-bar" data-eight-locks-bar="true">${eightLocksPillsHtml}</div></details>`
       : "") +
     `<div class="taller-artifacts-grid ek-span-full ek-auto-grid ek-mb-sm" data-taller-lang="${cleanLang}">` +
     TALLER_CC0_ARTIFACTS.map((art) => {

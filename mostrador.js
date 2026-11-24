@@ -35,7 +35,7 @@ import {
   syncPrintDrawerControlsFromEditionProfile, typesetTandaPdfBytes,
 } from "./mostrador/dosis.js";
 import {
-  HAREL_DOSIS_SUBTABS, HAREL_PRINT_SUBTABS, HAREL_STUDY_SUBTABS, HAREL_WORKSHOP_SUBTABS, applyHarelSubtabSelection,
+  HAREL_DOSIS_SUBTABS, HAREL_PRINT_SUBTABS, HAREL_STUDY_SUBTABS, HAREL_WORKSHOP_SUBTABS,
   applyStaticChromeTranslations, formatPhotocopySimBadgeText, hydrateBookNamesSourceBadge, hydrateImproveDrawerPanel,
   hydrateLifeTrailsFromPericopesArtifact, hydratePrintDrawerPanelsInDrawer, hydrateShareAndAuditDrawerPanel, hydrateStudyDrawerPanel,
   hydrateWasmManifestStatus, renderCrdtWalAndLockP2AuditCardHtml, renderMasterCensus7164CardHtml,
@@ -79,11 +79,12 @@ import {
   resolveScriptioContinuaCodeForLang, segmentScriptioContinuaSyllables, transduceOrthographyWeb, transduceVerseWithReverseMap,
 } from "./mostrador/orthography_wfst.js";
 import { countPdfPages, extractPdfPages } from "./mostrador/pdf_pages.js";
+import { patchStoreState } from "./mostrador/dom_patch.js";
 import { syncStickyDrawerContextHeader, projectStoreAttributesToDom } from "./mostrador/projection_contract.js";
 import {
-  closeSheet, createEkovozStore, openSheet, setSurfaceMode, toggleSheet,
+  closeSheet, createEkovozStore, createGuardedStateProxy, openSheet, setActiveIntent, toggleSheet,
 } from "./mostrador/state_store.js";
-import { createSurfaceCompositor, projectSurfaceLayoutFromState } from "./mostrador/surface_compositor.js";
+import { createSurfaceCompositor, projectSubtabGroupToDom, projectSurfaceLayoutFromState } from "./mostrador/surface_compositor.js";
 import {
   ROSETTA_66_BOOKS, createReferenceResolver, normalizeBookAliasToken, parseBiblicalCoordinateReference, resolveBookCodeByAliasOrName,
 } from "./mostrador/reference.js";
@@ -96,11 +97,11 @@ import { bindStageDomEvents } from "./mostrador/stage_dom_bindings.js";
 
 export {
   ARTIFACT_PROJECTION_SCHEMA, CANONICAL_12_BRANCH_PROFILES, CANONICAL_14_PLUS_2_EDITIONS_CATALOG, CANONICAL_14_PRINT_PROFILES, CANONICAL_16_TYPOLOGY_PROFILES, CANONICAL_80_BLOCKS_CATALOG, CANONICAL_9_TOML_PROFILES, CANONICAL_ECO_PACKS_MANIFEST, CRDT_WAL_SEMILATTICE, CROSS_WORK_BRIDGE_TABLE, EVANGELIOS_MACRO_THREADS_AND_ECHOES, FELICES_12_DICHAS_COORDINATE_MAP, FELICES_28_PLATES_MAP, FELICES_PLATE_TO_BIBLE_COORDINATE, FIELD_WORKSHOP_STP_LEXICON, GEOGRAPHIC_MACRO_REGIONS,
-  HAREL_DOSIS_SUBTABS, HAREL_PRINT_SUBTABS, HAREL_SHEET_MAP, HAREL_STUDY_SUBTABS, HAREL_WORKSHOP_SUBTABS, IMPROVE_I18N_FALLBACKS, IMPROVE_I18N_FALLBACKS_ES, LIFE_TRAILS_ANCHORS, LTDecoder, LTEncoder, MASTER_CENSUS_SUMMARY, MOSTRADOR_DOM_BINDINGS, MOSTRADOR_DOM_SCOPE_CONTRACTS, MULTI_ORTHO_LANGS, OPTICAL_CADENCE_PRESETS, PATCH_JOURNAL_LOCK_P2, POCKET_REFUGE_4_SHEETS_SPEC, POETIC_BOOKS, PRECOMPILED_PDF_LANGS, ROOT_NOTES_STP, ROSETTA_66_BOOKS, ReverseOrthographyMap, STATUS, STORED_ECO_PACKS, STP_LEDGER_SUMMARY, VERIFIED_TEXT_BIBLE_LANGS, applyHarelSubtabSelection, applyOrthographyProfile, applySpanish21DiachronicRegister, applyStaticChromeTranslations, applySuggestedImprovement, applyToDom, buildCssPagedMediaPrintHtml, buildElicitationSeedPayload, buildEvangeliosWeekOptionsHtml, classifyMaculaArgumentRole, computeAnalyticalRegisterMetrics, computeEcoPackCrc32Hex, computeFoliationLayout, computeKindlePrintBudget, computeMultiSignatureImposition, computeNyquistSafeFpsViaWasm, computeProsodyAndSyllableAlignmentInWasm, countPdfPages, createDataLayer, createFetchSource, createI18n, createReferenceResolver, createRelayEncoderFromDecoded, decodeLubyTransformPeeling, deriveEpistemicSeal, dlog, doseFilename, effectiveThreatClassWeb, encodeLubyTransformDroplets, escapeHtml, exportSneakernetBundleJson, extractPdfPages, foldCrdtWalSemilattice, formatLocalizedNumeralWeb, formatPhotocopySimBadgeText, hasDiachronicVariants, highlightStudyCardByStrongId, hydrateBookNamesSourceBadge, hydrateCulturalGlossesLexicon, hydrateEcoPacksManifest, hydrateLifeTrailsFromPericopesArtifact, hydrateWasmManifestStatus, importSneakernetBundleJson, indexRegionShards, isRtlLocale, listAll14PrintEditionsForLang, listCatalogEditionsForLang, listCountriesInRegion,
-  listLanguagesInCountry, listMacroRegions, listOrthographyProfilesForLang, locateVersePage, lookupWordTokenStrongEntry, negotiate, normalizeBookAliasToken, normalizeEditionSlug, ordinalOf, parseBiblicalCoordinateReference, parseCanonicalOtEchoRef, parseInitialRouteAndLocale, planBimodalClientPrint, planDose1,
+  HAREL_DOSIS_SUBTABS, HAREL_PRINT_SUBTABS, HAREL_SHEET_MAP, HAREL_STUDY_SUBTABS, HAREL_WORKSHOP_SUBTABS, IMPROVE_I18N_FALLBACKS, IMPROVE_I18N_FALLBACKS_ES, LIFE_TRAILS_ANCHORS, LTDecoder, LTEncoder, MASTER_CENSUS_SUMMARY, MOSTRADOR_DOM_BINDINGS, MOSTRADOR_DOM_SCOPE_CONTRACTS, MULTI_ORTHO_LANGS, OPTICAL_CADENCE_PRESETS, PATCH_JOURNAL_LOCK_P2, POCKET_REFUGE_4_SHEETS_SPEC, POETIC_BOOKS, PRECOMPILED_PDF_LANGS, ROOT_NOTES_STP, ROSETTA_66_BOOKS, ReverseOrthographyMap, STATUS, STORED_ECO_PACKS, STP_LEDGER_SUMMARY, VERIFIED_TEXT_BIBLE_LANGS, applyOrthographyProfile, applySpanish21DiachronicRegister, applyStaticChromeTranslations, applySuggestedImprovement, applyToDom, buildCssPagedMediaPrintHtml, buildElicitationSeedPayload, buildEvangeliosWeekOptionsHtml, classifyMaculaArgumentRole, computeAnalyticalRegisterMetrics, computeEcoPackCrc32Hex, computeFoliationLayout, computeKindlePrintBudget, computeMultiSignatureImposition, computeNyquistSafeFpsViaWasm, computeProsodyAndSyllableAlignmentInWasm, countPdfPages, createDataLayer, createFetchSource, createI18n, createReferenceResolver, createRelayEncoderFromDecoded, decodeLubyTransformPeeling, deriveEpistemicSeal, dlog, doseFilename, effectiveThreatClassWeb, encodeLubyTransformDroplets, escapeHtml, exportSneakernetBundleJson, extractPdfPages, foldCrdtWalSemilattice, formatLocalizedNumeralWeb, formatPhotocopySimBadgeText, hasDiachronicVariants, highlightStudyCardByStrongId, hydrateBookNamesSourceBadge, hydrateCulturalGlossesLexicon, hydrateEcoPacksManifest, hydrateLifeTrailsFromPericopesArtifact, hydrateWasmManifestStatus, importSneakernetBundleJson, indexRegionShards, isRtlLocale, listAll14PrintEditionsForLang, listCatalogEditionsForLang, listCountriesInRegion,
+  listLanguagesInCountry, listMacroRegions, listOrthographyProfilesForLang, locateVersePage, lookupWordTokenStrongEntry, negotiate, normalizeBookAliasToken, normalizeEditionSlug, ordinalOf, parseBiblicalCoordinateReference, parseCanonicalOtEchoRef, parseInitialRouteAndLocale, patchStoreState, planBimodalClientPrint, planDose1,
   planDose2,
-  planDose3, probeEcoPackRandomAccessBounds, projectCrossWorkCoordinate, propagateCascadeL1ToL5, refOfOrdinal, renderAnalyticalThermometerHtml, renderBranchAndTypologyInspectorHtml, renderCascadeAndLadderHtml, renderChapterDiachronicAuditCardHtml, renderChapterPericopesRibbonHtml, renderChapterPreviewHtml, renderCrdtWalAndLockP2AuditCardHtml, renderDiglossicParallelBridge, renderEvangeliosPlateActionsHtml, renderEvangeliosStageCardHtml, renderFelicesSocraticWonderCardHtml, renderImpositionAndLayoutPreviewHtml, renderImproveDrawerHtml, renderInteractiveVerseTokensHtml, renderLeipzig4LineGmisHtml, renderMasterCensus7164CardHtml, renderMultiSignatureAndPocketRefugeHtml, renderOfflineMeshEcoCardHtml, renderOpticalReceiverRxPanelHtml, renderPhilologyRosettaExplorerHtml, renderPhilologyRosettaInspectorHtml, renderPhilologyRosettaResultsRowsHtml, renderPhotocopyResilienceAndSocialCardHtml, renderStpLexiconExplorerHtml, renderStpLexiconResultsRowsHtml, renderStudy14ColDrawerHtml,
-  renderStudyStrataCards, renderTallerArtifactsCatalogHtml, renderUnifiedDiachronicContextHtml, resolveBicanonicalDivergence, resolveBookCodeByAliasOrName, resolveCanonicalBlockForPassage, resolveCanonicalOrthoProfileId, resolveEffectiveCorpusTarget, resolveEvangeliosActiveSelection, resolveEvangeliosMacroThreadAndEcho, resolveFelicesDichaCoordinate, resolveFelicesPlate, resolveLocalizedBookMeta, resolveMasoreticPericopeBreaks, resolveOrthoFamilyKey, resolveOverlayEntryForOsis, resolvePlateForBibleCoordinate, resolvePrintEditionPdfAssetUrl, resolveRegionalBridgeLanguage21, resolveScriptioContinuaCodeForLang, resolveVerseWithOverlay, runOpticalReceiverBurstSession, searchLanguages, searchPhilologyRosettaIndex, segmentScriptioContinuaSyllables, selectTopEntropyVerseQueue, serializeMostradorRouteQuery, setPaperFormat, simulateFifthGenPhotocopySauvolaBilateral, simulateThirdGenPhotocopySauvola, solitonCdf,
+  planDose3, probeEcoPackRandomAccessBounds, projectCrossWorkCoordinate, projectSubtabGroupToDom, propagateCascadeL1ToL5, refOfOrdinal, renderAnalyticalThermometerHtml, renderBranchAndTypologyInspectorHtml, renderCascadeAndLadderHtml, renderChapterDiachronicAuditCardHtml, renderChapterPericopesRibbonHtml, renderChapterPreviewHtml, renderCrdtWalAndLockP2AuditCardHtml, renderDiglossicParallelBridge, renderEvangeliosPlateActionsHtml, renderEvangeliosStageCardHtml, renderFelicesSocraticWonderCardHtml, renderImpositionAndLayoutPreviewHtml, renderImproveDrawerHtml, renderInteractiveVerseTokensHtml, renderLeipzig4LineGmisHtml, renderMasterCensus7164CardHtml, renderMultiSignatureAndPocketRefugeHtml, renderOfflineMeshEcoCardHtml, renderOpticalReceiverRxPanelHtml, renderPhilologyRosettaExplorerHtml, renderPhilologyRosettaInspectorHtml, renderPhilologyRosettaResultsRowsHtml, renderPhotocopyResilienceAndSocialCardHtml, renderStpLexiconExplorerHtml, renderStpLexiconResultsRowsHtml, renderStudy14ColDrawerHtml,
+  renderStudyStrataCards, renderTallerArtifactsCatalogHtml, renderUnifiedDiachronicContextHtml, resolveBicanonicalDivergence, resolveBookCodeByAliasOrName, resolveCanonicalBlockForPassage, resolveCanonicalOrthoProfileId, resolveEffectiveCorpusTarget, resolveEvangeliosActiveSelection, resolveEvangeliosMacroThreadAndEcho, resolveFelicesDichaCoordinate, resolveFelicesPlate, resolveLocalizedBookMeta, resolveMasoreticPericopeBreaks, resolveOrthoFamilyKey, resolveOverlayEntryForOsis, resolvePlateForBibleCoordinate, resolvePrintEditionPdfAssetUrl, resolveRegionalBridgeLanguage21, resolveScriptioContinuaCodeForLang, resolveVerseWithOverlay, runOpticalReceiverBurstSession, searchLanguages, searchPhilologyRosettaIndex, segmentScriptioContinuaSyllables, selectTopEntropyVerseQueue, serializeMostradorRouteQuery, setActiveIntent, setPaperFormat, simulateFifthGenPhotocopySauvolaBilateral, simulateThirdGenPhotocopySauvola, solitonCdf,
   splitmix64, stealthNeutralFilenameWeb, suggestLayer0Languages, summarizeChapterDiachronicTransformations, syncActiveStrongInStudyDrawer, syncDiachronicRegisterOrthogonality, syncFelicesWithCorpusLang, syncI18nUiFromState, syncPrintDrawerControlsFromEditionProfile, syncSisterWorksTabsDom, toUnicodeSuperscript, transduceOrthographyWeb, transduceVerseWithReverseMap, triggerOptInOfflinePackDownload, typesetTandaPdfBytes, updateUI, verifyAndStoreEcoPack, verifyArtifactProjectionClosure, verifyLock8PredicativeAndNegation, verifyVplDomScopeContainment, whitenBlockXor
 };
 
@@ -129,7 +130,7 @@ export function createMostradorController(options = {}) {
     duplex: options.duplex !== false,
     paperFormat: options.paperFormat || "a4",
     columns: Number(options.columns) || 2,
-    fontSizePt: Number(options.fontSizePt) || 10.5,
+    fontSizePt: Number(options.fontSizePt) || 9.5,
     orientation: options.orientation || "portrait",
     register: options.register || "intergeneracional",
     rollMode: options.rollMode || "chapter",
@@ -140,6 +141,7 @@ export function createMostradorController(options = {}) {
     activeSheet: null,
     mobileSheetOpen: false,
     userTouchedSheet: false,
+    activeIntent: options.activeIntent || (options.surfaceMode === "studio" ? "study" : "read"),
     surfaceMode: options.surfaceMode || "reader",
     appearanceTheme: options.appearanceTheme || "light",
     fontFamily: options.fontFamily || "serif",
@@ -160,6 +162,7 @@ export function createMostradorController(options = {}) {
     pendingExpectedCrc32Hex: String(options.pendingExpectedCrc32Hex || ""),
   };
   const store = createEkovozStore(state, { backingState: state });
+  const guardedState = createGuardedStateProxy(store, { strictWrites: false });
 
   let i18nInstance = options.i18n || null;
   let studyModulePromise = null;
@@ -307,31 +310,6 @@ export function createMostradorController(options = {}) {
       }
     }
     return query;
-  }
-
-  function withPreservedInputFocus(targetDoc, fn) {
-    const activeEl = targetDoc?.activeElement;
-    const activeId = activeEl?.id || "";
-    const selStart = typeof activeEl?.selectionStart === "number" ? activeEl.selectionStart : null;
-    const selEnd = typeof activeEl?.selectionEnd === "number" ? activeEl.selectionEnd : null;
-    const res = fn();
-    if (activeId) {
-      const nextEl = getEl(activeId, targetDoc);
-      if (nextEl) {
-        if (typeof nextEl.focus === "function") nextEl.focus();
-        if (selStart !== null && selEnd !== null && typeof nextEl.setSelectionRange === "function") {
-          try {
-            nextEl.setSelectionRange(selStart, selEnd);
-          } catch {
-            // Ignore on inputs that do not support selection range
-          }
-        } else if (selStart !== null) {
-          nextEl.selectionStart = selStart;
-          nextEl.selectionEnd = selEnd ?? selStart;
-        }
-      }
-    }
-    return res;
   }
 
   function syncActiveChromeProjection(targetDoc = doc) {
@@ -744,10 +722,11 @@ export function createMostradorController(options = {}) {
   function buildDrawerHydratorContext(targetDoc = doc) {
     return {
       state,
+      store,
       dataLayer,
       targetDoc,
       getEl,
-      withPreservedInputFocus,
+      patchStoreState,
       getI18n: () => i18nInstance,
       loadStudyModule: () => {
         if (!studyModulePromise) {
@@ -962,8 +941,8 @@ export function createMostradorController(options = {}) {
     transitionSheet,
     countVisibleSheets,
     setUiLocale,
-    setSurfaceMode: (mode, d = doc) => {
-      setSurfaceMode(store, mode);
+    setActiveIntent: (intent, d = doc) => {
+      setActiveIntent(store, intent, { window: d?.defaultView });
       return commitState({}, { doc: d, syncUrl: false });
     },
     setAppearanceTheme: (theme, d = doc) => commitState({ appearanceTheme: ["light", "sepia", "dark"].includes(theme) ? theme : "light" }, { doc: d, syncUrl: false }),
@@ -976,6 +955,7 @@ export function createMostradorController(options = {}) {
     hydrateBookAndChapterSelectors,
     renderStateToDom,
     commitState,
+    guardedState,
     syncActiveChromeProjection,
     syncUrlFromState,
   };
@@ -1049,6 +1029,7 @@ export async function bootBrowserMostrador(
     chapter: parsedRef.chapter || 1,
     verse: parsedRef.verse || 1,
     paperFormat: route.format || "a4",
+    activeIntent: new URLSearchParams(String(win.location?.search || "").replace(/^\?/, "")).get("intent") || (new URLSearchParams(String(win.location?.search || "").replace(/^\?/, "")).get("mode") === "studio" ? "study" : (options.activeIntent || "read")),
     surfaceMode: new URLSearchParams(String(win.location?.search || "").replace(/^\?/, "")).get("mode") === "studio" ? "studio" : (options.surfaceMode || "reader"),
   });
 
@@ -1076,13 +1057,13 @@ export async function bootBrowserMostrador(
   win.EkovozStore = {
     get activeSheet() { return controller.state.activeSheet; },
     get activeModal() { return controller.state.activeModal; },
-    get surfaceMode() { return controller.state.surfaceMode; },
+    get activeIntent() { return controller.state.activeIntent; },
     get appearanceTheme() { return controller.state.appearanceTheme; },
     get fontFamily() { return controller.state.fontFamily; },
     get fontScale() { return controller.state.fontScale; },
     get stealthMode() { return controller.state.stealthMode; },
     ...controller.store,
-    setSurfaceMode: controller.setSurfaceMode, setAppearanceTheme: controller.setAppearanceTheme, setStealthMode: controller.setStealthMode,
+    setActiveIntent: controller.setActiveIntent, setAppearanceTheme: controller.setAppearanceTheme, setStealthMode: controller.setStealthMode,
     transitionSheet: (s) => controller.transitionSheet(s, doc), countVisibleSheets: () => controller.countVisibleSheets(doc),
   };
 
@@ -1114,7 +1095,7 @@ export async function bootBrowserMostrador(
   if (!controller.state.userTouchedSheet) {
     if (route.sheet) {
       await controller.transitionSheet(route.sheet, doc, { mode: "open" });
-    } else if (controller.state.surfaceMode === "studio" && controller.state.activeWork === "biblia") {
+    } else if (!controller.state.activeSheet && controller.state.activeIntent === "study" && controller.state.activeWork === "biblia") {
       await controller.transitionSheet("study", doc, { mode: "open" });
     }
   }

@@ -1061,7 +1061,7 @@ export async function runWorkerTandaJob(payload = {}, emitProgress = () => { }) 
       wasmFontEmbedded: false,
       winAnsiFallbackForbidden: true,
       fallbackRecommendation: "css-paged-media",
-      message: `La fuente soberana '${fontFile}' no está disponible en bóveda offline ni en /packs/fonts/${fontFile}.zst. Se bloqueó toda degradación a WinAnsi; use Impresión Directa HTML (@media print).`,
+      message: `La tipografía '${fontFile}' no está disponible sin internet (/packs/fonts/${fontFile}.zst). Se bloqueó la sustitución automática; usa «Imprimir desde el navegador».`,
       totalTandas: 0,
       tandas: [],
       pdfBytes: new Uint8Array(),

@@ -8,14 +8,14 @@
  * Cada selector debe existir físicamente en `web/index.html` y ser descendiente estricto de `scopeRoot`.
  */
 export const MOSTRADOR_DOM_SCOPE_CONTRACTS = [
-  { id: "rosettaSearchInput", selector: "#rosettaSearchInput", scopeRoot: "#bibleEasyDrawerPanel" },
-  { id: "rosettaExplorerResultsRows", selector: "#rosettaExplorerResultsRows", scopeRoot: "#bibleEasyDrawerPanel" },
-  { id: "stpLexiconSearchInput", selector: "#stpLexiconSearchInput", scopeRoot: "#bibleFieldWorkshopSheet" },
-  { id: "stpLexiconResultsRows", selector: "#stpLexiconResultsRows", scopeRoot: "#bibleFieldWorkshopSheet" },
-  { id: "dunningKeyTermsGlossaryPanel", selector: "#dunningKeyTermsGlossaryPanel", scopeRoot: "#bibleFieldWorkshopSheet" },
-  { id: "externalAudit8LocksPanel", selector: "#externalAudit8LocksPanel", scopeRoot: "#bibleFieldWorkshopSheet" },
-  { id: "uncertaintyQueue60Panel", selector: "#uncertaintyQueue60Panel", scopeRoot: "#bibleFieldWorkshopSheet" },
-  { id: "tier3aDialectContinuumPanel", selector: "#tier3aDialectContinuumPanel", scopeRoot: "#bibleFieldWorkshopSheet" },
+  { id: "rosettaSearchInput", intent: "study", selector: "#rosettaSearchInput", scopeRoot: "#bibleEasyDrawerPanel" },
+  { id: "rosettaExplorerResultsRows", intent: "study", selector: "#rosettaExplorerResultsRows", scopeRoot: "#bibleEasyDrawerPanel" },
+  { id: "stpLexiconSearchInput", intent: "workshop", selector: "#stpLexiconSearchInput", scopeRoot: "#bibleFieldWorkshopSheet" },
+  { id: "stpLexiconResultsRows", intent: "workshop", selector: "#stpLexiconResultsRows", scopeRoot: "#bibleFieldWorkshopSheet" },
+  { id: "dunningKeyTermsGlossaryPanel", intent: "workshop", selector: "#dunningKeyTermsGlossaryPanel", scopeRoot: "#bibleFieldWorkshopSheet" },
+  { id: "externalAudit8LocksPanel", intent: "workshop", selector: "#externalAudit8LocksPanel", scopeRoot: "#bibleFieldWorkshopSheet" },
+  { id: "uncertaintyQueue60Panel", intent: "workshop", selector: "#uncertaintyQueue60Panel", scopeRoot: "#bibleFieldWorkshopSheet" },
+  { id: "tier3aDialectContinuumPanel", intent: "workshop", selector: "#tier3aDialectContinuumPanel", scopeRoot: "#bibleFieldWorkshopSheet" },
 ];
 
 /**
@@ -25,6 +25,7 @@ export const MOSTRADOR_DOM_SCOPE_CONTRACTS = [
  */
 export const ARTIFACT_PROJECTION_SCHEMA = [
   {
+    intent: "study",
     artifact: "web/data/pericopes_and_glosses.json",
     requiredKeys: [
       "chapter_pericopes",
@@ -39,6 +40,7 @@ export const ARTIFACT_PROJECTION_SCHEMA = [
     domSlots: ["#bibleEasyDrawer", "#felicesSocraticWonderCard", "#bibleChapterPericopesRibbon"],
   },
   {
+    intent: "workshop",
     artifact: "web/data/elicitation_ladder_250.json",
     requiredKeys: [
       "estimated_native_speaker_hours",
@@ -53,6 +55,7 @@ export const ARTIFACT_PROJECTION_SCHEMA = [
     domSlots: ["#bibleFieldWorkshopSheet", "#tier3aDialectContinuumPanel"],
   },
   {
+    intent: "workshop",
     artifact: "web/data/field_workshop_stp.json",
     requiredKeys: [
       "canonical_5_ot_translation_waves",
@@ -82,12 +85,14 @@ export const ARTIFACT_PROJECTION_SCHEMA = [
     ],
   },
   {
+    intent: "read",
     artifact: "web/data/book_names/es.json",
     requiredKeys: ["books", "lang", "name_source", "nsm_subtitle"],
     targetSelectors: ["#bibleSelectBook", "#btnOpenCompass", "#bibleCoordinateCompassGrid"],
     domSlots: ["#bibleSelectBook", "#btnOpenCompass", "#bibleCoordinateCompassGrid"],
   },
   {
+    intent: "print",
     artifact: "web/data/editorial_profiles.json",
     requiredKeys: [
       "branch_profiles_12",
@@ -102,6 +107,7 @@ export const ARTIFACT_PROJECTION_SCHEMA = [
     domSlots: ["#bibleOrthographyPills", "#biblePrintEditionsSheet"],
   },
   {
+    intent: "study",
     artifact: "web/shards/philology_rosetta_index.json",
     requiredKeys: [
       "canonical_metrology_units",
@@ -118,6 +124,7 @@ export const ARTIFACT_PROJECTION_SCHEMA = [
     domSlots: ["#rosettaSearchInput", "#rosettaExplorerResultsRows", "#bibleEasyDrawer"],
   },
   {
+    intent: "study",
     artifact: "web/data/diachronic_register_es.json",
     requiredKeys: [
       "book_vectors_66",
@@ -133,12 +140,14 @@ export const ARTIFACT_PROJECTION_SCHEMA = [
     domSlots: ["#bibleAnalyticalThermometerPanel", "#diachronicSubstitutionsDetails"],
   },
   {
+    intent: "share",
     artifact: "web/wasm/wasm_manifest.json",
     requiredKeys: ["modules"],
     targetSelectors: ["#editorialAuditStatusPanel", "#bibleOpticalQrStreamPanel"],
     domSlots: ["#editorialAuditStatusPanel", "#bibleOpticalQrStreamPanel"],
   },
   {
+    intent: "study",
     artifact: "web/data/annotation_index_report.json",
     requiredKeys: [
       "index_sha256",
@@ -153,6 +162,7 @@ export const ARTIFACT_PROJECTION_SCHEMA = [
     domSlots: ["#bibleAnalyticalThermometerPanel", "#wfstAndScriptioContinuaHost"],
   },
   {
+    intent: "study",
     artifact: "web/data/blind_calibration_report.json",
     requiredKeys: [
       "book_usfm",
@@ -169,6 +179,7 @@ export const ARTIFACT_PROJECTION_SCHEMA = [
     domSlots: ["#bibleAnalyticalThermometerPanel", "#wfstAndScriptioContinuaHost"],
   },
   {
+    intent: "read",
     artifact: "web/data/catalog.json",
     requiredKeys: [
       "book_order",
@@ -182,6 +193,7 @@ export const ARTIFACT_PROJECTION_SCHEMA = [
     domSlots: ["#bibleSelectBook", "#bibleSelectLang"],
   },
   {
+    intent: "share",
     artifact: "web/data/master_census_summary.json",
     requiredKeys: [
       "canonical_books",
@@ -196,6 +208,7 @@ export const ARTIFACT_PROJECTION_SCHEMA = [
     domSlots: ["#bibleShareAndAuditSheet", "#editorialAuditStatusPanel"],
   },
   {
+    intent: "share",
     artifact: "web/data/offline_packs_catalog.json",
     requiredKeys: [
       "available_pack_langs",
@@ -206,6 +219,7 @@ export const ARTIFACT_PROJECTION_SCHEMA = [
     domSlots: ["#bibleShareAndAuditSheet", "#offlinePacksCatalogPanel"],
   },
   {
+    intent: "share",
     artifact: "web/data/fonts_zst_manifest.json",
     requiredKeys: [
       "bundleBytes",

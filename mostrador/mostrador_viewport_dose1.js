@@ -296,7 +296,7 @@ export async function dispenseMostradorDose1({ opts = {}, state, dataLayer }) {
       : Math.max(1, Number(sheets) || 1);
     const strokeFallbackNote = hasRealPdf
       ? "Si la fuente física /F2 negrita no está embebida, /F1 aplica refuerzo vectorial PDF (q 2 Tr 0.28 w) sin degradar a latín."
-      : "Fallback CSS Paged Media (@media print): /F1 vectorial (q 2 Tr 0.28 w) reservado para el worker WASM PDF.";
+      : "Impresión directa desde el navegador activa; el refuerzo vectorial /F1 aplica al exportar el PDF completo.";
     return {
       bytes: pdfBytes,
       printHtml: bimodal.printHtml,
@@ -389,8 +389,8 @@ export function resolveVerifiedBookCount(targetState = {}) {
   }
   const navCount = Number(
     targetState?.lastNavResult?.provenance?.canonical_books_present ||
-      targetState?.lastNavResult?.chapter?.provenance?.canonical_books_present ||
-      0,
+    targetState?.lastNavResult?.chapter?.provenance?.canonical_books_present ||
+    0,
   );
   if (navCount > 0 && navCount <= 66) return navCount;
   const catEntry = targetState?.activeCatalogEntry || null;
@@ -398,8 +398,8 @@ export function resolveVerifiedBookCount(targetState = {}) {
   if (catCount > 0 && catCount <= 66) return catCount;
   const sovereignTier = String(
     targetState?.lastNavResult?.provenance?.sovereign_tier ||
-      targetState?.lastNavResult?.chapter?.provenance?.sovereign_tier ||
-      "",
+    targetState?.lastNavResult?.chapter?.provenance?.sovereign_tier ||
+    "",
   ).toLowerCase();
   if (sovereignTier === "tier_1_canonical") {
     return 66;

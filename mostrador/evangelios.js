@@ -483,6 +483,34 @@ export function parseCanonicalOtEchoRef(echoStr = "") {
   return { book: "GEN", chapter: 1, verse: 1, refCode: "GEN.1.1" };
 }
 
+const NT_BOOK_CODES = new Set([
+  "MAT", "MRK", "LUK", "JHN", "ACT", "ROM", "1CO", "2CO", "GAL",
+  "EPH", "PHP", "COL", "1TH", "2TH", "1TI", "2TI", "TIT", "PHM",
+  "HEB", "JAS", "1PE", "2PE", "1JN", "2JN", "3JN", "JUD", "REV",
+]);
+
+/**
+ * Resuelve el marcador canónico de perícopa diferenciando libros del NT (`§`)
+ * del AT masorético (`פ` / `ס`), evitando glifos hebreos en Evangelios y Epístolas.
+ */
+export function resolveCanonicalPericopeMarker(bookCode = "", kind = "petuhah", rawMarker = "") {
+  const cleanBook = String(bookCode || "").trim().toUpperCase();
+  if (NT_BOOK_CODES.has(cleanBook)) return "§";
+  if (rawMarker) return String(rawMarker);
+  return kind === "setumah" ? "ס" : "פ";
+}
+
+/**
+ * Limpia prefijos editoriales técnicos (`[Κ Kephalaion]`, `[K Kephalaion]`, `[¶ Paragraphos]`, `[פ Petuhah]`)
+ * incluyendo la homoglífica Kappa griega `Κ` (`U+039A`/`U+03BA`) y `K` latina (`U+004B`).
+ */
+export function stripEditorialPericopePrefix(title = "") {
+  return String(title || "").replace(
+    /^\[(?:[\u039A\u03BAK]\s+Kephalaion|¶\s+Paragraphos|[פס]\s+(?:Petuhah|Setumah))\]\s*/i,
+    "",
+  );
+}
+
 export function renderEvangeliosPlateActionsHtml({
   weekId = "s01",
   plateSlug = "",
@@ -533,6 +561,7 @@ export function renderEvangeliosPlateActionsHtml({
     })
     .join(" ");
 
+  const plateBookCode = enrichment.book || parsedPassage.book;
   const rawPericopes =
     Array.isArray(enrichment.pericopeBlocks) && enrichment.pericopeBlocks.length > 0
       ? enrichment.pericopeBlocks
@@ -543,7 +572,7 @@ export function renderEvangeliosPlateActionsHtml({
           {
             beforeVerse: parsedPassage.verse || 1,
             kind: "petuhah",
-            marker: "פ",
+            marker: resolveCanonicalPericopeMarker(plateBookCode, "petuhah"),
             title: isEnUi ? `Pericope Opening (${bookKey})` : `Apertura de Perícopa (${bookKey})`,
           },
         ];
@@ -552,7 +581,7 @@ export function renderEvangeliosPlateActionsHtml({
   const pericopesHtml = rawPericopes
     .map((pb, idx) => {
       if (typeof pb === "string") {
-        const cleanStr = pb.replace(/^\d+\.\s*/, "").trim();
+        const cleanStr = stripEditorialPericopePrefix(pb.replace(/^\d+\.\s*/, "").trim());
         const nStr = normCmp(cleanStr);
         if (!cleanStr || (normGesture && (nStr === normGesture || normGesture.includes(nStr) || nStr.includes(normGesture))) || seenChipLabels.has(nStr)) {
           return "";
@@ -560,22 +589,24 @@ export function renderEvangeliosPlateActionsHtml({
         seenChipLabels.add(nStr);
         const vMatch = /:(\d+)/.exec(cleanStr);
         const vStart = vMatch ? Number(vMatch[1]) || 1 : (parsedPassage.verse || 1);
-        const pRef = `${enrichment.book || parsedPassage.book}.${enrichment.chapter || parsedPassage.chapter}.${vStart}`;
+        const pRef = `${plateBookCode}.${enrichment.chapter || parsedPassage.chapter}.${vStart}`;
+        const marker = resolveCanonicalPericopeMarker(plateBookCode, "petuhah");
         return (
           `<button type="button" class="uls-chip evangelios-pericope-chip" ` +
           `data-pericope-block="${idx + 1}" data-pericope-verse="${vStart}" data-pericope-ref="${escapeHtml(pRef)}">` +
-          `פ v.${vStart} · ${escapeHtml(cleanStr)}</button>`
+          `${escapeHtml(marker)} v.${vStart} · ${escapeHtml(cleanStr)}</button>`
         );
       }
       const vStart = Number(pb.beforeVerse ?? pb.startVerse ?? pb.verse ?? 1) || 1;
-      const pRef = `${enrichment.book || parsedPassage.book}.${enrichment.chapter || parsedPassage.chapter}.${vStart}`;
-      const label = pb.title || pb.heading || pb.label || (isEnUi ? `Block ${idx + 1} (v. ${vStart})` : `Bloque ${idx + 1} (v. ${vStart})`);
+      const pRef = `${plateBookCode}.${enrichment.chapter || parsedPassage.chapter}.${vStart}`;
+      const rawLabel = pb.title || pb.heading || pb.label || (isEnUi ? `Block ${idx + 1} (v. ${vStart})` : `Bloque ${idx + 1} (v. ${vStart})`);
+      const label = stripEditorialPericopePrefix(rawLabel);
       const nLbl = normCmp(label);
       if ((normGesture && (nLbl === normGesture || normGesture.includes(nLbl) || nLbl.includes(normGesture))) || seenChipLabels.has(nLbl)) {
         return "";
       }
       seenChipLabels.add(nLbl);
-      const marker = pb.marker || (pb.kind === "setumah" ? "ס" : "פ");
+      const marker = resolveCanonicalPericopeMarker(plateBookCode, pb.kind, pb.marker);
       return (
         `<button type="button" class="uls-chip evangelios-pericope-chip" ` +
         `data-pericope-block="${idx + 1}" data-pericope-verse="${vStart}" data-pericope-ref="${escapeHtml(pRef)}">` +
@@ -634,7 +665,7 @@ export function renderChapterPericopesRibbonHtml(bookCode = "GEN", chapterNum = 
           beforeVerse: 1,
           startVerse: 1,
           kind: "petuhah",
-          marker: "פ",
+          marker: resolveCanonicalPericopeMarker(cleanBook, "petuhah"),
           title: `[פ Petuhah] ${cleanBook} ${cleanChap}:1`,
           synopticParallel: `${cleanBook}.${cleanChap}.1`,
         },
@@ -643,8 +674,9 @@ export function renderChapterPericopesRibbonHtml(bookCode = "GEN", chapterNum = 
   return rawList
     .map((pb, idx) => {
       const vStart = Number(pb.beforeVerse ?? pb.startVerse ?? 1) || 1;
-      const marker = pb.marker || (pb.kind === "setumah" ? "ס" : "פ");
-      const title = pb.title || `Perícopa ${idx + 1} (v.${vStart})`;
+      const marker = resolveCanonicalPericopeMarker(cleanBook, pb.kind, pb.marker);
+      const rawTitle = String(pb.title || `Perícopa ${idx + 1} (v.${vStart})`);
+      const title = stripEditorialPericopePrefix(rawTitle);
       const synoptic = String(pb.synopticParallel || `${cleanBook}.${cleanChap}.${vStart}`);
       return (
         `<button type="button" class="uls-chip chapter-pericope-ribbon-chip" ` +
@@ -689,7 +721,24 @@ export function renderFelicesSocraticWonderCardHtml(plateIndex = 1, uiLang = "es
     (isEn && plate.title_en) || plate.title_es || (isEn ? `Plate ${pNum} / 27` : `Lámina ${pNum} / 27`),
   );
   const citaStr = String(plate.cita_es || "MAT.5.3");
-  const typeStr = String(plate.type || "condicion");
+  const rawType = String(plate.type || "condicion");
+  const typeMapEs = {
+    conclusion: "conclusión",
+    condicion: "condición",
+    narrativa: "narrativa",
+    promesa: "promesa",
+    bienaventuranza: "dicha",
+    exhortacion: "exhortación",
+  };
+  const typeMapEn = {
+    conclusion: "conclusion",
+    condicion: "condition",
+    narrativa: "narrative",
+    promesa: "promise",
+    bienaventuranza: "beatitude",
+    exhortacion: "exhortation",
+  };
+  const typeStr = (isEn ? typeMapEn[rawType] : typeMapEs[rawType]) || rawType;
   const questions = Array.isArray(isEn ? plate.preguntas_en : plate.preguntas_es) &&
     (isEn ? plate.preguntas_en : plate.preguntas_es).length > 0
     ? (isEn ? plate.preguntas_en : plate.preguntas_es)
@@ -716,7 +765,7 @@ export function renderFelicesSocraticWonderCardHtml(plateIndex = 1, uiLang = "es
     `<div class="felices-socratic-wonder-inner" data-plate-number="${pNum}" data-plate-type="${escapeHtml(typeStr)}" data-ui-lang="${escapeHtml(uiLang)}">` +
     `<div class="felices-wonder-header">` +
     `<strong class="felices-wonder-title">✨ ${escapeHtml(titleStr)}</strong>` +
-    `<button type="button" class="uls-chip felices-wonder-cite-btn" data-wonder-cite="${escapeHtml(citaStr)}">📖 ${escapeHtml(citaStr)} (${escapeHtml(typeStr)})</button>` +
+    `<span class="uls-badge felices-wonder-cite-badge" data-wonder-cite="${escapeHtml(citaStr)}">📖 ${escapeHtml(citaStr)} (${escapeHtml(typeStr)})</span>` +
     `</div>` +
     `<ol class="felices-wonder-list">${questionsHtml}</ol>` +
     `</div>`
