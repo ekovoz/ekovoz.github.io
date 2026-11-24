@@ -11,9 +11,9 @@ import {
   hydrateFormulaicParallelsIndex,
   projectChapterThroughCascadeSemilattice,
 } from "./cascade_l1_l5.js";
-import { resolvePrimaryStrongForVerse } from "./drawer_study.js";
 import { runClientExternalAudit8Locks } from "./concordance_search.js";
 import { bindSurfaceActions, patchStoreState } from "./dom_patch.js";
+import { resolvePrimaryStrongForVerse } from "./drawer_study.js";
 import {
   normalizeRootNotesEntries,
   renderCrdtWalAndLockP2AuditCardHtml,
@@ -35,6 +35,7 @@ import {
   verifyLock8PredicativeAndNegation,
 } from "./mejorar_locks_pda.js";
 import { computeEcoPackCrc32Hex } from "./offline_mesh.js";
+import { resolveActiveWorkDrawerContext } from "./projection_contract.js";
 import { parseBiblicalCoordinateReference } from "./reference.js";
 import { projectSurfaceLayoutFromState } from "./surface_compositor.js";
 import {
@@ -279,12 +280,17 @@ export async function hydrateImproveDrawerPanel(ctx = {}) {
     i18n: i18nInstance,
     t: tFn,
   });
+  const workCtx = resolveActiveWorkDrawerContext(state);
+  const workBannerHtml = workCtx.isSisterWork
+    ? `<aside class="work-context-drawer-banner" data-work-context="${workCtx.activeWork}"><strong>${workCtx.bannerText}</strong></aside>`
+    : "";
   const container =
     getEl("socraticElicitorContainer", targetDoc) ||
     getEl("bibleFieldWorkshopSheet", targetDoc);
   if (container) {
-    container.innerHTML = html;
+    container.innerHTML = workBannerHtml + html;
     container.setAttribute?.("data-field-workshop-lang", fieldWorkshopActiveLang);
+    container.setAttribute?.("data-active-work", workCtx.activeWork);
     container.removeAttribute?.("data-field-workshop-fallback");
   }
 
@@ -327,8 +333,9 @@ export async function hydrateImproveDrawerPanel(ctx = {}) {
     }
   }
 
-  const tallerEl = getEl("tallerArtifactsCatalog", targetDoc);
-  if (tallerEl && typeof mod.renderTallerArtifactsCatalogHtml === "function") {
+  const renderAuditSubtabPanels = () => {
+    const tallerHost = getEl("tallerArtifactsCatalog", targetDoc);
+    if (!tallerHost) return;
     const draftOpts = {
       ...(Array.isArray(state.topUncertaintyQueue) && state.topUncertaintyQueue.length > 0
         ? { uncertaintyQueue: state.topUncertaintyQueue }
@@ -346,15 +353,31 @@ export async function hydrateImproveDrawerPanel(ctx = {}) {
       .replace(/<head\b[^>]*>[\s\S]*?<\/head>/gi, "")
       .replace(/<title\b[^>]*>[\s\S]*?<\/title>/gi, "")
       .replace(/<\/?(?:html|body|meta)[^>]*>/gi, "");
-    tallerEl.innerHTML =
-      mod.renderTallerArtifactsCatalogHtml({
-        lang: state.lang,
-        includeCensusCard: true,
-        includeEightLocksBar: false,
-        masterCensusSummary: state.masterCensusSummary || null,
-        uiLocale: state.uiLocale || "es",
-      }) + sanitizedDraftHtml;
-  }
+    const relocatedAuditHtml =
+      typeof mod.renderWorkshopAuditPanelsHtml === "function"
+        ? mod.renderWorkshopAuditPanelsHtml({
+          lang: state.lang,
+          uiLocale: state.uiLocale || "es",
+          uqPage: state.uncertaintyQueuePage || 1,
+          externalAuditText: state.externalAuditText || "",
+          externalAuditResult: state.externalAuditResult || null,
+          activeTier3aPair: state.activeTier3aPair || "",
+        })
+        : "";
+    const catalogHtml =
+      typeof mod.renderTallerArtifactsCatalogHtml === "function"
+        ? mod.renderTallerArtifactsCatalogHtml({
+          lang: state.lang,
+          includeCensusCard: true,
+          includeEightLocksBar: false,
+          masterCensusSummary: state.masterCensusSummary || null,
+          uiLocale: state.uiLocale || "es",
+        })
+        : "";
+    tallerHost.innerHTML = relocatedAuditHtml + catalogHtml + sanitizedDraftHtml;
+  };
+  state.refreshWorkshopAuditSubtab = renderAuditSubtabPanels;
+  renderAuditSubtabPanels();
 
   bindImproveFormControlsInDrawer(mod, ctx);
   projectSurfaceLayoutFromState(state, targetDoc, getEl);
@@ -455,6 +478,7 @@ export function bindImproveFormControlsInDrawer(mod, ctx = {}) {
         activeTier3aPair: state.activeTier3aPair || "",
       });
     }
+    state.refreshWorkshopAuditSubtab?.();
     const lexHostEl = getEl("stpLexiconExplorerHost", targetDoc);
     const lexRowsEl = getEl("stpLexiconResultsRows", targetDoc);
     const isStpActive = String(state.lang || "").toLowerCase() === "stp";
@@ -600,7 +624,7 @@ export function bindImproveFormControlsInDrawer(mod, ctx = {}) {
       const ds = evaluateBetaDawidSkeneSprt(votesList);
       const quorumStatus =
         ds.distinctReviewersCount >= 2 &&
-        (ds.promotedToCanonicalWal === true || ds.editorialStatus === "COMMUNITY_VALIDATED")
+          (ds.promotedToCanonicalWal === true || ds.editorialStatus === "COMMUNITY_VALIDATED")
           ? "quorum_verified"
           : "draft_local_signed_needs_quorum";
       const baseCascadeArg = state.lastAppliedCascade || {
@@ -932,65 +956,101 @@ export function bindImproveFormControlsInDrawer(mod, ctx = {}) {
     });
   }
 
+  const onAuditChange = async (e) => {
+    const targetId = e?.target?.id || "";
+    if (targetId === "externalAuditTextInput") {
+      state.externalAuditText = String(e.target.value ?? "");
+      return;
+    }
+    if (targetId === "externalAuditFileInput") {
+      const file = e?.target?.files?.[0];
+      if (!file || typeof file.text !== "function") return;
+      const rawDraft = await file.text();
+      state.externalAuditText = rawDraft;
+      state.externalAuditResult = runClientExternalAudit8Locks({
+        rawText: rawDraft,
+        oldSurface: oldInput?.value || "",
+      });
+      state.refreshWorkshopAuditSubtab?.();
+      (state.refreshPatchPreview || refreshPatchPreview)();
+    }
+  };
+  const onAuditClick = async (e) => {
+    const uqPageBtn = e?.target?.closest
+      ? e.target.closest("[data-uq-page]")
+      : e?.target?.getAttribute?.("data-uq-page")
+        ? e.target
+        : null;
+    const uqPageVal = uqPageBtn?.getAttribute?.("data-uq-page");
+    if (uqPageVal !== null && uqPageVal !== undefined) {
+      state.uncertaintyQueuePage = Math.max(1, Number(uqPageVal) || 1);
+      state.refreshWorkshopAuditSubtab?.();
+      (state.refreshPatchPreview || refreshPatchPreview)();
+      return true;
+    }
+    const tier3aBtn = e?.target?.closest
+      ? e.target.closest("[data-tier3a-pair]")
+      : e?.target?.getAttribute?.("data-tier3a-pair")
+        ? e.target
+        : null;
+    const tier3aKey = tier3aBtn?.getAttribute?.("data-tier3a-pair");
+    if (tier3aKey) {
+      state.activeTier3aPair = state.activeTier3aPair === tier3aKey ? "" : tier3aKey;
+      state.refreshWorkshopAuditSubtab?.();
+      (state.refreshPatchPreview || refreshPatchPreview)();
+      return true;
+    }
+    const runAuditBtn = e?.target?.closest
+      ? e.target.closest("#btnRunExternalAudit")
+      : e?.target?.id === "btnRunExternalAudit"
+        ? e.target
+        : null;
+    if (runAuditBtn) {
+      const auditInput = getEl("externalAuditTextInput", targetDoc);
+      const rawDraft = String(auditInput?.value ?? state.externalAuditText ?? "");
+      state.externalAuditText = rawDraft;
+      state.externalAuditResult = runClientExternalAudit8Locks({
+        rawText: rawDraft,
+        oldSurface: oldInput?.value || "",
+      });
+      state.refreshWorkshopAuditSubtab?.();
+      (state.refreshPatchPreview || refreshPatchPreview)();
+      return true;
+    }
+    const jumpOsisBtn = e?.target?.closest
+      ? e.target.closest("[data-jump-osis]")
+      : e?.target?.getAttribute?.("data-jump-osis")
+        ? e.target
+        : null;
+    const jumpOsisRef = jumpOsisBtn?.getAttribute?.("data-jump-osis");
+    if (jumpOsisRef) {
+      const parsedJump = parseBiblicalCoordinateReference(jumpOsisRef);
+      if (parsedJump && parsedJump.bookCode) {
+        await navigate(
+          {
+            book: parsedJump.bookCode,
+            chapter: parsedJump.chapter || 1,
+            verse: parsedJump.verse || 1,
+          },
+          targetDoc,
+        );
+        hydrateBookAndChapterSelectors(targetDoc);
+      }
+      return true;
+    }
+    return false;
+  };
+  const tallerAuditEl = getEl("tallerArtifactsCatalog", targetDoc);
+  if (tallerAuditEl && typeof tallerAuditEl.addEventListener === "function" && !tallerAuditEl._auditPanelsBound) {
+    tallerAuditEl._auditPanelsBound = true;
+    tallerAuditEl.addEventListener("change", onAuditChange);
+    tallerAuditEl.addEventListener("click", onAuditClick);
+  }
   if (cascadeEl && typeof cascadeEl.addEventListener === "function" && !cascadeEl._celfBound) {
     cascadeEl._celfBound = true;
-    cascadeEl.addEventListener("change", async (e) => {
-      const targetId = e?.target?.id || "";
-      if (targetId === "externalAuditTextInput") {
-        state.externalAuditText = String(e.target.value ?? "");
-        return;
-      }
-      if (targetId === "externalAuditFileInput") {
-        const file = e?.target?.files?.[0];
-        if (!file || typeof file.text !== "function") return;
-        const rawDraft = await file.text();
-        state.externalAuditText = rawDraft;
-        state.externalAuditResult = runClientExternalAudit8Locks({
-          rawText: rawDraft,
-          oldSurface: oldInput?.value || "",
-        });
-        (state.refreshPatchPreview || refreshPatchPreview)();
-      }
-    });
+    cascadeEl.addEventListener("change", onAuditChange);
     cascadeEl.addEventListener("click", async (e) => {
-      const uqPageBtn = e?.target?.closest
-        ? e.target.closest("[data-uq-page]")
-        : e?.target?.getAttribute?.("data-uq-page")
-          ? e.target
-          : null;
-      const uqPageVal = uqPageBtn?.getAttribute?.("data-uq-page");
-      if (uqPageVal !== null && uqPageVal !== undefined) {
-        state.uncertaintyQueuePage = Math.max(1, Number(uqPageVal) || 1);
-        (state.refreshPatchPreview || refreshPatchPreview)();
-        return;
-      }
-      const tier3aBtn = e?.target?.closest
-        ? e.target.closest("[data-tier3a-pair]")
-        : e?.target?.getAttribute?.("data-tier3a-pair")
-          ? e.target
-          : null;
-      const tier3aKey = tier3aBtn?.getAttribute?.("data-tier3a-pair");
-      if (tier3aKey) {
-        state.activeTier3aPair = state.activeTier3aPair === tier3aKey ? "" : tier3aKey;
-        (state.refreshPatchPreview || refreshPatchPreview)();
-        return;
-      }
-      const runAuditBtn = e?.target?.closest
-        ? e.target.closest("#btnRunExternalAudit")
-        : e?.target?.id === "btnRunExternalAudit"
-          ? e.target
-          : null;
-      if (runAuditBtn) {
-        const auditInput = getEl("externalAuditTextInput", targetDoc);
-        const rawDraft = String(auditInput?.value ?? state.externalAuditText ?? "");
-        state.externalAuditText = rawDraft;
-        state.externalAuditResult = runClientExternalAudit8Locks({
-          rawText: rawDraft,
-          oldSurface: oldInput?.value || "",
-        });
-        (state.refreshPatchPreview || refreshPatchPreview)();
-        return;
-      }
+      if (await onAuditClick(e)) return;
       const waveBtn = e?.target?.closest
         ? e.target.closest("[data-ot-wave]")
         : e?.target?.getAttribute?.("data-ot-wave")
@@ -1027,27 +1087,6 @@ export function bindImproveFormControlsInDrawer(mod, ctx = {}) {
               book: parsedEnt.bookCode,
               chapter: parsedEnt.chapter || 1,
               verse: parsedEnt.verse || 1,
-            },
-            targetDoc,
-          );
-          hydrateBookAndChapterSelectors(targetDoc);
-        }
-        return;
-      }
-      const jumpOsisBtn = e?.target?.closest
-        ? e.target.closest("[data-jump-osis]")
-        : e?.target?.getAttribute?.("data-jump-osis")
-          ? e.target
-          : null;
-      const jumpOsisRef = jumpOsisBtn?.getAttribute?.("data-jump-osis");
-      if (jumpOsisRef) {
-        const parsedJump = parseBiblicalCoordinateReference(jumpOsisRef);
-        if (parsedJump && parsedJump.bookCode) {
-          await navigate(
-            {
-              book: parsedJump.bookCode,
-              chapter: parsedJump.chapter || 1,
-              verse: parsedJump.verse || 1,
             },
             targetDoc,
           );

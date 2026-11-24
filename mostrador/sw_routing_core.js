@@ -90,6 +90,7 @@ export const SHELL_CORE_ASSETS = [
   "/mostrador/sister_works_controller.js",
   "/mostrador/social_and_photocopy_cards.js",
   "/mostrador/print_config_projector.js",
+  "/mostrador/print_work_and_photocopy.js",
   "/mostrador/stage_dom_bindings.js",
   "/mostrador/state_store.js",
   "/mostrador/stealth_filename.js",

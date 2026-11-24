@@ -25,7 +25,7 @@ import { isRtlLocale } from "./i18n.js";
 import { updatePrintConfig } from "./state_store.js";
 import { encodePaperFormatCode } from "./tanda_print_worker.js";
 
-export function normalizeChapterMapToEntries(bookCode, chapterNum, versesMap) {
+function normalizeChapterMapToEntries(bookCode, chapterNum, versesMap) {
   if (Array.isArray(versesMap)) return versesMap;
   if (!versesMap || typeof versesMap !== "object") return [];
   return Object.keys(versesMap)
@@ -463,20 +463,11 @@ export function ensureDirectEditionsAndGrambankControls(ctx = {}) {
   wrap.innerHTML =
     `<div id="activeEditionImpositionSummary" class="ek-row-wrap" data-active-edition-id="${escapeHtml(activeEd)}">` +
     `<span><strong>${isEn ? "Active edition:" : "Edición activa:"}</strong> ${escapeHtml(activeBadge)}</span>` +
-    `<button type="button" id="btnGoPrintDosesCatalog" class="uls-chip">${isEn ? "Change in 1. Doses" : "Cambiar en 1. Dosis"}</button>` +
     `</div>` +
     `<button type="button" id="btnApplyGrambankToPrint" class="uls-chip" data-grambank-apply-print="true" data-branch-id="${escapeHtml(branchId)}" data-typology-id="${escapeHtml(typoId)}">` +
     `${isEn ? "🌐 Apply typological profile to Print" : "🌐 Aplicar perfil tipológico a Impresión"}</button>`;
   if (isNewWrap && typeof cfgHost.appendChild === "function") {
     cfgHost.appendChild(wrap);
-  }
-
-  const jumpBtn = typeof getEl === "function" ? getEl("btnGoPrintDosesCatalog", targetDoc) : null;
-  if (jumpBtn && !jumpBtn._jumpPrintCatalogBound && typeof jumpBtn.addEventListener === "function") {
-    jumpBtn._jumpPrintCatalogBound = true;
-    jumpBtn.addEventListener("click", () => {
-      getEl("btnPrintSubtabDoses", targetDoc)?.click?.();
-    });
   }
 
   const gBtn = typeof getEl === "function" ? getEl("btnApplyGrambankToPrint", targetDoc) : null;

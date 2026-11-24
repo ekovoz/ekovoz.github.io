@@ -707,7 +707,15 @@ export function listCatalogEditionsForLang(manifestOrLang, maybeLang = "es", opt
     }
     const resolvedCols = tomlMeta.columns || item.columns || 2;
     const resolvedFontPt = tomlMeta.fontPt || item.fontPt || 9.5;
-    const resolvedPaper = tomlMeta.paperSize || (defaultPaper === "letter" ? "Letter" : "A4");
+    const requestedPaper = String(resolvedOptions?.paperFormat || resolvedOptions?.paper || "").trim().toLowerCase();
+    const baseTomlPaper = String(tomlMeta.paperSize || (defaultPaper === "letter" ? "Letter" : "A4"));
+    const isAdaptableBase = /^(?:a4|letter)$/i.test(baseTomlPaper);
+    const resolvedPaper =
+      isAdaptableBase && (requestedPaper === "letter" || requestedPaper === "a4")
+        ? requestedPaper === "letter"
+          ? "Letter"
+          : "A4"
+        : baseTomlPaper;
     const impositionMode = tomlMeta.impositionMode || "single_sheet_20mm";
     const fallbackUrl = resolvePrintEditionPdfAssetUrl(
       item.id,

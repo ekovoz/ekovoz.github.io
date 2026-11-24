@@ -73,6 +73,34 @@ export const BIBLE_CONSTANTS = _BIBLE_CONSTANTS;
 
 export const STATUS = Object.freeze({ LOADING: "loading", READY: "ready", UNAVAILABLE: "unavailable" });
 
+export const MOSTRADOR_DOM_BINDINGS = {
+  "#tabWorkBiblia": "switchWork:biblia",
+  "#tabWorkFelices": "switchWork:felices",
+  "#tabWorkEvangelios": "switchWork:evangelios",
+  "#bibleSelectBook": "navigate:book",
+  "#bibleSelectChapter": "navigate:chapter",
+  "#btnPrevChapter": "navigate:prevChapter",
+  "#btnNextChapter": "navigate:nextChapter",
+  "#btnOpenCompass": "compass:toggle",
+  "#bibleChapterPericopesRibbon": "selectVerse:pericope",
+  "#felicesSocraticWonderCard": "navigate:wonderCite",
+  "#toggleA4": "setPaperFormat:a4",
+  "#toggleCarta": "setPaperFormat:letter",
+  "#btnOpenPreviewCarousel": "openModal:previewModal",
+  "#previewModalCloseBtn": "closeModal:previewModal",
+  "#btnPreviewClose": "closeModal:previewModal",
+  "#carouselPrevBtn": "prevSlide",
+  "#carouselNextBtn": "nextSlide",
+  "#evangeliosWeekSelect": "hydrateEvangeliosSection:week",
+  "#evangeliosLangSelect": "hydrateEvangeliosSection:lang",
+  "#rosettaSearchInput": "renderPhilologyRosettaResultsRowsHtml",
+  "#stpLexiconSearchInput": "renderStpLexiconResultsRowsHtml",
+  "#bibleEasyDrawer": "transitionSheet:study",
+  "#btnOpenPrintEditionsSheet": "transitionSheet:print",
+  "#btnOpenFieldWorkshopSheet": "transitionSheet:field",
+  "#btnOpenShareAndAuditSheet": "transitionSheet:share",
+};
+
 const LANG_RE = /^[a-z]{2,3}(-[A-Za-z0-9]{2,8})*$/;
 const BOOK_RE = /^[1-3A-Z][A-Z0-9]{2}$/;
 const EDITION_RE = /^[a-z0-9_-]{1,32}$/;

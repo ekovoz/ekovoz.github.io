@@ -120,7 +120,7 @@
         "mostrador.tab.evangelios": "🌅 Evangelios",
         "mostrador.nav.prev": "Capítulo anterior",
         "mostrador.nav.next": "Capítulo siguiente",
-        "mostrador.step2.placeholder": "Pasaje (ej. Rom 1:16, Jn 3:16, Sal 23)",
+        "mostrador.step2.placeholder": "Book & chapter (e.g. Jn 3:16 or Ps 23)",
         "mostrador.heading": "Ekovoz — Lectura y Estudio Bíblico Políglota (66 Libros)",
         "seal.unavailable": "Traducción aún no disponible",
         "mostrador.step2.open_compass": "Ir",
@@ -153,7 +153,7 @@
         "mostrador.register.classic": "📜 Tradición clásica",
         "mostrador.register.bilingual": "👥 Bilingüe lado a lado",
         "mostrador.register.roll_toggle": "📄 Vista por página ↔ Rollo continuo",
-        "mostrador.step2.title": "2. Vista previa del pasaje",
+        "mostrador.step2.title": "Compass & Search",
         "mostrador.status.loading": "Cargando pasaje auténtico…",
         "mostrador.door.study": "🔬 1. Estudiar",
         "mostrador.door.print": "🖨️ 2. Imprimir",
@@ -226,7 +226,6 @@
         "print.btn.imposition": "📐 Calcular plegado del cuadernillo",
         "print.btn.layout": "📏 Revisar márgenes de página (A4 / Carta)",
         "print.btn.photocopy3gen": "🔬 Probar legibilidad en fotocopia (3.ª generación)",
-        "print.photocopyReceiptSummary": "🔬 Comprobante óptico y tipográfico",
         "share.btn.copyLink": "🔗 Copiar enlace directo a este pasaje",
         "share.fps.667": "6.67 FPS · 150 ms (seguro con poca luz)",
         "share.fps.10": "10 FPS · 100 ms (transferencia rápida de pantalla)",
@@ -274,6 +273,12 @@
         "corpus.tab.bibles": "📖 Biblias y Lenguas (24)",
         "corpus.tab.trails": "🧭 Planes de Lectura (8)",
         "print.stealthMode": "🥷 Nombres de archivo discretos (estudio)",
-        "print.btn.brailleB70": "♿ Braille B70 (.brf)"
+        "print.btn.brailleB70": "♿ Braille B70 (.brf)",
+        "study.acc.ubs": "🏛️ 6 Textual Traditions (UBS)",
+        "study.acc.onomasticon": "📜 Biblical Onomasticon (3,657 names)",
+        "study.acc.realia": "🪴 Biblical Realia, NSM-65 & Metrology",
+        "study.acc.tskFormulaic": "🔗 TSK Cross-References & OT↔NT Parallels",
+        "study.acc.orthography": "✍️ Orthography Comparator & Lexical Conservation",
+        "study.acc.typology": "🌐 Typological Profile & Editorial Tradition"
     }
 }

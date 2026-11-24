@@ -6,7 +6,12 @@
 
 import { HAREL_SHEET_MAP } from "./bridge_and_chapter.js";
 import { verifyArtifactProjectionClosure } from "./dom_projection_contracts.js";
-import { projectStoreAttributesToDom, syncStickyDrawerContextHeader } from "./projection_contract.js";
+import {
+  SURFACE_SLOT_MANIFEST,
+  projectStoreAttributesToDom,
+  resolveActiveWorkDrawerContext,
+  syncStickyDrawerContextHeader,
+} from "./projection_contract.js";
 import {
   DEFAULT_SUBTABS_BY_SHEET,
   closeSheet,
@@ -14,6 +19,38 @@ import {
   setActiveIntent,
   setSheetSubtab,
 } from "./state_store.js";
+
+/**
+ * Proyecta de forma sustractiva el manifiesto `(activeWork, activeSheet, activeSubtab)`
+ * marcando la única ranura primaria sobre el pliegue sin acumular duplicados (`D1-R9`).
+ */
+export function enforceSubtractiveSlotOwnership(state = {}, resolveEl) {
+  const normalizedSheet = state.activeSheet === "improve" ? "field" : state.activeSheet || null;
+  const activeSubtabs = state.activeSubtabBySheet || DEFAULT_SUBTABS_BY_SHEET;
+  const activeSubtab = normalizedSheet
+    ? activeSubtabs[normalizedSheet] || DEFAULT_SUBTABS_BY_SHEET[normalizedSheet] || ""
+    : "";
+  const slotKey = normalizedSheet && activeSubtab ? `${normalizedSheet}:${activeSubtab}` : "";
+  const spec = slotKey ? SURFACE_SLOT_MANIFEST[slotKey] || null : null;
+  const workCtx = resolveActiveWorkDrawerContext(state);
+  if (typeof resolveEl === "function") {
+    const drawersHost = resolveEl("sovereignGlobalDrawersHost");
+    if (drawersHost && typeof drawersHost.setAttribute === "function") {
+      drawersHost.setAttribute("data-active-work", workCtx.activeWork);
+      drawersHost.setAttribute("data-primary-slot", spec ? spec.primary : "");
+    }
+    if (spec && spec.primary) {
+      const primaryEl = resolveEl(spec.primary);
+      primaryEl?.setAttribute?.("data-slot-role", "primary");
+    }
+  }
+  return {
+    activeWork: workCtx.activeWork,
+    slotKey,
+    primarySlot: spec ? spec.primary : null,
+    collapsibleCount: spec ? spec.collapsibles.length : 0,
+  };
+}
 
 const SUBTAB_GROUP_TO_SHEET = Object.freeze({
   study: "study",
@@ -174,6 +211,10 @@ export function projectSurfaceLayoutFromState(state = {}, rootDoc, getEl) {
     hasOpenSheet ? { ...state, activeSheet: normalizedSheet } : { ...state, activeSheet: null },
     resolveEl,
     rootDoc,
+  );
+  enforceSubtractiveSlotOwnership(
+    hasOpenSheet ? { ...state, activeSheet: normalizedSheet } : { ...state, activeSheet: null },
+    resolveEl,
   );
   return true;
 }

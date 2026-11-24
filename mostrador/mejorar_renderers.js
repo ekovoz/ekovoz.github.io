@@ -315,6 +315,7 @@ export function renderCascadeAndLadderHtml({
   limit = 24,
   includeWalCard = false,
   includeCensusCard = false,
+  includeAuditPanels = false,
   uiLocale = "es",
   uqPage = 1,
   externalAuditText = "",
@@ -428,6 +429,78 @@ export function renderCascadeAndLadderHtml({
     ).join(" ") +
     `</div>`;
 
+  const auditPanelsHtml = includeAuditPanels
+    ? renderWorkshopAuditPanelsHtml({
+      lang: cleanLang,
+      uiLocale,
+      uqPage,
+      externalAuditText,
+      externalAuditResult,
+      activeTier3aPair,
+    })
+    : "";
+
+  const masterCensusAndLedgerHtml =
+    includeCensusCard === true
+      ? renderFieldWorkshopCensus7164Html(MASTER_CENSUS_SUMMARY, STP_LEDGER_SUMMARY)
+      : "";
+  const crdtWalAndLockP2Html =
+    includeWalCard === true
+      ? renderCrdtWalAndLockP2AuditCardHtml({
+        crdt_wal_semilattice: CRDT_WAL_SEMILATTICE,
+        patch_journal_lock_p2: PATCH_JOURNAL_LOCK_P2,
+        root_notes_stp: ROOT_NOTES_STP,
+      })
+      : "";
+
+  const seed250 = buildElicitationSeedPayload({
+    lang: cleanLang,
+    rung: activeRung && activeRung !== "ALL" ? activeRung : "Rung1SwadeshAndNsm65",
+    rank: 1,
+    verseId: resolvedRef,
+    strongIds: [sanitizePipeField(strongId || "H0430").toUpperCase()],
+    responseText: "",
+  });
+  const seedPanelHtml =
+    `<div class="celf250-ladder-panel ek-card-muted ek-mb-sm" data-celf250-ladder="true" data-celf250-rank="${seed250.rank}">` +
+    `<strong class="ek-title-sm">🧬 ${isEn ? `Community Progress Step #${seed250.rank}/250` : `Paso de Revisión Comunitaria #${seed250.rank}/250`}</strong>` +
+    `<details class="hig-tech-receipt-details tech-details"><summary>${isEn ? "🧾 Technical seed payload (CELF-250)" : "🧾 Detalles técnicos de semilla (CELF-250)"}</summary>` +
+    `<pre id="celf250SeedOutput" class="ek-pre-compact">${seed250.payloadLine}</pre>` +
+    `</details>` +
+    `</div>`;
+
+  return (
+    `<div class="cascade-impact-box ek-card" data-cascade-level="${cleanLevel}" data-cascade-lang="${cleanLang}" data-celf-total="${totalCount}" data-active-ot-wave="${waveNum}">` +
+    `<strong class="ek-title-sm">🌊 ${isEn ? `Cascade Propagation ${cleanLevel} (${totalCount} steps · ${sanitizePipeField(strongId)} in ${resolvedRef})` : `Propagación de Mejora ${cleanLevel} (${totalCount} pasos · ${sanitizePipeField(strongId)} en ${resolvedRef})`}</strong>` +
+    `<p class="ek-subtitle ek-mb-sm">` +
+    `${isEn ? `Refining this root in <code>${cleanLang}</code> updates matching verses across Bible, Gospels, and Beatitudes. Tap any step to inspect:` : `Al corregir esta raíz en <code>${cleanLang}</code>, el ajuste se propaga a Biblia, Evangelios y Felices. Pulsa un paso para revisarlo:`}` +
+    `</p>` +
+    `<details class="tech-details ek-mb-sm"><summary>${isEn ? "Technical details" : "Detalles técnicos"}</summary>` +
+    `<p class="ek-meta ek-mt-xs">CELF-250 (${totalCount} peldaños · Dawid-Skene + SPRT · 0 Bytes Audio)</p></details>` +
+    seedPanelHtml +
+    sisterCascadeHtml +
+    rungFilterHtml +
+    `<div class="ek-row-wrap">${ladderButtons}</div>` +
+    otWavesHtml +
+    auditPanelsHtml +
+    `<div class="ek-stack ek-mt-sm">` +
+    masterCensusAndLedgerHtml +
+    crdtWalAndLockP2Html +
+    `</div>` +
+    `</div>`
+  );
+}
+
+export function renderWorkshopAuditPanelsHtml({
+  lang = "stp",
+  uiLocale = "es",
+  uqPage = 1,
+  externalAuditText = "",
+  externalAuditResult = null,
+  activeTier3aPair = "",
+} = {}) {
+  const isEn = String(uiLocale || "es").trim().toLowerCase().startsWith("en");
+  const cleanLang = sanitizePipeField(lang || "stp").toLowerCase();
   const escAud = (v) =>
     String(v ?? "")
       .replace(/&/g, "&amp;")
@@ -451,7 +524,7 @@ export function renderCascadeAndLadderHtml({
       : `<div class="ek-mt-xs" data-live-audit-passed="${externalAuditResult.allPassed}"><strong class="ek-title-sm">${externalAuditResult.allPassed ? "✅" : "⛔"} ${externalAuditResult.passedCount}/${externalAuditResult.entriesCount} ${isEn ? "units passed 8 locks" : "unidades pasaron los 8 candados"}</strong><ul>${auditRowsHtml}</ul></div>`
     : `<p class="ek-meta ek-mt-xs">${isEn ? "Validate your own .usfm/.txt draft with all 8 deterministic locks on this device." : "Valida tu propio borrador .usfm/.txt con los 8 candados deterministas en este dispositivo."}</p>`;
   const externalAuditHtml =
-    `<div id="externalAudit8LocksPanel" class="ek-card-muted ek-mt-sm" data-external-audit-8-locks="true" data-all-8-locks-passed="${Boolean(extAudit.all_8_locks_passed)}">` +
+    `<div id="externalAudit8LocksPanel" class="ek-card-muted ek-mt-sm" data-audit-lang="${escAud(cleanLang)}" data-external-audit-8-locks="true" data-all-8-locks-passed="${Boolean(extAudit.all_8_locks_passed)}">` +
     `<div class="ek-row-between">` +
     `<strong>🛡️ ${isEn ? "External Editorial Review · 8-Lock USFM Audit" : "Revisión Editorial Externa · Auditoría 8 Candados"}</strong>` +
     `<span class="uls-badge ek-badge-compact">${extAudit.all_8_locks_passed !== false ? "✅ 8/8 PASS" : "⛔ VETO"} · ${Number(extAudit.rosetta_key_terms_extracted || 552)} ${isEn ? "key terms" : "términos"}</span>` +
@@ -524,57 +597,7 @@ export function renderCascadeAndLadderHtml({
     `<div id="tier3aPairDetailHost" class="ek-meta ek-mt-xs" aria-live="polite">${tier3aDetailHtml}</div>` +
     `</div>`;
 
-  const masterCensusAndLedgerHtml =
-    includeCensusCard === true
-      ? renderFieldWorkshopCensus7164Html(MASTER_CENSUS_SUMMARY, STP_LEDGER_SUMMARY)
-      : "";
-  const crdtWalAndLockP2Html =
-    includeWalCard === true
-      ? renderCrdtWalAndLockP2AuditCardHtml({
-        crdt_wal_semilattice: CRDT_WAL_SEMILATTICE,
-        patch_journal_lock_p2: PATCH_JOURNAL_LOCK_P2,
-        root_notes_stp: ROOT_NOTES_STP,
-      })
-      : "";
-
-  const seed250 = buildElicitationSeedPayload({
-    lang: cleanLang,
-    rung: activeRung && activeRung !== "ALL" ? activeRung : "Rung1SwadeshAndNsm65",
-    rank: 1,
-    verseId: resolvedRef,
-    strongIds: [sanitizePipeField(strongId || "H0430").toUpperCase()],
-    responseText: "",
-  });
-  const seedPanelHtml =
-    `<div class="celf250-ladder-panel ek-card-muted ek-mb-sm" data-celf250-ladder="true" data-celf250-rank="${seed250.rank}">` +
-    `<strong class="ek-title-sm">🧬 ${isEn ? `Community Progress Step #${seed250.rank}/250` : `Paso de Revisión Comunitaria #${seed250.rank}/250`}</strong>` +
-    `<details class="hig-tech-receipt-details tech-details"><summary>${isEn ? "🧾 Technical seed payload (CELF-250)" : "🧾 Detalles técnicos de semilla (CELF-250)"}</summary>` +
-    `<pre id="celf250SeedOutput" class="ek-pre-compact">${seed250.payloadLine}</pre>` +
-    `</details>` +
-    `</div>`;
-
-  return (
-    `<div class="cascade-impact-box ek-card" data-cascade-level="${cleanLevel}" data-cascade-lang="${cleanLang}" data-celf-total="${totalCount}" data-active-ot-wave="${waveNum}">` +
-    `<strong class="ek-title-sm">🌊 ${isEn ? `Cascade Propagation ${cleanLevel} (${totalCount} steps · ${sanitizePipeField(strongId)} in ${resolvedRef})` : `Propagación de Mejora ${cleanLevel} (${totalCount} pasos · ${sanitizePipeField(strongId)} en ${resolvedRef})`}</strong>` +
-    `<p class="ek-subtitle ek-mb-sm">` +
-    `${isEn ? `Refining this root in <code>${cleanLang}</code> updates matching verses across Bible, Gospels, and Beatitudes. Tap any step to inspect:` : `Al corregir esta raíz en <code>${cleanLang}</code>, el ajuste se propaga a Biblia, Evangelios y Felices. Pulsa un paso para revisarlo:`}` +
-    `</p>` +
-    `<details class="tech-details ek-mb-sm"><summary>${isEn ? "Technical details" : "Detalles técnicos"}</summary>` +
-    `<p class="ek-meta ek-mt-xs">CELF-250 (${totalCount} peldaños · Dawid-Skene + SPRT · 0 Bytes Audio)</p></details>` +
-    seedPanelHtml +
-    sisterCascadeHtml +
-    rungFilterHtml +
-    `<div class="ek-row-wrap">${ladderButtons}</div>` +
-    otWavesHtml +
-    externalAuditHtml +
-    uncertaintyQueueHtml +
-    tier3aHtml +
-    `<div class="ek-stack ek-mt-sm">` +
-    masterCensusAndLedgerHtml +
-    crdtWalAndLockP2Html +
-    `</div>` +
-    `</div>`
-  );
+  return externalAuditHtml + uncertaintyQueueHtml + tier3aHtml;
 }
 
 const DEFAULT_STP_LEXICON_SEED = [
@@ -838,19 +861,26 @@ export function renderTallerArtifactsCatalogHtml(langOrOpts = "es") {
         `<span class="uls-badge ek-badge-compact" data-lock-id="${lk.id}" data-lock-passed="${lk.passed}">${lk.passed ? "✅" : "⛔"} ${lk.label}</span>`,
     )
     .join(" ");
+  const isEnCatalog =
+    typeof langOrOpts === "object" &&
+    langOrOpts !== null &&
+    String(langOrOpts.uiLocale || "es").trim().toLowerCase().startsWith("en");
   return (
     (includeEightLocksBar
       ? `<details class="tech-details ek-mb-sm"><summary>Detalles técnicos de validación</summary><div class="eight-locks-pda-bar" data-eight-locks-bar="true">${eightLocksPillsHtml}</div></details>`
       : "") +
-    `<div class="taller-artifacts-grid ek-span-full ek-auto-grid ek-mb-sm" data-taller-lang="${cleanLang}">` +
+    `<div class="taller-fullwidth-audit-stack ek-span-full ek-stack">` +
+    walAuditHtml +
+    censusHtml +
+    `</div>` +
+    `<details id="tallerCc0DownloadsDetails" class="r9-stratum-accordion ek-span-full" data-taller-lang="${cleanLang}">` +
+    `<summary>📦 ${isEnCatalog ? "Download CC0 Field Artifacts & Lexicon (11 files)" : "Descargar Artefactos CC0 y Léxico de Campo (11 archivos)"}</summary>` +
+    `<div class="taller-artifacts-grid ek-auto-grid ek-mt-xs" data-taller-lang="${cleanLang}">` +
     TALLER_CC0_ARTIFACTS.map((art) => {
       const kit = buildDynamicTallerKitHref(cleanLang, art);
       return `<a class="uls-chip taller-artifact-link ek-btn-link" data-taller-artifact="${art.id}" data-taller-dynamic="${kit.isDynamic}" href="${kit.href}" download="${kit.downloadName}">${art.label}</a>`;
     }).join("") +
     `</div>` +
-    `<div class="taller-fullwidth-audit-stack ek-span-full ek-stack">` +
-    walAuditHtml +
-    censusHtml +
-    `</div>`
+    `</details>`
   );
 }

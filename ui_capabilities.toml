@@ -550,6 +550,54 @@ handler = "bindSupportContactDialog"
 test_file = "mostrador/tribunal_packs_crypto.test.mjs"
 test_name = "SLICE_R2_B07_B08_provenance_integrity_card_and_support_contact_honeypot_dialog"
 
+[capability.surface_slot_compositor]
+surface = "public-ui"
+selector = "#sovereignGlobalDrawersHost"
+module = "mostrador/surface_compositor.js"
+handler = "enforceSubtractiveSlotOwnership"
+test_file = "web/surface_compositor_r9.test.mjs"
+test_name = "SLICE_R9_01: SURFACE_SLOT_MANIFEST and resolveActiveWorkDrawerContext cover all 12 subtabs and 3 works"
+
+[capability.multi_work_drawer_context]
+surface = "public-ui"
+selector = "#sovereignWorkTabs"
+module = "mostrador/projection_contract.js"
+handler = "resolveActiveWorkDrawerContext"
+test_file = "web/surface_compositor_r9.test.mjs"
+test_name = "SLICE_R9_01: SURFACE_SLOT_MANIFEST and resolveActiveWorkDrawerContext cover all 12 subtabs and 3 works"
+
+[capability.unified_sauvola_photocopy]
+surface = "public-ui"
+selector = "#photocopyResilienceUnifiedSection"
+module = "mostrador/print_work_and_photocopy.js"
+handler = "resolveUnifiedSauvolaState"
+test_file = "web/subtractive_parity_r9.test.mjs"
+test_name = "SLICE_R9_06_07: drawer_print < 1000 LOC, SSOT A4/Letter, Sauvola unified, Braille B70 preview"
+
+[capability.unified_ed25519_authenticity]
+surface = "public-ui"
+selector = "#shareAuthenticityUnifiedCard"
+module = "mostrador/drawer_share.js"
+handler = "hydrateShareAndAuditDrawerPanel"
+test_file = "web/subtractive_parity_r9.test.mjs"
+test_name = "SLICE_R9_08_09: Share Vault promoted above accordions, Workshop audit moved to Revisión, Formulaic parallels exposed"
+
+[capability.formulaic_parallels_study]
+surface = "public-ui"
+selector = "#studyFormulaicParallelsHost"
+module = "mostrador/study_onomasticon_and_ubs.js"
+handler = "renderFormulaicParallelsCardHtml"
+test_file = "web/subtractive_parity_r9.test.mjs"
+test_name = "SLICE_R9_08_09: Share Vault promoted above accordions, Workshop audit moved to Revisión, Formulaic parallels exposed"
+
+[capability.braille_b70_live_preview]
+surface = "public-ui"
+selector = "#duplexAssistantPanel"
+module = "mostrador/print_work_and_photocopy.js"
+handler = "renderUnifiedBraillePreviewHtml"
+test_file = "web/subtractive_parity_r9.test.mjs"
+test_name = "SLICE_R9_06_07: drawer_print < 1000 LOC, SSOT A4/Letter, Sauvola unified, Braille B70 preview"
+
 [capability.cli_compile]
 surface = "editor-cli"
 cli_subcommand = "compile"

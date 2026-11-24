@@ -17,7 +17,8 @@ export {
 export {
   IMPROVE_I18N_FALLBACKS,
   IMPROVE_I18N_FALLBACKS_ES, renderCascadeAndLadderHtml, renderImproveDrawerHtml,
-  renderStpDraftCheckHtml, renderStpLexiconExplorerHtml, renderStpLexiconResultsRowsHtml, renderTallerArtifactsCatalogHtml
+  renderStpDraftCheckHtml, renderStpLexiconExplorerHtml, renderStpLexiconResultsRowsHtml, renderTallerArtifactsCatalogHtml,
+  renderWorkshopAuditPanelsHtml
 } from "./mejorar_renderers.js";
 export {
   evaluateBetaDawidSkeneSprt,

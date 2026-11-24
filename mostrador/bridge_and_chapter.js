@@ -6,7 +6,7 @@
 
 import { highlightSearchMatchHtml } from "./concordance_search.js";
 import { CROSS_WORK_BRIDGE_TABLE, projectCrossWorkCoordinate } from "./cross_work_bridge.js";
-import { STATUS } from "./data_layer.js";
+import { MOSTRADOR_DOM_BINDINGS, STATUS } from "./data_layer.js";
 import {
   applySpanish21DiachronicRegister,
   computeAnalyticalRegisterMetrics,
@@ -24,38 +24,7 @@ import {
   transduceOrthographyWeb,
 } from "./orthography_wfst.js";
 
-export { CROSS_WORK_BRIDGE_TABLE, projectCrossWorkCoordinate };
-
-/**
- * Mapa declarativo canónico `Selector DOM -> Handler` (`D68 / 7B+` + `D70 / 9B+` · `ARB-EKOVOZ-65`).
- */
-export const MOSTRADOR_DOM_BINDINGS = {
-  "#tabWorkBiblia": "switchWork:biblia",
-  "#tabWorkFelices": "switchWork:felices",
-  "#tabWorkEvangelios": "switchWork:evangelios",
-  "#bibleSelectBook": "navigate:book",
-  "#bibleSelectChapter": "navigate:chapter",
-  "#btnPrevChapter": "navigate:prevChapter",
-  "#btnNextChapter": "navigate:nextChapter",
-  "#btnOpenCompass": "compass:toggle",
-  "#bibleChapterPericopesRibbon": "selectVerse:pericope",
-  "#felicesSocraticWonderCard": "navigate:wonderCite",
-  "#toggleA4": "setPaperFormat:a4",
-  "#toggleCarta": "setPaperFormat:letter",
-  "#btnOpenPreviewCarousel": "openModal:previewModal",
-  "#previewModalCloseBtn": "closeModal:previewModal",
-  "#btnPreviewClose": "closeModal:previewModal",
-  "#carouselPrevBtn": "prevSlide",
-  "#carouselNextBtn": "nextSlide",
-  "#evangeliosWeekSelect": "hydrateEvangeliosSection:week",
-  "#evangeliosLangSelect": "hydrateEvangeliosSection:lang",
-  "#rosettaSearchInput": "renderPhilologyRosettaResultsRowsHtml",
-  "#stpLexiconSearchInput": "renderStpLexiconResultsRowsHtml",
-  "#bibleEasyDrawer": "transitionSheet:study",
-  "#btnOpenPrintEditionsSheet": "transitionSheet:print",
-  "#btnOpenFieldWorkshopSheet": "transitionSheet:field",
-  "#btnOpenShareAndAuditSheet": "transitionSheet:share",
-};
+export { CROSS_WORK_BRIDGE_TABLE, MOSTRADOR_DOM_BINDINGS, projectCrossWorkCoordinate };
 
 export const HAREL_SHEET_MAP = {
   study: {

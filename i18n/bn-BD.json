@@ -120,7 +120,7 @@
         "mostrador.tab.evangelios": "🌅 ইঞ্জিল শরীফ",
         "mostrador.nav.prev": "Previous chapter",
         "mostrador.nav.next": "Next chapter",
-        "mostrador.step2.placeholder": "Passage (e.g. Rom 1:16, Jn 3:16, Ps 23)",
+        "mostrador.step2.placeholder": "Book & chapter (e.g. Jn 3:16 or Ps 23)",
         "mostrador.heading": "Polyglot Bible Reader (66 Books · Printable & Shareable PDFs)",
         "seal.unavailable": "Translation not yet available",
         "mostrador.step2.open_compass": "Go",
@@ -153,7 +153,7 @@
         "mostrador.register.classic": "📜 Classic tradition",
         "mostrador.register.bilingual": "👥 Side-by-side bilingual",
         "mostrador.register.roll_toggle": "📄 Page view ↔ Continuous scroll",
-        "mostrador.step2.title": "2. Passage Preview",
+        "mostrador.step2.title": "Compass & Search",
         "mostrador.status.loading": "Loading authentic passage…",
         "mostrador.door.study": "🔬 ১. অধ্যয়ন",
         "mostrador.door.print": "🖨️ ২. প্রিন্ট",
@@ -226,7 +226,6 @@
         "print.btn.imposition": "📐 পুস্তিকার ভাঁজ হিসাব করুন",
         "print.btn.layout": "📏 পৃষ্ঠার মার্জিন যাচাই করুন (A4 / লেটার)",
         "print.btn.photocopy3gen": "🔬 ফটোকপির পাঠযোগ্যতা পরীক্ষা (৩য় প্রজন্ম)",
-        "print.photocopyReceiptSummary": "🔬 অপটিক্যাল ও টাইপোগ্রাফিক রসিদ",
         "share.btn.copyLink": "🔗 এই অংশের সরাসরি লিংক কপি করুন",
         "share.fps.667": "6.67 FPS · 150 ms (কম আলোতে নিরাপদ)",
         "share.fps.10": "10 FPS · 100 ms (দ্রুত স্ক্রিন স্থানান্তর)",
@@ -274,6 +273,12 @@
         "corpus.tab.bibles": "📖 বাইবেল ও ভাষা (24)",
         "corpus.tab.trails": "🧭 পাঠ পরিকল্পনা (8)",
         "print.stealthMode": "🥷 নিরপেক্ষ ফাইল নাম (অধ্যয়ন)",
-        "print.btn.brailleB70": "♿ ব্রেইল B70 (.brf)"
+        "print.btn.brailleB70": "♿ ব্রেইল B70 (.brf)",
+        "study.acc.ubs": "🏛️ 6 Textual Traditions (UBS)",
+        "study.acc.onomasticon": "📜 Biblical Onomasticon (3,657 names)",
+        "study.acc.realia": "🪴 Biblical Realia, NSM-65 & Metrology",
+        "study.acc.tskFormulaic": "🔗 TSK Cross-References & OT↔NT Parallels",
+        "study.acc.orthography": "✍️ Orthography Comparator & Lexical Conservation",
+        "study.acc.typology": "🌐 Typological Profile & Editorial Tradition"
     }
 }

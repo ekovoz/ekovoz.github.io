@@ -326,3 +326,74 @@ export async function hydrateOnomasticonAndUbsPanels(ctx = {}) {
     }
   }
 }
+
+const DEFAULT_FORMULAIC_QUOTES_SEED = Object.freeze([
+  { nt_ref: "MAT.1.23", ot_ref: "ISA.7.14", strong_anchor: "H6005_Immanuel_G1694" },
+  { nt_ref: "MAT.4.4", ot_ref: "DEU.8.3", strong_anchor: "H3899_lechem_G0740" },
+  { nt_ref: "MAT.5.5", ot_ref: "PSA.37.11", strong_anchor: "H6035_anav_G4239" },
+  { nt_ref: "MAT.27.46", ot_ref: "PSA.22.1", strong_anchor: "H0410_El_G2316" },
+  { nt_ref: "ROM.1.17", ot_ref: "HAB.2.4", strong_anchor: "H0530_emunah_G4102" },
+  { nt_ref: "JHN.1.23", ot_ref: "ISA.40.3", strong_anchor: "H6963_qol_G5456" },
+]);
+
+export function renderFormulaicParallelsCardHtml({
+  book = "GEN",
+  chapter = 1,
+  verse = 1,
+  formulaicIndex = null,
+  uiLocale = "es",
+} = {}) {
+  const isEn = String(uiLocale || "es").trim().toLowerCase().startsWith("en");
+  const cleanBook = String(book || "GEN").trim().toUpperCase();
+  const cleanChapter = Number(chapter) || 1;
+  const cleanVerse = Number(verse) || 1;
+  const osisRef = `${cleanBook}.${cleanChapter}.${cleanVerse}`;
+  const chapPrefix = `${cleanBook}.${cleanChapter}.`;
+
+  const rawQuotes = Array.isArray(formulaicIndex?.ot_in_nt_quotations) && formulaicIndex.ot_in_nt_quotations.length > 0
+    ? formulaicIndex.ot_in_nt_quotations
+    : DEFAULT_FORMULAIC_QUOTES_SEED;
+  const rawTemplates = Array.isArray(formulaicIndex?.templates) ? formulaicIndex.templates : [];
+
+  const exactQuotes = rawQuotes.filter((q) => {
+    const nt = String(q?.nt_ref || "").toUpperCase();
+    const ot = String(q?.ot_ref || "").toUpperCase();
+    return nt === osisRef || ot === osisRef || nt.startsWith(chapPrefix) || ot.startsWith(chapPrefix);
+  });
+  const matchedQuotes = (exactQuotes.length > 0 ? exactQuotes : rawQuotes).slice(0, 6);
+  const matchingTemplates = rawTemplates
+    .filter((tpl) => {
+      const anchor = String(tpl?.canonical_anchor_ref || "").toUpperCase();
+      const samples = Array.isArray(tpl?.sample_instance_refs) ? tpl.sample_instance_refs : [];
+      return anchor === osisRef || anchor.startsWith(chapPrefix) || samples.some((r) => String(r).toUpperCase().startsWith(chapPrefix));
+    })
+    .slice(0, 3);
+
+  const quoteChips = matchedQuotes
+    .map((q) => {
+      const targetRef = String(q.nt_ref).toUpperCase() === osisRef ? q.ot_ref : q.nt_ref;
+      const otherRef = String(q.nt_ref).toUpperCase() === osisRef ? q.nt_ref : q.ot_ref;
+      return (
+        `<button type="button" class="uls-chip formulaic-jump-chip" data-formulaic-ref="${escapeHtml(targetRef)}" data-strong-anchor="${escapeHtml(q.strong_anchor || "")}">` +
+        `📜 ${escapeHtml(otherRef)} ↔ ${escapeHtml(targetRef)} (${escapeHtml(String(q.strong_anchor || "").split("_")[0])})` +
+        `</button>`
+      );
+    })
+    .join(" ");
+
+  const tplSummaryHtml = matchingTemplates.length > 0
+    ? `<div class="ek-meta ek-mt-xs">${matchingTemplates.map((t) => `<span>🧬 ${escapeHtml(t.category || t.template_id)} (${Number(t.covered_verses_count || 0)} vv.) · ${escapeHtml(t.canonical_anchor_ref)}</span>`).join(" · ")}</div>`
+    : "";
+
+  const totalParallels = rawQuotes.length + rawTemplates.length;
+  return (
+    `<article id="formulaicParallelsCard" class="ek-card-muted" data-formulaic-osis="${escapeHtml(osisRef)}" data-formulaic-total="${totalParallels}" data-formulaic-matched="${matchedQuotes.length}">` +
+    `<div class="ek-row-between">` +
+    `<strong>🔗 ${isEn ? "OT ↔ NT Formulaic Parallels" : "Paralelos Formulaicos AT ↔ NT"}</strong>` +
+    `<span class="uls-badge ek-badge-compact">${exactQuotes.length > 0 ? `${exactQuotes.length} ${isEn ? "in chapter" : "en capítulo"}` : `${rawQuotes.length} ${isEn ? "indexed quotes" : "citas indexadas"}`}</span>` +
+    `</div>` +
+    `<div class="ek-row-wrap ek-mt-xs">${quoteChips}</div>` +
+    tplSummaryHtml +
+    `</article>`
+  );
+}

@@ -353,12 +353,19 @@ export function resolveEditionGeometrySpec(profileId = "02_2col_pastoral", paper
     numPrefix ||
     String(found?.id || cleanId).match(/^(\d{2})_/)?.[1] ||
     String(resolvedIdx + 1).padStart(2, "0");
+  const callerPaper = String(paperFormat || "").trim().toLowerCase();
+  const basePaper = String(found?.paperSize || "A4");
+  const isBaseStdPaper = /^(?:a4|letter|us-letter)$/i.test(basePaper);
   const paperSize =
-    resolvedPrefix === "01"
-      ? "A4"
-      : resolvedPrefix === "02"
+    isBaseStdPaper && (callerPaper === "letter" || callerPaper === "us-letter" || callerPaper === "a4")
+      ? callerPaper.includes("letter")
         ? "Letter"
-        : String(found?.paperSize || paperFormat || "A4");
+        : "A4"
+      : resolvedPrefix === "01"
+        ? "A4"
+        : resolvedPrefix === "02"
+          ? "Letter"
+          : String(found?.paperSize || paperFormat || "A4");
   const editionDir =
     resolvedPrefix === "01"
       ? "2col-a4"

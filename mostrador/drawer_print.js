@@ -25,24 +25,19 @@ import {
   renderImpositionAndLayoutPreviewHtml,
   renderMultiSignatureAndPocketRefugeHtml,
   resolveCanonicalBlockCode,
-  resolveCanonicalBlockForPassage,
   resolveMacroTandaForBlock,
   resolveRegionalPrintDefaults,
   simulateThirdGenPhotocopySauvola,
   syncDose2AndDose3LinksForActiveLang,
-  syncPrintDrawerControlsFromEditionProfile,
 } from "./dosis.js";
-import {
-  buildCssPagedMediaPrintHtml,
-  resolveLocalPrintArtifactFallback,
-} from "./bimodal_tanda_print.js";
+import { buildCssPagedMediaPrintHtml } from "./bimodal_tanda_print.js";
 import { computeSaddleStitchImpositionPlan } from "./optical_lt.js";
 import {
   buildEditionRenderSpecBytes16,
   resolveNumericEditionId,
   transduceTextToBrailleBrfAndUnicode,
 } from "./dosis_editions_catalog.js";
-import { bindSurfaceActions, patchStoreState, patchTextAndAttrs } from "./dom_patch.js";
+import { bindSurfaceActions, patchStoreState } from "./dom_patch.js";
 import { isRtlLocale } from "./i18n.js";
 import { mountOfflineFontNoticeWithLocalImporter } from "./offline_font_bundle.js";
 import { decodeRfc8878RawZstdFrameJs } from "./offline_mesh.js";
@@ -51,10 +46,19 @@ import {
   ensureDirectEditionsAndGrambankControls,
   filterBookEntriesRange,
   flattenLoadedBookChapters,
-  normalizeChapterMapToEntries,
   resolveEditionSubstrateForProfile,
   resolveGrambankTypologyPrintPreset,
 } from "./print_config_projector.js";
+import {
+  buildEditionCatalogCardHtml,
+  handleCatalogEditionCardClick,
+  mountOrUpdatePrintActiveWorkBanner,
+  normalizeStandardPaperFormat,
+  renderUnifiedBraillePreviewHtml,
+  resolveUnifiedSauvolaState,
+  revokeObjectUrlSafe,
+  toDownloadablePdfHref,
+} from "./print_work_and_photocopy.js";
 import { resolveOracleSpecimenDefaults } from "./sauvola_canvas_oracle.js";
 import {
   buildOpenGraphSocialCardSvg1200x630,
@@ -64,7 +68,6 @@ import {
   simulateKanungoSauvolaGeneration,
 } from "./social_and_photocopy_cards.js";
 import { isStealthFilenameActive, resolveSafeDownloadFilename } from "./stealth_filename.js";
-import { updatePrintConfig } from "./state_store.js";
 import {
   encodePaperFormatCode,
   resolveFontFileForLangOrScript,
@@ -88,41 +91,9 @@ export {
 
 const HAREL_PRINT_SUBTABS_CONST = ["doses", "imposition", "stationery"];
 
-function toDownloadablePdfHref(pdfInput) {
-  const parts = Array.isArray(pdfInput)
-    ? pdfInput.filter((p) => p instanceof Uint8Array && p.byteLength > 0)
-    : pdfInput instanceof Uint8Array && pdfInput.byteLength > 0
-      ? [pdfInput]
-      : [];
-  if (parts.length === 0) return "";
-  if (
-    typeof globalThis.window !== "undefined" &&
-    typeof globalThis.Blob === "function" &&
-    typeof globalThis.URL?.createObjectURL === "function"
-  ) {
-    return globalThis.URL.createObjectURL(new globalThis.Blob(parts, { type: "application/pdf" }));
-  }
-  const total = parts.reduce((acc, p) => acc + p.byteLength, 0);
-  const combined = new Uint8Array(total);
-  let off = 0;
-  for (const p of parts) {
-    combined.set(p, off);
-    off += p.byteLength;
-  }
-  return encodePdfBytesToDataUriSafe(combined);
-}
-
-function encodePdfBytesToDataUriSafe(bytes) {
-  let bin = "";
-  for (let i = 0; i < bytes.byteLength; i += 1) {
-    bin += String.fromCharCode(bytes[i]);
-  }
-  const b64 = typeof globalThis.btoa === "function" ? globalThis.btoa(bin) : Buffer.from(bytes).toString("base64");
-  return `data:application/pdf;base64,${b64}`;
-}
-
 export function renderPrintDrawerPanelsSyncInDrawer(ctx = {}) {
   const { state, targetDoc, getEl, hydratePrintDrawerPanels } = ctx;
+  mountOrUpdatePrintActiveWorkBanner(getEl("biblePrintEditionsSheet", targetDoc), targetDoc, state);
   const liveBlock = resolveCanonicalBlockCode(state.book, state.chapter, state.verse);
   const passageKey = `${state.book}.${state.chapter}`;
   if (state.activeBlockPassageKey !== passageKey) {
@@ -384,11 +355,18 @@ export function renderPrintDrawerPanelsSyncInDrawer(ctx = {}) {
       `<a id="btnDownloadBrailleBrf" class="uls-chip" href="${brfHref}" download="${escapeHtml(brfFilename)}" data-edition-slug="11_braille_nemeth_b70">` +
       `⠋ ${isEn ? "Download Tactile .brf (Ed. 11)" : "Descargar .brf Táctil (Ed. 11)"}</a>` +
       `</div>`;
+    const braillePreviewHtml = renderUnifiedBraillePreviewHtml({
+      verseRef: `${state.book || "GEN"} ${Number(state.chapter) || 1}:${Number(state.verse) || 1}`,
+      unicodeText: brfResult?.unicode || "",
+      brfText: brfResult?.brf || "",
+      isEn,
+      nemethEnabled: Boolean(nemethCheckedAttr),
+    });
     duplexPanel.innerHTML = `<div class="mostrador-duplex-assistant" data-edition="${escapeHtml(
       slug,
     )}" data-foliation-mode="${escapeHtml(foliation.mode)}" data-binding-edge="${escapeHtml(
       foliation.bindingEdge,
-    )}"><strong>${duplexHeader}</strong><p class="duplex-summary-text">${duplexBody}</p>${nemethToggleHtml}${multiSigHtml}${macroTandas16Html}</div>`;
+    )}"><strong>${duplexHeader}</strong><p class="duplex-summary-text">${duplexBody}</p>${nemethToggleHtml}${braillePreviewHtml}${multiSigHtml}${macroTandas16Html}</div>`;
 
     const chkNemeth = getEl("chkBrailleNemethToggle", targetDoc);
     if (chkNemeth && typeof chkNemeth.addEventListener === "function" && !chkNemeth._nemethBound) {
@@ -463,13 +441,12 @@ export function renderPrintDrawerPanelsSyncInDrawer(ctx = {}) {
     }
   }
 
+  const unifiedSauvola = resolveUnifiedSauvolaState(state);
   const photocopyBadge = getEl("biblePhotocopySimBadge", targetDoc);
   if (photocopyBadge) {
-    const activeGen = Number.isInteger(state.photocopyGen) ? state.photocopyGen : 3;
-    const activeSauvolaK = typeof state.sauvolaK === "number" ? state.sauvolaK : 0.25;
     const simLang = state.effectiveCorpusLang || state.lang || "es";
     const specimenSample = resolveOracleSpecimenDefaults(simLang, "").sampleText;
-    const simLive = simulateKanungoSauvolaGeneration(activeGen, activeSauvolaK, 300, {
+    const simLive = simulateKanungoSauvolaGeneration(unifiedSauvola.genIndex, unifiedSauvola.sauvolaK, 300, {
       lang: simLang,
       text: specimenSample,
       ttfBytes: state.activePrintTtfBytes || null,
@@ -501,8 +478,8 @@ export function renderPrintDrawerPanelsSyncInDrawer(ctx = {}) {
       verse: state.verse,
       text: verseText,
       lang: state.lang,
-      activeGen: state.photocopyGen ?? 5,
-      sauvolaK: state.sauvolaK ?? 0.32,
+      activeGen: unifiedSauvola.genIndex,
+      sauvolaK: unifiedSauvola.sauvolaK,
       uiLocale: state.uiLocale || "es",
       ttfBytes: state.activePrintTtfBytes || null,
     });
@@ -525,7 +502,7 @@ export function renderPrintDrawerPanelsSyncInDrawer(ctx = {}) {
     if (sauvolaInput && typeof sauvolaInput.addEventListener === "function" && !sauvolaInput._sauvolaKBound) {
       sauvolaInput._sauvolaKBound = true;
       const onSauvolaChange = (ev) => {
-        state.sauvolaK = Number(ev?.target?.value) || 0.32;
+        state.sauvolaK = Number(ev?.target?.value) || 0.25;
         renderPrintDrawerPanelsSyncInDrawer(ctx);
       };
       if (!sauvolaInput._sauvolaEventsBound) {
@@ -660,13 +637,14 @@ export function renderPrintDrawerPanelsSyncInDrawer(ctx = {}) {
   if (catalogGrid) {
     const activeProfileId = state.activePrintProfileId || "02_2col_pastoral";
     const effectiveLang = String(state.effectiveCorpusLang || state.lang || "es").trim() || "es";
+    const normPaper = normalizeStandardPaperFormat(effectivePaper);
     const activeBlockCode = `B${String(
       Math.max(1, Math.min(80, Number(state.activeBlockNumber) || liveBlock.blockNumber || 1)),
     ).padStart(2, "0")}`;
     const editions = listAll14PrintEditionsForLang(
       effectiveLang,
       effectiveLang,
-      { uiLocale: state.uiLocale || "es" },
+      { uiLocale: state.uiLocale || "es", paperFormat: normPaper },
     );
     if (!state.editionObjectUrls || typeof state.editionObjectUrls !== "object") {
       state.editionObjectUrls = {};
@@ -674,13 +652,7 @@ export function renderPrintDrawerPanelsSyncInDrawer(ctx = {}) {
     const editionScopeSig = `${effectiveLang}::${state.book || "GEN"}::${state.chapter || 1}::${activeBlockCode}`;
     if (state._editionObjectUrlsScope && state._editionObjectUrlsScope !== editionScopeSig) {
       for (const prevUrl of Object.values(state.editionObjectUrls)) {
-        if (typeof prevUrl === "string" && prevUrl.startsWith("blob:")) {
-          try {
-            globalThis.URL?.revokeObjectURL?.(prevUrl);
-          } catch {
-            // Non-fatal
-          }
-        }
+        revokeObjectUrlSafe(prevUrl);
       }
       state.editionObjectUrls = {};
     }
@@ -688,76 +660,19 @@ export function renderPrintDrawerPanelsSyncInDrawer(ctx = {}) {
     catalogGrid.setAttribute("data-editions-count", String(editions.length));
     catalogGrid.setAttribute("data-active-block-code", activeBlockCode);
     catalogGrid.innerHTML = editions
-      .map((ed) => {
-        const cardId = ed.profileId || ed.id;
-        const isSelected = ed.kind !== "field_pdf" && cardId === activeProfileId;
-        const dynamicFieldMode =
-          ed.id?.includes("refugio_4_hojas") || ed.editionSlug === "refugio_4_hojas"
-            ? 15
-            : ed.id?.includes("checklist_80_bloques") || ed.editionSlug === "checklist_80_bloques"
-              ? 0
-              : ed.id === "06_bilingue_paralela"
-                ? 15
-                : ed.id === "07_cuaderno_5lineas_apaisado"
-                  ? 16
-                  : 0;
-        const editionCacheKey = `${cardId}::${editionScopeSig}`;
-        const cachedCardHref = state.editionObjectUrls[editionCacheKey] || state.editionObjectUrls[cardId] || "";
-        const staticFieldHref =
-          ed.kind === "field_pdf" && effectiveLang === "es" && state.federationReachable !== false
-            ? buildRelativePdfAssetUrl(ed.profileUrl || ed.url || "")
-            : "";
-        const resolvedHref =
-          cachedCardHref ||
-          staticFieldHref ||
-          buildRelativePdfAssetUrl(ed.profileUrl || ed.url || "mostrador/tanda_print_worker.js");
-        const cardPaperRaw = String(ed.paperSize || "").toLowerCase();
-        const normEffPaper = String(effectivePaper || "a4").toLowerCase();
-        const isAdaptableStdPaper =
-          (cardPaperRaw === "a4" || cardPaperRaw === "letter") &&
-          (normEffPaper === "a4" || normEffPaper === "letter");
-        const resolvedCardPaper = isAdaptableStdPaper ? normEffPaper : (ed.paperSize || "");
-        const displayPaperBadge = isAdaptableStdPaper
-          ? (normEffPaper === "letter" ? "US-LETTER" : "A4")
-          : ed.paperSize
-            ? String(ed.paperSize).toUpperCase()
-            : "";
-        const paperCode = encodePaperFormatCode(
-          resolvedCardPaper || effectivePaper,
-          String(resolvedCardPaper || "").toLowerCase().includes("landscape") ? "landscape" : "portrait",
-        );
-        const specParts =
-          ed.kind === "field_pdf"
-            ? [
-              isEn ? "Field PDF" : "PDF de Campo",
-              ed.bytes ? `${(Number(ed.bytes) / 1024).toFixed(1)} KB` : "",
-            ].filter(Boolean)
-            : [
-              ed.columns ? `${ed.columns} col` : "",
-              ed.fontPt ? `${ed.fontPt} pt` : "",
-              displayPaperBadge,
-              activeBlockCode,
-            ].filter(Boolean);
-        const specBadge = specParts.length
-          ? `<span class="edition-spec-badge">${escapeHtml(specParts.join(" · "))}</span>`
-          : "";
-        return (
-          `<a class="uls-chip print-edition-card${isSelected ? " is-selected" : ""}" aria-pressed="${isSelected ? "true" : "false"
-          }" href="${escapeHtml(
-            resolvedHref,
-          )}" data-profile-id="${escapeHtml(cardId)}" data-edition-slug="${escapeHtml(
-            ed.editionSlug,
-          )}" data-edition-mode="${dynamicFieldMode}" data-paper-code="${paperCode}" data-active-block="${escapeHtml(activeBlockCode)}" data-field-pdf-bytes="${escapeHtml(
-            ed.bytes || "",
-          )}" data-geometry-key="${escapeHtml(ed.geometryKey || "")}" data-edition-kind="${escapeHtml(
-            ed.kind || "edition",
-          )}" data-toml-path="${escapeHtml(ed.tomlPath || "")}" data-font-pt="${escapeHtml(
-            ed.fontPt || "",
-          )}" data-columns="${escapeHtml(ed.columns || "")}" data-paper-size="${escapeHtml(
-            resolvedCardPaper,
-          )}" data-has-precompiled-pdf="${Boolean(staticFieldHref && !cachedCardHref)}" data-availability-mode="bimodal_client_print" data-bimodal-lane="lane_b_worker_tanda" download>📄 ${escapeHtml(ed.label)}${specBadge}</a>`
-        );
-      })
+      .map((ed) =>
+        buildEditionCatalogCardHtml(ed, {
+          state,
+          activeProfileId,
+          effectiveLang,
+          effectivePaper: normPaper,
+          activeBlockCode,
+          editionScopeSig,
+          isEn,
+          buildRelativePdfAssetUrl,
+          encodePaperFormatCode,
+        }),
+      )
       .join("");
 
     if (typeof catalogGrid.addEventListener === "function" && !catalogGrid._editionsBound) {
@@ -768,230 +683,18 @@ export function renderPrintDrawerPanelsSyncInDrawer(ctx = {}) {
           : e?.target?.getAttribute?.("data-profile-id")
             ? e.target
             : null;
-        const profId = cardEl?.getAttribute?.("data-profile-id");
-        if (!profId) return;
-        const curLang = String(state.effectiveCorpusLang || state.lang || "es").trim() || "es";
-        const isFieldCard =
-          profId.includes("refugio_4_hojas") || profId.includes("checklist_80_bloques");
-        if (isFieldCard && curLang === "es" && state.federationReachable !== false) {
-          return;
-        }
-        let cols = Number(cardEl?.getAttribute?.("data-columns")) || Number(state.columns) || 2;
-        let fontPt = Number(cardEl?.getAttribute?.("data-font-pt")) || Number(state.fontSizePt) || 9.5;
-        let paper = cardEl?.getAttribute?.("data-paper-size") || state.paperFormat || "a4";
-        let orientation = String(paper).toLowerCase().includes("landscape") ? "landscape" : "portrait";
-        let booklet4n = state.foliationMode === "saddle_stitch";
-        if (!isFieldCard) {
-          const synced = syncPrintDrawerControlsFromEditionProfile(profId, targetDoc);
-          state.activePrintProfileId = synced.profileId;
-          state.edition = synced.profileId;
-          state.fontSizePt = synced.fontPt;
-          state.columns = synced.columns;
-          state.paperFormat = synced.paper;
-          state.orientation = synced.orientation;
-          state.foliationMode = synced.foliationMode;
-          if (ctx.store) {
-            updatePrintConfig(ctx.store, {
-              edition: synced.profileId,
-              fontSizePt: synced.fontPt,
-              columns: synced.columns,
-              paperFormat: synced.paper,
-              orientation: synced.orientation,
-              foliationMode: synced.foliationMode,
-            });
-          }
-          ensureDirectEditionsAndGrambankControls({
-            ...ctx,
-            onConfigChanged: () => renderPrintDrawerPanelsSyncInDrawer(ctx),
-          });
-          cols = synced.columns;
-          fontPt = synced.fontPt;
-          paper = synced.paper;
-          orientation = synced.orientation || orientation;
-          booklet4n = synced.foliationMode === "saddle_stitch";
-        }
-        const curBlockCode = `B${String(
-          Math.max(1, Math.min(80, Number(state.activeBlockNumber) || 1)),
-        ).padStart(2, "0")}`;
-        const cacheKey = `${profId}::${curLang}::${state.book || "GEN"}::${state.chapter || 1}::${curBlockCode}`;
-        if (!state.editionObjectUrls || typeof state.editionObjectUrls !== "object") {
-          state.editionObjectUrls = {};
-        }
-        if (!state.editionObjectUrls[cacheKey] && !cardEl._directSynthesizedClick) {
-          e?.preventDefault?.();
-          try {
-            const substrate = await resolveEditionSubstrateForProfile(profId, {
-              state,
-              dataLayer: ctx.dataLayer,
-              curLang,
-              activeBook: state.book || "GEN",
-              activeChapter: state.chapter || 1,
-              columns: cols,
-              fontPt,
-              paper,
-              orientation,
-              booklet4n,
-            });
-            if (substrate.brfAscii || substrate.brfHref) {
-              if (!state.brfObjectUrls || typeof state.brfObjectUrls !== "object") {
-                state.brfObjectUrls = {};
-              }
-              const prevBrfUrl = state.brfObjectUrls[cacheKey];
-              if (typeof prevBrfUrl === "string" && prevBrfUrl.startsWith("blob:")) {
-                try {
-                  globalThis.URL?.revokeObjectURL?.(prevBrfUrl);
-                } catch {
-                  // Non-fatal
-                }
-              }
-              let resolvedBrfHref = substrate.brfHref || "";
-              if (
-                substrate.brfAscii &&
-                typeof globalThis.Blob === "function" &&
-                typeof globalThis.URL?.createObjectURL === "function"
-              ) {
-                try {
-                  resolvedBrfHref = globalThis.URL.createObjectURL(
-                    new globalThis.Blob([substrate.brfAscii], { type: "text/plain;charset=utf-8" }),
-                  );
-                } catch {
-                  // Fallback to data URI
-                }
-              }
-              state.brfObjectUrls[cacheKey] = resolvedBrfHref;
-              const brfFilename = resolveSafeDownloadFilename(state, { kind: "braille_brf", blockNumber: stealthBlkNum });
-              cardEl.setAttribute?.("data-brf-href", resolvedBrfHref);
-              cardEl.setAttribute?.("data-brf-download", brfFilename);
-              if (resolvedBrfHref && typeof targetDoc?.createElement === "function") {
-                try {
-                  const brfAnchor = targetDoc.createElement("a");
-                  if (brfAnchor) {
-                    brfAnchor.href = resolvedBrfHref;
-                    brfAnchor.download = brfFilename;
-                    brfAnchor.click?.();
-                  }
-                } catch {
-                  // Non-fatal in mock docs
-                }
-              }
-            }
-            const clickedEditionId = resolveNumericEditionId(profId || substrate.editionMode);
-            const clickedRenderSpec = clickedEditionId > 0
-              ? buildEditionRenderSpecBytes16(clickedEditionId, {
-                columns: substrate.columns,
-                fontTenthsPt: Math.round((Number(substrate.fontPt) || 9.5) * 10),
-                paperCode: encodePaperFormatCode(substrate.paper, substrate.orientation),
-              })
-              : null;
-            const res = await dispatchTandaWorkerJob({
-              lang: curLang,
-              book: substrate.book || state.book || "GEN",
-              chapter: substrate.chapter || state.chapter || 1,
-              verses: substrate.verses,
-              bridgeVerses: substrate.bridgeVerses,
-              bridgeFontFile: substrate.bridgeFontFile || "",
-              tertiaryFontFile: substrate.tertiaryFontFile || "",
-              editionId: clickedEditionId,
-              editionRenderSpec: clickedRenderSpec,
-              editionMode: substrate.editionMode,
-              columns: substrate.columns,
-              fontPt: substrate.fontPt,
-              paper: substrate.paper,
-              orientation: substrate.orientation,
-              includeBoldFont: true,
-              dir: isRtlLocale(curLang) ? "rtl" : "ltr",
-              booklet4n: substrate.booklet4n,
-              maxPagesPerTanda: 0,
-            });
-            const hasEditionParts = Array.isArray(res?.blobParts) && res.blobParts.length > 0;
-            const hasEditionPdf = hasEditionParts || (res?.pdfBytes instanceof Uint8Array && res.pdfBytes.byteLength > 0);
-            if (res?.type === "tanda-offline-font-notice") {
-              const noticeEl = getEl("tanda-offline-font-notice", targetDoc);
-              mountOfflineFontNoticeWithLocalImporter(noticeEl, res, {
-                targetDoc,
-                onImported: () => hydratePrintDrawerPanels?.(targetDoc),
-              });
-              const localFb = resolveLocalPrintArtifactFallback({
-                href: cardEl.getAttribute?.("href") || cardEl.href || "",
-                distAvailable: Boolean(state.federationReachable),
-                lang: curLang,
-                book: substrate.book || state.book || "GEN",
-                chapter: substrate.chapter || state.chapter || 1,
-                verse: state.verse || 1,
-                verses: substrate.verses,
-                columns: substrate.columns,
-                fontPt: substrate.fontPt,
-                paper: substrate.paper,
-                stealthMode: Boolean(state.stealthMode),
-                blockNumber: stealthBlkNum,
-                stealthFilename: stealthActive ? resolveSafeDownloadFilename(state, { kind: "paged_media", blockNumber: stealthBlkNum }) : "",
-              });
-              if (localFb.isFallback && localFb.href) {
-                cardEl.href = localFb.href;
-                cardEl.setAttribute?.("href", localFb.href);
-                cardEl.setAttribute?.("download", localFb.filename);
-                cardEl.setAttribute?.("data-local-print-fallback", localFb.mode);
-              }
-            } else if (hasEditionPdf) {
-              const prevHref = state.editionObjectUrls[cacheKey];
-              if (typeof prevHref === "string" && prevHref.startsWith("blob:")) {
-                try {
-                  globalThis.URL?.revokeObjectURL?.(prevHref);
-                } catch {
-                  // Non-fatal
-                }
-              }
-              const nextHref = toDownloadablePdfHref(hasEditionParts ? res.blobParts : res.pdfBytes);
-              state.editionObjectUrls[cacheKey] = nextHref;
-              state.editionObjectUrls[profId] = nextHref;
-              cardEl.href = nextHref;
-              cardEl.setAttribute?.("href", nextHref);
-              cardEl.setAttribute?.(
-                "download",
-                resolveSafeDownloadFilename(state, { kind: "edition_pdf", blockNumber: stealthBlkNum, defaultName: `${profId}-${curLang}.pdf` }),
-              );
-              if (typeof cardEl.click === "function") {
-                cardEl._directSynthesizedClick = true;
-                try {
-                  cardEl.click();
-                } finally {
-                  cardEl._directSynthesizedClick = false;
-                }
-              }
-            } else {
-              const localFb = resolveLocalPrintArtifactFallback({
-                href: cardEl.getAttribute?.("href") || cardEl.href || "",
-                distAvailable: Boolean(state.federationReachable),
-                lang: curLang,
-                book: substrate.book || state.book || "GEN",
-                chapter: substrate.chapter || state.chapter || 1,
-                verse: state.verse || 1,
-                verses: substrate.verses,
-                columns: substrate.columns,
-                fontPt: substrate.fontPt,
-                paper: substrate.paper,
-                stealthMode: Boolean(state.stealthMode),
-                blockNumber: stealthBlkNum,
-                stealthFilename: stealthActive ? resolveSafeDownloadFilename(state, { kind: "paged_media", blockNumber: stealthBlkNum }) : "",
-              });
-              if (localFb.isFallback && localFb.href) {
-                cardEl.href = localFb.href;
-                cardEl.setAttribute?.("href", localFb.href);
-                cardEl.setAttribute?.("download", localFb.filename);
-                cardEl.setAttribute?.("data-local-print-fallback", localFb.mode);
-              }
-            }
-          } catch {
-            // Non-fatal
-          }
-        } else if (state.editionObjectUrls[cacheKey]) {
-          const cachedHref = state.editionObjectUrls[cacheKey];
-          cardEl.href = cachedHref;
-          cardEl.setAttribute?.("href", cachedHref);
-        }
-        if (!isFieldCard) {
-          renderPrintDrawerPanelsSyncInDrawer(ctx);
-        }
+        if (!cardEl) return;
+        await handleCatalogEditionCardClick(cardEl, e, {
+          state,
+          ctx,
+          targetDoc,
+          getEl,
+          isStealthActive: stealthActive,
+          stealthBlkNum,
+          renderPrintDrawerPanelsSyncInDrawer,
+          hydratePrintDrawerPanels,
+          ensureDirectEditionsAndGrambankControls,
+        });
       });
     }
   }

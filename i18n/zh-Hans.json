@@ -120,7 +120,7 @@
         "mostrador.tab.evangelios": "🌅 福音书",
         "mostrador.nav.prev": "Previous chapter",
         "mostrador.nav.next": "Next chapter",
-        "mostrador.step2.placeholder": "Passage (e.g. Rom 1:16, Jn 3:16, Ps 23)",
+        "mostrador.step2.placeholder": "Book & chapter (e.g. Jn 3:16 or Ps 23)",
         "mostrador.heading": "Polyglot Bible Reader (66 Books · Printable & Shareable PDFs)",
         "seal.unavailable": "Translation not yet available",
         "mostrador.step2.open_compass": "Go",
@@ -153,7 +153,7 @@
         "mostrador.register.classic": "📜 Classic tradition",
         "mostrador.register.bilingual": "👥 Side-by-side bilingual",
         "mostrador.register.roll_toggle": "📄 Page view ↔ Continuous scroll",
-        "mostrador.step2.title": "2. Passage Preview",
+        "mostrador.step2.title": "Compass & Search",
         "mostrador.status.loading": "Loading authentic passage…",
         "mostrador.door.study": "🔬 1. 研读",
         "mostrador.door.print": "🖨️ 2. 打印",
@@ -226,7 +226,6 @@
         "print.btn.imposition": "📐 计算小册子折页",
         "print.btn.layout": "📏 检查页边距 (A4 / Letter)",
         "print.btn.photocopy3gen": "🔬 测试复印清晰度（第 3 代）",
-        "print.photocopyReceiptSummary": "🔬 光学与排版凭证",
         "share.btn.copyLink": "🔗 复制此经文的直接链接",
         "share.fps.667": "6.67 FPS · 150 ms（弱光安全）",
         "share.fps.10": "10 FPS · 100 ms（快速屏幕传输）",
@@ -274,6 +273,12 @@
         "corpus.tab.bibles": "📖 圣经与语言 (24)",
         "corpus.tab.trails": "🧭 读经计划 (8)",
         "print.stealthMode": "🥷 隐私文件名（中性学习名称）",
-        "print.btn.brailleB70": "♿ 盲文 B70 (.brf)"
+        "print.btn.brailleB70": "♿ 盲文 B70 (.brf)",
+        "study.acc.ubs": "🏛️ 6 Textual Traditions (UBS)",
+        "study.acc.onomasticon": "📜 Biblical Onomasticon (3,657 names)",
+        "study.acc.realia": "🪴 Biblical Realia, NSM-65 & Metrology",
+        "study.acc.tskFormulaic": "🔗 TSK Cross-References & OT↔NT Parallels",
+        "study.acc.orthography": "✍️ Orthography Comparator & Lexical Conservation",
+        "study.acc.typology": "🌐 Typological Profile & Editorial Tradition"
     }
 }

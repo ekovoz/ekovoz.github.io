@@ -7,12 +7,12 @@ import { serializeMostradorRouteQuery } from "../i18n_ui.js";
 import { escapeHtml } from "./bridge_and_chapter.js";
 import { canonicalOrdinalOf } from "./canonical_versification.js";
 import { lookupPericopeConstructiveReceipt } from "./diachronic_register.js";
+import { bindSurfaceActions, patchStoreState } from "./dom_patch.js";
 import {
   bindOpticalCameraAndCadenceController,
   hydrateOpticalTxAndRxPanels,
   stopQrBeamAutoCadenceTimer,
 } from "./drawer_share_optical_controller.js";
-import { bindSurfaceActions, patchStoreState } from "./dom_patch.js";
 import { validateAllEightLocksPda } from "./mejorar.js";
 import {
   CANONICAL_ECO_PACKS_MANIFEST,
@@ -46,13 +46,14 @@ import {
 } from "./optical_lt.js";
 
 import { resolveCanonicalBlockCode } from "./dosis.js";
-import { buildOpenGraphSocialCardSvg1200x630 } from "./social_and_photocopy_cards.js";
-import { resolveSafeDownloadFilename } from "./stealth_filename.js";
 import {
   mountOfflineFontNoticeWithLocalImporter,
   summarizeOfflineFontsVaultCatalog,
 } from "./offline_font_bundle.js";
+import { resolveActiveWorkDrawerContext } from "./projection_contract.js";
 import { renderEditorialProvenanceCardHtml } from "./provenance_and_support_panel.js";
+import { buildOpenGraphSocialCardSvg1200x630 } from "./social_and_photocopy_cards.js";
+import { resolveSafeDownloadFilename } from "./stealth_filename.js";
 import { hydrateVaultStorageManagerPanel } from "./vault_manager_panel.js";
 
 export const HAREL_DOSIS_SUBTABS = ["pdf", "mesh", "graphics"];
@@ -338,8 +339,31 @@ export function hydrateShareAndAuditDrawerPanel(ctx = {}) {
         ? "📦 Export portable HTML copy (USB / Bluetooth)"
         : "📦 Exportar copia HTML portable (USB / Bluetooth)";
     }
+    const workCtx = resolveActiveWorkDrawerContext(state);
+    const workBannerHtml = workCtx.isSisterWork
+      ? `<aside class="work-context-drawer-banner" data-work-context="${escapeHtml(workCtx.activeWork)}"><strong>${escapeHtml(workCtx.bannerText)}</strong></aside>`
+      : "";
+    const shareSheetEl = getEl("bibleShareAndAuditSheet", targetDoc);
+    const vaultHostEl = getEl("vaultStorageManagerHost", targetDoc);
+    if (shareSheetEl && typeof targetDoc?.createElement === "function" && typeof shareSheetEl.insertBefore === "function") {
+      let topShareBanner = getEl("shareActiveWorkBanner", targetDoc);
+      if (workCtx.isSisterWork) {
+        if (!topShareBanner) {
+          topShareBanner = targetDoc.createElement("aside");
+          topShareBanner.id = "shareActiveWorkBanner";
+          topShareBanner.className = "work-context-drawer-banner";
+          shareSheetEl.insertBefore(topShareBanner, vaultHostEl || packsPanel);
+        }
+        topShareBanner.removeAttribute?.("hidden");
+        topShareBanner.setAttribute?.("data-work-context", workCtx.activeWork);
+        topShareBanner.innerHTML = `<strong>${escapeHtml(workCtx.bannerText)}</strong>`;
+      } else if (topShareBanner) {
+        topShareBanner.setAttribute?.("hidden", "");
+      }
+    }
     packsPanel.innerHTML =
-      `<div class="mostrador-offline-packs" data-lang="${escapeHtml(activeLang)}" data-pack-mode="${packMode}" data-quine-url="${escapeHtml(quineRelUrl)}">` +
+      workBannerHtml +
+      `<div class="mostrador-offline-packs" data-lang="${escapeHtml(activeLang)}" data-active-work="${escapeHtml(workCtx.activeWork)}" data-pack-mode="${packMode}" data-quine-url="${escapeHtml(quineRelUrl)}">` +
       `<strong>${isEn ? `Offline Language Pack (${escapeHtml(activeLang.toUpperCase())})` : `Paquete Offline (${escapeHtml(activeLang.toUpperCase())})`}</strong>` +
       `<p class="share-pack-desc">${isEn ? "Zero telemetry · Offline reader package ready for USB, Bluetooth, and MicroSD." : "Cero telemetría · Paquete de lectura sin conexión listo para USB, Bluetooth y MicroSD."}</p>` +
       `<a href="${escapeHtml(quineRelUrl)}" download="${escapeHtml(quineFilename)}" data-quine-download="true" data-pack-mode="${packMode}" hidden></a>` +
@@ -349,7 +373,9 @@ export function hydrateShareAndAuditDrawerPanel(ctx = {}) {
     const ensureShareChildHost = (hostId, subtabName = "mesh") => {
       const existing = getEl(hostId, targetDoc);
       if (existing) {
-        existing.setAttribute?.("data-dosis-subtab-panel", subtabName);
+        if (subtabName !== "mesh") {
+          existing.setAttribute?.("data-dosis-subtab-panel", subtabName);
+        }
         return existing;
       }
       if (packsPanel?.parentNode && typeof targetDoc?.createElement === "function") {

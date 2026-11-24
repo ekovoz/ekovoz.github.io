@@ -120,7 +120,7 @@
         "mostrador.tab.evangelios": "🌅 Evangelhos",
         "mostrador.nav.prev": "Previous chapter",
         "mostrador.nav.next": "Next chapter",
-        "mostrador.step2.placeholder": "Passage (e.g. Rom 1:16, Jn 3:16, Ps 23)",
+        "mostrador.step2.placeholder": "Book & chapter (e.g. Jn 3:16 or Ps 23)",
         "mostrador.heading": "Polyglot Bible Reader (66 Books · Printable & Shareable PDFs)",
         "seal.unavailable": "Translation not yet available",
         "mostrador.step2.open_compass": "Go",
@@ -153,7 +153,7 @@
         "mostrador.register.classic": "📜 Classic tradition",
         "mostrador.register.bilingual": "👥 Side-by-side bilingual",
         "mostrador.register.roll_toggle": "📄 Page view ↔ Continuous scroll",
-        "mostrador.step2.title": "2. Passage Preview",
+        "mostrador.step2.title": "Compass & Search",
         "mostrador.status.loading": "Loading authentic passage…",
         "mostrador.door.study": "🔬 1. Estudar",
         "mostrador.door.print": "🖨️ 2. Imprimir",
@@ -226,7 +226,6 @@
         "print.btn.imposition": "📐 Calcular dobragem do caderno",
         "print.btn.layout": "📏 Verificar margens da página (A4 / Carta)",
         "print.btn.photocopy3gen": "🔬 Testar legibilidade em fotocópia (3.ª geração)",
-        "print.photocopyReceiptSummary": "🔬 Comprovante óptico e tipográfico",
         "share.btn.copyLink": "🔗 Copiar link direto para esta passagem",
         "share.fps.667": "6.67 FPS · 150 ms (seguro com pouca luz)",
         "share.fps.10": "10 FPS · 100 ms (transferência rápida de tela)",
@@ -274,6 +273,12 @@
         "corpus.tab.bibles": "📖 Bíblias e Línguas (24)",
         "corpus.tab.trails": "🧭 Planos de Leitura (8)",
         "print.stealthMode": "🥷 Nomes de arquivo discretos (estudo)",
-        "print.btn.brailleB70": "♿ Braille B70 (.brf)"
+        "print.btn.brailleB70": "♿ Braille B70 (.brf)",
+        "study.acc.ubs": "🏛️ 6 Textual Traditions (UBS)",
+        "study.acc.onomasticon": "📜 Biblical Onomasticon (3,657 names)",
+        "study.acc.realia": "🪴 Biblical Realia, NSM-65 & Metrology",
+        "study.acc.tskFormulaic": "🔗 TSK Cross-References & OT↔NT Parallels",
+        "study.acc.orthography": "✍️ Orthography Comparator & Lexical Conservation",
+        "study.acc.typology": "🌐 Typological Profile & Editorial Tradition"
     }
 }

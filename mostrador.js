@@ -388,19 +388,6 @@ export function createMostradorController(options = {}) {
     if (tabEvEl && chromeLabels.evangeliosTab) {
       tabEvEl.textContent = chromeLabels.evangeliosTab;
     }
-    const pulseBadgeEl = getEl("bibleStageRegisterPulseBadge", targetDoc);
-    if (pulseBadgeEl && chromeLabels.registerPulse) {
-      const regKey =
-        state.register === "clasica"
-          ? "clasico"
-          : state.register === "estudio"
-            ? "original"
-            : "siglo21";
-      pulseBadgeEl.textContent = chromeLabels.registerPulse[regKey] || chromeLabels.registerPulse.siglo21;
-      if (typeof pulseBadgeEl.setAttribute === "function") {
-        pulseBadgeEl.setAttribute("data-active-register", state.register || "intergeneracional");
-      }
-    }
     if (state.lastNavResult && state.lastNavResult.status === STATUS.READY) {
       renderViewportFromState(targetDoc);
     }

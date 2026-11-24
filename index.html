@@ -127,8 +127,6 @@
                 <button type="button" id="toggleRollMode" class="uls-chip"
                     data-i18n="mostrador.register.roll_toggle">📄 Page view ↔
                     Continuous scroll</button>
-                <span id="bibleStageRegisterPulseBadge" class="uls-badge" aria-live="polite">🌡️ Lectura clara
-                    contemporánea</span>
             </div>
             <div class="ek-row-wrap ek-divider-top" role="group" aria-label="App Interface Language">
                 <button type="button" class="uls-trigger-btn" id="ulsTriggerBtn" data-i18n-autonym="true"
@@ -386,7 +384,7 @@
 
         <dialog id="bibleCoordinateCompassModal" aria-label="Tactile 66-Book Compass">
             <div class="modal-header">
-                <h3 class="modal-title" data-i18n="mostrador.step2.title">2. Choose passage (66 Books)</h3>
+                <h3 class="modal-title" data-i18n="mostrador.step2.title">Compass &amp; Search</h3>
                 <button type="button" class="modal-close" id="btnCloseCompassModal" data-i18n-autonym="true"
                     aria-label="Close">✕</button>
             </div>
@@ -396,10 +394,10 @@
                 <button type="button" id="btnCompassTabTrails" class="uls-chip" role="tab" aria-selected="false"
                     aria-controls="compassPanelTrails" data-i18n="corpus.tab.trails">🧭 8 Reading Trails</button>
             </div>
-            <div>
+            <div class="compass-search-row">
                 <input type="text" id="mostradorRefInput" class="field-search-input"
                     data-i18n-attr="placeholder:mostrador.step2.placeholder"
-                    placeholder="Passage, phrase, or language (e.g. Rom 1:16, shepherd)">
+                    placeholder="Book &amp; chapter (e.g. Jn 3:16 or Ps 23)">
                 <button type="button" id="btnGoReference" class="uls-chip"
                     data-i18n="mostrador.step2.open_compass">Go</button>
             </div>
@@ -686,25 +684,24 @@
             <div data-study-subtab-panel="words">
                 <div id="leipzig14ColStratumAction"></div>
             </div>
-            <nav id="studyRosettaJumpBar" class="jump-pills-bar" data-study-subtab-panel="rosetta" hidden
-                aria-label="Jump to Study Strata">
-                <button type="button" class="uls-chip jump-pill" data-i18n-autonym="true" data-jump-target="nsm65StratumCard">NSM-65</button>
-                <button type="button" class="uls-chip jump-pill" data-i18n-autonym="true" data-jump-target="studyUbsComparatorHost">UBS · 6</button>
-                <button type="button" class="uls-chip jump-pill" data-i18n-autonym="true" data-jump-target="studyOnomasticonExplorerHost">Onomasticon · 3,657</button>
-                <button type="button" class="uls-chip jump-pill" data-i18n-autonym="true" data-jump-target="realiaMetrologyStratumCard">Realia · 1,800</button>
-                <button type="button" class="uls-chip jump-pill" data-i18n-autonym="true" data-jump-target="tskCrossRefsStratumCard">TSK</button>
-            </nav>
             <div id="nsm65StratumCard" data-study-subtab-panel="rosetta" hidden></div>
-            <div id="studyUbsComparatorHost" data-study-subtab-panel="rosetta" hidden></div>
-            <div id="studyOnomasticonExplorerHost" data-study-subtab-panel="rosetta" hidden></div>
-            <nav id="studyCalibrateJumpBar" class="jump-pills-bar" data-study-subtab-panel="calibrate" hidden
-                aria-label="Jump to Roots & Calibration">
-                <button type="button" class="uls-chip jump-pill" data-i18n-autonym="true" data-jump-target="philologyRosettaStaticHost">Rosetta · 4,036</button>
-                <button type="button" class="uls-chip jump-pill" data-i18n-autonym="true" data-jump-target="bibleAnalyticalThermometerPanel">66 Libros</button>
-                <button type="button" class="uls-chip jump-pill" data-i18n-autonym="true" data-jump-target="wfstAndScriptioContinuaHost">Ortografía</button>
-                <button type="button" class="uls-chip jump-pill" data-i18n-autonym="true" data-jump-target="diachronicSubstitutionsDetails">1909 → S.XXI</button>
-                <button type="button" class="uls-chip jump-pill" data-i18n-autonym="true" data-jump-target="bibleBranchAndTypologyPanel">Tipología · 12/16</button>
-            </nav>
+            <details id="studyUbsAccordion" class="r9-stratum-accordion" data-study-subtab-panel="rosetta" hidden>
+                <summary data-i18n="study.acc.ubs">⚖️ UBS 6 Bicanonical Traditions</summary>
+                <div id="studyUbsComparatorHost"></div>
+            </details>
+            <details id="studyOnomasticonAccordion" class="r9-stratum-accordion" data-study-subtab-panel="rosetta" hidden>
+                <summary data-i18n="study.acc.onomasticon">🧭 Onomasticon (3,657 Proper Names)</summary>
+                <div id="studyOnomasticonExplorerHost"></div>
+            </details>
+            <details id="studyRealiaAccordion" class="r9-stratum-accordion" data-study-subtab-panel="rosetta" hidden>
+                <summary data-i18n="study.acc.realia">🏺 Cultural Realia &amp; Metrology (1,800)</summary>
+                <div id="realiaMetrologyStratumCard"></div>
+            </details>
+            <details id="studyTskFormulaicAccordion" class="r9-stratum-accordion" data-study-subtab-panel="rosetta" hidden>
+                <summary data-i18n="study.acc.tskFormulaic">🔗 Cross-Refs TSK &amp; OT↔NT Formulaic Parallels</summary>
+                <div id="studyFormulaicParallelsHost"></div>
+                <div id="tskCrossRefsStratumCard"></div>
+            </details>
             <div id="philologyRosettaStaticHost" data-study-subtab-panel="calibrate" hidden class="rosetta-static-slot">
                 <select id="rosettaFilterCategorySelect" aria-label="Philology Rosetta Category">
                     <option value="all" selected data-i18n="rosetta.filter.all">All 5 alignment classes (4,036 tokens)
@@ -725,18 +722,22 @@
                     placeholder="Search H7225, G3056, GEN.31.55...">
                 <div id="rosettaExplorerResultsRows" role="region" aria-live="polite"></div>
             </div>
-            <div id="realiaMetrologyStratumCard" data-study-subtab-panel="rosetta" hidden></div>
-            <div id="tskCrossRefsStratumCard" data-study-subtab-panel="rosetta" hidden></div>
             <div id="bibleAnalyticalThermometerPanel" data-study-subtab-panel="calibrate" hidden></div>
-            <div id="wfstAndScriptioContinuaHost" data-study-subtab-panel="calibrate" hidden></div>
-            <details id="diachronicSubstitutionsDetails" open data-study-subtab-panel="calibrate" hidden
+            <details id="studyOrthographyAccordion" class="r9-stratum-accordion" data-study-subtab-panel="calibrate" hidden>
+                <summary data-i18n="study.acc.orthography">✍️ Conditional Orthography &amp; Scriptio Continua</summary>
+                <div id="wfstAndScriptioContinuaHost"></div>
+            </details>
+            <details id="diachronicSubstitutionsDetails" data-study-subtab-panel="calibrate" hidden
                 class="diachronic-substitutions-details">
                 <summary id="diachronicSubstitutionsSummary" data-i18n="study.diachronic_summary">View 1909 → 21st
                     Century
                     substitutions in this chapter</summary>
                 <div id="diachronicRegisterAuditPanel"></div>
             </details>
-            <div id="bibleBranchAndTypologyPanel" data-study-subtab-panel="calibrate" hidden></div>
+            <details id="studyTypologyAccordion" class="r9-stratum-accordion" data-study-subtab-panel="calibrate" hidden>
+                <summary data-i18n="study.acc.typology">🌍 Linguistic Typology &amp; Branches (12 / 16)</summary>
+                <div id="bibleBranchAndTypologyPanel"></div>
+            </details>
         </section>
 
         <!-- Drawer 2: Print Settings & 14 Canonical PDF Editions -->
@@ -797,12 +798,6 @@
             <div id="tanda-offline-font-notice" class="tanda-offline-notice" role="status" hidden></div>
             <div id="bibleEditionsCatalogGrid" data-print-subtab-panel="doses">
             </div>
-            <nav id="printImpositionJumpBar" class="jump-pills-bar" data-print-subtab-panel="imposition" hidden
-                aria-label="Jump to Print Settings">
-                <button type="button" class="uls-chip jump-pill" data-i18n-autonym="true" data-jump-target="bibleKindleConfigurator">Formato</button>
-                <button type="button" class="uls-chip jump-pill" data-i18n-autonym="true" data-jump-target="duplexAssistantPanel">80 Bloques</button>
-                <button type="button" class="uls-chip jump-pill" data-i18n-autonym="true" data-jump-target="impositionBookletPreviewHost">Plegado</button>
-            </nav>
             <div id="bibleKindleConfigurator" class="kindle-configurator" data-print-subtab-panel="imposition"
                 aria-label="Paper and Sheet Count Settings">
                 <label><span id="kindleFontSizeLabel" data-i18n="print.fontSizeLabel">Font size (pt):</span> <output
@@ -849,21 +844,17 @@
             </div>
             <div id="duplexAssistantPanel" data-print-subtab-panel="imposition"></div>
             <div id="impositionBookletPreviewHost" data-print-subtab-panel="imposition"></div>
-            <details id="printPhotocopyStressDetails" class="hig-tech-receipt-details"
-                data-print-subtab-panel="stationery" open>
-                <summary id="photocopyTechReceiptSummary" data-i18n="print.photocopyReceiptSummary">🔬 Optical &amp;
-                    typographic
-                    receipt</summary>
-                <div>
+            <div id="stationeryCardPanel" data-print-subtab-panel="stationery"></div>
+            <section id="photocopyResilienceUnifiedSection" class="photocopy-unified-card"
+                data-print-subtab-panel="stationery">
+                <div class="photocopy-header-row">
                     <button type="button" id="btnSimulatePhotocopy3Gen" class="uls-chip"
-                        data-i18n="print.btn.photocopy3gen">🔬 Test Photocopy Legibility (3rd
-                        Gen)</button>
+                        data-i18n="print.btn.photocopy3gen">🔬 Test Photocopy Legibility (3rd Gen)</button>
                     <span id="biblePhotocopySimBadge" class="uls-badge" data-euler-delta="0"
-                        data-min-stroke-pt="0.75">Sauvola R=128 · ≥0.75 pt · Δχ=0</span>
+                        data-min-stroke-pt="0.75">3ª Gen · Sauvola k=0.25 · ≥0.75 pt · Δχ=0</span>
                 </div>
                 <div id="editorialGraphicsPhotocopyHost" data-print-subtab-panel="stationery"></div>
-            </details>
-            <div id="stationeryCardPanel" data-print-subtab-panel="stationery"></div>
+            </section>
         </section>
 
         <!-- Drawer 3: Community Review & Patch Workshop (Lazy-loaded via mejorar.js) -->
@@ -888,12 +879,11 @@
                 <div id="stpLexiconResultsRows" role="region" aria-live="polite"></div>
                 <section id="dunningKeyTermsGlossaryPanel" aria-label="Dunning G2 Key Terms Glossary"></section>
             </div>
-            <div id="cascadeImpactPreviewList" data-workshop-subtab-panel="ladder">
+            <div id="cascadeImpactPreviewList" data-workshop-subtab-panel="ladder"></div>
+            <div id="tallerArtifactsCatalog" class="taller-artifacts-grid" data-workshop-subtab-panel="audit">
                 <section id="externalAudit8LocksPanel" aria-label="8 Deterministic Audit Locks"></section>
                 <section id="uncertaintyQueue60Panel" aria-label="Top 60 Uncertainty Verse Queue"></section>
                 <section id="tier3aDialectContinuumPanel" aria-label="Tier 3A Dialect Continuums"></section>
-            </div>
-            <div id="tallerArtifactsCatalog" class="taller-artifacts-grid" data-workshop-subtab-panel="audit">
             </div>
         </section>
 
@@ -913,12 +903,14 @@
                     data-dosis-subtab-btn="graphics" data-i18n="share.subtab.graphics" aria-selected="false"
                     aria-pressed="false">🔐 3. Authenticity &amp; Signature Verification</button>
             </nav>
-            <div>
+            <div data-dosis-subtab-panel="mesh">
                 <button type="button" id="btnShareQuine" class="btn-modal-action" data-dosis-subtab-panel="mesh"
                     data-i18n="mostrador.offline.save_cta">Export portable HTML copy (USB / Bluetooth)</button>
                 <button type="button" id="btnCopyDirectShareLink" class="uls-chip" data-dosis-subtab-panel="mesh"
                     data-i18n="share.btn.copyLink">🔗
                     Copy direct link to this passage</button>
+            </div>
+            <div data-dosis-subtab-panel="pdf" hidden>
                 <select id="bibleOpticalFpsSelect" aria-label="Optical Frame Cadence" data-dosis-subtab-panel="pdf"
                     hidden>
                     <option value="6.67" selected data-i18n="share.fps.667">6.67 FPS · 150 ms (Low-Light Safe)</option>
@@ -929,23 +921,31 @@
                 <button type="button" id="btnOpticalRelayTx" class="uls-chip" data-dosis-subtab-panel="pdf"
                     data-i18n="share.btn.relayTx" hidden>🔁
                     Relay Received Passage to Another Phone</button>
-                <button type="button" id="btnVerifyEd25519Signature" class="uls-chip" data-dosis-subtab-panel="graphics"
-                    data-i18n="share.btn.verifySig" hidden>🔐 Verify Authentic Editorial Signature</button>
             </div>
             <div id="opticalCameraViewportHost" class="optical-camera-host" data-dosis-subtab-panel="pdf" hidden>
                 <div id="opticalCameraIdlePlaceholder" class="optical-camera-idle" data-i18n="share.camera.idle">📷
                     Camera off. Tap «Receive with Camera» to scan QR-Beam frames offline.</div>
                 <video id="bibleOpticalCameraVideo" class="optical-camera-video" hidden playsinline muted></video>
             </div>
-            <div id="offlinePacksCatalogPanel" data-dosis-subtab-panel="mesh"></div>
             <div id="vaultStorageManagerHost" data-dosis-subtab-panel="mesh"></div>
-            <div id="editorialFontPackVaultPanel" data-dosis-subtab-panel="mesh"></div>
+            <details id="shareOfflinePacksDetails" class="r9-stratum-accordion" data-dosis-subtab-panel="mesh">
+                <summary data-i18n="share.subtab.mesh">📦 Offline Packs &amp; USB/Bluetooth Quine</summary>
+                <div id="offlinePacksCatalogPanel"></div>
+            </details>
+            <details id="shareFontVaultDetails" class="r9-stratum-accordion" data-dosis-subtab-panel="mesh">
+                <summary>🔤 Offline Font Pack (34 TTF / .zst)</summary>
+                <div id="editorialFontPackVaultPanel"></div>
+            </details>
             <div id="shareOpenGraphCardPanel" data-dosis-subtab-panel="graphics" hidden></div>
             <div id="bibleOpticalQrStreamPanel" data-dosis-subtab-panel="pdf" hidden>
             </div>
             <div id="opticalReceiverRxPanel" data-dosis-subtab-panel="pdf" hidden></div>
-            <div id="editorialProvenanceCardHost" data-dosis-subtab-panel="graphics" hidden></div>
-            <div id="editorialAuditStatusPanel" data-dosis-subtab-panel="graphics" hidden class="ek-status-panel"></div>
+            <section id="shareAuthenticityUnifiedCard" class="ek-card" data-dosis-subtab-panel="graphics" hidden>
+                <button type="button" id="btnVerifyEd25519Signature" class="uls-chip" data-dosis-subtab-panel="graphics"
+                    data-i18n="share.btn.verifySig" hidden>🔐 Verify Authentic Editorial Signature</button>
+                <div id="editorialAuditStatusPanel" data-dosis-subtab-panel="graphics" hidden class="ek-status-panel"></div>
+                <div id="editorialProvenanceCardHost" data-dosis-subtab-panel="graphics" hidden></div>
+            </section>
         </section>
     </section>
 

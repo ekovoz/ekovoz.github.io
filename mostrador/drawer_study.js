@@ -29,8 +29,9 @@ import {
   renderWfstAndScriptioContinuaInspectorHtml,
 } from "./orthography_wfst.js";
 import { applyGrambankTypologyToPrint } from "./print_config_projector.js";
+import { resolveActiveWorkDrawerContext } from "./projection_contract.js";
 import { parseBiblicalCoordinateReference } from "./reference.js";
-import { hydrateOnomasticonAndUbsPanels } from "./study_onomasticon_and_ubs.js";
+import { hydrateOnomasticonAndUbsPanels, renderFormulaicParallelsCardHtml } from "./study_onomasticon_and_ubs.js";
 
 export const HAREL_STUDY_SUBTABS = ["words", "rosetta", "calibrate"];
 
@@ -418,7 +419,11 @@ export async function hydrateStudyDrawerPanel(ctx = {}) {
     i18n: i18nInstance,
     t: tFn,
   };
-  const html = mod.renderStudy14ColDrawerHtml(matrixChapter, studyOpts);
+  const workCtx = resolveActiveWorkDrawerContext(state);
+  const workBannerHtml = workCtx.isSisterWork
+    ? `<aside class="work-context-drawer-banner" data-work-context="${escHtml(workCtx.activeWork)}"><strong>${escHtml(workCtx.bannerText)}</strong></aside>`
+    : "";
+  const html = workBannerHtml + mod.renderStudy14ColDrawerHtml(matrixChapter, studyOpts);
   const container =
     getEl("leipzig14ColStratumAction", targetDoc) ||
     getEl("bibleEasyDrawerPanel", targetDoc);
@@ -689,6 +694,45 @@ export async function hydrateStudyDrawerPanel(ctx = {}) {
     hydrateBookAndChapterSelectors,
     parseBiblicalCoordinateReference,
   });
+
+  const formulaicHost = getEl("studyFormulaicParallelsHost", targetDoc);
+  if (formulaicHost) {
+    if (!state.formulaicIndexData && typeof dataLayer?.loadJson === "function") {
+      try {
+        const fj = await dataLayer.loadJson("data/formulaic_index.json");
+        if (fj) state.formulaicIndexData = fj;
+      } catch {
+        // Non-fatal fallback to curated seed
+      }
+    }
+    formulaicHost.innerHTML = renderFormulaicParallelsCardHtml({
+      book: state.book,
+      chapter: state.chapter,
+      verse: state.verse,
+      formulaicIndex: state.formulaicIndexData || null,
+      uiLocale: state.uiLocale || "es",
+    });
+    if (typeof formulaicHost.addEventListener === "function" && !formulaicHost._formulaicBound) {
+      formulaicHost._formulaicBound = true;
+      formulaicHost.addEventListener("click", async (e) => {
+        const btn = e?.target?.closest
+          ? e.target.closest("[data-formulaic-ref]")
+          : e?.target?.getAttribute?.("data-formulaic-ref")
+            ? e.target
+            : null;
+        const targetRef = btn?.getAttribute?.("data-formulaic-ref");
+        if (!targetRef) return;
+        const parsed = parseBiblicalCoordinateReference(targetRef);
+        if (parsed && parsed.bookCode && typeof navigate === "function") {
+          await navigate(
+            { book: parsed.bookCode, chapter: parsed.chapter || 1, verse: parsed.verse || 1 },
+            targetDoc,
+          );
+          if (typeof hydrateBookAndChapterSelectors === "function") hydrateBookAndChapterSelectors(targetDoc);
+        }
+      });
+    }
+  }
 
   // D3-R40 + D3-R45: Hidrata el Inspector WFST Multi-Ortográfico + Scriptio Continua + Conservación de Masa Léxica y Matriz chrF++ en #wfstAndScriptioContinuaHost.
   const wfstHost = getEl("wfstAndScriptioContinuaHost", targetDoc);
