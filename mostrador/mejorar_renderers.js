@@ -316,6 +316,10 @@ export function renderCascadeAndLadderHtml({
   includeWalCard = false,
   includeCensusCard = false,
   uiLocale = "es",
+  uqPage = 1,
+  externalAuditText = "",
+  externalAuditResult = null,
+  activeTier3aPair = "",
 } = {}) {
   const isEn = String(uiLocale || "es").trim().toLowerCase().startsWith("en");
   const cleanLang = sanitizePipeField(lang || "stp").toLowerCase();
@@ -424,24 +428,64 @@ export function renderCascadeAndLadderHtml({
     ).join(" ") +
     `</div>`;
 
+  const escAud = (v) =>
+    String(v ?? "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
   const extAudit = EXTERNAL_AUDIT_8_LOCKS || {};
+  const auditRowsHtml =
+    externalAuditResult && Array.isArray(externalAuditResult.results) && externalAuditResult.results.length > 0
+      ? externalAuditResult.results
+        .slice(0, 8)
+        .map((r) => {
+          const badge = r.passed ? "✅ PASS" : `⛔ ${escAud(r.status)}`;
+          return `<li><code>${escAud(r.ref)}</code> · <strong>${badge}</strong> — ${escAud(String(r.text || "").slice(0, 90))}</li>`;
+        })
+        .join("")
+      : "";
+  const auditResultSummaryHtml = externalAuditResult
+    ? externalAuditResult.entriesCount === 0
+      ? `<p class="ek-meta ek-mt-xs">${isEn ? "Paste USFM (e.g. \\c 1 \\v 1 ...) or OSIS lines to validate." : "Pega USFM (ej. \\c 1 \\v 1 ...) o versículos para validar."}</p>`
+      : `<div class="ek-mt-xs" data-live-audit-passed="${externalAuditResult.allPassed}"><strong class="ek-title-sm">${externalAuditResult.allPassed ? "✅" : "⛔"} ${externalAuditResult.passedCount}/${externalAuditResult.entriesCount} ${isEn ? "units passed 8 locks" : "unidades pasaron los 8 candados"}</strong><ul>${auditRowsHtml}</ul></div>`
+    : `<p class="ek-meta ek-mt-xs">${isEn ? "Validate your own .usfm/.txt draft with all 8 deterministic locks on this device." : "Valida tu propio borrador .usfm/.txt con los 8 candados deterministas en este dispositivo."}</p>`;
   const externalAuditHtml =
     `<div id="externalAudit8LocksPanel" class="ek-card-muted ek-mt-sm" data-external-audit-8-locks="true" data-all-8-locks-passed="${Boolean(extAudit.all_8_locks_passed)}">` +
     `<div class="ek-row-between">` +
-    `<strong>🛡️ ${isEn ? "External Editorial Review" : "Revisión Editorial Externa"}</strong>` +
+    `<strong>🛡️ ${isEn ? "External Editorial Review · 8-Lock USFM Audit" : "Revisión Editorial Externa · Auditoría 8 Candados"}</strong>` +
     `<span class="uls-badge ek-badge-compact">${extAudit.all_8_locks_passed !== false ? "✅ 8/8 PASS" : "⛔ VETO"} · ${Number(extAudit.rosetta_key_terms_extracted || 552)} ${isEn ? "key terms" : "términos"}</span>` +
     `</div>` +
+    `<textarea id="externalAuditTextInput" class="ek-field-input ek-mt-xs" rows="3" placeholder="\\id GEN&#10;\\c 1&#10;\\v 1 Tu'xich jumai...">${escAud(externalAuditText || "")}</textarea>` +
+    `<div class="ek-row-wrap ek-mt-xs">` +
+    `<input type="file" id="externalAuditFileInput" accept=".usfm,.sfm,.txt" aria-label="${isEn ? "Load USFM file" : "Cargar archivo USFM"}">` +
+    `<button type="button" id="btnRunExternalAudit" class="uls-chip ek-btn-fitts">🔍 ${isEn ? "Audit 8 locks" : "Auditar 8 candados"}</button>` +
+    `</div>` +
+    `<div id="externalAuditLiveResult" aria-live="polite">${auditResultSummaryHtml}</div>` +
     `</div>`;
 
-  const uqSlice = UNCERTAINTY_QUEUE_60.slice(0, 8);
+  const uqTotal = UNCERTAINTY_QUEUE_60.length;
+  const uqPageSize = 15;
+  const uqTotalPages = Math.max(1, Math.ceil(uqTotal / uqPageSize));
+  const uqSafePage = Math.min(uqTotalPages, Math.max(1, Number(uqPage) || 1));
+  const uqStart = (uqSafePage - 1) * uqPageSize;
+  const uqSlice = UNCERTAINTY_QUEUE_60.slice(uqStart, uqStart + uqPageSize);
+  const uqPagerHtml =
+    uqTotalPages > 1
+      ? `<div class="ek-row-between ek-mt-xs" role="navigation" aria-label="${isEn ? "Priority queue pagination" : "Paginación de cola de prioridad"}">` +
+      `<button type="button" id="btnUqPrevPage" class="uls-chip ek-btn-fitts" data-uq-page="${Math.max(1, uqSafePage - 1)}"${uqSafePage <= 1 ? " disabled" : ""}>← ${isEn ? "Prev" : "Anterior"}</button>` +
+      `<span class="ek-meta">${uqStart + 1}–${Math.min(uqTotal, uqStart + uqSlice.length)} / ${uqTotal} · ${isEn ? "Page" : "Pág."} ${uqSafePage}/${uqTotalPages}</span>` +
+      `<button type="button" id="btnUqNextPage" class="uls-chip ek-btn-fitts" data-uq-page="${Math.min(uqTotalPages, uqSafePage + 1)}"${uqSafePage >= uqTotalPages ? " disabled" : ""}>${isEn ? "Next" : "Siguiente"} →</button>` +
+      `</div>`
+      : "";
   const uncertaintyQueueHtml =
-    `<div id="uncertaintyQueue60Panel" class="ek-card-muted ek-mt-sm" data-uncertainty-queue-total="${UNCERTAINTY_QUEUE_60.length}">` +
-    `<strong class="ek-title-sm">🎯 ${isEn ? "Priority Verses to Review" : "Versículos Prioritarios por Revisar"}</strong>` +
-    `<div class="ek-row-wrap">` +
+    `<div id="uncertaintyQueue60Panel" class="ek-card-muted ek-mt-sm" data-uncertainty-queue-total="${uqTotal}" data-uq-page="${uqSafePage}">` +
+    `<div class="ek-row-between"><strong class="ek-title-sm">🎯 ${isEn ? `Priority Verses to Review (${uqTotal})` : `Versículos Prioritarios por Revisar (${uqTotal})`}</strong></div>` +
+    `<div class="ek-row-wrap ek-mt-xs">` +
     uqSlice
       .map((uItem, idx) => {
         const uRef = sanitizePipeField(uItem.verse_id || uItem.ref || "ACT.5.8").toUpperCase();
-        const uRank = Number(uItem.rank) || idx + 1;
+        const uRank = Number(uItem.rank) || uqStart + idx + 1;
         const uScore = Number(uItem.semantic_uncertainty_u ?? uItem.shannon_entropy ?? 0.75).toFixed(3);
         return (
           `<button type="button" class="uls-chip uncertainty-queue-btn ek-btn-fitts" data-jump-osis="${uRef}" data-uncertainty-rank="${uRank}" data-uncertainty-u="${uScore}">` +
@@ -451,19 +495,33 @@ export function renderCascadeAndLadderHtml({
       })
       .join("") +
     `</div>` +
+    uqPagerHtml +
     `</div>`;
 
+  const selectedPairObj =
+    TIER3A_CONTINUUMS.find(
+      (tc) => `${sanitizePipeField(tc.donor_lang)}::${sanitizePipeField(tc.target_lang)}` === activeTier3aPair,
+    ) || null;
+  const tier3aDetailHtml = selectedPairObj
+    ? `<strong>${escAud(selectedPairObj.donor_lang)} → ${escAud(selectedPairObj.target_lang)}</strong> · ASJP LDND=${Number(selectedPairObj.asjp_ldnd || 0).toFixed(4)} · ${isEn ? "Cognates:" : "Cognados:"} ${escAud(selectedPairObj.sample_projected_cognates || "—")} · ${Number(FLOOR_1_SENTENCE_SPEC.single_sentence_unlocked_floor || 291)} ${isEn ? "languages unlocked from 1 anchor sentence" : "lenguas desbloqueadas desde 1 oración ancla"}`
+    : `${isEn ? "Tap a closely related pair to inspect cognate distance and scaffold floor." : "Pulsa un par cercano para inspeccionar distancia ASJP y cognados proyectados."}`;
   const tier3aHtml =
     `<div id="tier3aDialectContinuumPanel" class="ek-card-muted ek-mt-sm" data-tier3a-continuums="${TIER3A_CONTINUUMS.length}" data-floor-1-sentence="${Number(FLOOR_1_SENTENCE_SPEC.single_sentence_unlocked_floor || 291)}" data-reference-tier1="${sanitizePipeField(FLOOR_1_SENTENCE_SPEC.reference_tier1 || "spa_rv1909")}" data-total-sentences="${Number(FLOOR_1_SENTENCE_SPEC.total_sentences || 250)}">` +
     `<strong class="ek-title-sm">🌐 ${isEn ? "Closely Related Languages" : "Lenguas Cercanas"}</strong>` +
-    `<div class="ek-row-wrap">` +
-    TIER3A_CONTINUUMS.map(
-      (tc) =>
-        `<span class="uls-badge ek-badge-compact" data-donor-lang="${sanitizePipeField(tc.donor_lang)}" data-target-lang="${sanitizePipeField(tc.target_lang)}" data-asjp-ldnd="${Number(tc.asjp_ldnd || 0).toFixed(4)}">` +
-        `${sanitizePipeField(tc.donor_lang)} → ${sanitizePipeField(tc.target_lang)} (${sanitizePipeField(tc.sample_projected_cognates || "")})` +
-        `</span>`,
-    ).join("") +
+    `<div class="ek-row-wrap ek-mt-xs">` +
+    TIER3A_CONTINUUMS.map((tc) => {
+      const donor = sanitizePipeField(tc.donor_lang);
+      const target = sanitizePipeField(tc.target_lang);
+      const pairKey = `${donor}::${target}`;
+      const isPressed = pairKey === activeTier3aPair;
+      return (
+        `<button type="button" class="uls-chip tier3a-pair-btn ek-btn-fitts" data-tier3a-pair="${escAud(pairKey)}" data-donor-lang="${escAud(donor)}" data-target-lang="${escAud(target)}" data-asjp-ldnd="${Number(tc.asjp_ldnd || 0).toFixed(4)}" aria-pressed="${isPressed ? "true" : "false"}">` +
+        `${escAud(donor)} → ${escAud(target)} (${escAud(tc.sample_projected_cognates || "")})` +
+        `</button>`
+      );
+    }).join("") +
     `</div>` +
+    `<div id="tier3aPairDetailHost" class="ek-meta ek-mt-xs" aria-live="polite">${tier3aDetailHtml}</div>` +
     `</div>`;
 
   const masterCensusAndLedgerHtml =

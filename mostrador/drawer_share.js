@@ -334,6 +334,9 @@ export function hydrateShareAndAuditDrawerPanel(ctx = {}) {
     if (quineBtnEl && typeof quineBtnEl.setAttribute === "function") {
       quineBtnEl.setAttribute("data-quine-download", "true");
       quineBtnEl.setAttribute("data-quine-url", quineRelUrl);
+      quineBtnEl.textContent = isEn
+        ? "📦 Export portable HTML copy (USB / Bluetooth)"
+        : "📦 Exportar copia HTML portable (USB / Bluetooth)";
     }
     packsPanel.innerHTML =
       `<div class="mostrador-offline-packs" data-lang="${escapeHtml(activeLang)}" data-pack-mode="${packMode}" data-quine-url="${escapeHtml(quineRelUrl)}">` +

@@ -4,6 +4,7 @@
 // Extracted via LCOM4 Clean Seam (D87 / D6-A++ · ARB-EKOVOZ-62, ∂_mut(C) = 0)
 // ============================================================================
 
+import { highlightSearchMatchHtml } from "./concordance_search.js";
 import { CROSS_WORK_BRIDGE_TABLE, projectCrossWorkCoordinate } from "./cross_work_bridge.js";
 import { STATUS } from "./data_layer.js";
 import {
@@ -663,6 +664,7 @@ export function renderChapterPreviewHtml(
   const register = String(options.register || "intergeneracional");
   const bridgeChapterData = options.bridgeChapterData || null;
   const orthoProfile = String(options.orthographyProfile || "inali");
+  const searchHighlight = String(options.searchHighlight || "").trim();
 
   const verseNums = Object.keys(chapterData.verses)
     .map((k) => Number(k))
@@ -700,7 +702,7 @@ export function renderChapterPreviewHtml(
             reverseMap: options.reverseMap || null,
             tokenStrongPairs: options.tokenStrongPairs || [],
           })
-          : escapeHtml(rawPrimary);
+          : highlightSearchMatchHtml(escapeHtml(rawPrimary), searchHighlight);
       rowsHtml.push(
         `<div class="mostrador-diptych-row" data-verse="${vNum}" data-osis="${escapeHtml(
           osis
@@ -783,7 +785,7 @@ export function renderChapterPreviewHtml(
           reverseMap: reverseMapTarget,
           tokenStrongPairs: options.tokenStrongPairs || [],
         })
-        : escapeHtml(rawText);
+        : highlightSearchMatchHtml(escapeHtml(rawText), searchHighlight);
     const dropcapClass = vNum === 1 ? " bible-chapter-dropcap" : "";
 
     currentSpans.push(

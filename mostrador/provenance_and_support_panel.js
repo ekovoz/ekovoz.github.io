@@ -29,6 +29,14 @@ export function renderEditorialProvenanceCardHtml(provenance = null, uiLocale = 
   const berne = p.berne_article_15_3 || DEFAULT_PROVENANCE.berne_article_15_3;
   const ots = p.opentimestamps || DEFAULT_PROVENANCE.opentimestamps;
   const merkle = String(p.web_merkle_root || "").split(/\s+/)[0] || "verified-local";
+  const privacyText =
+    !isEn && p.privacy_guarantee === DEFAULT_PROVENANCE.privacy_guarantee
+      ? "Cero rastreadores, cero cookies de analítica, 100% operable sin conexión."
+      : p.privacy_guarantee;
+  const otsText =
+    !isEn && ots.protocol === DEFAULT_PROVENANCE.opentimestamps.protocol
+      ? "OpenTimestamps (atestación en cabecera Bitcoin)"
+      : ots.protocol;
 
   return (
     `<article id="editorialProvenanceIntegrityCard" class="editorial-provenance-card" data-berne-commitment="${escapeHtml(berne.creator_commitment_hash)}" data-zenodo-doi="${escapeHtml(p.zenodo_doi_concept)}">` +
@@ -36,15 +44,17 @@ export function renderEditorialProvenanceCardHtml(provenance = null, uiLocale = 
     `<strong>🛡️ ${isEn ? "About Integrity & Open Licenses" : "Acerca de la Integridad y Licencias Abiertas"}</strong>` +
     `<span class="uls-badge">${escapeHtml(p.license_primary)} / ${escapeHtml(p.license_media)}</span>` +
     `</header>` +
+    `<p class="provenance-privacy-note">${escapeHtml(privacyText)}</p>` +
+    `<details class="tech-details ek-mt-xs"><summary>${isEn ? "🔍 Integrity hashes & OpenTimestamps (DOI / Merkle)" : "🔍 Huellas criptográficas y OpenTimestamps (DOI / Merkle)"}</summary>` +
     `<dl class="provenance-meta-list">` +
     `<dt>${isEn ? "Authorship Commitment (Berne Art. 15.3)" : "Compromiso de Autoría (Berna Art. 15.3)"}</dt>` +
     `<dd><code>${escapeHtml(String(berne.creator_commitment_hash || "").slice(0, 24))}…</code></dd>` +
     `<dt>${isEn ? "Archival Deposit (CERN Zenodo DOI)" : "Depósito Permanente (DOI CERN Zenodo)"}</dt>` +
     `<dd><code>${escapeHtml(p.zenodo_doi_concept)}</code></dd>` +
     `<dt>${isEn ? "Timestamp & Merkle Ledger" : "Sellado Temporal y Raíz Merkle"}</dt>` +
-    `<dd>${escapeHtml(ots.protocol)} · <code>${escapeHtml(merkle.slice(0, 20))}…</code></dd>` +
+    `<dd>${escapeHtml(otsText)} · <code>${escapeHtml(merkle.slice(0, 20))}…</code></dd>` +
     `</dl>` +
-    `<p class="provenance-privacy-note">${escapeHtml(p.privacy_guarantee)}</p>` +
+    `</details>` +
     `</article>`
   );
 }
@@ -67,7 +77,7 @@ export function bindSupportContactDialog({ state = {}, store = null, doc = null,
       `<label class="support-honeypot-field" hidden aria-hidden="true">Website<input type="text" id="supportHoneypotInput" name="website_hp" tabindex="-1" autocomplete="off" /></label>` +
       `<div class="support-form-actions">` +
       `<button type="submit" id="btnSubmitSupportReport" class="btn-modal-action">${isEn ? "Prepare Report" : "Preparar reporte"}</button>` +
-      `<a id="supportProtonFallbackLink" class="uls-chip" href="mailto:ekovoz-support@proton.me?subject=Ekovoz%20Report">✉️ ProtonMail (Offline Fallback)</a>` +
+      `<a id="supportProtonFallbackLink" class="uls-chip" href="mailto:ekovoz-support@proton.me?subject=Ekovoz%20Report">${isEn ? "✉️ ProtonMail (Offline Fallback)" : "✉️ ProtonMail (Respaldo sin conexión)"}</a>` +
       `</div>` +
       `<div id="supportReportStatus" role="status" aria-live="polite"></div>` +
       `</form>`;
@@ -101,7 +111,7 @@ export function bindSupportContactDialog({ state = {}, store = null, doc = null,
       const status = resolve("supportReportStatus");
       if (hp && String(hp.value || "").trim().length > 0) {
         if (status) {
-          status.textContent = "Blocked by anti-bot honeypot.";
+          status.textContent = isEn ? "Blocked by anti-bot honeypot." : "Bloqueado por filtro antispam.";
           status.setAttribute?.("data-honeypot-blocked", "true");
         }
         return;

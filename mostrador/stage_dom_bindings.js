@@ -9,6 +9,7 @@ import {
   getActivePlateIndex,
   setActivePlateIndex,
   setPaperFormat,
+  syncFelicesWithCorpusLang,
   syncI18nUiFromState,
 } from "../i18n_ui.js";
 import {
@@ -18,6 +19,7 @@ import {
   lookupWordTokenStrongEntry,
   projectCrossWorkCoordinate,
 } from "./bridge_and_chapter.js";
+import { searchBookVersesConcordance } from "./concordance_search.js";
 import { bindSurfaceActions } from "./dom_patch.js";
 import { normalizeEditionSlug } from "./dosis.js";
 import { DEFAULT_PRINT_CONFIG } from "./dosis_profiles_schema.js";
@@ -105,6 +107,40 @@ export function bindStageDomEvents(ctx = {}) {
   if (corpusTabTrails) {
     corpusTabTrails.setAttribute?.("data-action", "corpus-tab-trails");
     bindSurfaceActions(corpusTabTrails, { "corpus-tab-trails": () => switchCorpusTab("trails") }, { scope: "corpus-trails", events: ["click"] });
+  }
+
+  const compassTabBooks = getEl("btnCompassTabBooks", targetDoc);
+  const compassTabTrails = getEl("btnCompassTabTrails", targetDoc);
+  const compassPanelBooks = getEl("compassPanelBooks", targetDoc);
+  const compassPanelTrails = getEl("compassPanelTrails", targetDoc);
+  const switchCompassTab = (tabName) => {
+    const isTrails = tabName === "trails";
+    if (compassTabBooks) compassTabBooks.setAttribute("aria-selected", isTrails ? "false" : "true");
+    if (compassTabTrails) compassTabTrails.setAttribute("aria-selected", isTrails ? "true" : "false");
+    if (compassPanelBooks) compassPanelBooks.hidden = isTrails;
+    if (compassPanelTrails) compassPanelTrails.hidden = !isTrails;
+  };
+  if (compassTabBooks) {
+    compassTabBooks.setAttribute?.("data-action", "compass-tab-books");
+    bindSurfaceActions(compassTabBooks, { "compass-tab-books": () => switchCompassTab("books") }, { scope: "compass-books", events: ["click"] });
+  }
+  if (compassTabTrails) {
+    compassTabTrails.setAttribute?.("data-action", "compass-tab-trails");
+    bindSurfaceActions(compassTabTrails, { "compass-tab-trails": () => switchCompassTab("trails") }, { scope: "compass-trails", events: ["click"] });
+  }
+
+  if (targetDoc && typeof targetDoc.addEventListener === "function" && !targetDoc._r8JumpDelegationBound) {
+    targetDoc._r8JumpDelegationBound = true;
+    targetDoc.addEventListener("click", (ev) => {
+      const btn = ev?.target?.closest ? ev.target.closest("[data-jump-target]") : ev?.target?.getAttribute?.("data-jump-target") ? ev.target : null;
+      const targetId = btn?.getAttribute?.("data-jump-target");
+      if (!targetId) return;
+      const el = getEl(targetId, targetDoc);
+      if (el) {
+        if (el.hidden) el.hidden = false;
+        el.scrollIntoView?.({ behavior: "smooth", block: "start" });
+      }
+    });
   }
 
   const bookSelect = getEl("bibleSelectBook", targetDoc);
@@ -324,10 +360,21 @@ export function bindStageDomEvents(ctx = {}) {
     });
   }
 
+  const applyCorpusLanguageSelection = async (nextLang, regOverride = null) => {
+    const targetLang = String(nextLang || "es").trim() || "es";
+    const reg = regOverride || (targetLang === "es-1909" ? "clasica" : state.register);
+    await navigate({ lang: targetLang, register: reg }, targetDoc);
+    if (state.activeWork === "evangelios" && typeof hydrateEvangeliosSection === "function") {
+      await hydrateEvangeliosSection(state.evangeliosQuarter || "T1", state.evangeliosWeekId || "s01");
+    } else if (state.activeWork === "felices") {
+      await syncFelicesWithCorpusLang(targetLang, targetDoc);
+    }
+  };
+
   if (langSelect && typeof langSelect.addEventListener === "function") {
     langSelect.addEventListener("change", async (e) => {
       const nextLang = e?.target?.value || langSelect.value || "es";
-      await navigate({ lang: nextLang }, targetDoc);
+      await applyCorpusLanguageSelection(nextLang);
     });
   }
 
@@ -372,23 +419,23 @@ export function bindStageDomEvents(ctx = {}) {
       boundCorpusBtns.add(qBtn);
       qBtn.addEventListener("click", async () => {
         const targetLang = qBtn.getAttribute?.("data-corpus-lang") || corpusLang;
-        const reg = targetLang === "es-1909" ? "clasica" : state.register;
-        await navigate({ lang: targetLang, register: reg }, targetDoc);
+        await applyCorpusLanguageSelection(targetLang);
       });
     }
   }
-  const corpusPillsHost = getEl("bibleVerifiedCorpusPills", targetDoc);
-  if (corpusPillsHost && typeof corpusPillsHost.addEventListener === "function") {
-    corpusPillsHost.addEventListener("click", async (e) => {
-      const btn = typeof e?.target?.closest === "function"
-        ? e.target.closest("[data-corpus-lang]")
-        : e?.target;
-      if (!btn || boundCorpusBtns.has(btn)) return;
-      const targetLang = btn.getAttribute?.("data-corpus-lang");
-      if (!targetLang) return;
-      const reg = targetLang === "es-1909" ? "clasica" : state.register;
-      await navigate({ lang: targetLang, register: reg }, targetDoc);
-    });
+  for (const hostId of ["bibleVerifiedCorpusPills", "corpusWorkLanguagesBar"]) {
+    const pillsEl = getEl(hostId, targetDoc);
+    if (pillsEl && typeof pillsEl.addEventListener === "function") {
+      pillsEl.addEventListener("click", async (e) => {
+        const btn = typeof e?.target?.closest === "function"
+          ? e.target.closest("[data-corpus-lang]")
+          : e?.target;
+        if (!btn || boundCorpusBtns.has(btn)) return;
+        const targetLang = btn.getAttribute?.("data-corpus-lang");
+        if (!targetLang) return;
+        await applyCorpusLanguageSelection(targetLang);
+      });
+    }
   }
 
   const btnRegInter = getEl("btnRegIntergeneracional", targetDoc);
@@ -411,13 +458,6 @@ export function bindStageDomEvents(ctx = {}) {
   if (btnRegBilingue && typeof btnRegBilingue.addEventListener === "function") {
     btnRegBilingue.addEventListener("click", async () => {
       await navigate({ register: "bilingue" }, targetDoc);
-    });
-  }
-
-  const btnRegEstudio = getEl("btnRegEstudio", targetDoc);
-  if (btnRegEstudio && typeof btnRegEstudio.addEventListener === "function") {
-    btnRegEstudio.addEventListener("click", async () => {
-      await transitionSheet("study", targetDoc);
     });
   }
 
@@ -607,9 +647,17 @@ export function bindStageDomEvents(ctx = {}) {
     }
   }
 
+  let activeSpotlightSeq = 0;
+
   const executeSpotlightMatch = async (match) => {
     if (!match) return false;
     closeCompassModalDialog();
+    state.activeSearchHighlight =
+      match.kind === "concordance" ? String(match.matchQuery || "").trim() : "";
+    const vpEl = getEl("bibleVerseViewport", targetDoc);
+    if (vpEl && typeof vpEl.removeAttribute === "function") {
+      vpEl.removeAttribute("data-render-sig");
+    }
     if (match.kind === "lexicon" && match.work === "felices" && typeof ctx.switchWork === "function") {
       state.activePlateIndex = Number(match.plates?.[0]) || 1;
       await ctx.switchWork("felices", targetDoc);
@@ -632,6 +680,7 @@ export function bindStageDomEvents(ctx = {}) {
 
   const renderSpotlightResults = async (rawQuery) => {
     const qStr = String(rawQuery || "").trim();
+    const seq = ++activeSpotlightSeq;
     if (!qStr) {
       if (spotlightHost) {
         spotlightHost.hidden = true;
@@ -646,15 +695,47 @@ export function bindStageDomEvents(ctx = {}) {
         state.canonLexicon = null;
       }
     }
-    const matches = searchSpotlightCorpus({
+    const lexMatches = searchSpotlightCorpus({
       query: qStr,
       canonLexicon: state.canonLexicon || null,
       loadedVerses: state.lastNavResult?.chapter?.verses || null,
       book: state.book || "GEN",
       chapter: state.chapter || 1,
       lang: state.lang || "es",
-      limit: 8,
+      limit: 6,
     });
+    let concMatches = [];
+    if (
+      qStr.length >= 2 &&
+      !parseBiblicalCoordinateReference(qStr) &&
+      typeof dataLayer?.loadBookText === "function"
+    ) {
+      try {
+        const activeBook = String(state.book || "GEN").toUpperCase();
+        const activeLang = String(state.lang || "es").trim() || "es";
+        const bookRes = await dataLayer.loadBookText(activeLang, activeBook);
+        if (bookRes?.status === "ready" && bookRes?.data) {
+          concMatches = searchBookVersesConcordance({
+            bookData: bookRes.data,
+            book: activeBook,
+            query: qStr,
+            limit: 6,
+          });
+        }
+      } catch {
+        concMatches = [];
+      }
+    }
+    if (seq !== activeSpotlightSeq) return [];
+    const seenKeys = new Set();
+    const matches = [];
+    for (const m of [...lexMatches, ...concMatches]) {
+      const k = `${m.kind}:${m.book || ""}:${m.chapter || 1}:${m.verse || 1}:${m.label || ""}`;
+      if (seenKeys.has(k)) continue;
+      seenKeys.add(k);
+      matches.push(m);
+      if (matches.length >= 10) break;
+    }
     if (spotlightHost) {
       if (matches.length === 0) {
         spotlightHost.hidden = true;
@@ -664,8 +745,8 @@ export function bindStageDomEvents(ctx = {}) {
         spotlightHost.innerHTML = matches
           .map(
             (m, idx) =>
-              `<button type="button" class="uls-chip spotlight-result-chip" role="option" data-spotlight-idx="${idx}" data-spotlight-kind="${m.kind}" data-spotlight-book="${m.book || ""}" data-spotlight-chapter="${m.chapter || 1}" data-spotlight-verse="${m.verse || 1}">` +
-              `🔎 <strong>${m.label}</strong>${m.snippet ? ` — ${m.snippet.replace(/[<>&"]/g, " ")}` : ""}</button>`,
+              `<button type="button" class="uls-chip ${m.kind === "concordance" ? "concordance-match-btn" : "spotlight-result-chip"}" role="option" data-spotlight-idx="${idx}" data-spotlight-kind="${m.kind}" data-spotlight-book="${m.book || ""}" data-spotlight-chapter="${m.chapter || 1}" data-spotlight-verse="${m.verse || 1}">` +
+              `🔎 <strong>${escapeHtml(m.label)}</strong>${m.snippet ? ` — ${escapeHtml(String(m.snippet).replace(/[\r\n]+/g, " "))}` : ""}</button>`,
           )
           .join("");
         spotlightHost._lastMatches = matches;
@@ -762,6 +843,8 @@ export function bindStageDomEvents(ctx = {}) {
 
   const syncKindlePrintConfig = async () => {
     if (fontSlider?.value) state.fontSizePt = Number(fontSlider.value) || DEFAULT_PRINT_CONFIG.fontPt;
+    const fontValEl = getEl("kindleFontSizeValue", targetDoc);
+    if (fontValEl) fontValEl.textContent = `${Number(state.fontSizePt || DEFAULT_PRINT_CONFIG.fontPt).toFixed(1)} pt`;
     if (colSel?.value) state.columns = Number(colSel.value) || 2;
     if (paperSel?.value) state.paperFormat = String(paperSel.value).toLowerCase();
     if (orientSel?.value) state.orientation = String(orientSel.value).toLowerCase();

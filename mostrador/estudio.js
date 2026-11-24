@@ -244,6 +244,14 @@ export function humanizeSemanticTagChain(rawTag, uiLocale = "es") {
   return [...new Set(human.filter(Boolean))].join(" · ");
 }
 
+function formatNsmSentenceCase(raw) {
+  const clean = String(raw || "").trim();
+  if (!clean || clean === "∅") return "∅";
+  if (!/[A-ZÁÉÍÓÚÜÑ]{2,}/.test(clean)) return clean;
+  const lower = clean.toLowerCase();
+  return lower.charAt(0).toUpperCase() + lower.slice(1);
+}
+
 /**
  * Humaniza las columnas técnicas de la Matriz de 15 Columnas (`col01..col15`, `D4-R39` / `D2-R45`),
  * decodificando taxonomías `SDBH` de 12 dígitos, separando insignias `[Hxxxx]` y traduciendo `NSM-65`.
@@ -341,13 +349,6 @@ export function renderStudy14ColDrawerHtml(matrixShard, options = {}) {
     `</div></div>`;
 
   const activeStrongTarget = String(options.activeStrongId || "").trim().toUpperCase();
-  const formatNsmSentenceCase = (raw) => {
-    const clean = String(raw || "").trim();
-    if (!clean || clean === "∅") return "∅";
-    if (!/[A-ZÁÉÍÓÚÜÑ]{2,}/.test(clean)) return clean;
-    const lower = clean.toLowerCase();
-    return lower.charAt(0).toUpperCase() + lower.slice(1);
-  };
   const studyTargetLang = String(options.lang || shard?.lang || "").trim().toLowerCase();
   const wordCardsHtml = normalizedRows
     .map((r) => {
@@ -411,7 +412,7 @@ export function renderStudy14ColDrawerHtml(matrixShard, options = {}) {
       nsmEntries
         .map(
           (n) =>
-            `<li data-nsm-strong="${escapeHtml(n.strong_id)}"><code>${escapeHtml(n.strong_id)}</code> <strong>${escapeHtml(n.lemma)}</strong> (${escapeHtml(n.gloss)}): ${escapeHtml(formatHumanReadable15ColFields({ c13_nsm_65: n.nsm_explication }, uiLocale).nsmHuman)}</li>`,
+            `<li data-nsm-strong="${escapeHtml(n.strong_id)}"><code>${escapeHtml(n.strong_id)}</code> <strong>${escapeHtml(n.lemma)}</strong> (${escapeHtml(n.gloss)}): ${escapeHtml(formatNsmSentenceCase(formatHumanReadable15ColFields({ c13_nsm_65: n.nsm_explication }, uiLocale).nsmHuman))}</li>`,
         )
         .join("") +
       `</ul></div>`
@@ -426,7 +427,7 @@ export function renderStudy14ColDrawerHtml(matrixShard, options = {}) {
         .map((re) => {
           const rId = re.id || re.term_id || re.title || re.surface_es || "realia";
           const rTitle = re.title || `${re.surface_es || ""} (${re.lemma_original || re.strong_code || ""})`.trim();
-          const rExp = formatHumanReadable15ColFields({ c13_nsm_65: re.explanation || re.footnote_gloss_es || re.nsm_65_decomposition || "" }, uiLocale).nsmHuman;
+          const rExp = formatNsmSentenceCase(formatHumanReadable15ColFields({ c13_nsm_65: re.explanation || re.footnote_gloss_es || re.nsm_65_decomposition || "" }, uiLocale).nsmHuman);
           return `<li data-realia-id="${escapeHtml(rId)}"><strong>${escapeHtml(rTitle)}:</strong> ${escapeHtml(rExp)}</li>`;
         })
         .join("") +
@@ -544,7 +545,7 @@ export function renderStudyStrataCards(matrixShard, options = {}) {
       nsmItems
         .map(
           (r) =>
-            `<li data-nsm-strong="${escapeHtml(r.c07_strong_id)}"><code>${escapeHtml(r.c07_strong_id)}</code> <strong>${escapeHtml(r.c05_orig_text)}</strong> (${escapeHtml(r.c12_gloss_es)}) → <span class="nsm-human-gloss">${escapeHtml(formatHumanReadable15ColFields(r, uiLocale).nsmHuman)}</span></li>`
+            `<li data-nsm-strong="${escapeHtml(r.c07_strong_id)}"><code>${escapeHtml(r.c07_strong_id)}</code> <strong>${escapeHtml(r.c05_orig_text)}</strong> (${escapeHtml(r.c12_gloss_es)}) → <span class="nsm-human-gloss">${escapeHtml(formatNsmSentenceCase(formatHumanReadable15ColFields(r, uiLocale).nsmHuman))}</span></li>`
         )
         .join("") +
       `</ul>`
@@ -610,7 +611,7 @@ export function renderStudyStrataCards(matrixShard, options = {}) {
         const rTitle =
           re.title ||
           `${re.surface_es || re.term_es || ""} (${re.lemma_original || re.original_lemma || re.strong_code || ""})`.trim();
-        const rExp = formatHumanReadable15ColFields({ c13_nsm_65: re.explanation || re.footnote_gloss_es || re.nsm_65_decomposition || re.nsm_65_explanation || "" }, uiLocale).nsmHuman;
+        const rExp = formatNsmSentenceCase(formatHumanReadable15ColFields({ c13_nsm_65: re.explanation || re.footnote_gloss_es || re.nsm_65_decomposition || re.nsm_65_explanation || "" }, uiLocale).nsmHuman);
         return `<li data-realia-id="${escapeHtml(rId)}"><strong>${escapeHtml(rTitle)}:</strong> ${escapeHtml(rExp)}</li>`;
       })
       .join("") +

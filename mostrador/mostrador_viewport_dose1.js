@@ -145,6 +145,7 @@ export function renderMostradorViewportFromState({
         orthographyProfile: state.orthographyProfile,
         reverseMap,
         tokenStrongPairs: state.tokenStrongPairs || [],
+        searchHighlight: state.activeSearchHighlight || "",
       },
     );
     if (overlayProj.bannerHtml) {

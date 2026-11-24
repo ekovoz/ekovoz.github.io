@@ -21,6 +21,22 @@ const CANONICAL_24_PACK_LANGS = Object.freeze([
   "it", "ja", "ko", "sw", "tr", "arp", "bre", "cha",
 ]);
 
+const EMBEDDED_DATA_PACK_LANGS = new Set([
+  "en", "es", "grc", "he", "matrix_tier0", "stp",
+]);
+
+/**
+ * Resuelve la URL canónica de un `.ekpack`: `data/packs/` solo para los 6 paquetes embebidos,
+ * y `packs/` para los demás idiomas descargables bajo demanda (`D4-R8` / `SLICE-R8A-09`).
+ */
+export function resolveCanonicalVaultPackUrl(langCode, meta = null) {
+  const clean = String(langCode || "").trim();
+  if (meta?.sameOriginPackUrl) return String(meta.sameOriginPackUrl);
+  return EMBEDDED_DATA_PACK_LANGS.has(clean)
+    ? `data/packs/${clean}.ekpack`
+    : `packs/${clean}.ekpack`;
+}
+
 function formatMegabytes(bytes = 0) {
   const n = Math.max(0, Number(bytes) || 0);
   if (n >= 1024 * 1024) return `${(n / (1024 * 1024)).toFixed(2)} MB`;
@@ -73,7 +89,7 @@ export function renderVaultStorageManagerHtml({
       const sizeStr = rec ? formatMegabytes(rec.byteLen || rec.packBlob?.size || 0) : "";
       const prog = progressByLang[langCode];
       const meta = packMetaMap.get(langCode);
-      const url = meta?.sameOriginPackUrl || `data/packs/${langCode}.ekpack`;
+      const url = resolveCanonicalVaultPackUrl(langCode, meta);
       return (
         `<li class="vault-pack-row" data-vault-pack="${escapeHtml(langCode)}" data-vault-installed="${downloaded}">` +
         `<div class="vault-pack-info">` +
@@ -141,7 +157,7 @@ export async function hydrateVaultStorageManagerPanel(ctx = {}) {
       }
       const dlBtn = e?.target?.closest ? e.target.closest("[data-vault-download]") : e?.target?.getAttribute?.("data-vault-download") ? e.target : null;
       const dlLang = dlBtn?.getAttribute?.("data-vault-download");
-      const dlUrl = dlBtn?.getAttribute?.("data-vault-url") || `data/packs/${dlLang}.ekpack`;
+      const dlUrl = dlBtn?.getAttribute?.("data-vault-url") || resolveCanonicalVaultPackUrl(dlLang);
       if (dlLang) {
         try {
           const bytes = await fetchPackWithChunkProgress(dlUrl, {

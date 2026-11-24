@@ -111,7 +111,7 @@ export function projectSurfaceLayoutFromState(state = {}, rootDoc, getEl) {
 
   const drawersHost = resolveEl("sovereignGlobalDrawersHost");
   if (drawersHost) {
-    const showDrawersHost = hasOpenSheet || activeWork === "biblia";
+    const showDrawersHost = true;
     drawersHost.hidden = !showDrawersHost;
     drawersHost.setAttribute?.("data-inspector-open", hasOpenSheet ? "true" : "false");
   }
@@ -183,15 +183,15 @@ export function projectSurfaceLayoutFromState(state = {}, rootDoc, getEl) {
  * during bootstrap (before any lazy sheet module import settles).
  */
 export function bindEarlySubtabDelegation({ store, state, doc, onSubtabChange } = {}) {
-  if (!doc || typeof doc.addEventListener !== "function") return () => {};
-  if (doc._r2SubtabDelegationBound) return doc._r2SubtabUnbind || (() => {});
+  if (!doc || typeof doc.addEventListener !== "function") return () => { };
+  if (doc._r2SubtabDelegationBound) return doc._r2SubtabUnbind || (() => { });
 
   let lastSheetOpenerEl = null;
   const restoreSheetFocus = () => {
     const opener = lastSheetOpenerEl;
     lastSheetOpenerEl = null;
     if (opener && typeof opener.focus === "function") {
-      try { opener.focus(); } catch {}
+      try { opener.focus(); } catch { }
     }
   };
 
@@ -334,7 +334,7 @@ export function applyInitialSurfaceModeFromUrl({ store, state, search = "", doc,
  */
 export function createSurfaceCompositor({ store, state, doc, getEl, onSubtabChange } = {}) {
   const unbindSubtabs = bindEarlySubtabDelegation({ store, state, doc, onSubtabChange });
-  let unsubscribe = () => {};
+  let unsubscribe = () => { };
   if (store && typeof store.subscribe === "function") {
     unsubscribe = store.subscribe((snapshot) => {
       projectSurfaceLayoutFromState(snapshot, doc, getEl);

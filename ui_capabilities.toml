@@ -92,7 +92,7 @@ test_name = "dose2_and_dose3_from_real_index_and_manifest"
 [capability.study_14col_drawer]
 surface = "public-ui"
 intent = "study"
-selector = "#btnRegEstudio"
+selector = "#bibleEasyDrawer"
 module = "mostrador/estudio.js"
 handler = "renderStudy14ColDrawerHtml"
 test_file = "mostrador/estudio.test.mjs"

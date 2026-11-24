@@ -330,11 +330,10 @@ export let FLOOR_1_SENTENCE_SPEC = {
 };
 export let CRDT_WAL_SEMILATTICE = {
   raw_wal_lines_count: 60,
-  canonical_patches_count: 5,
+  canonical_patches_count: 4,
   canonical_patches: [
     { patch_id: "PATCH-STP-L2-0001", level: "L2", ref: "GEN.1.1", strong_id: "H0430", surface_stp: "Tu'xich jumai jixdha' Jawatan Dios gu mɨk gio gu oidha'.", status: "COMMITTED" },
     { patch_id: "PATCH-STP-L3-001", level: "L3", ref: "GEN.1.2", strong_id: "H7307", surface_stp: "Gu Jich Xoi'kam Dios jum tulhiiñchudha' parhii'ñ suudai'.", status: "COMMITTED" },
-    { patch_id: "PATCH-STP-L2-TEST-9D", level: "L2", ref: "PSA.23.1", strong_id: "H3068", surface_stp: "Jawatan Dios dhi' jiñ bhuiyabdam, cham tu' jiñ bhɨɨma'.", status: "COMMITTED" },
     { patch_id: "PATCH-STP-L4-BEATITUDE-CLI", level: "L4", ref: "MAT.5.3", strong_id: "G3107", surface_stp: "Jix bhai' ji'k jix chu'm jum aa' na pim tɨjɨɨ'ñdham bɨɨx jum a'ga.", status: "COMMITTED" },
     { patch_id: "PATCH-WAL-COMMIT-R16", level: "L2", ref: "GEN.1.1", strong_id: "H0430", surface_stp: "Tu'xich jumai Jawatan Dios jix chu b'o' bɨɨx na jax chu'm.", status: "COMMITTED" },
   ],
@@ -529,10 +528,16 @@ export function hydrateFieldWorkshopData(artifact, ladderArtifact = null) {
   }
   if (artifact.crdt_wal_semilattice && typeof artifact.crdt_wal_semilattice === "object") {
     const c = artifact.crdt_wal_semilattice;
+    const filteredPatches = Array.isArray(c.canonical_patches)
+      ? c.canonical_patches.filter((p) => !/-TEST-/i.test(String(p?.patch_id || "")))
+      : undefined;
     CRDT_WAL_SEMILATTICE = {
       ...c,
+      ...(filteredPatches ? { canonical_patches: filteredPatches } : {}),
       raw_wal_lines_count: Number(c.raw_wal_lines_count ?? c.raw_wal_lines) || 67,
-      canonical_patches_count: Number(c.canonical_patches_count ?? c.folded_canonical_count) || 5,
+      canonical_patches_count: filteredPatches
+        ? filteredPatches.length
+        : (Number(c.canonical_patches_count ?? c.folded_canonical_count) || 4),
     };
   }
   if (artifact.patch_journal_lock_p2 && typeof artifact.patch_journal_lock_p2 === "object") {

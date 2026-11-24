@@ -463,7 +463,7 @@ export function ensureDirectEditionsAndGrambankControls(ctx = {}) {
   wrap.innerHTML =
     `<div id="activeEditionImpositionSummary" class="ek-row-wrap" data-active-edition-id="${escapeHtml(activeEd)}">` +
     `<span><strong>${isEn ? "Active edition:" : "Edición activa:"}</strong> ${escapeHtml(activeBadge)}</span>` +
-    `<button type="button" id="btnGoPrintDosesCatalog" class="uls-chip">${isEn ? "Change in 1. Editions" : "Cambiar en 1. Ediciones"}</button>` +
+    `<button type="button" id="btnGoPrintDosesCatalog" class="uls-chip">${isEn ? "Change in 1. Doses" : "Cambiar en 1. Dosis"}</button>` +
     `</div>` +
     `<button type="button" id="btnApplyGrambankToPrint" class="uls-chip" data-grambank-apply-print="true" data-branch-id="${escapeHtml(branchId)}" data-typology-id="${escapeHtml(typoId)}">` +
     `${isEn ? "🌐 Apply typological profile to Print" : "🌐 Aplicar perfil tipológico a Impresión"}</button>`;

@@ -12,6 +12,7 @@ import {
   projectChapterThroughCascadeSemilattice,
 } from "./cascade_l1_l5.js";
 import { resolvePrimaryStrongForVerse } from "./drawer_study.js";
+import { runClientExternalAudit8Locks } from "./concordance_search.js";
 import { bindSurfaceActions, patchStoreState } from "./dom_patch.js";
 import {
   normalizeRootNotesEntries,
@@ -301,6 +302,10 @@ export async function hydrateImproveDrawerPanel(ctx = {}) {
       includeWalCard: false,
       includeCensusCard: false,
       uiLocale: state.uiLocale || "es",
+      uqPage: state.uncertaintyQueuePage || 1,
+      externalAuditText: state.externalAuditText || "",
+      externalAuditResult: state.externalAuditResult || null,
+      activeTier3aPair: state.activeTier3aPair || "",
     });
   }
 
@@ -444,6 +449,10 @@ export function bindImproveFormControlsInDrawer(mod, ctx = {}) {
         includeWalCard: false,
         includeCensusCard: false,
         uiLocale: state.uiLocale || "es",
+        uqPage: state.uncertaintyQueuePage || 1,
+        externalAuditText: state.externalAuditText || "",
+        externalAuditResult: state.externalAuditResult || null,
+        activeTier3aPair: state.activeTier3aPair || "",
       });
     }
     const lexHostEl = getEl("stpLexiconExplorerHost", targetDoc);
@@ -925,7 +934,63 @@ export function bindImproveFormControlsInDrawer(mod, ctx = {}) {
 
   if (cascadeEl && typeof cascadeEl.addEventListener === "function" && !cascadeEl._celfBound) {
     cascadeEl._celfBound = true;
+    cascadeEl.addEventListener("change", async (e) => {
+      const targetId = e?.target?.id || "";
+      if (targetId === "externalAuditTextInput") {
+        state.externalAuditText = String(e.target.value ?? "");
+        return;
+      }
+      if (targetId === "externalAuditFileInput") {
+        const file = e?.target?.files?.[0];
+        if (!file || typeof file.text !== "function") return;
+        const rawDraft = await file.text();
+        state.externalAuditText = rawDraft;
+        state.externalAuditResult = runClientExternalAudit8Locks({
+          rawText: rawDraft,
+          oldSurface: oldInput?.value || "",
+        });
+        (state.refreshPatchPreview || refreshPatchPreview)();
+      }
+    });
     cascadeEl.addEventListener("click", async (e) => {
+      const uqPageBtn = e?.target?.closest
+        ? e.target.closest("[data-uq-page]")
+        : e?.target?.getAttribute?.("data-uq-page")
+          ? e.target
+          : null;
+      const uqPageVal = uqPageBtn?.getAttribute?.("data-uq-page");
+      if (uqPageVal !== null && uqPageVal !== undefined) {
+        state.uncertaintyQueuePage = Math.max(1, Number(uqPageVal) || 1);
+        (state.refreshPatchPreview || refreshPatchPreview)();
+        return;
+      }
+      const tier3aBtn = e?.target?.closest
+        ? e.target.closest("[data-tier3a-pair]")
+        : e?.target?.getAttribute?.("data-tier3a-pair")
+          ? e.target
+          : null;
+      const tier3aKey = tier3aBtn?.getAttribute?.("data-tier3a-pair");
+      if (tier3aKey) {
+        state.activeTier3aPair = state.activeTier3aPair === tier3aKey ? "" : tier3aKey;
+        (state.refreshPatchPreview || refreshPatchPreview)();
+        return;
+      }
+      const runAuditBtn = e?.target?.closest
+        ? e.target.closest("#btnRunExternalAudit")
+        : e?.target?.id === "btnRunExternalAudit"
+          ? e.target
+          : null;
+      if (runAuditBtn) {
+        const auditInput = getEl("externalAuditTextInput", targetDoc);
+        const rawDraft = String(auditInput?.value ?? state.externalAuditText ?? "");
+        state.externalAuditText = rawDraft;
+        state.externalAuditResult = runClientExternalAudit8Locks({
+          rawText: rawDraft,
+          oldSurface: oldInput?.value || "",
+        });
+        (state.refreshPatchPreview || refreshPatchPreview)();
+        return;
+      }
       const waveBtn = e?.target?.closest
         ? e.target.closest("[data-ot-wave]")
         : e?.target?.getAttribute?.("data-ot-wave")

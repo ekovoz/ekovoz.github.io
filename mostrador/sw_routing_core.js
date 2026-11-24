@@ -38,6 +38,7 @@ export const SHELL_CORE_ASSETS = [
   "/i18n_ui.js",
   "/mostrador/bridge_and_chapter.js",
   "/mostrador/canonical_versification.js",
+  "/mostrador/concordance_search.js",
   "/mostrador/chrome_static_i18n.js",
   "/mostrador/diglossic_chapter_renderer.js",
   "/mostrador/drawer_hydrators.js",

@@ -1296,8 +1296,24 @@
       padding: 0;
     }
 
-    body[data-intent="read"] .site-footer {
+    body[data-intent="read"] .site-footer,
+    body[data-intent="read"] #bibleVerseViewport,
+    body[data-intent="read"] #felicesSovereignSection,
+    body[data-intent="read"] #evangeliosSovereignSection {
       padding-bottom: 5.5rem;
+    }
+
+    body[data-intent="read"] #felicesSovereignSection .focal-plate-frame {
+      max-height: 250px;
+      min-height: 190px;
+    }
+
+    body[data-intent="read"] #felicesSovereignSection .focal-viewer {
+      margin: 0.35rem auto 0.6rem auto;
+    }
+
+    body[data-intent="read"] #felicesSovereignSection .paper-toggle-wrapper {
+      margin: 0.35rem 0 0.75rem 0;
     }
 
     body[data-intent="read"] #bibleProgressiveSheetDoors {
@@ -2385,8 +2401,8 @@
   }
 
   .oral-portico-cadence-btn {
-    min-height: 40px;
-    padding: 0.2rem 0.6rem;
+    min-height: 48px;
+    padding: 0.25rem 0.65rem;
   }
 
   #audioCadenceWpmSelect {
@@ -2530,6 +2546,69 @@
     overflow: hidden;
     text-overflow: ellipsis;
     min-width: 0;
+  }
+
+  .jump-pills-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    margin: 0.45rem 0 0.65rem;
+    padding-bottom: 0.45rem;
+    border-bottom: 1px solid var(--card-border);
+  }
+
+  .jump-pill {
+    font-size: 0.78rem;
+    padding: 0.38rem 0.65rem;
+    min-height: 48px;
+    min-width: 48px;
+  }
+
+  #nsm65StratumCard,
+  #studyUbsComparatorHost,
+  #studyOnomasticonExplorerHost,
+  #realiaMetrologyStratumCard,
+  #tskCrossRefsStratumCard,
+  #philologyRosettaStaticHost,
+  #bibleAnalyticalThermometerPanel,
+  #wfstAndScriptioContinuaHost,
+  #diachronicSubstitutionsDetails,
+  #bibleBranchAndTypologyPanel,
+  #bibleKindleConfigurator,
+  #duplexAssistantPanel,
+  #impositionBookletPreviewHost {
+    scroll-margin-top: 3.5rem;
+  }
+
+  @media (max-width: 1023px) {
+    .jump-pill {
+      min-height: 48px;
+      min-width: 48px;
+    }
+  }
+
+  .concordance-match-btn {
+    width: 100%;
+    text-align: left;
+    justify-content: flex-start;
+    margin-bottom: 0.35rem;
+  }
+
+  .search-hit-mark {
+    background: color-mix(in srgb, var(--accent-amber) 24%, transparent);
+    color: inherit;
+    padding: 0 0.15rem;
+    border-radius: 3px;
+  }
+
+  .uls-badge.is-active-syllable {
+    font-weight: 700;
+    border-color: var(--accent-amber);
+    opacity: 1;
+  }
+
+  .uls-badge[data-syllable-index]:not(.is-active-syllable) {
+    opacity: 0.8;
   }
 }
 

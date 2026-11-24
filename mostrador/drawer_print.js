@@ -264,6 +264,8 @@ export function renderPrintDrawerPanelsSyncInDrawer(ctx = {}) {
   state.fontSizePt = activeFontPt;
   const fontSliderEl = getEl("kindleFontSizeSlider", targetDoc);
   if (fontSliderEl) fontSliderEl.value = String(activeFontPt);
+  const fontValEl = getEl("kindleFontSizeValue", targetDoc);
+  if (fontValEl) fontValEl.textContent = `${activeFontPt.toFixed(1)} pt`;
   const paperSelEl = getEl("kindlePaperFormatSelector", targetDoc);
   if (paperSelEl) paperSelEl.value = effectivePaper;
   const orientSel = getEl("kindleOrientationSelector", targetDoc);
@@ -709,9 +711,20 @@ export function renderPrintDrawerPanelsSyncInDrawer(ctx = {}) {
           cachedCardHref ||
           staticFieldHref ||
           buildRelativePdfAssetUrl(ed.profileUrl || ed.url || "mostrador/tanda_print_worker.js");
+        const cardPaperRaw = String(ed.paperSize || "").toLowerCase();
+        const normEffPaper = String(effectivePaper || "a4").toLowerCase();
+        const isAdaptableStdPaper =
+          (cardPaperRaw === "a4" || cardPaperRaw === "letter") &&
+          (normEffPaper === "a4" || normEffPaper === "letter");
+        const resolvedCardPaper = isAdaptableStdPaper ? normEffPaper : (ed.paperSize || "");
+        const displayPaperBadge = isAdaptableStdPaper
+          ? (normEffPaper === "letter" ? "US-LETTER" : "A4")
+          : ed.paperSize
+            ? String(ed.paperSize).toUpperCase()
+            : "";
         const paperCode = encodePaperFormatCode(
-          ed.paperSize || effectivePaper,
-          String(ed.paperSize || "").toLowerCase().includes("landscape") ? "landscape" : "portrait",
+          resolvedCardPaper || effectivePaper,
+          String(resolvedCardPaper || "").toLowerCase().includes("landscape") ? "landscape" : "portrait",
         );
         const specParts =
           ed.kind === "field_pdf"
@@ -722,7 +735,7 @@ export function renderPrintDrawerPanelsSyncInDrawer(ctx = {}) {
             : [
               ed.columns ? `${ed.columns} col` : "",
               ed.fontPt ? `${ed.fontPt} pt` : "",
-              ed.paperSize ? String(ed.paperSize).toUpperCase() : "",
+              displayPaperBadge,
               activeBlockCode,
             ].filter(Boolean);
         const specBadge = specParts.length
@@ -741,7 +754,7 @@ export function renderPrintDrawerPanelsSyncInDrawer(ctx = {}) {
           )}" data-toml-path="${escapeHtml(ed.tomlPath || "")}" data-font-pt="${escapeHtml(
             ed.fontPt || "",
           )}" data-columns="${escapeHtml(ed.columns || "")}" data-paper-size="${escapeHtml(
-            ed.paperSize || "",
+            resolvedCardPaper,
           )}" data-has-precompiled-pdf="${Boolean(staticFieldHref && !cachedCardHref)}" data-availability-mode="bimodal_client_print" data-bimodal-lane="lane_b_worker_tanda" download>📄 ${escapeHtml(ed.label)}${specBadge}</a>`
         );
       })

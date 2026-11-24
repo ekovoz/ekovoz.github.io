@@ -294,8 +294,8 @@ export function syncSisterWorksTabsDom(cleanWork = "biblia", getElFn) {
   applySec(bibSec, cleanWork === "biblia");
   applySec(felSec, cleanWork === "felices");
   applySec(evaSec, cleanWork === "evangelios");
-  // Keep global Harel drawers accessible in Reader/Sister works when a sheet (e.g. Share/Offline) is requested
-  const showGlobalDrawers = cleanWork === "biblia" || Boolean(drawersHost?.getAttribute?.("data-inspector-open") === "true");
+  // Keep global Harel drawers accessible across all 3 canonical works (Biblia, Felices, Evangelios · D3-R8)
+  const showGlobalDrawers = ["biblia", "felices", "evangelios"].includes(cleanWork) || Boolean(drawersHost?.getAttribute?.("data-inspector-open") === "true");
   applySec(drawersHost, showGlobalDrawers);
 
   if (tabBib) tabBib.setAttribute("aria-selected", cleanWork === "biblia" ? "true" : "false");
@@ -392,7 +392,11 @@ export function bindSisterWorksStageEvents(ctx = {}) {
   const hydrateEvangeliosSection = async (quarterFilter = state.evangeliosQuarter || "T1", weekId = state.evangeliosWeekId || "") => {
     const evSec = getEl("evangeliosSovereignSection", targetDoc);
     if (!evSec) return null;
-    const activeCorpusLang = String(state.effectiveCorpusLang || state.lang || "es").trim() || "es";
+    const rawStateLang = String(state.lang || "").trim();
+    const activeCorpusLang =
+      ["es", "en", "pt", "fr", "quc", "gn", "stp"].includes(rawStateLang)
+        ? rawStateLang
+        : String(state.effectiveCorpusLang || rawStateLang || "es").trim() || "es";
     state.evangeliosLang = activeCorpusLang;
     const evLangSelSync = getEl("evangeliosLangSelect", targetDoc);
     if (evLangSelSync) {

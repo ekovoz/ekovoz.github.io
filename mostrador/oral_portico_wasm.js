@@ -17,6 +17,13 @@ function stopOralPorticoAnimationLoop(state) {
     clearInterval(state.oralPorticoFallbackTimerId);
     state.oralPorticoFallbackTimerId = null;
   }
+  if (state.oralVoiceActive && typeof globalThis.speechSynthesis?.cancel === "function") {
+    try {
+      globalThis.speechSynthesis.cancel();
+    } catch {
+      // Headless / sandboxed environments may lack full speechSynthesis
+    }
+  }
   state.oralPorticoPlaying = false;
 }
 
@@ -28,6 +35,7 @@ function patchOralPorticoCursorInPlace({
   getEl,
   targetDoc,
 }) {
+  const isEn = String(state?.uiLocale || state?.lang || "es").trim().toLowerCase().startsWith("en");
   const cadenceBar =
     (typeof getEl === "function" ? getEl("bibleAudioCadenceBar", targetDoc) : null) ||
     (typeof oralBanner?.querySelector === "function"
@@ -53,14 +61,18 @@ function patchOralPorticoCursorInPlace({
       ? oralBanner.querySelector("#btnPlayPauseOralPorticoCadence")
       : null);
   if (playBtn) {
-    playBtn.textContent = isPlaying ? "⏸ Pausar" : "▶ Guiar Versículo";
+    playBtn.textContent = isPlaying
+      ? (isEn ? "⏸ Pause" : "⏸ Pausar")
+      : (isEn ? "▶ Guide Verse" : "▶ Guiar Versículo");
   }
   const cursorBadge =
     typeof oralBanner?.querySelector === "function"
       ? oralBanner.querySelector('[data-prosodic-cursor="true"]')
       : null;
   if (cursorBadge) {
-    cursorBadge.textContent = `Sílaba #${prosody.activeSyllableIndex + 1}/${prosody.syllables.length}: «${prosody.activeSyllable}»`;
+    cursorBadge.textContent = isEn
+      ? `Syllable #${prosody.activeSyllableIndex + 1}/${prosody.syllables.length}: «${prosody.activeSyllable}»`
+      : `Sílaba #${prosody.activeSyllableIndex + 1}/${prosody.syllables.length}: «${prosody.activeSyllable}»`;
   }
   const spans =
     Array.isArray(oralBanner?._porticoSyllableSpans) && oralBanner._porticoSyllableSpans.length > 0
@@ -119,8 +131,11 @@ export function renderOralPorticoWasmConsole({
     playerWasm,
   );
   state.lastProsodyAlignment = prosody;
+  const isEn = String(state.uiLocale || state.lang || "es").trim().toLowerCase().startsWith("en");
   const isPlaying = Boolean(state.oralPorticoPlaying);
-  const mountKey = `${state.book}|${state.chapter}|${state.verse}|${prosody.wpm}|${prosody.totalMs}|${prosody.syllables.length}|${prosody.wasmBacked}`;
+  const voiceActive = Boolean(state.oralVoiceActive);
+  const hasDeviceSpeech = typeof globalThis.speechSynthesis?.speak === "function";
+  const mountKey = `${state.book}|${state.chapter}|${state.verse}|${prosody.wpm}|${prosody.totalMs}|${prosody.syllables.length}|${prosody.wasmBacked}|${isEn ? "en" : "es"}|${voiceActive}`;
 
   if (
     oralBanner._porticoMountKey === mountKey &&
@@ -145,8 +160,17 @@ export function renderOralPorticoWasmConsole({
     )
     .join(" ");
 
+  const guideBtnLabel = isPlaying
+    ? (isEn ? "⏸ Pause" : "⏸ Pausar")
+    : (isEn ? "▶ Guide Verse" : "▶ Guiar Versículo");
+  const voiceToggleLabel = voiceActive
+    ? (isEn ? "🔊 Device Voice: ON" : "🔊 Voz del dispositivo: SÍ")
+    : (isEn ? "🔇 Optional Device Voice" : "🔇 Voz del dispositivo (Opcional)");
+  const voiceStatusText = voiceActive && !hasDeviceSpeech
+    ? (isEn ? "No OS voices available — using silent syllable cursor." : "Sin voces del sistema — usando guía visual por sílabas.")
+    : (isEn ? "Silent syllable guide (0 Bytes Audio · offline)." : "Guía visual por sílabas sin red (0 Bytes Audio).");
+
   oralBanner.innerHTML =
-    `<style id="oralPorticoDynamicStyle">.uls-badge.is-active-syllable{font-weight:700;border-color:var(--accent-amber);opacity:1}.uls-badge[data-syllable-index]:not(.is-active-syllable){opacity:0.8}</style>` +
     `<div id="bibleAudioCadenceBar" class="mostrador-audio-cadence-bar" ` +
     `data-wpm="${prosody.wpm}" ` +
     `data-target-bits-per-sec="${prosody.targetBitsPerSec}" ` +
@@ -154,6 +178,7 @@ export function renderOralPorticoWasmConsole({
     `data-total-ms="${prosody.totalMs}" ` +
     `data-syllable-count="${prosody.syllables.length}" ` +
     `data-playing="${isPlaying}" ` +
+    `data-voice-active="${voiceActive}" ` +
     `data-active-syllable-index="${prosody.activeSyllableIndex}" ` +
     `data-active-syllable="${escapeHtml(prosody.activeSyllable)}" ` +
     `data-pause-comma-ms="${prosody.pauseCommaMs}" ` +
@@ -162,26 +187,30 @@ export function renderOralPorticoWasmConsole({
     `data-audio-crc16="${escapeHtml(prosody.crc16Hex)}" ` +
     `data-wasm-backed="${prosody.wasmBacked}">` +
     `<div class="ek-row-between ek-mb-sm">` +
-    `<strong>🗣️ Escucha Guiada (${escapeHtml(`${state.book} ${state.chapter}:${state.verse}`)}) <small class="uls-badge hig-tech-meta">Pórtico Prosódico WASM · 0 Bytes Audio · ${prosody.wpm} WPM (~${prosody.targetBitsPerSec} bits/s) · CRC-16=${escapeHtml(prosody.crc16Hex)}</small></strong>` +
+    `<strong>🗣️ ${isEn ? "Guided Reading" : "Lectura Guiada"} (${escapeHtml(`${state.book} ${state.chapter}:${state.verse}`)}) <small class="ek-meta">${escapeHtml(voiceStatusText)}</small></strong>` +
     `<div class="ek-flex-wrap-inline">` +
-    `<button type="button" id="btnPlayPauseOralPorticoCadence" class="uls-chip oral-portico-cadence-btn">${isPlaying ? "⏸ Pausar" : "▶ Guiar Versículo"}</button>` +
-    `<label for="audioCadenceWpmSelect">Cadencia: ` +
+    `<button type="button" id="btnPlayPauseOralPorticoCadence" class="uls-chip oral-portico-cadence-btn">${guideBtnLabel}</button>` +
+    `<button type="button" id="btnOralVoiceToggle" class="uls-chip oral-portico-cadence-btn" aria-pressed="${voiceActive}">${voiceToggleLabel}</button>` +
+    `<label for="audioCadenceWpmSelect">${isEn ? "Pace:" : "Cadencia:"} ` +
     `<select id="audioCadenceWpmSelect">` +
     [90, 120, 135, 150, 160]
       .map((w) => `<option value="${w}"${w === prosody.wpm ? " selected" : ""}>${w} WPM</option>`)
       .join("") +
     `</select></label>` +
-    `<label for="audioElapsedRange">Cursor (ms): ` +
+    `<label for="audioElapsedRange">${isEn ? "Position:" : "Cursor (ms):"} ` +
     `<input id="audioElapsedRange" type="range" min="0" max="${prosody.totalMs}" step="250" value="${prosody.elapsedMs}">` +
     `</label>` +
     `</div></div>` +
+    `<div class="prosody-syllable-strip oral-portico-secondary">` +
+    `<span class="uls-badge" data-prosodic-cursor="true">${isEn ? `Syllable #${prosody.activeSyllableIndex + 1}/${prosody.syllables.length}: «${escapeHtml(prosody.activeSyllable)}»` : `Sílaba #${prosody.activeSyllableIndex + 1}/${prosody.syllables.length}: «${escapeHtml(prosody.activeSyllable)}»`}</span> ` +
+    `${syllablesHtml}</div>` +
+    `<details class="tech-details ek-mt-xs"><summary>${isEn ? "Technical cadence & CRC-16 timing" : "Detalles técnicos de cadencia y CRC-16"}</summary>` +
     `<div class="oral-portico-secondary">` +
-    `<span class="uls-badge" data-prosodic-pause="comma">τ₁ Coma: ${prosody.pauseCommaMs} ms</span>` +
-    `<span class="uls-badge" data-prosodic-pause="semicolon">τ₂ Punto y coma: ${prosody.pauseSemicolonMs} ms</span>` +
-    `<span class="uls-badge" data-prosodic-pause="period">τ₃ Punto / Selah: ${prosody.pausePeriodSelahMs} ms</span>` +
-    `<span class="uls-badge" data-prosodic-cursor="true">Sílaba #${prosody.activeSyllableIndex + 1}/${prosody.syllables.length}: «${escapeHtml(prosody.activeSyllable)}»</span>` +
-    `</div>` +
-    `<div class="prosody-syllable-strip oral-portico-secondary">${syllablesHtml}</div>` +
+    `<span class="uls-badge" data-prosodic-pause="comma">${isEn ? "τ₁ Comma" : "τ₁ Coma"}: ${prosody.pauseCommaMs} ms</span> ` +
+    `<span class="uls-badge" data-prosodic-pause="semicolon">${isEn ? "τ₂ Semicolon" : "τ₂ Punto y coma"}: ${prosody.pauseSemicolonMs} ms</span> ` +
+    `<span class="uls-badge" data-prosodic-pause="period">${isEn ? "τ₃ Period / Selah" : "τ₃ Punto / Selah"}: ${prosody.pausePeriodSelahMs} ms</span> ` +
+    `<span class="uls-badge">0 Bytes Audio · ${prosody.wpm} WPM (~${prosody.targetBitsPerSec} bits/s) · CRC-16=${escapeHtml(prosody.crc16Hex)}</span>` +
+    `</div></details>` +
     `</div>`;
 
   oralBanner._porticoMountKey = mountKey;
@@ -256,6 +285,31 @@ export function renderOralPorticoWasmConsole({
         }
       }
       updateTick();
+    });
+  }
+
+  const voiceBtn = getEl("btnOralVoiceToggle", targetDoc);
+  if (voiceBtn && typeof voiceBtn.addEventListener === "function") {
+    voiceBtn.addEventListener("click", () => {
+      state.oralVoiceActive = !state.oralVoiceActive;
+      if (state.oralVoiceActive && typeof globalThis.speechSynthesis?.speak === "function" && typeof SpeechSynthesisUtterance === "function") {
+        try {
+          globalThis.speechSynthesis.cancel();
+          const u = new SpeechSynthesisUtterance(verseText);
+          u.lang = String(state.lang || "es");
+          u.rate = Math.max(0.6, Math.min(1.6, prosody.wpm / 150));
+          globalThis.speechSynthesis.speak(u);
+        } catch {
+          // Silent fallback to WASM cursor
+        }
+      } else if (!state.oralVoiceActive && typeof globalThis.speechSynthesis?.cancel === "function") {
+        try {
+          globalThis.speechSynthesis.cancel();
+        } catch {
+          // Non-fatal
+        }
+      }
+      renderOralPorticoWasmConsole({ state, dataLayer, getEl, targetDoc });
     });
   }
 

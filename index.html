@@ -113,6 +113,23 @@
                 aria-label="Decrease text size">A-</button>
             <button type="button" id="btnScaleUp" class="uls-chip" data-i18n-autonym="true"
                 aria-label="Increase text size">A+</button>
+            <div id="bibleRegisterSelector" class="register-selector-group ek-row-wrap ek-divider-top" role="group"
+                aria-label="Reading Mode">
+                <button type="button" id="btnRegIntergeneracional" class="uls-chip"
+                    data-register="intergeneracional" data-i18n="mostrador.register.intergenerational">🕊️ Clear
+                    contemporary reading</button>
+                <button type="button" id="btnRegClasica" class="uls-chip" data-register="clasica"
+                    data-i18n="mostrador.register.classic">📜 Classic tradition
+                    (1909)</button>
+                <button type="button" id="btnRegBilingue" class="uls-chip" data-register="bilingue"
+                    data-i18n="mostrador.register.bilingual">👥 Side-by-side
+                    bilingual (62/38)</button>
+                <button type="button" id="toggleRollMode" class="uls-chip"
+                    data-i18n="mostrador.register.roll_toggle">📄 Page view ↔
+                    Continuous scroll</button>
+                <span id="bibleStageRegisterPulseBadge" class="uls-badge" aria-live="polite">🌡️ Lectura clara
+                    contemporánea</span>
+            </div>
             <div class="ek-row-wrap ek-divider-top" role="group" aria-label="App Interface Language">
                 <button type="button" class="uls-trigger-btn" id="ulsTriggerBtn" data-i18n-autonym="true"
                     aria-haspopup="listbox" aria-expanded="false" aria-controls="langSelect">
@@ -149,21 +166,25 @@
                 </select>
             </div>
         </div>
-        <!-- Global Orthogonal Corpus Language Funnel (24 Bibles & Portions + SIL 7,164 Census) & 8 Life Trails (D3-R5) -->
+        <!-- Global Orthogonal Corpus Language Funnel (24 Bibles & Portions + Sister Works Languages + SIL 7,164 Census) -->
         <details class="advanced-editorial-drawer advanced-editorial-drawer corpus-drawer"
             id="bibleLanguageAndRegisterDrawer">
             <summary hidden aria-hidden="true" data-i18n="mostrador.step1.title">
                 1. Choose language: 24 Bibles &amp; Portions or SIL Census (7,164)</summary>
             <div>
-                <div id="corpusDrawerTabs" class="subtabs-bar" role="tablist" aria-label="Biblias y Planes de Lectura">
-                    <button type="button" id="btnCorpusTabBibles" class="uls-chip" role="tab" aria-selected="true"
-                        aria-controls="corpusTabPanelBibles" data-i18n="corpus.tab.bibles">📖 Biblias y Lenguas
-                        (24)</button>
-                    <button type="button" id="btnCorpusTabTrails" class="uls-chip" role="tab" aria-selected="false"
-                        aria-controls="corpusTabPanelTrails" data-i18n="corpus.tab.trails">🧭 Planes de Lectura
-                        (8)</button>
+                <p class="ek-title-sm" data-i18n="corpus.tab.bibles">📖 Bibles &amp; Languages (24)</p>
+                <div id="corpusWorkLanguagesBar" class="chip-wrap-row ek-mb-sm" role="group"
+                    aria-label="Sister Work Editions (Evangelios and Felices)">
+                    <button type="button" id="quickWorkLangGn" class="uls-chip" data-i18n-autonym="true"
+                        data-corpus-lang="gn" data-work-scope="evangelios">🇵🇾 Avañe'ẽ Guaraní (gn · Evangelios)</button>
+                    <button type="button" id="quickWorkLangQuc" class="uls-chip" data-i18n-autonym="true"
+                        data-corpus-lang="quc" data-work-scope="evangelios">🇬🇹 K'iche' (quc · Evangelios)</button>
+                    <button type="button" id="quickWorkLangBnBd" class="uls-chip" data-i18n-autonym="true"
+                        data-corpus-lang="bn-BD" data-work-scope="felices">🇧🇩 বাংলা বাংলাদেশ (bn-BD · Felices)</button>
+                    <button type="button" id="quickWorkLangBnIn" class="uls-chip" data-i18n-autonym="true"
+                        data-corpus-lang="bn-IN" data-work-scope="felices">🇮🇳 বাংলা ভারত (bn-IN · Felices)</button>
                 </div>
-                <div id="corpusTabPanelBibles" role="tabpanel" aria-labelledby="btnCorpusTabBibles">
+                <div id="corpusTabPanelBibles" role="region" aria-label="24 Verified Bibles and 7,164 Languages">
                     <div id="bibleVerifiedCorpusPills" class="chip-wrap-row" role="group"
                         aria-label="24 Verified Bibles and Portions">
                         <button type="button" id="quickLangEs" class="uls-chip" data-i18n-autonym="true"
@@ -216,23 +237,6 @@
                             data-corpus-lang="bre">🌊 Brezhoneg (Porción)</button>
                         <button type="button" id="quickLangCha" class="uls-chip" data-i18n-autonym="true"
                             data-corpus-lang="cha">🌺 Chamorro (Porción)</button>
-                    </div>
-                    <div id="bibleRegisterSelector" class="register-selector-group ek-mt-sm" role="group"
-                        aria-label="Reading Mode">
-                        <button type="button" id="btnRegIntergeneracional" class="uls-chip"
-                            data-register="intergeneracional" data-i18n="mostrador.register.intergenerational">🕊️ Clear
-                            contemporary reading</button>
-                        <button type="button" id="btnRegClasica" class="uls-chip" data-register="clasica"
-                            data-i18n="mostrador.register.classic">📜 Classic tradition
-                            (1909)</button>
-                        <button type="button" id="btnRegBilingue" class="uls-chip" data-register="bilingue"
-                            data-i18n="mostrador.register.bilingual">👥 Side-by-side
-                            bilingual (62/38)</button>
-                        <button type="button" id="toggleRollMode" class="uls-chip"
-                            data-i18n="mostrador.register.roll_toggle">📄 Page view ↔
-                            Continuous scroll</button>
-                        <span id="bibleStageRegisterPulseBadge" class="uls-badge" aria-live="polite">🌡️ Lectura clara
-                            contemporánea</span>
                     </div>
                     <div class="ek-mt-sm">
                         <input type="search" id="quickLangFilterInput" class="field-search-input"
@@ -301,32 +305,13 @@
                             <option value="ja">日本語 (ja)</option>
                             <option value="ko">한국어 (ko)</option>
                             <option value="quc">K'iche' (quc)</option>
+                            <option value="gn">Avañe'ẽ · Guaraní (gn · Evangelios)</option>
                             <option value="arp">Hinónoʼeitíít · Arapaho (arp · Porciones)</option>
                             <option value="bre">Brezhoneg · Breton (bre · Porciones)</option>
                             <option value="cha">Finuʼ Chamorro (cha · Porciones)</option>
                             <option value="aud">Au'dam (aud · Draft)</option>
                             <option value="kgv">Kalamang (kgv · Draft)</option>
                         </select>
-                    </div>
-                </div>
-                <div id="corpusTabPanelTrails" role="tabpanel" aria-labelledby="btnCorpusTabTrails" hidden>
-                    <div id="bibleLifeTrails" class="chip-wrap-row" aria-label="8 Life Trails">
-                        <button type="button" id="btnTrailConsuelo" class="uls-chip" data-trail-id="consuelo"
-                            data-i18n="trail.consuelo">Comfort (Ps 23)</button>
-                        <button type="button" id="btnTrailPaz" class="uls-chip" data-trail-id="paz"
-                            data-i18n="trail.paz">Peace (Jn 14)</button>
-                        <button type="button" id="btnTrailPerdon" class="uls-chip" data-trail-id="perdon"
-                            data-i18n="trail.perdon">Forgiveness (Lk 15)</button>
-                        <button type="button" id="btnTrailSabiduria" class="uls-chip" data-trail-id="sabiduria"
-                            data-i18n="trail.sabiduria">Wisdom (Jas 1)</button>
-                        <button type="button" id="btnTrailFamilia" class="uls-chip" data-trail-id="familia"
-                            data-i18n="trail.familia">Family (1 Cor 13)</button>
-                        <button type="button" id="btnTrailEsperanza" class="uls-chip" data-trail-id="esperanza"
-                            data-i18n="trail.esperanza">Hope (Rom 8)</button>
-                        <button type="button" id="btnTrailOracion" class="uls-chip" data-trail-id="oracion"
-                            data-i18n="trail.oracion">Prayer (Mt 6)</button>
-                        <button type="button" id="btnTrailCreacion" class="uls-chip" data-trail-id="creacion"
-                            data-i18n="trail.creacion">Creation (Gen 1)</button>
                     </div>
                 </div>
             </div>
@@ -397,13 +382,7 @@
             <p class="bible-verse-line" data-i18n="mostrador.status.loading">Loading passage…</p>
         </div>
 
-        <div id="stage-action">
-            <div>
-                <button type="button" id="btnRegEstudio" class="uls-chip" data-study-shortcut="true"
-                    data-i18n="mostrador.register.study" hidden aria-hidden="true" tabindex="-1">🔬 Word-by-word study
-                    (15 Columns)</button>
-            </div>
-        </div>
+        <div id="stage-action"></div>
 
         <dialog id="bibleCoordinateCompassModal" aria-label="Tactile 66-Book Compass">
             <div class="modal-header">
@@ -411,35 +390,63 @@
                 <button type="button" class="modal-close" id="btnCloseCompassModal" data-i18n-autonym="true"
                     aria-label="Close">✕</button>
             </div>
+            <div id="compassModeTabsBar" class="subtabs-bar" role="tablist" aria-label="Books or Reading Trails">
+                <button type="button" id="btnCompassTabBooks" class="uls-chip" role="tab" aria-selected="true"
+                    aria-controls="compassPanelBooks" data-i18n-autonym="true">📖 66</button>
+                <button type="button" id="btnCompassTabTrails" class="uls-chip" role="tab" aria-selected="false"
+                    aria-controls="compassPanelTrails" data-i18n="corpus.tab.trails">🧭 8 Reading Trails</button>
+            </div>
             <div>
                 <input type="text" id="mostradorRefInput" class="field-search-input"
                     data-i18n-attr="placeholder:mostrador.step2.placeholder"
-                    placeholder="Passage (e.g. Rom 1:16, Jn 3:16, Sal 23)">
+                    placeholder="Passage, phrase, or language (e.g. Rom 1:16, shepherd)">
                 <button type="button" id="btnGoReference" class="uls-chip"
                     data-i18n="mostrador.step2.open_compass">Go</button>
             </div>
             <div id="spotlightSearchResults" class="spotlight-results-list" role="listbox"
                 aria-label="Spotlight Corpus Results" hidden>
             </div>
-            <div>
-                <select id="bibleSelectBook" aria-label="Bible Book (66 Books)">
-                    <option value="GEN">01. Genesis (GEN)</option>
-                    <option value="EXO">02. Exodus (EXO)</option>
-                    <option value="PSA">19. Psalms (PSA)</option>
-                    <option value="ISA">23. Isaiah (ISA)</option>
-                    <option value="MAT">40. Matthew (MAT)</option>
-                    <option value="LUK">42. Luke (LUK)</option>
-                    <option value="JHN" selected>43. John (JHN)</option>
-                    <option value="ROM">45. Romans (ROM)</option>
-                    <option value="REV">66. Revelation (REV)</option>
-                </select>
-                <select id="bibleSelectChapter" aria-label="Chapter">
-                    <option value="1" selected>1</option>
-                    <option value="14">14</option>
-                    <option value="23">23</option>
-                </select>
+            <div id="compassPanelBooks" role="tabpanel" aria-labelledby="btnCompassTabBooks">
+                <div>
+                    <select id="bibleSelectBook" aria-label="Bible Book (66 Books)">
+                        <option value="GEN">01. Genesis (GEN)</option>
+                        <option value="EXO">02. Exodus (EXO)</option>
+                        <option value="PSA">19. Psalms (PSA)</option>
+                        <option value="ISA">23. Isaiah (ISA)</option>
+                        <option value="MAT">40. Matthew (MAT)</option>
+                        <option value="LUK">42. Luke (LUK)</option>
+                        <option value="JHN" selected>43. John (JHN)</option>
+                        <option value="ROM">45. Romans (ROM)</option>
+                        <option value="REV">66. Revelation (REV)</option>
+                    </select>
+                    <select id="bibleSelectChapter" aria-label="Chapter">
+                        <option value="1" selected>1</option>
+                        <option value="14">14</option>
+                        <option value="23">23</option>
+                    </select>
+                </div>
+                <div id="bibleCoordinateCompassGrid" class="compass-grid">
+                </div>
             </div>
-            <div id="bibleCoordinateCompassGrid" class="compass-grid">
+            <div id="compassPanelTrails" role="tabpanel" aria-labelledby="btnCompassTabTrails" hidden>
+                <div id="bibleLifeTrails" class="chip-wrap-row" aria-label="8 Life Trails">
+                    <button type="button" id="btnTrailConsuelo" class="uls-chip" data-trail-id="consuelo"
+                        data-i18n="trail.consuelo">Comfort (Ps 23)</button>
+                    <button type="button" id="btnTrailPaz" class="uls-chip" data-trail-id="paz"
+                        data-i18n="trail.paz">Peace (Jn 14)</button>
+                    <button type="button" id="btnTrailPerdon" class="uls-chip" data-trail-id="perdon"
+                        data-i18n="trail.perdon">Forgiveness (Lk 15)</button>
+                    <button type="button" id="btnTrailSabiduria" class="uls-chip" data-trail-id="sabiduria"
+                        data-i18n="trail.sabiduria">Wisdom (Jas 1)</button>
+                    <button type="button" id="btnTrailFamilia" class="uls-chip" data-trail-id="familia"
+                        data-i18n="trail.familia">Family (1 Cor 13)</button>
+                    <button type="button" id="btnTrailEsperanza" class="uls-chip" data-trail-id="esperanza"
+                        data-i18n="trail.esperanza">Hope (Rom 8)</button>
+                    <button type="button" id="btnTrailOracion" class="uls-chip" data-trail-id="oracion"
+                        data-i18n="trail.oracion">Prayer (Mt 6)</button>
+                    <button type="button" id="btnTrailCreacion" class="uls-chip" data-trail-id="creacion"
+                        data-i18n="trail.creacion">Creation (Gen 1)</button>
+                </div>
             </div>
         </dialog>
     </section>
@@ -552,10 +559,7 @@
                         data-i18n="felices.previewBadge">Preview sheets</button>
                 </div>
             </div>
-            <!-- Socratic Wonder Pedagogical Card for 27 Plates (D9-A+ / D7-V3UX) -->
-            <aside id="felicesSocraticWonderCard" class="socratic-wonder-card" aria-live="polite">
-            </aside>
-            <!-- Paper Format Selector ISO A4 vs US Letter (D2-A+, D8-A+) -->
+            <!-- Paper Format Selector ISO A4 vs US Letter + 32 Official PDFs Above Fold (D1-R8) -->
             <div class="paper-toggle-wrapper" role="group" aria-label="Paper Format">
                 <button type="button" class="paper-option active" id="toggleCarta" aria-pressed="true">
                     <span class="paper-name" id="nameCarta" data-i18n="felices.paperCarta">Letter (US/MX)</span>
@@ -586,18 +590,13 @@
                     </a>
                 </div>
             </div>
-            <details class="advanced-editorial-drawer">
-                <summary data-i18n="felices.foldingGuideSummary">📖 Folding Guide,
-                    Optical Transfer &amp; Contact</summary>
-                <div>
-                    <button type="button" class="fold-guide-trigger" id="foldGuideTrigger"
-                        data-i18n="felices.foldGuideTrigger">📖 How to print and fold?</button>
-                    <button type="button" class="optical-trigger" id="btnFelicesOpticalShare"><span
-                            id="opticalTriggerText" data-i18n="felices.opticalBtn">Share without cables (Screen to
-                            camera)</span></button>
-
-                </div>
-            </details>
+            <!-- Socratic Wonder Pedagogical Card for 27 Plates (D9-A+ / D7-V3UX) -->
+            <aside id="felicesSocraticWonderCard" class="socratic-wonder-card" aria-live="polite">
+            </aside>
+            <div class="ek-mt-sm">
+                <button type="button" class="fold-guide-trigger" id="foldGuideTrigger"
+                    data-i18n="felices.foldGuideTrigger">📖 How to print and fold?</button>
+            </div>
             <div class="offline-badge" id="offlineBadge"><span id="offlineBadgeText"
                     data-i18n="felices.offlineBadge">100% offline and screen-to-camera transferable</span></div>
             <p class="footer-note" id="footerNote" data-i18n="felices.footer">Public domain educational work based on
@@ -687,9 +686,25 @@
             <div data-study-subtab-panel="words">
                 <div id="leipzig14ColStratumAction"></div>
             </div>
+            <nav id="studyRosettaJumpBar" class="jump-pills-bar" data-study-subtab-panel="rosetta" hidden
+                aria-label="Jump to Study Strata">
+                <button type="button" class="uls-chip jump-pill" data-i18n-autonym="true" data-jump-target="nsm65StratumCard">NSM-65</button>
+                <button type="button" class="uls-chip jump-pill" data-i18n-autonym="true" data-jump-target="studyUbsComparatorHost">UBS · 6</button>
+                <button type="button" class="uls-chip jump-pill" data-i18n-autonym="true" data-jump-target="studyOnomasticonExplorerHost">Onomasticon · 3,657</button>
+                <button type="button" class="uls-chip jump-pill" data-i18n-autonym="true" data-jump-target="realiaMetrologyStratumCard">Realia · 1,800</button>
+                <button type="button" class="uls-chip jump-pill" data-i18n-autonym="true" data-jump-target="tskCrossRefsStratumCard">TSK</button>
+            </nav>
             <div id="nsm65StratumCard" data-study-subtab-panel="rosetta" hidden></div>
             <div id="studyUbsComparatorHost" data-study-subtab-panel="rosetta" hidden></div>
             <div id="studyOnomasticonExplorerHost" data-study-subtab-panel="rosetta" hidden></div>
+            <nav id="studyCalibrateJumpBar" class="jump-pills-bar" data-study-subtab-panel="calibrate" hidden
+                aria-label="Jump to Roots & Calibration">
+                <button type="button" class="uls-chip jump-pill" data-i18n-autonym="true" data-jump-target="philologyRosettaStaticHost">Rosetta · 4,036</button>
+                <button type="button" class="uls-chip jump-pill" data-i18n-autonym="true" data-jump-target="bibleAnalyticalThermometerPanel">66 Libros</button>
+                <button type="button" class="uls-chip jump-pill" data-i18n-autonym="true" data-jump-target="wfstAndScriptioContinuaHost">Ortografía</button>
+                <button type="button" class="uls-chip jump-pill" data-i18n-autonym="true" data-jump-target="diachronicSubstitutionsDetails">1909 → S.XXI</button>
+                <button type="button" class="uls-chip jump-pill" data-i18n-autonym="true" data-jump-target="bibleBranchAndTypologyPanel">Tipología · 12/16</button>
+            </nav>
             <div id="philologyRosettaStaticHost" data-study-subtab-panel="calibrate" hidden class="rosetta-static-slot">
                 <select id="rosettaFilterCategorySelect" aria-label="Philology Rosetta Category">
                     <option value="all" selected data-i18n="rosetta.filter.all">All 5 alignment classes (4,036 tokens)
@@ -782,9 +797,16 @@
             <div id="tanda-offline-font-notice" class="tanda-offline-notice" role="status" hidden></div>
             <div id="bibleEditionsCatalogGrid" data-print-subtab-panel="doses">
             </div>
+            <nav id="printImpositionJumpBar" class="jump-pills-bar" data-print-subtab-panel="imposition" hidden
+                aria-label="Jump to Print Settings">
+                <button type="button" class="uls-chip jump-pill" data-i18n-autonym="true" data-jump-target="bibleKindleConfigurator">Formato</button>
+                <button type="button" class="uls-chip jump-pill" data-i18n-autonym="true" data-jump-target="duplexAssistantPanel">80 Bloques</button>
+                <button type="button" class="uls-chip jump-pill" data-i18n-autonym="true" data-jump-target="impositionBookletPreviewHost">Plegado</button>
+            </nav>
             <div id="bibleKindleConfigurator" class="kindle-configurator" data-print-subtab-panel="imposition"
                 aria-label="Paper and Sheet Count Settings">
-                <label><span id="kindleFontSizeLabel" data-i18n="print.fontSizeLabel">Font size (pt):</span> <input
+                <label><span id="kindleFontSizeLabel" data-i18n="print.fontSizeLabel">Font size (pt):</span> <output
+                        id="kindleFontSizeValue" class="uls-badge" for="kindleFontSizeSlider">9.5 pt</output> <input
                         type="range" id="kindleFontSizeSlider" min="7.2" max="16" step="0.3" value="9.5"></label>
                 <select id="kindleColumnSelector" aria-label="Print Columns">
                     <option value="1" data-i18n="print.col.1">1 Column (Portrait / Pulpit)</option>
@@ -825,10 +847,10 @@
                     data-i18n="print.btn.layout">📏 Check Page
                     Margins (A4 / Letter)</button>
             </div>
-            <div id="impositionBookletPreviewHost" data-print-subtab-panel="imposition"></div>
             <div id="duplexAssistantPanel" data-print-subtab-panel="imposition"></div>
+            <div id="impositionBookletPreviewHost" data-print-subtab-panel="imposition"></div>
             <details id="printPhotocopyStressDetails" class="hig-tech-receipt-details"
-                data-print-subtab-panel="stationery">
+                data-print-subtab-panel="stationery" open>
                 <summary id="photocopyTechReceiptSummary" data-i18n="print.photocopyReceiptSummary">🔬 Optical &amp;
                     typographic
                     receipt</summary>
@@ -893,7 +915,7 @@
             </nav>
             <div>
                 <button type="button" id="btnShareQuine" class="btn-modal-action" data-dosis-subtab-panel="mesh"
-                    data-i18n="mostrador.offline.save_cta">Save active language for offline use</button>
+                    data-i18n="mostrador.offline.save_cta">Export portable HTML copy (USB / Bluetooth)</button>
                 <button type="button" id="btnCopyDirectShareLink" class="uls-chip" data-dosis-subtab-panel="mesh"
                     data-i18n="share.btn.copyLink">🔗
                     Copy direct link to this passage</button>

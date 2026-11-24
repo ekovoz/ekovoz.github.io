@@ -245,7 +245,9 @@ export function hydrateOpticalTxAndRxPanels({
       `</div></div>` +
       `<div class="ek-row-gap-lg">` +
       `<div id="qrBeamMatrixHost" class="qrbeam-matrix-host">${svgMarkup}<canvas id="qrBeamMatrixCanvas" width="174" height="174" aria-hidden="true"></canvas></div>` +
+      `<details class="tech-details"><summary>${isEn ? "Technical optical stream (ECO-GRID)" : "Detalles técnicos del canal óptico (ECO-GRID)"}</summary>` +
       `<p class="qrbeam-desc">${isEn ? `ECO-GRID 29×29 (${packetBytes.byteLength} B ≤ 66 B): Systematic Pass (0..${encoder.K - 1}) + ECOM digest trailer + SplitMix64 LT repair tail.` : `ECO-GRID 29×29 (${packetBytes.byteLength} B ≤ 66 B): Pase sistemático (0..${encoder.K - 1}) + cierre ECOM + cola LT SplitMix64.`}</p>` +
+      `</details>` +
       `</div></div>`;
 
     const paintGranularOpticalFrame = (nextSeq) => {

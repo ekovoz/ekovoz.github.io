@@ -325,12 +325,26 @@ export function createMostradorController(options = {}) {
     return syncStickyDrawerContextHeader(effectiveState, getEl, targetDoc);
   }
 
+  function syncActiveCorpusLabelDom(targetDoc = doc) {
+    const corpusLbl = getEl("sovereignActiveCorpusLabel", targetDoc);
+    if (!corpusLbl) return;
+    const packsCount =
+      Array.isArray(state.availablePackLangs24) && state.availablePackLangs24.length > 0
+        ? state.availablePackLangs24.length
+        : 24;
+    const isUiEn = String(state.uiLocale || "es").trim().toLowerCase().startsWith("en");
+    corpusLbl.textContent = isUiEn
+      ? `Corpus: ${state.lang} · ${packsCount} Bibles · 7,164`
+      : `Corpus: ${state.lang} · ${packsCount} Biblias · 7,164`;
+  }
+
   function renderStateToDom(targetDoc = doc, { syncUrl = true, pushUrl = false } = {}) {
     if (!targetDoc) return state.lastSerializedUrl || "";
     hydrateBookAndChapterSelectors(targetDoc);
     updateCompassTriggerDom(targetDoc);
     syncOrthographyPillsVisibility(targetDoc);
     syncLifeTrailsActiveState(targetDoc);
+    syncActiveCorpusLabelDom(targetDoc);
     const paperSel = getEl("kindlePaperFormatSelector", targetDoc);
     if (paperSel && state.paperFormat) {
       paperSel.value = state.paperFormat;
@@ -454,13 +468,7 @@ export function createMostradorController(options = {}) {
     if (langSelectEl && langSelectEl.value !== state.lang) {
       langSelectEl.value = state.lang;
     }
-    const corpusLbl = getEl("sovereignActiveCorpusLabel", targetDoc);
-    if (corpusLbl) {
-      const packsCount = Array.isArray(state.availablePackLangs24) && state.availablePackLangs24.length > 0
-        ? state.availablePackLangs24.length
-        : 24;
-      corpusLbl.textContent = `Corpus: ${state.lang} · ${packsCount} Biblias · 7,164`;
-    }
+    syncActiveCorpusLabelDom(targetDoc);
     const evLangSel = getEl("evangeliosLangSelect", targetDoc);
     if (evLangSel && state.lang) {
       if (typeof evLangSel.appendChild === "function" && targetDoc?.createElement) {

@@ -229,21 +229,23 @@ export function renderCrdtWalAndLockP2AuditCardHtml(workshopArtifact = null) {
   const rootNotes = normalizeRootNotesEntries(workshopArtifact?.root_notes_stp);
 
   const rawLines = Number(crdt.raw_wal_lines ?? crdt.raw_wal_lines_count) || 67;
-  const patches =
+  const rawPatches =
     Array.isArray(crdt.canonical_patches) && crdt.canonical_patches.length > 0
       ? crdt.canonical_patches
       : [
         { patch_id: "PATCH-STP-L2-0001", level: "L2", ref: "GEN.1.1", strong_id: "H0430", status: "COMMITTED" },
         { patch_id: "PATCH-STP-L3-001", level: "L3", ref: "GEN.1.2", strong_id: "H7307", status: "COMMITTED" },
-        { patch_id: "PATCH-STP-L2-TEST-9D", level: "L2", ref: "PSA.23.1", strong_id: "H3068", status: "COMMITTED" },
         { patch_id: "PATCH-STP-L4-BEATITUDE-CLI", level: "L4", ref: "MAT.5.3", strong_id: "G3107", status: "COMMITTED" },
         { patch_id: "PATCH-WAL-COMMIT-R16", level: "L2", ref: "GEN.1.1", strong_id: "H0430", status: "COMMITTED" },
       ];
+  const patches = rawPatches.filter(
+    (p) => !/-TEST-/i.test(String(p?.patch_id || "")),
+  );
   const foldedWal = foldCrdtWalSemilattice(patches);
   const canonicalCount =
-    Number(crdt.folded_canonical_count ?? crdt.canonical_patches_count) ||
+    patches.length ||
     foldedWal.canonicalCount ||
-    5;
+    4;
 
   const rawJournalEntries = Array.isArray(lockP2.entries)
     ? lockP2.entries
