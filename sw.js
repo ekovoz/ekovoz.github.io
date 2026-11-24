@@ -119,7 +119,6 @@ const SHELL_CORE_ASSETS = [
   "/data/diachronic_register_es.json",
   "/data/editorial_profiles.json",
   "/data/elicitation_ladder_250.json",
-  "/data/evangelios/corpus.json",
   "/data/field_workshop_stp.json",
   "/data/fonts_zst_manifest.json",
   "/data/formulaic_index.json",

@@ -30,6 +30,7 @@ import {
   listLanguagesInCountry,
   searchLanguages,
 } from "./lang_funnel.js";
+import { resolvePublicOrPreviewWork } from "./projection_contract.js";
 import { bindSupportContactDialog } from "./provenance_and_support_panel.js";
 import {
   ROSETTA_66_BOOKS,
@@ -923,7 +924,7 @@ export function bindStageDomEvents(ctx = {}) {
   }
 
   const switchWork = async (workId, docRef = targetDoc) => {
-    const cleanWork = ["biblia", "felices", "evangelios"].includes(workId) ? workId : "biblia";
+    const cleanWork = resolvePublicOrPreviewWork(workId, state);
     const prevWork = state.activeWork || "biblia";
     if (cleanWork !== "biblia" && state.activeSheet) {
       await transitionSheet(null, docRef);

@@ -1,6 +1,7 @@
 // web/mostrador/evangelios.js — Acciones de Impresión, Estudio, Perícopas Masoréticas (Petuhah פ / Setumah ס),
 // Hilos Macro-Narrativos (52 semanas), Ecos AT->NT y las 12 Dichas Soberanas (`D4-R+`, `D7-B+`, `D8-B+`).
 
+import { isWorkVisible, parsePreviewWorksParam } from "./projection_contract.js";
 import { ROSETTA_66_BOOKS } from "./reference.js";
 
 export const MASORETIC_AND_GOSPEL_PERICOPE_MAP = {
@@ -828,29 +829,44 @@ export function parseInitialRouteAndLocale({
     const n = Number(q.get(k));
     return n >= 1 ? clampFelicesNum(Math.round(n), h) : null;
   };
+  const rawPreview = g("preview");
+  const previewWorks = parsePreviewWorksParam(rawPreview);
+  const previewParam = previewWorks.length > 0 ? (rawPreview || (previewWorks.length === 1 ? previewWorks[0] : "1")) : "";
   const plate = b("plate", FELICES_N);
   const dicha = b("dicha", 12);
   const week = parseWeekSlug27(g("week"));
   const rW = g("work").toLowerCase();
-  const work = FELICES_WK.includes(rW)
+  const requestedWork = FELICES_WK.includes(rW)
     ? rW
     : plate || dicha
       ? "felices"
       : week
         ? "evangelios"
         : FELICES_WK.find((w) => pL.includes(w)) || "biblia";
+  const workAllowed = isWorkVisible(requestedWork, previewWorks);
+  const blockedDraftWork = workAllowed ? null : requestedWork;
+  const work = workAllowed ? requestedWork : "biblia";
+  const degradedWeek = blockedDraftWork === "evangelios" ? week : null;
+  const effectiveWeek = work === "evangelios" ? week : null;
   const dP = dicha ? (dicha === 1 ? 25 : dicha === 12 ? 27 : clampFelicesNum(dicha * 2 - 1, 24)) : null;
   const pC = work === "felices" && (plate || dP) ? FELICES_PLATE_TO_BIBLE_COORDINATE[plate || dP] : null;
+  const evFallbackRef = degradedWeek && EVANGELIOS_MACRO_THREADS_AND_ECHOES[degradedWeek]?.anchorOsis
+    ? EVANGELIOS_MACRO_THREADS_AND_ECHOES[degradedWeek].anchorOsis
+    : null;
   const rR = g("ref");
   return {
     work,
+    blockedDraftWork,
+    degradedWeek,
+    previewWorks,
+    previewParam,
     ui: g("ui") || defaultUi || "en",
     lang: g("lang") || defaultLang || "es",
-    ref: rR || (pC ? `${pC.book}.${pC.chapter}.${pC.verse}` : "JHN.1.1"),
+    ref: rR || (pC ? `${pC.book}.${pC.chapter}.${pC.verse}` : evFallbackRef || "JHN.1.1"),
     refExplicit: !!rR,
     plate,
     dicha,
-    week,
+    week: effectiveWeek,
     reg: g("reg").toLowerCase() || g("register").toLowerCase() || null,
     ortho: g("ortho") || null,
     sheet: g("sheet").toLowerCase() || null,
@@ -859,8 +875,11 @@ export function parseInitialRouteAndLocale({
 }
 
 export function serializeMostradorRouteQuery(st = {}, fallbackPlate = 24) {
+  const previewWorks = Array.isArray(st.previewWorks)
+    ? st.previewWorks
+    : parsePreviewWorksParam(st.preview || st.previewParam || "");
   const rW = trimFelicesStr(st.work || st.activeWork || "biblia").toLowerCase();
-  const work = FELICES_WK.includes(rW) ? rW : "biblia";
+  const work = FELICES_WK.includes(rW) && isWorkVisible(rW, previewWorks) ? rW : "biblia";
   const q = new URLSearchParams({
     work,
     ui: trimFelicesStr(st.ui || st.uiLocale, "en"),
@@ -870,6 +889,9 @@ export function serializeMostradorRouteQuery(st = {}, fallbackPlate = 24) {
       `${trimFelicesStr(st.book, "JHN").toUpperCase()}.${clampFelicesNum(st.chapter, 999)}.${clampFelicesNum(st.verse, 999)}`,
     ),
   });
+  if (previewWorks.length > 0) {
+    q.set("preview", trimFelicesStr(st.previewParam, previewWorks.length === 1 ? previewWorks[0] : "1"));
+  }
   if (work === "felices") {
     q.set("plate", String(clampFelicesNum(st.plate ?? st.activePlateIndex ?? fallbackPlate, FELICES_N, 24)));
     const d = Number(st.dicha ?? st.activeDichaIndex ?? st.felicesDicha);

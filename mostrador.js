@@ -1002,10 +1002,22 @@ export async function bootBrowserMostrador(
     defaultLang: "es",
   });
   let effectiveRefStr = route.ref;
-  if (route.work === "evangelios" && !route.refExplicit && route.week) {
-    const evThread = EVANGELIOS_MACRO_THREADS_AND_ECHOES[route.week];
-    if (evThread?.passage) {
-      effectiveRefStr = evThread.passage;
+  if (!route.refExplicit && (route.work === "evangelios" || route.blockedDraftWork === "evangelios")) {
+    const bridgeWeek = route.week || route.degradedWeek;
+    if (bridgeWeek) {
+      const evThread = EVANGELIOS_MACRO_THREADS_AND_ECHOES[bridgeWeek];
+      if (evThread?.passage) {
+        effectiveRefStr = evThread.passage;
+      } else {
+        const projected = projectCrossWorkCoordinate({
+          fromWork: "evangelios",
+          toWork: "biblia",
+          weekId: bridgeWeek,
+        });
+        if (projected?.book) {
+          effectiveRefStr = `${projected.book}.${projected.chapter || 1}.${projected.verse || 1}`;
+        }
+      }
     }
   }
   const parsedRef = parseBiblicalCoordinateReference(effectiveRefStr) || {
@@ -1028,6 +1040,8 @@ export async function bootBrowserMostrador(
     surfaceMode: new URLSearchParams(String(win.location?.search || "").replace(/^\?/, "")).get("mode") === "studio" ? "studio" : (options.surfaceMode || "reader"),
   });
 
+  controller.state.previewWorks = Array.isArray(route.previewWorks) ? route.previewWorks : [];
+  controller.state.previewParam = String(route.previewParam || "");
   controller.state.activeWork = route.work || "biblia";
   if (route.reg) controller.state.register = route.reg;
   if (route.ortho) controller.state.orthographyProfile = route.ortho;
@@ -1085,6 +1099,8 @@ export async function bootBrowserMostrador(
 
   if (route.work && route.work !== "biblia" && typeof controller.state.switchWork === "function") {
     await controller.state.switchWork(route.work, doc);
+  } else if (route.blockedDraftWork) {
+    controller.syncUrlFromState(doc, { push: false });
   }
 
   if (!controller.state.userTouchedSheet) {
@@ -1103,6 +1119,8 @@ export async function bootBrowserMostrador(
         defaultUi: controller.state.uiLocale || "en",
         defaultLang: controller.state.lang || "es",
       });
+      controller.state.previewWorks = Array.isArray(popRoute.previewWorks) ? popRoute.previewWorks : [];
+      controller.state.previewParam = String(popRoute.previewParam || "");
       const popRef = parseBiblicalCoordinateReference(popRoute.ref) || {
         bookCode: controller.state.book,
         chapter: controller.state.chapter,

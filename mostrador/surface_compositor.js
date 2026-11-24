@@ -8,8 +8,11 @@ import { HAREL_SHEET_MAP } from "./bridge_and_chapter.js";
 import { verifyArtifactProjectionClosure } from "./dom_projection_contracts.js";
 import {
   SURFACE_SLOT_MANIFEST,
+  WORK_LIFECYCLE,
+  isWorkVisible,
   projectStoreAttributesToDom,
   resolveActiveWorkDrawerContext,
+  resolvePublicOrPreviewWork,
   resolveWorkDrawerAdapter,
   syncStickyDrawerContextHeader,
 } from "./projection_contract.js";
@@ -156,9 +159,8 @@ export function projectSurfaceLayoutFromState(state = {}, rootDoc, getEl) {
   projectStoreAttributesToDom(state, rootDoc);
   projectAllSubtabsFromState(state, rootDoc);
 
-  const activeWork = ["biblia", "felices", "evangelios"].includes(state.activeWork)
-    ? state.activeWork
-    : "biblia";
+  const showEvangelios = isWorkVisible("evangelios", state);
+  const activeWork = resolvePublicOrPreviewWork(state.activeWork, state);
   const workSections = {
     biblia: "bibleSovereignSection",
     felices: "felicesSovereignSection",
@@ -169,6 +171,28 @@ export function projectSurfaceLayoutFromState(state = {}, rootDoc, getEl) {
     if (el) {
       el.hidden = wKey !== activeWork;
       el.setAttribute?.("data-active-work", wKey === activeWork ? "true" : "false");
+    }
+  }
+  const tabEvEl = resolveEl("tabWorkEvangelios");
+  if (tabEvEl) {
+    tabEvEl.hidden = !showEvangelios;
+    tabEvEl.setAttribute?.("aria-hidden", showEvangelios ? "false" : "true");
+  }
+  if (typeof rootDoc.querySelectorAll === "function") {
+    for (const evScoped of Array.from(rootDoc.querySelectorAll('[data-work-scope="evangelios"]'))) {
+      evScoped.hidden = !showEvangelios;
+      if ("disabled" in evScoped) evScoped.disabled = !showEvangelios;
+    }
+  }
+  const evDraftBadge = resolveEl("evangeliosDraftPreviewBadge");
+  if (evDraftBadge) {
+    const showDraftBadge = showEvangelios && WORK_LIFECYCLE.evangelios !== "public";
+    evDraftBadge.hidden = !showDraftBadge;
+    if (showDraftBadge) {
+      const isEnUi = String(state.uiLocale || "en").trim().toLowerCase().startsWith("en");
+      evDraftBadge.textContent = isEnUi
+        ? "🧪 Draft · Internal Preview"
+        : "🧪 Borrador · Vista previa interna";
     }
   }
 

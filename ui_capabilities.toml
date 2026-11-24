@@ -407,6 +407,7 @@ test_name = "D1_to_D10_A_plus_ARB_EKOVOZ_61_triple_provenance_closure_and_full_b
 
 [capability.evangelios_polyglot_7_lang_selector]
 surface = "public-ui"
+release_stage = "draft"
 selector = "#evangeliosLangSelect"
 module = "mostrador.js"
 handler = "hydrateEvangeliosSection"
@@ -504,6 +505,7 @@ test_name = "SLICE_R3_03_04_bn_bd_localized_svg_plate_spanish_label_and_dicha_co
 
 [capability.evangelios_unified_header_and_print]
 surface = "public-ui"
+release_stage = "draft"
 selector = "#sovereignCorpusLangBtn"
 module = "mostrador/sister_works_controller.js"
 handler = "renderEvangeliosStageCardHtml"

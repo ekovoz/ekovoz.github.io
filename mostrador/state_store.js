@@ -18,6 +18,7 @@ export const STORE_DOMAIN_OWNERS = Object.freeze({
   regionCode: "navigation",
   uiLocale: "locale",
   activeWork: "work",
+  previewWorks: "work",
   activePlateIndex: "work",
   activeDichaIndex: "work",
   evangeliosWeekId: "work",
@@ -121,6 +122,7 @@ export function createEkovozStore(initialState = {}, options = {}) {
 
   const defaults = {
     activeWork: "biblia",
+    previewWorks: [],
     activeModal: null,
     activeSheet: null,
     activeSubtabBySheet: DEFAULT_SUBTABS_BY_SHEET,

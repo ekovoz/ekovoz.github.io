@@ -7,6 +7,53 @@
 import { STORE_DOMAIN_OWNERS, VALID_ACTIVE_INTENTS, VALID_ACTIVE_MODALS } from "./state_store.js";
 
 /**
+ * Ciclo de vida declarativo por obra editorial (`D1-R11`, `ARB-EKOVOZ-R11`).
+ * Para reactivar una obra en borrador, cambiar `"draft"` a `"public"`.
+ */
+export const WORK_LIFECYCLE = Object.freeze({
+  biblia: "public",
+  felices: "public",
+  evangelios: "draft",
+});
+
+/**
+ * Parsea `?preview=...` (`?preview=1`, `?preview=true`, `?preview=all` o lista CSV como `?preview=evangelios`).
+ */
+export function parsePreviewWorksParam(rawPreview = "") {
+  const clean = String(rawPreview || "").trim().toLowerCase();
+  if (!clean || clean === "0" || clean === "false" || clean === "off") return [];
+  if (clean === "1" || clean === "true" || clean === "all") {
+    return Object.keys(WORK_LIFECYCLE).filter((k) => WORK_LIFECYCLE[k] !== "public");
+  }
+  const tokens = clean.split(/[\s,]+/).filter(Boolean);
+  return Array.from(new Set(tokens.filter((t) => Object.prototype.hasOwnProperty.call(WORK_LIFECYCLE, t))));
+}
+
+/**
+ * Indica si `workId` es visible para el usuario o sesión actual (`public` o autorizado vía `previewWorks`).
+ */
+export function isWorkVisible(workId, stateOrPreview = null) {
+  const key = String(workId || "").trim().toLowerCase();
+  const stage = WORK_LIFECYCLE[key];
+  if (!stage) return false;
+  if (stage === "public") return true;
+  const previewList = Array.isArray(stateOrPreview)
+    ? stateOrPreview
+    : Array.isArray(stateOrPreview?.previewWorks)
+      ? stateOrPreview.previewWorks
+      : parsePreviewWorksParam(stateOrPreview?.preview || stateOrPreview?.previewParam);
+  return previewList.includes(key);
+}
+
+/**
+ * Resuelve la obra efectiva garantizando degradación segura hacia `"biblia"` cuando una obra está en `draft` sin permiso.
+ */
+export function resolvePublicOrPreviewWork(requestedWork, stateOrPreview = null) {
+  const key = String(requestedWork || "biblia").trim().toLowerCase();
+  return isWorkVisible(key, stateOrPreview) ? key : "biblia";
+}
+
+/**
  * Manifiesto declarativo de ranuras por contexto `(sheet, subtab)` (`D1-R9` / `SLICE-R9-01`).
  * Impone máximo 1 unidad funcional primaria visible sobre el pliegue y ubica las secundarias en acordeones colapsables.
  */

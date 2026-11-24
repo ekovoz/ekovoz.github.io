@@ -5,7 +5,6 @@
 ## Canonical Works Catalog
 
 - [Sagrada Biblia — Edición Soberana Políglota (66 Libros Canónicos)](https://ekovoz.org/llms/biblia/): 80 plates, class A, license CC0-1.0
-- [Evangelios para Colorear (Programa del Año - 52 Hojas)](https://ekovoz.org/llms/evangelios/): 52 plates, class C, license CC-BY-SA-4.0
 - [Los Felices del Señor Jesús](https://ekovoz.org/llms/felices/): 27 plates, class A, license CC-BY-SA-4.0
 
 ## Full Documentation & Complete Text
@@ -34,11 +33,6 @@
 - [Persa - فارسی](https://ekovoz.org/llms/biblia/fa.md): Sagrada Biblia — Edición Soberana Políglota (66 Libros Canónicos) (fa) in raw clean Markdown.
 - [Tepehuano del Sur (O'dam) - O'dam](https://ekovoz.org/llms/biblia/stp.md): Sagrada Biblia — Edición Soberana Políglota (66 Libros Canónicos) (stp) in raw clean Markdown.
 - [spa - spa](https://ekovoz.org/llms/biblia/spa.md): Sagrada Biblia — Edición Soberana Políglota (66 Libros Canónicos) (spa) in raw clean Markdown.
-
-### Work: Evangelios para Colorear (Programa del Año - 52 Hojas) (`evangelios`)
-
-- [Español - Español](https://ekovoz.org/llms/evangelios/es.md): Evangelios para Colorear (Programa del Año - 52 Hojas) (es) in raw clean Markdown.
-- [Tepehuano del Sur (O'dam) - O'dam](https://ekovoz.org/llms/evangelios/stp.md): Evangelios para Colorear (Programa del Año - 52 Hojas) (stp) in raw clean Markdown.
 
 ### Work: Los Felices del Señor Jesús (`felices`)
 
