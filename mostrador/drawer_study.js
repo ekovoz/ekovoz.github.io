@@ -10,6 +10,7 @@ import {
   renderChapterDiachronicAuditCardHtml,
   renderUnifiedDiachronicContextHtml,
 } from "./diachronic_register.js";
+import { bindSurfaceActions, patchStoreState, patchTextAndAttrs, reconcileKeyedList } from "./dom_patch.js";
 import { renderBranchAndTypologyInspectorHtml } from "./dosis.js";
 import {
   decodeSdbhHierarchicalCode,
@@ -23,7 +24,6 @@ import {
   translateNsm65PrimePhrase,
 } from "./estudio.js";
 import { hydratePericopesAndGlosses } from "./evangelios.js";
-import { bindSurfaceActions, patchStoreState, patchTextAndAttrs, reconcileKeyedList } from "./dom_patch.js";
 import {
   listOrthographyProfilesForLang,
   renderWfstAndScriptioContinuaInspectorHtml,
@@ -456,10 +456,25 @@ export async function hydrateStudyDrawerPanel(ctx = {}) {
         });
       }
       let summarySlot = getEl("philologyRosettaSummarySlot", targetDoc);
-      if (!summarySlot && targetDoc?.createElement && typeof staticRosettaHostEl.insertBefore === "function") {
-        summarySlot = targetDoc.createElement("div");
-        summarySlot.id = "philologyRosettaSummarySlot";
-        staticRosettaHostEl.insertBefore(summarySlot, staticRosettaHostEl.firstChild || null);
+      if (!summarySlot && targetDoc?.createElement && typeof staticRosettaHostEl.appendChild === "function") {
+        let auditDetails = getEl("rosettaCalibrationAuditDetails", targetDoc);
+        if (!auditDetails) {
+          auditDetails = targetDoc.createElement("details");
+          auditDetails.id = "rosettaCalibrationAuditDetails";
+          auditDetails.className = "r9-stratum-accordion ek-mt-sm";
+          const auditSummary = targetDoc.createElement("summary");
+          const isEnLoc = String(state.uiLocale || "es").toLowerCase().startsWith("en");
+          auditSummary.textContent = isEnLoc
+            ? "🧬 Philological Roots & 12-Language Calibration Summary"
+            : "🧬 Resumen filológico de raíces y calibración en 12 lenguas";
+          summarySlot = targetDoc.createElement("div");
+          summarySlot.id = "philologyRosettaSummarySlot";
+          auditDetails.appendChild(auditSummary);
+          auditDetails.appendChild(summarySlot);
+          staticRosettaHostEl.appendChild(auditDetails);
+        } else {
+          summarySlot = getEl("philologyRosettaSummarySlot", targetDoc);
+        }
       }
       if (summarySlot) {
         const renderInspectorFn =

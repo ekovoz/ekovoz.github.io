@@ -598,6 +598,60 @@ handler = "renderUnifiedBraillePreviewHtml"
 test_file = "web/subtractive_parity_r9.test.mjs"
 test_name = "SLICE_R9_06_07: drawer_print < 1000 LOC, SSOT A4/Letter, Sauvola unified, Braille B70 preview"
 
+[capability.creator_commitment_merkle_verifier]
+surface = "public-ui"
+intent = "share"
+selector = "#editorialProvenanceCardHost"
+module = "mostrador/provenance_and_support_panel.js"
+handler = "verifyBerneCommitmentSha256"
+test_file = "web/apple_hig_parity_r10.test.mjs"
+test_name = "SLICE_R10_08_09: Berne 15.3 SHA-256 WebCrypto verifier, dist_merkle_roots, Onomasticon and llms link"
+
+[capability.workshop_5_langs_switcher]
+surface = "public-ui"
+intent = "workshop"
+selector = "#tallerArtifactsCatalog"
+module = "mostrador/workshop_audit_and_langs.js"
+handler = "renderWorkshop5LangsSwitcherHtml"
+test_file = "web/apple_hig_parity_r10.test.mjs"
+test_name = "SLICE_R10_10: Workshop 5 CC0 langs switcher, single tech details, and zero false Audio/Rung jargon"
+
+[capability.typology_print_integrated_picker]
+surface = "public-ui"
+intent = "print"
+selector = "#printTypologyBridgeHost"
+module = "mostrador/print_work_and_photocopy.js"
+handler = "renderCompactTypologySelectorHtml"
+test_file = "web/subtractive_parity_r9.test.mjs"
+test_name = "SLICE_R9_06_07: drawer_print < 1000 LOC, SSOT A4/Letter, Sauvola unified, Braille B70 preview"
+
+[capability.field_pdfs_and_worker_progress]
+surface = "public-ui"
+intent = "print"
+selector = "#printFieldPdfsHost"
+module = "mostrador/print_work_and_photocopy.js"
+handler = "renderFieldRefugeAndChecklistHtml"
+test_file = "web/subtractive_parity_r9.test.mjs"
+test_name = "SLICE_R9_06_07: drawer_print < 1000 LOC, SSOT A4/Letter, Sauvola unified, Braille B70 preview"
+
+[capability.zstd_fonts_and_matrix_tier0_vault]
+surface = "public-ui"
+intent = "share"
+selector = "#vaultStorageManagerHost"
+module = "mostrador/vault_manager_panel.js"
+handler = "renderVaultStorageManagerHtml"
+test_file = "web/vault_idb_v2ld.test.mjs"
+test_name = "SLICE_R2_B05_B06_B08_vault_delete_quota_chunk_progress_and_24_pack_manager"
+
+[capability.llms_dual_head_explorer]
+surface = "public-ui"
+intent = "share"
+selector = "#offlinePacksCatalogPanel"
+module = "mostrador/drawer_share.js"
+handler = "hydrateShareAndAuditDrawerPanel"
+test_file = "web/apple_hig_parity_r10.test.mjs"
+test_name = "SLICE_R10_08_09: Berne 15.3 SHA-256 WebCrypto verifier, dist_merkle_roots, Onomasticon and llms link"
+
 [capability.cli_compile]
 surface = "editor-cli"
 cli_subcommand = "compile"

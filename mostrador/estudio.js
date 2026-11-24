@@ -253,6 +253,41 @@ function formatNsmSentenceCase(raw) {
 }
 
 /**
+ * Guardia semantica sub-dominio Louw-Nida (`D3-R10`): evita que LN:23.46..60 (gestacion/nacimiento)
+ * proyecte el primitivo grueso de alimento en filas cacheadas de `matrix_tier0.ekpack`.
+ */
+function resolveCoherentNsm65ForDomain(rawDomain = "", rawNsm = "", uiLocale = "es") {
+  const isEn = !String(uiLocale || "es").trim().toLowerCase().startsWith("es");
+  const dLow = String(rawDomain || "").toLowerCase();
+  const nsmLow = String(rawNsm || "").toLowerCase();
+  const ln23Match = /\bln:23\.(\d+)/i.exec(dLow);
+  if (ln23Match) {
+    const sub = Number(ln23Match[1]) || 0;
+    if (sub >= 46 && sub <= 60) {
+      return isEn
+        ? "Birth, pregnancy, and new life coming into the world"
+        : "Nacimiento, gestación y vida nueva que viene al mundo";
+    }
+    if (sub >= 61 && sub <= 112 && nsmLow.includes("alimento")) {
+      return isEn
+        ? "Vital process of breathing, sleeping, living, or dying"
+        : "Proceso vital de respirar, dormir, vivir o morir";
+    }
+    if (sub >= 113 && nsmLow.includes("alimento")) {
+      return isEn
+        ? "Health, strength, or healing of the human body"
+        : "Salud, fuerza o sanidad del cuerpo humano";
+    }
+  }
+  if (/\bln:89\./i.test(dLow) && nsmLow.includes("tiempo cuando hay luz")) {
+    return isEn
+      ? "Logical link joining words or ideas in speech"
+      : "Relación lógica que une palabras o ideas en el discurso";
+  }
+  return "";
+}
+
+/**
  * Humaniza las columnas técnicas de la Matriz de 15 Columnas (`col01..col15`, `D4-R39` / `D2-R45`),
  * decodificando taxonomías `SDBH` de 12 dígitos, separando insignias `[Hxxxx]` y traduciendo `NSM-65`.
  */
@@ -271,11 +306,13 @@ export function formatHumanReadable15ColFields(row = {}, uiLocale = "es") {
   const clauseHuman = !rawClause || rawClause === "∅" ? "C1" : rawClause;
   const domainHuman = humanizeSemanticTagChain(rawDomain, uiLocale) || decodedDomain.label || "General";
 
-  let nsmCandidate = "";
-  if (/PRIM:/i.test(rawNsm)) {
-    nsmCandidate = translateNsm65PrimePhrase(rawNsm.slice(rawNsm.search(/PRIM:/i)), uiLocale);
-  } else {
-    nsmCandidate = humanizeSemanticTagChain(rawNsm, uiLocale);
+  let nsmCandidate = resolveCoherentNsm65ForDomain(rawDomain, rawNsm, uiLocale);
+  if (!nsmCandidate) {
+    if (/PRIM:/i.test(rawNsm)) {
+      nsmCandidate = translateNsm65PrimePhrase(rawNsm.slice(rawNsm.search(/PRIM:/i)), uiLocale);
+    } else {
+      nsmCandidate = humanizeSemanticTagChain(rawNsm, uiLocale);
+    }
   }
   const nsmHuman = nsmCandidate || "∅";
   return { roleHuman, clauseHuman, domainHuman, nsmHuman, strongBadges };

@@ -8,7 +8,9 @@
 import { escapeHtml } from "./bridge_and_chapter.js";
 import {
   buildRelativePdfAssetUrl,
+  CANONICAL_12_BRANCH_PROFILES,
   CANONICAL_16_MACRO_TANDAS,
+  CANONICAL_16_TYPOLOGY_PROFILES,
   CANONICAL_80_BLOCKS_CATALOG,
   chooseEdition,
   computeFoliationLayout,
@@ -50,16 +52,23 @@ import {
   resolveGrambankTypologyPrintPreset,
 } from "./print_config_projector.js";
 import {
+  bindImpositionAndLayoutButtons,
+  bindPagedMediaPrintButton,
   buildEditionCatalogCardHtml,
   handleCatalogEditionCardClick,
   mountOrUpdatePrintActiveWorkBanner,
   normalizeStandardPaperFormat,
+  renderCompactTypologySelectorHtml,
+  renderDuplexAssistantCardHtml,
+  renderFieldRefugeAndChecklistHtml,
+  renderStationeryPostcardHtml,
   renderUnifiedBraillePreviewHtml,
+  resolveDuplexFlipEdge,
   resolveUnifiedSauvolaState,
   revokeObjectUrlSafe,
-  toDownloadablePdfHref,
+  storeWorkerTandaPdfResult,
 } from "./print_work_and_photocopy.js";
-import { resolveOracleSpecimenDefaults } from "./sauvola_canvas_oracle.js";
+import { resolveWorkDrawerAdapter } from "./projection_contract.js";
 import {
   buildOpenGraphSocialCardSvg1200x630,
   formatPhotocopySimBadgeText,
@@ -68,6 +77,7 @@ import {
   simulateKanungoSauvolaGeneration,
 } from "./social_and_photocopy_cards.js";
 import { isStealthFilenameActive, resolveSafeDownloadFilename } from "./stealth_filename.js";
+import { mountSlotView } from "./surface_compositor.js";
 import {
   encodePaperFormatCode,
   resolveFontFileForLangOrScript,
@@ -183,44 +193,13 @@ export function renderPrintDrawerPanelsSyncInDrawer(ctx = {}) {
     }
   }
 
-  const btnPagedMedia = getEl("btnPrintCssPagedMedia", targetDoc);
-  if (btnPagedMedia && typeof btnPagedMedia.addEventListener === "function" && !btnPagedMedia._pagedMediaBound) {
-    btnPagedMedia._pagedMediaBound = true;
-    btnPagedMedia.addEventListener("click", () => {
-      const chapVerses = state.lastNavResult?.chapter?.verses || {};
-      const entries = Object.keys(chapVerses)
-        .sort((a, b) => (Number(a) || 0) - (Number(b) || 0))
-        .map((vNum) => ({ ref: `${state.book || "GEN"} ${state.chapter || 1}:${vNum}`, text: String(chapVerses[vNum] || "") }));
-      const pagedHtml = buildCssPagedMediaPrintHtml({
-        lang: state.lang || "es",
-        book: state.book || "GEN",
-        chapter: state.chapter || 1,
-        verse: state.verse || 1,
-        verses: entries.length > 0 ? entries : null,
-        columns: state.columns || 2,
-        fontPt: state.fontSizePt || 9.5,
-        paper: state.paperFormat || "a4",
-        duplex: state.duplex !== false,
-        dir: isRtlLocale(state.lang) ? "rtl" : "ltr",
-      });
-      const dlFilename = resolveSafeDownloadFilename(state, { kind: "paged_media", blockNumber: stealthBlkNum });
-      btnPagedMedia.setAttribute?.("data-paged-media-ready", "true");
-      btnPagedMedia.setAttribute?.("data-paged-media-filename", dlFilename);
-      const dataUrl = `data:text/html;charset=utf-8,${encodeURIComponent(pagedHtml)}`;
-      if (typeof targetDoc?.createElement === "function") {
-        try {
-          const a = targetDoc.createElement("a");
-          if (a) {
-            a.href = dataUrl;
-            a.download = dlFilename;
-            a.click?.();
-          }
-        } catch {
-          // Non-fatal in headless DOM
-        }
-      }
-    });
-  }
+  bindPagedMediaPrintButton({
+    state,
+    targetDoc,
+    getEl,
+    buildCssPagedMediaPrintHtml,
+    stealthBlkNum,
+  });
 
   const isEn = String(state.uiLocale || "es").trim().toLowerCase().startsWith("en");
   const regionalDefaults = resolveRegionalPrintDefaults(state.countryIso2 || "MX", {
@@ -294,10 +273,72 @@ export function renderPrintDrawerPanelsSyncInDrawer(ctx = {}) {
     }
   }
 
+  const workAdapter = resolveWorkDrawerAdapter(state);
+  const printSheetEl = getEl("biblePrintEditionsSheet", targetDoc);
+  if (printSheetEl && typeof printSheetEl.setAttribute === "function") {
+    printSheetEl.setAttribute("data-work-print-mode", workAdapter.printMode || "bible_editions");
+  }
+
   ensureDirectEditionsAndGrambankControls({
     ...ctx,
     onConfigChanged: () => renderPrintDrawerPanelsSyncInDrawer(ctx),
   });
+
+  const flipEdgeInfo = resolveDuplexFlipEdge(
+    activeOrientation,
+    state.foliationMode || "saddle_stitch",
+    state.uiLocale || "es",
+  );
+  const duplexToggleEl = getEl("kindleDuplexToggle", targetDoc);
+  if (duplexToggleEl && typeof duplexToggleEl.setAttribute === "function") {
+    duplexToggleEl.setAttribute("data-flip-edge", flipEdgeInfo.edge);
+  }
+  const duplexLabelTextEl = getEl("kindleDuplexLabelText", targetDoc);
+  if (duplexLabelTextEl) {
+    duplexLabelTextEl.textContent = flipEdgeInfo.toggleLabel;
+  }
+
+  const typologyHost = getEl("printTypologyBridgeHost", targetDoc);
+  if (typologyHost) {
+    const activeBranchId = state.activeBranchId || CANONICAL_12_BRANCH_PROFILES[0]?.id || "G_01_latin_extended";
+    const activeTypoId = state.activeTypologyId || CANONICAL_16_TYPOLOGY_PROFILES[0]?.id || "es_typology";
+    mountSlotView(typologyHost, {
+      html: renderCompactTypologySelectorHtml({
+        branches: state.editorialProfiles?.branch_profiles_12 || CANONICAL_12_BRANCH_PROFILES,
+        typologies: state.editorialProfiles?.typology_profiles_16 || CANONICAL_16_TYPOLOGY_PROFILES,
+        activeBranchId,
+        activeTypologyId: activeTypoId,
+        uiLocale: state.uiLocale || "es",
+      }),
+      ownerId: "drawer_print:imposition:typology",
+      orderIndex: 1,
+    });
+    const branchSel = getEl("printBranchProfileSelect", targetDoc);
+    const typoSel = getEl("printTypologyProfileSelect", targetDoc);
+    const onTypoChange = async () => {
+      const nextBranch = String(branchSel?.value || activeBranchId);
+      const nextTypo = String(typoSel?.value || activeTypoId);
+      await applyGrambankTypologyToPrint(ctx, nextBranch, nextTypo, { triggerJob: false });
+      renderPrintDrawerPanelsSyncInDrawer(ctx);
+    };
+    if (branchSel && typeof branchSel.addEventListener === "function" && !branchSel._printTypoBound) {
+      branchSel._printTypoBound = true;
+      branchSel.addEventListener("change", onTypoChange);
+    }
+    if (typoSel && typeof typoSel.addEventListener === "function" && !typoSel._printTypoBound) {
+      typoSel._printTypoBound = true;
+      typoSel.addEventListener("change", onTypoChange);
+    }
+  }
+
+  const fieldPdfsHost = getEl("printFieldPdfsHost", targetDoc);
+  if (fieldPdfsHost) {
+    mountSlotView(fieldPdfsHost, {
+      html: renderFieldRefugeAndChecklistHtml(state.editorialProfiles || null, state.uiLocale || "es"),
+      ownerId: "drawer_print:doses:field_pdfs",
+      orderIndex: 2,
+    });
+  }
 
   const duplexPanel = getEl("duplexAssistantPanel", targetDoc);
   if (duplexPanel) {
@@ -329,44 +370,29 @@ export function renderPrintDrawerPanelsSyncInDrawer(ctx = {}) {
       fontPt: state.fontSizePt || 9.5,
       uiLocale: state.uiLocale || "es",
     });
-    const duplexHeader = isEn
-      ? `Duplex Assistant (${state.duplex ? "2-sided · Even parity guaranteed" : "1-sided"}) · ${escapeHtml(foliation.summary)}`
-      : `Asistente Dúplex (${state.duplex ? "2 caras · Paridad par garantizada" : "1 cara"}) · ${escapeHtml(foliation.summary)}`;
-    const duplexBody = isEn
-      ? `Step 1: Print odd pages (front). Step 2: Flip sheet along the long edge and print even pages (back) · ${escapeHtml(budget.summaryText)}.`
-      : `Paso 1: Imprime caras impares (anverso). Paso 2: Voltea el pliego por el borde largo e imprime caras pares (reverso) · ${escapeHtml(budget.summaryText)}.`;
-    const nemethCheckedAttr = state.brailleNemethEnabled || slug === "11_braille_nemeth_b70" ? " checked" : "";
-    const nemethLabel = isEn
-      ? "Nemeth Math Braille · Ed. 11 BEB B70 (excludes 1:1-5)"
-      : "Braille Matemático Nemeth · Ed. 11 BEB B70 (excluye 1:1-5)";
+    const nemethChecked = Boolean(state.brailleNemethEnabled || slug === "11_braille_nemeth_b70");
     const activeVerseSample =
       state.lastNavResult?.chapter?.verses?.[String(state.verse)] || "En el principio creó Dios los cielos y la tierra.";
     const brfResult = transduceTextToBrailleBrfAndUnicode(
       `${state.book || "GEN"} ${Number(state.chapter) || 1}:${Number(state.verse) || 1} ${activeVerseSample}`,
-      { nemethMath: Boolean(nemethCheckedAttr) },
+      { nemethMath: nemethChecked },
     );
-    const brfHref = `data:text/plain;charset=utf-8,${encodeURIComponent(String(brfResult?.brf || ""))}`;
-    const brfFilename = resolveSafeDownloadFilename(state, { kind: "braille_brf", blockNumber: stealthBlkNum });
-    const nemethToggleHtml =
-      `<div class="braille-actions-row">` +
-      `<label class="hig-toggle-row uls-chip">` +
-      `<input type="checkbox" id="chkBrailleNemethToggle" data-action="toggle-braille-nemeth" data-edition-slug="11_braille_nemeth_b70"${nemethCheckedAttr} />` +
-      `<span>${escapeHtml(nemethLabel)}</span></label>` +
-      `<a id="btnDownloadBrailleBrf" class="uls-chip" href="${brfHref}" download="${escapeHtml(brfFilename)}" data-edition-slug="11_braille_nemeth_b70">` +
-      `⠋ ${isEn ? "Download Tactile .brf (Ed. 11)" : "Descargar .brf Táctil (Ed. 11)"}</a>` +
-      `</div>`;
-    const braillePreviewHtml = renderUnifiedBraillePreviewHtml({
+    duplexPanel.innerHTML = renderDuplexAssistantCardHtml({
+      slug,
+      duplex: Boolean(state.duplex !== false),
+      foliation,
+      flipEdgeInfo,
+      budgetSummary: budget.summaryText,
+      nemethChecked,
       verseRef: `${state.book || "GEN"} ${Number(state.chapter) || 1}:${Number(state.verse) || 1}`,
       unicodeText: brfResult?.unicode || "",
       brfText: brfResult?.brf || "",
+      brfHref: `data:text/plain;charset=utf-8,${encodeURIComponent(String(brfResult?.brf || ""))}`,
+      brfFilename: resolveSafeDownloadFilename(state, { kind: "braille_brf", blockNumber: stealthBlkNum }),
+      multiSigHtml,
+      macroTandas16Html,
       isEn,
-      nemethEnabled: Boolean(nemethCheckedAttr),
     });
-    duplexPanel.innerHTML = `<div class="mostrador-duplex-assistant" data-edition="${escapeHtml(
-      slug,
-    )}" data-foliation-mode="${escapeHtml(foliation.mode)}" data-binding-edge="${escapeHtml(
-      foliation.bindingEdge,
-    )}"><strong>${duplexHeader}</strong><p class="duplex-summary-text">${duplexBody}</p>${nemethToggleHtml}${braillePreviewHtml}${multiSigHtml}${macroTandas16Html}</div>`;
 
     const chkNemeth = getEl("chkBrailleNemethToggle", targetDoc);
     if (chkNemeth && typeof chkNemeth.addEventListener === "function" && !chkNemeth._nemethBound) {
@@ -442,21 +468,24 @@ export function renderPrintDrawerPanelsSyncInDrawer(ctx = {}) {
   }
 
   const unifiedSauvola = resolveUnifiedSauvolaState(state);
+  const simLang = state.effectiveCorpusLang || state.lang || "es";
+  const activeVerseForPhotocopy = String(
+    state.lastNavResult?.chapter?.verses?.[String(state.verse)] ||
+    "En el principio creó Dios los cielos y la tierra.",
+  ).slice(0, 140);
+  const simLive = simulateKanungoSauvolaGeneration(unifiedSauvola.genIndex, unifiedSauvola.sauvolaK, 300, {
+    lang: simLang,
+    text: activeVerseForPhotocopy,
+    ttfBytes: state.activePrintTtfBytes || null,
+  });
   const photocopyBadge = getEl("biblePhotocopySimBadge", targetDoc);
   if (photocopyBadge) {
-    const simLang = state.effectiveCorpusLang || state.lang || "es";
-    const specimenSample = resolveOracleSpecimenDefaults(simLang, "").sampleText;
-    const simLive = simulateKanungoSauvolaGeneration(unifiedSauvola.genIndex, unifiedSauvola.sauvolaK, 300, {
-      lang: simLang,
-      text: specimenSample,
-      ttfBytes: state.activePrintTtfBytes || null,
-    });
     const sim3rd = simulateThirdGenPhotocopySauvola({
       strokePt: (state.fontSizePt || 9.5) >= 9.0 ? 0.85 : 0.75,
       k: simLive.sauvolaK,
       R: 128,
       lang: simLang,
-      text: specimenSample,
+      text: activeVerseForPhotocopy,
       ttfBytes: state.activePrintTtfBytes || null,
     });
     photocopyBadge.textContent = formatPhotocopySimBadgeText(simLive);
@@ -469,19 +498,18 @@ export function renderPrintDrawerPanelsSyncInDrawer(ctx = {}) {
 
   const graphicsHost = getEl("editorialGraphicsPhotocopyHost", targetDoc);
   if (graphicsHost) {
-    const verseText =
-      state.lastNavResult?.chapter?.verses?.[String(state.verse)] ||
-      "En el principio creó Dios los cielos y la tierra.";
     graphicsHost.innerHTML = renderPhotocopyResilienceAndSocialCardHtml({
       book: state.book,
       chapter: state.chapter,
       verse: state.verse,
-      text: verseText,
+      text: activeVerseForPhotocopy,
       lang: state.lang,
       activeGen: unifiedSauvola.genIndex,
       sauvolaK: unifiedSauvola.sauvolaK,
       uiLocale: state.uiLocale || "es",
       ttfBytes: state.activePrintTtfBytes || null,
+      precomputedActiveSim: simLive,
+      showHeaderContrastBadge: false,
     });
     if (typeof graphicsHost.addEventListener === "function" && !graphicsHost._photocopyBound) {
       graphicsHost._photocopyBound = true;
@@ -534,14 +562,14 @@ export function renderPrintDrawerPanelsSyncInDrawer(ctx = {}) {
       duplex: false,
       dir: isRtlLocale(curLang) ? "rtl" : "ltr",
     });
-    const postalHref = `data:text/html;charset=utf-8,${encodeURIComponent(postalHtml)}`;
-    const postalDownload = resolveSafeDownloadFilename(state, { kind: "postal_a6", blockNumber: stealthBlkNum });
-    stationeryPanel.innerHTML =
-      `<div class="mostrador-stationery-card" data-osis="${escapeHtml(`${state.book}.${state.chapter}.${state.verse}`)}">` +
-      `<strong>${isEn ? "A6 Typographic Postcard" : "Postal tipográfica A6"} (${escapeHtml(refLabel)})</strong>` +
-      `<blockquote class="stationery-quote">"${escapeHtml(verseText)}"</blockquote>` +
-      `<a id="btnDownloadStationeryPostcard" class="uls-chip stationery-download-btn" href="${postalHref}" download="${escapeHtml(postalDownload)}">✉️ ${isEn ? "Download A6 Postcard (HTML)" : "Descargar Postal A6 (HTML)"}</a>` +
-      `</div>`;
+    stationeryPanel.innerHTML = renderStationeryPostcardHtml({
+      osis: `${state.book}.${state.chapter}.${state.verse}`,
+      refLabel,
+      verseText,
+      postalHref: `data:text/html;charset=utf-8,${encodeURIComponent(postalHtml)}`,
+      postalDownload: resolveSafeDownloadFilename(state, { kind: "postal_a6", blockNumber: stealthBlkNum }),
+      isEn,
+    });
   }
 
   const impHost = getEl("impositionBookletPreviewHost", targetDoc);
@@ -558,80 +586,14 @@ export function renderPrintDrawerPanelsSyncInDrawer(ctx = {}) {
     });
   }
 
-  const btnCalcImp = getEl("btnCalculateImposition", targetDoc);
-  if (btnCalcImp && typeof btnCalcImp.addEventListener === "function" && !btnCalcImp._printImpBound) {
-    btnCalcImp._printImpBound = true;
-    btnCalcImp.addEventListener("click", () => {
-      state.activePrintPreviewMode = "imposition";
-      const curIsEn = String(state.uiLocale || "es").trim().toLowerCase().startsWith("en");
-      const curOrientation = String(state.orientation || "portrait").toLowerCase() === "landscape" ? "landscape" : "portrait";
-      const imp = computeSaddleStitchImpositionPlan({
-        totalPages: 16,
-        paperThicknessMm: 0.09,
-        rtl: isRtlLocale(state.lang),
-      });
-      const sheetsSummary = imp.sheets
-        .map((s) => `P${s.sheetIndex}[F:${s.front[0]}-${s.front[1]} / V:${s.back[0]}-${s.back[1]} · creep +${s.creepMm}mm]`)
-        .join(" · ");
-      const receiptHtml =
-        `<div class="audit-receipt" data-action="calculate-imposition" data-integrity="${imp.integrityVerified}" data-rtl="${imp.rtl}">` +
-        (curIsEn
-          ? `📐 <strong>4n Saddle-Stitch Imposition (${imp.paddedPages} pp · ${imp.sheetCount} sheets · ${imp.rtl ? "RTL Reversed Spine" : "LTR"}):</strong> Constant sum=${imp.folioSumConstant} · Max creep=${imp.maxCreepMm}mm · ${escapeHtml(sheetsSummary)}</div>`
-          : `📐 <strong>Imposición Saddle-Stitch 4n (${imp.paddedPages} págs · ${imp.sheetCount} pliegos · ${imp.rtl ? "RTL Lomo Invertido" : "LTR"}):</strong> Suma constante=${imp.folioSumConstant} · Creep máx=${imp.maxCreepMm}mm · ${escapeHtml(sheetsSummary)}</div>`);
-      const host = getEl("impositionBookletPreviewHost", targetDoc);
-      if (host) {
-        host.setAttribute("data-audit-action", "calculate-imposition");
-        host.innerHTML =
-          renderImpositionAndLayoutPreviewHtml({
-            mode: "imposition",
-            paper: state.paperFormat || "a4",
-            pageCount: 16,
-            columns: state.columns || 2,
-            fontPt: state.fontSizePt || 9.5,
-            orientation: curOrientation,
-            dir: isRtlLocale(state.lang) ? "rtl" : "ltr",
-            uiLocale: state.uiLocale || "es",
-          }) + receiptHtml;
-      }
-    });
-  }
-
-  const btnCalcLayout = getEl("btnCalculateLayout", targetDoc);
-  if (btnCalcLayout && typeof btnCalcLayout.addEventListener === "function" && !btnCalcLayout._printLayoutBound) {
-    btnCalcLayout._printLayoutBound = true;
-    btnCalcLayout.addEventListener("click", () => {
-      state.activePrintPreviewMode = "layout";
-      const curIsEn = String(state.uiLocale || "es").trim().toLowerCase().startsWith("en");
-      const curOrientation = String(state.orientation || "portrait").toLowerCase() === "landscape" ? "landscape" : "portrait";
-      const budgetCalc = computeKindlePrintBudget({
-        fontPt: state.fontSizePt || 9.5,
-        columns: state.columns || 2,
-        orientation: curOrientation,
-        paper: state.paperFormat || "a4",
-        uiLocale: state.uiLocale || "es",
-      });
-      const receiptHtml =
-        `<div class="audit-receipt" data-action="calculate-layout" data-cpl="${budgetCalc.cpl}">` +
-        (curIsEn
-          ? `📏 <strong>Verified Page Geometry:</strong> ${escapeHtml(budgetCalc.summaryText)}.</div>`
-          : `📏 <strong>Márgenes Verificados:</strong> ${escapeHtml(budgetCalc.summaryText)}.</div>`);
-      const host = getEl("impositionBookletPreviewHost", targetDoc);
-      if (host) {
-        host.setAttribute("data-audit-action", "calculate-layout");
-        host.innerHTML =
-          renderImpositionAndLayoutPreviewHtml({
-            mode: "layout",
-            paper: state.paperFormat || "a4",
-            pageCount: 16,
-            columns: state.columns || 2,
-            fontPt: state.fontSizePt || 9.5,
-            orientation: curOrientation,
-            dir: isRtlLocale(state.lang) ? "rtl" : "ltr",
-            uiLocale: state.uiLocale || "es",
-          }) + receiptHtml;
-      }
-    });
-  }
+  bindImpositionAndLayoutButtons({
+    state,
+    targetDoc,
+    getEl,
+    computeSaddleStitchImpositionPlan,
+    computeKindlePrintBudget,
+    renderImpositionAndLayoutPreviewHtml,
+  });
 
   const catalogGrid = getEl("bibleEditionsCatalogGrid", targetDoc);
   if (catalogGrid) {
@@ -867,6 +829,17 @@ export async function hydratePrintDrawerPanelsInDrawer(ctx = {}) {
             paperCode: encodePaperFormatCode(state.paperFormat || "a4", state.orientation || "portrait"),
           })
           : null;
+        const workerWrap = getEl("tandaWorkerProgressWrap", targetDoc);
+        const workerBar = getEl("tandaWorkerProgress", targetDoc);
+        const workerLabel = getEl("tandaWorkerProgressLabel", targetDoc);
+        if (workerWrap) workerWrap.removeAttribute?.("hidden");
+        if (workerBar) workerBar.value = 35;
+        if (workerLabel) {
+          workerLabel.textContent =
+            String(state.uiLocale || "es").startsWith("en")
+              ? "Preparing PDF sheets in background…"
+              : "Preparando pliegos PDF sin bloqueo…";
+        }
         const [dose2Res, dose3Res] = await Promise.all([
           skipDose2Redundant
             ? Promise.resolve(null)
@@ -903,6 +876,9 @@ export async function hydratePrintDrawerPanelsInDrawer(ctx = {}) {
             maxPagesPerTanda: 0,
           }),
         ]);
+        if (workerBar) workerBar.value = 100;
+        if (workerLabel) workerLabel.textContent = "";
+        if (workerWrap) workerWrap.setAttribute?.("hidden", "");
         if (dose2Res?.type === "tanda-offline-font-notice" || dose3Res?.type === "tanda-offline-font-notice") {
           const noticeEl = getEl("tanda-offline-font-notice", targetDoc);
           const activeNotice = dose2Res?.type === "tanda-offline-font-notice" ? dose2Res : dose3Res;
@@ -911,40 +887,8 @@ export async function hydratePrintDrawerPanelsInDrawer(ctx = {}) {
             onImported: () => hydratePrintDrawerPanels?.(targetDoc),
           });
         }
-        const d2Parts = Array.isArray(dose2Res?.blobParts) && dose2Res.blobParts.length > 0 ? dose2Res.blobParts : null;
-        if (d2Parts || (dose2Res?.pdfBytes instanceof Uint8Array && dose2Res.pdfBytes.byteLength > 0)) {
-          if (typeof state.dose2ObjectUrl === "string" && state.dose2ObjectUrl.startsWith("blob:")) {
-            try {
-              globalThis.URL?.revokeObjectURL?.(state.dose2ObjectUrl);
-            } catch {
-              // Non-fatal
-            }
-          }
-          state.dose2WorkerBlobParts = d2Parts || [dose2Res.pdfBytes];
-          state.dose2WorkerPdfBytes = d2Parts
-            ? (d2Parts.length === 1 ? d2Parts[0] : null)
-            : dose2Res.pdfBytes;
-          state.dose2ObjectUrl = toDownloadablePdfHref(state.dose2WorkerBlobParts);
-        }
-        const d3Parts = Array.isArray(dose3Res?.blobParts) && dose3Res.blobParts.length > 0 ? dose3Res.blobParts : null;
-        if (d3Parts || (dose3Res?.pdfBytes instanceof Uint8Array && dose3Res.pdfBytes.byteLength > 0)) {
-          if (typeof state.dose3ObjectUrl === "string" && state.dose3ObjectUrl.startsWith("blob:")) {
-            try {
-              globalThis.URL?.revokeObjectURL?.(state.dose3ObjectUrl);
-            } catch {
-              // Non-fatal
-            }
-          }
-          state.dose3WorkerBlobParts = d3Parts || [dose3Res.pdfBytes];
-          state.dose3WorkerPdfBytes = d3Parts
-            ? (d3Parts.length === 1 ? d3Parts[0] : null)
-            : dose3Res.pdfBytes;
-          state.dose3LastCompletedTandas = targetMacroPlans.length;
-          state._dose3Streamed16Of16 = Boolean(
-            state.generateFull66BookBible && targetMacroPlans.length === 16,
-          );
-          state.dose3ObjectUrl = toDownloadablePdfHref(state.dose3WorkerBlobParts);
-        }
+        storeWorkerTandaPdfResult(state, "dose2", dose2Res, 1);
+        storeWorkerTandaPdfResult(state, "dose3", dose3Res, targetMacroPlans.length);
         syncDose2AndDose3LinksForActiveLang({ state, targetDoc, getEl });
         renderPrintDrawerPanelsSyncInDrawer(ctx);
       }

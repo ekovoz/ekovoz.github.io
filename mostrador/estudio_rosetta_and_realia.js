@@ -353,12 +353,15 @@ export function renderPhilologyRosettaInspectorHtml(activeRows = [], options = {
 
   const residualClassesLine =
     `<li data-residual-classes-5="true" data-residuals-total="${totalResiduals}">` +
-    `<strong>${isEn ? `Transmission variants & notes (${totalResiduals.toLocaleString("en-US")} cases)` : `Variantes y notas de transmisión (${totalResiduals.toLocaleString("en-US")} casos)`} <span class="hig-tech-meta" data-tech-key="alignment_residuals.tsv">(${isEn ? "Textual apparatus" : "Aparato textual"})</span>:</strong> ` +
+    `<strong>${isEn ? `Transmission variants & notes (${totalResiduals.toLocaleString("en-US")} cases)` : `Variantes y notas de transmisión (${totalResiduals.toLocaleString("en-US")} casos)`}</strong> ` +
+    `<details class="tech-details ek-mt-xs"><summary>${isEn ? "Editorial apparatus breakdown" : "Desglose del aparato textual"} (${totalResiduals.toLocaleString("en-US")})</summary>` +
+    `<div class="ek-row-wrap ek-mt-xs">` +
     `<span class="uls-badge" data-residual-kind="KETIV_QERE">${escapeHtml(humanizeTechnicalCode("KETIV_QERE", uiLocale))} (${kqCount})</span> · ` +
     `<span class="uls-badge" data-residual-kind="VERSIFICATION">${escapeHtml(humanizeTechnicalCode("VERSIFICATION", uiLocale))} (${versCount})</span> · ` +
     `<span class="uls-badge" data-residual-kind="TR_SUPPLEMENT">${escapeHtml(humanizeTechnicalCode("TR_SUPPLEMENT", uiLocale))} (${trCount})</span> · ` +
     `<span class="uls-badge" data-residual-kind="SURFACE_VARIANT">${escapeHtml(humanizeTechnicalCode("SURFACE_VARIANT", uiLocale))} (${surfCount})</span> · ` +
     `<span class="uls-badge" data-residual-kind="UNMATCHED">${escapeHtml(humanizeTechnicalCode("UNMATCHED", uiLocale))} (${unmCount})</span>` +
+    `</div></details>` +
     `</li>`;
 
   const annotReport =
@@ -379,8 +382,11 @@ export function renderPhilologyRosettaInspectorHtml(activeRows = [], options = {
   const oovRate = Number(annotReport.oov_rate || 0.0).toFixed(2);
   const annotationLine =
     `<li data-annotation-tokens="${totalTokens}" data-annotation-hebrew="${hebrewTokens}" data-annotation-greek="${greekTokens}" data-annotation-oov="${oovRate}">` +
-    `<strong>${isEn ? "Word-by-word morphological coverage" : "Cobertura morfológica palabra por palabra"} <span class="hig-tech-meta" data-tech-key="annotation_index_report.json">(${isEn ? "Indexed morphological corpus" : "Corpus morfológico indexado"})</span>:</strong> ` +
+    `<strong>${isEn ? "Word-by-word coverage" : "Cobertura palabra por palabra"}:</strong> ` +
+    `${totalTokens.toLocaleString("en-US")} ${isEn ? "indexed words" : "palabras indexadas"} · ${strongEntriesCount.toLocaleString("en-US")} ${isEn ? "roots" : "raíces"}` +
+    `<details class="tech-details ek-mt-xs"><summary>${isEn ? "Technical index metrics" : "Métricas técnicas del índice"}</summary>` +
     `<code>${totalTokens.toLocaleString("en-US")} tokens</code> (${isEn ? "OT Hebrew/Aramaic" : "AT Hebreo/Arameo"}: <code>${hebrewTokens.toLocaleString("en-US")}</code> · ${isEn ? "NT Greek" : "NT Griego"}: <code>${greekTokens.toLocaleString("en-US")}</code> · <code>${strongEntriesCount.toLocaleString("en-US")} Strongs</code> · <code>${morphTagsCount.toLocaleString("en-US")} tags</code> · <code>OOV = ${oovRate}%</code>)` +
+    `</details>` +
     `</li>`;
 
   const calSummary = aggregateBlindCalibration12Langs(
@@ -396,9 +402,11 @@ export function renderPhilologyRosettaInspectorHtml(activeRows = [], options = {
     .join(" ");
   const blindCalibrationLine =
     `<li data-blind-calibration-chrf="${escapeHtml(chrfScore)}" data-blind-calibration-langs="${calSummary.langsCount}" data-blind-calibration-rows="${calSummary.rowsCount}">` +
-    `<strong>${isEn ? `Verified fidelity across ${calSummary.langsCount} languages` : `Fidelidad verificada en ${calSummary.langsCount} lenguas`} <span class="hig-tech-meta" data-tech-key="blind_calibration_report.json">(${isEn ? "Blind cross-lingual audit" : "Auditoría ciega multilingüe"})</span>:</strong> ` +
-    `<code>${escapeHtml(chrfScore)} chrF++</code> · <strong>${calSummary.langsCount} ${isEn ? "languages" : "lenguas"}</strong> (${calSummary.rowsCount} ${isEn ? "tests" : "pruebas"} · ${calSummary.passRatePct}% ${isEn ? "passed" : "aprobadas"})` +
+    `<strong>${isEn ? `Verified fidelity across ${calSummary.langsCount} languages` : `Fidelidad verificada en ${calSummary.langsCount} lenguas`}:</strong> ` +
+    `${calSummary.passRatePct}% ${isEn ? "verified across" : "verificada en"} ${calSummary.rowsCount} ${isEn ? "passages" : "pasajes"}` +
+    `<details class="tech-details ek-mt-xs"><summary>${isEn ? `Multilingual calibration details (${escapeHtml(chrfScore)} chrF++)` : `Detalles de calibración multilingüe (${escapeHtml(chrfScore)} chrF++)`}</summary>` +
     `<div id="rosettaBlindCalibration12Table" class="ek-row-wrap ek-gap-xs ek-mt-xs">${byLangPills}</div>` +
+    `</details>` +
     `</li>`;
 
   const explorerHtml =

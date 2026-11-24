@@ -247,6 +247,7 @@ export function renderEvangeliosStageCardHtml(
     )
     .join("");
   return (
+    `<div class="evangelios-reading-body">` +
     `<header class="evangelios-stage-card-header" data-pericope-header="${escapeHtml(pericopeHdr?.title || "")}" data-plate-slug="${escapeHtml(activeEntry.plate_id || "")}" data-total-plates="${totalPlates}" data-canonical-gospel-verses="${gospelVersesCount}">` +
     `<div><strong>${weekWord} ${activeEntry.week}/${totalPlates} · ${escapeHtml(labelTitle)}</strong> ` +
     `<span class="uls-badge evangelios-corpus-counts-badge" data-evangelios-corpus-counts="true">${totalPlates} ${isEn ? "plates" : "láminas"} · ${gospelVersesCount.toLocaleString("en-US")} vv.</span>${overlayBadgesHtml}</div>` +
@@ -267,7 +268,8 @@ export function renderEvangeliosStageCardHtml(
       lang: activeEvLang,
       uiLocale,
       gestureText: activeEntry.gesture || "",
-    })
+    }) +
+    `</div>`
   );
 }
 

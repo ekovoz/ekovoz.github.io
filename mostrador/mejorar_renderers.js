@@ -33,7 +33,7 @@ import {
 
 export const IMPROVE_I18N_FALLBACKS = {
   "improve.title": "Suggest a translation improvement (L1–L5)",
-  "improve.subtitle": "Deterministic plain-text field patch (0 Bytes Audio · CC0)",
+  "improve.subtitle": "Plain-text translation patch · Free public domain (CC0)",
   "improve.kind_label": "Target:",
   "improve.kind_verse": "Biblical verse / Strong root",
   "improve.kind_ui": "Interface text",
@@ -52,7 +52,7 @@ export const IMPROVE_I18N_FALLBACKS = {
 
 export const IMPROVE_I18N_FALLBACKS_ES = {
   "improve.title": "Proponer mejora de traducción (L1–L5)",
-  "improve.subtitle": "Parche determinista en texto plano (0 Bytes Audio · CC0)",
+  "improve.subtitle": "Corrección en texto verificable · Dominio público libre (CC0)",
   "improve.kind_label": "Objetivo:",
   "improve.kind_verse": "Versículo bíblico / Raíz Strong",
   "improve.kind_ui": "Texto de interfaz",
@@ -168,6 +168,7 @@ export function renderImproveDrawerHtml({
     `</div>` +
     `</header>` +
     `<div class="ek-stack">` +
+    `<div class="ek-form-pair">` +
     `<label class="ek-label">` +
     `<span data-i18n="improve.kind_label">${t("improve.kind_label")}</span> ` +
     `<select id="improveKindSelect" class="ek-input">` +
@@ -186,6 +187,7 @@ export function renderImproveDrawerHtml({
       .join("") +
     `</select>` +
     `</label>` +
+    `</div>` +
     `<label class="ek-label">` +
     `<span data-i18n="improve.current">${t("improve.current")}</span>` +
     `<input id="improveOldSurfaceInput" class="ek-input" type="text" value="${patch.old_surface.replace(/"/g, "&quot;")}">` +
@@ -297,10 +299,10 @@ export function renderStpDraftCheckHtml({
 
 const CELF_RUNG_LABELS = {
   ALL: "Todos (250)",
-  Rung1SwadeshAndNsm65: "Rung 1 · Swadesh & NSM-65",
-  Rung2MorphosyntaxAndTamValence: "Rung 2 · Morfosintaxis & TAM",
-  Rung3TheologicalKinshipAndNarratives: "Rung 3 · Parentesco & Narrativa",
-  Rung4AutomatedPropagationAnd8Locks: "Rung 4 · Propagación & 8 Candados",
+  Rung1SwadeshAndNsm65: "Nivel 1 · Vocabulario básico",
+  Rung2MorphosyntaxAndTamValence: "Nivel 2 · Gramática y verbos",
+  Rung3TheologicalKinshipAndNarratives: "Nivel 3 · Parentesco y relato",
+  Rung4AutomatedPropagationAnd8Locks: "Nivel 4 · Propagación y revisión",
 };
 
 export function renderCascadeAndLadderHtml({
@@ -377,8 +379,8 @@ export function renderCascadeAndLadderHtml({
   const nextEntropyItem = entropyQueue[0] || { ref: "GEN.1.1", shannon_entropy: 2.45, marginal_gain_bits: 48.2 };
 
   const rungFilterHtml =
-    `<div class="celf-rung-filter-bar ek-row-wrap ek-mb-sm" role="group" aria-label="${isEn ? "Filter by CELF-250 Rung" : "Filtro por Peldaño CELF-250"}">` +
-    `<button type="button" id="btnNextHighEntropyVerse" class="uls-chip ek-btn-fitts" data-next-entropy-ref="${nextEntropyItem.ref}" data-shannon-entropy="${nextEntropyItem.shannon_entropy}">⚡ ${isEn ? "Next high uncertainty" : "Siguiente alta incertidumbre"}: ${nextEntropyItem.ref} (H=${nextEntropyItem.shannon_entropy}b)</button>` +
+    `<div class="celf-rung-filter-bar ek-row-wrap ek-mb-sm" role="group" aria-label="${isEn ? "Filter by Review Stage" : "Filtro por Etapa de Revisión"}">` +
+    `<button type="button" id="btnNextHighEntropyVerse" class="uls-chip ek-btn-fitts" data-next-entropy-ref="${nextEntropyItem.ref}" data-shannon-entropy="${nextEntropyItem.shannon_entropy}">⚡ ${isEn ? "Next priority verse" : "Siguiente pasaje prioritario"}: ${nextEntropyItem.ref}</button>` +
     Object.entries(CELF_RUNG_LABELS)
       .map(
         ([rungKey, label]) =>
@@ -461,13 +463,12 @@ export function renderCascadeAndLadderHtml({
     strongIds: [sanitizePipeField(strongId || "H0430").toUpperCase()],
     responseText: "",
   });
-  const seedPanelHtml =
-    `<div class="celf250-ladder-panel ek-card-muted ek-mb-sm" data-celf250-ladder="true" data-celf250-rank="${seed250.rank}">` +
-    `<strong class="ek-title-sm">🧬 ${isEn ? `Community Progress Step #${seed250.rank}/250` : `Paso de Revisión Comunitaria #${seed250.rank}/250`}</strong>` +
-    `<details class="hig-tech-receipt-details tech-details"><summary>${isEn ? "🧾 Technical seed payload (CELF-250)" : "🧾 Detalles técnicos de semilla (CELF-250)"}</summary>` +
+  const celfSummaryBlock =
+    `<details id="celf250TechDetails" class="tech-details hig-tech-receipt-details ek-mb-sm" data-celf250-ladder="true" data-celf250-rank="${seed250.rank}">` +
+    `<summary>${isEn ? `Technical details · Community step #${seed250.rank}/250` : `Detalles técnicos · Paso #${seed250.rank}/250 (${totalCount} pasos)`}</summary>` +
+    `<p class="ek-meta ek-mt-xs">${isEn ? `Review ladder (${totalCount} steps · Community consensus · CELF-250)` : `Escalera de revisión (${totalCount} pasos · Consenso comunitario · CELF-250)`}</p>` +
     `<pre id="celf250SeedOutput" class="ek-pre-compact">${seed250.payloadLine}</pre>` +
-    `</details>` +
-    `</div>`;
+    `</details>`;
 
   return (
     `<div class="cascade-impact-box ek-card" data-cascade-level="${cleanLevel}" data-cascade-lang="${cleanLang}" data-celf-total="${totalCount}" data-active-ot-wave="${waveNum}">` +
@@ -475,9 +476,7 @@ export function renderCascadeAndLadderHtml({
     `<p class="ek-subtitle ek-mb-sm">` +
     `${isEn ? `Refining this root in <code>${cleanLang}</code> updates matching verses across Bible, Gospels, and Beatitudes. Tap any step to inspect:` : `Al corregir esta raíz en <code>${cleanLang}</code>, el ajuste se propaga a Biblia, Evangelios y Felices. Pulsa un paso para revisarlo:`}` +
     `</p>` +
-    `<details class="tech-details ek-mb-sm"><summary>${isEn ? "Technical details" : "Detalles técnicos"}</summary>` +
-    `<p class="ek-meta ek-mt-xs">CELF-250 (${totalCount} peldaños · Dawid-Skene + SPRT · 0 Bytes Audio)</p></details>` +
-    seedPanelHtml +
+    celfSummaryBlock +
     sisterCascadeHtml +
     rungFilterHtml +
     `<div class="ek-row-wrap">${ladderButtons}</div>` +
@@ -529,9 +528,10 @@ export function renderWorkshopAuditPanelsHtml({
     `<strong>🛡️ ${isEn ? "External Editorial Review · 8-Lock USFM Audit" : "Revisión Editorial Externa · Auditoría 8 Candados"}</strong>` +
     `<span class="uls-badge ek-badge-compact">${extAudit.all_8_locks_passed !== false ? "✅ 8/8 PASS" : "⛔ VETO"} · ${Number(extAudit.rosetta_key_terms_extracted || 552)} ${isEn ? "key terms" : "términos"}</span>` +
     `</div>` +
-    `<textarea id="externalAuditTextInput" class="ek-field-input ek-mt-xs" rows="3" placeholder="\\id GEN&#10;\\c 1&#10;\\v 1 Tu'xich jumai...">${escAud(externalAuditText || "")}</textarea>` +
+    `<textarea id="externalAuditTextInput" class="ek-field-input ek-textarea-full ek-mt-xs" rows="3" placeholder="\\id GEN&#10;\\c 1&#10;\\v 1 Tu'xich jumai...">${escAud(externalAuditText || "")}</textarea>` +
     `<div class="ek-row-wrap ek-mt-xs">` +
-    `<input type="file" id="externalAuditFileInput" accept=".usfm,.sfm,.txt" aria-label="${isEn ? "Load USFM file" : "Cargar archivo USFM"}">` +
+    `<label for="externalAuditFileInput" class="uls-chip ek-file-picker-btn">📂 ${isEn ? "Load .usfm / .txt file" : "Cargar archivo .usfm / .txt"}` +
+    `<input type="file" id="externalAuditFileInput" class="sr-only-file-input" accept=".usfm,.sfm,.txt" aria-label="${isEn ? "Load USFM file" : "Cargar archivo USFM"}"></label>` +
     `<button type="button" id="btnRunExternalAudit" class="uls-chip ek-btn-fitts">🔍 ${isEn ? "Audit 8 locks" : "Auditar 8 candados"}</button>` +
     `</div>` +
     `<div id="externalAuditLiveResult" aria-live="polite">${auditResultSummaryHtml}</div>` +

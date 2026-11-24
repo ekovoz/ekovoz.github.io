@@ -11,7 +11,11 @@ import { STORE_DOMAIN_OWNERS, VALID_ACTIVE_INTENTS, VALID_ACTIVE_MODALS } from "
  * Impone máximo 1 unidad funcional primaria visible sobre el pliegue y ubica las secundarias en acordeones colapsables.
  */
 export const SURFACE_SLOT_MANIFEST = Object.freeze({
-  "study:words": Object.freeze({ primary: "leipzig14ColStratumAction", collapsibles: Object.freeze([]) }),
+  "study:words": Object.freeze({
+    primary: "leipzig14ColStratumAction",
+    collapsibles: Object.freeze([]),
+    slotOrder: Object.freeze(["leipzig14ColStratumAction"]),
+  }),
   "study:rosetta": Object.freeze({
     primary: "nsm65StratumCard",
     collapsibles: Object.freeze([
@@ -21,52 +25,112 @@ export const SURFACE_SLOT_MANIFEST = Object.freeze({
       "tskCrossRefsStratumCard",
       "studyFormulaicParallelsHost",
     ]),
+    slotOrder: Object.freeze([
+      "nsm65StratumCard",
+      "studyUbsAccordion",
+      "studyOnomasticonAccordion",
+      "studyRealiaAccordion",
+      "studyTskFormulaicAccordion",
+    ]),
   }),
   "study:calibrate": Object.freeze({
     primary: "philologyRosettaStaticHost",
     collapsibles: Object.freeze([
+      "rosettaCalibrationAuditDetails",
       "wfstAndScriptioContinuaHost",
       "diachronicSubstitutionsDetails",
       "bibleBranchAndTypologyPanel",
     ]),
+    slotOrder: Object.freeze([
+      "philologyRosettaStaticHost",
+      "bibleAnalyticalThermometerPanel",
+      "studyOrthographyAccordion",
+      "diachronicSubstitutionsDetails",
+      "studyTypologyAccordion",
+    ]),
   }),
   "print:doses": Object.freeze({
     primary: "mostradorDoseCards",
-    collapsibles: Object.freeze(["bibleEditionsCatalogGrid"]),
+    collapsibles: Object.freeze(["printFieldPdfsHost", "bibleEditionsCatalogGrid"]),
+    slotOrder: Object.freeze(["mostradorDoseCards", "printFieldPdfsHost", "bibleEditionsCatalogGrid"]),
   }),
   "print:imposition": Object.freeze({
     primary: "bibleKindleConfigurator",
-    collapsibles: Object.freeze(["duplexAssistantPanel", "impositionBookletPreviewHost"]),
+    collapsibles: Object.freeze(["printTypologyBridgeHost", "duplexAssistantPanel", "impositionBookletPreviewHost"]),
+    slotOrder: Object.freeze(["bibleKindleConfigurator", "printTypologyBridgeHost", "duplexAssistantPanel", "impositionBookletPreviewHost"]),
   }),
   "print:stationery": Object.freeze({
     primary: "stationeryCardPanel",
     collapsibles: Object.freeze(["photocopyResilienceUnifiedSection"]),
+    slotOrder: Object.freeze(["stationeryCardPanel", "photocopyResilienceUnifiedSection"]),
   }),
   "field:patch": Object.freeze({
     primary: "socraticElicitorContainer",
     collapsibles: Object.freeze(["stpLexiconExplorerHost"]),
+    slotOrder: Object.freeze(["socraticElicitorContainer", "stpLexiconExplorerHost"]),
   }),
   "field:ladder": Object.freeze({
     primary: "cascadeImpactPreviewList",
     collapsibles: Object.freeze([]),
+    slotOrder: Object.freeze(["cascadeImpactPreviewList"]),
   }),
   "field:audit": Object.freeze({
     primary: "externalAudit8LocksPanel",
     collapsibles: Object.freeze(["tallerArtifactsCatalog"]),
+    slotOrder: Object.freeze(["externalAudit8LocksPanel", "tallerArtifactsCatalog"]),
   }),
   "share:mesh": Object.freeze({
     primary: "vaultStorageManagerHost",
-    collapsibles: Object.freeze(["offlinePacksCatalogPanel", "editorialFontPackVaultPanel"]),
+    collapsibles: Object.freeze(["shareOfflinePacksDetails", "shareFontVaultDetails"]),
+    slotOrder: Object.freeze(["vaultStorageManagerHost", "shareOfflinePacksDetails", "shareFontVaultDetails"]),
   }),
   "share:pdf": Object.freeze({
     primary: "bibleOpticalQrStreamPanel",
     collapsibles: Object.freeze(["opticalReceiverRxPanel"]),
+    slotOrder: Object.freeze(["bibleOpticalQrStreamPanel", "opticalReceiverRxPanel"]),
   }),
   "share:graphics": Object.freeze({
     primary: "shareOpenGraphCardPanel",
     collapsibles: Object.freeze(["shareAuthenticityUnifiedCard"]),
+    slotOrder: Object.freeze(["shareOpenGraphCardPanel", "shareAuthenticityUnifiedCard"]),
   }),
 });
+
+/**
+ * Registro declarativo de adaptadores multi-obra escalable a N obras (`D11-R10`).
+ * Define el modo de adaptacion de cada gaveta sin condicionales dispersos en 4 archivos.
+ */
+export const WORK_DRAWER_ADAPTERS = Object.freeze({
+  biblia: Object.freeze({
+    workId: "biblia",
+    studyPriority: "verse-15col",
+    printMode: "biblia-3-doses",
+    workshopTarget: "chapter-verse",
+    shareTarget: "passage-pack",
+    llmsManifestPrefix: "llms/biblia",
+  }),
+  felices: Object.freeze({
+    workId: "felices",
+    studyPriority: "anchor-passage",
+    printMode: "plate-and-booklet",
+    workshopTarget: "plate-dicha",
+    shareTarget: "plate-card",
+    llmsManifestPrefix: "llms/felices",
+  }),
+  evangelios: Object.freeze({
+    workId: "evangelios",
+    studyPriority: "pericope-week",
+    printMode: "weekly-booklet",
+    workshopTarget: "liturgical-week",
+    shareTarget: "weekly-card",
+    llmsManifestPrefix: "llms/evangelios",
+  }),
+});
+
+export function resolveWorkDrawerAdapter(state = {}) {
+  const workId = WORK_DRAWER_ADAPTERS[state?.activeWork] ? state.activeWork : "biblia";
+  return WORK_DRAWER_ADAPTERS[workId];
+}
 
 /**
  * Resuelve la etiqueta y coordenada bíblica ancla de la obra activa (`biblia`, `felices`, `evangelios`) (`D3-R9`).

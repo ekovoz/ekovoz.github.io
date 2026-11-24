@@ -122,9 +122,9 @@ export function renderOnomasticonExplorerHtml({
   const pagerHtml =
     totalPages > 1
       ? `<div class="ek-row-wrap">` +
-        `<button type="button" class="uls-chip" data-onomasticon-page="${Math.max(1, activePage - 1)}"${activePage <= 1 ? " disabled" : ""}>◀</button>` +
-        `<button type="button" class="uls-chip" data-onomasticon-page="${Math.min(totalPages, activePage + 1)}"${activePage >= totalPages ? " disabled" : ""}>▶</button>` +
-        `</div>`
+      `<button type="button" class="uls-chip" data-onomasticon-page="${Math.max(1, activePage - 1)}"${activePage <= 1 ? " disabled" : ""}>◀</button>` +
+      `<button type="button" class="uls-chip" data-onomasticon-page="${Math.min(totalPages, activePage + 1)}"${activePage >= totalPages ? " disabled" : ""}>▶</button>` +
+      `</div>`
       : "";
 
   return (
@@ -386,12 +386,15 @@ export function renderFormulaicParallelsCardHtml({
     : "";
 
   const totalParallels = rawQuotes.length + rawTemplates.length;
+  const deduplicatedOtVerses = Number(formulaicIndex?.total_deduplicated_ot_verses || 4200);
+  const formattedDeduplicated = deduplicatedOtVerses.toLocaleString("en-US");
   return (
-    `<article id="formulaicParallelsCard" class="ek-card-muted" data-formulaic-osis="${escapeHtml(osisRef)}" data-formulaic-total="${totalParallels}" data-formulaic-matched="${matchedQuotes.length}">` +
+    `<article id="formulaicParallelsCard" class="ek-card-muted" data-formulaic-osis="${escapeHtml(osisRef)}" data-formulaic-total="${totalParallels}" data-formulaic-matched="${matchedQuotes.length}" data-deduplicated-ot-verses="${deduplicatedOtVerses}">` +
     `<div class="ek-row-between">` +
     `<strong>🔗 ${isEn ? "OT ↔ NT Formulaic Parallels" : "Paralelos Formulaicos AT ↔ NT"}</strong>` +
     `<span class="uls-badge ek-badge-compact">${exactQuotes.length > 0 ? `${exactQuotes.length} ${isEn ? "in chapter" : "en capítulo"}` : `${rawQuotes.length} ${isEn ? "indexed quotes" : "citas indexadas"}`}</span>` +
     `</div>` +
+    `<p class="ek-meta ek-mt-xs">${isEn ? `${formattedDeduplicated} Old Testament anchor verses deduplicated across canonical templates` : `${formattedDeduplicated} versículos del Antiguo Testamento unificados en plantillas canónicas`}</p>` +
     `<div class="ek-row-wrap ek-mt-xs">${quoteChips}</div>` +
     tplSummaryHtml +
     `</article>`

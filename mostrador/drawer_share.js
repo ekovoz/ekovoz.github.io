@@ -13,7 +13,6 @@ import {
   hydrateOpticalTxAndRxPanels,
   stopQrBeamAutoCadenceTimer,
 } from "./drawer_share_optical_controller.js";
-import { validateAllEightLocksPda } from "./mejorar.js";
 import {
   CANONICAL_ECO_PACKS_MANIFEST,
   SOVEREIGN_ED25519_PUBLIC_KEY_HEX,
@@ -50,8 +49,12 @@ import {
   mountOfflineFontNoticeWithLocalImporter,
   summarizeOfflineFontsVaultCatalog,
 } from "./offline_font_bundle.js";
-import { resolveActiveWorkDrawerContext } from "./projection_contract.js";
-import { renderEditorialProvenanceCardHtml } from "./provenance_and_support_panel.js";
+import { resolveActiveWorkDrawerContext, resolveWorkDrawerAdapter } from "./projection_contract.js";
+import {
+  bindProvenanceVerifierEvents,
+  renderEditorialAuditAttestationHtml,
+  renderEditorialProvenanceCardHtml,
+} from "./provenance_and_support_panel.js";
 import { buildOpenGraphSocialCardSvg1200x630 } from "./social_and_photocopy_cards.js";
 import { resolveSafeDownloadFilename } from "./stealth_filename.js";
 import { hydrateVaultStorageManagerPanel } from "./vault_manager_panel.js";
@@ -158,103 +161,6 @@ function resolveSignedPackReceipt(langCode = "es", state = null, dataLayer = nul
   };
 }
 
-function renderEditorialAuditAttestationHtml({
-  verseSurface = "",
-  ed25519Verified = true,
-  masterCensus = null,
-  rustTelemetry = null,
-  pericopeReceipt = null,
-  ledgerBlake3Root = "",
-  uiLocale = "es",
-} = {}) {
-  const isEn = String(uiLocale || "es").trim().toLowerCase().startsWith("en");
-  const normalizedSurface = String(verseSurface || "").normalize("NFC");
-  const eightLocksReport = validateAllEightLocksPda({
-    oldSurface: normalizedSurface,
-    newSurface: normalizedSurface,
-  });
-  const eightLocksPillsHtml = eightLocksReport.locks
-    .map(
-      (lk) =>
-        `<span class="uls-badge ek-badge-compact" data-lock-id="${escapeHtml(lk.id)}" data-lock-passed="${Boolean(lk.passed)}">${lk.passed ? "✅" : "⛔"} ${escapeHtml(lk.label)}</span>`,
-    )
-    .join(" ");
-
-  const mc = masterCensus || {};
-  const totalLangs = Number(mc.total_living_languages) || 7164;
-  const macroRegions = Number(mc.total_macro_regions) || (Array.isArray(mc.macro_regions_12) ? mc.macro_regions_12.length : 12);
-  const subclades = Number(mc.total_phylogenetic_subclades) || 380;
-  const books = Number(mc.canonical_books) || 66;
-  const chapters = Number(mc.canonical_chapters) || 1189;
-  const verses = Number(mc.canonical_verses) || 31102;
-  const blocks = Number(mc.canonical_blocks) || 80;
-  const walFolded = Number(mc.crdt_wal_patches_folded) || 69;
-  const fe = mc.formulaic_entropy || {};
-  const uniqueTemplates = Number(fe.unique_templates) || 26620;
-  const dedupVerses = Number(fe.deduplicated_verses) || 4482;
-  const reductionPct = Number(fe.reduction_pct) || 14.41;
-  const tiers4 = Array.isArray(mc.sovereign_tiers_4) ? mc.sovereign_tiers_4 : [];
-  const tiersSummary = tiers4.length > 0
-    ? tiers4.map((t) => `${t.tier}:${t.count}`).join(" · ")
-    : "T0:1020 · T1:1550 · T2:1420 · T3:3174";
-  const stpProg = mc.stp_ledger_progress || mc.stp_ledger_summary?.stp_ledger_progress || {};
-  const batchRange = String(stpProg.batch_id_range || "BLK-0001..BLK-1245");
-  const batchesDone = Number(stpProg.total_batches_completed) || 1245;
-  const diskCorpora = Array.isArray(mc.verified_disk_bible_corpora) ? mc.verified_disk_bible_corpora.length : 16;
-  const zeroTrunc = mc.zero_truncation_certified !== false;
-
-  const rt = rustTelemetry || {};
-  const surfaceScore = Number(rt.core_surface_score) || 10181;
-  const fonts28Ok = rt.fonts_28_manifest_verified !== false;
-  const wfstLen = Number(rt.wfst_sample_len) || 45;
-  const nyquistMs = Number(rt.wasm_and_optical_abi?.interval_ms) || 150;
-  const bilateralDims = Array.isArray(rt.bilateral_filter_dims) ? rt.bilateral_filter_dims.join("x") : "4x4";
-
-  const isVerifiedSig = ed25519Verified === true;
-  const ed25519GateAttr = String(isVerifiedSig);
-  const ed25519BadgeText = isVerifiedSig ? "✅ Ed25519 VERIFIED" : "⛔ Ed25519 REJECTED";
-
-  const humanAttestationTitle = isEn
-    ? "Editorial Authenticity & Integrity Check"
-    : "Verificación de Autenticidad Editorial";
-  const humanAttestationStatus = isVerifiedSig
-    ? (isEn ? "✅ Authentic editorial edition" : "✅ Edición editorial auténtica")
-    : (isEn ? "⛔ Unverified signature" : "⛔ Firma no verificada");
-
-  return (
-    `<div class="editorial-attestation-receipt ek-card ek-stack-sm" data-ed25519-verified="${ed25519GateAttr}" data-eight-locks-status="${escapeHtml(eightLocksReport.status)}" data-zero-truncation="${zeroTrunc}" data-living-languages="${totalLangs}" data-rust-surface-score="${surfaceScore}">` +
-    `<div class="ek-row-between">` +
-    `<strong>🛡️ ${humanAttestationTitle}</strong>` +
-    `<span class="uls-badge">${humanAttestationStatus} · ${totalLangs.toLocaleString("en-US")} ${isEn ? "languages" : "lenguas"}</span>` +
-    `</div>` +
-    `<details class="tech-details">` +
-    `<summary>${isEn ? "Technical details & cryptographic signature" : "Detalles técnicos y firma criptográfica"}</summary>` +
-    `<div class="ek-stack-sm ek-mt-sm">` +
-    `<span class="uls-badge" data-ed25519-gate="${ed25519GateAttr}">${ed25519BadgeText} · Zero-Truncation=${zeroTrunc ? "OK" : "PENDING"}</span>` +
-    `<div class="eight-locks-pda-bar" data-eight-locks-bar="true">${eightLocksPillsHtml}</div>` +
-    `<div class="ek-row-wrap" data-master-census-7keys="true">` +
-    `<span class="uls-badge" data-census-key="living_languages">🌍 ${totalLangs.toLocaleString("en-US")} ${isEn ? "langs" : "lenguas"} · ${macroRegions} ${isEn ? "regions" : "regiones"} · ${subclades} subclades</span>` +
-    `<span class="uls-badge" data-census-key="canonical_canon">📖 ${books}B / ${chapters.toLocaleString("en-US")}C / ${verses.toLocaleString("en-US")}V / ${blocks} ${isEn ? "blocks" : "bloques"}</span>` +
-    `<span class="uls-badge" data-census-key="crdt_wal">🔄 CRDT WAL: ${walFolded} ${isEn ? "patches" : "parches"}</span>` +
-    `<span class="uls-badge" data-census-key="formulaic_entropy">🧬 ${uniqueTemplates.toLocaleString("en-US")} templates (−${reductionPct}% / ${dedupVerses.toLocaleString("en-US")} vv.)</span>` +
-    `<span class="uls-badge" data-census-key="sovereign_tiers_4">📊 ${escapeHtml(tiersSummary)}</span>` +
-    `<span class="uls-badge" data-census-key="stp_ledger_progress">🧱 STP ${escapeHtml(batchRange)} (${batchesDone}/1245)</span>` +
-    `<span class="uls-badge" data-census-key="verified_disk_corpora">💿 ${diskCorpora} ${isEn ? "disk corpora" : "corpus en disco"}</span>` +
-    `</div>` +
-    `<div class="ek-meta" data-rust-engines-telemetry="true">` +
-    `🦀 Rust Engines: CoreScore=${surfaceScore} · Fonts28=${fonts28Ok ? "OK" : "WARN"} · WFST=${wfstLen} · Bilateral=${escapeHtml(bilateralDims)} · OpticalABI=${nyquistMs}ms` +
-    `</div>` +
-    (pericopeReceipt
-      ? `<div class="ek-meta" data-pericope-constructive-receipt="true">` +
-      `🧾 ${isEn ? "Constructive Pericope Receipt" : "Recibo Constructivo de Perícopa"}: <code>${escapeHtml(String(pericopeReceipt.batchId || ""))}</code> · MATTR=${Number(pericopeReceipt.mattr || 0).toFixed(3)} · SHA-256=<code>${escapeHtml(String(pericopeReceipt.sha256Prefix || ""))}</code>${ledgerBlake3Root ? ` · BLAKE3=<code>${escapeHtml(String(ledgerBlake3Root).slice(0, 12))}</code>` : ""}` +
-      `</div>`
-      : "") +
-    `</div>` +
-    `</details>` +
-    `</div>`
-  );
-}
-
 /**
  * Hidrata la Gaveta 4 (Compartir, Quine Offline, QRBeam LT y Auditoría) (`D8-R41` / `D10-R38` / `D6-R38` / `D2-R42` / `D7-R42`).
  */
@@ -285,6 +191,8 @@ export function hydrateShareAndAuditDrawerPanel(ctx = {}) {
       .then((cat) => {
         if (cat) {
           hydrateEcoPacksManifest(cat);
+          if (cat.matrixTier0Url) state.matrixTier0Url = String(cat.matrixTier0Url);
+          if (cat.matrixTier0Bytes) state.matrixTier0Bytes = Number(cat.matrixTier0Bytes) || 7562231;
           if (typeof hydrateShareAndAuditDrawer === "function" && !state._offlinePacksRehydratedOnce) {
             state._offlinePacksRehydratedOnce = true;
             hydrateShareAndAuditDrawer(targetDoc);
@@ -292,6 +200,13 @@ export function hydrateShareAndAuditDrawerPanel(ctx = {}) {
         }
       })
       .catch(() => { });
+  }
+
+  const workCtx = resolveActiveWorkDrawerContext(state);
+  const workAdapter = resolveWorkDrawerAdapter(state);
+  const shareSheetEl = getEl("bibleShareAndAuditSheet", targetDoc);
+  if (shareSheetEl && typeof shareSheetEl.setAttribute === "function") {
+    shareSheetEl.setAttribute("data-work-share-target", workAdapter.shareTarget || "biblia_quine");
   }
 
   const packsPanel = getEl("offlinePacksCatalogPanel", targetDoc);
@@ -323,7 +238,7 @@ export function hydrateShareAndAuditDrawerPanel(ctx = {}) {
       "En el principio creó Dios los cielos y la tierra.";
     // D8-R44 / DEB-R44-08: ordinal canónico exacto 1..31,102 (antes `ordinalOf` sin catálogo devolvía siempre `null` → #1).
     const activeOrdinal = canonicalOrdinalOf(state.book || "GEN", state.chapter || 1, state.verse || 1);
-    const ecoMeshCardHtml = renderOfflineMeshEcoCardHtml({
+    const rawEcoMeshCardHtml = renderOfflineMeshEcoCardHtml({
       activeLang: packLang,
       activeVerseOrdinal: Math.max(0, (Number(activeOrdinal) || 1) - 1),
       activeVerseRef: `${state.book}.${state.chapter}.${state.verse}`,
@@ -331,6 +246,10 @@ export function hydrateShareAndAuditDrawerPanel(ctx = {}) {
       uiLocale: state.uiLocale || "es",
       vaultPacks: Array.isArray(state._hydratedVaultPacks) ? state._hydratedVaultPacks : null,
     });
+    const ecoMeshCardHtml = rawEcoMeshCardHtml.replace(
+      /<div class="ek-row-wrap ek-mb-sm">(?:<a class="uls-chip eco-pack-download-link"[\s\S]*?)?<\/div>/,
+      "",
+    );
     const quineBtnEl = getEl("btnShareQuine", targetDoc);
     if (quineBtnEl && typeof quineBtnEl.setAttribute === "function") {
       quineBtnEl.setAttribute("data-quine-download", "true");
@@ -339,11 +258,9 @@ export function hydrateShareAndAuditDrawerPanel(ctx = {}) {
         ? "📦 Export portable HTML copy (USB / Bluetooth)"
         : "📦 Exportar copia HTML portable (USB / Bluetooth)";
     }
-    const workCtx = resolveActiveWorkDrawerContext(state);
     const workBannerHtml = workCtx.isSisterWork
       ? `<aside class="work-context-drawer-banner" data-work-context="${escapeHtml(workCtx.activeWork)}"><strong>${escapeHtml(workCtx.bannerText)}</strong></aside>`
       : "";
-    const shareSheetEl = getEl("bibleShareAndAuditSheet", targetDoc);
     const vaultHostEl = getEl("vaultStorageManagerHost", targetDoc);
     if (shareSheetEl && typeof targetDoc?.createElement === "function" && typeof shareSheetEl.insertBefore === "function") {
       let topShareBanner = getEl("shareActiveWorkBanner", targetDoc);
@@ -361,10 +278,22 @@ export function hydrateShareAndAuditDrawerPanel(ctx = {}) {
         topShareBanner.setAttribute?.("hidden", "");
       }
     }
+    const llmsCleanLang = String(activeLang || "es").split("-")[0] || "es";
+    const llmsHref =
+      workCtx.activeWork === "felices"
+        ? `llms/felices/${["ar", "bn", "en", "es", "fa", "fr", "hi", "id", "it", "ja", "ko", "pt", "ru", "tr", "ur", "zh-Hans"].includes(activeLang) ? activeLang : "es"}.md`
+        : workCtx.activeWork === "evangelios"
+          ? `llms/evangelios/${llmsCleanLang === "stp" ? "stp" : "es"}.md`
+          : ["ar", "bn", "en", "es", "fa", "fr", "hi", "id"].includes(llmsCleanLang)
+            ? `llms/biblia/${llmsCleanLang}.md`
+            : "llms.txt";
     packsPanel.innerHTML =
       workBannerHtml +
       `<div class="mostrador-offline-packs" data-lang="${escapeHtml(activeLang)}" data-active-work="${escapeHtml(workCtx.activeWork)}" data-pack-mode="${packMode}" data-quine-url="${escapeHtml(quineRelUrl)}">` +
-      `<strong>${isEn ? `Offline Language Pack (${escapeHtml(activeLang.toUpperCase())})` : `Paquete Offline (${escapeHtml(activeLang.toUpperCase())})`}</strong>` +
+      `<div class="ek-row-between">` +
+      `<strong>${isEn ? `Offline Package (${escapeHtml(activeLang.toUpperCase())})` : `Paquete sin conexión (${escapeHtml(activeLang.toUpperCase())})`}</strong>` +
+      `<a id="linkActiveLlmsManifest" class="uls-chip ek-btn-link" href="${escapeHtml(llmsHref)}" data-work="${escapeHtml(workCtx.activeWork)}">🤖 ${isEn ? "Open Text Guide (llms)" : "Índice textual limpio (llms)"}</a>` +
+      `</div>` +
       `<p class="share-pack-desc">${isEn ? "Zero telemetry · Offline reader package ready for USB, Bluetooth, and MicroSD." : "Cero telemetría · Paquete de lectura sin conexión listo para USB, Bluetooth y MicroSD."}</p>` +
       `<a href="${escapeHtml(quineRelUrl)}" download="${escapeHtml(quineFilename)}" data-quine-download="true" data-pack-mode="${packMode}" hidden></a>` +
       ecoMeshCardHtml +
@@ -408,11 +337,19 @@ export function hydrateShareAndAuditDrawerPanel(ctx = {}) {
 
     const fontVaultHost = ensureShareChildHost("editorialFontPackVaultPanel");
     if (fontVaultHost) {
-      const fontSummary = summarizeOfflineFontsVaultCatalog(state.fontsZstManifest || null);
+      const fm = state.fontsZstManifest || null;
+      const fontSummary = summarizeOfflineFontsVaultCatalog(fm);
+      const rawFontMb = ((Number(fm?.total_raw_bytes) || 12175164) / (1024 * 1024)).toFixed(2);
+      const zstFontMb = ((Number(fm?.total_zst_bytes) || 5543056) / (1024 * 1024)).toFixed(2);
+      const zstSavedPct = Math.max(
+        1,
+        Math.round((1 - (Number(fm?.total_zst_bytes) || 5543056) / (Number(fm?.total_raw_bytes) || 12175164)) * 100),
+      );
       fontVaultHost.innerHTML =
-        `<div id="ekfontsVaultSummaryCard" class="ekfonts-vault-summary-card" data-ekfonts-bundle="${escapeHtml(fontSummary.bundleFile)}" data-fonts-count="${fontSummary.totalFonts}">` +
+        `<div id="ekfontsVaultSummaryCard" class="ekfonts-vault-summary-card" data-ekfonts-bundle="${escapeHtml(fontSummary.bundleFile)}" data-fonts-count="${fontSummary.totalFonts}" data-zst-saved-pct="${zstSavedPct}">` +
         `<div class="photocopy-header-row">` +
         `<strong>🔤 ${isEn ? "Offline Typography Pack (34 fonts)" : "Paquete tipográfico sin conexión (34 fuentes)"}</strong>` +
+        `<span class="uls-badge" data-zst-savings-badge="true">Zstd −${zstSavedPct}% (${rawFontMb} → ${zstFontMb} MB)</span>` +
         `<a class="uls-chip ekfonts-download-chip" href="${escapeHtml(fontSummary.bundleUrl)}" download="${escapeHtml(fontSummary.bundleFile)}" data-tech-key="${escapeHtml(fontSummary.bundleFile)}" data-ekfonts-bundle-url="${escapeHtml(fontSummary.bundleUrl)}">📦 ${isEn ? "Download typography pack" : "Descargar paquete tipográfico"} (${fontSummary.totalFonts || 34})</a>` +
         `</div>` +
         `<div id="shareOfflineFontImporterHost"></div>` +
@@ -601,14 +538,30 @@ export function hydrateShareAndAuditDrawerPanel(ctx = {}) {
     if (importSneakernetInput && typeof importSneakernetInput.addEventListener === "function" && !importSneakernetInput._sneakernetImpBound) {
       importSneakernetInput._sneakernetImpBound = true;
       importSneakernetInput.addEventListener("change", async (evt) => {
+        const commitBundleText = async (rawText) => {
+          const imported = importBundleFromFile(rawText);
+          const candidateBin =
+            imported.payloadBytes instanceof Uint8Array && imported.payloadBytes.byteLength >= 32
+              ? imported.payloadBytes
+              : null;
+          if (!imported.valid || !candidateBin || !parseEkpackPreamble32Js(candidateBin)) return null;
+          const playerWasm = dataLayer?.getHydratedWasmModule?.("ekovoz_player_wasm") || null;
+          return commitVerifiedPackToIndexedDb(
+            {
+              lang: imported.lang || packLang,
+              packBytes: candidateBin,
+              expectedCrc32: imported.crc32Hex || "",
+              expectedSha256: imported.sha256 || "",
+            },
+            SOVEREIGN_ED25519_PUBLIC_KEY_HEX,
+            playerWasm,
+          );
+        };
         const selectedFile = evt?.target?.files?.[0] || importSneakernetInput.files?.[0] || null;
         if (selectedFile && typeof selectedFile.arrayBuffer === "function") {
           const fileBytes = new Uint8Array(await selectedFile.arrayBuffer());
-          const preamble = parseEkpackPreamble32Js(fileBytes);
-          if (preamble) {
-            const nameStem = String(selectedFile.name || `${packLang}.ekpack`)
-              .replace(/\.ekpack$/i, "")
-              .trim() || packLang;
+          if (parseEkpackPreamble32Js(fileBytes)) {
+            const nameStem = String(selectedFile.name || `${packLang}.ekpack`).replace(/\.ekpack$/i, "").trim() || packLang;
             const playerWasm = dataLayer?.getHydratedWasmModule?.("ekovoz_player_wasm") || null;
             const fileReceipt = resolveSignedPackReceipt(nameStem, state, dataLayer);
             const committed = await commitVerifiedPackToIndexedDb(
@@ -623,58 +576,19 @@ export function hydrateShareAndAuditDrawerPanel(ctx = {}) {
             );
             importSneakernetInput.setAttribute("data-imported-valid", String(Boolean(committed.verified)));
             importSneakernetInput.setAttribute("data-imported-lang", committed.lang);
-            if (typeof ctx.navigate === "function") {
-              await ctx.navigate({ lang: committed.lang }, targetDoc);
-            }
+            await ctx.navigate?.({ lang: committed.lang }, targetDoc);
             return;
           }
-          const rawText = new TextDecoder("utf-8").decode(fileBytes);
-          const imported = importBundleFromFile(rawText);
-          const candidateBin =
-            imported.payloadBytes instanceof Uint8Array && imported.payloadBytes.byteLength >= 32
-              ? imported.payloadBytes
-              : null;
-          if (imported.valid && candidateBin && parseEkpackPreamble32Js(candidateBin)) {
-            const playerWasm = dataLayer?.getHydratedWasmModule?.("ekovoz_player_wasm") || null;
-            const committed = await commitVerifiedPackToIndexedDb(
-              {
-                lang: imported.lang || packLang,
-                packBytes: candidateBin,
-                expectedCrc32: imported.crc32Hex || "",
-                expectedSha256: imported.sha256 || "",
-              },
-              SOVEREIGN_ED25519_PUBLIC_KEY_HEX,
-              playerWasm,
-            );
-            const verifiedOk = Boolean(committed?.verified);
-            importSneakernetInput.setAttribute("data-imported-valid", String(verifiedOk));
-            if (verifiedOk && typeof ctx.navigate === "function") {
-              await ctx.navigate({ lang: committed.lang || imported.lang || packLang }, targetDoc);
-            }
-            return;
-          }
-          importSneakernetInput.setAttribute("data-imported-valid", "false");
+          const committed = await commitBundleText(new TextDecoder("utf-8").decode(fileBytes));
+          const verifiedOk = Boolean(committed?.verified);
+          importSneakernetInput.setAttribute("data-imported-valid", String(verifiedOk));
+          if (verifiedOk) await ctx.navigate?.({ lang: committed.lang || packLang }, targetDoc);
           return;
         }
         if (state.lastExportedSneakernetBundle) {
-          const imported = importBundleFromFile(state.lastExportedSneakernetBundle);
-          const candidateBin =
-            imported.payloadBytes instanceof Uint8Array && imported.payloadBytes.byteLength >= 32
-              ? imported.payloadBytes
-              : null;
-          if (imported.valid && candidateBin && parseEkpackPreamble32Js(candidateBin)) {
-            const playerWasm = dataLayer?.getHydratedWasmModule?.("ekovoz_player_wasm") || null;
-            const committed = await commitVerifiedPackToIndexedDb(
-              {
-                lang: imported.lang || packLang,
-                packBytes: candidateBin,
-                expectedCrc32: imported.crc32Hex || "",
-                expectedSha256: imported.sha256 || "",
-              },
-              SOVEREIGN_ED25519_PUBLIC_KEY_HEX,
-              playerWasm,
-            );
-            importSneakernetInput.setAttribute("data-imported-valid", String(Boolean(committed?.verified)));
+          const committed = await commitBundleText(state.lastExportedSneakernetBundle);
+          if (committed) {
+            importSneakernetInput.setAttribute("data-imported-valid", String(Boolean(committed.verified)));
             return;
           }
         }
@@ -804,12 +718,15 @@ export function hydrateShareAndAuditDrawerPanel(ctx = {}) {
   const provHost = getEl("editorialProvenanceCardHost", targetDoc);
   if (provHost) {
     provHost.innerHTML = renderEditorialProvenanceCardHtml(state.editorialProvenance || null, state.uiLocale || "es");
+    bindProvenanceVerifierEvents(provHost, state.editorialProvenance || null, state.uiLocale || "es");
     if (!state.editorialProvenance && dataLayer && typeof dataLayer.loadEditorialProvenance === "function") {
       Promise.resolve(dataLayer.loadEditorialProvenance())
         .then((prov) => {
           if (prov) {
             state.editorialProvenance = prov;
             provHost.innerHTML = renderEditorialProvenanceCardHtml(prov, state.uiLocale || "es");
+            provHost._berneVerifierBound = false;
+            bindProvenanceVerifierEvents(provHost, prov, state.uiLocale || "es");
           }
         })
         .catch(() => { });
@@ -820,29 +737,21 @@ export function hydrateShareAndAuditDrawerPanel(ctx = {}) {
 export { applyStaticChromeTranslations } from "./chrome_static_i18n.js";
 
 /**
- * Enlaza las acciones de la Gaveta 4 (Quine, enlace directo, Ed25519/Merkle, imposición, márgenes, cadencia óptica,
- * cámara Rx y relevo LT) extraídas de `createMostradorController::bindDomEvents` (`D9-R44`, costura LCOM4 ∂(C)=0).
+ * Enlaza las acciones de la Gaveta 4 (Quine, enlace directo, Ed25519/Merkle, cadencia óptica, cámara Rx y relevo LT).
  */
 export function bindShareDrawerActionEvents(ctx = {}) {
   const { state, dataLayer, targetDoc, getEl, hydrateShareAndAuditDrawer } = ctx;
   const executeGaveta4Action = async (shareBtnId) => {
     hydrateShareAndAuditDrawer(targetDoc);
     const statusPanel = getEl("editorialAuditStatusPanel", targetDoc);
-    if (statusPanel) {
-      statusPanel.setAttribute?.("data-status-visible", "true");
-    }
+    statusPanel?.setAttribute?.("data-status-visible", "true");
     const packLang = String(state.lang || "es").trim() || "es";
-    const osis = `${state.book}.${state.chapter}.${state.verse}`;
 
     if (shareBtnId === "btnShareQuine") {
       const packBytes = await resolvePackBytesForVault(packLang, dataLayer);
       const playerWasm =
-        (dataLayer && typeof dataLayer.getHydratedWasmModule === "function"
-          ? dataLayer.getHydratedWasmModule("ekovoz_player_wasm")
-          : null) ||
-        (dataLayer && typeof dataLayer.loadWasmModule === "function"
-          ? await dataLayer.loadWasmModule("ekovoz_player_wasm")
-          : null);
+        dataLayer?.getHydratedWasmModule?.("ekovoz_player_wasm") ||
+        (typeof dataLayer?.loadWasmModule === "function" ? await dataLayer.loadWasmModule("ekovoz_player_wasm") : null);
       const quinePayload = await buildFullCorpusDeflateQuineHtml(packLang, "Ekovoz Offline Quine", {
         packBytes,
         parseEkpackContainerJs,
@@ -860,15 +769,11 @@ export function bindShareDrawerActionEvents(ctx = {}) {
           ? URL.createObjectURL(new Blob([quinePayload], { type: "text/html;charset=utf-8" }))
           : `data:text/html;charset=utf-8,${encodeURIComponent(quinePayload)}`;
       const safeQuineName = resolveSafeDownloadFilename(state, { kind: "quine_html", lang: packLang });
-      if (
-        typeof targetDoc?.createElement === "function" &&
-        typeof quineUrl === "string" &&
-        quineUrl.startsWith("blob:")
-      ) {
+      if (typeof targetDoc?.createElement === "function" && typeof quineUrl === "string" && quineUrl.startsWith("blob:")) {
         const dlLink = targetDoc.createElement("a");
         dlLink.href = quineUrl;
         dlLink.download = safeQuineName;
-        if (typeof dlLink.click === "function") dlLink.click();
+        dlLink.click?.();
       }
       if (statusPanel) {
         const bookCountMatch = quinePayload.match(/data-(?:book-count|quine-books)="(\d+)"/);
@@ -883,19 +788,14 @@ export function bindShareDrawerActionEvents(ctx = {}) {
       }
     } else if (shareBtnId === "btnCopyDirectShareLink") {
       const shareUrl = serializeMostradorRouteQuery(state);
-      if (typeof navigator !== "undefined" && navigator.clipboard && typeof navigator.clipboard.writeText === "function") {
-        navigator.clipboard.writeText(shareUrl).catch(() => { });
-      }
+      navigator?.clipboard?.writeText?.(shareUrl).catch(() => { });
       if (statusPanel) {
         statusPanel.setAttribute("data-audit-action", "copy-link");
-        statusPanel.innerHTML =
-          `<div class="audit-receipt" data-action="copy-link" data-share-url="${escapeHtml(shareUrl)}">` +
-          `🔗 <strong>Enlace directo copiado:</strong> <code>${escapeHtml(shareUrl)}</code></div>`;
+        statusPanel.innerHTML = `<div class="audit-receipt" data-action="copy-link" data-share-url="${escapeHtml(shareUrl)}">🔗 <strong>Enlace directo copiado:</strong> <code>${escapeHtml(shareUrl)}</code></div>`;
       }
     } else if (shareBtnId === "btnVerifyEd25519Signature") {
       const manifest = await dataLayer.loadManifest();
-      const merkleObj =
-        typeof dataLayer.loadMerkleRoot === "function" ? await dataLayer.loadMerkleRoot() : null;
+      const merkleObj = typeof dataLayer.loadMerkleRoot === "function" ? await dataLayer.loadMerkleRoot() : null;
       const receipt = verifyManifestAndMerkleAudit({
         manifest,
         merkleRootHex: merkleObj?.merkleRootHex || "",
@@ -904,11 +804,12 @@ export function bindShareDrawerActionEvents(ctx = {}) {
         chapter: state.chapter,
       });
       const signedPack = resolveSignedPackReceipt(state.lang, state, dataLayer);
+      const wasmMod = dataLayer?.getHydratedWasmModule?.("ekovoz_player_wasm") || null;
       const ed25519Ok = await verifyEd25519ManifestSignatureWebCrypto(
         signedPack.signingMessage,
         signedPack.ed25519SignatureHex,
         signedPack.ed25519PublicKeyHex || SOVEREIGN_ED25519_PUBLIC_KEY_HEX,
-        dataLayer?.getHydratedWasmModule?.("ekovoz_player_wasm") || null,
+        wasmMod,
       );
       if (ed25519Ok) {
         const binaryPack = await resolvePackBytesForVault(packLang, dataLayer);
@@ -921,7 +822,7 @@ export function bindShareDrawerActionEvents(ctx = {}) {
             signatureHex: signedPack.ed25519SignatureHex,
             signingMessage: signedPack.signingMessage,
             publicKeyHex: signedPack.ed25519PublicKeyHex || SOVEREIGN_ED25519_PUBLIC_KEY_HEX,
-            wasmPlayerMod: dataLayer?.getHydratedWasmModule?.("ekovoz_player_wasm") || null,
+            wasmPlayerMod: wasmMod,
           }).catch(() => null);
         }
       }
@@ -933,44 +834,30 @@ export function bindShareDrawerActionEvents(ctx = {}) {
           verseSurface: state.lastNavResult?.chapter?.verses?.[String(state.verse)] || "",
           ed25519Verified: ed25519Ok,
           masterCensus: state.masterCensusSummary || dataLayer?.getHydratedMasterCensusSummary?.() || null,
-          rustTelemetry:
-            state.editorialProfiles?.rust_domain_engines_telemetry ||
-            dataLayer?.getHydratedEditorialProfiles?.()?.rust_domain_engines_telemetry ||
-            null,
+          rustTelemetry: state.editorialProfiles?.rust_domain_engines_telemetry || dataLayer?.getHydratedEditorialProfiles?.()?.rust_domain_engines_telemetry || null,
           uiLocale: state.uiLocale || "es",
         });
         statusPanel.innerHTML =
           `<div class="audit-receipt" data-action="verify-signature" data-verified="${receipt.verified && ed25519Ok}" data-ed25519="${ed25519Ok}" data-merkle-root="${escapeHtml(receipt.merkleRootHex)}">` +
           `🔐 <strong>Auditoría Criptográfica (${escapeHtml(receipt.algorithm)} + Ed25519):</strong> ` +
           `Estado=${receipt.verified && ed25519Ok ? "VERIFICADO" : "PENDIENTE"} · Artefactos=${receipt.artifactsChecked} · ` +
-          `Merkle Root=<code>${escapeHtml(receipt.merkleRootHex.slice(0, 16))}…</code> · ` +
-          `SHA-256=<code>${escapeHtml(receipt.sampleSha256.slice(0, 16))}…</code></div>` +
+          `Merkle Root=<code>${escapeHtml(receipt.merkleRootHex.slice(0, 16))}…</code> · SHA-256=<code>${escapeHtml(receipt.sampleSha256.slice(0, 16))}…</code></div>` +
           baseAttestation;
       }
     }
   };
 
-  for (const shareBtnId of [
-    "btnShareQuine",
-    "btnCopyDirectShareLink",
-    "btnVerifyEd25519Signature",
-  ]) {
+  for (const shareBtnId of ["btnShareQuine", "btnCopyDirectShareLink", "btnVerifyEd25519Signature"]) {
     const sBtn = getEl(shareBtnId, targetDoc);
-    if (sBtn && typeof sBtn.addEventListener === "function") {
-      sBtn.addEventListener("click", async () => {
-        sBtn.setAttribute("data-last-invoked", shareBtnId);
-        await executeGaveta4Action(shareBtnId);
-      });
-    }
+    sBtn?.addEventListener?.("click", async () => {
+      sBtn.setAttribute("data-last-invoked", shareBtnId);
+      await executeGaveta4Action(shareBtnId);
+    });
   }
 
-  const getUserMediaFn =
-    typeof navigator !== "undefined" &&
-      navigator.mediaDevices &&
-      typeof navigator.mediaDevices.getUserMedia === "function"
-      ? navigator.mediaDevices.getUserMedia.bind(navigator.mediaDevices)
-      : null;
-
+  const getUserMediaFn = typeof navigator !== "undefined" && navigator.mediaDevices && typeof navigator.mediaDevices.getUserMedia === "function"
+    ? navigator.mediaDevices.getUserMedia.bind(navigator.mediaDevices)
+    : null;
   bindOpticalCameraAndCadenceController({
     fpsSel: getEl("bibleOpticalFpsSelect", targetDoc),
     camRxBtn: getEl("btnToggleOpticalCameraRx", targetDoc),
@@ -984,38 +871,32 @@ export function bindShareDrawerActionEvents(ctx = {}) {
   });
 
   const relayBtn = getEl("btnOpticalRelayTx", targetDoc);
-  if (relayBtn && typeof relayBtn.addEventListener === "function") {
-    relayBtn.addEventListener("click", () => {
-      state.qrFrameSeq = 0;
-      hydrateShareAndAuditDrawer(targetDoc);
-      const relayDecoderSource =
-        state.lastOpticalRxReport?.decoder &&
-          typeof state.lastOpticalRxReport.decoder.reconstructBytes === "function"
-          ? state.lastOpticalRxReport.decoder
-          : {
-            K: 4,
-            blockSize: 32,
-            isComplete: () => true,
-            reconstructBytes: () =>
-              new TextEncoder().encode(
-                `${state.book}.${state.chapter}.${state.verse} · ${state.lastNavResult?.chapter?.verses?.[String(state.verse)] ||
-                "Relay payload"
-                }`,
-              ),
-          };
-      const relayEncoder = createRelayEncoderFromDecoded(relayDecoderSource, 32);
-      const relayDroplet = relayEncoder.nextDroplet();
-      state.lastRelayEncoder = relayEncoder;
-      const statusPanel = getEl("editorialAuditStatusPanel", targetDoc);
-      if (statusPanel) {
-        statusPanel.setAttribute?.("data-status-visible", "true");
-        statusPanel.setAttribute("data-audit-action", "optical-relay-tx");
-        statusPanel.setAttribute("data-relay-k", String(relayEncoder.K));
-        statusPanel.innerHTML =
-          `<div class="audit-receipt" data-action="optical-relay-tx" data-relay-k="${relayEncoder.K}" data-relay-seq="${relayDroplet.seq}">` +
-          `🔁 <strong>Re-Emisión Relay Iniciada (K=${relayEncoder.K} bloques · Droplet #${relayDroplet.seq}):</strong> Re-codificando los K bloques decodificados con nueva semilla Luby Transform.</div>`;
-      }
-    });
-  }
+  relayBtn?.addEventListener?.("click", () => {
+    state.qrFrameSeq = 0;
+    hydrateShareAndAuditDrawer(targetDoc);
+    const relayDecoderSource =
+      state.lastOpticalRxReport?.decoder && typeof state.lastOpticalRxReport.decoder.reconstructBytes === "function"
+        ? state.lastOpticalRxReport.decoder
+        : {
+          K: 4,
+          blockSize: 32,
+          isComplete: () => true,
+          reconstructBytes: () => new TextEncoder().encode(
+            `${state.book}.${state.chapter}.${state.verse} · ${state.lastNavResult?.chapter?.verses?.[String(state.verse)] || "Relay payload"}`,
+          ),
+        };
+    const relayEncoder = createRelayEncoderFromDecoded(relayDecoderSource, 32);
+    const relayDroplet = relayEncoder.nextDroplet();
+    state.lastRelayEncoder = relayEncoder;
+    const statusPanel = getEl("editorialAuditStatusPanel", targetDoc);
+    if (statusPanel) {
+      statusPanel.setAttribute?.("data-status-visible", "true");
+      statusPanel.setAttribute("data-audit-action", "optical-relay-tx");
+      statusPanel.setAttribute("data-relay-k", String(relayEncoder.K));
+      statusPanel.innerHTML =
+        `<div class="audit-receipt" data-action="optical-relay-tx" data-relay-k="${relayEncoder.K}" data-relay-seq="${relayDroplet.seq}">` +
+        `🔁 <strong>Re-Emisión Relay Iniciada (K=${relayEncoder.K} bloques · Droplet #${relayDroplet.seq}):</strong> Re-codificando los K bloques decodificados con nueva semilla Luby Transform.</div>`;
+    }
+  });
   return executeGaveta4Action;
 }

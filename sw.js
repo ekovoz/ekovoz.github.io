@@ -43,6 +43,7 @@ const SHELL_CORE_ASSETS = [
   "/mostrador/drawer_print.js",
   "/mostrador/drawer_workshop.js",
   "/mostrador/drawer_workshop_cards.js",
+  "/mostrador/workshop_audit_and_langs.js",
   "/mostrador/workshop_overlay_store.js",
   "/mostrador/drawer_share.js",
   "/mostrador/drawer_share_optical_controller.js",

@@ -26,7 +26,6 @@ import {
   buildPatchPayload,
   computeWalSnapshotRollbackPreview,
   hydrateFieldWorkshopData,
-  renderStpDraftCheckHtml,
   renderStpLexiconExplorerHtml,
   renderStpLexiconResultsRowsHtml,
 } from "./mejorar.js";
@@ -36,8 +35,12 @@ import {
 } from "./mejorar_locks_pda.js";
 import { computeEcoPackCrc32Hex } from "./offline_mesh.js";
 import { resolveActiveWorkDrawerContext } from "./projection_contract.js";
-import { parseBiblicalCoordinateReference } from "./reference.js";
 import { projectSurfaceLayoutFromState } from "./surface_compositor.js";
+import {
+  createWorkshopAuditHandlers,
+  deriveVerseLockAnchors,
+  renderWorkshopAuditSubtabHtml,
+} from "./workshop_audit_and_langs.js";
 import {
   OVERLAY_AUTHORITY_LOCAL_SELF_SIGNED,
   OVERLAY_AUTHORITY_MAINTAINER_ED25519,
@@ -72,105 +75,6 @@ export {
   resolveVerseWithOverlay
 };
 export const HAREL_WORKSHOP_SUBTABS = ["patch", "ladder", "audit"];
-
-const COMBINING_DIACRITICS_REGEX = /[\u0300-\u036f\u0591-\u05c7\u064b-\u065f\u0670]/g;
-
-function foldConsonants(s) {
-  const clean = String(s || "")
-    .normalize("NFKC")
-    .normalize("NFD")
-    .replace(COMBINING_DIACRITICS_REGEX, "")
-    .normalize("NFC")
-    .toLowerCase()
-    .replace(/[^\p{L}\p{N}]/gu, "");
-  return /^[a-z0-9]+$/.test(clean) ? clean.replace(/[aeiou]/g, "") : clean;
-}
-
-function findSurfaceAnchorToken(surfaceStr, rowCandidates, allowCognateMatch) {
-  const raw = String(surfaceStr || "");
-  const rawLow = raw.toLowerCase();
-  for (const cand of rowCandidates) {
-    const clean = String(cand || "").trim();
-    const minLen = /^[a-z0-9]+$/i.test(clean) ? 3 : 2;
-    if (clean.length >= minLen && rawLow.includes(clean.toLowerCase())) {
-      return clean;
-    }
-  }
-  if (!allowCognateMatch || !raw) return "";
-  const surfWords = raw.split(/[\s,.;:!?()«»“”"'‖]+/).filter((w) => w.length >= 2);
-  for (const cand of rowCandidates) {
-    const candSkel = foldConsonants(cand);
-    const minLen = /^[a-z0-9]+$/.test(candSkel) ? 3 : 2;
-    if (candSkel.length < minLen) continue;
-    for (const sw of surfWords) {
-      const swSkel = foldConsonants(sw);
-      if (swSkel.length >= minLen && (swSkel === candSkel || swSkel.includes(candSkel) || candSkel.includes(swSkel))) {
-        return sw;
-      }
-    }
-  }
-  return "";
-}
-
-function deriveVerseLockAnchors(state, oldSurfStr = "") {
-  const verseNum = Number(state?.verse);
-  const rawRows = Array.isArray(state?.lastNavResult?.matrix?.rows)
-    ? state.lastNavResult.matrix.rows
-    : [];
-  const verseMatrixRows = rawRows.filter((r) => {
-    if (!r) return false;
-    const vVal = Array.isArray(r) ? r[0] : (r.verse ?? r.v);
-    return Number(vVal) === verseNum;
-  });
-  const derivedProperNouns = [];
-  let derivedAgent = "";
-  let derivedPatient = "";
-  const activeLang = String(state?.lang || "").toLowerCase();
-  const isVernacularBridge = activeLang !== "es" && activeLang !== "en";
-  for (const r of verseMatrixRows) {
-    const isArr = Array.isArray(r);
-    const morphTag = String(isArr ? (r[4] ?? "") : (r.morph ?? r.c06_morph ?? ""));
-    const domLn = String(isArr ? (r[5] ?? "") : (r.domain ?? r.c07 ?? ""));
-    const realiaC14 = String(isArr ? (r[12] ?? "") : (r.realia ?? r.c14 ?? r.realia_c14 ?? ""));
-    const glossCandidates = [
-      String(isArr ? (r[1] ?? "") : (r.surface ?? r.c03_surface ?? "")).trim(),
-      String(isArr ? (r[6] ?? "") : (r.gloss_en ?? r.c08_gloss_en ?? "")).trim(),
-      String(isArr ? (r[7] ?? "") : (r.gloss_es ?? r.c09_gloss_es ?? "")).trim(),
-      String(isArr ? (r[14] ?? "") : (r.translit ?? r.c06_translit ?? "")).trim(),
-    ].filter(Boolean);
-    const isProperRow =
-      /(?:^|[\/\-H])Np\b|\b(?:NP|PRI|PROP)\b/.test(morphTag) ||
-      /\bLN:93\./i.test(domLn) ||
-      /\b(?:ONO-[A-Z0-9-]+|PER-[0-9]+|LOC-[0-9]+|ONOMASTICON:PROPER_DESIGNATOR)\b/i.test(realiaC14);
-    const matchedTok = findSurfaceAnchorToken(
-      oldSurfStr,
-      glossCandidates,
-      isVernacularBridge && isProperRow,
-    );
-    if (matchedTok) {
-      if (isProperRow && !derivedProperNouns.includes(matchedTok)) {
-        derivedProperNouns.push(matchedTok);
-      }
-      const clauseCol = isArr ? (r[8] ?? "") : (r.clause ?? r.c10_clause ?? "");
-      const pragCol = isArr ? (r[10] ?? "") : (r.prag ?? r.c12_prag ?? "");
-      const roleTag = `${clauseCol} ${pragCol}`.toUpperCase();
-      if (!derivedAgent && /\b(?:SUBJ|AG|A0|A0_AGENT)\b/.test(roleTag)) {
-        derivedAgent = matchedTok;
-      } else if (!derivedPatient && /\b(?:OBJ|PAT|A1|A1_PATIENT)\b/.test(roleTag)) {
-        derivedPatient = matchedTok;
-      }
-    }
-  }
-  const expectedProperNouns =
-    Array.isArray(state?.expectedProperNouns) && state.expectedProperNouns.length > 0
-      ? state.expectedProperNouns
-      : derivedProperNouns;
-  return {
-    expectedProperNouns,
-    expectedAgent: state?.expectedAgent || derivedAgent,
-    expectedPatient: state?.expectedPatient || derivedPatient,
-  };
-}
 
 /**
  * Hidrata la Gaveta 3 (Taller de Campo + Escalera CELF 250 + Auditoría CRDT/Censo) (`D4-R41` / `D3-R38` / `D10-R38`).
@@ -336,45 +240,10 @@ export async function hydrateImproveDrawerPanel(ctx = {}) {
   const renderAuditSubtabPanels = () => {
     const tallerHost = getEl("tallerArtifactsCatalog", targetDoc);
     if (!tallerHost) return;
-    const draftOpts = {
-      ...(Array.isArray(state.topUncertaintyQueue) && state.topUncertaintyQueue.length > 0
-        ? { uncertaintyQueue: state.topUncertaintyQueue }
-        : {}),
-      lang: state.lang,
-    };
-    const rawDraftHtml =
-      String(state.lang || "").toLowerCase() === "stp"
-        ? typeof mod.renderStpDraftCheckHtml === "function"
-          ? mod.renderStpDraftCheckHtml(draftOpts)
-          : renderStpDraftCheckHtml(draftOpts)
-        : "";
-    const sanitizedDraftHtml = String(rawDraftHtml || "")
-      .replace(/<!doctype[^>]*>/gi, "")
-      .replace(/<head\b[^>]*>[\s\S]*?<\/head>/gi, "")
-      .replace(/<title\b[^>]*>[\s\S]*?<\/title>/gi, "")
-      .replace(/<\/?(?:html|body|meta)[^>]*>/gi, "");
-    const relocatedAuditHtml =
-      typeof mod.renderWorkshopAuditPanelsHtml === "function"
-        ? mod.renderWorkshopAuditPanelsHtml({
-          lang: state.lang,
-          uiLocale: state.uiLocale || "es",
-          uqPage: state.uncertaintyQueuePage || 1,
-          externalAuditText: state.externalAuditText || "",
-          externalAuditResult: state.externalAuditResult || null,
-          activeTier3aPair: state.activeTier3aPair || "",
-        })
-        : "";
-    const catalogHtml =
-      typeof mod.renderTallerArtifactsCatalogHtml === "function"
-        ? mod.renderTallerArtifactsCatalogHtml({
-          lang: state.lang,
-          includeCensusCard: true,
-          includeEightLocksBar: false,
-          masterCensusSummary: state.masterCensusSummary || null,
-          uiLocale: state.uiLocale || "es",
-        })
-        : "";
-    tallerHost.innerHTML = relocatedAuditHtml + catalogHtml + sanitizedDraftHtml;
+    tallerHost.innerHTML = renderWorkshopAuditSubtabHtml({
+      mod,
+      state,
+    });
   };
   state.refreshWorkshopAuditSubtab = renderAuditSubtabPanels;
   renderAuditSubtabPanels();
@@ -956,90 +825,15 @@ export function bindImproveFormControlsInDrawer(mod, ctx = {}) {
     });
   }
 
-  const onAuditChange = async (e) => {
-    const targetId = e?.target?.id || "";
-    if (targetId === "externalAuditTextInput") {
-      state.externalAuditText = String(e.target.value ?? "");
-      return;
-    }
-    if (targetId === "externalAuditFileInput") {
-      const file = e?.target?.files?.[0];
-      if (!file || typeof file.text !== "function") return;
-      const rawDraft = await file.text();
-      state.externalAuditText = rawDraft;
-      state.externalAuditResult = runClientExternalAudit8Locks({
-        rawText: rawDraft,
-        oldSurface: oldInput?.value || "",
-      });
-      state.refreshWorkshopAuditSubtab?.();
-      (state.refreshPatchPreview || refreshPatchPreview)();
-    }
-  };
-  const onAuditClick = async (e) => {
-    const uqPageBtn = e?.target?.closest
-      ? e.target.closest("[data-uq-page]")
-      : e?.target?.getAttribute?.("data-uq-page")
-        ? e.target
-        : null;
-    const uqPageVal = uqPageBtn?.getAttribute?.("data-uq-page");
-    if (uqPageVal !== null && uqPageVal !== undefined) {
-      state.uncertaintyQueuePage = Math.max(1, Number(uqPageVal) || 1);
-      state.refreshWorkshopAuditSubtab?.();
-      (state.refreshPatchPreview || refreshPatchPreview)();
-      return true;
-    }
-    const tier3aBtn = e?.target?.closest
-      ? e.target.closest("[data-tier3a-pair]")
-      : e?.target?.getAttribute?.("data-tier3a-pair")
-        ? e.target
-        : null;
-    const tier3aKey = tier3aBtn?.getAttribute?.("data-tier3a-pair");
-    if (tier3aKey) {
-      state.activeTier3aPair = state.activeTier3aPair === tier3aKey ? "" : tier3aKey;
-      state.refreshWorkshopAuditSubtab?.();
-      (state.refreshPatchPreview || refreshPatchPreview)();
-      return true;
-    }
-    const runAuditBtn = e?.target?.closest
-      ? e.target.closest("#btnRunExternalAudit")
-      : e?.target?.id === "btnRunExternalAudit"
-        ? e.target
-        : null;
-    if (runAuditBtn) {
-      const auditInput = getEl("externalAuditTextInput", targetDoc);
-      const rawDraft = String(auditInput?.value ?? state.externalAuditText ?? "");
-      state.externalAuditText = rawDraft;
-      state.externalAuditResult = runClientExternalAudit8Locks({
-        rawText: rawDraft,
-        oldSurface: oldInput?.value || "",
-      });
-      state.refreshWorkshopAuditSubtab?.();
-      (state.refreshPatchPreview || refreshPatchPreview)();
-      return true;
-    }
-    const jumpOsisBtn = e?.target?.closest
-      ? e.target.closest("[data-jump-osis]")
-      : e?.target?.getAttribute?.("data-jump-osis")
-        ? e.target
-        : null;
-    const jumpOsisRef = jumpOsisBtn?.getAttribute?.("data-jump-osis");
-    if (jumpOsisRef) {
-      const parsedJump = parseBiblicalCoordinateReference(jumpOsisRef);
-      if (parsedJump && parsedJump.bookCode) {
-        await navigate(
-          {
-            book: parsedJump.bookCode,
-            chapter: parsedJump.chapter || 1,
-            verse: parsedJump.verse || 1,
-          },
-          targetDoc,
-        );
-        hydrateBookAndChapterSelectors(targetDoc);
-      }
-      return true;
-    }
-    return false;
-  };
+  const { onAuditChange, onAuditClick } = createWorkshopAuditHandlers({
+    state,
+    targetDoc,
+    getEl,
+    oldInput,
+    refreshPatchPreview,
+    navigate,
+    hydrateBookAndChapterSelectors,
+  });
   const tallerAuditEl = getEl("tallerArtifactsCatalog", targetDoc);
   if (tallerAuditEl && typeof tallerAuditEl.addEventListener === "function" && !tallerAuditEl._auditPanelsBound) {
     tallerAuditEl._auditPanelsBound = true;
@@ -1080,13 +874,13 @@ export function bindImproveFormControlsInDrawer(mod, ctx = {}) {
           : null;
       const nextEntropyRef = entropyBtn?.getAttribute?.("data-next-entropy-ref");
       if (nextEntropyRef) {
-        const parsedEnt = parseBiblicalCoordinateReference(nextEntropyRef);
-        if (parsedEnt && parsedEnt.bookCode) {
+        const mEnt = String(nextEntropyRef).trim().match(/^([A-Z0-9]+)\.(\d+)(?:\.(\d+))?/i);
+        if (mEnt) {
           await navigate(
             {
-              book: parsedEnt.bookCode,
-              chapter: parsedEnt.chapter || 1,
-              verse: parsedEnt.verse || 1,
+              book: mEnt[1].toUpperCase(),
+              chapter: Number(mEnt[2]) || 1,
+              verse: Number(mEnt[3]) || 1,
             },
             targetDoc,
           );
@@ -1101,13 +895,13 @@ export function bindImproveFormControlsInDrawer(mod, ctx = {}) {
           : null;
       const ladderRef = rungBtn?.getAttribute?.("data-ladder-ref");
       if (ladderRef) {
-        const parsed = parseBiblicalCoordinateReference(ladderRef);
-        if (parsed && parsed.bookCode) {
+        const mRng = String(ladderRef).trim().match(/^([A-Z0-9]+)\.(\d+)(?:\.(\d+))?/i);
+        if (mRng) {
           await navigate(
             {
-              book: parsed.bookCode,
-              chapter: parsed.chapter || 1,
-              verse: parsed.verse || 1,
+              book: mRng[1].toUpperCase(),
+              chapter: Number(mRng[2]) || 1,
+              verse: Number(mRng[3]) || 1,
             },
             targetDoc,
           );

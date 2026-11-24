@@ -10,6 +10,7 @@ import {
   SURFACE_SLOT_MANIFEST,
   projectStoreAttributesToDom,
   resolveActiveWorkDrawerContext,
+  resolveWorkDrawerAdapter,
   syncStickyDrawerContextHeader,
 } from "./projection_contract.js";
 import {
@@ -21,8 +22,26 @@ import {
 } from "./state_store.js";
 
 /**
+ * Monta de forma atomica una vista dentro de su contenedor asignado (`D1-R10`),
+ * garantizando un unico dueno por ranura, orden determinista y cero inserciones paralelas huerfanas.
+ */
+export function mountSlotView(containerEl, { html = "", ownerId = "", orderIndex = null } = {}) {
+  if (!containerEl) return false;
+  if (typeof containerEl.setAttribute === "function") {
+    if (ownerId) containerEl.setAttribute("data-slot-owner", String(ownerId));
+    if (Number.isFinite(Number(orderIndex))) {
+      containerEl.setAttribute("data-slot-order", String(Number(orderIndex)));
+    }
+  }
+  if (typeof html === "string") {
+    containerEl.innerHTML = html;
+  }
+  return true;
+}
+
+/**
  * Proyecta de forma sustractiva el manifiesto `(activeWork, activeSheet, activeSubtab)`
- * marcando la única ranura primaria sobre el pliegue sin acumular duplicados (`D1-R9`).
+ * gobernando orden, dueno de ranura y adaptador de obra sin acumular duplicados (`D1-R10`, `D11-R10`).
  */
 export function enforceSubtractiveSlotOwnership(state = {}, resolveEl) {
   const normalizedSheet = state.activeSheet === "improve" ? "field" : state.activeSheet || null;
@@ -33,22 +52,36 @@ export function enforceSubtractiveSlotOwnership(state = {}, resolveEl) {
   const slotKey = normalizedSheet && activeSubtab ? `${normalizedSheet}:${activeSubtab}` : "";
   const spec = slotKey ? SURFACE_SLOT_MANIFEST[slotKey] || null : null;
   const workCtx = resolveActiveWorkDrawerContext(state);
+  const workAdapter = resolveWorkDrawerAdapter(state);
   if (typeof resolveEl === "function") {
     const drawersHost = resolveEl("sovereignGlobalDrawersHost");
     if (drawersHost && typeof drawersHost.setAttribute === "function") {
       drawersHost.setAttribute("data-active-work", workCtx.activeWork);
       drawersHost.setAttribute("data-primary-slot", spec ? spec.primary : "");
+      drawersHost.setAttribute("data-work-print-mode", workAdapter.printMode);
+      drawersHost.setAttribute("data-work-share-target", workAdapter.shareTarget);
     }
     if (spec && spec.primary) {
       const primaryEl = resolveEl(spec.primary);
       primaryEl?.setAttribute?.("data-slot-role", "primary");
+      primaryEl?.setAttribute?.("data-slot-order", "0");
+    }
+    if (spec && Array.isArray(spec.slotOrder)) {
+      spec.slotOrder.forEach((slotId, idx) => {
+        const slotEl = resolveEl(slotId);
+        if (slotEl && typeof slotEl.setAttribute === "function") {
+          slotEl.setAttribute("data-slot-order", String(idx));
+        }
+      });
     }
   }
   return {
     activeWork: workCtx.activeWork,
+    workAdapter,
     slotKey,
     primarySlot: spec ? spec.primary : null,
     collapsibleCount: spec ? spec.collapsibles.length : 0,
+    slotOrder: spec?.slotOrder || [],
   };
 }
 

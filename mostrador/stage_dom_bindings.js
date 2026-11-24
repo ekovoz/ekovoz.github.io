@@ -805,7 +805,7 @@ export function bindStageDomEvents(ctx = {}) {
   for (const [sheetKey, cfg] of Object.entries(HAREL_SHEET_MAP)) {
     const btn = getEl(cfg.buttonId, targetDoc);
     if (btn && typeof btn.addEventListener === "function") {
-      btn.addEventListener("click", () => transitionSheet(sheetKey, targetDoc));
+      btn.addEventListener("click", () => transitionSheet(sheetKey, targetDoc, { fromUser: true }));
     }
   }
 

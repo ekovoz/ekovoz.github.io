@@ -222,13 +222,15 @@
   }
 
   .focal-plate-frame {
-    width: 100%;
-    min-height: 220px;
-    aspect-ratio: 4 / 3;
-    max-height: 360px;
-    background: var(--focal-frame-bg);
+    width: fit-content;
+    max-width: 100%;
+    min-height: 0;
+    aspect-ratio: auto;
+    max-height: none;
+    margin: 0 auto;
+    background: var(--card-bg);
     border: 1px solid var(--focal-frame-border);
-    border-radius: 16px;
+    border-radius: 16px 16px 0 0;
     overflow: hidden;
     position: relative;
     cursor: zoom-in;
@@ -241,28 +243,16 @@
 
   .felices-localized-plate-card {
     width: 100%;
-    height: 100%;
+    min-height: 220px;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     text-align: center;
-    padding: 1.1rem 1.25rem 4.25rem;
+    padding: 1.1rem 1.25rem;
     gap: 0.55rem;
     background: linear-gradient(155deg, var(--accent-secondary-bg), var(--card-bg));
     color: var(--text-primary);
-  }
-
-  .felices-localized-plate-glyph {
-    width: 56px;
-    height: 56px;
-    opacity: 0.9;
-  }
-
-  .felices-localized-plate-title {
-    font-size: 1.05rem;
-    font-weight: 700;
-    line-height: 1.3;
   }
 
   .felices-localized-plate-verse {
@@ -278,8 +268,10 @@
   }
 
   .focal-plate-frame img {
-    width: 100%;
-    height: 100%;
+    width: auto;
+    max-width: 100%;
+    height: auto;
+    max-height: 520px;
     object-fit: contain;
     display: block;
     user-select: none;
@@ -287,17 +279,18 @@
   }
 
   .focal-plate-overlay {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
+    position: static;
+    width: 100%;
+    box-sizing: border-box;
     background: rgba(20, 18, 16, 0.94);
-    border-top: 1px solid rgba(255, 255, 255, 0.18);
+    border: 1px solid var(--focal-frame-border);
+    border-top: none;
+    border-radius: 0 0 14px 14px;
     color: #ffffff;
-    padding: 0.75rem 1rem;
+    padding: 0.7rem 1rem;
     display: flex;
     justify-content: space-between;
-    align-items: flex-end;
+    align-items: center;
     gap: 0.75rem;
     text-align: left;
   }
@@ -408,14 +401,6 @@
     transform: scale(0.97);
   }
 
-  .language-wrapper {
-    margin: 1.15rem 0 1.5rem 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.45rem;
-  }
-
   .uls-trigger-btn {
     background: var(--accent-secondary-bg);
     border: 1px solid var(--accent-secondary-border);
@@ -451,16 +436,19 @@
   }
 
   .actions-group {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: 1fr;
     gap: 0.9rem;
     margin-top: 0.5rem;
   }
 
   @media (min-width: 520px) {
     .actions-group {
-      flex-direction: row;
-      justify-content: center;
+      grid-template-columns: 1fr 1fr;
+      align-items: stretch;
+    }
+    .actions-group > div {
+      display: flex;
     }
   }
 
@@ -559,35 +547,6 @@
 
   .fold-guide-trigger:hover {
     color: var(--accent-amber);
-  }
-
-  .optical-trigger {
-    background: transparent;
-    border: 1px solid rgba(146, 64, 14, 0.3);
-    color: var(--accent-amber);
-    padding: 0.65rem 1.1rem;
-    border-radius: 9999px;
-    font-size: 0.85rem;
-    font-weight: 500;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin-top: 1.35rem;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    font-family: inherit;
-  }
-
-  .optical-trigger:hover {
-    background: var(--badge-bg);
-    border-color: var(--accent-amber);
-    transform: translateY(-1px);
-  }
-
-  .optical-trigger svg {
-    width: 17px;
-    height: 17px;
-    flex-shrink: 0;
   }
 
   .offline-badge {
@@ -1296,6 +1255,10 @@
       padding: 0;
     }
 
+    body[data-intent="read"] {
+      padding-bottom: 5.5rem;
+    }
+
     body[data-intent="read"] .site-footer,
     body[data-intent="read"] #bibleVerseViewport,
     body[data-intent="read"] #felicesSovereignSection,
@@ -1304,8 +1267,8 @@
     }
 
     body[data-intent="read"] #felicesSovereignSection .focal-plate-frame {
-      max-height: 250px;
-      min-height: 190px;
+      max-height: none;
+      min-height: 0;
     }
 
     body[data-intent="read"] #felicesSovereignSection .focal-viewer {
@@ -2679,6 +2642,46 @@
   .uls-badge[data-syllable-index]:not(.is-active-syllable) {
     opacity: 0.8;
   }
+
+  @media (min-width: 1024px) {
+    #bibleVerseViewport:not(.is-bilingual) {
+      max-width: 68ch;
+      margin-inline: auto;
+    }
+  }
+
+  .evangelios-reading-body {
+    text-align: left;
+  }
+
+  .evangelios-reading-body .evangelios-stage-card-header {
+    text-align: center;
+  }
+
+  a.uls-chip,
+  a.btn-card,
+  a.btn-modal-secondary {
+    text-decoration: none;
+  }
+
+  .hig-toggle-row > input[type="checkbox"] { width: 32px; height: 32px; min-width: 32px; min-height: 32px; margin: 0; accent-color: var(--accent-primary); }
+  @media (max-width: 1023px) {
+    .hig-toggle-row > input[type="checkbox"] { width: 48px; height: 48px; min-width: 48px; min-height: 48px; }
+    body[data-mobile-sheet-open="true"] #sovereignGlobalDrawersHost .apple-sheet:not([hidden]) { margin-top: 0.25rem; padding: 0.55rem 0.65rem; }
+    #sovereignGlobalDrawersHost .subtabs-bar { margin-bottom: 0.35rem; gap: 0.25rem; }
+    #shareAuthenticityUnifiedCard { padding: 0.45rem 0.55rem; }
+    #editorialAuditStatusPanel { margin-top: 0.3rem; }
+    #editorialAuditStatusPanel .editorial-attestation-receipt { padding: 0.4rem 0.5rem; gap: 0.25rem; }
+    #editorialAuditStatusPanel .editorial-attestation-receipt .uls-badge { font-size: 0.72rem; padding: 0.15rem 0.4rem; }
+  }
+  .ek-form-pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.5rem; }
+  @media (max-width: 480px) { .ek-form-pair { grid-template-columns: 1fr; } }
+  .ek-textarea-full { width: 100%; box-sizing: border-box; }
+  .sr-only-file-input { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+  .ek-file-picker-btn { position: relative; cursor: pointer; display: inline-flex; align-items: center; gap: 0.35rem; }
+  .photocopy-segmented-bar { display: flex; flex-wrap: nowrap; overflow-x: auto; gap: 0.25rem; }
+  .photocopy-seg-btn { flex: 1 0 auto; font-size: 0.76rem; padding: 0.28rem 0.5rem; }
+  .vault-pack-row.is-matrix-highlight { border-color: var(--accent-amber); background: var(--badge-bg); }
 }
 
 @layer states {

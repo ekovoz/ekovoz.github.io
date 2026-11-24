@@ -115,8 +115,8 @@
                 aria-label="Increase text size">A+</button>
             <div id="bibleRegisterSelector" class="register-selector-group ek-row-wrap ek-divider-top" role="group"
                 aria-label="Reading Mode">
-                <button type="button" id="btnRegIntergeneracional" class="uls-chip"
-                    data-register="intergeneracional" data-i18n="mostrador.register.intergenerational">🕊️ Clear
+                <button type="button" id="btnRegIntergeneracional" class="uls-chip" data-register="intergeneracional"
+                    data-i18n="mostrador.register.intergenerational">🕊️ Clear
                     contemporary reading</button>
                 <button type="button" id="btnRegClasica" class="uls-chip" data-register="clasica"
                     data-i18n="mostrador.register.classic">📜 Classic tradition
@@ -124,8 +124,8 @@
                 <button type="button" id="btnRegBilingue" class="uls-chip" data-register="bilingue"
                     data-i18n="mostrador.register.bilingual">👥 Side-by-side
                     bilingual (62/38)</button>
-                <button type="button" id="toggleRollMode" class="uls-chip"
-                    data-i18n="mostrador.register.roll_toggle">📄 Page view ↔
+                <button type="button" id="toggleRollMode" class="uls-chip" data-i18n="mostrador.register.roll_toggle">📄
+                    Page view ↔
                     Continuous scroll</button>
             </div>
             <div class="ek-row-wrap ek-divider-top" role="group" aria-label="App Interface Language">
@@ -174,11 +174,13 @@
                 <div id="corpusWorkLanguagesBar" class="chip-wrap-row ek-mb-sm" role="group"
                     aria-label="Sister Work Editions (Evangelios and Felices)">
                     <button type="button" id="quickWorkLangGn" class="uls-chip" data-i18n-autonym="true"
-                        data-corpus-lang="gn" data-work-scope="evangelios">🇵🇾 Avañe'ẽ Guaraní (gn · Evangelios)</button>
+                        data-corpus-lang="gn" data-work-scope="evangelios">🇵🇾 Avañe'ẽ Guaraní (gn ·
+                        Evangelios)</button>
                     <button type="button" id="quickWorkLangQuc" class="uls-chip" data-i18n-autonym="true"
                         data-corpus-lang="quc" data-work-scope="evangelios">🇬🇹 K'iche' (quc · Evangelios)</button>
                     <button type="button" id="quickWorkLangBnBd" class="uls-chip" data-i18n-autonym="true"
-                        data-corpus-lang="bn-BD" data-work-scope="felices">🇧🇩 বাংলা বাংলাদেশ (bn-BD · Felices)</button>
+                        data-corpus-lang="bn-BD" data-work-scope="felices">🇧🇩 বাংলা বাংলাদেশ (bn-BD ·
+                        Felices)</button>
                     <button type="button" id="quickWorkLangBnIn" class="uls-chip" data-i18n-autonym="true"
                         data-corpus-lang="bn-IN" data-work-scope="felices">🇮🇳 বাংলা ভারত (bn-IN · Felices)</button>
                 </div>
@@ -238,6 +240,7 @@
                     </div>
                     <div class="ek-mt-sm">
                         <input type="search" id="quickLangFilterInput" class="field-search-input"
+                            data-i18n-attr="placeholder:corpus.search.placeholder"
                             placeholder="Search 7,164 languages (ISO, autonym, country)...">
                     </div>
                     <div id="bibleGeoFunnel" class="geo-funnel-row" aria-label="Geographic 3-Tap Funnel">
@@ -532,12 +535,12 @@
                 <div class="focal-plate-frame" id="focalPlateFrame" role="button" tabindex="0"
                     title="View high-resolution plate">
                     <img id="focalPlateImg" src="assets/felices/plates/24.jpg" alt="Coloring plate">
-                    <div class="focal-plate-overlay">
-                        <span class="focal-plate-verse" id="focalPlateVerse">«…for so they persecuted the prophets who
-                            were before you» (Mt 5:12b)</span>
-                        <span class="focal-plate-zoom-hint" id="focalPlateZoomHint">🔍 <span id="focalPlateZoomHintText"
-                                data-i18n="felices.zoomHint">Tap to zoom</span></span>
-                    </div>
+                </div>
+                <div class="focal-plate-overlay">
+                    <span class="focal-plate-verse" id="focalPlateVerse">«…for so they persecuted the prophets who
+                        were before you» (Mt 5:12b)</span>
+                    <span class="focal-plate-zoom-hint" id="focalPlateZoomHint">🔍 <span id="focalPlateZoomHintText"
+                            data-i18n="felices.zoomHint">Tap to zoom</span></span>
                 </div>
                 <div class="focal-controls">
                     <button type="button" class="focal-btn" aria-label="Previous plate" id="btnPrevPlate"
@@ -689,7 +692,8 @@
                 <summary data-i18n="study.acc.ubs">⚖️ UBS 6 Bicanonical Traditions</summary>
                 <div id="studyUbsComparatorHost"></div>
             </details>
-            <details id="studyOnomasticonAccordion" class="r9-stratum-accordion" data-study-subtab-panel="rosetta" hidden>
+            <details id="studyOnomasticonAccordion" class="r9-stratum-accordion" data-study-subtab-panel="rosetta"
+                hidden>
                 <summary data-i18n="study.acc.onomasticon">🧭 Onomasticon (3,657 Proper Names)</summary>
                 <div id="studyOnomasticonExplorerHost"></div>
             </details>
@@ -697,7 +701,8 @@
                 <summary data-i18n="study.acc.realia">🏺 Cultural Realia &amp; Metrology (1,800)</summary>
                 <div id="realiaMetrologyStratumCard"></div>
             </details>
-            <details id="studyTskFormulaicAccordion" class="r9-stratum-accordion" data-study-subtab-panel="rosetta" hidden>
+            <details id="studyTskFormulaicAccordion" class="r9-stratum-accordion" data-study-subtab-panel="rosetta"
+                hidden>
                 <summary data-i18n="study.acc.tskFormulaic">🔗 Cross-Refs TSK &amp; OT↔NT Formulaic Parallels</summary>
                 <div id="studyFormulaicParallelsHost"></div>
                 <div id="tskCrossRefsStratumCard"></div>
@@ -723,7 +728,8 @@
                 <div id="rosettaExplorerResultsRows" role="region" aria-live="polite"></div>
             </div>
             <div id="bibleAnalyticalThermometerPanel" data-study-subtab-panel="calibrate" hidden></div>
-            <details id="studyOrthographyAccordion" class="r9-stratum-accordion" data-study-subtab-panel="calibrate" hidden>
+            <details id="studyOrthographyAccordion" class="r9-stratum-accordion" data-study-subtab-panel="calibrate"
+                hidden>
                 <summary data-i18n="study.acc.orthography">✍️ Conditional Orthography &amp; Scriptio Continua</summary>
                 <div id="wfstAndScriptioContinuaHost"></div>
             </details>
@@ -734,7 +740,8 @@
                     substitutions in this chapter</summary>
                 <div id="diachronicRegisterAuditPanel"></div>
             </details>
-            <details id="studyTypologyAccordion" class="r9-stratum-accordion" data-study-subtab-panel="calibrate" hidden>
+            <details id="studyTypologyAccordion" class="r9-stratum-accordion" data-study-subtab-panel="calibrate"
+                hidden>
                 <summary data-i18n="study.acc.typology">🌍 Linguistic Typology &amp; Branches (12 / 16)</summary>
                 <div id="bibleBranchAndTypologyPanel"></div>
             </details>
@@ -796,6 +803,11 @@
                     data-i18n="print.btn.cssPagedMedia">🖨️ Print from browser</button>
             </div>
             <div id="tanda-offline-font-notice" class="tanda-offline-notice" role="status" hidden></div>
+            <div id="tandaWorkerProgressWrap" class="ek-mt-xs" data-print-subtab-panel="doses" hidden>
+                <progress id="tandaWorkerProgress" max="100" value="0">0%</progress>
+                <span id="tandaWorkerProgressLabel" class="ek-meta"></span>
+            </div>
+            <div id="printFieldPdfsHost" data-print-subtab-panel="doses"></div>
             <div id="bibleEditionsCatalogGrid" data-print-subtab-panel="doses">
             </div>
             <div id="bibleKindleConfigurator" class="kindle-configurator" data-print-subtab-panel="imposition"
@@ -830,10 +842,12 @@
                         Margin + 2-Hole Punch)</option>
                 </select>
                 <label class="hig-toggle-row"><input type="checkbox" id="kindleDuplexToggle" checked> <span
-                        data-i18n="dose.1.duplex_label">Double-sided printing (duplex)</span></label>
+                        id="kindleDuplexLabelText" data-i18n="dose.1.duplex_label">Double-sided printing
+                        (duplex)</span></label>
                 <output id="kindleBudgetOutput">9.5pt · 2 col · Portrait · A4 (58
                     cpl)</output>
             </div>
+            <div id="printTypologyBridgeHost" data-print-subtab-panel="imposition"></div>
             <div data-print-subtab-panel="imposition">
                 <button type="button" id="btnCalculateImposition" class="uls-chip" data-print-tool="imposition"
                     data-i18n="print.btn.imposition">📐
@@ -936,16 +950,17 @@
                 <summary>🔤 Offline Font Pack (34 TTF / .zst)</summary>
                 <div id="editorialFontPackVaultPanel"></div>
             </details>
-            <div id="shareOpenGraphCardPanel" data-dosis-subtab-panel="graphics" hidden></div>
             <div id="bibleOpticalQrStreamPanel" data-dosis-subtab-panel="pdf" hidden>
             </div>
             <div id="opticalReceiverRxPanel" data-dosis-subtab-panel="pdf" hidden></div>
             <section id="shareAuthenticityUnifiedCard" class="ek-card" data-dosis-subtab-panel="graphics" hidden>
                 <button type="button" id="btnVerifyEd25519Signature" class="uls-chip" data-dosis-subtab-panel="graphics"
                     data-i18n="share.btn.verifySig" hidden>🔐 Verify Authentic Editorial Signature</button>
-                <div id="editorialAuditStatusPanel" data-dosis-subtab-panel="graphics" hidden class="ek-status-panel"></div>
+                <div id="editorialAuditStatusPanel" data-dosis-subtab-panel="graphics" hidden class="ek-status-panel">
+                </div>
                 <div id="editorialProvenanceCardHost" data-dosis-subtab-panel="graphics" hidden></div>
             </section>
+            <div id="shareOpenGraphCardPanel" data-dosis-subtab-panel="graphics" hidden></div>
         </section>
     </section>
 

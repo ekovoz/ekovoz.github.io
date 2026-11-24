@@ -123,15 +123,20 @@ export function renderEditorialGraphicsAndPrintSpecsCard({
   sauvolaK = 0.32,
   uiLocale = "es",
   ttfBytes = null,
+  precomputedActiveSim = null,
+  showHeaderContrastBadge = true,
 } = {}) {
   const isEn = String(uiLocale || "es").trim().toLowerCase().startsWith("en");
   const refLabel = `${String(book || "GEN").toUpperCase()} ${Number(chapter) || 1}:${Number(verse) || 1}`;
   const cleanText = String(text || "En el principio creó Dios los cielos y la tierra.").slice(0, 140);
-  const activeSim = simulateKanungoSauvolaGeneration(activeGen, sauvolaK, 300, {
-    lang,
-    text: cleanText,
-    ttfBytes,
-  });
+  const activeSim =
+    precomputedActiveSim && typeof precomputedActiveSim === "object"
+      ? precomputedActiveSim
+      : simulateKanungoSauvolaGeneration(activeGen, sauvolaK, 300, {
+        lang,
+        text: cleanText,
+        ttfBytes,
+      });
   const fifthGenBilateral = simulateFifthGenPhotocopySauvolaBilateral({
     strokePt: 0.85,
     k: activeSim.sauvolaK,
@@ -139,14 +144,13 @@ export function renderEditorialGraphicsAndPrintSpecsCard({
   });
   const generations = [0, 1, 2, 3, 4, 5].map((g) => {
     const defaultK = Number((0.2 + g * 0.024).toFixed(2));
-    const sim = simulateKanungoSauvolaGeneration(
-      g,
-      g === activeSim.genIndex ? activeSim.sauvolaK : defaultK,
-      300,
-      { lang, text: cleanText, ttfBytes },
-    );
+    const sim =
+      g === activeSim.genIndex
+        ? activeSim
+        : simulateKanungoSauvolaGeneration(g, defaultK, 300, { lang, text: cleanText, ttfBytes });
     return {
       gen: g,
+      shortLabel: g === 0 ? "Orig" : `G${g}`,
       label:
         g === 0
           ? "Original 300 DPI"
@@ -166,11 +170,11 @@ export function renderEditorialGraphicsAndPrintSpecsCard({
   const genBadges = generations
     .map(
       (g) =>
-        `<button type="button" class="uls-chip photocopy-gen-btn${g.active ? " is-selected" : ""}" data-photocopy-gen="${g.gen}" data-contrast-ratio="${g.contrast}" data-sauvola-k="${g.sauvolaK}">` +
-        `🖨️ <strong>${g.label}</strong>: ${g.contrast}` +
+        `<button type="button" class="uls-chip photocopy-gen-btn photocopy-seg-btn${g.active ? " is-selected" : ""}" data-photocopy-gen="${g.gen}" data-gen-label="${escHtml(g.label)}" data-contrast-ratio="${g.contrast}" data-sauvola-k="${g.sauvolaK}" title="${escHtml(g.label)}: ${g.contrast}" aria-pressed="${g.active ? "true" : "false"}">` +
+        `<strong>${g.shortLabel}</strong> · ${g.contrast}` +
         `</button>`,
     )
-    .join(" ");
+    .join("");
 
   const stagesBadges = activeSim.stages5
     .map(
@@ -190,6 +194,10 @@ export function renderEditorialGraphicsAndPrintSpecsCard({
     uiLocale,
   });
 
+  const headerStatusHtml = showHeaderContrastBadge
+    ? `<span id="photocopyActiveStatusBadge" class="uls-badge" data-sauvola-pass="true">✅ ${isEn ? `Copy Gen ${activeSim.genIndex} · Contrast` : `Copia Gen. ${activeSim.genIndex} · Contraste`} ${activeSim.contrastLabel} ≥ 7.0:1 AAA</span>`
+    : "";
+
   return (
     `<div id="editorialGraphicsPhotocopyPanel" class="editorial-graphics-photocopy-card" ` +
     `data-photocopy-generations="5" ` +
@@ -201,9 +209,9 @@ export function renderEditorialGraphicsAndPrintSpecsCard({
     `data-social-card-dimensions="${fifthGenBilateral.socialCardDimensions}">` +
     `<div class="photocopy-header-row">` +
     `<strong>🖼️ ${isEn ? "Print Legibility & Photocopy Resilience" : "Legibilidad en Impresión y Fotocopia Rural"}</strong>` +
-    `<span id="photocopyActiveStatusBadge" class="uls-badge" data-sauvola-pass="true">✅ ${isEn ? `Copy Gen ${activeSim.genIndex} · Contrast` : `Copia Gen. ${activeSim.genIndex} · Contraste`} ${activeSim.contrastLabel} ≥ 7.0:1 AAA</span>` +
+    headerStatusHtml +
     `</div>` +
-    `<div class="photocopy-badges-row">${genBadges}</div>` +
+    `<div class="photocopy-badges-row photocopy-segmented-bar" role="group" aria-label="${isEn ? "Photocopy generations" : "Generaciones de fotocopia"}">${genBadges}</div>` +
     `<div class="photocopy-controls-row">` +
     `<label for="inputSauvolaK" class="photocopy-slider-label">🎛️ ${isEn ? `Binarization sensitivity k (${activeSim.sauvolaK.toFixed(2)}):` : `Sensibilidad de copia k (${activeSim.sauvolaK.toFixed(2)}):`}</label>` +
     `<input id="inputSauvolaK" class="photocopy-slider-input" type="range" min="0.15" max="0.40" step="0.01" value="${activeSim.sauvolaK.toFixed(2)}" />` +
