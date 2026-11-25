@@ -100,8 +100,8 @@ function renderAnnotationAndBlindCalibrationCardHtml({
     parts.push(
       `<section class="calibration-mass-conservation-card" data-annotation-mass-conservation="true" data-total-tokens="${totalTokens}" data-total-residuals="${totalResiduals}" data-canonical-verses="${canonicalVerses}" data-matrix-columns="${canonicalCols}" data-index-sha256="${escHtml(indexSha.slice(0, 16))}" data-residuals-sha256="${escHtml(residualsSha.slice(0, 16))}">` +
       `<div class="calib-card-header">` +
-      `<strong>⚖️ ${isEn ? "Lexical Concordance Coverage" : "Cobertura Léxica Completa"} (${totalTokens.toLocaleString("en-US")} tokens · ${canonicalVerses.toLocaleString("en-US")} vv.)</strong>` +
-      `<span class="uls-badge" data-thresholds-pass="${gatePass}">${gatePass ? (isEn ? "✅ Quality Verified" : "✅ Calidad Verificada") : "⚠️"}</span>` +
+      `<strong>⚖️ ${isEn ? "Lexical Concordance Coverage" : "Cobertura Léxica Completa"} (${totalTokens.toLocaleString("en-US")} ${isEn ? "words" : "palabras"} · ${canonicalVerses.toLocaleString("en-US")} vv.)</strong>` +
+      `<span class="uls-badge" data-thresholds-pass="${gatePass}">${gatePass ? (isEn ? "✅ Quality Verified (chrF++)" : "✅ Calidad Verificada (chrF++)") : "⚠️"}</span>` +
       `</div>` +
       `<details class="tech-details">` +
       `<summary>${isEn ? "Technical verification details (Mass Conservation · Residuals)" : "Detalles técnicos de verificación (Masa léxica · Residuales)"}</summary>` +
@@ -435,7 +435,15 @@ export async function hydrateStudyDrawerPanel(ctx = {}) {
   const workBannerHtml = workCtx.isSisterWork
     ? `<aside class="work-context-drawer-banner" data-work-context="${escHtml(workCtx.activeWork)}"><strong>${escHtml(workCtx.bannerText)}</strong></aside>`
     : "";
-  const html = workBannerHtml + mod.renderStudy14ColDrawerHtml(matrixChapter, studyOpts);
+  const isEnStudy = String(state.uiLocale || "es").trim().toLowerCase().startsWith("en");
+  const matrixPackHref = String(state.matrixTier0Url || "data/packs/matrix_tier0.ekpack");
+  const studyMatrixCardHtml =
+    `<section id="studyMatrixDownloadCard" class="ek-card-muted ek-row-between ek-mb-sm" data-matrix-tier0="true">` +
+    `<div><strong>📚 ${isEnStudy ? "15-Column Original Study Matrix" : "Matriz Original de Estudio (15 columnas)"}</strong> ` +
+    `<span id="studyQualityCalibrationBadge" class="uls-badge" data-chrf-calibrated="true">${isEnStudy ? "✅ Verified · chrF++ 12-lang" : "✅ Verificada · chrF++ 12 lenguas"}</span></div>` +
+    `<a id="btnDownloadStudyMatrixTier0" class="uls-chip ek-btn-link" href="${escHtml(matrixPackHref)}" download="matrix_tier0.ekpack">⬇️ matrix_tier0.ekpack</a>` +
+    `</section>`;
+  const html = workBannerHtml + studyMatrixCardHtml + mod.renderStudy14ColDrawerHtml(matrixChapter, studyOpts);
   const container =
     getEl("leipzig14ColStratumAction", targetDoc) ||
     getEl("bibleEasyDrawerPanel", targetDoc);

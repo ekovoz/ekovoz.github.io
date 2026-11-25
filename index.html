@@ -76,7 +76,7 @@
 </head>
 
 <body data-intent="read" data-theme="light" data-font-family="serif" data-stealth-mode="false">
-    <header id="sovereignTopBar" class="top-bar-shell">
+    <header id="sovereignTopBar" class="top-bar-shell site-header">
         <div class="top-bar-row">
             <nav id="sovereignWorkTabs" class="top-bar-work-tabs" role="tablist" aria-label="Editorial Works">
                 <button type="button" id="tabWorkBiblia" class="uls-chip" role="tab" aria-selected="true"
@@ -117,6 +117,41 @@
             <button type="button" id="toggleRollMode" class="uls-chip" data-i18n="mostrador.register.roll_toggle">📄
                 Page view ↔
                 Continuous scroll</button>
+            <div class="ek-row-wrap ek-divider-top" role="group" aria-label="App Interface Language">
+                <button type="button" class="uls-trigger-btn" id="ulsTriggerBtn" data-i18n-autonym="true"
+                    aria-haspopup="listbox" aria-expanded="false" aria-controls="langSelect">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="2" y1="12" x2="22" y2="12"></line>
+                        <path
+                            d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z">
+                        </path>
+                    </svg>
+                    <span id="ulsCurrentLang">English</span>
+                    <span class="uls-badge" id="ulsUiCountBadge">18 UI</span>
+                </button>
+                <select id="langSelect" aria-label="Language / Idioma" hidden>
+                    <option value="en" selected>English</option>
+                    <option value="es">Español</option>
+                    <option value="bn-BD">বাংলা — বাংলাদেশ (Bangladesh · ঈসা মসীহ)</option>
+                    <option value="bn-IN">বাংলা — ভারত/প্রচলিত (West Bengal · প্রভু যীশু)</option>
+                    <option value="bn">বাংলা</option>
+                    <option value="fr">Français</option>
+                    <option value="pt">Português</option>
+                    <option value="it">Italiano</option>
+                    <option value="id">Bahasa Indonesia</option>
+                    <option value="tr">Türkçe</option>
+                    <option value="ru">Русский</option>
+                    <option value="zh-Hans">简体中文</option>
+                    <option value="ja">日本語</option>
+                    <option value="ko">한국어</option>
+                    <option value="hi">हिन्दी</option>
+                    <option value="ar">العربية</option>
+                    <option value="ur">اردو</option>
+                    <option value="fa">فارسی</option>
+                </select>
+            </div>
         </div>
         <!-- Global Orthogonal Corpus Language Funnel (24 Bibles & Portions + Sister Works Languages + SIL 7,164 Census) -->
         <details class="advanced-editorial-drawer advanced-editorial-drawer corpus-drawer"
@@ -135,40 +170,18 @@
                     <button type="button" id="btnRegBilingue" class="uls-chip" data-register="bilingue"
                         data-i18n="mostrador.register.bilingual">👥 Side-by-side
                         bilingual (62/38)</button>
-                </div>
-                <div class="ek-row-wrap ek-mb-sm ek-divider-top" role="group" aria-label="App Interface Language">
-                    <button type="button" class="uls-trigger-btn" id="ulsTriggerBtn" data-i18n-autonym="true"
-                        aria-haspopup="listbox" aria-expanded="false" aria-controls="langSelect">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <circle cx="12" cy="12" r="10"></circle>
-                            <line x1="2" y1="12" x2="22" y2="12"></line>
-                            <path
-                                d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z">
-                            </path>
-                        </svg>
-                        <span id="ulsCurrentLang">English</span>
-                        <span class="uls-badge" id="ulsUiCountBadge">18 UI</span>
-                    </button>
-                    <select id="langSelect" aria-label="Language / Idioma" hidden>
-                        <option value="en" selected>English</option>
-                        <option value="es">Español</option>
-                        <option value="bn-BD">বাংলা — বাংলাদেশ (Bangladesh · ঈসা মসীহ)</option>
-                        <option value="bn-IN">বাংলা — ভারত/প্রচলিত (West Bengal · প্রভু যীশু)</option>
-                        <option value="bn">বাংলা</option>
-                        <option value="fr">Français</option>
-                        <option value="pt">Português</option>
-                        <option value="it">Italiano</option>
-                        <option value="id">Bahasa Indonesia</option>
-                        <option value="tr">Türkçe</option>
-                        <option value="ru">Русский</option>
-                        <option value="zh-Hans">简体中文</option>
-                        <option value="ja">日本語</option>
-                        <option value="ko">한국어</option>
-                        <option value="hi">हिन्दी</option>
-                        <option value="ar">العربية</option>
-                        <option value="ur">اردو</option>
-                        <option value="fa">فارسی</option>
+                    <select id="bibleBridgeLangSelect" aria-label="Bridge Language (62/38)">
+                        <option value="">Bridge: Auto</option>
+                        <option value="es">Bridge: ES</option>
+                        <option value="en">Bridge: EN</option>
+                        <option value="fr">Bridge: FR</option>
+                        <option value="pt">Bridge: PT</option>
+                        <option value="ar">Bridge: AR</option>
+                        <option value="hi">Bridge: HI</option>
+                        <option value="id">Bridge: ID</option>
+                        <option value="ru">Bridge: RU</option>
+                        <option value="sw">Bridge: SW</option>
+                        <option value="zh-Hans">Bridge: ZH</option>
                     </select>
                 </div>
                 <p class="ek-title-sm" data-i18n="corpus.tab.bibles">📖 Bibles &amp; Languages (24)</p>
@@ -178,7 +191,8 @@
                         data-corpus-lang="gn" data-work-scope="evangelios" hidden>🇵🇾 Avañe'ẽ Guaraní (gn ·
                         Evangelios)</button>
                     <button type="button" id="quickWorkLangQuc" class="uls-chip" data-i18n-autonym="true"
-                        data-corpus-lang="quc" data-work-scope="evangelios" hidden>🇬🇹 K'iche' (quc · Evangelios)</button>
+                        data-corpus-lang="quc" data-work-scope="evangelios" hidden>🇬🇹 K'iche' (quc ·
+                        Evangelios)</button>
                     <button type="button" id="quickWorkLangBnBd" class="uls-chip" data-i18n-autonym="true"
                         data-corpus-lang="bn-BD" data-work-scope="felices">🇧🇩 বাংলা বাংলাদেশ (bn-BD ·
                         Felices)</button>
@@ -244,6 +258,8 @@
                             data-i18n-attr="placeholder:corpus.search.placeholder"
                             placeholder="Search 7,164 languages (ISO, autonym, country)...">
                     </div>
+                    <div id="polyglotRecycledListHost" class="polyglot-recycled-window ek-mt-xs"
+                        data-polyglot-window="true" role="listbox" aria-label="Filtered languages window"></div>
                     <div id="bibleGeoFunnel" class="geo-funnel-row" aria-label="Geographic 3-Tap Funnel">
                         <select id="bibleSelectRegion" aria-label="World Region">
                             <option value="americas-mesoamerica" data-i18n="region.americas-mesoamerica">Mesoamerica
@@ -307,7 +323,8 @@
                             <option value="ja">日本語 (ja)</option>
                             <option value="ko">한국어 (ko)</option>
                             <option value="quc">K'iche' (quc)</option>
-                            <option value="gn" data-work-scope="evangelios" hidden>Avañe'ẽ · Guaraní (gn · Evangelios)</option>
+                            <option value="gn" data-work-scope="evangelios" hidden>Avañe'ẽ · Guaraní (gn · Evangelios)
+                            </option>
                             <option value="arp">Hinónoʼeitíít · Arapaho (arp · Porciones)</option>
                             <option value="bre">Brezhoneg · Breton (bre · Porciones)</option>
                             <option value="cha">Finuʼ Chamorro (cha · Porciones)</option>
@@ -324,24 +341,32 @@
         data-cowan-focal-groups="4" data-audio-bytes="0" data-jpg-bytes="0">
         <div>
             <h2 id="bibleMainHeading" data-i18n="mostrador.heading">Print or Download the Bible in Your Language</h2>
-            <p id="bibleLivePreviewHint" class="stage-preview-hint" data-i18n="mostrador.preview_hint">Live preview of the passage ready to print</p>
+            <p id="bibleLivePreviewHint" class="stage-preview-hint" data-i18n="mostrador.preview_hint">Live preview of
+                the passage ready to print</p>
             <span id="epistemicStatusSeal" class="uls-badge" data-seal="seal.unavailable"
                 data-i18n="seal.unavailable">Translation not yet available</span>
         </div>
         <div id="printFirstStageRibbon" class="print-stage-ribbon" role="region"
             aria-label="Download Printable Bible PDF by Stage" data-print-tier="1">
             <div class="print-stage-grid">
-                <button type="button" id="btnStagePdfDose1" class="print-stage-btn is-primary"
-                    data-print-stage-action="dose1"><strong data-i18n="printStage.dose1">1. This Chapter PDF</strong><span>JHN 1 · &lt;= 12 pp.</span></button>
-                <button type="button" id="btnStagePdfDose2" class="print-stage-btn is-primary"
-                    data-print-stage-action="dose2"><strong data-i18n="printStage.dose2">2. Booklet / Book PDF</strong><span>Block B01 · 2-sided</span></button>
-                <button type="button" id="btnStagePdfDose3" class="print-stage-btn is-primary"
-                    data-print-stage-action="dose3"><strong data-i18n="printStage.dose3">3. Full Bible PDF (66)</strong><span>14+2 print editions</span></button>
+                <div class="print-stage-card" data-ergos-homogeneous-card="print-stage"><button type="button"
+                        id="btnStagePdfDose1" class="print-stage-btn is-primary" data-print-stage-action="dose1"><strong
+                            data-i18n="printStage.dose1">1. This Chapter PDF</strong><span>JHN 1 · &lt;= 12
+                            pp.</span></button></div>
+                <div class="print-stage-card" data-ergos-homogeneous-card="print-stage"><button type="button"
+                        id="btnStagePdfDose2" class="print-stage-btn is-primary" data-print-stage-action="dose2"><strong
+                            data-i18n="printStage.dose2">2. Booklet / Book PDF</strong><span>Block B01 ·
+                            2-sided</span></button></div>
+                <div class="print-stage-card" data-ergos-homogeneous-card="print-stage"><button type="button"
+                        id="btnStagePdfDose3" class="print-stage-btn is-primary" data-print-stage-action="dose3"><strong
+                            data-i18n="printStage.dose3">3. Full Bible PDF (66)</strong><span>14+2 print
+                            editions</span></button></div>
             </div>
             <div class="print-stage-footer">
                 <span class="print-stage-sub" data-i18n="printStage.heading">Print or download PDF by stage</span>
                 <button type="button" id="btnStagePdfMoreFormats" class="uls-chip print-stage-more-btn"
-                    data-print-stage-action="open-print" data-i18n="printStage.moreFormats">Paper size, Braille &amp; offline copy</button>
+                    data-print-stage-action="open-print" data-i18n="printStage.moreFormats">Paper size, Braille &amp;
+                    offline copy</button>
             </div>
         </div>
 
@@ -836,10 +861,13 @@
                     data-i18n="print.btn.cssPagedMedia">🖨️ Print from browser</button>
             </div>
             <div id="tanda-offline-font-notice" class="tanda-offline-notice" role="status" hidden></div>
-            <div id="tandaWorkerProgressWrap" class="ek-mt-xs" data-print-subtab-panel="doses" hidden>
+            <div id="tandaWorkerProgressWrap" class="ek-mt-xs" data-print-subtab-panel="doses"
+                data-worker-active="false" hidden>
+                <div id="tandaWorkerProgressCardHost"></div>
                 <progress id="tandaWorkerProgress" max="100" value="0">0%</progress>
                 <span id="tandaWorkerProgressLabel" class="ek-meta"></span>
-                <button type="button" id="btnCancelTandaPdfJob" class="uls-chip print-cancel-btn" data-i18n="print.btn.cancelJob" hidden>Cancel</button>
+                <button type="button" id="btnCancelTandaPdfJob" class="uls-chip print-cancel-btn"
+                    data-i18n="print.btn.cancelJob" hidden>Cancel</button>
             </div>
             <div id="printNaturalStagesHost" data-print-subtab-panel="doses"></div>
             <div id="printFieldPdfsHost" data-print-subtab-panel="doses"></div>
@@ -930,6 +958,7 @@
             </div>
             <div id="cascadeImpactPreviewList" data-workshop-subtab-panel="ladder"></div>
             <div id="tallerArtifactsCatalog" class="taller-artifacts-grid" data-workshop-subtab-panel="audit">
+                <div id="tallerArtifactsDynamicList" class="taller-artifacts-dynamic-list"></div>
                 <section id="externalAudit8LocksPanel" aria-label="8 Deterministic Audit Locks"></section>
                 <section id="uncertaintyQueue60Panel" aria-label="Top 60 Uncertainty Verse Queue"></section>
                 <section id="tier3aDialectContinuumPanel" aria-label="Tier 3A Dialect Continuums"></section>

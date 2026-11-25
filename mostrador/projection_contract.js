@@ -4,7 +4,13 @@
 // Frontera de mutación ∂(C) = 0 respecto del controlador: sólo lee `state` y escribe nodos DOM ya existentes.
 // ============================================================================
 
-import { STORE_DOMAIN_OWNERS, VALID_ACTIVE_INTENTS, VALID_ACTIVE_MODALS } from "./state_store.js";
+import {
+  STORE_DOMAIN_OWNERS,
+  VALID_ACTIVE_INTENTS,
+  VALID_ACTIVE_MODALS,
+  WORK_LIFECYCLE,
+  isRegisteredWorkId,
+} from "./state_store.js";
 
 /**
  * Ciclo de vida declarativo por obra editorial (`D1-R11`, `ARB-EKOVOZ-R11`).
@@ -15,11 +21,7 @@ import { STORE_DOMAIN_OWNERS, VALID_ACTIVE_INTENTS, VALID_ACTIVE_MODALS } from "
  *   las obras en `"draft"` NO deben tratarse como gaps huérfanos ni promoverse a `"public"` de forma automática;
  *   su acceso queda restringido explícitamente a `?preview=1` salvo autorización expresa de lanzamiento.
  */
-export const WORK_LIFECYCLE = Object.freeze({
-  biblia: "public",
-  felices: "public",
-  evangelios: "draft", // INTENCIONAL (R11): deshabilitado por defecto; requiere ?preview=1
-});
+export { WORK_LIFECYCLE, isRegisteredWorkId };
 
 /**
  * Parsea `?preview=...` (`?preview=1`, `?preview=true`, `?preview=all` o lista CSV como `?preview=evangelios`).
@@ -188,8 +190,8 @@ export function resolveWorkDrawerAdapter(state = {}) {
  * Resuelve la etiqueta y coordenada bíblica ancla de la obra activa (`biblia`, `felices`, `evangelios`) (`D3-R9`).
  */
 export function resolveActiveWorkDrawerContext(state = {}) {
-  const activeWork = ["biblia", "felices", "evangelios"].includes(state.activeWork)
-    ? state.activeWork
+  const activeWork = isRegisteredWorkId(state.activeWork)
+    ? String(state.activeWork).trim().toLowerCase()
     : "biblia";
   const isEn = String(state.uiLocale || "en").trim().toLowerCase().startsWith("en");
   const book = String(state.book || (activeWork === "felices" ? "MAT" : "GEN")).toUpperCase();
@@ -298,8 +300,8 @@ export function projectStoreAttributesToDom(state = {}, targetDoc) {
     ? VALID_ACTIVE_MODALS.includes(state.activeModal)
     : VALID_ACTIVE_MODALS.has(state.activeModal);
   const activeModal = state.activeModal && hasValidModal ? String(state.activeModal) : "";
-  const activeWork = ["biblia", "felices", "evangelios"].includes(state.activeWork)
-    ? state.activeWork
+  const activeWork = isRegisteredWorkId(state.activeWork)
+    ? String(state.activeWork).trim().toLowerCase()
     : "biblia";
   const activeSheet = state.activeSheet ? String(state.activeSheet) : "";
   const mobileSheetOpen = Boolean(state.activeSheet && state.mobileSheetOpen === true);

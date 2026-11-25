@@ -201,6 +201,10 @@ export async function executeDose2And3WorkerDispatch({
       cancelBtn.addEventListener("click", () => {
         state._activeTandaAbortController?.abort?.();
         workerWrap?.setAttribute?.("data-progress-cancelled", "true");
+        workerWrap?.setAttribute?.("data-worker-active", "false");
+        const cancelledCard = renderTandaProgressCardHtml({ active: false, cancelled: true, uiLocale: state.uiLocale || "es" });
+        const cardHost = typeof getEl === "function" ? getEl("tandaWorkerProgressCardHost", targetDoc) : null;
+        if (cardHost) cardHost.innerHTML = cancelledCard;
         if (workerLabel) {
           workerLabel.textContent = isEn ? "PDF generation cancelled cleanly." : "Generación de PDF cancelada sin residuos.";
         }
@@ -209,10 +213,26 @@ export async function executeDose2And3WorkerDispatch({
     }
   }
   if ((state.activeSubtabBySheet?.print || activePrintSubtab) === "doses" && explicitWorkerReq) {
+    workerWrap?.setAttribute?.("data-worker-active", "true");
     workerWrap?.removeAttribute?.("hidden");
+    if (workerWrap) workerWrap.hidden = false;
     workerBar?.setAttribute?.("data-ergos-active-job", "true");
     if (workerBar) workerBar.value = 15;
     if (workerLabel) workerLabel.textContent = isEn ? "Preparing PDF sheets in background…" : "Preparando pliegos PDF sin bloqueo…";
+    const cardHost = typeof getEl === "function" ? getEl("tandaWorkerProgressCardHost", targetDoc) : null;
+    if (cardHost) {
+      cardHost.innerHTML = renderTandaProgressCardHtml({
+        active: true,
+        completedBooks: 0,
+        totalBooks: Math.max(1, targetMacroPlans?.length === 16 ? 66 : 1),
+        currentBookCode: activeBook || "GEN",
+        editionLabel: state.activePrintProfileId || "",
+        estimatedMb: 0,
+        cancellable: true,
+        cancelled: false,
+        uiLocale: state.uiLocale || "es",
+      });
+    }
   }
   const baseJob = {
     lang: effectiveLang,

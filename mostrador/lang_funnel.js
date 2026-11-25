@@ -504,3 +504,18 @@ export function suggestLayer0Languages(indexOrShards, options = {}) {
     : indexRegionShards(Array.isArray(indexOrShards) ? indexOrShards : []);
   return idx.suggestLayer0(options);
 }
+
+/**
+ * Retorna una ventana acotada (`<= 36` filas por defecto, GOLD-684) sobre búsqueda o subregión.
+ */
+export function listLanguagesWindow(indexOrShards, { query = "", macroRegionId = 0, subregionName = "", offset = 0, limit = 36 } = {}) {
+  const safeCap = Math.max(1, Math.min(36, Number(limit) || 36));
+  const cleanOffset = Math.max(0, Number(offset) || 0);
+  const idx = indexOrShards && typeof indexOrShards.search === "function"
+    ? indexOrShards
+    : indexRegionShards(Array.isArray(indexOrShards) ? indexOrShards : []);
+  const full = String(query || "").trim()
+    ? idx.search(query, { macroRegionId: macroRegionId || undefined, limit: cleanOffset + safeCap })
+    : idx.listByRegion(macroRegionId || 1, subregionName);
+  return (Array.isArray(full) ? full : []).slice(cleanOffset, cleanOffset + safeCap);
+}

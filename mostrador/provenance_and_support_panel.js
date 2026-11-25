@@ -19,7 +19,7 @@ const DEFAULT_PROVENANCE = Object.freeze({
   },
   onomasticon_pack: {
     entries_count: 3657,
-    path: "packs/onomasticon_3657.json.zst",
+    path: "data/onomasticon_3657.json.zst",
     sha256: "c4ab1c958f73fcc73f5ecfe9ad2d907dfd65078dc5f353fea797280e83bb4f6a",
     zstd_bytes: 79360,
   },

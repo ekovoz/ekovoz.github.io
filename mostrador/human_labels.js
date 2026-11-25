@@ -81,6 +81,42 @@ const HUMAN_PHILOLOGY_LABELS = Object.freeze({
     es: "Dominio público abierto",
     en: "Open public domain",
   }),
+  TOKEN: Object.freeze({
+    es: "Palabra",
+    en: "Word",
+  }),
+  "CRDT WAL": Object.freeze({
+    es: "Registro de revisiones",
+    en: "Revision history log",
+  }),
+  "MACRO-TANDA": Object.freeze({
+    es: "Bloque completo de impresión",
+    en: "Full print bundle",
+  }),
+  "SAUVOLA K=0.25": Object.freeze({
+    es: "Nitidez para fotocopias",
+    en: "Photocopy legibility boost",
+  }),
+  SAUVOLA: Object.freeze({
+    es: "Nitidez de fotocopia",
+    en: "Photocopy clarity",
+  }),
+  CPL: Object.freeze({
+    es: "Caracteres por línea",
+    en: "Characters per line",
+  }),
+  "8/8 PASS": Object.freeze({
+    es: "8 controles de calidad aprobados",
+    en: "8 quality checks passed",
+  }),
+  "BERNA 15.3": Object.freeze({
+    es: "Sello público de autoría abierta",
+    en: "Public open-authorship seal",
+  }),
+  "14+2": Object.freeze({
+    es: "16 ediciones listas para imprimir",
+    en: "16 print-ready editions",
+  }),
 });
 
 export function humanizeTechnicalCode(rawCode, uiLocale = "es") {

@@ -24,18 +24,12 @@ import { bindSurfaceActions } from "./dom_patch.js";
 import { normalizeEditionSlug } from "./dosis.js";
 import { DEFAULT_PRINT_CONFIG } from "./dosis_profiles_schema.js";
 import { syncActiveStrongInStudyDrawer } from "./drawer_hydrators.js";
-import {
-  indexRegionShards,
-  listCountriesInRegion,
-  listLanguagesInCountry,
-  searchLanguages,
-} from "./lang_funnel.js";
 import { bindPrintFirstStageRibbon } from "./print_stage_ribbon.js";
+import { bindCorpusPolyglotAndUiPreferences } from "./polyglot_picker_view.js";
 import { resolvePublicOrPreviewWork } from "./projection_contract.js";
 import { bindSupportContactDialog } from "./provenance_and_support_panel.js";
 import {
   ROSETTA_66_BOOKS,
-  hydratePackLanguagesFromManifest,
   parseBiblicalCoordinateReference,
   searchSpotlightCorpus,
 } from "./reference.js";
@@ -84,31 +78,6 @@ export function bindStageDomEvents(ctx = {}) {
         vp?.scrollIntoView?.({ behavior: "smooth", block: "start" });
       },
     }, { scope: "sticky-jump", events: ["click"] });
-  }
-
-  const corpusTabBibles = getEl("btnCorpusTabBibles", targetDoc);
-  const corpusTabTrails = getEl("btnCorpusTabTrails", targetDoc);
-  const corpusPanelBibles = getEl("corpusTabPanelBibles", targetDoc);
-  const corpusPanelTrails = getEl("corpusTabPanelTrails", targetDoc);
-  const switchCorpusTab = (tabName) => {
-    const isTrails = tabName === "trails";
-    if (ctx.store && typeof ctx.store.setState === "function") {
-      ctx.store.setState({ activeCorpusTab: isTrails ? "trails" : "bibles" }, "sheet");
-    } else if (state && typeof state === "object") {
-      state.activeCorpusTab = isTrails ? "trails" : "bibles";
-    }
-    if (corpusTabBibles) corpusTabBibles.setAttribute("aria-selected", isTrails ? "false" : "true");
-    if (corpusTabTrails) corpusTabTrails.setAttribute("aria-selected", isTrails ? "true" : "false");
-    if (corpusPanelBibles) corpusPanelBibles.hidden = isTrails;
-    if (corpusPanelTrails) corpusPanelTrails.hidden = !isTrails;
-  };
-  if (corpusTabBibles) {
-    corpusTabBibles.setAttribute?.("data-action", "corpus-tab-bibles");
-    bindSurfaceActions(corpusTabBibles, { "corpus-tab-bibles": () => switchCorpusTab("bibles") }, { scope: "corpus-bibles", events: ["click"] });
-  }
-  if (corpusTabTrails) {
-    corpusTabTrails.setAttribute?.("data-action", "corpus-tab-trails");
-    bindSurfaceActions(corpusTabTrails, { "corpus-tab-trails": () => switchCorpusTab("trails") }, { scope: "corpus-trails", events: ["click"] });
   }
 
   const compassTabBooks = getEl("btnCompassTabBooks", targetDoc);
@@ -315,139 +284,20 @@ export function bindStageDomEvents(ctx = {}) {
     });
   }
 
-  const regionSelect = getEl("bibleSelectRegion", targetDoc);
-  const countrySelect = getEl("bibleSelectCountry", targetDoc);
-  const langSelect = getEl("bibleSelectLang", targetDoc);
-  const langFilterInput = getEl("quickLangFilterInput", targetDoc);
-
-  const ensureRegionIndexLoaded = async () => {
-    if (state.regionIndex) return state.regionIndex;
-    const catalog = await dataLayer.loadCatalog();
-    const shards =
-      typeof dataLayer.loadAllRegionShards === "function" ? await dataLayer.loadAllRegionShards() : [];
-    state.regionIndex = indexRegionShards(shards, catalog || { languages: [] });
-    return state.regionIndex;
-  };
-
-  if (regionSelect && typeof regionSelect.addEventListener === "function") {
-    regionSelect.addEventListener("change", async (e) => {
-      state.regionCode = e?.target?.value || regionSelect.value || "americas-mesoamerica";
-      const idx = await ensureRegionIndexLoaded();
-      const subregions = listCountriesInRegion(idx, state.regionCode);
-      if (countrySelect && subregions.length > 0) {
-        countrySelect.innerHTML = subregions
-          .map((c) => `<option value="${escapeHtml(c.code || c.name)}">${escapeHtml(c.label || c.name)}</option>`)
-          .join("");
-      }
-      const regionLangs = listLanguagesInCountry(idx, state.regionCode, "");
-      if (langSelect && regionLangs.length > 0) {
-        langSelect.innerHTML = regionLangs
-          .slice(0, 60)
-          .map(
-            (m) =>
-              `<option value="${escapeHtml(m.code)}" data-seal="${escapeHtml(m.sovereignSeal || "")}">${escapeHtml(m.displayLabel)}</option>`,
-          )
-          .join("");
-      }
-    });
-  }
-
-  if (countrySelect && typeof countrySelect.addEventListener === "function") {
-    countrySelect.addEventListener("change", async (e) => {
-      const subName = String(e?.target?.value || countrySelect.value || "MX");
-      state.countryIso2 = subName.toUpperCase().slice(0, 2);
-      const idx = await ensureRegionIndexLoaded();
-      const subLangs = listLanguagesInCountry(idx, state.regionCode || 1, subName);
-      if (langSelect && subLangs.length > 0) {
-        langSelect.innerHTML = subLangs
-          .slice(0, 60)
-          .map(
-            (m) =>
-              `<option value="${escapeHtml(m.code)}" data-seal="${escapeHtml(m.sovereignSeal || "")}">${escapeHtml(m.displayLabel)}</option>`,
-          )
-          .join("");
-      }
-      await updateDoseLinks(targetDoc);
-    });
-  }
-
-  const applyCorpusLanguageSelection = async (nextLang, regOverride = null) => {
-    const targetLang = String(nextLang || "es").trim() || "es";
-    const reg = regOverride || (targetLang === "es-1909" ? "clasica" : state.register);
-    await navigate({ lang: targetLang, register: reg }, targetDoc);
-    if (state.activeWork === "evangelios" && typeof hydrateEvangeliosSection === "function") {
-      await hydrateEvangeliosSection(state.evangeliosQuarter || "T1", state.evangeliosWeekId || "s01");
-    } else if (state.activeWork === "felices") {
-      await syncFelicesWithCorpusLang(targetLang, targetDoc);
-    }
-  };
-
-  if (langSelect && typeof langSelect.addEventListener === "function") {
-    langSelect.addEventListener("change", async (e) => {
-      const nextLang = e?.target?.value || langSelect.value || "es";
-      await applyCorpusLanguageSelection(nextLang);
-    });
-  }
-
-  if (langFilterInput && typeof langFilterInput.addEventListener === "function") {
-    langFilterInput.addEventListener("input", async (e) => {
-      const q = String(e?.target?.value || langFilterInput.value || "").trim();
-      if (!q) return;
-      const idx = await ensureRegionIndexLoaded();
-      const matches = searchLanguages(idx, q, { limit: 25 });
-      if (matches.length > 0 && langSelect) {
-        langSelect.innerHTML = matches
-          .map(
-            (m) =>
-              `<option value="${escapeHtml(m.code)}" data-iso="${escapeHtml(m.iso639_3)}" data-seal="${escapeHtml(m.sovereignSeal || "")}">${escapeHtml(m.displayLabel || m.name || m.code)}</option>`,
-          )
-          .join("");
-      }
-    });
-  }
-
-  const boundCorpusBtns = new Set();
-  for (const [btnId, corpusLang] of [
-    ["quickLangEs", "es"],
-    ["quickLangEs1909", "es-1909"],
-    ["quickLangEn", "en"],
-    ["quickLangPt", "pt"],
-    ["quickLangFr", "fr"],
-    ["quickLangStp", "stp"],
-    ["quickLangHe", "he"],
-    ["quickLangGrc", "grc"],
-    ["quickLangAr", "ar"],
-    ["quickLangFa", "fa"],
-    ["quickLangUr", "ur"],
-    ["quickLangHi", "hi"],
-    ["quickLangBn", "bn"],
-    ["quickLangId", "id"],
-    ["quickLangRu", "ru"],
-    ["quickLangZhHans", "zh-Hans"],
-  ]) {
-    const qBtn = getEl(btnId, targetDoc);
-    if (qBtn && typeof qBtn.addEventListener === "function") {
-      boundCorpusBtns.add(qBtn);
-      qBtn.addEventListener("click", async () => {
-        const targetLang = qBtn.getAttribute?.("data-corpus-lang") || corpusLang;
-        await applyCorpusLanguageSelection(targetLang);
-      });
-    }
-  }
-  for (const hostId of ["bibleVerifiedCorpusPills", "corpusWorkLanguagesBar"]) {
-    const pillsEl = getEl(hostId, targetDoc);
-    if (pillsEl && typeof pillsEl.addEventListener === "function") {
-      pillsEl.addEventListener("click", async (e) => {
-        const btn = typeof e?.target?.closest === "function"
-          ? e.target.closest("[data-corpus-lang]")
-          : e?.target;
-        if (!btn || boundCorpusBtns.has(btn)) return;
-        const targetLang = btn.getAttribute?.("data-corpus-lang");
-        if (!targetLang) return;
-        await applyCorpusLanguageSelection(targetLang);
-      });
-    }
-  }
+  bindCorpusPolyglotAndUiPreferences({
+    state,
+    dataLayer,
+    targetDoc,
+    getEl,
+    navigate,
+    setUiLocale,
+    updateDoseLinks,
+    hydrateEvangeliosSection,
+    syncFelicesWithCorpusLang,
+    renderViewportFromState,
+    syncUrlFromState,
+    hydratePrintDrawerPanels,
+  });
 
   const btnRegInter = getEl("btnRegIntergeneracional", targetDoc);
   if (btnRegInter && typeof btnRegInter.addEventListener === "function") {
@@ -511,25 +361,6 @@ export function bindStageDomEvents(ctx = {}) {
         hydrateBookAndChapterSelectors(targetDoc);
       });
     }
-  }
-
-  const uiLangSelect = getEl("langSelect", targetDoc);
-  const ulsTrigger = getEl("ulsTriggerBtn", targetDoc);
-  if (uiLangSelect && typeof uiLangSelect.addEventListener === "function") {
-    uiLangSelect.addEventListener("change", async (e) => {
-      const nextUi = e?.target?.value || uiLangSelect.value || "en";
-      await setUiLocale(nextUi, targetDoc);
-      uiLangSelect.hidden = true;
-      if (ulsTrigger) ulsTrigger.setAttribute("aria-expanded", "false");
-    });
-  }
-  if (ulsTrigger && typeof ulsTrigger.addEventListener === "function") {
-    ulsTrigger.addEventListener("click", () => {
-      if (uiLangSelect) {
-        uiLangSelect.hidden = !uiLangSelect.hidden;
-        ulsTrigger.setAttribute("aria-expanded", uiLangSelect.hidden ? "false" : "true");
-      }
-    });
   }
 
   const appearanceBtn = getEl("btnAppearanceMenu", targetDoc);
@@ -616,47 +447,6 @@ export function bindStageDomEvents(ctx = {}) {
   const refInput = getEl("mostradorRefInput", targetDoc);
   const refBtn = getEl("btnGoReference", targetDoc);
   const spotlightHost = getEl("spotlightSearchResults", targetDoc);
-
-  if (dataLayer && !state._packs24HydratedFromManifest) {
-    state._packs24HydratedFromManifest = true;
-    const loadPacksMeta =
-      typeof dataLayer.loadOfflinePacksCatalog === "function"
-        ? dataLayer.loadOfflinePacksCatalog()
-        : typeof dataLayer.loadJson === "function"
-          ? dataLayer.loadJson("data/packs/packs_manifest.json")
-          : null;
-    if (loadPacksMeta) {
-      Promise.resolve(loadPacksMeta)
-        .then((manifestData) => {
-          if (!manifestData) return;
-          const hydrated = hydratePackLanguagesFromManifest(manifestData);
-          state.hydratedPacks24 = hydrated.packs;
-          state.availablePackLangs24 = hydrated.langs;
-          const packLangSel = getEl("bibleSelectLang", targetDoc);
-          if (packLangSel && typeof packLangSel.setAttribute === "function") {
-            packLangSel.setAttribute("data-hydrated-packs-count", String(hydrated.totalPacks));
-          }
-          if (packLangSel && Array.isArray(hydrated.packs) && typeof targetDoc?.createElement === "function") {
-            const existingVals = new Set(
-              Array.from(packLangSel.options || []).map((o) => String(o?.value || "").trim()),
-            );
-            for (const p of hydrated.packs) {
-              if (!p.lang || existingVals.has(p.lang)) continue;
-              const opt = targetDoc.createElement("option");
-              opt.value = p.lang;
-              opt.textContent = `${p.lang.toUpperCase()} (.ekpack)`;
-              if (typeof opt.setAttribute === "function") {
-                opt.setAttribute("data-pack-url", p.sameOriginPackUrl);
-              }
-              if (typeof packLangSel.appendChild === "function") {
-                packLangSel.appendChild(opt);
-              }
-            }
-          }
-        })
-        .catch(() => { });
-    }
-  }
 
   let activeSpotlightSeq = 0;
 
@@ -843,11 +633,9 @@ export function bindStageDomEvents(ctx = {}) {
     return pkg;
   };
 
-  for (const dose1BtnId of ["btnDose1Sheets", "btnPrintAroundVerse"]) {
-    const btnDose1 = getEl(dose1BtnId, targetDoc);
-    if (btnDose1 && typeof btnDose1.addEventListener === "function") {
-      btnDose1.addEventListener("click", handleDose1Trigger);
-    }
+  const btnDose1 = getEl("btnDose1Sheets", targetDoc);
+  if (btnDose1 && typeof btnDose1.addEventListener === "function") {
+    btnDose1.addEventListener("click", handleDose1Trigger);
   }
   bindPrintFirstStageRibbon({ targetDoc, getEl, state, handleDose1Trigger, transitionSheet, hydratePrintDrawerPanels });
 

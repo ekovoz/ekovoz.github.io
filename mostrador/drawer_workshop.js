@@ -256,12 +256,25 @@ export async function hydrateImproveDrawerPanel(ctx = {}) {
     }
 
     const renderAuditSubtabPanels = () => {
-      const tallerHost = getEl("tallerArtifactsCatalog", targetDoc);
+      const tallerHost = getEl("tallerArtifactsDynamicList", targetDoc) || getEl("tallerArtifactsCatalog", targetDoc);
       if (!tallerHost) return;
       tallerHost.innerHTML = renderWorkshopAuditSubtabHtml({
         mod,
         state,
       });
+      const catalogHost = getEl("tallerArtifactsCatalog", targetDoc);
+      if (catalogHost && tallerHost !== catalogHost && catalogHost.children) {
+        const dupIds = new Set([
+          "externalAudit8LocksPanel",
+          "uncertaintyQueue60Panel",
+          "tier3aDialectContinuumPanel",
+        ]);
+        for (const child of Array.from(catalogHost.children)) {
+          if (child !== tallerHost && dupIds.has(child.id) && typeof child.remove === "function") {
+            child.remove();
+          }
+        }
+      }
     };
     state.refreshWorkshopAuditSubtab = renderAuditSubtabPanels;
     renderAuditSubtabPanels();

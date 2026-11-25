@@ -268,6 +268,8 @@ export function renderPhilologyRosettaInspectorHtml(activeRows = [], options = {
   const seenBridges = new Set();
 
   for (const r of activeRows) {
+    const rowVerse = Number(r?.verse ?? r?.v ?? r?.c01_verse ?? 1);
+    if (Number.isFinite(rowVerse) && rowVerse === 0) continue;
     const sid = r?.c07_strong_id;
     if (!sid || sid === "∅") continue;
     const fam = resolveConsonantalRootFamily(sid, rosettaIndex);
@@ -502,13 +504,15 @@ export function searchPhilologyRosettaIndex(
   if (cleanCat === "all" || cleanCat === "ketiv_qere") {
     const kqList = idx?.ketiv_qere_residuals || PHILOLOGY_ROSETTA_DEFAULT_INDEX.ketiv_qere_residuals;
     for (const kq of kqList || []) {
+      const refCode = normalizeRefCode(kq.verse_id, "GEN.8.17");
+      if (/[:.]0\b/.test(String(kq.verse_id || "")) || /[:.]0\b/.test(refCode)) continue;
       items.push({
         category: "ketiv_qere",
         id: `${kq.verse_id}#${kq.token_idx}`,
         title: `Ketiv ${kq.ketiv_written} ↔ Qere ${kq.qere_read} (${kq.verse_id})`,
         detail: kq.masoretic_note,
         strong: kq.strong || "H3808",
-        ref: normalizeRefCode(kq.verse_id, "GEN.8.17"),
+        ref: refCode,
       });
     }
   }
@@ -516,13 +520,15 @@ export function searchPhilologyRosettaIndex(
   if (cleanCat === "all" || cleanCat === "versification") {
     const vList = idx?.versification_eng_org || PHILOLOGY_ROSETTA_DEFAULT_INDEX.versification_eng_org;
     for (const ve of vList || []) {
+      const refCode = normalizeRefCode(ve.eng_range, "PSA.23.1");
+      if (/[:.]0\b/.test(String(ve.eng_range || "")) || /[:.]0\b/.test(refCode)) continue;
       items.push({
         category: "versification",
         id: ve.eng_range,
         title: `ENG ${ve.eng_range} ↔ ORG ${ve.org_range}`,
         detail: `${ve.tradition}: ${ve.note}`,
         strong: "H0430",
-        ref: normalizeRefCode(ve.eng_range, "PSA.23.1"),
+        ref: refCode,
       });
     }
   }
@@ -557,6 +563,7 @@ export function searchPhilologyRosettaIndex(
             : [];
       for (const rItem of bucket) {
         const refNorm = normalizeRefCode(rItem.verse_id, "GEN.1.1");
+        if (/[:.]0\b/.test(String(rItem.verse_id || "")) || /[:.]0\b/.test(refNorm)) continue;
         const humanKind = humanizeTechnicalCode(kindKey, "es");
         items.push({
           category: kindLower,

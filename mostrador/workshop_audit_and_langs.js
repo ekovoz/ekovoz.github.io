@@ -8,13 +8,45 @@ import { escapeHtml } from "./bridge_and_chapter.js";
 import { runClientExternalAudit8Locks } from "./concordance_search.js";
 import { renderStpDraftCheckHtml } from "./mejorar.js";
 
-const WORKSHOP_5_CC0_LANGS = Object.freeze([
+const WORKSHOP_CORE_CC0_LANGS = Object.freeze([
   { code: "es", labelEs: "🇲🇽 Español", labelEn: "🇲🇽 Spanish" },
   { code: "en", labelEs: "🇺🇸 English", labelEn: "🇺🇸 English" },
   { code: "stp", labelEs: "🏔️ O'dam (Tepehuano)", labelEn: "🏔️ O'dam (Tepehuano)" },
   { code: "he", labelEs: "🇮🇱 Hebreo (WLC)", labelEn: "🇮🇱 Hebrew (WLC)" },
   { code: "grc", labelEs: "🏛️ Griego (SBLGNT)", labelEn: "🏛️ Greek (SBLGNT)" },
 ]);
+
+function resolveWorkshopCatalogLangs(masterCensusSummary = null, activeTallerLang = "es") {
+  const out = [...WORKSHOP_CORE_CC0_LANGS];
+  const seen = new Set(out.map((e) => e.code));
+  const extraCodes = [
+    ...(Array.isArray(masterCensusSummary?.verified_pack_langs) ? masterCensusSummary.verified_pack_langs : []),
+    ...(Array.isArray(masterCensusSummary?.celf_250_active_langs) ? masterCensusSummary.celf_250_active_langs : []),
+    ...(Array.isArray(masterCensusSummary?.tier2_nt_human_ot_workshop_corpora)
+      ? masterCensusSummary.tier2_nt_human_ot_workshop_corpora
+      : []),
+    "fr",
+    "pt",
+    "ar",
+    "sw",
+    "ceb",
+    "tgl",
+    "vie",
+    "yor",
+    String(activeTallerLang || "").trim().toLowerCase(),
+  ];
+  for (const raw of extraCodes) {
+    const code = String(raw || "").trim().toLowerCase();
+    if (!code || seen.has(code)) continue;
+    seen.add(code);
+    out.push({
+      code,
+      labelEs: `🌐 ${code.toUpperCase()} (CELF-250 / L1-L3)`,
+      labelEn: `🌐 ${code.toUpperCase()} (CELF-250 / L1-L3)`,
+    });
+  }
+  return out;
+}
 
 const COMBINING_DIACRITICS_REGEX = /[\u0300-\u036f\u0591-\u05c7\u064b-\u065f\u0670]/g;
 
@@ -121,13 +153,15 @@ export function renderWorkshop5LangsSwitcherHtml(
   uiLocale = "es",
 ) {
   const isEn = String(uiLocale || "es").trim().toLowerCase().startsWith("en");
-  const cleanActive = WORKSHOP_5_CC0_LANGS.some((l) => l.code === activeTallerLang)
-    ? activeTallerLang
+  const normActive = String(activeTallerLang || "es").trim().toLowerCase() || "es";
+  const catalogLangs = resolveWorkshopCatalogLangs(masterCensusSummary, normActive);
+  const cleanActive = catalogLangs.some((l) => l.code === normActive)
+    ? normActive
     : "es";
   const tier2Corpora = Array.isArray(masterCensusSummary?.tier2_nt_human_ot_workshop_corpora)
     ? masterCensusSummary.tier2_nt_human_ot_workshop_corpora
     : ["stp"];
-  const buttonsHtml = WORKSHOP_5_CC0_LANGS.map((entry) => {
+  const buttonsHtml = catalogLangs.map((entry) => {
     const active = entry.code === cleanActive;
     const isTier2 = tier2Corpora.includes(entry.code);
     return (
@@ -139,9 +173,9 @@ export function renderWorkshop5LangsSwitcherHtml(
   }).join("");
 
   return (
-    `<section id="workshop5LangsSwitcher" class="ek-card-muted ek-span-full ek-stack-sm" data-active-taller-lang="${escapeHtml(cleanActive)}" data-tier2-corpora="${escapeHtml(tier2Corpora.join(","))}">` +
+    `<section id="workshop5LangsSwitcher" class="ek-card-muted ek-span-full ek-stack-sm" data-active-taller-lang="${escapeHtml(cleanActive)}" data-tier2-corpora="${escapeHtml(tier2Corpora.join(","))}" data-workshop-langs-count="${catalogLangs.length}">` +
     `<div class="ek-row-between">` +
-    `<strong class="ek-title-sm">🌍 ${isEn ? "Workshop CC0 Language Artifacts (5 verified folders)" : "Kits de Taller CC0 por idioma (5 carpetas verificadas)"}</strong>` +
+    `<strong class="ek-title-sm">🌍 ${isEn ? `Workshop CC0 Language Artifacts (${catalogLangs.length} languages)` : `Kits de Taller CC0 por idioma (${catalogLangs.length} idiomas)`}</strong>` +
     `<span class="uls-badge" data-tier2-workshop-badge="true">${isEn ? "Human NT + OT Workshop" : "NT humano + Taller AT"}: ${escapeHtml(tier2Corpora.map((c) => c.toUpperCase()).join(", "))}</span>` +
     `</div>` +
     `<div class="ek-row-wrap" role="group" aria-label="${isEn ? "Select CC0 Workshop Language" : "Seleccionar idioma de kit de taller CC0"}">${buttonsHtml}</div>` +
@@ -154,7 +188,7 @@ export function renderWorkshopAuditSubtabHtml({
   state = {},
 } = {}) {
   const activeTallerLang =
-    String(state.activeTallerLang || (WORKSHOP_5_CC0_LANGS.some((l) => l.code === state.lang) ? state.lang : "es"))
+    String(state.activeTallerLang || state.lang || "es")
       .trim()
       .toLowerCase() || "es";
   const uiLocale = state.uiLocale || "es";
@@ -170,7 +204,7 @@ export function renderWorkshopAuditSubtabHtml({
     lang: activeTallerLang,
   };
   const rawDraftHtml =
-    activeTallerLang === "stp"
+    activeTallerLang !== "he" && activeTallerLang !== "grc"
       ? typeof mod.renderStpDraftCheckHtml === "function"
         ? mod.renderStpDraftCheckHtml(draftOpts)
         : renderStpDraftCheckHtml(draftOpts)

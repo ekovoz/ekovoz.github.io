@@ -5,7 +5,7 @@
 // Grambank wiring to print_config_projector.js, and stealth naming to stealth_filename.js.
 // ============================================================================
 
-import { escapeHtml } from "./bridge_and_chapter.js";
+import { buildCssPagedMediaPrintHtml } from "./bimodal_tanda_print.js";
 import {
   buildRelativePdfAssetUrl,
   CANONICAL_12_BRANCH_PROFILES,
@@ -29,20 +29,17 @@ import {
   resolveCanonicalBlockCode,
   resolveMacroTandaForBlock,
   resolveRegionalPrintDefaults,
-  simulateThirdGenPhotocopySauvola,
   syncDose2AndDose3LinksForActiveLang,
 } from "./dosis.js";
-import { buildCssPagedMediaPrintHtml } from "./bimodal_tanda_print.js";
-import { computeSaddleStitchImpositionPlan } from "./optical_lt.js";
 import {
   buildEditionRenderSpecBytes16,
   resolveNumericEditionId,
   transduceTextToBrailleBrfAndUnicode,
 } from "./dosis_editions_catalog.js";
-import { bindSurfaceActions, patchStoreState } from "./dom_patch.js";
 import { isRtlLocale } from "./i18n.js";
 import { mountOfflineFontNoticeWithLocalImporter } from "./offline_font_bundle.js";
 import { decodeRfc8878RawZstdFrameJs } from "./offline_mesh.js";
+import { computeSaddleStitchImpositionPlan } from "./optical_lt.js";
 import {
   applyGrambankTypologyToPrint,
   ensureDirectEditionsAndGrambankControls,
@@ -53,8 +50,18 @@ import {
   resolveGrambankTypologyPrintPreset,
 } from "./print_config_projector.js";
 import {
+  bindDose2And3LazySynthLinks,
+  bindNaturalStagePresetsInDrawer,
+  collectBlockAndTandaVerses,
+  executeDose2And3WorkerDispatch,
+} from "./print_guide_and_progress.js";
+import {
+  bindStealthAndPagedMediaControls,
+  bindUnifiedBrailleB70Controls,
+  renderAndBindPhotocopyPanel,
+} from "./print_unified_options.js";
+import {
   bindImpositionAndLayoutButtons,
-  bindPagedMediaPrintButton,
   buildEditionCatalogCardHtml,
   handleCatalogEditionCardClick,
   mountOrUpdatePrintActiveWorkBanner,
@@ -63,11 +70,9 @@ import {
   renderDuplexAssistantCardHtml,
   renderFieldRefugeAndChecklistHtml,
   renderStationeryPostcardHtml,
-  renderUnifiedBraillePreviewHtml,
   resolveDuplexFlipEdge,
-  resolveUnifiedSauvolaState,
   revokeObjectUrlSafe,
-  storeWorkerTandaPdfResult,
+  storeWorkerTandaPdfResult
 } from "./print_work_and_photocopy.js";
 import { resolveWorkDrawerAdapter } from "./projection_contract.js";
 import {
@@ -77,13 +82,7 @@ import {
   renderPhotocopyResilienceAndSocialCardHtml,
   simulateKanungoSauvolaGeneration,
 } from "./social_and_photocopy_cards.js";
-import { isStealthFilenameActive, resolveSafeDownloadFilename } from "./stealth_filename.js";
-import {
-  bindDose2And3LazySynthLinks,
-  bindNaturalStagePresetsInDrawer,
-  collectBlockAndTandaVerses,
-  executeDose2And3WorkerDispatch,
-} from "./print_guide_and_progress.js";
+import { resolveSafeDownloadFilename } from "./stealth_filename.js";
 import { mountSlotView } from "./surface_compositor.js";
 import {
   encodePaperFormatCode,
@@ -93,17 +92,15 @@ import {
 } from "./tanda_print_worker.js";
 
 export {
-  HAREL_PRINT_SUBTABS_CONST as HAREL_PRINT_SUBTABS,
   applyGrambankTypologyToPrint,
   buildOpenGraphSocialCardSvg1200x630,
-  formatPhotocopySimBadgeText,
-  mountOfflineFontNoticeWithLocalImporter,
+  formatPhotocopySimBadgeText, HAREL_PRINT_SUBTABS_CONST as HAREL_PRINT_SUBTABS, mountOfflineFontNoticeWithLocalImporter,
   renderEditorialGraphicsAndPrintSpecsCard,
   renderPhotocopyResilienceAndSocialCardHtml,
   resolveEditionSubstrateForProfile,
   resolveGrambankTypologyPrintPreset,
   runWorkerTandaJob,
-  simulateKanungoSauvolaGeneration,
+  simulateKanungoSauvolaGeneration
 };
 
 const HAREL_PRINT_SUBTABS_CONST = ["doses", "imposition", "stationery"];
@@ -128,40 +125,15 @@ export function renderPrintDrawerPanelsSyncInDrawer(ctx = {}) {
   });
   bindNaturalStagePresetsInDrawer({ state, targetDoc, getEl, hydratePrintDrawerPanels });
 
-  const stealthActive = isStealthFilenameActive(state);
   const stealthBlkNum = Number(state.activeBlockNumber) || liveBlock.blockNumber || 1;
-  const chkStealth = getEl("chkStealthPackMode", targetDoc);
-  if (chkStealth) {
-    chkStealth.checked = Boolean(state.stealthMode);
-    chkStealth.setAttribute?.("data-action", "toggle-stealth-mode");
-    bindSurfaceActions(chkStealth, {
-      "toggle-stealth-mode": (ev) => {
-        const nextStealth = Boolean(ev?.target?.checked ?? chkStealth.checked);
-        patchStoreState(ctx, { stealthMode: nextStealth }, "stealth");
-        targetDoc?.documentElement?.setAttribute?.("data-stealth-mode", nextStealth ? "true" : "false");
-        renderPrintDrawerPanelsSyncInDrawer(ctx);
-      },
-    }, { scope: "print-stealth", events: ["change"] });
-  }
-  if (stealthActive) {
-    for (const [lid, kind] of [
-      ["linkDose2BlockPdf", "dosis2"],
-      ["linkDose3FullBiblePdf", "dosis3"],
-    ]) {
-      const lEl = getEl(lid, targetDoc);
-      if (lEl) {
-        lEl.setAttribute?.("download", resolveSafeDownloadFilename(state, { kind, blockNumber: stealthBlkNum }));
-        lEl.setAttribute?.("data-stealth-mode", "true");
-      }
-    }
-  }
-
-  bindPagedMediaPrintButton({
+  bindStealthAndPagedMediaControls({
+    ctx,
     state,
     targetDoc,
     getEl,
-    buildCssPagedMediaPrintHtml,
     stealthBlkNum,
+    buildCssPagedMediaPrintHtml,
+    renderPrintDrawerPanelsSyncInDrawer,
   });
 
   const isEn = String(state.uiLocale || "es").trim().toLowerCase().startsWith("en");
@@ -184,41 +156,14 @@ export function renderPrintDrawerPanelsSyncInDrawer(ctx = {}) {
   const orientSel = getEl("kindleOrientationSelector", targetDoc);
   if (orientSel) orientSel.value = activeOrientation;
 
-  const btnQuickBraille = getEl("btnQuickBrailleB70", targetDoc);
-  if (btnQuickBraille) {
-    const isBrailleOn = effectivePaper === "b70" || state.activePrintProfileId === "11_braille_nemeth_b70" || Boolean(state.brailleNemethEnabled);
-    btnQuickBraille.setAttribute?.("aria-pressed", isBrailleOn ? "true" : "false");
-    btnQuickBraille.setAttribute?.("data-action", "quick-braille-b70");
-    bindSurfaceActions(
-      btnQuickBraille,
-      {
-        "quick-braille-b70": () => {
-          const turningOn = !(state.paperFormat === "b70" || state.activePrintProfileId === "11_braille_nemeth_b70");
-          if (turningOn) {
-            state._prevPaperBeforeBraille = state.paperFormat || "a4";
-            state._prevPrintProfileBeforeBraille = state.activePrintProfileId || "02_2col_pastoral";
-            patchStoreState(ctx, {
-              paperFormat: "b70",
-              activePrintProfileId: "11_braille_nemeth_b70",
-              edition: "11_braille_nemeth_b70",
-              brailleNemethEnabled: true,
-            }, "print");
-          } else {
-            const restorePaper = state._prevPaperBeforeBraille || "a4";
-            const restoreProfile = state._prevPrintProfileBeforeBraille || "02_2col_pastoral";
-            patchStoreState(ctx, {
-              paperFormat: restorePaper,
-              activePrintProfileId: restoreProfile,
-              edition: restoreProfile,
-              brailleNemethEnabled: false,
-            }, "print");
-          }
-          hydratePrintDrawerPanels?.(targetDoc);
-        },
-      },
-      { scope: "quick-braille-b70", events: ["click"] },
-    );
-  }
+  bindUnifiedBrailleB70Controls({
+    ctx,
+    state,
+    targetDoc,
+    getEl,
+    effectivePaper,
+    hydratePrintDrawerPanels,
+  });
   const budget = computeKindlePrintBudget({
     fontPt: activeFontPt,
     columns: state.columns || 2,
@@ -358,24 +303,14 @@ export function renderPrintDrawerPanelsSyncInDrawer(ctx = {}) {
       isEn,
     });
 
-    const chkNemeth = getEl("chkBrailleNemethToggle", targetDoc);
-    if (chkNemeth && typeof chkNemeth.addEventListener === "function" && !chkNemeth._nemethBound) {
-      chkNemeth._nemethBound = true;
-      chkNemeth.addEventListener("change", (ev) => {
-        const checked = Boolean(ev?.target?.checked);
-        state.brailleNemethEnabled = checked;
-        if (checked) {
-          state._prevPrintProfileBeforeBraille = state.activePrintProfileId || "02_2col_pastoral";
-          state.activePrintProfileId = "11_braille_nemeth_b70";
-          state.edition = "11_braille_nemeth_b70";
-        } else if (state.activePrintProfileId === "11_braille_nemeth_b70") {
-          const restore = state._prevPrintProfileBeforeBraille || "02_2col_pastoral";
-          state.activePrintProfileId = restore;
-          state.edition = restore;
-        }
-        hydratePrintDrawerPanels?.(targetDoc);
-      });
-    }
+    bindUnifiedBrailleB70Controls({
+      ctx,
+      state,
+      targetDoc,
+      getEl,
+      effectivePaper,
+      hydratePrintDrawerPanels,
+    });
     const macroSel = getEl("macroTanda16Select", targetDoc);
     if (macroSel && typeof macroSel.addEventListener === "function" && !macroSel._macroSelBound) {
       macroSel._macroSelBound = true;
@@ -431,79 +366,13 @@ export function renderPrintDrawerPanelsSyncInDrawer(ctx = {}) {
     }
   }
 
-  const unifiedSauvola = resolveUnifiedSauvolaState(state);
-  const simLang = state.effectiveCorpusLang || state.lang || "es";
-  const activeVerseForPhotocopy = String(
-    state.lastNavResult?.chapter?.verses?.[String(state.verse)] ||
-    "En el principio creó Dios los cielos y la tierra.",
-  ).slice(0, 140);
-  const simLive = simulateKanungoSauvolaGeneration(unifiedSauvola.genIndex, unifiedSauvola.sauvolaK, 300, {
-    lang: simLang,
-    text: activeVerseForPhotocopy,
-    ttfBytes: state.activePrintTtfBytes || null,
+  renderAndBindPhotocopyPanel({
+    ctx,
+    state,
+    targetDoc,
+    getEl,
+    renderPrintDrawerPanelsSyncInDrawer,
   });
-  const photocopyBadge = getEl("biblePhotocopySimBadge", targetDoc);
-  if (photocopyBadge) {
-    const sim3rd = simulateThirdGenPhotocopySauvola({
-      strokePt: (state.fontSizePt || 9.5) >= 9.0 ? 0.85 : 0.75,
-      k: simLive.sauvolaK,
-      R: 128,
-      lang: simLang,
-      text: activeVerseForPhotocopy,
-      ttfBytes: state.activePrintTtfBytes || null,
-    });
-    photocopyBadge.textContent = formatPhotocopySimBadgeText(simLive);
-    photocopyBadge.setAttribute("data-euler-delta", String(simLive.eulerCharacteristicDelta));
-    photocopyBadge.setAttribute("data-survives-3rd-gen", String(Boolean(simLive.wcagPassAaa && sim3rd.survives3rdGen)));
-    photocopyBadge.setAttribute("data-photocopy-gen", String(simLive.genIndex));
-    photocopyBadge.setAttribute("data-sauvola-k", String(simLive.sauvolaK));
-    photocopyBadge.setAttribute("data-contrast-ratio", String(simLive.contrastLabel));
-  }
-
-  const graphicsHost = getEl("editorialGraphicsPhotocopyHost", targetDoc);
-  if (graphicsHost) {
-    graphicsHost.innerHTML = renderPhotocopyResilienceAndSocialCardHtml({
-      book: state.book,
-      chapter: state.chapter,
-      verse: state.verse,
-      text: activeVerseForPhotocopy,
-      lang: state.lang,
-      activeGen: unifiedSauvola.genIndex,
-      sauvolaK: unifiedSauvola.sauvolaK,
-      uiLocale: state.uiLocale || "es",
-      ttfBytes: state.activePrintTtfBytes || null,
-      precomputedActiveSim: simLive,
-      showHeaderContrastBadge: false,
-    });
-    if (typeof graphicsHost.addEventListener === "function" && !graphicsHost._photocopyBound) {
-      graphicsHost._photocopyBound = true;
-      graphicsHost.addEventListener("click", (e) => {
-        const genBtn = e?.target?.closest
-          ? e.target.closest("[data-photocopy-gen]")
-          : e?.target?.getAttribute?.("data-photocopy-gen")
-            ? e.target
-            : null;
-        const genAttr = genBtn?.getAttribute?.("data-photocopy-gen");
-        if (genAttr !== null && genAttr !== undefined) {
-          state.photocopyGen = Number(genAttr) || 0;
-          renderPrintDrawerPanelsSyncInDrawer(ctx);
-        }
-      });
-    }
-    const sauvolaInput = getEl("inputSauvolaK", targetDoc);
-    if (sauvolaInput && typeof sauvolaInput.addEventListener === "function" && !sauvolaInput._sauvolaKBound) {
-      sauvolaInput._sauvolaKBound = true;
-      const onSauvolaChange = (ev) => {
-        state.sauvolaK = Number(ev?.target?.value) || 0.25;
-        renderPrintDrawerPanelsSyncInDrawer(ctx);
-      };
-      if (!sauvolaInput._sauvolaEventsBound) {
-        sauvolaInput._sauvolaEventsBound = true;
-        sauvolaInput.addEventListener("input", onSauvolaChange);
-        sauvolaInput.addEventListener("change", onSauvolaChange);
-      }
-    }
-  }
 
   const stationeryPanel = getEl("stationeryCardPanel", targetDoc);
   if (stationeryPanel) {
@@ -711,6 +580,7 @@ export async function hydratePrintDrawerPanelsInDrawer(ctx = {}) {
   const workerLabel = getEl("tandaWorkerProgressLabel", targetDoc);
   const activePrintSubtab = state.activeSubtabBySheet?.print || state.activeSubtabs?.print || "doses";
   if (activePrintSubtab !== "doses" || ctx.skipSpeculativeWorker === true) {
+    workerWrap?.setAttribute?.("data-worker-active", "false");
     workerWrap?.setAttribute?.("hidden", "");
     workerBar?.removeAttribute?.("data-ergos-active-job");
     if (workerLabel) workerLabel.textContent = "";
@@ -805,6 +675,7 @@ export async function hydratePrintDrawerPanelsInDrawer(ctx = {}) {
     } finally {
       if (workerLabel) workerLabel.textContent = "";
       workerBar?.removeAttribute?.("data-ergos-active-job");
+      workerWrap?.setAttribute?.("data-worker-active", "false");
       workerWrap?.setAttribute?.("hidden", "");
       state.generateFull66BookBible = false;
     }
@@ -817,7 +688,7 @@ export function revokePrintObjectUrls(targetState) {
   if (!targetState || typeof targetState !== "object") return;
   const revokeIfBlob = (u) => {
     if (typeof u === "string" && u.startsWith("blob:")) {
-      try { globalThis.URL?.revokeObjectURL?.(u); } catch {}
+      try { globalThis.URL?.revokeObjectURL?.(u); } catch { }
     }
   };
   for (const key of ["dose2ObjectUrl", "dose3ObjectUrl"]) {

@@ -356,7 +356,7 @@ export function summarizeOfflineFontsVaultCatalog(manifestData = null) {
 
   return {
     bundleFile: String(manifestData?.bundleFile || "ekovoz_fonts_bundle_v1.ekfonts"),
-    bundleUrl: String(manifestData?.bundleUrl || "/packs/fonts/ekovoz_fonts_bundle_v1.ekfonts"),
+    bundleUrl: String(manifestData?.bundleUrl || "packs/fonts/ekovoz_fonts_bundle_v1.ekfonts"),
     bundleBytes: Number(manifestData?.bundleBytes) || 0,
     bundleSha256: normalizeShaHex(manifestData?.bundleSha256),
     codec: String(manifestData?.codec || "RFC8878_ZSTD_LEVEL_22"),

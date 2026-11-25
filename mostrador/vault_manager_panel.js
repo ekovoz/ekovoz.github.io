@@ -26,40 +26,53 @@ const EMBEDDED_DATA_PACK_LANGS = new Set([
 ]);
 
 const VAULT_PACK_HUMAN_NAMES = Object.freeze({
-  es: "Español (Reina-Valera / Actualizada)",
-  en: "English (WEB / KJV)",
-  stp: "O'dam (Tepehuano del Sureste)",
-  he: "Hebreo bíblico (WLC)",
-  grc: "Griego koiné (SBLGNT)",
-  pt: "Portugués",
-  fr: "Francés",
-  ar: "Árabe",
-  fa: "Persa (Farsi)",
-  ur: "Urdu",
-  hi: "Hindi",
-  bn: "Bengalí",
-  id: "Indonesio",
-  ru: "Ruso",
-  "zh-Hans": "Chino simplificado",
-  de: "Alemán",
-  it: "Italiano",
-  ja: "Japonés",
-  ko: "Coreano",
-  sw: "Swahili",
-  tr: "Turco",
-  arp: "Arapaho",
-  bre: "Bretón",
-  cha: "Chamorro",
-  matrix_tier0: "Estudio 15 columnas (Matriz original)",
+  es: { es: "Español (Reina-Valera / Actualizada)", en: "Spanish (Reina-Valera / Updated)" },
+  en: { es: "Inglés (WEB / KJV)", en: "English (WEB / KJV)" },
+  stp: { es: "O'dam (Tepehuano del Sureste)", en: "O'dam (Southeastern Tepehuan)" },
+  he: { es: "Hebreo bíblico (WLC)", en: "Biblical Hebrew (WLC)" },
+  grc: { es: "Griego koiné (SBLGNT)", en: "Koine Greek (SBLGNT)" },
+  pt: { es: "Portugués", en: "Portuguese" },
+  fr: { es: "Francés", en: "French" },
+  ar: { es: "Árabe", en: "Arabic" },
+  fa: { es: "Persa (Farsi)", en: "Persian (Farsi)" },
+  ur: { es: "Urdu", en: "Urdu" },
+  hi: { es: "Hindi", en: "Hindi" },
+  bn: { es: "Bengalí", en: "Bengali" },
+  id: { es: "Indonesio", en: "Indonesian" },
+  ru: { es: "Ruso", en: "Russian" },
+  "zh-Hans": { es: "Chino simplificado", en: "Simplified Chinese" },
+  de: { es: "Alemán", en: "German" },
+  it: { es: "Italiano", en: "Italian" },
+  ja: { es: "Japonés", en: "Japanese" },
+  ko: { es: "Coreano", en: "Korean" },
+  sw: { es: "Swahili", en: "Swahili" },
+  tr: { es: "Turco", en: "Turkish" },
+  arp: { es: "Arapaho", en: "Arapaho" },
+  bre: { es: "Bretón", en: "Breton" },
+  cha: { es: "Chamorro", en: "Chamorro" },
+  matrix_tier0: { es: "Estudio 15 columnas (Matriz original)", en: "15-Column Study Matrix (Original)" },
 });
 
-function resolveVaultPackDisplayTitle(langCode, isEn = false) {
+const CANONICAL_PACK_BOOK_COUNTS = Object.freeze({
+  stp: 27,
+  arp: 1,
+  bre: 4,
+  cha: 6,
+});
+
+function resolveVaultPackDisplayTitle(langCode, isEn = false, meta = null) {
   const clean = String(langCode || "").trim();
-  if (clean === "matrix_tier0") {
-    return isEn ? "15-Column Study Matrix (Original)" : VAULT_PACK_HUMAN_NAMES.matrix_tier0;
-  }
-  const baseName = VAULT_PACK_HUMAN_NAMES[clean] || clean.toUpperCase();
-  return `${baseName} · ${isEn ? "66 books" : "66 libros"}`;
+  const names = VAULT_PACK_HUMAN_NAMES[clean];
+  const baseName = names ? (isEn ? names.en : names.es) : clean.toUpperCase();
+  if (clean === "matrix_tier0") return baseName;
+  const rawCount = Number(meta?.canonicalBooksPresent ?? CANONICAL_PACK_BOOK_COUNTS[clean] ?? 66);
+  const count = Number.isFinite(rawCount) && rawCount > 0 ? rawCount : 66;
+  const tierSuffix = count === 27
+    ? (isEn ? "27 books (NT)" : "27 libros (NT)")
+    : count < 66
+      ? (isEn ? `${count} ${count === 1 ? "book" : "books"} (portion)` : `${count} ${count === 1 ? "libro" : "libros"} (porción)`)
+      : (isEn ? "66 books" : "66 libros");
+  return `${baseName} · ${tierSuffix}`;
 }
 
 /**
@@ -140,7 +153,7 @@ export function renderVaultStorageManagerHtml({
     const prog = progressByLang[langCode];
     const url = resolveCanonicalVaultPackUrl(langCode, meta, matrixTier0Url);
     const fileKey = isMatrix ? "matrix_tier0.ekpack" : `${langCode}.ekpack`;
-    const humanTitle = resolveVaultPackDisplayTitle(langCode, isEn);
+    const humanTitle = resolveVaultPackDisplayTitle(langCode, isEn, meta);
     const searchHay = `${langCode} ${humanTitle} ${fileKey}`.toLowerCase();
     const statusBadge = downloaded
       ? `✅ ${isEn ? "Ready" : "Listo"}${sizeStr ? ` · ${sizeStr}` : ""}`
@@ -174,7 +187,7 @@ export function renderVaultStorageManagerHtml({
   const cleanFilter = String(filterQuery || "").trim().toLowerCase();
   const remainingCodes = mergedLangs.filter((lc) => !prioritySet.has(lc));
   const filteredRemainingCodes = cleanFilter
-    ? remainingCodes.filter((lc) => `${lc} ${resolveVaultPackDisplayTitle(lc, isEn)}`.toLowerCase().includes(cleanFilter))
+    ? remainingCodes.filter((lc) => `${lc} ${resolveVaultPackDisplayTitle(lc, isEn, packMetaMap.get(lc))}`.toLowerCase().includes(cleanFilter))
     : remainingCodes;
 
   const priorityRowsHtml = priorityCodes

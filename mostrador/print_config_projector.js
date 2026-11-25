@@ -4,7 +4,8 @@
 // Ed. 15 Bilingual Bridge 62/38 & Ed. 16 CC0 Notebook 45mm margin), and Grambank wiring.
 // ============================================================================
 
-import { escapeHtml, resolveRegionalBridgeLanguage21 } from "./bridge_and_chapter.js";
+import { escapeHtml } from "./bridge_and_chapter.js";
+import { resolveSelectableBridgeLang } from "./diglossic_chapter_renderer.js";
 import {
   CANONICAL_12_BRANCH_PROFILES,
   CANONICAL_14_PLUS_2_EDITIONS_CATALOG,
@@ -124,7 +125,7 @@ export async function resolveEditionSubstrateForProfile(
   };
 
   if (id.includes("refugio_4_hojas")) {
-    const bridgeLang = curLang === "es" ? "en" : "es";
+    const bridgeLang = resolveSelectableBridgeLang({ state, curLang });
     const vernOut = [];
     const bridgeOut = [];
     const vernByBook = new Map();
@@ -185,17 +186,7 @@ export async function resolveEditionSubstrateForProfile(
   }
 
   if (id === "06_bilingue_paralela") {
-    const resolvedBridge =
-      typeof resolveRegionalBridgeLanguage21 === "function"
-        ? resolveRegionalBridgeLanguage21(curLang, state.countryIso2 || "MX")
-        : null;
-    const bridgeLang =
-      String(
-        state.lastBridgeLang ||
-        resolvedBridge?.code ||
-        (curLang === "es" ? "en" : "es"),
-      )
-        .trim() || "es";
+    const bridgeLang = resolveSelectableBridgeLang({ state, curLang });
     let bridgeEntries = await loadBookEntries(bridgeLang, activeBook);
     const cachedBridgeVerses = state.lastBridgeChapter?.verses || state.lastNavResult?.bridgeChapter?.verses;
     if (bridgeEntries.length === 0 && cachedBridgeVerses) {

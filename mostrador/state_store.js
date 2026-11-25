@@ -16,6 +16,7 @@ export const STORE_DOMAIN_OWNERS = Object.freeze({
   oralPorticoActive: "navigation",
   countryIso2: "navigation",
   regionCode: "navigation",
+  bridgeLang: "navigation",
   uiLocale: "locale",
   activeWork: "work",
   previewWorks: "work",
@@ -34,6 +35,7 @@ export const STORE_DOMAIN_OWNERS = Object.freeze({
   fontFamily: "appearance",
   fontScale: "appearance",
   stealthMode: "stealth",
+  activeDose: "print",
   edition: "print",
   paperFormat: "print",
   columns: "print",
@@ -467,9 +469,20 @@ export function toggleSheet(store, rawSheetName) {
   return current === normalized ? closeSheet(store) : openSheet(store, normalized);
 }
 
-export function setActiveWork(store, workId) {
+export const WORK_LIFECYCLE = Object.freeze({
+  biblia: "public",
+  felices: "public",
+  evangelios: "draft", // INTENCIONAL (R11): deshabilitado por defecto; requiere ?preview=1
+});
+
+export function isRegisteredWorkId(workId, lifecycle = WORK_LIFECYCLE) {
+  const key = String(workId || "").trim().toLowerCase();
+  return Boolean(key && Object.prototype.hasOwnProperty.call(lifecycle, key));
+}
+
+export function setActiveWork(store, workId, lifecycle = WORK_LIFECYCLE) {
   if (!store || typeof store.setState !== "function") return "biblia";
-  const cleanWork = ["biblia", "felices", "evangelios"].includes(workId) ? workId : "biblia";
+  const cleanWork = isRegisteredWorkId(workId, lifecycle) ? String(workId).trim().toLowerCase() : "biblia";
   store.batch?.(({ setState }) => {
     setState({ activeWork: cleanWork }, "work");
     if (cleanWork !== "biblia") {

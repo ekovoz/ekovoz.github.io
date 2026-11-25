@@ -92,6 +92,18 @@ function patchOralPorticoCursorInPlace({
       sp.setAttribute("data-syllable-active", isActive ? "true" : "false");
     }
   }
+  const vpEl = typeof getEl === "function" ? getEl("bibleVerseViewport", targetDoc) : null;
+  const wordTokens = typeof vpEl?.querySelectorAll === "function" ? Array.from(vpEl.querySelectorAll(".bible-word-token")) : [];
+  const totalSyl = Math.max(1, prosody.syllables?.length || spans.length || 1);
+  if (wordTokens.length > 0) {
+    const tokIdx = Math.min(wordTokens.length - 1, Math.floor((Number(prosody.activeSyllableIndex || 0) / totalSyl) * wordTokens.length));
+    for (let wi = 0; wi < wordTokens.length; wi += 1) {
+      const wEl = wordTokens[wi];
+      const activeWord = wi === tokIdx;
+      wEl?.classList?.toggle?.("is-speaking-word", activeWord);
+      wEl?.setAttribute?.("data-speaking-word", activeWord ? "true" : "false");
+    }
+  }
   if (state) state.lastProsodyAlignment = prosody;
 }
 
@@ -197,14 +209,14 @@ export function renderOralPorticoWasmConsole({
       .map((w) => `<option value="${w}"${w === prosody.wpm ? " selected" : ""}>${w} WPM</option>`)
       .join("") +
     `</select></label>` +
-    `<label for="audioElapsedRange">${isEn ? "Position:" : "Cursor (ms):"} ` +
+    `<label for="audioElapsedRange">${isEn ? "Position:" : "Posición:"} ` +
     `<input id="audioElapsedRange" type="range" min="0" max="${prosody.totalMs}" step="250" value="${prosody.elapsedMs}">` +
     `</label>` +
     `</div></div>` +
+    `<details class="tech-details ek-mt-xs"><summary>${isEn ? "Technical cadence, syllables & CRC-16 timing" : "Detalles técnicos de sílabas, cadencia y CRC-16"}</summary>` +
     `<div class="prosody-syllable-strip oral-portico-secondary">` +
     `<span class="uls-badge" data-prosodic-cursor="true">${isEn ? `Syllable #${prosody.activeSyllableIndex + 1}/${prosody.syllables.length}: «${escapeHtml(prosody.activeSyllable)}»` : `Sílaba #${prosody.activeSyllableIndex + 1}/${prosody.syllables.length}: «${escapeHtml(prosody.activeSyllable)}»`}</span> ` +
     `${syllablesHtml}</div>` +
-    `<details class="tech-details ek-mt-xs"><summary>${isEn ? "Technical cadence & CRC-16 timing" : "Detalles técnicos de cadencia y CRC-16"}</summary>` +
     `<div class="oral-portico-secondary">` +
     `<span class="uls-badge" data-prosodic-pause="comma">${isEn ? "τ₁ Comma" : "τ₁ Coma"}: ${prosody.pauseCommaMs} ms</span> ` +
     `<span class="uls-badge" data-prosodic-pause="semicolon">${isEn ? "τ₂ Semicolon" : "τ₂ Punto y coma"}: ${prosody.pauseSemicolonMs} ms</span> ` +
@@ -218,6 +230,14 @@ export function renderOralPorticoWasmConsole({
     typeof oralBanner.querySelectorAll === "function"
       ? Array.from(oralBanner.querySelectorAll("[data-syllable-index]"))
       : oralBanner._porticoSyllableSpans || [];
+  patchOralPorticoCursorInPlace({
+    oralBanner,
+    state,
+    prosody,
+    isPlaying,
+    getEl,
+    targetDoc,
+  });
 
   const updateTick = () => {
     const tickProsody = computeProsodyAndSyllableAlignmentInWasm(

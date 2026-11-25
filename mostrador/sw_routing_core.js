@@ -5,7 +5,7 @@
 // fallback /index.html estricto a mode=navigate, 0 respuestas opaque).
 // ============================================================================
 
-export const CACHE_NAME = "ekovoz-mostrador-v49";
+export const CACHE_NAME = "ekovoz-mostrador-v50";
 export const OPT_IN_META_KEY = "/__ekovoz_meta/offline-opt-in";
 
 export const SUPPORTED_BOOK_NAMES_LANGS = new Set([
@@ -91,8 +91,10 @@ export const SHELL_CORE_ASSETS = [
   "/mostrador/sister_works_controller.js",
   "/mostrador/social_and_photocopy_cards.js",
   "/mostrador/print_config_projector.js",
+  "/mostrador/polyglot_picker_view.js",
   "/mostrador/print_guide_and_progress.js",
   "/mostrador/print_stage_ribbon.js",
+  "/mostrador/print_unified_options.js",
   "/mostrador/print_work_and_photocopy.js",
   "/mostrador/stage_dom_bindings.js",
   "/mostrador/state_store.js",
@@ -100,6 +102,7 @@ export const SHELL_CORE_ASSETS = [
   "/mostrador/study_onomasticon_and_ubs.js",
   "/mostrador/surface_compositor.js",
   "/mostrador/sw_routing_core.js",
+  "/mostrador/url_route_lens.js",
   "/mostrador/cascade_l1_l5.js",
   "/mostrador/tanda_print_worker.js",
   "/mostrador/bimodal_tanda_print.js",

@@ -232,7 +232,7 @@ export function renderPrintStageRibbonHtml(opts = {}) {
   const buttonsHtml = spec.stages
     .map((s) => {
       const cls = s.primary ? "print-stage-btn is-primary-stage" : "print-stage-btn";
-      return `<button type="button" id="${escHtml(s.id)}" class="${cls}" data-print-stage-action="${escHtml(s.action)}"><span class="print-stage-title">${escHtml(s.label)}</span><span class="print-stage-meta">${escHtml(s.sublabel)} · ${escHtml(s.badge)}</span></button>`;
+      return `<div class="print-stage-card" data-ergos-homogeneous-card="print-stage"><button type="button" id="${escHtml(s.id)}" class="${cls}" data-print-stage-action="${escHtml(s.action)}"><span class="print-stage-title">${escHtml(s.label)}</span><span class="print-stage-meta">${escHtml(s.sublabel)} · ${escHtml(s.badge)}</span></button></div>`;
     })
     .join("");
   return `<div class="print-stage-header"><span class="print-stage-kicker">${escHtml(spec.heading)}</span><button type="button" id="${escHtml(spec.secondaryAction.id)}" class="uls-chip print-stage-more" data-print-stage-action="${escHtml(spec.secondaryAction.action)}">${escHtml(spec.secondaryAction.label)}</button></div><p class="print-stage-subline">${escHtml(spec.subline)}</p><div class="print-stage-actions-row" role="group" aria-label="${escHtml(spec.heading)}">${buttonsHtml}</div>`;
@@ -261,6 +261,7 @@ export function bindPrintFirstStageRibbon({
     const action = String(btn?.getAttribute?.("data-print-stage-action") || "").trim();
     if (!action) return;
     if (action === "dose1") {
+      if (state && typeof state === "object") state.activeDose = 1;
       await handleDose1Trigger?.();
       return;
     }
@@ -268,7 +269,10 @@ export function bindPrintFirstStageRibbon({
       transitionSheet?.("share", targetDoc, { fromUser: true });
       return;
     }
-    transitionSheet?.("print", targetDoc, { fromUser: true });
+    if (state && typeof state === "object") {
+      state.activeDose = action === "dose2" ? 2 : action === "dose3" || action === "stage-nt" ? 3 : (state.activeDose || 1);
+    }
+    transitionSheet?.("print", targetDoc, { fromUser: true, dose: state?.activeDose });
     if (action === "dose2") {
       const link2 = getEl("linkDose2BlockPdf", targetDoc);
       link2?.click?.();

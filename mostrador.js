@@ -5,9 +5,12 @@
 // ============================================================================
 
 import {
-  FELICES_PLATE_TO_BIBLE_COORDINATE, applyAriaLabelsToDom, parseInitialRouteAndLocale, resolvePlateForBibleCoordinate,
+  FELICES_PLATE_TO_BIBLE_COORDINATE, applyAriaLabelsToDom, resolvePlateForBibleCoordinate,
   serializeMostradorRouteQuery, setActivePlateIndex, setPaperFormat, syncFelicesWithCorpusLang, syncI18nUiFromState, updateUI,
 } from "./i18n_ui.js";
+import {
+  parseInitialRouteAndLocale, resolveDefaultCorpusLangForUi,
+} from "./mostrador/url_route_lens.js";
 import {
   CROSS_WORK_BRIDGE_TABLE, HAREL_SHEET_MAP, LIFE_TRAILS_ANCHORS, MOSTRADOR_DOM_BINDINGS, MULTI_ORTHO_LANGS, POETIC_BOOKS,
   REGIONAL_BRIDGE_LANGUAGES_10, applyOrthographyProfile, deriveEpistemicSeal, escapeHtml, lookupWordTokenStrongEntry,
@@ -23,7 +26,7 @@ import {
   renderAnalyticalThermometerHtml, renderChapterDiachronicAuditCardHtml, renderUnifiedDiachronicContextHtml, resolveEffectiveCorpusTarget,
   summarizeChapterDiachronicTransformations, syncDiachronicRegisterOrthogonality,
 } from "./mostrador/diachronic_register.js";
-import { isVerifiedCanonicalTier0Or1, mapFullChapterGmisRows, renderProgressiveTwoStrataDiglossicBridge, resolveHonestSovereignTier } from "./mostrador/diglossic_chapter_renderer.js";
+import { isVerifiedCanonicalTier0Or1, mapFullChapterGmisRows, renderProgressiveTwoStrataDiglossicBridge, resolveHonestSovereignTier, resolveSelectableBridgeLang } from "./mostrador/diglossic_chapter_renderer.js";
 import {
   CANONICAL_12_BRANCH_PROFILES, CANONICAL_14_PLUS_2_EDITIONS_CATALOG, CANONICAL_14_PRINT_PROFILES, CANONICAL_16_TYPOLOGY_PROFILES,
   CANONICAL_80_BLOCKS_CATALOG, CANONICAL_9_TOML_PROFILES, POCKET_REFUGE_4_SHEETS_SPEC, PRECOMPILED_PDF_LANGS, VERIFIED_TEXT_BIBLE_LANGS,
@@ -52,7 +55,7 @@ import {
 import {
   EVANGELIOS_MACRO_THREADS_AND_ECHOES, FELICES_12_DICHAS_COORDINATE_MAP, FELICES_28_PLATES_MAP, hydratePericopesAndGlosses,
   parseCanonicalOtEchoRef, renderChapterPericopesRibbonHtml, renderEvangeliosPlateActionsHtml, renderFelicesSocraticWonderCardHtml,
-  resolveDefaultCorpusLangForUi, resolveEvangeliosMacroThreadAndEcho, resolveFelicesDichaCoordinate, resolveFelicesPlate,
+  resolveEvangeliosMacroThreadAndEcho, resolveFelicesDichaCoordinate, resolveFelicesPlate,
   resolveMasoreticPericopeBreaks,
 } from "./mostrador/evangelios.js";
 import {
@@ -87,7 +90,7 @@ import { syncStickyDrawerContextHeader, projectStoreAttributesToDom } from "./mo
 import {
   closeSheet, createEkovozStore, createGuardedStateProxy, openSheet, setActiveIntent, toggleSheet,
 } from "./mostrador/state_store.js";
-import { createSurfaceCompositor, projectSubtabGroupToDom, projectSurfaceLayoutFromState } from "./mostrador/surface_compositor.js";
+import { applyInitialSurfaceModeFromUrl, createSurfaceCompositor, projectSubtabGroupToDom, projectSurfaceLayoutFromState } from "./mostrador/surface_compositor.js";
 import {
   ROSETTA_66_BOOKS, createReferenceResolver, normalizeBookAliasToken, parseBiblicalCoordinateReference, resolveBookCodeByAliasOrName,
 } from "./mostrador/reference.js";
@@ -521,7 +524,11 @@ export function createMostradorController(options = {}) {
     const isTier0Or1 = isVerifiedCanonicalTier0Or1(normCorpusLang, res);
 
     if (state.register === "bilingue" && res.status === STATUS.READY) {
-      const bridgeLang = state.lang === "es" ? "en" : "es";
+      const bridgeLang = resolveSelectableBridgeLang({
+        state,
+        curLang: state.lang,
+        bridgeLang: state.bridgeLang || state.lastBridgeLang || "",
+      });
       try {
         const bridgeRes = await dataLayer.loadChapter({
           lang: bridgeLang,
@@ -586,13 +593,15 @@ export function createMostradorController(options = {}) {
           1,
         );
         const regionalSlot = REGIONAL_BRIDGE_LANGUAGES_10[macroRegion] || REGIONAL_BRIDGE_LANGUAGES_10[1];
-        const bridgeSpec = resolveRegionalBridgeLanguage21({
-          lang: normCorpusLang || state.lang || "",
-          macroRegion,
-          bridgeLang:
-            catalogEntry?.bridge_lang ||
-            (o1Route?.isLusophone ? "pt" : regionalSlot?.code || ""),
-        });
+        const explicitBridge = String(state.bridgeLang || catalogEntry?.bridge_lang || "").trim();
+        const resolvedBridgeCode = explicitBridge || (o1Route?.isLusophone ? "pt" : regionalSlot?.code || "");
+        const bridgeSpec = explicitBridge
+          ? { code: explicitBridge, label: `Bridge (${explicitBridge})` }
+          : resolveRegionalBridgeLanguage21({
+              lang: normCorpusLang || state.lang || "",
+              macroRegion,
+              bridgeLang: resolvedBridgeCode,
+            });
         let bridgeVerses = {};
         try {
           let brRes = await dataLayer.loadChapter({
@@ -1042,8 +1051,9 @@ export async function bootBrowserMostrador(
     book: parsedRef.bookCode,
     chapter: parsedRef.chapter || 1,
     verse: parsedRef.verse || 1,
+    edition: route.profile || "02_2col_pastoral",
     paperFormat: route.format || "a4",
-    activeIntent: new URLSearchParams(String(win.location?.search || "").replace(/^\?/, "")).get("intent") || (new URLSearchParams(String(win.location?.search || "").replace(/^\?/, "")).get("mode") === "studio" ? "study" : (options.activeIntent || "read")),
+    activeIntent: route.intent || options.activeIntent || "read",
     surfaceMode: new URLSearchParams(String(win.location?.search || "").replace(/^\?/, "")).get("mode") === "studio" ? "studio" : (options.surfaceMode || "reader"),
   });
 
@@ -1053,6 +1063,8 @@ export async function bootBrowserMostrador(
   if (route.reg) controller.state.register = route.reg;
   if (route.ortho) controller.state.orthographyProfile = route.ortho;
   if (route.format) controller.state.paperFormat = route.format;
+  if (route.dose) controller.state.activeDose = route.dose;
+  if (route.bridge) controller.state.bridgeLang = route.bridge;
   controller.state.explicitPlateRequested = route.plate !== null;
   if (route.plate !== null) {
     controller.state.activePlateIndex = route.plate;
@@ -1111,10 +1123,16 @@ export async function bootBrowserMostrador(
   }
 
   if (!controller.state.userTouchedSheet) {
-    if (route.sheet) {
-      await controller.transitionSheet(route.sheet, doc, { mode: "open" });
-    } else if (!controller.state.activeSheet && controller.state.activeIntent === "study" && controller.state.activeWork === "biblia") {
-      await controller.transitionSheet("study", doc, { mode: "open" });
+    applyInitialSurfaceModeFromUrl({
+      store: controller.store,
+      state: controller.state,
+      search: win.location?.search || "",
+      doc,
+      getEl: (id, d) => (d || doc)?.getElementById?.(id) || null,
+    });
+    const bootTargetSheet = route.sheet || (controller.state.activeIntent !== "read" ? controller.state.activeIntent : null);
+    if (bootTargetSheet && controller.state.activeWork === "biblia") {
+      await controller.transitionSheet(bootTargetSheet, doc, { mode: "open" });
     }
   }
 

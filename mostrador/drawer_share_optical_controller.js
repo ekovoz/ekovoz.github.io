@@ -244,7 +244,7 @@ export function hydrateOpticalTxAndRxPanels({
       `<button type="button" id="btnNextQrBeamFrame" class="uls-chip qrbeam-btn">⏭ ${isEn ? "Next Frame" : "Siguiente cuadro"} (#${grid.seq + 1})</button>` +
       `</div></div>` +
       `<div class="ek-row-gap-lg">` +
-      `<div id="qrBeamMatrixHost" class="qrbeam-matrix-host">${svgMarkup}<canvas id="qrBeamMatrixCanvas" width="174" height="174" aria-hidden="true"></canvas></div>` +
+      `<div id="qrBeamMatrixHost" class="qrbeam-matrix-host"><span id="qrBeamMatrixSvgSlot">${svgMarkup}</span><canvas id="qrBeamMatrixCanvas" width="174" height="174" aria-hidden="true"></canvas></div>` +
       `<details class="tech-details"><summary>${isEn ? "Technical optical stream (ECO-GRID)" : "Detalles técnicos del canal óptico (ECO-GRID)"}</summary>` +
       `<p class="qrbeam-desc">${isEn ? `ECO-GRID 29×29 (${packetBytes.byteLength} B ≤ 66 B): Systematic Pass (0..${encoder.K - 1}) + ECOM digest trailer + SplitMix64 LT repair tail.` : `ECO-GRID 29×29 (${packetBytes.byteLength} B ≤ 66 B): Pase sistemático (0..${encoder.K - 1}) + cierre ECOM + cola LT SplitMix64.`}</p>` +
       `</details>` +
@@ -255,10 +255,15 @@ export function hydrateOpticalTxAndRxPanels({
       const cycleMod = encoder.K + Math.max(4, Math.ceil(encoder.K * 0.5)) + 1;
       const effSeq = nextSeq % cycleMod;
       const nextTx = buildEco1OpticalTxFrame(rawBytes, effSeq, 1);
-      const matrixHost = getEl("qrBeamMatrixHost", targetDoc);
+      const svgSlot = getEl("qrBeamMatrixSvgSlot", targetDoc);
       const canvasEl = getEl("qrBeamMatrixCanvas", targetDoc);
-      if (matrixHost) {
-        matrixHost.innerHTML = renderDropletMatrixSvgOrCanvas(nextTx.grid, null);
+      if (svgSlot) {
+        svgSlot.innerHTML = renderDropletMatrixSvgOrCanvas(nextTx.grid, null);
+      } else {
+        const matrixHost = getEl("qrBeamMatrixHost", targetDoc);
+        if (matrixHost && !canvasEl) {
+          matrixHost.innerHTML = renderDropletMatrixSvgOrCanvas(nextTx.grid, null);
+        }
       }
       if (canvasEl) drawGridOntoOpticalCanvas(canvasEl, nextTx.grid);
       const counterEl = getEl("opticalFrameCounter", targetDoc);

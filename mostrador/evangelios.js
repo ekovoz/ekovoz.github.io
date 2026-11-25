@@ -1,8 +1,18 @@
 // web/mostrador/evangelios.js — Acciones de Impresión, Estudio, Perícopas Masoréticas (Petuhah פ / Setumah ס),
 // Hilos Macro-Narrativos (52 semanas), Ecos AT->NT y las 12 Dichas Soberanas (`D4-R+`, `D7-B+`, `D8-B+`).
 
-import { isWorkVisible, parsePreviewWorksParam } from "./projection_contract.js";
 import { ROSETTA_66_BOOKS } from "./reference.js";
+import {
+  FELICES_PLATE_TO_BIBLE_COORDINATE,
+  parseInitialRouteAndLocale as parseRouteCore,
+  resolveDefaultCorpusLangForUi,
+  serializeMostradorRouteQuery
+} from "./url_route_lens.js";
+export {
+  FELICES_PLATE_TO_BIBLE_COORDINATE,
+  resolveDefaultCorpusLangForUi,
+  serializeMostradorRouteQuery
+};
 
 export const MASORETIC_AND_GOSPEL_PERICOPE_MAP = {
   "GEN.1": [
@@ -774,29 +784,8 @@ export function renderFelicesSocraticWonderCardHtml(plateIndex = 1, uiLang = "es
 }
 
 const FELICES_N = 27;
-const FELICES_WK = ["biblia", "felices", "evangelios"];
 const clampFelicesNum = (v, h, d = 1) => Math.max(1, Math.min(h, Number(v) || d));
 const trimFelicesStr = (v, d = "") => String(v || d).trim();
-const parseWeekSlug27 = (s) => {
-  const m = trimFelicesStr(s).toLowerCase().match(/^s?0*(\d{1,2})$/);
-  return m ? `s${String(clampFelicesNum(m[1], 52)).padStart(2, "0")}` : null;
-};
-
-export const FELICES_PLATE_TO_BIBLE_COORDINATE = Object.fromEntries(
-  Array.from({ length: FELICES_N }, (_, i) => [
-    i + 1,
-    i < 24
-      ? {
-        book: "MAT",
-        chapter: 5,
-        verse: i < 2 ? 1 : i < 4 ? 3 : Math.min(12, (i >> 1) + 2),
-        beatitudeIndex: Math.min(10, i >> 1),
-      }
-      : i < 26
-        ? { book: "MAT", chapter: 5, verse: 1, beatitudeIndex: 0 }
-        : { book: "REV", chapter: 22, verse: 14, beatitudeIndex: 11 },
-  ]),
-);
 
 export function resolveFelicesPlateCoord(b = "MAT", ch = 5, v = 3, cur = 24, opts = {}) {
   const k = clampFelicesNum(cur, FELICES_N, 24);
@@ -816,140 +805,10 @@ export function resolveFelicesPlateCoord(b = "MAT", ch = 5, v = 3, cur = 24, opt
   return k;
 }
 
-const DEFAULT_CORPUS_LANG_BY_UI_MAP = {
-  en: "en",
-  es: "es",
-  fr: "fr",
-  pt: "pt",
-  it: "it",
-  id: "id",
-  tr: "tr",
-  ru: "ru",
-  "zh-hans": "zh-Hans",
-  zh: "zh-Hans",
-  ja: "ja",
-  ko: "ko",
-  hi: "hi",
-  bn: "bn",
-  "bn-bd": "bn",
-  "bn-in": "bn",
-  ar: "ar",
-  ur: "ur",
-  fa: "fa",
-};
-
-/**
- * Alinea el idioma inicial del corpus bíblico con el idioma de interfaz negociado (`uiLocale`),
- * garantizando coherencia por defecto (p. ej. `ui=en` -> `lang=en`, `ui=es` -> `lang=es`)
- * cuando el usuario no especificó `?lang=`.
- */
-export function resolveDefaultCorpusLangForUi(uiLocale = "en") {
-  const clean = trimFelicesStr(uiLocale, "en").replace(/_/g, "-").toLowerCase();
-  if (!clean) return "en";
-  if (Object.prototype.hasOwnProperty.call(DEFAULT_CORPUS_LANG_BY_UI_MAP, clean)) {
-    return DEFAULT_CORPUS_LANG_BY_UI_MAP[clean];
-  }
-  const primary = clean.split("-")[0];
-  if (Object.prototype.hasOwnProperty.call(DEFAULT_CORPUS_LANG_BY_UI_MAP, primary)) {
-    return DEFAULT_CORPUS_LANG_BY_UI_MAP[primary];
-  }
-  return "en";
-}
-
-export function parseInitialRouteAndLocale({
-  search = "",
-  pathname = "",
-  defaultUi = "en",
-  defaultLang = null,
-} = {}) {
-  const q = new URLSearchParams(trimFelicesStr(search).replace(/^\?/, ""));
-  const pL = trimFelicesStr(pathname).toLowerCase();
-  const g = (k) => trimFelicesStr(q.get(k));
-  const b = (k, h) => {
-    const n = Number(q.get(k));
-    return n >= 1 ? clampFelicesNum(Math.round(n), h) : null;
-  };
-  const rawPreview = g("preview");
-  const previewWorks = parsePreviewWorksParam(rawPreview);
-  const previewParam = previewWorks.length > 0 ? (rawPreview || (previewWorks.length === 1 ? previewWorks[0] : "1")) : "";
-  const plate = b("plate", FELICES_N);
-  const dicha = b("dicha", 12);
-  const week = parseWeekSlug27(g("week"));
-  const rW = g("work").toLowerCase();
-  const requestedWork = FELICES_WK.includes(rW)
-    ? rW
-    : plate || dicha
-      ? "felices"
-      : week
-        ? "evangelios"
-        : FELICES_WK.find((w) => pL.includes(w)) || "biblia";
-  const workAllowed = isWorkVisible(requestedWork, previewWorks);
-  const blockedDraftWork = workAllowed ? null : requestedWork;
-  const work = workAllowed ? requestedWork : "biblia";
-  const degradedWeek = blockedDraftWork === "evangelios" ? week : null;
-  const effectiveWeek = work === "evangelios" ? week : null;
-  const dP = dicha ? (dicha === 1 ? 25 : dicha === 12 ? 27 : clampFelicesNum(dicha * 2 - 1, 24)) : null;
-  const pC = work === "felices" && (plate || dP) ? FELICES_PLATE_TO_BIBLE_COORDINATE[plate || dP] : null;
-  const evFallbackRef = degradedWeek && EVANGELIOS_MACRO_THREADS_AND_ECHOES[degradedWeek]?.anchorOsis
-    ? EVANGELIOS_MACRO_THREADS_AND_ECHOES[degradedWeek].anchorOsis
-    : null;
-  const rR = g("ref");
-  const ui = g("ui") || defaultUi || "en";
-  const lang = g("lang") || defaultLang || resolveDefaultCorpusLangForUi(ui);
-  return {
-    work,
-    blockedDraftWork,
-    degradedWeek,
-    previewWorks,
-    previewParam,
-    ui,
-    lang,
-    ref: rR || (pC ? `${pC.book}.${pC.chapter}.${pC.verse}` : evFallbackRef || "JHN.1.1"),
-    refExplicit: !!rR,
-    plate,
-    dicha,
-    week: effectiveWeek,
-    reg: g("reg").toLowerCase() || g("register").toLowerCase() || null,
-    ortho: g("ortho") || null,
-    sheet: g("sheet").toLowerCase() || null,
-    format: g("format").toLowerCase() === "letter" ? "letter" : "a4",
-  };
-}
-
-export function serializeMostradorRouteQuery(st = {}, fallbackPlate = 24) {
-  const previewWorks = Array.isArray(st.previewWorks)
-    ? st.previewWorks
-    : parsePreviewWorksParam(st.preview || st.previewParam || "");
-  const rW = trimFelicesStr(st.work || st.activeWork || "biblia").toLowerCase();
-  const work = FELICES_WK.includes(rW) && isWorkVisible(rW, previewWorks) ? rW : "biblia";
-  const ui = trimFelicesStr(st.ui || st.uiLocale, "en");
-  const q = new URLSearchParams({
-    work,
-    ui,
-    lang: trimFelicesStr(st.lang, resolveDefaultCorpusLangForUi(ui)),
-    ref: trimFelicesStr(
-      st.ref,
-      `${trimFelicesStr(st.book, "JHN").toUpperCase()}.${clampFelicesNum(st.chapter, 999)}.${clampFelicesNum(st.verse, 999)}`,
-    ),
+export function parseInitialRouteAndLocale(opts = {}) {
+  return parseRouteCore({
+    ...opts,
+    macroThreads: opts?.macroThreads || EVANGELIOS_MACRO_THREADS_AND_ECHOES,
   });
-  if (previewWorks.length > 0) {
-    q.set("preview", trimFelicesStr(st.previewParam, previewWorks.length === 1 ? previewWorks[0] : "1"));
-  }
-  if (work === "felices") {
-    q.set("plate", String(clampFelicesNum(st.plate ?? st.activePlateIndex ?? fallbackPlate, FELICES_N, 24)));
-    const d = Number(st.dicha ?? st.activeDichaIndex ?? st.felicesDicha);
-    if (d >= 1 && d <= 12) q.set("dicha", String(Math.round(d)));
-  } else if (work === "evangelios") {
-    q.set("week", parseWeekSlug27(st.week || st.evangeliosWeekId) || "s01");
-  }
-  for (const [k, v] of [
-    ["reg", trimFelicesStr(st.reg || st.register).toLowerCase()],
-    ["ortho", trimFelicesStr(st.ortho || st.orthographyProfile)],
-    ["sheet", trimFelicesStr(st.sheet || st.activeSheet).toLowerCase()],
-    ["format", trimFelicesStr(st.format || st.paperFormat).toLowerCase()],
-  ]) {
-    if (v && v !== "intergeneracional" && v !== "a4") q.set(k, v);
-  }
-  return `?${q}`;
 }
 

@@ -717,6 +717,10 @@ export function hydrateShareAndAuditDrawerPanel(ctx = {}) {
   void hydrateVaultStorageManagerPanel({ state, targetDoc, getEl });
   const provHost = getEl("editorialProvenanceCardHost", targetDoc);
   if (provHost) {
+    const authCard = getEl("shareAuthenticityUnifiedCard", targetDoc);
+    if (authCard && provHost.parentNode === authCard && typeof authCard.insertBefore === "function" && authCard.firstChild && authCard.firstChild !== provHost) {
+      authCard.insertBefore(provHost, authCard.firstChild);
+    }
     provHost.innerHTML = renderEditorialProvenanceCardHtml(state.editorialProvenance || null, state.uiLocale || "es");
     bindProvenanceVerifierEvents(provHost, state.editorialProvenance || null, state.uiLocale || "es");
     if (!state.editorialProvenance && dataLayer && typeof dataLayer.loadEditorialProvenance === "function") {

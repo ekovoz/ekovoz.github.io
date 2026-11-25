@@ -319,11 +319,11 @@ export function createDataLayer({ source, cacheLimit = 32 } = {}) {
     const orderedBases = mounts.length > 0 ? mounts : ["packs", "data/packs"];
     const out = [];
     for (const base of orderedBases) {
-      if (base === "data/packs" && source?.isFetchNetworkSource && !EMBEDDED_SEED_PACK_LANGS.has(baseLang)) {
-        continue;
-      }
       const candidate = `${base}/${baseLang}.ekpack`;
       if (!out.includes(candidate)) out.push(candidate);
+    }
+    if (!out.includes(`data/packs/${baseLang}.ekpack`)) {
+      out.push(`data/packs/${baseLang}.ekpack`);
     }
     return out;
   }
@@ -1335,7 +1335,10 @@ export function createDataLayer({ source, cacheLimit = 32 } = {}) {
 
   async function loadOnomasticonCatalog() {
     if (hydratedOnomasticonCatalog) return hydratedOnomasticonCatalog;
-    const zstBytes = await loadBytes("data/onomasticon_3657.json.zst");
+    let zstBytes = await loadBytes("data/onomasticon_3657.json.zst").catch(() => null);
+    if (!zstBytes || !(zstBytes instanceof Uint8Array) || zstBytes.byteLength === 0) {
+      zstBytes = await loadBytes("packs/onomasticon_3657.json.zst").catch(() => null);
+    }
     if (!zstBytes || !(zstBytes instanceof Uint8Array) || zstBytes.byteLength === 0) {
       return null;
     }

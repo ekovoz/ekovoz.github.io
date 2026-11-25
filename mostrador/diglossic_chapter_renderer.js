@@ -58,6 +58,30 @@ export function isVerifiedCanonicalTier0Or1(langCode, navResult = null) {
 }
 
 /**
+ * Resuelve la lengua puente para lectura bilingüe `62/38` o andamiaje `Tiers 2–4` (`D6-V3HIG`).
+ * Respeta cualquier `.ekpack` elegido en `state.bridgeLang`/`bridgeLang` y cae a la lengua puente regional (`R01..R12`).
+ */
+export function resolveSelectableBridgeLang({ state = null, curLang = "es", bridgeLang = "", macroRegion = 0 } = {}) {
+  const srcLower = String(curLang || state?.lang || "es").trim().toLowerCase();
+  const rawOverride = String(bridgeLang || state?.bridgeLang || state?.lastBridgeLang || "").trim();
+  const normOverride = rawOverride.toLowerCase() === "zh" || rawOverride.toLowerCase() === "zh-hans" || rawOverride.toLowerCase() === "cmn"
+    ? "zh-Hans"
+    : rawOverride;
+  if (normOverride && normOverride.toLowerCase() !== srcLower) {
+    return normOverride;
+  }
+  const o1 = lookupIso639MacroRegionO1(srcLower);
+  const regional = resolveRegionalBridgeLanguage21({
+    macroRegion: Number(macroRegion) || o1.macroRegionId || 1,
+    lang: srcLower,
+  });
+  if (regional?.code && regional.code.toLowerCase() !== srcLower) {
+    return regional.code;
+  }
+  return srcLower === "es" || srcLower === "es-1909" ? "en" : "es";
+}
+
+/**
  * Clasifica el nivel soberano real prohibiendo disfrazar lenguas humanas `Tier 1` como `TIER_4_GMIS_CELF250` (`DEBRIS-V2G-03`).
  */
 export function resolveHonestSovereignTier({
@@ -178,11 +202,14 @@ export function renderProgressiveTwoStrataDiglossicBridge({
       : o1Region.macroRegionId;
   const regionalSlot =
     REGIONAL_BRIDGE_LANGUAGES_10[resolvedMacroRegion] || REGIONAL_BRIDGE_LANGUAGES_10[1];
-  const bridgeSpec = resolveRegionalBridgeLanguage21({
-    macroRegion: resolvedMacroRegion,
-    bridgeLang: bridgeLang || (o1Region.isLusophone ? "pt" : regionalSlot?.code || ""),
-    lang,
-  });
+  const explicitBridge = String(bridgeLang || "").trim();
+  const bridgeSpec = explicitBridge && explicitBridge.toLowerCase() !== String(lang || "").trim().toLowerCase()
+    ? { code: explicitBridge, label: `Bridge (${explicitBridge})` }
+    : resolveRegionalBridgeLanguage21({
+        macroRegion: resolvedMacroRegion,
+        bridgeLang: o1Region.isLusophone ? "pt" : regionalSlot?.code || "",
+        lang,
+      });
 
   const gmisByVerse = new Map();
   for (const r of Array.isArray(gmisRows) ? gmisRows : []) {

@@ -126,7 +126,8 @@ export function projectSubtabGroupToDom(rootDoc, groupName, activeSubtab) {
   for (const panel of Array.from(rootDoc.querySelectorAll(`[${panelAttr}]`))) {
     const val = panel.getAttribute?.(panelAttr);
     const hasPinnedStatus = panel.getAttribute?.("data-status-visible") === "true";
-    const isVisible = val === activeSubtab || hasPinnedStatus;
+    const isIdleProgress = panel.id === "tandaWorkerProgressWrap" && panel.getAttribute?.("data-worker-active") !== "true";
+    const isVisible = !isIdleProgress && (val === activeSubtab || hasPinnedStatus);
     panel.hidden = !isVisible;
     toggledPanels += 1;
   }
@@ -227,16 +228,6 @@ export function projectSurfaceLayoutFromState(state = {}, rootDoc, getEl) {
       btn.setAttribute?.("data-chrome-priority", resolveDrawerChromePriority(sheetKey));
     }
   }
-
-  const corpusTab = state.activeCorpusTab === "trails" ? "trails" : "bibles";
-  const tabBibles = resolveEl("btnCorpusTabBibles");
-  const tabTrails = resolveEl("btnCorpusTabTrails");
-  const panelBibles = resolveEl("corpusTabPanelBibles");
-  const panelTrails = resolveEl("corpusTabPanelTrails");
-  if (tabBibles) tabBibles.setAttribute?.("aria-selected", corpusTab === "bibles" ? "true" : "false");
-  if (tabTrails) tabTrails.setAttribute?.("aria-selected", corpusTab === "trails" ? "true" : "false");
-  if (panelBibles) panelBibles.hidden = corpusTab !== "bibles";
-  if (panelTrails) panelTrails.hidden = corpusTab !== "trails";
 
   const activeSubtabs = state.activeSubtabBySheet || DEFAULT_SUBTABS_BY_SHEET;
   const isSharePdf = normalizedSheet === "share" && activeSubtabs.share === "pdf";

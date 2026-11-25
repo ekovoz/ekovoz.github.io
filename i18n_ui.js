@@ -1,5 +1,4 @@
 import { resolveOverlayEntryForOsis, resolveVerseWithOverlay } from "./mostrador/drawer_workshop.js";
-import { renderLocalizedFelicesPlateCardHtml } from "./mostrador/felices_stage_controller.js";
 import {
   FELICES_PLATE_TO_BIBLE_COORDINATE,
   parseInitialRouteAndLocale,
@@ -7,6 +6,7 @@ import {
   resolveFelicesPlateCoord,
   serializeMostradorRouteQuery as serializeRouteCore,
 } from "./mostrador/evangelios.js";
+import { renderLocalizedFelicesPlateCardHtml } from "./mostrador/felices_stage_controller.js";
 export { FELICES_PLATE_TO_BIBLE_COORDINATE, parseInitialRouteAndLocale };
 export const LANGUAGE_PACKS = Object.freeze("en|English,es|Español,bn-BD|Bengali BD|বাংলা|Beng,bn-IN|Bengali IN|বাংলা|Beng,fr|Français,pt|Português,it|Italiano,id|Indonesia,tr|Türkçe,ru|Русский||Cyrl,zh-Hans|中文||Hans,ja|日本語||Jpan,ko|한국어||Kore,hi|हिन्दी||Deva,bn|বাংলা||Beng,ar|العربية||Arab|rtl,ur|اردو||Aran|rtl,fa|فارسی||Arab|rtl".split(",").map(s => { const [code, name, a, script = "Latn", dir = "ltr"] = s.split("|"); return { code, name, autonym: a || name, dir, script }; }));
 const N = 27, D = () => (typeof document !== "undefined" ? document : null), $ = (d, id) => d?.getElementById?.(id), L = x => S(x).toLowerCase(), clp = (v, h, d = 1) => Math.max(1, Math.min(h, Number(v) || d)), S = (v, d = "") => String(v || d).trim(), gL = (d, o) => o || $(d, "langSelect")?.value || "en", sA = (e, k, v) => e?.setAttribute?.(k, v);
@@ -38,7 +38,7 @@ export function updateDownloadLinks(doc = D(), lO = "") {
   for (const [id, h, fn] of [["linkSheets", sH, `felices-${pL}-v1-sheets-${f}.pdf`], ["linkBooklet", bH, `felices-${pL}-v1-booklet-${f}.pdf`]]) { const e = $(doc, id); if (e) { e.href = h; sA(e, "download", fn); } }
   return { distLang: pL, sheetsHref: sH, bookletHref: bH, paperFormat: pFmt };
 }
-export function setPaperFormat(f, d = D()) { pFmt = f === "letter" ? "letter" : "a4"; if (!d) return pFmt; for (const [id, on] of [["toggleA4", pFmt === "a4"], ["toggleCarta", pFmt !== "a4"]]) { const b = $(d, id), s = String(on); b?.classList?.toggle?.("active", on); sA(b, "aria-checked", s); sA(b, "aria-pressed", s); } updateDownloadLinks(d); return pFmt; }
+export function setPaperFormat(f, d = D()) { pFmt = f === "letter" ? "letter" : "a4"; if (stRef && typeof stRef === "object") { stRef.paperFormat = pFmt; stRef.felicesPaperFormat = pFmt; } const sel = $(d, "kindlePaperFormatSelector"); if (sel && sel.value && sel.value !== "b70" && sel.value !== pFmt) sel.value = pFmt; if (!d) return pFmt; for (const [id, on] of [["toggleA4", pFmt === "a4"], ["toggleCarta", pFmt !== "a4"]]) { const b = $(d, id), s = String(on); b?.classList?.toggle?.("active", on); sA(b, "aria-checked", s); sA(b, "aria-pressed", s); } updateDownloadLinks(d); return pFmt; }
 export function updateFocalPlate(d = D(), lO = "", n = true, uO = "", st = stRef) {
   if (!d) return; const l = gL(d, lO), uL = uO || l, isEs = L(uL).startsWith("es"), isEn = !isEs, pW = resolveFelicesStrings(uL).plateLabel || (isEn ? "Plate" : "Lámina"), lb = `${pW} ${pIdx} / ${N}`, u = getPlateUrl(pIdx).slice(1), c = FC[pIdx] || FC[24], os = `${c.book}.${c.chapter}.${c.verse}`, tx = resolveFelicesPlateVerse(pIdx, l, {}, st), ov = resolveOverlayEntryForOsis(st, l, os), dI = clp((c.beatitudeIndex || 0) + 1, 12);
   const im = $(d, "focalPlateImg"), id = $(d, "plateIndexText"), vE = $(d, "focalPlateVerse"), cI = $(d, "carouselImg"), cC = $(d, "carouselCaption"), wC = $(d, "felicesSocraticWonderCard"), fFr = $(d, "focalPlateFrame");
