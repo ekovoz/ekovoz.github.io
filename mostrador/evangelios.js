@@ -816,11 +816,51 @@ export function resolveFelicesPlateCoord(b = "MAT", ch = 5, v = 3, cur = 24, opt
   return k;
 }
 
+const DEFAULT_CORPUS_LANG_BY_UI_MAP = {
+  en: "en",
+  es: "es",
+  fr: "fr",
+  pt: "pt",
+  it: "it",
+  id: "id",
+  tr: "tr",
+  ru: "ru",
+  "zh-hans": "zh-Hans",
+  zh: "zh-Hans",
+  ja: "ja",
+  ko: "ko",
+  hi: "hi",
+  bn: "bn",
+  "bn-bd": "bn",
+  "bn-in": "bn",
+  ar: "ar",
+  ur: "ur",
+  fa: "fa",
+};
+
+/**
+ * Alinea el idioma inicial del corpus bíblico con el idioma de interfaz negociado (`uiLocale`),
+ * garantizando coherencia por defecto (p. ej. `ui=en` -> `lang=en`, `ui=es` -> `lang=es`)
+ * cuando el usuario no especificó `?lang=`.
+ */
+export function resolveDefaultCorpusLangForUi(uiLocale = "en") {
+  const clean = trimFelicesStr(uiLocale, "en").replace(/_/g, "-").toLowerCase();
+  if (!clean) return "en";
+  if (Object.prototype.hasOwnProperty.call(DEFAULT_CORPUS_LANG_BY_UI_MAP, clean)) {
+    return DEFAULT_CORPUS_LANG_BY_UI_MAP[clean];
+  }
+  const primary = clean.split("-")[0];
+  if (Object.prototype.hasOwnProperty.call(DEFAULT_CORPUS_LANG_BY_UI_MAP, primary)) {
+    return DEFAULT_CORPUS_LANG_BY_UI_MAP[primary];
+  }
+  return "en";
+}
+
 export function parseInitialRouteAndLocale({
   search = "",
   pathname = "",
   defaultUi = "en",
-  defaultLang = "es",
+  defaultLang = null,
 } = {}) {
   const q = new URLSearchParams(trimFelicesStr(search).replace(/^\?/, ""));
   const pL = trimFelicesStr(pathname).toLowerCase();
@@ -854,14 +894,16 @@ export function parseInitialRouteAndLocale({
     ? EVANGELIOS_MACRO_THREADS_AND_ECHOES[degradedWeek].anchorOsis
     : null;
   const rR = g("ref");
+  const ui = g("ui") || defaultUi || "en";
+  const lang = g("lang") || defaultLang || resolveDefaultCorpusLangForUi(ui);
   return {
     work,
     blockedDraftWork,
     degradedWeek,
     previewWorks,
     previewParam,
-    ui: g("ui") || defaultUi || "en",
-    lang: g("lang") || defaultLang || "es",
+    ui,
+    lang,
     ref: rR || (pC ? `${pC.book}.${pC.chapter}.${pC.verse}` : evFallbackRef || "JHN.1.1"),
     refExplicit: !!rR,
     plate,
@@ -880,10 +922,11 @@ export function serializeMostradorRouteQuery(st = {}, fallbackPlate = 24) {
     : parsePreviewWorksParam(st.preview || st.previewParam || "");
   const rW = trimFelicesStr(st.work || st.activeWork || "biblia").toLowerCase();
   const work = FELICES_WK.includes(rW) && isWorkVisible(rW, previewWorks) ? rW : "biblia";
+  const ui = trimFelicesStr(st.ui || st.uiLocale, "en");
   const q = new URLSearchParams({
     work,
-    ui: trimFelicesStr(st.ui || st.uiLocale, "en"),
-    lang: trimFelicesStr(st.lang, "es"),
+    ui,
+    lang: trimFelicesStr(st.lang, resolveDefaultCorpusLangForUi(ui)),
     ref: trimFelicesStr(
       st.ref,
       `${trimFelicesStr(st.book, "JHN").toUpperCase()}.${clampFelicesNum(st.chapter, 999)}.${clampFelicesNum(st.verse, 999)}`,

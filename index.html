@@ -85,9 +85,10 @@
                 <button type="button" id="tabWorkFelices" class="uls-chip" role="tab" aria-selected="false"
                     aria-controls="felicesSovereignSection" data-work-tab="felices" data-i18n="mostrador.tab.felices">🎨
                     Beatitudes</button>
+                <!-- INTENTIONAL DRAFT GATE (R11 — DO NOT AUTO-UNHIDE): Keep Evangelios/Gospels hidden in public chrome (?preview=1 only) even during backend->UI parity audits. -->
                 <button type="button" id="tabWorkEvangelios" class="uls-chip" role="tab" aria-selected="false"
                     aria-controls="evangeliosSovereignSection" data-work-tab="evangelios" data-work-i18n="evangelios"
-                    data-i18n="mostrador.tab.evangelios">🌅 The Gospels (52)</button>
+                    data-i18n="mostrador.tab.evangelios" hidden>🌅 The Gospels (52)</button>
             </nav>
             <div class="language-region-pill-group" role="group" aria-label="Language and Appearance">
                 <button type="button" class="uls-chip" id="sovereignCorpusLangBtn" data-i18n-autonym="true"
@@ -174,10 +175,10 @@
                 <div id="corpusWorkLanguagesBar" class="chip-wrap-row ek-mb-sm" role="group"
                     aria-label="Sister Work Editions (Evangelios and Felices)">
                     <button type="button" id="quickWorkLangGn" class="uls-chip" data-i18n-autonym="true"
-                        data-corpus-lang="gn" data-work-scope="evangelios">🇵🇾 Avañe'ẽ Guaraní (gn ·
+                        data-corpus-lang="gn" data-work-scope="evangelios" hidden>🇵🇾 Avañe'ẽ Guaraní (gn ·
                         Evangelios)</button>
                     <button type="button" id="quickWorkLangQuc" class="uls-chip" data-i18n-autonym="true"
-                        data-corpus-lang="quc" data-work-scope="evangelios">🇬🇹 K'iche' (quc · Evangelios)</button>
+                        data-corpus-lang="quc" data-work-scope="evangelios" hidden>🇬🇹 K'iche' (quc · Evangelios)</button>
                     <button type="button" id="quickWorkLangBnBd" class="uls-chip" data-i18n-autonym="true"
                         data-corpus-lang="bn-BD" data-work-scope="felices">🇧🇩 বাংলা বাংলাদেশ (bn-BD ·
                         Felices)</button>
@@ -306,7 +307,7 @@
                             <option value="ja">日本語 (ja)</option>
                             <option value="ko">한국어 (ko)</option>
                             <option value="quc">K'iche' (quc)</option>
-                            <option value="gn" data-work-scope="evangelios">Avañe'ẽ · Guaraní (gn · Evangelios)</option>
+                            <option value="gn" data-work-scope="evangelios" hidden>Avañe'ẽ · Guaraní (gn · Evangelios)</option>
                             <option value="arp">Hinónoʼeitíít · Arapaho (arp · Porciones)</option>
                             <option value="bre">Brezhoneg · Breton (bre · Porciones)</option>
                             <option value="cha">Finuʼ Chamorro (cha · Porciones)</option>

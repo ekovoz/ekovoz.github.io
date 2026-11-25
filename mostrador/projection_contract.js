@@ -7,13 +7,18 @@
 import { STORE_DOMAIN_OWNERS, VALID_ACTIVE_INTENTS, VALID_ACTIVE_MODALS } from "./state_store.js";
 
 /**
- * Ciclo de vida declarativo por obra editorial (`D1-R11`, `D3-R12`).
- * Para pausar una obra como borrador interno, cambiar `"public"` a `"draft"`.
+ * Ciclo de vida declarativo por obra editorial (`D1-R11`, `ARB-EKOVOZ-R11`).
+ *
+ * REGLA PERMANENTE DE GOBERNANZA (INTENTIONAL MAINTAINER GATE — DO NOT AUTO-PROMOTE):
+ * - Cualquier obra marcada como `"draft"` está DESHABILITADA deliberadamente por decisión del mantenedor.
+ * - Al realizar futuras auditorías o planes para "exponer todas las funcionalidades del backend en la UI",
+ *   las obras en `"draft"` NO deben tratarse como gaps huérfanos ni promoverse a `"public"` de forma automática;
+ *   su acceso queda restringido explícitamente a `?preview=1` salvo autorización expresa de lanzamiento.
  */
 export const WORK_LIFECYCLE = Object.freeze({
   biblia: "public",
   felices: "public",
-  evangelios: "public",
+  evangelios: "draft", // INTENCIONAL (R11): deshabilitado por defecto; requiere ?preview=1
 });
 
 /**

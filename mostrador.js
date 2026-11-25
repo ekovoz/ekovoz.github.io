@@ -52,9 +52,12 @@ import {
 import {
   EVANGELIOS_MACRO_THREADS_AND_ECHOES, FELICES_12_DICHAS_COORDINATE_MAP, FELICES_28_PLATES_MAP, hydratePericopesAndGlosses,
   parseCanonicalOtEchoRef, renderChapterPericopesRibbonHtml, renderEvangeliosPlateActionsHtml, renderFelicesSocraticWonderCardHtml,
-  resolveEvangeliosMacroThreadAndEcho, resolveFelicesDichaCoordinate, resolveFelicesPlate, resolveMasoreticPericopeBreaks,
+  resolveDefaultCorpusLangForUi, resolveEvangeliosMacroThreadAndEcho, resolveFelicesDichaCoordinate, resolveFelicesPlate,
+  resolveMasoreticPericopeBreaks,
 } from "./mostrador/evangelios.js";
-import { applyToDom, createI18n, formatLocalizedNumeralWeb, isRtlLocale, localizeWorkChromeLabels, negotiate } from "./mostrador/i18n.js";
+import {
+  applyToDom, createI18n, formatLocalizedNumeralWeb, isRtlLocale, localizeWorkChromeLabels, negotiate, requestedUiLocales,
+} from "./mostrador/i18n.js";
 import { GEOGRAPHIC_MACRO_REGIONS, indexRegionShards, listCountriesInRegion, listLanguagesInCountry, listMacroRegions, lookupIso639MacroRegionO1, searchLanguages, suggestLayer0Languages } from "./mostrador/lang_funnel.js";
 import {
   CRDT_WAL_SEMILATTICE, FIELD_WORKSHOP_STP_LEXICON, IMPROVE_I18N_FALLBACKS, IMPROVE_I18N_FALLBACKS_ES, MASTER_CENSUS_SUMMARY,
@@ -995,11 +998,15 @@ export async function bootBrowserMostrador(
     // Ignore storage/cache access restrictions in private contexts
   }
   const doc = win.document;
+  let savedUi = null;
+  try { savedUi = win.localStorage?.getItem?.("ekovoz_ui_locale") || null; } catch { savedUi = null; }
+  const navLangs = Array.isArray(win.navigator?.languages) && win.navigator.languages.length ? win.navigator.languages : (win.navigator?.language ? [win.navigator.language] : []);
+  const INITIAL_UI_LOCALES = ["en", "es", "fr", "pt", "it", "id", "tr", "ru", "zh-Hans", "ja", "ko", "hi", "bn", "bn-BD", "bn-IN", "ar", "ur", "fa"];
+  const negotiatedUi = negotiate(requestedUiLocales({ search: win.location?.search || "", savedPreference: savedUi, navigatorLanguages: navLangs }), INITIAL_UI_LOCALES, doc.documentElement.getAttribute("lang") || "en");
   const route = parseInitialRouteAndLocale({
     search: win.location?.search || "",
     pathname: win.location?.pathname || "",
-    defaultUi: doc.documentElement.getAttribute("lang") || "en",
-    defaultLang: "es",
+    defaultUi: negotiatedUi,
   });
   let effectiveRefStr = route.ref;
   if (!route.refExplicit && (route.work === "evangelios" || route.blockedDraftWork === "evangelios")) {
@@ -1117,7 +1124,7 @@ export async function bootBrowserMostrador(
         search: win.location?.search || "",
         pathname: win.location?.pathname || "",
         defaultUi: controller.state.uiLocale || "en",
-        defaultLang: controller.state.lang || "es",
+        defaultLang: controller.state.lang || resolveDefaultCorpusLangForUi(controller.state.uiLocale || "en"),
       });
       controller.state.previewWorks = Array.isArray(popRoute.previewWorks) ? popRoute.previewWorks : [];
       controller.state.previewParam = String(popRoute.previewParam || "");
