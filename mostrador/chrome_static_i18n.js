@@ -46,16 +46,16 @@ export function applyStaticChromeTranslations(targetDoc, uiLocale = "es", state 
   const felDichaSel = getEl("felicesDichaSelect");
   if (felDichaSel && felDichaSel.options) {
     const enDichaTitles = {
-      "1": "Beatitude 1 · Mt 5:1 (Jesus Goes Up on the Mountain)",
+      "1": "Beatitude 1 · Mt 5:1 (On the Mountain)",
       "2": "Beatitude 2 · Mt 5:3 (Poor in Spirit)",
       "3": "Beatitude 3 · Mt 5:4 (Those Who Mourn)",
       "4": "Beatitude 4 · Mt 5:5 (The Meek)",
-      "5": "Beatitude 5 · Mt 5:6 (Hunger and Thirst for Righteousness)",
+      "5": "Beatitude 5 · Mt 5:6 (Hunger and Thirst)",
       "6": "Beatitude 6 · Mt 5:7 (The Merciful)",
       "7": "Beatitude 7 · Mt 5:8 (Pure in Heart)",
       "8": "Beatitude 8 · Mt 5:9 (The Peacemakers)",
-      "9": "Beatitude 9 · Mt 5:10 (Persecuted for Righteousness)",
-      "10": "Beatitude 10 · Mt 5:11 (Blessed When Reviled)",
+      "9": "Beatitude 9 · Mt 5:10 (Persecuted)",
+      "10": "Beatitude 10 · Mt 5:11 (When Reviled)",
       "11": "Beatitude 11 · Mt 5:12 (Joy of the Prophets)",
       "12": "Beatitude 12 · Rev 22:14 (Tree of Life)",
     };
@@ -64,7 +64,7 @@ export function applyStaticChromeTranslations(targetDoc, uiLocale = "es", state 
       "2": "Dicha 2 · Mt 5:3 (Pobres en Espíritu)",
       "3": "Dicha 3 · Mt 5:4 (Los que Lloran)",
       "4": "Dicha 4 · Mt 5:5 (Los Mansos)",
-      "5": "Dicha 5 · Mt 5:6 (Hambre y Sed de Justicia)",
+      "5": "Dicha 5 · Mt 5:6 (Hambre y Sed)",
       "6": "Dicha 6 · Mt 5:7 (Misericordiosos)",
       "7": "Dicha 7 · Mt 5:8 (Limpio Corazón)",
       "8": "Dicha 8 · Mt 5:9 (Pacificadores)",

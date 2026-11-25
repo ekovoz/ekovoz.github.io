@@ -233,17 +233,28 @@ export function renderPrintStageRibbonHtml(opts = {}) {
   const primaryStage = spec.stages[0] || {
     id: "btnStagePdfDose1",
     action: "dose1",
-    label: isEn ? "Print current chapter · PDF" : "Imprimir capítulo actual · PDF",
+    label: isEn ? "Print chapter · PDF" : "Imprimir capítulo · PDF",
     sublabel: "",
     badge: "",
   };
-  const moreLabel = isEn ? "More formats…" : "Más formatos…";
+  const tierHint =
+    spec.tier === 2
+      ? (isEn ? " (NT)" : " (NT)")
+      : spec.tier === 3
+        ? (isEn ? " (Portion)" : " (Porción)")
+        : spec.tier >= 4
+          ? (isEn ? " (Bridge)" : " (Puente)")
+          : "";
+  const fullDesc = isEn
+    ? `Print chapter · ${primaryStage.sublabel}${primaryStage.badge ? ` (${primaryStage.badge})` : ""}`
+    : `Imprimir capítulo · ${primaryStage.sublabel}${primaryStage.badge ? ` (${primaryStage.badge})` : ""}`;
   const ctaText = isEn
-    ? `🖨️ Print chapter · ${primaryStage.sublabel}${primaryStage.badge ? ` (${primaryStage.badge})` : ""}`
-    : `🖨️ Imprimir capítulo actual · ${primaryStage.sublabel}${primaryStage.badge ? ` (${primaryStage.badge})` : ""}`;
+    ? `🖨️ Print ${primaryStage.sublabel} · PDF${tierHint}`
+    : `🖨️ Imprimir ${primaryStage.sublabel} · PDF${tierHint}`;
+  const moreLabel = isEn ? "Formats…" : "Formatos…";
   return (
     `<div class="print-stage-header" data-ribbon-compact="true" data-compact-mobile="true" data-cowan-budget="2">` +
-    `<button type="button" id="${escHtml(primaryStage.id)}" class="print-stage-btn is-primary-stage" data-print-stage-action="${escHtml(primaryStage.action)}" title="${escHtml(spec.heading)}">${escHtml(ctaText)}</button>` +
+    `<button type="button" id="${escHtml(primaryStage.id)}" class="print-stage-btn is-primary-stage" data-print-stage-action="${escHtml(primaryStage.action)}" aria-label="${escHtml(fullDesc)}" title="${escHtml(spec.heading)}">${escHtml(ctaText)}</button>` +
     `<button type="button" id="btnStagePdfMoreFormats" class="uls-chip print-stage-more" data-print-stage-action="open-print">${escHtml(moreLabel)}</button>` +
     `</div>`
   );

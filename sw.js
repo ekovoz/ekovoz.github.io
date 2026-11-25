@@ -2,7 +2,7 @@
 // Cero sentencias ESM `export`/`import` para registro clásico universal; lógica pura espejo de `web/mostrador/sw_routing_core.js`.
 // Opt-in persistido en CacheStorage para sobrevivir la suspensión efímera de 30s; fallback HTML restringido a `mode === "navigate"`.
 
-const CACHE_NAME = "ekovoz-mostrador-v50";
+const CACHE_NAME = "ekovoz-mostrador-v51";
 const OPT_IN_META_KEY = "/__ekovoz_meta/offline-opt-in";
 
 const SUPPORTED_BOOK_NAMES_LANGS = new Set([
@@ -39,10 +39,12 @@ const SHELL_CORE_ASSETS = [
   "/mostrador/chrome_static_i18n.js",
   "/mostrador/diglossic_chapter_renderer.js",
   "/mostrador/drawer_hydrators.js",
+  "/mostrador/drawer_pro_boveda.js",
   "/mostrador/drawer_study.js",
   "/mostrador/drawer_print.js",
   "/mostrador/drawer_workshop.js",
   "/mostrador/drawer_workshop_cards.js",
+  "/mostrador/docx_client_reader.js",
   "/mostrador/print_funnel_view.js",
   "/mostrador/workshop_audit_and_langs.js",
   "/mostrador/workshop_overlay_store.js",

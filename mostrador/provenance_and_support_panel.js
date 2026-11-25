@@ -233,7 +233,7 @@ export function renderEditorialProvenanceCardHtml(provenance = null, uiLocale = 
     `<dt>${isEn ? "Archival Deposit (CERN Zenodo DOI)" : "Depósito Permanente (DOI CERN Zenodo)"}</dt>` +
     `<dd><code>${escapeHtml(p.zenodo_doi_concept)}</code> (v${escapeHtml(zenodoVersion)})</dd>` +
     `<dt>${isEn ? "Compressed Onomasticon Pack" : "Paquete Onomasticon Zstd"}</dt>` +
-    `<dd><a class="uls-chip ek-btn-link" href="${escapeHtml(String(ono?.path || "packs/onomasticon_3657.json.zst"))}" download="onomasticon_3657.json.zst">📦 ${Number(ono?.entries_count || 3657).toLocaleString("en-US")} (${onoKb} KB Zstd)</a></dd>` +
+    `<dd><a class="uls-chip ek-btn-link" href="${escapeHtml(String(ono?.path || "data/onomasticon_3657.json.zst"))}" download="onomasticon_3657.json.zst">📦 ${Number(ono?.entries_count || 3657).toLocaleString("en-US")} (${onoKb} KB Zstd)</a></dd>` +
     `<dt>${isEn ? "Timestamp & Merkle Ledger" : "Sellado Temporal y Raíz Merkle"}</dt>` +
     `<dd>${escapeHtml(otsText)} · <code>${escapeHtml(merkle.slice(0, 20))}…</code></dd>` +
     `</dl>` +

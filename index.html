@@ -184,8 +184,39 @@
                         <option value="zh-Hans">Bridge: ZH</option>
                     </select>
                 </div>
+                <div id="bibleOrthographyPills" class="chip-wrap-row ortho-pills-bar ek-mb-sm" aria-label="Script Variants" hidden>
+                    <button type="button" id="btnOrthoInali" class="uls-chip" data-i18n="ortho.inali" data-ortho="INALI"
+                        data-ortho-lang="stp" data-ortho-profile="INALI_2018">School orthography (INALI)</button>
+                    <button type="button" id="btnOrthoTradicional" class="uls-chip" data-i18n="ortho.tradicional"
+                        data-ortho="Tradicional" data-ortho-lang="stp" data-ortho-profile="ILV_1950">Traditional
+                        orthography</button>
+                    <button type="button" id="btnOrthoFonetica" class="uls-chip" data-i18n="ortho.fonetica"
+                        data-ortho="Fonética" data-ortho-lang="stp" data-ortho-profile="FONETICA_IPA">Everyday orthography
+                        (WhatsApp)</button>
+                    <button type="button" id="btnOrthoBnBd" class="uls-chip" data-i18n-autonym="true" data-ortho="bn-BD"
+                        data-ortho-lang="bn" data-ortho-profile="bn-BD" hidden>🇧🇩 বাংলা বাংলাদেশ (bn-BD · ঈসা মসীহ)</button>
+                    <button type="button" id="btnOrthoBnIn" class="uls-chip" data-i18n-autonym="true" data-ortho="bn-IN"
+                        data-ortho-lang="bn" data-ortho-profile="bn-IN" hidden>🇮🇳 বাংলা ভারত/প্রচলিত (bn-IN · প্রভু
+                        যীশু)</button>
+                    <button type="button" id="btnOrthoArbTashkeel" class="uls-chip" data-i18n-autonym="true"
+                        data-ortho="TASHKEEL_STRIPPED" data-ortho-lang="arb" data-ortho-profile="TASHKEEL_STRIPPED"
+                        data-ortho-alt-profile="VOWELIZED" hidden>🕌 العربية بدون تشكيل (Tashkeel ↔ Vocalizado)</button>
+                    <button type="button" id="btnOrthoUznCyrl" class="uls-chip" data-i18n-autonym="true" data-ortho="CYRL"
+                        data-ortho-lang="uzn" data-ortho-profile="CYRL" data-ortho-alt-profile="LATN" hidden>🇺🇿 Ўзбек Кирилл
+                        (CYRL ↔ LATN)</button>
+                    <button type="button" id="btnOrthoTzmTfng" class="uls-chip" data-i18n-autonym="true" data-ortho="TFNG"
+                        data-ortho-lang="tzm" data-ortho-profile="TFNG" data-ortho-alt-profile="LATN" hidden>ⵣ ⵜⴰⵎⴰⵣⵉⵖⵜ Tifinagh
+                        (TFNG ↔ LATN)</button>
+                </div>
                 <p class="ek-title-sm" data-i18n="corpus.tab.bibles">📖 Bibles &amp; Languages (24)</p>
                 <div id="corpusTabPanelBibles" role="region" aria-label="24 Verified Bibles and 7,164 Languages">
+                    <div class="ek-mt-sm">
+                        <input type="search" id="quickLangFilterInput" class="field-search-input"
+                            data-i18n-attr="placeholder:corpus.search.placeholder"
+                            placeholder="Search 7,164 languages (ISO, autonym, country)...">
+                    </div>
+                    <div id="polyglotRecycledListHost" class="polyglot-recycled-window ek-mt-xs"
+                        data-polyglot-window="true" role="listbox" aria-label="Filtered languages window"></div>
                     <div id="bibleVerifiedCorpusPills" class="chip-wrap-row" role="group"
                         aria-label="24 Verified Bibles and Portions">
                         <button type="button" id="quickLangEs" class="uls-chip" data-i18n-autonym="true"
@@ -253,13 +284,6 @@
                         <button type="button" id="quickWorkLangBnIn" class="uls-chip" data-i18n-autonym="true"
                             data-corpus-lang="bn-IN" data-work-scope="felices">🇮🇳 বাংলা ভারত (bn-IN · Felices)</button>
                     </div>
-                    <div class="ek-mt-sm">
-                        <input type="search" id="quickLangFilterInput" class="field-search-input"
-                            data-i18n-attr="placeholder:corpus.search.placeholder"
-                            placeholder="Search 7,164 languages (ISO, autonym, country)...">
-                    </div>
-                    <div id="polyglotRecycledListHost" class="polyglot-recycled-window ek-mt-xs"
-                        data-polyglot-window="true" role="listbox" aria-label="Filtered languages window"></div>
                     <div id="bibleGeoFunnel" class="geo-funnel-row" aria-label="Geographic 3-Tap Funnel">
                         <select id="bibleSelectRegion" aria-label="World Region">
                             <option value="americas-mesoamerica" data-i18n="region.americas-mesoamerica">Mesoamerica
@@ -339,10 +363,10 @@
 
     <section id="bibleSovereignSection" class="bible-stage-card" data-active-work="true" data-roll-mode="chapter"
         data-cowan-focal-groups="4" data-audio-bytes="0" data-jpg-bytes="0">
-        <div>
-            <h2 id="bibleMainHeading" data-i18n="mostrador.heading">Print or Download the Bible in Your Language</h2>
-            <p id="bibleLivePreviewHint" class="stage-preview-hint" data-i18n="mostrador.preview_hint">Live preview of
-                the passage ready to print</p>
+        <div class="stage-heading-row">
+            <h2 id="bibleMainHeading" data-i18n="mostrador.heading">Holy Scriptures</h2>
+            <p id="bibleLivePreviewHint" class="stage-preview-hint" data-i18n="mostrador.preview_hint">66 books · free
+                reading &amp; print</p>
             <span id="epistemicStatusSeal" class="uls-badge" data-seal="seal.loading"
                 data-i18n="seal.loading">Loading verified passage…</span>
         </div>
@@ -350,10 +374,9 @@
             aria-label="Download Printable Bible PDF by Stage" data-print-tier="1" data-ribbon-compact="true">
             <div class="print-stage-header" data-ribbon-compact="true" data-cowan-budget="2">
                 <button type="button" id="btnStagePdfDose1" class="print-stage-btn is-primary-stage"
-                    data-print-stage-action="dose1" data-i18n="printStage.dose1">🖨️ Print this chapter · PDF (JHN
-                    1)</button>
+                    data-print-stage-action="dose1" data-i18n="printStage.dose1">🖨️ Print · PDF</button>
                 <button type="button" id="btnStagePdfMoreFormats" class="uls-chip print-stage-more"
-                    data-print-stage-action="open-print" data-i18n="printStage.moreFormats">More formats…</button>
+                    data-print-stage-action="open-print" data-i18n="printStage.moreFormats">Formats…</button>
             </div>
         </div>
 
@@ -374,32 +397,6 @@
         </div>
 
         <div id="bibleOralPorticoBanner" class="oral-portico-banner" data-audio-bytes="0" hidden>
-        </div>
-
-        <div id="bibleOrthographyPills" class="chip-wrap-row ortho-pills-bar" aria-label="Script Variants" hidden>
-            <button type="button" id="btnOrthoInali" class="uls-chip" data-i18n="ortho.inali" data-ortho="INALI"
-                data-ortho-lang="stp" data-ortho-profile="INALI_2018">School orthography (INALI)</button>
-            <button type="button" id="btnOrthoTradicional" class="uls-chip" data-i18n="ortho.tradicional"
-                data-ortho="Tradicional" data-ortho-lang="stp" data-ortho-profile="ILV_1950">Traditional
-                orthography</button>
-            <button type="button" id="btnOrthoFonetica" class="uls-chip" data-i18n="ortho.fonetica"
-                data-ortho="Fonética" data-ortho-lang="stp" data-ortho-profile="FONETICA_IPA">Everyday orthography
-                (WhatsApp)</button>
-            <button type="button" id="btnOrthoBnBd" class="uls-chip" data-i18n-autonym="true" data-ortho="bn-BD"
-                data-ortho-lang="bn" data-ortho-profile="bn-BD" hidden>🇧🇩 বাংলা বাংলাদেশ (bn-BD · ঈসা মসীহ)</button>
-            <button type="button" id="btnOrthoBnIn" class="uls-chip" data-i18n-autonym="true" data-ortho="bn-IN"
-                data-ortho-lang="bn" data-ortho-profile="bn-IN" hidden>🇮🇳 বাংলা ভারত/প্রচলিত (bn-IN · প্রভু
-                যীশু)</button>
-            <button type="button" id="btnOrthoArbTashkeel" class="uls-chip" data-i18n-autonym="true"
-                data-ortho="TASHKEEL_STRIPPED" data-ortho-lang="arb" data-ortho-profile="TASHKEEL_STRIPPED"
-                data-ortho-alt-profile="VOWELIZED" hidden>🕌 العربية بدون تشكيل (Tashkeel ↔ Vocalizado)</button>
-            <button type="button" id="btnOrthoUznCyrl" class="uls-chip" data-i18n-autonym="true" data-ortho="CYRL"
-                data-ortho-lang="uzn" data-ortho-profile="CYRL" data-ortho-alt-profile="LATN" hidden>🇺🇿 Ўзбек Кирилл
-                (CYRL ↔ LATN)</button>
-            <button type="button" id="btnOrthoTzmTfng" class="uls-chip" data-i18n-autonym="true" data-ortho="TFNG"
-                data-ortho-lang="tzm" data-ortho-profile="TFNG" data-ortho-alt-profile="LATN" hidden>ⵣ ⵜⴰⵎⴰⵣⵉⵖⵜ Tifinagh
-                (TFNG ↔
-                LATN)</button>
         </div>
 
         <!-- External Paratextual Pericopes & Synoptic Parallels Ribbon (D5-A+ / D1-A++) -->
@@ -533,12 +530,12 @@
                     <option value="2">Dicha 2 · Mt 5:3 (Pobres en Espíritu)</option>
                     <option value="3">Dicha 3 · Mt 5:4 (Los que Lloran)</option>
                     <option value="4">Dicha 4 · Mt 5:5 (Los Mansos)</option>
-                    <option value="5">Dicha 5 · Mt 5:6 (Hambre y Sed de Justicia)</option>
+                    <option value="5">Dicha 5 · Mt 5:6 (Hambre y Sed)</option>
                     <option value="6">Dicha 6 · Mt 5:7 (Misericordiosos)</option>
                     <option value="7">Dicha 7 · Mt 5:8 (Limpio Corazón)</option>
                     <option value="8">Dicha 8 · Mt 5:9 (Pacificadores)</option>
-                    <option value="9">Dicha 9 · Mt 5:10 (Perseguidos por la Justicia)</option>
-                    <option value="10">Dicha 10 · Mt 5:11 (Bienaventurados cuando os vituperen)</option>
+                    <option value="9">Dicha 9 · Mt 5:10 (Perseguidos)</option>
+                    <option value="10">Dicha 10 · Mt 5:11 (Vituperados)</option>
                     <option value="11" selected>Dicha 11 · Mt 5:12 (Gozo de los Profetas)</option>
                     <option value="12">Dicha 12 · Ap 22:14 (Árbol de la Vida)</option>
                 </select>
@@ -755,7 +752,7 @@
             </details>
             <div id="bibleAnalyticalThermometerPanel" data-study-subtab-panel="calibrate" hidden></div>
             <details id="studyOrthographyAccordion" class="r9-stratum-accordion" data-study-subtab-panel="calibrate"
-                open hidden>
+                hidden>
                 <summary data-i18n="study.acc.orthography">✍️ Conditional Orthography &amp; Scriptio Continua</summary>
                 <div id="wfstAndScriptioContinuaHost"></div>
             </details>
@@ -880,8 +877,10 @@
                     <option value="folio" data-i18n="dose.paper.folio">Folio / Oficio (216×330 mm)</option>
                     <option value="b70" data-i18n="dose.paper.b70">B70 (280×292 mm)</option>
                 </select>
-                <button type="button" id="btnQuickBrailleB70" class="uls-chip" data-i18n="print.btn.brailleB70"
-                    aria-pressed="false">♿ Braille B70 (.brf)</button>
+                <div class="braille-quick-group" role="group" aria-label="Tactile Braille Export">
+                    <button type="button" id="btnQuickBrailleB70" class="uls-chip" data-i18n="print.btn.brailleB70"
+                        aria-pressed="false">♿ Braille B70 (.brf)</button>
+                </div>
                 <select id="kindleOrientationSelector" aria-label="Page Orientation">
                     <option value="portrait" selected data-i18n="print.orient.portrait">↕️ Portrait</option>
                     <option value="landscape" data-i18n="print.orient.landscape">↔️ Landscape (Center Fold)
@@ -1005,14 +1004,16 @@
             <div id="opticalReceiverRxPanel" data-dosis-subtab-panel="pdf" hidden></div>
             <section id="shareAuthenticityUnifiedCard" class="ek-card" data-dosis-subtab-panel="graphics"
                 data-slot-order="1" data-unified-authenticity-card="true" hidden>
-                <div class="ek-row-between ek-mb-sm">
-                    <strong>🛡️ <span data-i18n="share.auth.unifiedTitle">Verifiable Editorial Certificate</span></strong>
-                    <button type="button" id="btnVerifyEd25519Signature" class="uls-chip" data-dosis-subtab-panel="graphics"
-                        data-i18n="share.btn.verifySig" hidden>🔐 Verify Authentic Editorial Signature</button>
-                </div>
-                <div id="editorialAuditStatusPanel" data-dosis-subtab-panel="graphics" hidden class="ek-status-panel">
-                </div>
-                <div id="editorialProvenanceCardHost" data-dosis-subtab-panel="graphics" hidden></div>
+                <details id="shareProBovedaDetails" class="r9-stratum-accordion" data-pro-boveda="true">
+                    <summary>🔐 <span data-i18n="share.auth.unifiedTitle">Verifiable Editorial Certificate</span></summary>
+                    <div class="ek-row-between ek-mb-sm ek-mt-xs">
+                        <button type="button" id="btnVerifyEd25519Signature" class="uls-chip" data-dosis-subtab-panel="graphics"
+                            data-i18n="share.btn.verifySig" hidden>🔐 Verify Authentic Editorial Signature</button>
+                    </div>
+                    <div id="editorialAuditStatusPanel" data-dosis-subtab-panel="graphics" hidden class="ek-status-panel">
+                    </div>
+                    <div id="editorialProvenanceCardHost" data-dosis-subtab-panel="graphics" hidden></div>
+                </details>
             </section>
             <div id="shareOpenGraphCardPanel" data-dosis-subtab-panel="graphics" data-slot-order="0" hidden></div>
         </section>

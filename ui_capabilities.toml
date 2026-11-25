@@ -948,6 +948,32 @@ handler         = "computeClientModernizeReadabilityAudit"
 test_file       = "tests/web/hig4_reactive_parity.test.mjs"
 test_name       = "SLICE_EKO_HIG4_09_10: diachronic 7 keys, annotation index_rel_path, ladder probes, and modernize AoA/MDD audit"
 
+[capability.docx_client_reader]
+surface         = "public-ui"
+exposure_tier   = "drawer-secondary"
+release_stage   = "public"
+intent          = "workshop"
+canonical_owner = "#tallerArtifactsCatalog"
+selector        = "#externalAuditFileInput"
+template_module = "mostrador/mejorar_renderers.js"
+module          = "mostrador/docx_client_reader.js"
+handler         = "extractDocxDocumentXmlText"
+test_file       = "tests/web/concordance_and_audit_r8.test.mjs"
+test_name       = "SLICE_EKO_HIG5_11: docx_client_reader extracts word/document.xml via EOCD + deflate-raw and enforces 8 MiB cap"
+
+[capability.pro_boveda_lazy_drawer]
+surface         = "public-ui"
+exposure_tier   = "drawer-secondary"
+release_stage   = "public"
+intent          = "study"
+canonical_owner = "#bibleEasyDrawer"
+selector        = "#proBovedaCalibrationDetails"
+template_module = "mostrador/drawer_study.js"
+module          = "mostrador/drawer_pro_boveda.js"
+handler         = "hydrateProBovedaStudyCalibration"
+test_file       = "tests/web/estudio.test.mjs"
+test_name       = "SLICE_EKO_EXIT_03: calibración I+D lazy-loads desde Bóveda Pro sin contaminar vista estándar"
+
 [intent_contracts]
 max_hops = 2
 exit_print = ["print_first_stage_ribbon", "print_unified_options_v3"]

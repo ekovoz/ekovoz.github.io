@@ -541,6 +541,7 @@ export function planBimodalClientPrint(opts = {}) {
     return {
       lane: "A",
       mode: precompiledLang ? "lane_a_precompiled_or_css" : "lane_a_css_and_tanda",
+      engineMode: precompiledLang ? "precompiled" : wasmRequired ? "browser-print" : "wasm-local",
       lang: cleanLang,
       hasPrecompiledPdf: Boolean(precompiledLang),
       truncated: false,
@@ -559,6 +560,7 @@ export function planBimodalClientPrint(opts = {}) {
   return {
     lane: "B",
     mode: "lane_b_worker_tanda",
+    engineMode: wasmRequired ? "wasm-local" : pdfBytes?.byteLength > 0 ? "wasm-local" : precompiledLang ? "precompiled" : "browser-print",
     workerUrl: "mostrador/tanda_print_worker.js",
     lang: cleanLang,
     hasPrecompiledPdf: Boolean(precompiledLang),

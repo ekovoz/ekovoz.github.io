@@ -236,15 +236,17 @@ export async function hydrateImproveDrawerPanel(ctx = {}) {
     });
     const workCtx = resolveActiveWorkDrawerContext(state);
     const isEnWorkshop = String(state.uiLocale || "es").trim().toLowerCase().startsWith("en");
-    const workBannerHtml = workCtx.isSisterWork
-      ? `<aside class="work-context-drawer-banner" data-work-context="${workCtx.activeWork}" data-workshop-collaborator="true"><strong>${workCtx.bannerText}</strong></aside>`
-      : `<aside class="work-context-drawer-banner" data-workshop-collaborator="true"><strong>🌱 ${isEnWorkshop ? "Collaborator mode · Help carry the Bible into more languages" : "Modo colaborador · Ayuda a llevar la Biblia a más lenguas"}</strong></aside>`;
+    const localEditsCount = Array.isArray(state.liveCascadeOverlays) ? state.liveCascadeOverlays.length : 0;
+    const progressCardHtml =
+      `<aside id="workshopProgressCard" class="work-context-drawer-banner" data-work-context="${workCtx.activeWork}" data-workshop-collaborator="true" data-local-edits="${localEditsCount}">` +
+      `<strong>🌱 ${workCtx.isSisterWork ? workCtx.bannerText : (isEnWorkshop ? `My Progress · ${localEditsCount} local pass(es) in ${fieldWorkshopActiveLang.toUpperCase()}` : `Mi progreso · ${localEditsCount} corrección(es) locales en ${fieldWorkshopActiveLang.toUpperCase()}`)}</strong>` +
+      `</aside>`;
     const container =
       getEl("socraticElicitorContainer", targetDoc) ||
       getEl("bibleFieldWorkshopSheet", targetDoc);
     getEl("bibleFieldWorkshopSheet", targetDoc)?.setAttribute?.("data-workshop-collaborator-mode", "true");
     if (container) {
-      container.innerHTML = workBannerHtml + html;
+      container.innerHTML = progressCardHtml + html;
       container.setAttribute?.("data-field-workshop-lang", fieldWorkshopActiveLang);
       container.setAttribute?.("data-active-work", workCtx.activeWork);
       container.removeAttribute?.("data-field-workshop-fallback");

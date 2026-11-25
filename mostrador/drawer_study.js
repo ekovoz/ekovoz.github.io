@@ -3,7 +3,6 @@
 // Decisiones D1-R41, D2-R41, D3-R41, D8-R41 · Costura Limpia ∂(C)=0
 // ============================================================================
 
-import { BIBLE_CONSTANTS } from "./data_layer.js";
 import {
   getAll156DiachronicSubstitutionsCatalog,
   hydrateDiachronicRegister,
@@ -13,7 +12,7 @@ import {
 } from "./diachronic_register.js";
 import { bindSurfaceActions, patchStoreState, patchTextAndAttrs, reconcileKeyedList } from "./dom_patch.js";
 import { renderBranchAndTypologyInspectorHtml } from "./dosis.js";
-import { decodeSdbhHierarchicalCode, highlightStudyCardByStrongId, hydrateCulturalGlossesLexicon, hydratePhilologyRosettaIndex, isClosedClassFunctionTag, renderPhilologyRosettaExplorerHtml, renderPhilologyRosettaInspectorHtml, renderPhilologyRosettaResultsRowsHtml, searchPhilologyRosettaIndex, translateNsm65PrimePhrase } from "./estudio.js";
+import { highlightStudyCardByStrongId, hydrateCulturalGlossesLexicon, hydratePhilologyRosettaIndex, isClosedClassFunctionTag, renderPhilologyRosettaExplorerHtml, renderPhilologyRosettaInspectorHtml, renderPhilologyRosettaResultsRowsHtml, searchPhilologyRosettaIndex } from "./estudio.js";
 import { humanizeUiCopy } from "./human_labels.js";
 import { hydratePericopesAndGlosses } from "./evangelios.js";
 import {
@@ -35,152 +34,14 @@ function escHtml(val) {
     .replace(/"/g, "&quot;");
 }
 
-function renderAnnotationAndBlindCalibrationCardHtml({
-  annotationReport = null,
-  blindCalibrationRows = null,
-  sampleRow = null,
-  activeLang = "es",
-  activeBook = "GEN",
-  uiLocale = "es",
-} = {}) {
+function renderProBovedaStudyAccordionHtml(uiLocale = "es") {
   const isEn = String(uiLocale || "es").trim().toLowerCase().startsWith("en");
-  const canonicalVerses = Number(BIBLE_CONSTANTS?.CANONICAL_VERSES_COUNT || 31102);
-  const canonicalCols = Number(BIBLE_CONSTANTS?.MATRIX_TIER0_DESCRIPTORS_COUNT || BIBLE_CONSTANTS?.MATRIX_COLUMNS_COUNT || 15);
-  const sampleSdbh = sampleRow?.c11_semantic_domain
-    ? decodeSdbhHierarchicalCode(sampleRow.c11_semantic_domain, uiLocale).label
-    : "";
-  const sampleNsm = sampleRow?.c13_nsm_65
-    ? translateNsm65PrimePhrase(sampleRow.c13_nsm_65, uiLocale)
-    : "";
-
-  const parts = [];
-  if (annotationReport && typeof annotationReport === "object") {
-    const totals = annotationReport.totals || {};
-    const ratios = annotationReport.ratios || {};
-    const thresholds = annotationReport.thresholds || {};
-    const residualsByKind = annotationReport.residuals_by_kind || {};
-    const sources = Array.isArray(annotationReport.sources) ? annotationReport.sources : [];
-    const indexSha = String(annotationReport.index_sha256 || "");
-    const residualsSha = String(annotationReport.residuals_sha256 || "");
-    const otTokens = Number(totals.ot_tokens || 0);
-    const ntTokens = Number(totals.nt_tokens || 0);
-    const totalTokens = otTokens + ntTokens;
-    const residualEntries = Object.entries(residualsByKind);
-    const totalResiduals = residualEntries.reduce((acc, [, v]) => acc + (Number(v) || 0), 0);
-    const residualBadges = residualEntries
-      .map(
-        ([kind, count]) =>
-          `<span class="uls-badge" data-residual-kind="${escHtml(kind)}">${escHtml(kind)}: <strong>${Number(count) || 0}</strong></span>`,
-      )
-      .join(" ");
-    const sourceBadges = sources
-      .map(
-        (src) =>
-          `<span class="uls-badge" data-open-source-id="${escHtml(src.id)}" title="SHA-256: ${escHtml(src.sha256)}">${escHtml(src.id)} (${escHtml(src.license)} · <code>${escHtml(String(src.sha256 || "").slice(0, 8))}</code>)</span>`,
-      )
-      .join(" ");
-    const gatePass = Boolean(thresholds.pass);
-    const ntSpanRatio = ((Number(ratios.nt_tagnt_spanish) || 0) * 100).toFixed(2);
-    const minNtSpan = ((Number(thresholds.min_nt_tagnt_spanish) || 0.95) * 100).toFixed(0);
-    const otUnannRatio = ((Number(ratios.ot_unannotated) || 0) * 100).toFixed(3);
-    const maxOtUnann = ((Number(thresholds.max_ot_unannotated) || 0.01) * 100).toFixed(1);
-    const ntUnannRatio = ((Number(ratios.nt_unannotated) || 0) * 100).toFixed(3);
-    const maxNtUnann = ((Number(thresholds.max_nt_unannotated) || 0.005) * 100).toFixed(1);
-    const otKetivRatio = ((Number(ratios.ot_ketiv) || 0) * 100).toFixed(3);
-    const maxOtKetiv = ((Number(thresholds.max_ot_ketiv) || 0.005) * 100).toFixed(1);
-
-    const indexRelPath = String(annotationReport.index_rel_path || "obras/biblia/original_matrix/annotation_index_v1.tsv.zst");
-
-    parts.push(
-      `<section class="calibration-mass-conservation-card" data-annotation-mass-conservation="true" data-total-tokens="${totalTokens}" data-total-residuals="${totalResiduals}" data-canonical-verses="${canonicalVerses}" data-matrix-columns="${canonicalCols}" data-index-sha256="${escHtml(indexSha.slice(0, 16))}" data-residuals-sha256="${escHtml(residualsSha.slice(0, 16))}" data-index-rel-path="${escHtml(indexRelPath)}">` +
-      `<div class="calib-card-header">` +
-      `<strong>⚖️ ${isEn ? "Lexical Concordance Coverage" : "Cobertura Léxica Completa"} (${totalTokens.toLocaleString("en-US")} ${isEn ? "words" : "palabras"} · ${canonicalVerses.toLocaleString("en-US")} vv.)</strong>` +
-      `<span class="uls-badge" data-chrf-plus-plus="true" data-thresholds-pass="${gatePass}">${gatePass ? (isEn ? "✅ Quality Verified" : "✅ Calidad Verificada") : "⚠️"}</span>` +
-      `</div>` +
-      `<details class="tech-details">` +
-      `<summary>${isEn ? "Technical verification details (Mass Conservation · Residuals)" : "Detalles técnicos de verificación (Masa léxica · Residuales)"}</summary>` +
-      `<div class="ek-stack-sm ek-mt-sm">` +
-      `<span class="uls-badge">TAGNT-ES ${ntSpanRatio}% (≥${minNtSpan}%) · OT-Unann ${otUnannRatio}% (≤${maxOtUnann}%) · NT-Unann ${ntUnannRatio}% (≤${maxNtUnann}%) · Ketiv ${otKetivRatio}% (≤${maxOtKetiv}%)</span>` +
-      (sampleSdbh || sampleNsm
-        ? `<div class="hig-tech-meta">${sampleSdbh ? `<span>SDBH: ${escHtml(sampleSdbh)}</span>` : ""}${sampleSdbh && sampleNsm ? " · " : ""}${sampleNsm ? `<span>${escHtml(humanizeUiCopy("NSM-65", uiLocale))}: ${escHtml(sampleNsm)}</span>` : ""}</div>`
-        : "") +
-      `<div class="calib-badge-row">` +
-      `<span class="calib-row-label">${isEn ? `5 Residual Classes (${totalResiduals.toLocaleString("en-US")}):` : `5 Clases Residuales (${totalResiduals.toLocaleString("en-US")}):`}</span> ${residualBadges}` +
-      `</div>` +
-      `<div class="calib-badge-row calib-sources-row">` +
-      `<span class="calib-row-label">${isEn ? `${sources.length} Open Sources:` : `${sources.length} Fuentes Abiertas:`}</span> ${sourceBadges}` +
-      `</div>` +
-      `</div>` +
-      `</details>` +
-      `</section>`,
-    );
-  }
-
-  if (Array.isArray(blindCalibrationRows) && blindCalibrationRows.length > 0) {
-    const booksOrder = ["GEN", "PSA", "ISA", "JON"];
-    const byLang = new Map();
-    for (const row of blindCalibrationRows) {
-      const lc = String(row.lang_code || "").trim();
-      if (!lc) continue;
-      if (!byLang.has(lc)) {
-        byLang.set(lc, {
-          langCode: lc,
-          macroFamily: String(row.macro_family || ""),
-          cells: new Map(),
-        });
-      }
-      byLang.get(lc).cells.set(String(row.book_usfm || "").toUpperCase(), row);
-    }
-    const normLang = String(activeLang || "es").split("-")[0].toLowerCase();
-    const normBook = String(activeBook || "GEN").toUpperCase();
-    const headerCells = booksOrder
-      .map((bk) => {
-        const isActiveCol = bk === normBook;
-        return `<th class="calib-th${isActiveCol ? " is-active-col" : ""}" data-book-col="${bk}" data-active-book-col="${isActiveCol}">${bk}</th>`;
-      })
-      .join("");
-    const bodyRows = Array.from(byLang.values())
-      .map((entry) => {
-        const isActiveRow = entry.langCode.toLowerCase() === normLang;
-        const tds = booksOrder
-          .map((bk) => {
-            const cell = entry.cells.get(bk);
-            const isActiveCol = bk === normBook;
-            if (!cell) return `<td class="calib-td-num">—</td>`;
-            const chrf = Number(cell.chrf_plus_plus || 0).toFixed(1);
-            const charF2 = Number(cell.char_f2 || 0).toFixed(1);
-            const wordF2 = Number(cell.word_f2 || 0).toFixed(1);
-            const lr = Number(cell.length_ratio_gale_church || 1).toFixed(2);
-            const mattr = Number(cell.mattr_50 || 1).toFixed(2);
-            const passGate = Boolean(cell.passes_release_gate);
-            return `<td class="calib-td-num${isActiveRow && isActiveCol ? " is-active-cell" : ""}" data-calib-cell="${escHtml(entry.langCode)}:${bk}" data-passes-gate="${passGate}" data-active-cell="${isActiveRow && isActiveCol}" title="charF2=${charF2} · wordF2=${wordF2} · Gale-Church=${lr} · MATTR50=${mattr}">${chrf}${passGate ? "" : "⚠"}</td>`;
-          })
-          .join("");
-        return (
-          `<tr class="${isActiveRow ? "is-active-lang-row" : ""}" data-calib-lang="${escHtml(entry.langCode)}" data-active-lang-row="${isActiveRow}">` +
-          `<td class="calib-td-lang"><code>${escHtml(entry.langCode)}</code> <span class="calib-family-tag">(${escHtml(entry.macroFamily)})</span></td>` +
-          tds +
-          `</tr>`
-        );
-      })
-      .join("");
-
-    parts.push(
-      `<section class="blind-calibration-chrf-card" data-blind-calibration-matrix="true" data-langs-count="${byLang.size}" data-books-count="${booksOrder.length}">` +
-      `<strong class="calib-matrix-title">🎯 ${isEn ? `Cross-Language Translation Benchmark (${byLang.size} Languages × 4 Passages)` : `Calibración Comparativa (${byLang.size} Lenguas × 4 Pasajes)`}</strong>` +
-      `<details class="tech-details">` +
-      `<summary>${isEn ? `Technical fidelity matrix (${byLang.size} languages)` : `Matriz técnica de fidelidad (${byLang.size} lenguas)`}</summary>` +
-      `<div class="hig-tech-meta">chrF++ · Gale-Church · MATTR50</div>` +
-      `<table class="calib-matrix-table">` +
-      `<thead><tr><th class="calib-th-lang">${isEn ? "Lang / Family" : "Lengua / Familia"}</th>${headerCells}</tr></thead>` +
-      `<tbody>${bodyRows}</tbody>` +
-      `</table>` +
-      `</details>` +
-      `</section>`,
-    );
-  }
-
-  return parts.join("");
+  return (
+    `<details id="proBovedaCalibrationDetails" class="r9-stratum-accordion ek-mt-sm" data-pro-boveda="true">` +
+    `<summary>🔬 ${isEn ? "Pro Vault · I+D Calibration & Corpus Metrics (chrF++, AoA, MDD)" : "Bóveda Pro · Calibración I+D y Métricas (chrF++, AoA, MDD)"}</summary>` +
+    `<div id="proBovedaStudyCalibSlot" class="ek-mt-xs"><p class="ek-meta">${isEn ? "Open to load linguistic benchmark matrices on demand." : "Abre para cargar matrices de calibración I+D bajo demanda."}</p></div>` +
+    `</details>`
+  );
 }
 
 /**
@@ -356,6 +217,7 @@ export async function hydrateStudyDrawerPanel(ctx = {}) {
     hydrateBookAndChapterSelectors,
     transitionSheet,
   } = ctx;
+  const isEnStudySync = String(state.uiLocale || "es").trim().toLowerCase().startsWith("en");
   const profilesSync = listOrthographyProfilesForLang(state.lang);
   const wfstHostSync = getEl("wfstAndScriptioContinuaHost", targetDoc);
   if (wfstHostSync) {
@@ -366,14 +228,7 @@ export async function hydrateStudyDrawerPanel(ctx = {}) {
         profileId: state.orthographyProfile || profilesSync[0]?.id || "INALI_PRACTICAL",
         sampleText: syncVerseText || undefined,
         uiLocale: state.uiLocale || "es",
-      }) +
-      renderAnnotationAndBlindCalibrationCardHtml({
-        annotationReport: state.annotationIndexReport || dataLayer?.getHydratedAnnotationIndexReport?.() || null,
-        blindCalibrationRows: state.blindCalibrationReport || dataLayer?.getHydratedBlindCalibrationReport?.() || null,
-        activeLang: state.lang,
-        activeBook: state.book,
-        uiLocale: state.uiLocale || "es",
-      });
+      }) + renderProBovedaStudyAccordionHtml(state.uiLocale || "es");
   }
   const thermoPanelSync = getEl("bibleAnalyticalThermometerPanel", targetDoc);
   if (thermoPanelSync) {
@@ -420,20 +275,6 @@ export async function hydrateStudyDrawerPanel(ctx = {}) {
       // Non-fatal
     }
   }
-  if (!state.annotationIndexReport && typeof dataLayer.loadAnnotationIndexReport === "function") {
-    try {
-      state.annotationIndexReport = await dataLayer.loadAnnotationIndexReport();
-    } catch {
-      // Non-fatal
-    }
-  }
-  if (!state.blindCalibrationReport && typeof dataLayer.loadBlindCalibrationReport === "function") {
-    try {
-      state.blindCalibrationReport = await dataLayer.loadBlindCalibrationReport();
-    } catch {
-      // Non-fatal
-    }
-  }
   const i18nInstance = typeof getI18n === "function" ? getI18n() : null;
   const tFn = i18nInstance ? (k, p) => i18nInstance.t(k, p) : undefined;
   const staticRosettaHostEl = getEl("philologyRosettaStaticHost", targetDoc);
@@ -463,9 +304,11 @@ export async function hydrateStudyDrawerPanel(ctx = {}) {
   const matrixPackHref = String(state.matrixTier0Url || "data/packs/matrix_tier0.ekpack");
   const studyMatrixCardHtml =
     `<div id="studyMatrixDownloadCard" class="ek-row-between ek-meta ek-mb-xs" data-matrix-tier0="true">` +
-    `<span>📚 ${isEnStudy ? "Original Study (15 col)" : "Estudio Original (15 col)"} · <span id="studyQualityCalibrationBadge" data-chrf-calibrated="chrF++ 12-lang" title="chrF++ 12-lang">${isEnStudy ? "✅ Verified (12 langs)" : "✅ Verificada (12 lenguas)"}</span></span>` +
-    `<a id="btnDownloadStudyMatrixTier0" class="ek-btn-link" data-tech-key="matrix_tier0.ekpack" href="${escHtml(matrixPackHref)}" download="matrix_tier0.ekpack">⬇️ ${isEnStudy ? "Vault (4. Share)" : "Bóveda (4. Compartir)"}</a>` +
-    `</div>`;
+    `<span>📚 ${isEnStudy ? "Original Study (15 col)" : "Estudio Original (15 col)"}</span>` +
+    `<span class="ek-row-wrap">` +
+    `<button type="button" id="btnOpenProBovedaFromStudy" class="uls-chip" data-action="open-pro-boveda">🔐 ${isEnStudy ? "Pro Vault" : "Bóveda Pro"}</button>` +
+    `<a id="btnDownloadStudyMatrixTier0" class="ek-btn-link" data-tech-key="matrix_tier0.ekpack" href="${escHtml(matrixPackHref)}" download="matrix_tier0.ekpack">⬇️ ${isEnStudy ? "Download Matrix (7.21 MB)" : "Descargar Matriz (7.21 MB)"}</a>` +
+    `</span></div>`;
   const html = workBannerHtml + studyMatrixCardHtml + mod.renderStudy14ColDrawerHtml(matrixChapter, studyOpts);
   const container =
     getEl("leipzig14ColStratumAction", targetDoc) ||
@@ -797,7 +640,18 @@ export async function hydrateStudyDrawerPanel(ctx = {}) {
     }
   }
 
-  // D3-R40 + D3-R45: Hidrata el Inspector WFST Multi-Ortográfico + Scriptio Continua + Conservación de Masa Léxica y Matriz chrF++ en #wfstAndScriptioContinuaHost.
+  const proBovedaStudyBtn = getEl("btnOpenProBovedaFromStudy", targetDoc);
+  if (proBovedaStudyBtn && typeof proBovedaStudyBtn.addEventListener === "function" && !proBovedaStudyBtn._proVaultBound) {
+    proBovedaStudyBtn._proVaultBound = true;
+    proBovedaStudyBtn.addEventListener("click", async () => {
+      patchStoreState(ctx, { activeSubtabBySheet: { ...(state.activeSubtabBySheet || {}), share: "graphics" } }, "sheet");
+      await transitionSheet?.("share", targetDoc, { fromUser: true });
+      const det = getEl("shareProBovedaDetails", targetDoc);
+      if (det) det.open = true;
+    });
+  }
+
+  // Bóveda Pro Lazy (SLICE-EKO-HIG5-06 · LCOM4 >= 2): WFST ortográfico arriba; métricas I+D (chrF++, AoA, MDD) bajo demanda.
   const wfstHost = getEl("wfstAndScriptioContinuaHost", targetDoc);
   if (wfstHost) {
     const profilesForLang = listOrthographyProfilesForLang(state.lang);
@@ -807,21 +661,24 @@ export async function hydrateStudyDrawerPanel(ctx = {}) {
       Array.isArray(matrixChapter?.rows) && matrixChapter.rows.length > 0 && !Array.isArray(matrixChapter.rows[0])
         ? matrixChapter.rows[0]
         : null;
-    const calibrationCardsHtml = renderAnnotationAndBlindCalibrationCardHtml({
-      annotationReport: state.annotationIndexReport || dataLayer?.getHydratedAnnotationIndexReport?.() || null,
-      blindCalibrationRows: state.blindCalibrationReport || dataLayer?.getHydratedBlindCalibrationReport?.() || null,
-      sampleRow: firstRowObj,
-      activeLang: state.lang,
-      activeBook: state.book,
-      uiLocale: state.uiLocale || "es",
-    });
     wfstHost.innerHTML =
       renderWfstAndScriptioContinuaInspectorHtml({
         lang: state.lang,
         profileId: state.orthographyProfile || profilesForLang[0]?.id || "INALI_PRACTICAL",
         sampleText: activeVerseText || undefined,
         uiLocale: state.uiLocale || "es",
-      }) + calibrationCardsHtml;
+      }) + renderProBovedaStudyAccordionHtml(state.uiLocale || "es");
+    const calibDetails = getEl("proBovedaCalibrationDetails", targetDoc);
+    if (calibDetails && typeof calibDetails.addEventListener === "function" && !calibDetails._proCalibBound) {
+      calibDetails._proCalibBound = true;
+      calibDetails.addEventListener("toggle", async () => {
+        if (!calibDetails.open) return;
+        const slotEl = getEl("proBovedaStudyCalibSlot", targetDoc);
+        if (!slotEl || slotEl.getAttribute?.("data-pro-boveda-hydrated") === "true") return;
+        const { hydrateProBovedaStudyCalibration } = await import("./drawer_pro_boveda.js");
+        await hydrateProBovedaStudyCalibration({ slotEl, state, dataLayer, sampleRow: firstRowObj });
+      });
+    }
     const wfstSel = getEl("wfstInspectorProfileSelect", targetDoc);
     if (wfstSel && typeof wfstSel.addEventListener === "function" && !wfstSel._wfstBound) {
       wfstSel._wfstBound = true;

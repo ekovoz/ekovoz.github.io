@@ -9,9 +9,6 @@ import {
   serializeMostradorRouteQuery, setActivePlateIndex, setPaperFormat, syncFelicesWithCorpusLang, syncI18nUiFromState, updateUI,
 } from "./i18n_ui.js";
 import {
-  parseInitialRouteAndLocale, resolveDefaultCorpusLangForUi,
-} from "./mostrador/url_route_lens.js";
-import {
   CROSS_WORK_BRIDGE_TABLE, HAREL_SHEET_MAP, LIFE_TRAILS_ANCHORS, MOSTRADOR_DOM_BINDINGS, MULTI_ORTHO_LANGS, POETIC_BOOKS,
   REGIONAL_BRIDGE_LANGUAGES_10, applyOrthographyProfile, deriveEpistemicSeal, escapeHtml, lookupWordTokenStrongEntry,
   projectCrossWorkCoordinate, renderChapterPreviewHtml, renderDiglossicParallelBridge, renderInteractiveVerseTokensHtml,
@@ -21,13 +18,14 @@ import {
   ARTIFACT_PROJECTION_SCHEMA, MOSTRADOR_DOM_SCOPE_CONTRACTS, STATUS, computeProsodyAndSyllableAlignmentInWasm, createDataLayer,
   createFetchSource, loadNsmRealiaLexicon, projectNsmRealiaLexicon3NF, resolveLocalizedBookMeta, verifyArtifactProjectionClosure, verifyVplDomScopeContainment,
 } from "./mostrador/data_layer.js";
-import { auditSingleOwnerContract } from "./mostrador/dom_projection_contracts.js";
 import {
   applySpanish21DiachronicRegister, computeAnalyticalRegisterMetrics, hasDiachronicVariants, hydrateDiachronicRegister,
   renderAnalyticalThermometerHtml, renderChapterDiachronicAuditCardHtml, renderUnifiedDiachronicContextHtml, resolveEffectiveCorpusTarget,
   summarizeChapterDiachronicTransformations, syncDiachronicRegisterOrthogonality,
 } from "./mostrador/diachronic_register.js";
 import { isVerifiedCanonicalTier0Or1, mapFullChapterGmisRows, renderProgressiveTwoStrataDiglossicBridge, resolveHonestSovereignTier, resolveSelectableBridgeLang } from "./mostrador/diglossic_chapter_renderer.js";
+import { patchStoreState } from "./mostrador/dom_patch.js";
+import { auditSingleOwnerContract, resolveCapabilityIntentLayer } from "./mostrador/dom_projection_contracts.js";
 import {
   CANONICAL_12_BRANCH_PROFILES, CANONICAL_14_PLUS_2_EDITIONS_CATALOG, CANONICAL_14_PRINT_PROFILES, CANONICAL_16_TYPOLOGY_PROFILES,
   CANONICAL_80_BLOCKS_CATALOG, CANONICAL_9_TOML_PROFILES, POCKET_REFUGE_4_SHEETS_SPEC, PRECOMPILED_PDF_LANGS, VERIFIED_TEXT_BIBLE_LANGS,
@@ -59,6 +57,7 @@ import {
   resolveEvangeliosMacroThreadAndEcho, resolveFelicesDichaCoordinate, resolveFelicesPlate,
   resolveMasoreticPericopeBreaks,
 } from "./mostrador/evangelios.js";
+import { bindFelicesStageEvents } from "./mostrador/felices_stage_controller.js";
 import {
   applyToDom, createI18n, formatLocalizedNumeralWeb, isRtlLocale, localizeWorkChromeLabels, negotiate, requestedUiLocales,
 } from "./mostrador/i18n.js";
@@ -69,10 +68,12 @@ import {
   foldCrdtWalSemilattice, propagateCascadeL1ToL5, renderCascadeAndLadderHtml, renderImproveDrawerHtml, renderStpLexiconExplorerHtml,
   renderStpLexiconResultsRowsHtml, renderTallerArtifactsCatalogHtml, selectTopEntropyVerseQueue, verifyLock8PredicativeAndNegation,
 } from "./mostrador/mejorar.js";
-import { dispenseMostradorDose1, renderMostradorViewportFromState, resolveVerifiedBookCount, updateMostradorDoseLinks, updateMostradorSealDom } from "./mostrador/mostrador_viewport_dose1.js";
+import { dispenseMostradorDose1, renderMostradorViewportFromState, updateMostradorDoseLinks, updateMostradorSealDom } from "./mostrador/mostrador_viewport_dose1.js";
 import {
-  CANONICAL_ECO_PACKS_MANIFEST, STORED_ECO_PACKS, computeEcoPackCrc32Hex, exportSneakernetBundleJson, hydrateEcoPacksManifest,
-  ensureVaultHydrated, importSneakernetBundleJson, probeEcoPackRandomAccessBounds, renderOfflineMeshEcoCardHtml, triggerOptInOfflinePackDownload,
+  CANONICAL_ECO_PACKS_MANIFEST, STORED_ECO_PACKS, computeEcoPackCrc32Hex,
+  ensureVaultHydrated,
+  exportSneakernetBundleJson, hydrateEcoPacksManifest,
+  importSneakernetBundleJson, probeEcoPackRandomAccessBounds, renderOfflineMeshEcoCardHtml, triggerOptInOfflinePackDownload,
   verifyAndStoreEcoPack,
 } from "./mostrador/offline_mesh.js";
 import {
@@ -86,22 +87,22 @@ import {
   resolveScriptioContinuaCodeForLang, segmentScriptioContinuaSyllables, transduceOrthographyWeb, transduceVerseWithReverseMap,
 } from "./mostrador/orthography_wfst.js";
 import { countPdfPages, extractPdfPages } from "./mostrador/pdf_pages.js";
-import { patchStoreState } from "./mostrador/dom_patch.js";
-import { resolveCapabilityIntentLayer } from "./mostrador/dom_projection_contracts.js";
-import { syncStickyDrawerContextHeader, projectStoreAttributesToDom } from "./mostrador/projection_contract.js";
-import {
-  closeSheet, createEkovozStore, createGuardedStateProxy, openSheet, setActiveIntent, toggleSheet,
-} from "./mostrador/state_store.js";
-import { applyInitialSurfaceModeFromUrl, createSurfaceCompositor, projectSubtabGroupToDom, projectSurfaceLayoutFromState } from "./mostrador/surface_compositor.js";
+import { projectStoreAttributesToDom, syncStickyDrawerContextHeader } from "./mostrador/projection_contract.js";
 import {
   ROSETTA_66_BOOKS, createReferenceResolver, normalizeBookAliasToken, parseBiblicalCoordinateReference, resolveBookCodeByAliasOrName,
 } from "./mostrador/reference.js";
-import { bindFelicesStageEvents } from "./mostrador/felices_stage_controller.js";
 import {
   bindSisterWorksStageEvents, buildEvangeliosWeekOptionsHtml, renderEvangeliosStageCardHtml,
   resolveEvangeliosActiveSelection, syncSisterWorksTabsDom,
 } from "./mostrador/sister_works_controller.js";
 import { bindStageDomEvents } from "./mostrador/stage_dom_bindings.js";
+import {
+  closeSheet, createEkovozStore, createGuardedStateProxy, openSheet, setActiveIntent, toggleSheet,
+} from "./mostrador/state_store.js";
+import { applyInitialSurfaceModeFromUrl, createSurfaceCompositor, projectSubtabGroupToDom, projectSurfaceLayoutFromState } from "./mostrador/surface_compositor.js";
+import {
+  parseInitialRouteAndLocale, resolveDefaultCorpusLangForUi,
+} from "./mostrador/url_route_lens.js";
 
 export {
   ARTIFACT_PROJECTION_SCHEMA, CANONICAL_12_BRANCH_PROFILES, CANONICAL_14_PLUS_2_EDITIONS_CATALOG, CANONICAL_14_PRINT_PROFILES, CANONICAL_16_TYPOLOGY_PROFILES, CANONICAL_80_BLOCKS_CATALOG, CANONICAL_9_TOML_PROFILES, CANONICAL_ECO_PACKS_MANIFEST, CRDT_WAL_SEMILATTICE, CROSS_WORK_BRIDGE_TABLE, EVANGELIOS_MACRO_THREADS_AND_ECHOES, FELICES_12_DICHAS_COORDINATE_MAP, FELICES_28_PLATES_MAP, FELICES_PLATE_TO_BIBLE_COORDINATE, FIELD_WORKSHOP_STP_LEXICON, GEOGRAPHIC_MACRO_REGIONS,
@@ -343,8 +344,8 @@ export function createMostradorController(options = {}) {
         : 24;
     const isUiEn = String(state.uiLocale || "es").trim().toLowerCase().startsWith("en");
     corpusLbl.textContent = isUiEn
-      ? `Corpus: ${state.lang} · ${packsCount} Bibles · 7,164`
-      : `Corpus: ${state.lang} · ${packsCount} Biblias · 7,164`;
+      ? `Corpus: ${state.lang} · 7,164`
+      : `Corpus: ${state.lang} · 7,164`;
   }
 
   function renderStateToDom(targetDoc = doc, { syncUrl = true, pushUrl = false } = {}) {

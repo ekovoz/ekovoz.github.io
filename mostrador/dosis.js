@@ -453,10 +453,22 @@ export function syncDose2AndDose3LinksForActiveLang({
   const dose2Planned = planDose2(blockCode, lang, edition);
 
   if (linkDose2) {
+    const engine2 = state.dose2WorkerPdfBytes?.byteLength > 0
+      ? "wasm-local"
+      : bimodalDose2?.pdfBytes?.byteLength > 0
+        ? "wasm-local"
+        : dose2Href === "#"
+          ? "wasm-local"
+          : "precompiled";
+    const engine2Label = isEn
+      ? (engine2 === "precompiled" ? "Precompiled PDF" : "Building PDF in local WASM")
+      : (engine2 === "precompiled" ? "PDF precompilado" : "Compilando PDF en WASM local");
     linkDose2.href = dose2Href;
     linkDose2.setAttribute?.("href", dose2Href);
     linkDose2.setAttribute?.("download", `ekovoz-${lang}-${book.toLowerCase()}-${activeCols}col-${activeFontPt}pt.pdf`);
     linkDose2.setAttribute?.("data-dose-mode", dose2Href === "#" ? "wasm-on-demand" : "bimodal-tanda");
+    linkDose2.setAttribute?.("data-pdf-engine", engine2);
+    linkDose2.setAttribute?.("title", engine2Label);
     linkDose2.setAttribute?.("data-tanda-scope", Array.isArray(state.fullBookVerses) ? "full-book" : "chapter-seed");
     linkDose2.setAttribute?.("data-worker-url", bimodalDose2.workerUrl || dose2Planned.url);
     linkDose2.setAttribute?.("data-block-code", blockCode);
@@ -470,10 +482,20 @@ export function syncDose2AndDose3LinksForActiveLang({
       isFullBible16: false,
       uiLocale: state.uiLocale || "es",
     });
-    linkDose2.textContent = unifiedLabels.dose2Text;
+    linkDose2.textContent = `${unifiedLabels.dose2Text} · ${engine2Label}`;
   }
   if (linkDose3) {
     const isFullBible16 = Boolean(state._dose3Streamed16Of16);
+    const engine3 = state.dose3WorkerPdfBytes?.byteLength > 0
+      ? "wasm-local"
+      : bimodalDose3?.pdfBytes?.byteLength > 0
+        ? "wasm-local"
+        : dose3Href === "#"
+          ? "wasm-local"
+          : "precompiled";
+    const engine3Label = isEn
+      ? (engine3 === "precompiled" ? "Precompiled PDF" : "Building PDF in local WASM")
+      : (engine3 === "precompiled" ? "PDF precompilado" : "Compilando PDF en WASM local");
     const dose3Scope = isFullBible16
       ? "full-bible-16-tandas"
       : Array.isArray(state.bibleTandaVerses)
@@ -486,6 +508,8 @@ export function syncDose2AndDose3LinksForActiveLang({
     linkDose3.setAttribute?.("href", dose3Href);
     linkDose3.setAttribute?.("download", dose3Download);
     linkDose3.setAttribute?.("data-dose-mode", dose3Href === "#" ? "wasm-on-demand" : "bimodal-tanda");
+    linkDose3.setAttribute?.("data-pdf-engine", engine3);
+    linkDose3.setAttribute?.("title", engine3Label);
     linkDose3.setAttribute?.("data-tanda-scope", dose3Scope);
     linkDose3.setAttribute?.("data-macro-tanda", isFullBible16 ? "ALL-16" : activeMacroTanda.macroTandaId);
     linkDose3.setAttribute?.("data-worker-url", bimodalDose3.workerUrl);
@@ -499,7 +523,7 @@ export function syncDose2AndDose3LinksForActiveLang({
       isFullBible16,
       uiLocale: state.uiLocale || "es",
     });
-    linkDose3.textContent = unifiedLabels.dose3Text;
+    linkDose3.textContent = `${unifiedLabels.dose3Text} · ${engine3Label}`;
   }
   return {
     mode: "bimodal-tanda",

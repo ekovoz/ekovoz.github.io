@@ -526,21 +526,25 @@ export function renderWorkshopAuditPanelsHtml({
         })
         .join("")
       : "";
+  const rosettaTerms = Number(extAudit.rosetta_key_terms_extracted);
+  const rosettaTermsLabel = Number.isFinite(rosettaTerms) && rosettaTerms > 0
+    ? `${rosettaTerms} ${isEn ? "key terms" : "términos"}`
+    : (isEn ? "No Rosetta index loaded" : "Sin índice Rosetta cargado");
   const auditResultSummaryHtml = externalAuditResult
     ? externalAuditResult.entriesCount === 0
-      ? `<p class="ek-meta ek-mt-xs">${isEn ? "Paste USFM (e.g. \\c 1 \\v 1 ...) or OSIS lines to validate." : "Pega USFM (ej. \\c 1 \\v 1 ...) o versículos para validar."}</p>`
-      : `<div class="ek-mt-xs" data-live-audit-passed="${externalAuditResult.allPassed}"><strong class="ek-title-sm">${externalAuditResult.allPassed ? "✅" : "⛔"} ${externalAuditResult.passedCount}/${externalAuditResult.entriesCount} ${isEn ? "units passed 8 locks" : "unidades pasaron los 8 candados"}</strong><ul>${auditRowsHtml}</ul></div>`
-    : `<p class="ek-meta ek-mt-xs">${isEn ? "Validate your own .usfm/.txt draft with all 8 deterministic locks on this device." : "Valida tu propio borrador .usfm/.txt con los 8 candados deterministas en este dispositivo."}</p>`;
+      ? `<p class="ek-meta ek-mt-xs">${isEn ? "Paste USFM (e.g. \\c 1 \\v 1 ...) or load .usfm/.txt/.docx (<= 8 MiB local preview; CLI ekovoz audit-external for full corpus audit)." : "Pega USFM (ej. \\c 1 \\v 1 ...) o carga .usfm/.txt/.docx (<= 8 MiB en cliente; usa CLI ekovoz audit-external para auditoría completa)."}</p>`
+      : `<div class="ek-mt-xs" data-live-audit-passed="${externalAuditResult.allPassed}"><strong class="ek-title-sm">${externalAuditResult.allPassed ? "✅" : "⛔"} ${externalAuditResult.passedCount}/${externalAuditResult.entriesCount} ${isEn ? "units passed 8 locks (local check)" : "unidades pasaron los 8 candados (revisión local)"}</strong><ul>${auditRowsHtml}</ul></div>`
+    : `<p class="ek-meta ek-mt-xs">${isEn ? "Validate .usfm/.txt/.docx drafts (<= 8 MiB) locally with 8 deterministic locks. For full corpus audit run ekovoz audit-external." : "Valida borradores .usfm/.txt/.docx (<= 8 MiB) localmente con los 8 candados. Para auditoría completa de corpus usa ekovoz audit-external."}</p>`;
   const externalAuditHtml =
     `<div id="externalAudit8LocksPanel" class="ek-card-muted ek-mt-sm" data-audit-lang="${escAud(cleanLang)}" data-external-audit-8-locks="true" data-all-8-locks-passed="${Boolean(extAudit.all_8_locks_passed)}">` +
     `<div class="ek-row-between">` +
-    `<strong>🛡️ ${isEn ? "External Editorial Review · 8-Lock USFM Audit" : "Revisión Editorial Externa · Auditoría 8 Candados"}</strong>` +
-    `<span class="uls-badge ek-badge-compact">${extAudit.all_8_locks_passed !== false ? `✅ ${humanizeUiCopy("8/8 PASS", uiLocale)}` : "⛔ VETO"} · ${Number(extAudit.rosetta_key_terms_extracted || 552)} ${isEn ? "key terms" : "términos"}</span>` +
+    `<strong>🛡️ ${isEn ? "External Editorial Review · 8-Lock Audit" : "Revisión Editorial Externa · Auditoría 8 Candados"}</strong>` +
+    `<span class="uls-badge ek-badge-compact">${extAudit.all_8_locks_passed !== false ? `✅ ${humanizeUiCopy("8/8 PASS", uiLocale)}` : "⛔ VETO"} · ${rosettaTermsLabel}</span>` +
     `</div>` +
     `<textarea id="externalAuditTextInput" class="ek-field-input ek-textarea-full ek-mt-xs" rows="3" placeholder="\\id GEN&#10;\\c 1&#10;\\v 1 Tu'xich jumai...">${escAud(externalAuditText || "")}</textarea>` +
     `<div class="ek-row-wrap ek-mt-xs">` +
-    `<label for="externalAuditFileInput" class="uls-chip ek-file-picker-btn">📂 ${isEn ? "Load .usfm / .txt file" : "Cargar archivo .usfm / .txt"}` +
-    `<input type="file" id="externalAuditFileInput" class="sr-only-file-input" accept=".usfm,.sfm,.txt" aria-label="${isEn ? "Load USFM file" : "Cargar archivo USFM"}"></label>` +
+    `<label for="externalAuditFileInput" class="uls-chip ek-file-picker-btn">📂 ${isEn ? "Load .usfm / .txt / .docx (<=8 MB)" : "Cargar .usfm / .txt / .docx (<=8 MB)"}` +
+    `<input type="file" id="externalAuditFileInput" class="sr-only-file-input" accept=".usfm,.sfm,.txt,.docx" aria-label="${isEn ? "Load USFM, TXT or DOCX file" : "Cargar archivo USFM, TXT o DOCX"}"></label>` +
     `<button type="button" id="btnRunExternalAudit" class="uls-chip ek-btn-fitts">🔍 ${isEn ? "Audit 8 locks" : "Auditar 8 candados"}</button>` +
     `</div>` +
     `<div id="externalAuditLiveResult" aria-live="polite">${auditResultSummaryHtml}</div>` +

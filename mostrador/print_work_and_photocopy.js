@@ -535,7 +535,7 @@ export function renderCompactTypologySelectorHtml({
 
   return (
     `<details id="printTypologyBridgeCard" class="tech-details ek-card-muted ek-stack-sm ek-mt-xs" data-typology-bridge="true">` +
-    `<summary class="ek-title-sm">🌐 ${isEn ? "Advanced linguistic layout adaptation" : "Adaptación lingüística avanzada de maquetación"}</summary>` +
+    `<summary class="ek-title-sm">🌐 ${isEn ? "Advanced · Linguistic layout (Grambank 12×16)" : "Avanzado · Adaptación lingüística (Grambank 12×16)"}</summary>` +
     `<div class="ek-form-pair ek-mt-xs">` +
     `<label class="ek-label-sm">${isEn ? "Linguistic branch (12)" : "Rama lingüística (12)"}` +
     `<select id="printBranchProfileSelect" class="ek-input">${branchOptions}</select></label>` +

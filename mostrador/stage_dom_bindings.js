@@ -465,11 +465,11 @@ export function bindStageDomEvents(ctx = {}) {
   const corpusDrawer = getEl("bibleLanguageAndRegisterDrawer", targetDoc);
   if (corpusLangBtn && typeof corpusLangBtn.addEventListener === "function") {
     corpusLangBtn.addEventListener("click", () => {
-      if (corpusDrawer) {
-        corpusDrawer.open = !corpusDrawer.open;
-        corpusLangBtn.setAttribute("aria-expanded", corpusDrawer.open ? "true" : "false");
-        syncBodyWorkAndOverlayAttrs(targetDoc);
-      }
+      if (!corpusDrawer) return;
+      corpusDrawer.open = !corpusDrawer.open;
+      corpusLangBtn.setAttribute("aria-expanded", corpusDrawer.open ? "true" : "false");
+      if (corpusDrawer.open) setTimeout(() => { try { getEl("quickLangFilterInput", targetDoc)?.focus({ preventScroll: true }); } catch { } }, 0);
+      syncBodyWorkAndOverlayAttrs(targetDoc);
     });
   }
 

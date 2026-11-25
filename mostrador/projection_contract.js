@@ -275,21 +275,23 @@ export function syncStickyDrawerContextHeader(state = {}, getEl, targetDoc) {
 }
 
 /**
- * Projects declarative store attributes (surface mode, theme polarity, typography, stealth)
+ * Resuelve la intención explícita de superficie sin depender de conmutadores globales ocultos (`2A'`).
+ */
+function resolveExplicitSurfaceIntent(state = {}) {
+  if (VALID_ACTIVE_INTENTS.includes(state.activeIntent)) return state.activeIntent;
+  if (state.activeSheet === "field" || state.activeSheet === "improve") return "workshop";
+  if (["study", "print", "share"].includes(state.activeSheet)) return state.activeSheet;
+  return state.surfaceMode === "studio" ? "study" : "read";
+}
+
+/**
+ * Projects declarative store attributes (surface intent, theme polarity, typography, stealth)
  * onto root/body with zero local state mutation.
  */
 export function projectStoreAttributesToDom(state = {}, targetDoc) {
   if (!targetDoc) return false;
   const targets = [targetDoc.documentElement, targetDoc.body].filter(Boolean);
-  const activeIntent = VALID_ACTIVE_INTENTS.includes(state.activeIntent)
-    ? state.activeIntent
-    : state.activeSheet === "field" || state.activeSheet === "improve"
-      ? "workshop"
-      : ["study", "print", "share"].includes(state.activeSheet)
-        ? state.activeSheet
-        : state.surfaceMode === "studio"
-          ? "study"
-          : "read";
+  const activeIntent = resolveExplicitSurfaceIntent(state);
   const theme = ["light", "sepia", "dark"].includes(state.appearanceTheme) ? state.appearanceTheme : "light";
   const fontFamily = state.fontFamily === "sans" ? "sans" : "serif";
   const fontScale = Number.isFinite(Number(state.fontScale))

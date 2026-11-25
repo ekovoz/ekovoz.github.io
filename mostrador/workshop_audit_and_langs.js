@@ -5,7 +5,7 @@
 // ============================================================================
 
 import { escapeHtml } from "./bridge_and_chapter.js";
-import { runClientExternalAudit8Locks } from "./concordance_search.js";
+import { auditExternalFileClient, runClientExternalAudit8Locks } from "./concordance_search.js";
 import { humanizeUiCopy } from "./human_labels.js";
 import { renderStpDraftCheckHtml } from "./mejorar.js";
 
@@ -311,9 +311,17 @@ export function computeClientModernizeReadabilityAudit(rawText = "", uiLocale = 
   const mdd = Number(Math.min(6.0, Math.max(1.2, 1.3 + avgClauseWords * 0.06)).toFixed(2));
   const passed = aoaYears <= 11.0 && mdd <= 2.6;
   const label = isEn
-    ? `Readability · AoA=${aoaYears}y (≤11) · MDD=${mdd} (≤2.6)`
-    : `Legibilidad · AoA=${aoaYears}a (≤11) · MDD=${mdd} (≤2.6)`;
-  return { aoaYears, mdd, passed, wordsCount: words.length, label };
+    ? `Quick local estimate (full spacy/UD via CLI: ekovoz modernize-audit) · AoA=${aoaYears}y (≤11) · MDD=${mdd} (≤2.6)`
+    : `Estimación local rápida (spacy/UD completo: ekovoz modernize-audit) · AoA=${aoaYears}a (≤11) · MDD=${mdd} (≤2.6)`;
+  return {
+    aoaYears,
+    mdd,
+    passed,
+    wordsCount: words.length,
+    method: "client-heuristic-estimate",
+    cliCommand: "ekovoz modernize-audit",
+    label,
+  };
 }
 
 export function createWorkshopAuditHandlers({
@@ -341,14 +349,26 @@ export function createWorkshopAuditHandlers({
     }
     if (targetId === "externalAuditFileInput") {
       const file = e?.target?.files?.[0];
-      if (!file || typeof file.text !== "function") return;
-      const rawDraft = await file.text();
-      state.externalAuditText = rawDraft;
-      state.externalAuditResult = runClientExternalAudit8Locks({
-        rawText: rawDraft,
+      if (!file) return;
+      const isDocx = /\.docx$/i.test(String(file.name || ""));
+      let bytes = null;
+      let rawText = "";
+      if (isDocx && typeof file.arrayBuffer === "function") {
+        bytes = new Uint8Array(await file.arrayBuffer());
+      } else if (typeof file.text === "function") {
+        rawText = await file.text();
+      } else {
+        return;
+      }
+      const clientRes = await auditExternalFileClient({
+        fileName: file.name || "",
+        bytes,
+        rawText,
         oldSurface: oldInput?.value || "",
       });
-      state.externalModernizeAudit = computeClientModernizeReadabilityAudit(rawDraft, state.uiLocale || "es");
+      state.externalAuditText = clientRes.extractedText;
+      state.externalAuditResult = clientRes.audit;
+      state.externalModernizeAudit = computeClientModernizeReadabilityAudit(clientRes.extractedText, state.uiLocale || "es");
       state.refreshWorkshopAuditSubtab?.();
       (state.refreshPatchPreview || refreshPatchPreview)();
     }

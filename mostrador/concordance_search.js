@@ -172,6 +172,8 @@ export function runClientExternalAudit8Locks({
       passedCount: 0,
       vetoCount: 0,
       results: [],
+      auditScope: "client-8locks-local",
+      cliHint: "ekovoz audit-external",
     };
   }
   const results = entries.map((entry) => {
@@ -195,6 +197,34 @@ export function runClientExternalAudit8Locks({
     passedCount,
     vetoCount,
     results,
+    auditScope: "client-8locks-local",
+    cliHint: "ekovoz audit-external",
+  };
+}
+
+/**
+ * Lee un File/Uint8Array (.docx o texto/.usfm) en el cliente (tope <= 8 MiB para .docx)
+ * y ejecuta la auditoría local de 8 candados con alcance explícito respecto a `ekovoz audit-external`.
+ */
+export async function auditExternalFileClient({
+  fileName = "",
+  bytes = null,
+  rawText = "",
+  oldSurface = "",
+} = {}) {
+  const isDocx = /\.docx$/i.test(String(fileName || "")) ||
+    (bytes instanceof Uint8Array && bytes.byteLength >= 4 && bytes[0] === 0x50 && bytes[1] === 0x4b);
+  let extractedText = String(rawText || "");
+  let sourceKind = "text";
+  if (isDocx && bytes) {
+    const { extractDocxDocumentXmlText } = await import("./docx_client_reader.js");
+    extractedText = await extractDocxDocumentXmlText(bytes);
+    sourceKind = "docx-client-l0";
+  }
+  return {
+    sourceKind,
+    extractedText,
+    audit: runClientExternalAudit8Locks({ rawText: extractedText, oldSurface }),
   };
 }
 

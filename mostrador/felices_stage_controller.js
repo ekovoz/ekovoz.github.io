@@ -132,6 +132,40 @@ export function bindFelicesStageEvents(ctx = {}) {
   if (btnPrintP && typeof btnPrintP.addEventListener === "function") {
     btnPrintP.addEventListener("click", () => printActivePlate());
   }
+  for (const dlId of ["linkSheets", "linkBooklet"]) {
+    const dlLink = getEl(dlId, targetDoc);
+    if (dlLink && typeof dlLink.addEventListener === "function") {
+      dlLink.addEventListener("click", async (e) => {
+        const href = String(dlLink.getAttribute?.("href") || dlLink.href || "");
+        if (!href.startsWith("dist/") || typeof globalThis.fetch !== "function") return;
+        e.preventDefault?.();
+        let reachable = false;
+        try {
+          const headRes = await globalThis.fetch(href, { method: "HEAD" });
+          reachable = Boolean(headRes?.ok);
+        } catch {
+          reachable = false;
+        }
+        if (reachable && typeof globalThis.window?.open === "function") {
+          globalThis.window.open(href, "_blank", "noopener");
+          return;
+        }
+        const toastEl = getEl("toastNotification", targetDoc);
+        if (toastEl) {
+          const isEn = String(state?.uiLocale || state?.lang || "es").toLowerCase().startsWith("en");
+          toastEl.textContent = isEn
+            ? "Offline standalone build: opening local print view"
+            : "Modo web autónomo: abriendo vista local de impresión";
+          toastEl.classList?.add?.("show");
+        }
+        if (typeof transitionSheet === "function") {
+          await transitionSheet("print", targetDoc);
+        } else {
+          printActivePlate();
+        }
+      });
+    }
+  }
   const btnShareW = getEl("btnShareWork", targetDoc);
   if (btnShareW && typeof btnShareW.addEventListener === "function") {
     btnShareW.addEventListener("click", () => shareResource(targetDoc, state));

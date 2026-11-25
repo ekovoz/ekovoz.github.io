@@ -260,7 +260,7 @@ export function hydrateOpticalTxAndRxPanels({
       `<button type="button" id="btnToggleQrBeamAutoPlay" class="uls-chip qrbeam-btn">${isPlaying ? (isEn ? "⏸ Pause Beam" : "⏸ Pausar Emisión") : isEn ? "▶ Auto Beam" : "▶ Emisión Continua"}</button>` +
       `<button type="button" id="btnNextQrBeamFrame" class="uls-chip qrbeam-btn">⏭ ${isEn ? "Next Frame" : "Siguiente cuadro"} (#${grid.seq + 1})</button>` +
       `</div></div>` +
-      `<p id="opticalNyquistChannelHint" class="ek-meta ek-m-0 ek-mb-sm" data-optical-max-kb="4">${isEn ? "Optical channel <= 4 KB (1–3 chapters / verses). For the full Bible (~1 MB), export the offline HTML file or USB package." : "Canal óptico <= 4 KB (pasajes y capítulos). Para la Biblia completa (~1 MB), usa el archivo HTML portable o paquete USB."}</p>` +
+      `<p id="opticalNyquistChannelHint" class="ek-meta ek-m-0 ek-mb-sm" data-optical-max-kb="4">${isEn ? "Physical QR limit <= 4–16 KB (1–3 chapters / verses). For the full Bible (~1 MB), export portable HTML or USB package." : "Límite físico QR <= 4–16 KB (pasajes y capítulos). Para Biblia completa (~1 MB), usa HTML portable o paquete USB."}</p>` +
       `<div class="ek-row-gap-lg">` +
       `<div id="qrBeamMatrixHost" class="qrbeam-matrix-host"><span id="qrBeamMatrixSvgSlot">${svgMarkup}</span><canvas id="qrBeamMatrixCanvas" width="174" height="174" aria-hidden="true"></canvas></div>` +
       `<details class="tech-details" data-advanced-audit="true"><summary>${isEn ? "Technical optical stream details" : "Detalles técnicos del canal óptico"}</summary>` +

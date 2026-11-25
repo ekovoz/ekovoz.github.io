@@ -328,14 +328,8 @@ export function hydrateShareAndAuditDrawerPanel(ctx = {}) {
     });
     const sharePacksDetailsEl = getEl("shareOfflinePacksDetails", targetDoc);
     sharePacksDetailsEl?.setAttribute?.("hidden", "");
-    packsPanel.innerHTML =
-      workBannerHtml +
-      `<div class="mostrador-offline-packs" data-lang="${escapeHtml(activeLang)}" data-active-work="${escapeHtml(workCtx.activeWork)}" data-pack-mode="${packMode}" data-quine-url="${escapeHtml(quineRelUrl)}">` +
-      `<a id="linkActiveLlmsManifest" class="uls-chip ek-btn-link" href="${escapeHtml(llmsHref)}" data-work="${escapeHtml(workCtx.activeWork)}">🤖 ${isEn ? "Open Text Guide (llms)" : "Índice textual limpio (llms)"}</a>` +
-      `<a href="${escapeHtml(quineRelUrl)}" download="${escapeHtml(quineFilename)}" data-quine-download="true" data-pack-mode="${packMode}" hidden></a>` +
-      ecoMeshCardHtml +
-      `</div>` +
-      portabilityCardHtml;
+    const proDossiersHtml = `<details id="shareProBovedaDossiersDetails" class="r9-stratum-accordion ek-mt-xs" data-pro-boveda="true"><summary>🔐 ${isEn ? "Pro Vault · Text Guides (llms) & Open Manifest (110 assets)" : "Bóveda Pro · Guías textuales (llms) y Manifiesto abierto (110 activos)"}</summary><div id="shareProBovedaDossiersBody" class="ek-stack-sm ek-mt-xs"><a id="linkActiveLlmsManifest" class="uls-chip ek-btn-link" href="${escapeHtml(llmsHref)}" data-work="${escapeHtml(workCtx.activeWork)}">🤖 ${isEn ? "Open Text Guide (llms)" : "Índice textual limpio (llms)"}</a>${portabilityCardHtml}</div></details>`;
+    packsPanel.innerHTML = `${workBannerHtml}<div class="mostrador-offline-packs" data-lang="${escapeHtml(activeLang)}" data-active-work="${escapeHtml(workCtx.activeWork)}" data-pack-mode="${packMode}" data-quine-url="${escapeHtml(quineRelUrl)}"><a href="${escapeHtml(quineRelUrl)}" download="${escapeHtml(quineFilename)}" data-quine-download="true" data-pack-mode="${packMode}" hidden></a>${ecoMeshCardHtml}</div>${proDossiersHtml}`;
 
     const ensureShareChildHost = (hostId, subtabName = "mesh") => {
       const existing = getEl(hostId, targetDoc);

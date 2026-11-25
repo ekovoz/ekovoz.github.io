@@ -211,6 +211,27 @@ export function bindCorpusPolyglotAndUiPreferences({
     });
   }
 
+  const corpusDrawer = getEl("bibleLanguageAndRegisterDrawer", targetDoc);
+  const hydrateInitialSearchWindow = async () => {
+    const q = String(langFilterInput?.value || "").trim();
+    const idx = await ensureRegionIndexLoaded();
+    const matched = q
+      ? searchLanguages(idx, q, { limit: POLYGLOT_RECYCLED_WINDOW_CAP })
+      : listLanguagesWindow(idx, { limit: POLYGLOT_RECYCLED_WINDOW_CAP });
+    projectLangChoices(
+      Array.isArray(matched) ? matched.slice(0, POLYGLOT_RECYCLED_WINDOW_CAP) : [],
+    );
+  };
+  if (corpusDrawer && typeof corpusDrawer.addEventListener === "function") {
+    corpusDrawer.addEventListener("toggle", () => {
+      if (!corpusDrawer.open) return;
+      hydrateInitialSearchWindow().catch(() => { });
+      if (langFilterInput && typeof langFilterInput.focus === "function") {
+        setTimeout(() => { try { langFilterInput.focus({ preventScroll: true }); } catch { } }, 0);
+      }
+    });
+  }
+
   if (langFilterInput && typeof langFilterInput.addEventListener === "function") {
     langFilterInput.addEventListener("input", async (e) => {
       const q = String(e?.target?.value || langFilterInput.value || "").trim();
