@@ -6,6 +6,7 @@
 
 import { escapeHtml } from "./bridge_and_chapter.js";
 import { runClientExternalAudit8Locks } from "./concordance_search.js";
+import { humanizeUiCopy } from "./human_labels.js";
 import { renderStpDraftCheckHtml } from "./mejorar.js";
 
 const WORKSHOP_CORE_CC0_LANGS = Object.freeze([
@@ -161,24 +162,48 @@ export function renderWorkshop5LangsSwitcherHtml(
   const tier2Corpora = Array.isArray(masterCensusSummary?.tier2_nt_human_ot_workshop_corpora)
     ? masterCensusSummary.tier2_nt_human_ot_workshop_corpora
     : ["stp"];
-  const buttonsHtml = catalogLangs.map((entry) => {
+  const pivotCodes = new Set(WORKSHOP_CORE_CC0_LANGS.map((e) => e.code));
+  const pillEntries = catalogLangs.filter((e) => pivotCodes.has(e.code) || e.code === cleanActive);
+  const extraEntries = catalogLangs.filter((e) => !pivotCodes.has(e.code) && e.code !== cleanActive);
+  const formatEntryLabel = (entry) => {
+    const raw = isEn ? entry.labelEn : entry.labelEs;
+    const suffix = tier2Corpora.includes(entry.code)
+      ? ` · ${humanizeUiCopy("Taller comunitario OT", uiLocale)}`
+      : "";
+    return `${raw}${suffix}`;
+  };
+  const buttonsHtml = pillEntries.map((entry) => {
     const active = entry.code === cleanActive;
-    const isTier2 = tier2Corpora.includes(entry.code);
     return (
       `<button type="button" class="uls-chip workshop-lang-switch-btn${active ? " is-selected" : ""}" ` +
       `data-taller-lang-pick="${entry.code}" aria-pressed="${active ? "true" : "false"}">` +
-      `${isEn ? entry.labelEn : entry.labelEs}${isTier2 ? " · NT+Taller OT" : ""}` +
+      `${formatEntryLabel(entry)}` +
       `</button>`
     );
   }).join("");
+  const extraSelectHtml = extraEntries.length > 0
+    ? `<select id="tallerExtraLangSelect" class="ek-select-compact" data-taller-lang-select="true" aria-label="${isEn ? "More workshop languages" : "Más idiomas de taller"}">` +
+      `<option value="">${isEn ? `More languages (${extraEntries.length})` : `Más idiomas (${extraEntries.length})`}</option>` +
+      extraEntries.map((entry) => `<option value="${entry.code}">${formatEntryLabel(entry)}</option>`).join("") +
+      `</select>`
+    : "";
+  const activeEntry = catalogLangs.find((e) => e.code === cleanActive) || WORKSHOP_CORE_CC0_LANGS[0];
+  const activeFocusHint = cleanActive === "he"
+    ? (isEn ? "Source check · Hebrew Bible (WLC) roots, imperatives & proper names" : "Fuente original · Biblia Hebrea (WLC): raíces, imperativos y nombres propios")
+    : cleanActive === "grc"
+      ? (isEn ? "Source check · Greek NT & LXX lexical lemmas and clauses" : "Fuente original · Griego (LXX + SBLGNT): léxico y cláusulas")
+      : cleanActive === "stp"
+        ? (isEn ? "O'dam field workshop · New Testament + community OT review" : "Taller O'dam · Nuevo Testamento + revisión comunitaria AT")
+        : (isEn ? `Community review · Active edition: ${activeEntry.labelEn}` : `Revisión comunitaria · Edición activa: ${activeEntry.labelEs}`);
 
   return (
     `<section id="workshop5LangsSwitcher" class="ek-card-muted ek-span-full ek-stack-sm" data-active-taller-lang="${escapeHtml(cleanActive)}" data-tier2-corpora="${escapeHtml(tier2Corpora.join(","))}" data-workshop-langs-count="${catalogLangs.length}">` +
     `<div class="ek-row-between">` +
-    `<strong class="ek-title-sm" data-workshop-lang-banner="${escapeHtml(cleanActive)}">🌍 ${isEn ? `Community Review Tools · Active: ${cleanActive.toUpperCase()} (${catalogLangs.length} languages)` : `Colaboración Comunitaria · Lengua activa: ${cleanActive.toUpperCase()} (${catalogLangs.length} idiomas)`}</strong>` +
-    `<span class="uls-badge" data-tier2-workshop-badge="true">${isEn ? "New Testament + Community OT" : "NT verificado + AT comunitario"}: ${escapeHtml(tier2Corpora.map((c) => c.toUpperCase()).join(", "))}</span>` +
+    `<strong class="ek-title-sm" data-workshop-lang-banner="${escapeHtml(cleanActive)}">🌍 ${isEn ? `Community Review · Active: ${cleanActive.toUpperCase()} (${catalogLangs.length})` : `Colaboración · Activo: ${cleanActive.toUpperCase()} (${catalogLangs.length})`}</strong>` +
+    `<span class="uls-badge" data-tier2-workshop-badge="true">${isEn ? "NT verified + Community OT" : "NT verificado + AT comunitario"}: ${escapeHtml(tier2Corpora.map((c) => c.toUpperCase()).join(", "))}</span>` +
     `</div>` +
-    `<div class="ek-row-wrap" role="group" aria-label="${isEn ? "Select CC0 Workshop Language" : "Seleccionar idioma de kit de taller CC0"}">${buttonsHtml}</div>` +
+    `<p class="ek-meta" data-workshop-lang-focus="${escapeHtml(cleanActive)}">${escapeHtml(activeFocusHint)}</p>` +
+    `<div class="ek-row-wrap" role="group" aria-label="${isEn ? "Select CC0 Workshop Language" : "Seleccionar idioma de kit de taller CC0"}">${buttonsHtml}${extraSelectHtml}</div>` +
     `</section>`
   );
 }
@@ -249,6 +274,14 @@ export function createWorkshopAuditHandlers({
 } = {}) {
   const onAuditChange = async (e) => {
     const targetId = e?.target?.id || "";
+    if (targetId === "tallerExtraLangSelect" || e?.target?.getAttribute?.("data-taller-lang-select")) {
+      const pickedExtra = String(e?.target?.value || "").trim().toLowerCase();
+      if (pickedExtra) {
+        state.activeTallerLang = pickedExtra;
+        state.refreshWorkshopAuditSubtab?.();
+      }
+      return;
+    }
     if (targetId === "externalAuditTextInput") {
       state.externalAuditText = String(e.target.value ?? "");
       return;

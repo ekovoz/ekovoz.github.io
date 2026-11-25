@@ -12,17 +12,8 @@ import {
 } from "./diachronic_register.js";
 import { bindSurfaceActions, patchStoreState, patchTextAndAttrs, reconcileKeyedList } from "./dom_patch.js";
 import { renderBranchAndTypologyInspectorHtml } from "./dosis.js";
-import {
-  decodeSdbhHierarchicalCode,
-  highlightStudyCardByStrongId,
-  hydrateCulturalGlossesLexicon,
-  hydratePhilologyRosettaIndex,
-  renderPhilologyRosettaExplorerHtml,
-  renderPhilologyRosettaInspectorHtml,
-  renderPhilologyRosettaResultsRowsHtml,
-  searchPhilologyRosettaIndex,
-  translateNsm65PrimePhrase,
-} from "./estudio.js";
+import { decodeSdbhHierarchicalCode, highlightStudyCardByStrongId, hydrateCulturalGlossesLexicon, hydratePhilologyRosettaIndex, isClosedClassFunctionTag, renderPhilologyRosettaExplorerHtml, renderPhilologyRosettaInspectorHtml, renderPhilologyRosettaResultsRowsHtml, searchPhilologyRosettaIndex, translateNsm65PrimePhrase } from "./estudio.js";
+import { humanizeUiCopy } from "./human_labels.js";
 import { hydratePericopesAndGlosses } from "./evangelios.js";
 import {
   listOrthographyProfilesForLang,
@@ -108,7 +99,7 @@ function renderAnnotationAndBlindCalibrationCardHtml({
       `<div class="ek-stack-sm ek-mt-sm">` +
       `<span class="uls-badge">TAGNT-ES ${ntSpanRatio}% (≥${minNtSpan}%) · OT-Unann ${otUnannRatio}% (≤${maxOtUnann}%) · NT-Unann ${ntUnannRatio}% (≤${maxNtUnann}%) · Ketiv ${otKetivRatio}% (≤${maxOtKetiv}%)</span>` +
       (sampleSdbh || sampleNsm
-        ? `<div class="hig-tech-meta">${sampleSdbh ? `<span>SDBH: ${escHtml(sampleSdbh)}</span>` : ""}${sampleSdbh && sampleNsm ? " · " : ""}${sampleNsm ? `<span>NSM-65: ${escHtml(sampleNsm)}</span>` : ""}</div>`
+        ? `<div class="hig-tech-meta">${sampleSdbh ? `<span>SDBH: ${escHtml(sampleSdbh)}</span>` : ""}${sampleSdbh && sampleNsm ? " · " : ""}${sampleNsm ? `<span>${escHtml(humanizeUiCopy("NSM-65", uiLocale))}: ${escHtml(sampleNsm)}</span>` : ""}</div>`
         : "") +
       `<div class="calib-badge-row">` +
       `<span class="calib-row-label">${isEn ? `5 Residual Classes (${totalResiduals.toLocaleString("en-US")}):` : `5 Clases Residuales (${totalResiduals.toLocaleString("en-US")}):`}</span> ${residualBadges}` +
@@ -901,14 +892,20 @@ export async function resolvePrimaryStrongForVerse(state, dataLayer) {
   try {
     const matrixChapter = await dataLayer.loadMatrixChapter(state.book, state.chapter);
     const rows = Array.isArray(matrixChapter?.rows) ? matrixChapter.rows : [];
+    let fallbackStrong = "";
     for (const r of rows) {
-      if (Array.isArray(r) && Number(r[1]) === Number(state.verse) && r[6] && r[6] !== "∅") {
-        return String(r[6]).toUpperCase();
-      }
-      if (r && typeof r === "object" && Number(r.verse) === Number(state.verse) && r.c07_strong_id && r.c07_strong_id !== "∅") {
-        return String(r.c07_strong_id).toUpperCase();
-      }
+      const isArr = Array.isArray(r);
+      const vNum = isArr ? Number(r[1]) : Number(r?.verse);
+      const strong = String(isArr ? (r[6] || "") : (r?.c07_strong_id || "")).trim().toUpperCase();
+      if (vNum !== Number(state.verse) || !strong || strong === "∅") continue;
+      if (!fallbackStrong) fallbackStrong = strong;
+      const morph = isArr ? (r[4] || "") : (r?.c08_morph_code || "");
+      const role = isArr ? (r[9] || "") : (r?.c09_macula_role || "");
+      const domain = isArr ? (r[5] || "") : (r?.c11_semantic_domain || "");
+      const nsm = isArr ? (r[11] || "") : (r?.c13_nsm_65 || "");
+      if (strong.includes("+") || !isClosedClassFunctionTag(domain, role, morph, nsm)) return strong;
     }
+    if (fallbackStrong) return fallbackStrong;
   } catch {
     // Fallback by testament
   }

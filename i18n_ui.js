@@ -1,15 +1,9 @@
 import { resolveOverlayEntryForOsis, resolveVerseWithOverlay } from "./mostrador/drawer_workshop.js";
-import {
-  FELICES_PLATE_TO_BIBLE_COORDINATE,
-  parseInitialRouteAndLocale,
-  renderFelicesSocraticWonderCardHtml,
-  resolveFelicesPlateCoord,
-  serializeMostradorRouteQuery as serializeRouteCore,
-} from "./mostrador/evangelios.js";
+import { FELICES_PLATE_TO_BIBLE_COORDINATE, parseInitialRouteAndLocale, renderFelicesSocraticWonderCardHtml, resolveFelicesPlateCoord, serializeMostradorRouteQuery as serializeRouteCore } from "./mostrador/evangelios.js";
 import { renderLocalizedFelicesPlateCardHtml } from "./mostrador/felices_stage_controller.js";
 export { FELICES_PLATE_TO_BIBLE_COORDINATE, parseInitialRouteAndLocale };
-export const LANGUAGE_PACKS = Object.freeze("en|English,es|Español,bn-BD|Bengali BD|বাংলা|Beng,bn-IN|Bengali IN|বাংলা|Beng,fr|Français,pt|Português,it|Italiano,id|Indonesia,tr|Türkçe,ru|Русский||Cyrl,zh-Hans|中文||Hans,ja|日本語||Jpan,ko|한국어||Kore,hi|हिन्दी||Deva,bn|বাংলা||Beng,ar|العربية||Arab|rtl,ur|اردو||Aran|rtl,fa|فارسی||Arab|rtl".split(",").map(s => { const [code, name, a, script = "Latn", dir = "ltr"] = s.split("|"); return { code, name, autonym: a || name, dir, script }; }));
-const N = 27, D = () => (typeof document !== "undefined" ? document : null), $ = (d, id) => d?.getElementById?.(id), L = x => S(x).toLowerCase(), clp = (v, h, d = 1) => Math.max(1, Math.min(h, Number(v) || d)), S = (v, d = "") => String(v || d).trim(), gL = (d, o) => o || $(d, "langSelect")?.value || "en", sA = (e, k, v) => e?.setAttribute?.(k, v);
+export const LANGUAGE_PACKS = Object.freeze("en|English,es|Español,bn-BD|Bengali BD|বাংলা|Beng,bn-IN|Bengali IN|বাংলা|Beng,fr|Français,pt|Português,it|Italiano,id|Indonesia,tr|Türkçe,ru|Русский||Cyrl,zh-Hans|中文||Hans,ja|日本語||Jpan,ko|한국어||Kore,hi|हिन्दी||Deva,bn|বাংলা||Beng,ar|العربية||Arab|rtl,ur|اردو||Aran|rtl,fa|فارسی||Arab|rtl".split(",").map(s=>{const[code,name,a,script="Latn",dir="ltr"]=s.split("|");return{code,name,autonym:a||name,dir,script};}));
+const N=27,D=()=>typeof document!=="undefined"?document:null,$=(d,id)=>d?.getElementById?.(id),L=x=>S(x).toLowerCase(),clp=(v,h,d=1)=>Math.max(1,Math.min(h,Number(v)||d)),S=(v,d="")=>String(v||d).trim(),gL=(d,o)=>o||$(d,"langSelect")?.value||"en",sA=(e,k,v)=>e?.setAttribute?.(k,v);
 let pIdx = 24, sIdx = 0, pFmt = "a4", onC = null, stRef = null;
 const FC = FELICES_PLATE_TO_BIBLE_COORDINATE, uC = new Map(), fC = new Map(), pLc = l => (S(l).includes("-") ? S(l).split("-")[0] : null);
 export const getActivePlateIndex = () => pIdx;
@@ -45,7 +39,7 @@ export function updateFocalPlate(d = D(), lO = "", n = true, uO = "", st = stRef
   const isEsCorpus = L(l).startsWith("es");
   let locHost = $(d, "focalPlateLocalizedArt");
   if (!locHost && fFr && typeof d.createElement === "function") { locHost = d.createElement("div"); locHost.id = "focalPlateLocalizedArt"; locHost.className = "felices-localized-plate-host"; fFr.insertBefore?.(locHost, im?.nextSibling || null); }
-  if (im) { im.src = u; im.alt = lb; im.hidden = false; }
+  if (im) { im.src = u; im.alt = lb; im.hidden = !isEsCorpus; }
   if (locHost) {
     locHost.hidden = isEsCorpus;
     if (!isEsCorpus) locHost.innerHTML = renderLocalizedFelicesPlateCardHtml({ plateIndex: pIdx, totalPlates: N, lang: l, uiLocale: uL, verseText: tx, refLabel: `${c.book} ${c.chapter}:${c.verse}`, dir: LANGUAGE_PACKS.find(p => p.code === l || p.code === pLc(l))?.dir || "ltr" });
@@ -53,8 +47,8 @@ export function updateFocalPlate(d = D(), lO = "", n = true, uO = "", st = stRef
   if (id) { id.textContent = lb; sA(id, "data-osis-ref", os); } if (vE) { vE.textContent = tx; sA(vE, "data-osis-ref", os); sA(vE, "data-overlay-authority", ov?.authorityTier || ""); } if (cI) cI.src = u; if (cC) cC.textContent = tx; if (wC) wC.innerHTML = renderFelicesSocraticWonderCardHtml(pIdx, uL);
   sIdx = pIdx <= 11 ? 0 : pIdx <= 23 ? 1 : 2; for (let j = 0; j < 3; j++)$(d, `termPill_${j + 1}`)?.classList?.toggle("active", j === sIdx);
   for (const [k, v] of [["felicesPlateSelect", `${pIdx}`], ["felicesDichaSelect", `${dI}`], ["felicesLangSelect", l]]) { const e = $(d, k); if (e && e.value !== v) e.value = v; }
-  for (const o of $(d, "felicesPlateSelect")?.options || []) { const t = S(o.textContent); o.textContent = isEn ? t.replace(/^Lámina\b/, "Plate").replace(/\(Sal\b/, "(Ps") : t.replace(/^Plate\b/, "Lámina").replace(/\(Ps\b/, "(Sal"); }
-  for (const o of $(d, "felicesDichaSelect")?.options || []) { const t = S(o.textContent); o.textContent = isEn ? t.replace(/^Dicha\b/, "Beatitude").replace(/\bSal\b/, "Ps") : t.replace(/^Beatitude\b/, "Dicha").replace(/\bPs\b/, "Sal"); }
+  for (const o of $(d, "felicesPlateSelect")?.options || []) { const t = S(o.textContent).replace(/\s*\/\s*27\s*/, "/27 · ").replace(/\(([^)]+)\)/, "$1"); o.textContent = isEn ? t.replace(/^(?:Lámina|Lám\.)\b/, "Pl.").replace(/\bSal\b/, "Ps") : t.replace(/^(?:Plate|Pl\.)\b/, "Lám.").replace(/\bPs\b/, "Sal"); }
+  for (const o of $(d, "felicesDichaSelect")?.options || []) { const t = S(o.textContent).replace(/\s+\(/, " · ").replace(/\)\s*$/, ""); o.textContent = isEn ? t.replace(/^Dicha\b/, "Beatitude").replace(/\bSal\b/, "Ps") : t.replace(/^Beatitude\b/, "Dicha").replace(/\bPs\b/, "Sal"); }
   const ob = $(d, "btnFelicesOpenInBible"); if (ob) { sA(ob, "data-felices-osis", os); ob.textContent = isEs ? `📖 Abrir pasaje en La Biblia (${c.book} ${c.chapter}:${c.verse})` : `📖 Open passage in The Bible (${c.book} ${c.chapter}:${c.verse})`; } if (n) onC?.({ plateIndex: pIdx, dichaIndex: dI, book: c.book, chapter: c.chapter, verse: c.verse });
 }
 export function syncI18nUiFromState(st = {}, d = D()) { if (st && typeof st === "object") stRef = st; if (st.activePlateIndex !== undefined || st.plate !== undefined) pIdx = clp(st.activePlateIndex ?? st.plate, N, 24); else if (st.book && st.chapter && st.verse) pIdx = resolvePlateForBibleCoordinate(st.book, st.chapter, st.verse, pIdx); if (st.paperFormat || st.format) setPaperFormat(L(st.paperFormat || st.format), d); const l = S(st.lang || st.uiLocale || gL(d), "es"), u = S(st.uiLocale || l, "en"); updateDownloadLinks(d, l); updateFocalPlate(d, l, false, u, st); if (d) { ensureLocaleLoaded(l).then(() => updateFocalPlate(d, l, false, u, st)).catch(() => { }); } return { plateIndex: pIdx, paperFormat: pFmt }; }

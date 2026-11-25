@@ -147,7 +147,7 @@ export function renderOralPorticoWasmConsole({
   const isPlaying = Boolean(state.oralPorticoPlaying);
   const voiceActive = Boolean(state.oralVoiceActive);
   const hasDeviceSpeech = typeof globalThis.speechSynthesis?.speak === "function";
-  const mountKey = `${state.book}|${state.chapter}|${state.verse}|${prosody.wpm}|${prosody.totalMs}|${prosody.syllables.length}|${prosody.wasmBacked}|${isEn ? "en" : "es"}|${voiceActive}`;
+  const mountKey = `${state.book}|${state.chapter}|${state.verse}|${prosody.wpm}|${prosody.totalMs}|${prosody.syllables.length}|${prosody.wasmBacked}|${isEn ? "en" : "es"}|${voiceActive}|${isPlaying || Boolean(state.oralAudioPlayed)}`;
 
   if (
     oralBanner._porticoMountKey === mountKey &&
@@ -197,10 +197,10 @@ export function renderOralPorticoWasmConsole({
     `data-pause-semicolon-ms="${prosody.pauseSemicolonMs}" ` +
     `data-pause-period-ms="${prosody.pausePeriodSelahMs}" ` +
     `data-audio-crc16="${escapeHtml(prosody.crc16Hex)}" ` +
-    `data-oral-status="verified" ` +
+    `data-oral-status="${isPlaying || state.oralAudioPlayed ? "verified" : "ready"}" ` +
     `data-wasm-backed="${prosody.wasmBacked}">` +
     `<div class="ek-row-between ek-mb-sm">` +
-    `<strong>🗣️ ${isEn ? "Listen to passage" : "Escuchar pasaje"} (${escapeHtml(`${state.book} ${state.chapter}:${state.verse}`)}) <span class="uls-badge" data-oral-verified="true">${isEn ? "Verified audio" : "Audio verificado"}</span> <small class="ek-meta">${escapeHtml(voiceStatusText)}</small></strong>` +
+    `<strong>🗣️ ${isEn ? "Listen to passage" : "Escuchar pasaje"} (${escapeHtml(`${state.book} ${state.chapter}:${state.verse}`)}) ${isPlaying || state.oralAudioPlayed ? `<span class="uls-badge" data-oral-verified="true">${isEn ? "Verified audio" : "Audio verificado"}</span> ` : ""}<small class="ek-meta">${escapeHtml(voiceStatusText)}</small></strong>` +
     `<div class="ek-flex-wrap-inline">` +
     `<button type="button" id="btnPlayPauseOralPorticoCadence" class="uls-chip oral-portico-cadence-btn">${guideBtnLabel}</button>` +
     `<button type="button" id="btnOralVoiceToggle" class="uls-chip oral-portico-cadence-btn" aria-pressed="${voiceActive}">${voiceToggleLabel}</button>` +
@@ -214,16 +214,18 @@ export function renderOralPorticoWasmConsole({
     `<input id="audioElapsedRange" type="range" min="0" max="${prosody.totalMs}" step="250" value="${prosody.elapsedMs}">` +
     `</label>` +
     `</div></div>` +
-    `<details class="tech-details ek-mt-xs"><summary>${isEn ? "Technical pace & syllable timing" : "Detalles técnicos de ritmo y sílabas"}</summary>` +
-    `<div class="prosody-syllable-strip oral-portico-secondary">` +
-    `<span class="uls-badge" data-prosodic-cursor="true">${isEn ? `Syllable #${prosody.activeSyllableIndex + 1}/${prosody.syllables.length}: «${escapeHtml(prosody.activeSyllable)}»` : `Sílaba #${prosody.activeSyllableIndex + 1}/${prosody.syllables.length}: «${escapeHtml(prosody.activeSyllable)}»`}</span> ` +
-    `${syllablesHtml}</div>` +
-    `<div class="oral-portico-secondary">` +
-    `<span class="uls-badge" data-prosodic-pause="comma">${isEn ? "τ₁ Comma" : "τ₁ Coma"}: ${prosody.pauseCommaMs} ms</span> ` +
-    `<span class="uls-badge" data-prosodic-pause="semicolon">${isEn ? "τ₂ Semicolon" : "τ₂ Punto y coma"}: ${prosody.pauseSemicolonMs} ms</span> ` +
-    `<span class="uls-badge" data-prosodic-pause="period">${isEn ? "τ₃ Period / Selah" : "τ₃ Punto / Selah"}: ${prosody.pausePeriodSelahMs} ms</span> ` +
-    `<span class="uls-badge">0 Bytes Audio · ${prosody.wpm} WPM (~${prosody.targetBitsPerSec} bits/s) · CRC-16=${escapeHtml(prosody.crc16Hex)}</span>` +
-    `</div></details>` +
+    (prosody.syllables.length > 0
+      ? `<details class="tech-details ek-mt-xs" data-advanced-audit="true"><summary>${isEn ? "Technical pace & syllable timing" : "Detalles técnicos de ritmo y sílabas"}</summary>` +
+        `<div class="prosody-syllable-strip oral-portico-secondary">` +
+        `<span class="uls-badge" data-prosodic-cursor="true">${isEn ? `Syllable #${prosody.activeSyllableIndex + 1}/${prosody.syllables.length}: «${escapeHtml(prosody.activeSyllable)}»` : `Sílaba #${prosody.activeSyllableIndex + 1}/${prosody.syllables.length}: «${escapeHtml(prosody.activeSyllable)}»`}</span> ` +
+        `${syllablesHtml}</div>` +
+        `<div class="oral-portico-secondary">` +
+        `<span class="uls-badge" data-prosodic-pause="comma">${isEn ? "τ₁ Comma" : "τ₁ Coma"}: ${prosody.pauseCommaMs} ms</span> ` +
+        `<span class="uls-badge" data-prosodic-pause="semicolon">${isEn ? "τ₂ Semicolon" : "τ₂ Punto y coma"}: ${prosody.pauseSemicolonMs} ms</span> ` +
+        `<span class="uls-badge" data-prosodic-pause="period">${isEn ? "τ₃ Period / Selah" : "τ₃ Punto / Selah"}: ${prosody.pausePeriodSelahMs} ms</span> ` +
+        `<span class="uls-badge">0 Bytes Audio · ${prosody.wpm} WPM (~${prosody.targetBitsPerSec} bits/s) · CRC-16=${escapeHtml(prosody.crc16Hex)}</span>` +
+        `</div></details>`
+      : "") +
     `</div>`;
 
   oralBanner._porticoMountKey = mountKey;
@@ -265,6 +267,8 @@ export function renderOralPorticoWasmConsole({
       }
       stopOralPorticoAnimationLoop(state);
       state.oralPorticoPlaying = true;
+      state.oralAudioPlayed = true;
+      oralBanner?.querySelector?.("[data-oral-status]")?.setAttribute?.("data-oral-status", "verified");
       if ((Number(state.audioElapsedMs) || 0) >= prosody.totalMs) {
         state.audioElapsedMs = 0;
       }

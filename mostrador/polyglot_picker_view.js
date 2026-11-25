@@ -346,7 +346,7 @@ export function bindCorpusPolyglotAndUiPreferences({
               if (!p.lang || existingVals.has(p.lang)) continue;
               const opt = targetDoc.createElement("option");
               opt.value = p.lang;
-              opt.textContent = `${p.lang.toUpperCase()} (.ekpack)`;
+              opt.textContent = p.lang.toUpperCase();
               opt.setAttribute?.("data-pack-url", p.sameOriginPackUrl);
               langSelect.appendChild?.(opt);
             }

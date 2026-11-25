@@ -6,7 +6,7 @@
 
 import { escapeHtml } from "./bridge_and_chapter.js";
 
-export const SISTER_WORK_ONLY_LANG_CODES = Object.freeze({
+const SISTER_WORK_ONLY_LANG_CODES = Object.freeze({
   felices: new Set(["bn-bd", "bn-in"]),
   evangelios: new Set(["gn", "quc"]),
 });

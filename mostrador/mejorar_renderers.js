@@ -389,15 +389,14 @@ export function renderCascadeAndLadderHtml({
     .map((item, idx) => {
       const refStr = sanitizePipeField(item.verse_id || item.ref || "GEN.1.1").toUpperCase();
       const rankNum = Number(item.rank) || idx + 1;
-      const rungName = sanitizePipeField(item.rung || "CELF-250");
+      const rungName = sanitizePipeField(item.rung || "Etapa comunitaria");
       const rungHuman = rungName === "Rung1SwadeshAndNsm65"
         ? (isEn ? "Stage 1 · Core words" : "Nivel 1 · Vocabulario básico")
         : CELF_RUNG_LABELS[rungName] || (isEn ? "Community stage" : "Etapa comunitaria");
-      const gainBits = Number(item.marginal_gain_bits ?? item.marginal_gain ?? 0);
-      const gainBadge = gainBits > 0 ? ` · +${gainBits.toFixed(1)}` : "";
+      const humanRef = refStr.replace(/^([A-Z0-9]+)\.(\d+)\.(\d+)$/, "$1 $2:$3");
       return (
         `<button type="button" class="uls-chip mostrador-celf-rung-btn ek-btn-fitts" data-ladder-ref="${refStr}" data-ladder-rank="${rankNum}" data-ladder-rung="${rungName}">` +
-        `#${rankNum} · ${refStr} (${rungHuman}${gainBadge})` +
+        `#${rankNum} · ${humanRef} (${rungHuman})` +
         `</button>`
       );
     })
@@ -426,7 +425,7 @@ export function renderCascadeAndLadderHtml({
     `<button type="button" class="uls-chip ot-wave-filter-btn ek-btn-fitts" data-ot-wave="0" aria-pressed="${waveNum === 0 ? "true" : "false"}">${isEn ? "All Waves" : "Todas las Ondas"}</button>` +
     CANONICAL_5_OT_TRANSLATION_WAVES.map(
       (w) =>
-        `<button type="button" class="uls-chip ot-wave-filter-btn ek-btn-fitts" data-ot-wave="${w.wave}" data-uncertainty-bits="${w.meanUncertaintyBits}" aria-pressed="${waveNum === Number(w.wave) ? "true" : "false"}">${w.title} (U=${w.meanUncertaintyBits}b)</button>`,
+        `<button type="button" class="uls-chip ot-wave-filter-btn ek-btn-fitts" data-ot-wave="${w.wave}" data-uncertainty-bits="${w.meanUncertaintyBits}" aria-pressed="${waveNum === Number(w.wave) ? "true" : "false"}">${w.title}</button>`,
     ).join(" ") +
     `</div>`;
 
@@ -464,9 +463,9 @@ export function renderCascadeAndLadderHtml({
     responseText: "",
   });
   const celfSummaryBlock = showElicitationLadder
-    ? `<details id="celf250TechDetails" class="tech-details hig-tech-receipt-details ek-mb-sm" data-celf250-ladder="true" data-celf250-rank="${seed250.rank}">` +
+    ? `<details id="celf250TechDetails" class="tech-details hig-tech-receipt-details ek-mb-sm" data-advanced-audit="true" data-celf250-ladder="true" data-celf250-rank="${seed250.rank}">` +
     `<summary>${isEn ? `Technical details · Community step #${seed250.rank}/250` : `Detalles técnicos · Paso #${seed250.rank}/250 (${totalCount} pasos)`}</summary>` +
-    `<p class="ek-meta ek-mt-xs">${isEn ? `Review ladder (${totalCount} steps · Community consensus · CELF-250)` : `Escalera de revisión (${totalCount} pasos · Consenso comunitario · CELF-250)`}</p>` +
+    `<p class="ek-meta ek-mt-xs">${isEn ? `Community review sequence (${totalCount} steps · Community consensus)` : `Secuencia de revisión (${totalCount} pasos · Consenso comunitario)`}</p>` +
     `<pre id="celf250SeedOutput" class="ek-pre-compact">${seed250.payloadLine}</pre>` +
     `</details>`
     : "";

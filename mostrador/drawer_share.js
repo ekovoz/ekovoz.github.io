@@ -210,6 +210,11 @@ export function hydrateShareAndAuditDrawerPanel(ctx = {}) {
     shareSheetEl.removeAttribute?.("hidden");
     shareSheetEl.setAttribute?.("data-work-share-target", workAdapter.shareTarget || "biblia_quine");
     shareSheetEl.setAttribute?.("data-unified-offline-vault", "true");
+    const qrHost = getEl("bibleOpticalQrStreamPanel", targetDoc);
+    const camHost = getEl("opticalCameraViewportHost", targetDoc);
+    if (qrHost && camHost && camHost.parentNode === shareSheetEl && typeof shareSheetEl.insertBefore === "function") {
+      shareSheetEl.insertBefore(qrHost, camHost);
+    }
   }
   const sharePacksDetailsEl = getEl("shareOfflinePacksDetails", targetDoc);
   sharePacksDetailsEl?.setAttribute?.("data-vault-unified", "true");

@@ -75,7 +75,7 @@
     <link rel="stylesheet" href="./mostrador.css">
 </head>
 
-<body data-intent="read" data-theme="light" data-font-family="serif" data-stealth-mode="false">
+<body data-intent="read" data-work="biblia" data-overlay-open="false" data-theme="light" data-font-family="serif" data-stealth-mode="false">
     <header id="sovereignTopBar" class="top-bar-shell site-header">
         <div class="top-bar-row">
             <nav id="sovereignWorkTabs" class="top-bar-work-tabs" role="tablist" aria-label="Editorial Works">
@@ -129,7 +129,7 @@
                         </path>
                     </svg>
                     <span id="ulsCurrentLang">English</span>
-                    <span class="uls-badge" id="ulsUiCountBadge">18 UI</span>
+                    <span class="uls-badge" id="ulsUiCountBadge">18 Idiomas</span>
                 </button>
                 <select id="langSelect" aria-label="Language / Idioma" hidden>
                     <option value="en" selected>English</option>
@@ -185,20 +185,6 @@
                     </select>
                 </div>
                 <p class="ek-title-sm" data-i18n="corpus.tab.bibles">📖 Bibles &amp; Languages (24)</p>
-                <div id="corpusWorkLanguagesBar" class="chip-wrap-row ek-mb-sm" role="group"
-                    aria-label="Sister Work Editions (Evangelios and Felices)">
-                    <button type="button" id="quickWorkLangGn" class="uls-chip" data-i18n-autonym="true"
-                        data-corpus-lang="gn" data-work-scope="evangelios" hidden>🇵🇾 Avañe'ẽ Guaraní (gn ·
-                        Evangelios)</button>
-                    <button type="button" id="quickWorkLangQuc" class="uls-chip" data-i18n-autonym="true"
-                        data-corpus-lang="quc" data-work-scope="evangelios" hidden>🇬🇹 K'iche' (quc ·
-                        Evangelios)</button>
-                    <button type="button" id="quickWorkLangBnBd" class="uls-chip" data-i18n-autonym="true"
-                        data-corpus-lang="bn-BD" data-work-scope="felices">🇧🇩 বাংলা বাংলাদেশ (bn-BD ·
-                        Felices)</button>
-                    <button type="button" id="quickWorkLangBnIn" class="uls-chip" data-i18n-autonym="true"
-                        data-corpus-lang="bn-IN" data-work-scope="felices">🇮🇳 বাংলা ভারত (bn-IN · Felices)</button>
-                </div>
                 <div id="corpusTabPanelBibles" role="region" aria-label="24 Verified Bibles and 7,164 Languages">
                     <div id="bibleVerifiedCorpusPills" class="chip-wrap-row" role="group"
                         aria-label="24 Verified Bibles and Portions">
@@ -216,8 +202,6 @@
                             data-corpus-lang="de">🇩🇪 Deutsch (66)</button>
                         <button type="button" id="quickLangIt" class="uls-chip" data-i18n-autonym="true"
                             data-corpus-lang="it">🇮🇹 Italiano (66)</button>
-                        <button type="button" id="quickLangStp" class="uls-chip" data-i18n-autonym="true"
-                            data-corpus-lang="stp">🏔️ O'dam Tepehuano (27 NT + Taller AT)</button>
                         <button type="button" id="quickLangHe" class="uls-chip" data-i18n-autonym="true"
                             data-corpus-lang="he">🕎 עברית WLC+Delitzsch (66)</button>
                         <button type="button" id="quickLangGrc" class="uls-chip" data-i18n-autonym="true"
@@ -246,12 +230,28 @@
                             data-corpus-lang="ja">🇯🇵 日本語 (66)</button>
                         <button type="button" id="quickLangKo" class="uls-chip" data-i18n-autonym="true"
                             data-corpus-lang="ko">🇰🇷 한국어 (66)</button>
+                        <button type="button" id="quickLangStp" class="uls-chip" data-i18n-autonym="true"
+                            data-corpus-lang="stp">🏔️ O'dam Tepehuano (27 NT + Taller AT)</button>
                         <button type="button" id="quickLangArp" class="uls-chip" data-i18n-autonym="true"
                             data-corpus-lang="arp">🪶 Arapaho (Porción)</button>
                         <button type="button" id="quickLangBre" class="uls-chip" data-i18n-autonym="true"
                             data-corpus-lang="bre">🌊 Brezhoneg (Porción)</button>
                         <button type="button" id="quickLangCha" class="uls-chip" data-i18n-autonym="true"
                             data-corpus-lang="cha">🌺 Chamorro (Porción)</button>
+                    </div>
+                    <div id="corpusWorkLanguagesBar" class="chip-wrap-row ek-mt-xs" role="group"
+                        aria-label="Sister Work Editions (Evangelios and Felices)">
+                        <button type="button" id="quickWorkLangGn" class="uls-chip" data-i18n-autonym="true"
+                            data-corpus-lang="gn" data-work-scope="evangelios" hidden>🇵🇾 Avañe'ẽ Guaraní (gn ·
+                            Evangelios)</button>
+                        <button type="button" id="quickWorkLangQuc" class="uls-chip" data-i18n-autonym="true"
+                            data-corpus-lang="quc" data-work-scope="evangelios" hidden>🇬🇹 K'iche' (quc ·
+                            Evangelios)</button>
+                        <button type="button" id="quickWorkLangBnBd" class="uls-chip" data-i18n-autonym="true"
+                            data-corpus-lang="bn-BD" data-work-scope="felices">🇧🇩 বাংলা বাংলাদেশ (bn-BD ·
+                            Felices)</button>
+                        <button type="button" id="quickWorkLangBnIn" class="uls-chip" data-i18n-autonym="true"
+                            data-corpus-lang="bn-IN" data-work-scope="felices">🇮🇳 বাংলা ভারত (bn-IN · Felices)</button>
                     </div>
                     <div class="ek-mt-sm">
                         <input type="search" id="quickLangFilterInput" class="field-search-input"
@@ -451,7 +451,7 @@
             <div class="compass-search-row">
                 <input type="text" id="mostradorRefInput" class="field-search-input"
                     data-i18n-attr="placeholder:mostrador.step2.placeholder"
-                    placeholder="Buscar libro, cita (Jn 3:16) o palabra bíblica">
+                    placeholder="Cita (Jn 3:16) o libro">
                 <button type="button" id="btnGoReference" class="uls-chip"
                     data-i18n="mostrador.step2.open_compass">Go</button>
             </div>

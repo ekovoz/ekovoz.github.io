@@ -4,6 +4,7 @@ export { renderDiglossicParallelBridge, resolveRegionalBridgeLanguage21 };
 // Ekovoz Mostrador Ronda 20 — Cero dependencias de Node.js, cero relleno sintético.
 
 import { MATRIX_ROW_COLUMNS } from "./data_layer.js";
+import { humanizeUiCopy } from "./human_labels.js";
 import {
   aggregateBlindCalibration12Langs,
   detectContextualCulturalGlossesForVerse,
@@ -429,7 +430,8 @@ export function renderStudy14ColDrawerHtml(matrixShard, options = {}) {
     })
     .join("");
 
-  const firstTokenRow = normalizedRows.find((r) => r.c07_strong_id && r.c07_strong_id !== "∅") || normalizedRows[0] || null;
+  const isLexicalRow = (r) => Boolean(r?.c07_strong_id && r.c07_strong_id !== "∅" && (String(r.c07_strong_id).includes("+") || !isClosedClassFunctionTag(r.c11_semantic_domain, r.c09_macula_role, r.c08_morph_code, r.c13_nsm_65)));
+  const firstTokenRow = normalizedRows.find(isLexicalRow) || normalizedRows.find((r) => r.c07_strong_id && r.c07_strong_id !== "∅") || normalizedRows[0] || null;
   const focusedStrongId = activeStrongTarget || String(firstTokenRow?.c07_strong_id || "H0430");
   const focusedOsisRef = String(firstTokenRow?.c02_ref || `${book}.${chapter}.${activeVerseNum}`);
   const focusedActionBarHtml = normalizedRows.length > 0
@@ -579,10 +581,26 @@ export function renderStudyStrataCards(matrixShard, options = {}) {
       uniqueNsm.set(key, r);
     }
   }
-  const nsmItems = Array.from(uniqueNsm.values()).slice(0, 8);
+  const nsmItems = Array.from(uniqueNsm.values())
+    .sort((a, b) => {
+      const aClosed = isClosedClassFunctionTag(a.c11_semantic_domain, a.c09_macula_role, a.c08_morph_code, a.c13_nsm_65) ? 1 : 0;
+      const bClosed = isClosedClassFunctionTag(b.c11_semantic_domain, b.c09_macula_role, b.c08_morph_code, b.c13_nsm_65) ? 1 : 0;
+      return aClosed - bClosed;
+    })
+    .slice(0, 8);
+  const nsmHeading = humanizeUiCopy(
+    isEn
+      ? `Stratum 1 · Universal Semantic Primitives NSM-65 (${book} ${chapter}:${verse})`
+      : `Estrato 1 · Primitivos Semánticos Universales NSM-65 (${book} ${chapter}:${verse})`,
+    uiLocale,
+  );
+  const nsmEmpty = humanizeUiCopy(
+    isEn ? "No NSM-65 primitives recorded for this verse" : "Sin primitivos NSM-65 registrados en este versículo",
+    uiLocale,
+  );
   const nsmHtml =
     `<div class="stratum-card nsm65-stratum" data-stratum="nsm65" data-ref="${escapeHtml(activeOsis)}">` +
-    `<strong class="stratum-title">🧭 ${isEn ? `Stratum 1 · Universal Semantic Primitives NSM-65 (${escapeHtml(book)} ${chapter}:${verse})` : `Estrato 1 · Primitivos Semánticos Universales NSM-65 (${escapeHtml(book)} ${chapter}:${verse})`}</strong>` +
+    `<strong class="stratum-title">🧭 ${escapeHtml(nsmHeading)}</strong>` +
     (nsmItems.length > 0
       ? `<ul class="study-list stratum-list">` +
       nsmItems
@@ -592,7 +610,7 @@ export function renderStudyStrataCards(matrixShard, options = {}) {
         )
         .join("") +
       `</ul>`
-      : `<p class="stratum-empty-note">∅ (${isEn ? "No NSM-65 primitives recorded for this verse" : "Sin primitivos NSM-65 registrados en este versículo"}).</p>`) +
+      : `<p class="stratum-empty-note">∅ (${escapeHtml(nsmEmpty)}).</p>`) +
     `</div>`;
 
   const rawShardRealia = Array.isArray(shard?.realia) ? shard.realia : [];
@@ -757,7 +775,7 @@ export function renderLeipzig4LineGmisHtml(matrixShard, options = {}) {
             `<code>${escapeHtml(w.c07_strong_id)}</code> · <span>${escapeHtml(w.c08_morph_code)}</span> · <span>${escapeHtml(w.c09_macula_role)}</span>` +
             `</div>` +
             `<div class="gmis-line-3" data-gmis-line="3">` +
-            `NSM-65: ${escapeHtml(formatHumanReadable15ColFields(w, uiLocale).nsmHuman)}` +
+            `${escapeHtml(humanizeUiCopy("NSM-65", uiLocale))}: ${escapeHtml(formatHumanReadable15ColFields(w, uiLocale).nsmHuman)}` +
             `</div>` +
             `<div class="gmis-line-4" data-gmis-line="4">` +
             `<span class="gmis-bridge-gloss">${escapeHtml(w.c12_gloss_es)}</span>` +
@@ -780,7 +798,7 @@ export function renderLeipzig4LineGmisHtml(matrixShard, options = {}) {
     `<section class="gmis-4line-scaffold" data-gmis-scaffold="true" data-lang="${escapeHtml(lang)}" data-book="${escapeHtml(book)}" data-chapter="${chapter}" data-word-order="${escapeHtml(wordOrder)}">` +
     `<header class="gmis-scaffold-header">` +
     `<strong>🔬 ${isEn ? "4-Line Interlinear Analysis" : "Análisis Interlineal en 4 Líneas"}</strong> ` +
-    `<details class="tech-details"><summary>${isEn ? "Technical details (GMIS · WLC / SRGNT / NSM-65)" : "Detalles técnicos (GMIS · WLC / SRGNT / NSM-65)"}</summary>` +
+    `<details class="tech-details" data-advanced-audit="true"><summary>${isEn ? "Technical source details" : "Detalles técnicos de fuente"}</summary>` +
     `<code>GMIS · Leipzig / WLC / SRGNT / NSM-65</code>` +
     `</details>` +
     `</header>` +

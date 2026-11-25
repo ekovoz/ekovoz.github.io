@@ -46,6 +46,7 @@ export const SHELL_CORE_ASSETS = [
   "/mostrador/drawer_print.js",
   "/mostrador/drawer_workshop.js",
   "/mostrador/drawer_workshop_cards.js",
+  "/mostrador/print_funnel_view.js",
   "/mostrador/workshop_audit_and_langs.js",
   "/mostrador/workshop_overlay_store.js",
   "/mostrador/authenticity_sheet.js",

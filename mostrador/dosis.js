@@ -46,6 +46,20 @@ import {
   rasterizeTrueTypeGlyphsFromSfntBytes,
   resolveOracleSpecimenDefaults,
 } from "./sauvola_canvas_oracle.js";
+import {
+  CANONICAL_16_MACRO_TANDAS,
+  formatUnifiedDoseLinksCopy,
+  planSequential16MacroTandasGeneration,
+  renderCanonical16MacroTandasSelectorHtml,
+  resolveMacroTandaForBlock,
+} from "./print_funnel_view.js";
+
+export {
+  CANONICAL_16_MACRO_TANDAS,
+  planSequential16MacroTandasGeneration,
+  renderCanonical16MacroTandasSelectorHtml,
+  resolveMacroTandaForBlock,
+};
 const CANONICAL_66_USFM = [
   "GEN", "EXO", "LEV", "NUM", "DEU", "JOS", "JDG", "RUT", "1SA", "2SA", "1KI", "2KI", "1CH", "2CH", "EZR", "NEH", "EST", "JOB", "PSA", "PRO", "ECC", "SNG",
   "ISA", "JER", "LAM", "EZK", "DAN", "HOS", "JOL", "AMO", "OBA", "JON", "MIC", "NAM", "HAB", "ZEP", "HAG", "ZEC", "MAL",
@@ -330,142 +344,7 @@ export function buildCanonical80BlocksPagesIndex(catalog, lang = "es", edition =
   };
 }
 
-/**
- * Agrupa biyectivamente los `80` bloques canónicos (`BLK-001..BLK-080`, `5` bloques por Macro-Tanda = `16 × 5 = 80`)
- * en las **16 Macro-Tandas Canónicas** cosibles ($M \le 8$ hojas por cuadernillo `4N`, `32` págs/cuadernillo, `< 14 MiB` RAM Worker).
- */
-function buildCanonical16MacroTandasCatalog() {
-  const macroTandas = [];
-  for (let m = 0; m < 16; m += 1) {
-    const macroNumber = m + 1;
-    const padded = String(macroNumber).padStart(2, "0");
-    const slice5 = CANONICAL_80_BLOCKS_CATALOG.slice(m * 5, (m + 1) * 5);
-    const firstBlk = slice5[0];
-    const lastBlk = slice5[slice5.length - 1];
-    const totalLogicalPages = slice5.reduce((acc, b) => acc + (Number(b.pagesCount) || 16), 0);
-    const imp = computeMultiSignatureImposition({
-      totalPages: totalLogicalPages,
-      maxSheetsPerSignature: 8,
-      paperThicknessMm: 0.09,
-      paperBulkFactor: 1.15,
-      dir: "ltr",
-    });
-    const booksSet = new Set();
-    const bookOrder66 = CANONICAL_66_USFM;
-    for (const blk of slice5) {
-      const rawStart = String(blk.startBook || "").toUpperCase();
-      const rawEnd = String(blk.endBook || rawStart).toUpperCase();
-      const sBook = USFM_BOOK_ALIAS_MAP[rawStart] || rawStart;
-      const eBook = USFM_BOOK_ALIAS_MAP[rawEnd] || rawEnd;
-      const sIdx = bookOrder66.indexOf(sBook);
-      const eIdx = bookOrder66.indexOf(eBook);
-      if (sIdx >= 0 && eIdx >= sIdx) {
-        for (let k = sIdx; k <= eIdx; k += 1) {
-          booksSet.add(bookOrder66[k]);
-        }
-      } else {
-        if (sBook) booksSet.add(sBook);
-        if (eBook) booksSet.add(eBook);
-      }
-    }
-    const rangeLabel = `${firstBlk.startBook} ${firstBlk.startChapter} – ${lastBlk.endBook} ${lastBlk.endChapter}`;
-    macroTandas.push({
-      macroTandaId: `MT-${padded}`,
-      macroTandaCode: `MT${padded}`,
-      macroTandaNumber: macroNumber,
-      testament: macroNumber <= 12 ? "AT" : "NT",
-      startBlockNumber: firstBlk.blockNumber,
-      endBlockNumber: lastBlk.blockNumber,
-      blockIds: slice5.map((b) => b.blockId),
-      blockCodes: slice5.map((b) => b.shortCode),
-      booksIncluded: [...booksSet],
-      startBook: firstBlk.startBook,
-      startChapter: firstBlk.startChapter,
-      endBook: lastBlk.endBook,
-      endChapter: lastBlk.endChapter,
-      rangeLabel,
-      logicalPagesCount: Number(imp.totalPages ?? imp.paddedTotalPages) || 32,
-      signatureCount: imp.signatureCount,
-      maxSheetsPerSignature: 8,
-      spreads4nCount: (Number(imp.totalPages ?? imp.paddedTotalPages) || 32) / 2,
-      maxCreepMm: imp.maxCreepMm,
-      creepWithinBound: imp.creepWithinBound,
-      workerRamSafeUnder14Mb: true,
-    });
-  }
-  return macroTandas;
-}
-
-export const CANONICAL_16_MACRO_TANDAS = buildCanonical16MacroTandasCatalog();
-
-export function resolveMacroTandaForBlock(blockNumberOrCode = 1) {
-  const num =
-    typeof blockNumberOrCode === "string"
-      ? Math.max(1, Math.min(80, Number(blockNumberOrCode.replace(/\D+/g, "")) || 1))
-      : Math.max(1, Math.min(80, Number(blockNumberOrCode) || 1));
-  const macroIdx = Math.min(15, Math.floor((num - 1) / 5));
-  return CANONICAL_16_MACRO_TANDAS[macroIdx] || CANONICAL_16_MACRO_TANDAS[0];
-}
-
-export function planSequential16MacroTandasGeneration({
-  lang = "es",
-  columns = 2,
-  fontPt = 9.5,
-  paper = "a4",
-  dir = "ltr",
-} = {}) {
-  const cleanLang = String(lang || "es").trim().toLowerCase() || "es";
-  return CANONICAL_16_MACRO_TANDAS.map((mt) => ({
-    macroTandaId: mt.macroTandaId,
-    macroTandaNumber: mt.macroTandaNumber,
-    blockIds: mt.blockIds,
-    booksIncluded: mt.booksIncluded,
-    rangeLabel: mt.rangeLabel,
-    columns: Math.max(1, Math.min(3, Number(columns) || 2)),
-    fontPt: Number(fontPt) || 9.5,
-    paper: String(paper || "a4").toLowerCase(),
-    dir: dir === "rtl" ? "rtl" : "ltr",
-    booklet4n: true,
-    maxSheetsPerSignature: 8,
-    maxCreepMm: mt.maxCreepMm,
-    spreads4nCount: mt.spreads4nCount,
-    downloadFilename: `ekovoz_${cleanLang}_${mt.macroTandaId.toLowerCase()}_${Number(columns) || 2}col.pdf`,
-  }));
-}
-
-export function renderCanonical16MacroTandasSelectorHtml({
-  activeMacroTandaNumber = 1,
-  lang = "es",
-  columns = 2,
-  fontPt = 9.5,
-  uiLocale = "es",
-} = {}) {
-  const isEn = String(uiLocale || "es").trim().toLowerCase().startsWith("en");
-  const idx = Math.max(1, Math.min(16, Number(activeMacroTandaNumber) || 1)) - 1;
-  const activeMt = CANONICAL_16_MACRO_TANDAS[idx] || CANONICAL_16_MACRO_TANDAS[0];
-  const optionsHtml = CANONICAL_16_MACRO_TANDAS.map((mt) => {
-    const sel = mt.macroTandaNumber === activeMt.macroTandaNumber ? " selected" : "";
-    return (
-      `<option value="${mt.macroTandaNumber}"${sel}>` +
-      `${mt.macroTandaId} (${mt.blockCodes[0]}–${mt.blockCodes[4]}) · ${mt.rangeLabel} · M≤${mt.maxSheetsPerSignature}h · creep ${mt.maxCreepMm}mm` +
-      `</option>`
-    );
-  }).join("");
-
-  return (
-    `<div id="macroTandas16Dose3Panel" class="macro-tandas-16-card" data-macro-tandas-count="16" data-canonical-blocks-covered="80" data-active-macro-tanda="${activeMt.macroTandaId}" data-max-sheets-signature="${activeMt.maxSheetsPerSignature}" data-creep-mm="${activeMt.maxCreepMm}" data-spreads-4n="${activeMt.spreads4nCount}">` +
-    `<div class="ek-row-between ek-mb-sm">` +
-    `<strong>🏛️ ${isEn ? "Dose 3 · 16 Canonical Macro-Tandas (80 Blocks, M≤8 Sewable Signatures)" : "Dosis 3 · 16 Macro-Tandas Canónicas (80 Bloques, Cuadernillos M≤8 Hojas)"}</strong>` +
-    `<span class="uls-badge" data-macro-tanda-creep="${activeMt.maxCreepMm}">4N: ${activeMt.spreads4nCount} ${isEn ? "spreads" : "pliegos"} · creep ${activeMt.maxCreepMm} mm · &lt;14 MiB Worker</span>` +
-    `</div>` +
-    `<div class="ek-row-wrap">` +
-    `<label for="macroTanda16Select" class="ek-semibold">${isEn ? "Macro-Tanda (1–16):" : "Macro-Tanda (1–16):"}</label>` +
-    `<select id="macroTanda16Select" data-action="select-macro-tanda-16" aria-label="${isEn ? "Select Canonical Macro-Tanda (1 to 16)" : "Seleccionar Macro-Tanda Canónica (1 a 16)"}">${optionsHtml}</select>` +
-    `<button type="button" id="btnGenerateAll16MacroTandas" class="uls-chip eco-action-btn ek-semibold" data-action="generate-sequential-16-macro-tandas" data-lang="${lang}" data-cols="${Number(columns) || 2}" data-font-pt="${Number(fontPt) || 9.5}">⚡ ${isEn ? "Synthesize All 16 Tandas (Worker)" : "Generar las 16 Tandas en Secuencia (Worker)"}</button>` +
-    `</div>` +
-    `</div>`
-  );
-}
+// Canon 16 Macro-Tandas movido a ./print_funnel_view.js (D4-HIG2 / SLICE-EKO-HIG2-05).
 
 export function syncDose2AndDose3LinksForActiveLang({
   state = {},
@@ -584,9 +463,14 @@ export function syncDose2AndDose3LinksForActiveLang({
     linkDose2.setAttribute?.("data-columns", String(activeCols));
     linkDose2.setAttribute?.("data-font-pt", String(activeFontPt));
     linkDose2.setAttribute?.("data-lang", lang);
-    linkDose2.textContent = isEn
-      ? `📚 2. Print/Download Book Tanda PDF (${lang.toUpperCase()} · ${book} · ${activeCols}col)`
-      : `📚 2. Imprimir/Descargar Libro en Tanda PDF (${lang.toUpperCase()} · ${book} · ${activeCols}col)`;
+    const unifiedLabels = formatUnifiedDoseLinksCopy({
+      lang,
+      book,
+      activeMacroTanda,
+      isFullBible16: false,
+      uiLocale: state.uiLocale || "es",
+    });
+    linkDose2.textContent = unifiedLabels.dose2Text;
   }
   if (linkDose3) {
     const isFullBible16 = Boolean(state._dose3Streamed16Of16);
@@ -608,13 +492,14 @@ export function syncDose2AndDose3LinksForActiveLang({
     linkDose3.setAttribute?.("data-columns", String(activeCols));
     linkDose3.setAttribute?.("data-font-pt", String(activeFontPt));
     linkDose3.setAttribute?.("data-lang", lang);
-    linkDose3.textContent = isFullBible16
-      ? isEn
-        ? `🏛️ 3. Download Full Bible PDF (16/16 Macro-Tandas · ${lang.toUpperCase()})`
-        : `🏛️ 3. Descargar Biblia Completa PDF (16/16 Macro-Tandas · ${lang.toUpperCase()})`
-      : isEn
-        ? `🏛️ 3. Download Macro-Tanda ${activeMacroTanda.macroTandaId} (${activeMacroTanda.blockCodes[0]}–${activeMacroTanda.blockCodes[4]} · ${lang.toUpperCase()})`
-        : `🏛️ 3. Descargar Macro-Tanda ${activeMacroTanda.macroTandaId} (${activeMacroTanda.blockCodes[0]}–${activeMacroTanda.blockCodes[4]} · ${lang.toUpperCase()})`;
+    const unifiedLabels = formatUnifiedDoseLinksCopy({
+      lang,
+      book,
+      activeMacroTanda,
+      isFullBible16,
+      uiLocale: state.uiLocale || "es",
+    });
+    linkDose3.textContent = unifiedLabels.dose3Text;
   }
   return {
     mode: "bimodal-tanda",
@@ -912,7 +797,7 @@ export function simulateThirdGenPhotocopySauvola({
     survives3rdGen,
     contrastRatio: oracle.contrastRatio,
     rasterSource: oracle.rasterSource,
-    badgeText: `${verdict} · Trazo ${cleanStroke.toFixed(2)} pt (mín. 0.75 pt) · Contraste ${oracle.contrastRatio.toFixed(2)}:1 · Δχ=${eulerDelta}`,
+    badgeText: `${verdict} · Trazo ${cleanStroke.toFixed(2)} pt (mín. 0.75 pt) · Contraste ${oracle.contrastRatio.toFixed(2)}:1`,
   };
 }
 

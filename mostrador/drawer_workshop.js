@@ -40,6 +40,7 @@ import { projectSurfaceLayoutFromState } from "./surface_compositor.js";
 import {
   createWorkshopAuditHandlers,
   deriveVerseLockAnchors,
+  renderWorkshop5LangsSwitcherHtml,
   renderWorkshopAuditSubtabHtml,
 } from "./workshop_audit_and_langs.js";
 import {
@@ -103,6 +104,20 @@ export async function hydrateImproveDrawerPanel(ctx = {}) {
     earlyAuditEl._auditPanelsBound = true;
     earlyAuditEl.addEventListener("change", earlyHandlers.onAuditChange);
     earlyAuditEl.addEventListener("click", earlyHandlers.onAuditClick);
+  }
+  const earlyDynamicHost = getEl?.("tallerArtifactsDynamicList", targetDoc);
+  if (earlyDynamicHost && !String(earlyDynamicHost.innerHTML || "").includes("workshop5LangsSwitcher")) {
+    const renderEarlySwitcher = () => {
+      earlyDynamicHost.innerHTML = renderWorkshop5LangsSwitcherHtml(
+        state?.activeTallerLang || state?.lang || "es",
+        state?.masterCensusSummary || null,
+        state?.uiLocale || "es",
+      );
+    };
+    if (state && typeof state.refreshWorkshopAuditSubtab !== "function") {
+      state.refreshWorkshopAuditSubtab = renderEarlySwitcher;
+    }
+    renderEarlySwitcher();
   }
   return workshopSlotRunner.run("workshop", async (_signal, isCurrent) => {
     const mod = await loadImproveModule();
@@ -890,57 +905,21 @@ export function bindImproveFormControlsInDrawer(mod, ctx = {}) {
         (state.refreshPatchPreview || refreshPatchPreview)();
         return;
       }
-      const filterBtn = e?.target?.closest
-        ? e.target.closest("[data-celf-rung-filter]")
-        : e?.target?.getAttribute?.("data-celf-rung-filter")
-          ? e.target
-          : null;
+      const filterBtn = e?.target?.closest ? e.target.closest("[data-celf-rung-filter]") : e?.target?.getAttribute?.("data-celf-rung-filter") ? e.target : null;
       const filterKey = filterBtn?.getAttribute?.("data-celf-rung-filter");
-      if (filterKey) {
-        state.activeCelfRung = filterKey;
-        (state.refreshPatchPreview || refreshPatchPreview)();
-        return;
-      }
-      const entropyBtn = e?.target?.closest
-        ? e.target.closest("[data-next-entropy-ref]")
-        : e?.target?.getAttribute?.("data-next-entropy-ref")
-          ? e.target
-          : null;
+      if (filterKey) { state.activeCelfRung = filterKey; (state.refreshPatchPreview || refreshPatchPreview)(); return; }
+      const entropyBtn = e?.target?.closest ? e.target.closest("[data-next-entropy-ref]") : e?.target?.getAttribute?.("data-next-entropy-ref") ? e.target : null;
       const nextEntropyRef = entropyBtn?.getAttribute?.("data-next-entropy-ref");
       if (nextEntropyRef) {
         const mEnt = String(nextEntropyRef).trim().match(/^([A-Z0-9]+)\.(\d+)(?:\.(\d+))?/i);
-        if (mEnt) {
-          await navigate(
-            {
-              book: mEnt[1].toUpperCase(),
-              chapter: Number(mEnt[2]) || 1,
-              verse: Number(mEnt[3]) || 1,
-            },
-            targetDoc,
-          );
-          hydrateBookAndChapterSelectors(targetDoc);
-        }
+        if (mEnt) { await navigate({ book: mEnt[1].toUpperCase(), chapter: Number(mEnt[2]) || 1, verse: Number(mEnt[3]) || 1 }, targetDoc); hydrateBookAndChapterSelectors(targetDoc); }
         return;
       }
-      const rungBtn = e?.target?.closest
-        ? e.target.closest("[data-ladder-ref]")
-        : e?.target?.getAttribute?.("data-ladder-ref")
-          ? e.target
-          : null;
+      const rungBtn = e?.target?.closest ? e.target.closest("[data-ladder-ref]") : e?.target?.getAttribute?.("data-ladder-ref") ? e.target : null;
       const ladderRef = rungBtn?.getAttribute?.("data-ladder-ref");
       if (ladderRef) {
         const mRng = String(ladderRef).trim().match(/^([A-Z0-9]+)\.(\d+)(?:\.(\d+))?/i);
-        if (mRng) {
-          await navigate(
-            {
-              book: mRng[1].toUpperCase(),
-              chapter: Number(mRng[2]) || 1,
-              verse: Number(mRng[3]) || 1,
-            },
-            targetDoc,
-          );
-          hydrateBookAndChapterSelectors(targetDoc);
-        }
+        if (mRng) { await navigate({ book: mRng[1].toUpperCase(), chapter: Number(mRng[2]) || 1, verse: Number(mRng[3]) || 1 }, targetDoc); hydrateBookAndChapterSelectors(targetDoc); }
       }
     });
   }

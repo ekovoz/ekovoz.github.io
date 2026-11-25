@@ -43,7 +43,7 @@ export function formatPhotocopySimBadgeText(simResult = null) {
   const sim = simResult || simulateKanungoSauvolaGeneration(5, 0.32, 300);
   const genLabel = sim.genIndex === 0 ? "Original 300 DPI" : `${sim.genIndex}ª Gen`;
   const legibleVerdict = sim.wcagPassAaa !== false ? "Legible para fotocopiar" : "Ajustar contraste";
-  return `✅ ${genLabel} · ${legibleVerdict} (Contraste ${sim.contrastLabel} ≥ 7.0:1 · Δχ=${sim.eulerCharacteristicDelta})`;
+  return `✅ ${genLabel} · ${legibleVerdict} (Contraste ${sim.contrastLabel} ≥ 7.0:1)`;
 }
 
 function wrapSvgTextLines(rawText, maxCharsPerLine = 40, maxLines = 4) {
@@ -214,9 +214,9 @@ export function renderEditorialGraphicsAndPrintSpecsCard({
     `</div>` +
     `<div class="photocopy-badges-row photocopy-segmented-bar" role="group" aria-label="${isEn ? "Photocopy generations" : "Generaciones de fotocopia"}">${genBadges}</div>` +
     `<div class="photocopy-controls-row">` +
-    `<label for="inputSauvolaK" class="photocopy-slider-label">🎛️ ${isEn ? `Binarization sensitivity k (${activeSim.sauvolaK.toFixed(2)}):` : `Sensibilidad de copia k (${activeSim.sauvolaK.toFixed(2)}):`}</label>` +
+    `<label for="inputSauvolaK" class="photocopy-slider-label">🎛️ ${isEn ? `Copy contrast level (${activeSim.sauvolaK.toFixed(2)}):` : `Nivel de contraste de copia (${activeSim.sauvolaK.toFixed(2)}):`}</label>` +
     `<input id="inputSauvolaK" class="photocopy-slider-input" type="range" min="0.15" max="0.40" step="0.01" value="${activeSim.sauvolaK.toFixed(2)}" />` +
-    `<details class="tech-details"><summary>${isEn ? "Technical details (Sauvola + Kanungo)" : "Detalles técnicos (Sauvola + Kanungo)"}</summary><div class="photocopy-badges-row">${stagesBadges}</div></details>` +
+    `<details class="tech-details" data-advanced-audit="true"><summary>${isEn ? "Technical photocopy model details" : "Detalles técnicos del modelo de copiado"}</summary><div class="photocopy-badges-row">${stagesBadges}</div></details>` +
     `</div>` +
     `<div class="photocopy-preview-caption">` +
     `<img class="photocopy-preview-img" alt="Photocopy Specimen Preview" src="${specimenData.svgDataUrl}" />` +

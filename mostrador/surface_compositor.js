@@ -137,7 +137,7 @@ export function projectSubtabGroupToDom(rootDoc, groupName, activeSubtab) {
 /**
  * Synchronizes all 4 sheet subtab groups from `state.activeSubtabBySheet`.
  */
-export function projectAllSubtabsFromState(state = {}, rootDoc) {
+function projectAllSubtabsFromState(state = {}, rootDoc) {
   const bySheet = state.activeSubtabBySheet || DEFAULT_SUBTABS_BY_SHEET;
   const results = [];
   for (const [groupName, sheetId] of Object.entries(SUBTAB_GROUP_TO_SHEET)) {
@@ -276,7 +276,7 @@ export function projectSurfaceLayoutFromState(state = {}, rootDoc, getEl) {
  * Registers synchronous root click delegation for all `[data-*-subtab-btn]` controls
  * during bootstrap (before any lazy sheet module import settles).
  */
-export function bindEarlySubtabDelegation({ store, state, doc, onSubtabChange } = {}) {
+function bindEarlySubtabDelegation({ store, state, doc, onSubtabChange } = {}) {
   if (!doc || typeof doc.addEventListener !== "function") return () => { };
   if (doc._r2SubtabDelegationBound) return doc._r2SubtabUnbind || (() => { });
 

@@ -245,8 +245,9 @@ export function renderPrintDrawerPanelsSyncInDrawer(ctx = {}) {
 
   const fieldPdfsHost = getEl("printFieldPdfsHost", targetDoc);
   if (fieldPdfsHost) {
+    const kitsTitle = isEn ? "Emergency Field Kits (Refuge & Checklist PDFs)" : "Kits de Campo e Impresión de Refugio (PDFs Listos)";
     mountSlotView(fieldPdfsHost, {
-      html: renderFieldRefugeAndChecklistHtml(state.editorialProfiles || null, state.uiLocale || "es"),
+      html: `<details id="printFieldKitsDetails" class="r9-stratum-accordion"><summary>🏕️ ${kitsTitle}</summary>${renderFieldRefugeAndChecklistHtml(state.editorialProfiles || null, state.uiLocale || "es")}</details>`,
       ownerId: "drawer_print:doses:field_pdfs",
       orderIndex: 2,
     });

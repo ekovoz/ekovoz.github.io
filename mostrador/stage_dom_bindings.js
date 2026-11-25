@@ -95,7 +95,16 @@ export function bindStageDomEvents(ctx = {}) {
     if (compassPanelBooks) compassPanelBooks.hidden = mode !== "books";
     if (compassPanelConcordance) compassPanelConcordance.hidden = mode !== "concordance";
     if (compassPanelTrails) compassPanelTrails.hidden = mode !== "trails";
+    const rInp = getEl("mostradorRefInput", targetDoc);
+    if (rInp) {
+      const isEn = String(state.uiLocale || "es").toLowerCase().startsWith("en");
+      rInp.placeholder = mode === "concordance" ? (isEn ? "Word or phrase…" : "Palabra o frase…") : mode === "trails" ? (isEn ? "Search trail or topic" : "Buscar ruta o tema") : (isEn ? "Ref (Jn 3:16) or book" : "Cita (Jn 3:16) o libro");
+    }
   };
+  const tskAccEl = getEl("studyTskFormulaicAccordion", targetDoc);
+  if (tskAccEl && typeof tskAccEl.addEventListener === "function") {
+    tskAccEl.addEventListener("toggle", () => { if (tskAccEl.open) tskAccEl.scrollIntoView?.({ behavior: "smooth", block: "nearest" }); });
+  }
   if (compassTabBooks) {
     compassTabBooks.setAttribute?.("data-action", "compass-tab-books");
     bindSurfaceActions(compassTabBooks, { "compass-tab-books": () => switchCompassTab("books") }, { scope: "compass-books", events: ["click"] });
@@ -179,6 +188,18 @@ export function bindStageDomEvents(ctx = {}) {
   const closeCompassBtn = getEl("btnCloseCompassModal", targetDoc);
   const compassGrid = getEl("bibleCoordinateCompassGrid", targetDoc);
 
+  const syncBodyWorkAndOverlayAttrs = (docRef = targetDoc) => {
+    const bodyEl = docRef?.body;
+    if (!bodyEl || typeof bodyEl.setAttribute !== "function") return;
+    const curWork = String(state.activeWork || "biblia").trim().toLowerCase() || "biblia";
+    bodyEl.setAttribute("data-work", curWork);
+    const corpusOpen = Boolean(getEl("bibleLanguageAndRegisterDrawer", docRef)?.open);
+    const compassOpen = Boolean(getEl("bibleCoordinateCompassModal", docRef)?.open);
+    const anyOverlay = corpusOpen || compassOpen || Boolean(state.activeModal);
+    bodyEl.setAttribute("data-overlay-open", anyOverlay ? "true" : "false");
+  };
+  syncBodyWorkAndOverlayAttrs(targetDoc);
+
   const compassDialogCtrl = createNativeDialogController(compassModal, {
     modalId: "compass",
     openerFallback: compassBtn,
@@ -189,6 +210,7 @@ export function bindStageDomEvents(ctx = {}) {
   const closeCompassModalDialog = () => {
     compassDialogCtrl.close();
     state.activeModal = null;
+    syncBodyWorkAndOverlayAttrs(targetDoc);
   };
 
   if (compassBtn && typeof compassBtn.addEventListener === "function") {
@@ -200,6 +222,7 @@ export function bindStageDomEvents(ctx = {}) {
         } else {
           compassDialogCtrl.open(compassBtn);
           state.activeModal = "compass";
+          syncBodyWorkAndOverlayAttrs(targetDoc);
         }
       }
     });
@@ -440,6 +463,7 @@ export function bindStageDomEvents(ctx = {}) {
       if (corpusDrawer) {
         corpusDrawer.open = !corpusDrawer.open;
         corpusLangBtn.setAttribute("aria-expanded", corpusDrawer.open ? "true" : "false");
+        syncBodyWorkAndOverlayAttrs(targetDoc);
       }
     });
   }
@@ -739,6 +763,7 @@ export function bindStageDomEvents(ctx = {}) {
     } else {
       state.activeWork = cleanWork;
     }
+    syncBodyWorkAndOverlayAttrs(docRef);
     syncSisterWorksTabsDom(cleanWork, (id) => getEl(id, docRef));
 
     const projected = projectCrossWorkCoordinate({
@@ -761,21 +786,11 @@ export function bindStageDomEvents(ctx = {}) {
     state.evangeliosQuarter = projected.evangeliosQuarter;
 
     if (cleanWork === "evangelios" && typeof hydrateEvangeliosSection === "function") {
-      await hydrateEvangeliosSection(
-        state.evangeliosQuarter || "T1",
-        state.evangeliosWeekId || "s01",
-      );
+      await hydrateEvangeliosSection(state.evangeliosQuarter || "T1", state.evangeliosWeekId || "s01");
     } else if (cleanWork === "felices") {
       setActivePlateIndex(state.activePlateIndex ?? 24, docRef);
     } else if (cleanWork === "biblia") {
-      await navigate(
-        {
-          book: state.book,
-          chapter: state.chapter,
-          verse: state.verse,
-        },
-        docRef,
-      );
+      await navigate({ book: state.book, chapter: state.chapter, verse: state.verse }, docRef);
     }
 
     hydrateBookAndChapterSelectors(docRef);
@@ -784,15 +799,10 @@ export function bindStageDomEvents(ctx = {}) {
     syncI18nUiFromState(state, docRef);
     syncUrlFromState(docRef, { push: prevWork !== cleanWork });
 
-    if (state.activeSheet === "study") {
-      await hydrateStudyDrawer(docRef);
-    } else if (state.activeSheet === "field") {
-      await hydrateImproveDrawer(docRef);
-    } else if (state.activeSheet === "print") {
-      hydratePrintDrawerPanels(docRef);
-    } else if (state.activeSheet === "share") {
-      hydrateShareAndAuditDrawer(docRef);
-    }
+    if (state.activeSheet === "study") await hydrateStudyDrawer(docRef);
+    else if (state.activeSheet === "field") await hydrateImproveDrawer(docRef);
+    else if (state.activeSheet === "print") hydratePrintDrawerPanels(docRef);
+    else if (state.activeSheet === "share") hydrateShareAndAuditDrawer(docRef);
     return cleanWork;
   };
 
@@ -800,17 +810,9 @@ export function bindStageDomEvents(ctx = {}) {
   ctx.switchWork = switchWork;
   globalThis.switchSovereignWork = (w) => switchWork(w, targetDoc);
 
-  const tabBib = getEl("tabWorkBiblia", targetDoc);
-  const tabFel = getEl("tabWorkFelices", targetDoc);
-  const tabEva = getEl("tabWorkEvangelios", targetDoc);
-  if (tabBib && typeof tabBib.addEventListener === "function") {
-    tabBib.addEventListener("click", () => switchWork("biblia", targetDoc));
-  }
-  if (tabFel && typeof tabFel.addEventListener === "function") {
-    tabFel.addEventListener("click", () => switchWork("felices", targetDoc));
-  }
-  if (tabEva && typeof tabEva.addEventListener === "function") {
-    tabEva.addEventListener("click", () => switchWork("evangelios", targetDoc));
+  for (const [btnId, workId] of [["tabWorkBiblia", "biblia"], ["tabWorkFelices", "felices"], ["tabWorkEvangelios", "evangelios"]]) {
+    const tabBtn = getEl(btnId, targetDoc);
+    if (tabBtn && typeof tabBtn.addEventListener === "function") tabBtn.addEventListener("click", () => switchWork(workId, targetDoc));
   }
 
   bindSupportContactDialog({ state, store: ctx.store, doc: targetDoc, getEl });

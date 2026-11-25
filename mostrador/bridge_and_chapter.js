@@ -578,9 +578,9 @@ export function renderDiglossicParallelBridge({
         leftCellHtml =
           `<div class="diglossic-gmis-4line" data-maternal-stratum="GMIS_SCAFFOLD" data-gmis-lines="4">` +
           `<div data-gmis-line="1"><strong>L1 Original/Morfemas:</strong> ${l1}</div>` +
-          `<div data-gmis-line="2"><strong>L2 Glosa Leipzig:</strong> ${l2}</div>` +
-          `<div data-gmis-line="3"><strong>L3 NSM-65:</strong> ${l3}</div>` +
-          `<div data-gmis-line="4"><strong>L4 CELF-250 (${escapeHtml(lang)}):</strong> ${escapeHtml(celfPrompt || `Semilla submodular para ${osis}`)}</div>` +
+          `<div data-gmis-line="2"><strong>L2 Glosa lingüística:</strong> ${l2}</div>` +
+          `<div data-gmis-line="3"><strong>L3 Sentido universal:</strong> ${l3}</div>` +
+          `<div data-gmis-line="4"><strong>L4 Revisión comunitaria (${escapeHtml(lang)}):</strong> ${escapeHtml(celfPrompt || `Semilla de traducción para ${osis}`)}</div>` +
           `</div>`;
       }
       const rightCellHtml =
@@ -599,7 +599,7 @@ export function renderDiglossicParallelBridge({
   return (
     `<section class="diglossic-parallel-bridge" data-diglossic-bridge="true" data-lang="${escapeHtml(lang)}" data-bridge-lang="${escapeHtml(bridgeSpec.code)}" data-sovereign-tier="${escapeHtml(sovereignTier)}" data-epistemic-seal="${sealCode}" data-epistemic-honesty="ZERO_SYNTHETIC_BIBLE">` +
     `<header class="diglossic-bridge-header">` +
-    `<span><strong>Columna Materna (<code>${escapeHtml(lang)}</code>):</strong> ${isHumanMaternalPortion ? "Porción Humana Verificada" : "Andamiaje Interlineal Honesto GMIS + CELF-250 (0% Falsa Biblia)"}</span>` +
+    `<span><strong>Columna Materna (<code>${escapeHtml(lang)}</code>):</strong> ${isHumanMaternalPortion ? "Porción Humana Verificada" : "Andamiaje Interlineal de Campo (0% Texto Sintético)"}</span>` +
     `<span><strong>Lengua Puente Siglo XXI (<code>${escapeHtml(bridgeSpec.code)}</code>):</strong> ${escapeHtml(bridgeSpec.label)}</span>` +
     `</header>` +
     rowsHtml +
@@ -624,7 +624,7 @@ export function renderChapterPreviewHtml(
       msg
     )}</p><div class="ek-row-wrap ek-mt-sm"><button type="button" id="btnRetryNavigation" class="uls-chip" data-i18n="mostrador.action.retry">${escapeHtml(
       retryLabel
-    )}</button><button type="button" id="btnOpenCelf250FromUnavailable" class="uls-chip" data-action="open-celf250-workshop">✏️ Iniciar traducción de campo (CELF-250)</button></div></div>`;
+    )}</button><button type="button" id="btnOpenCelf250FromUnavailable" class="uls-chip" data-action="open-celf250-workshop">✏️ Iniciar traducción de campo</button></div></div>`;
   }
 
   const selectedVerse = Math.max(1, Number(options.selectedVerse) || 1);

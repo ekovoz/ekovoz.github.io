@@ -141,6 +141,30 @@ const HUMAN_PHILOLOGY_LABELS = Object.freeze({
     es: "Puente: Automático",
     en: "Bridge: Auto",
   }),
+  UBS: Object.freeze({
+    es: "Ediciones textuales internacionales",
+    en: "International textual editions",
+  }),
+  QRSTREAMSESION: Object.freeze({
+    es: "Receptor óptico por cámara",
+    en: "Optical camera receiver",
+  }),
+  QRSTREAMSESSION: Object.freeze({
+    es: "Receptor óptico por cámara",
+    en: "Optical camera receiver",
+  }),
+  SAUVOLA_KANUNGO: Object.freeze({
+    es: "Calibración de nitidez en copias",
+    en: "Photocopy legibility check",
+  }),
+  OPENTIMESTAMPS: Object.freeze({
+    es: "Sello público de fecha e integridad",
+    en: "Public date & integrity seal",
+  }),
+  SBLGNT: Object.freeze({
+    es: "Texto griego fuente",
+    en: "Greek source text",
+  }),
 });
 
 export function isExpertVocabularyEnabled(searchStr = "") {
@@ -155,4 +179,35 @@ export function humanizeTechnicalCode(rawCode, uiLocale = "es") {
   const direct = HUMAN_PHILOLOGY_LABELS[upper] || HUMAN_PHILOLOGY_LABELS[clean];
   if (direct) return isEn ? direct.en : direct.es;
   return isEn ? "Manuscript variant note" : "Nota de tradición textual";
+}
+
+/**
+ * Normaliza etiquetas visibles en DOM para erradicar fugas técnicas INV-ERG-20 en los renderizadores.
+ */
+export function humanizeUiCopy(rawText, uiLocale = "es", { allowExpert = false } = {}) {
+  const src = String(rawText ?? "");
+  if (!src || allowExpert) return src;
+  const isEn = String(uiLocale || "es").trim().toLowerCase().startsWith("en");
+  const replacements = [
+    [/\bPrimitivos Semánticos Universales NSM-65\b/gi, isEn ? "Universal Core Meanings" : "Sentido básico universal"],
+    [/\bUniversal Semantic Primitives NSM-65\b/gi, "Universal Core Meanings"],
+    [/\bNSM-65\b/gi, isEn ? "Core meaning" : "Sentido básico"],
+    [/\bCELF-250\b/gi, isEn ? "250-step community guide" : "Guía comunitaria (250 pasos)"],
+    [/\bQrStreamSession\b/gi, isEn ? "Optical camera link" : "Enlace óptico por cámara"],
+    [/\bBerna 15\.3\b/gi, isEn ? "open-authorship verification" : "verificación abierta de autoría"],
+    [/\bBerne 15\.3\b/gi, "open-authorship verification"],
+    [/\bMacro-Tanda\s*(?:MT-\d+)?\b/gi, isEn ? "Print bundle" : "Paquete de impresión"],
+    [/\((?:6\s+Tradiciones Textuales\s*)?UBS\)/gi, isEn ? "(Historical Manuscript Traditions)" : "(Tradiciones Textuales Históricas)"],
+    [/\bUBS\b/g, isEn ? "Historical Editions" : "Ediciones Históricas"],
+    [/\bOpenTimestamps\b/gi, isEn ? "public integrity records" : "sellos públicos de fecha"],
+    [/\bSauvola \+ Kanungo\b/gi, isEn ? "photocopy clarity model" : "simulación de fotocopia rural"],
+    [/\bNT\+Taller OT\b/gi, isEn ? "NT verified + OT workbook" : "NT verificado + taller AT"],
+    [/\bWLC\b/g, isEn ? "Hebrew source" : "Hebreo fuente"],
+    [/\bSBLGNT\b/g, isEn ? "Greek source" : "Griego fuente"],
+  ];
+  let out = src;
+  for (const [rx, sub] of replacements) {
+    out = out.replace(rx, sub);
+  }
+  return out.replace(/\s{2,}/g, " ").trim();
 }

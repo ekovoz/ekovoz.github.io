@@ -568,8 +568,8 @@ export function renderDuplexAssistantCardHtml({
   const duplexBody = `${escapeHtml(flipEdgeInfo.step2Text || "")} · ${escapeHtml(budgetSummary || "")}.`;
   const nemethCheckedAttr = nemethChecked ? " checked" : "";
   const nemethLabel = isEn
-    ? "Nemeth Math Braille · Ed. 11 BEB B70 (excludes 1:1-5)"
-    : "Braille Matemático Nemeth · Ed. 11 BEB B70 (excluye 1:1-5)";
+    ? "Braille Math & Grade B70 (Ed. 11)"
+    : "Braille Matemático B70 (Ed. 11)";
   const nemethToggleHtml =
     `<div class="braille-actions-row">` +
     `<label class="hig-toggle-row uls-chip">` +

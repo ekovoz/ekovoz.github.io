@@ -235,8 +235,22 @@ export function hydrateOpticalTxAndRxPanels({
           : (isEn ? `LT SplitMix64 #${tf.grid.seq}` : `Solitón SplitMix64 #${tf.grid.seq}`);
     const phaseLabel = formatPhaseLabel(txFrame);
 
+    const activeQrMode = state.qrShareSubmode === "receive" ? "receive" : "send";
+    const camHostEl = targetDoc?.getElementById?.("opticalCameraViewportHost") || null;
+    const relayBtnEl = targetDoc?.getElementById?.("btnOpticalRelayTx") || null;
+    const camBtnEl = targetDoc?.getElementById?.("btnToggleOpticalCameraRx") || null;
+    const rxPanelEl = targetDoc?.getElementById?.("opticalReceiverRxPanel") || null;
+    if (camHostEl) camHostEl.hidden = activeQrMode !== "receive";
+    if (relayBtnEl) relayBtnEl.hidden = activeQrMode !== "receive";
+    if (camBtnEl) camBtnEl.hidden = activeQrMode !== "receive";
+    if (rxPanelEl) rxPanelEl.hidden = activeQrMode !== "receive";
+
     qrPanel.innerHTML =
-      `<div id="qrBeamStreamRoot" class="mostrador-qrbeam-stream" data-fps="${activeCadenceKey}" data-nyquist-safe="${Boolean(nyquistCheck?.valid ?? nyquistCheck?.nyquistSafe)}" data-nyquist-channel-limit="4096" data-lt-peeling-decoded="${ltComplete}" data-eco1-bytes="${packetBytes.byteLength}" data-packet-kind="${txFrame.packetKind}" data-systematic-phase="${isSystematicPhase}" data-ecom-frame="${isEndOfStreamEcom}" data-frame-interval-ms="${cadencePreset.intervalMs}" data-total-blocks="${encoder.K}" data-seq="${grid.seq}" data-degree="${grid.degree}" data-parity="${grid.parityBit}">` +
+      `<div id="qrBeamStreamRoot" class="mostrador-qrbeam-stream" data-fps="${activeCadenceKey}" data-nyquist-safe="${Boolean(nyquistCheck?.valid ?? nyquistCheck?.nyquistSafe)}" data-nyquist-channel-limit="4096" data-lt-peeling-decoded="${ltComplete}" data-eco1-bytes="${packetBytes.byteLength}" data-packet-kind="${txFrame.packetKind}" data-systematic-phase="${isSystematicPhase}" data-ecom-frame="${isEndOfStreamEcom}" data-frame-interval-ms="${cadencePreset.intervalMs}" data-total-blocks="${encoder.K}" data-seq="${grid.seq}" data-degree="${grid.degree}" data-parity="${grid.parityBit}" data-qr-mode="${activeQrMode}">` +
+      `<div class="subtabs-bar ek-mb-sm" role="tablist" aria-label="${isEn ? "Optical transfer mode" : "Modo de transferencia óptica"}">` +
+      `<button type="button" id="btnQrModeSend" class="uls-chip" role="tab" aria-selected="${activeQrMode === "send"}" aria-pressed="${activeQrMode === "send"}" data-qr-mode="send">📡 ${isEn ? "Show QR" : "Enviar QR"}</button>` +
+      `<button type="button" id="btnQrModeReceive" class="uls-chip" role="tab" aria-selected="${activeQrMode === "receive"}" aria-pressed="${activeQrMode === "receive"}" data-qr-mode="receive">📷 ${isEn ? "Receive Camera" : "Recibir cámara"}</button>` +
+      `</div>` +
       `<div class="ek-row-between ek-mb-sm">` +
       `<strong>📡 ${isEn ? "Offline Optical QR" : "QR Óptico sin internet"} (<span id="opticalFrameCounter" data-seq="${grid.seq}" data-packet-kind="${txFrame.packetKind}">${activeCadenceKey} fps · ${phaseLabel} · ${isEn ? "Parity" : "Paridad"} ${grid.parityBit}</span>)</strong>` +
       `<div class="ek-flex-wrap-inline">` +
@@ -246,10 +260,21 @@ export function hydrateOpticalTxAndRxPanels({
       `<p id="opticalNyquistChannelHint" class="ek-meta ek-m-0 ek-mb-sm" data-optical-max-kb="4">${isEn ? "Optical channel <= 4 KB (1–3 chapters / verses). For the full Bible (~1 MB), export the offline HTML file or USB package." : "Canal óptico <= 4 KB (pasajes y capítulos). Para la Biblia completa (~1 MB), usa el archivo HTML portable o paquete USB."}</p>` +
       `<div class="ek-row-gap-lg">` +
       `<div id="qrBeamMatrixHost" class="qrbeam-matrix-host"><span id="qrBeamMatrixSvgSlot">${svgMarkup}</span><canvas id="qrBeamMatrixCanvas" width="174" height="174" aria-hidden="true"></canvas></div>` +
-      `<details class="tech-details"><summary>${isEn ? "Technical optical stream (ECO-GRID)" : "Detalles técnicos del canal óptico (ECO-GRID)"}</summary>` +
+      `<details class="tech-details" data-advanced-audit="true"><summary>${isEn ? "Technical optical stream details" : "Detalles técnicos del canal óptico"}</summary>` +
       `<p class="qrbeam-desc">${isEn ? `ECO-GRID 29×29 (${packetBytes.byteLength} B ≤ 66 B): Systematic Pass (0..${encoder.K - 1}) + ECOM digest trailer + SplitMix64 LT repair tail.` : `ECO-GRID 29×29 (${packetBytes.byteLength} B ≤ 66 B): Pase sistemático (0..${encoder.K - 1}) + cierre ECOM + cola LT SplitMix64.`}</p>` +
       `</details>` +
       `</div></div>`;
+
+    for (const [mBtnId, mVal] of [["btnQrModeSend", "send"], ["btnQrModeReceive", "receive"]]) {
+      const mBtn = getEl(mBtnId, targetDoc);
+      if (mBtn && typeof mBtn.addEventListener === "function" && !mBtn._qrModeBound) {
+        mBtn._qrModeBound = true;
+        mBtn.addEventListener("click", () => {
+          state.qrShareSubmode = mVal;
+          rehydrateDrawer?.(targetDoc);
+        });
+      }
+    }
 
     const paintGranularOpticalFrame = (nextSeq) => {
       state.qrFrameSeq = nextSeq;
