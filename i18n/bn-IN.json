@@ -282,11 +282,9 @@
     "study.acc.typology": "🌐 ভাষাতাত্ত্বিক রূপরেখা ও সম্পাদনা রীতি",
     "corpus.search.placeholder": "৭,১৬৪টি ভাষা খুঁজুন (ISO, নিজ নাম, দেশ)...",
     "mostrador.preview_hint": "প্রিন্টের জন্য প্রস্তুত পাঠের সরাসরি প্রিভিউ",
-    "printStage.heading": "ধাপে ধাপে PDF প্রিন্ট বা ডাউনলোড করুন",
     "printStage.dose1": "1. এই অধ্যায়ের PDF",
-    "printStage.dose2": "2. পুস্তিকা / বই PDF",
-    "printStage.dose3": "3. সম্পূর্ণ বাইবেল PDF (66)",
     "printStage.moreFormats": "কাগজের মাপ, ব্রেইল ও অফলাইন কপি",
-    "print.btn.cancelJob": "বাতিল"
+    "print.btn.cancelJob": "বাতিল",
+    "share.auth.unifiedTitle": "যাচাইযোগ্য সম্পাদকীয় শংসাপত্র"
   }
 }

@@ -7,6 +7,7 @@
 import { highlightSearchMatchHtml } from "./concordance_search.js";
 import { CROSS_WORK_BRIDGE_TABLE, projectCrossWorkCoordinate } from "./cross_work_bridge.js";
 import { MOSTRADOR_DOM_BINDINGS, STATUS } from "./data_layer.js";
+import { renderProgressiveTwoStrataDiglossicBridge } from "./diglossic_chapter_renderer.js";
 import {
   applySpanish21DiachronicRegister,
   computeAnalyticalRegisterMetrics,
@@ -130,12 +131,12 @@ export function toUnicodeSuperscript(numStr) {
 export const STP_AT_ABSTENTION_MARKER =
   "⟦— stp AT: sin raíz O'dam atestiguada · ver puente es⟧";
 
-function isStpAtAbstentionVerse(rawText) {
+export function isStpAtAbstentionVerse(rawText) {
   const s = String(rawText ?? "").trim();
   return s === STP_AT_ABSTENTION_MARKER || s.includes("⟦— stp AT:");
 }
 
-function renderStpAbstentionPillHtml(osis = "", bridgeCode = "") {
+export function renderStpAbstentionPillHtml(osis = "", bridgeCode = "") {
   const bridgeAttr = bridgeCode
     ? ` data-bridge-lang="${escapeHtml(bridgeCode)}"`
     : "";
@@ -493,7 +494,7 @@ export function resolveRegionalBridgeLanguage21({ macroRegion = 0, bridgeLang = 
     const found = Object.values(REGIONAL_BRIDGE_LANGUAGES_10).find(
       (x) => x.code.toLowerCase() === normalizedOverride.toLowerCase(),
     );
-    return found || { code: normalizedOverride, label: `Bridge (${normalizedOverride})` };
+    return found || { code: normalizedOverride, label: normalizedOverride.toUpperCase() };
   }
   let resolvedRegion = Number(macroRegion) || 0;
   if (lang) {
@@ -509,102 +510,15 @@ export function resolveRegionalBridgeLanguage21({ macroRegion = 0, bridgeLang = 
 }
 
 /**
- * Renderiza el Puente Paralelo Diglósico Honesto para `Tiers 2–4` (`D7-V2`, `@req[BIB-V2-21]`):
- * - Columna Materna: porción humana verificada (`Tier 2` NT / `Tier 3` porción) o andamiaje
- *   explícito `GMIS` de 4 líneas + escalera `CELF-250` (`Tier 2` AT / `Tier 4`), con `0%` texto
- *   sintético disfrazado de Biblia humana.
- * - Columna Puente: Lengua Puente Regional Siglo XXI (`es, en, fr, pt, sw, ar, hi, id, ru, zh`).
+ * Renderiza el Puente Paralelo Diglósico Honesto delegando en el renderizador único de
+ * `diglossic_chapter_renderer.js` (`SLICE-EKO-HIG3-05` · consolidación sustractiva).
  */
-export function renderDiglossicParallelBridge({
-  lang = "stp",
-  book = "GEN",
-  chapter = 1,
-  sovereignTier = "TIER_2_NT_PLUS_OT_SYNTH",
-  macroRegion = 1,
-  bridgeLang = "",
-  maternalVerses = {},
-  bridgeVerses = {},
-  gmisRows = [],
-  celfPrompt = "",
-} = {}) {
-  const cleanBook = String(book || "GEN").trim().toUpperCase();
-  const cleanChap = Number(chapter) || 1;
-  const ntBooks = new Set([
-    "MAT", "MRK", "LUK", "JHN", "ACT", "ROM", "1CO", "2CO", "GAL", "EPH", "PHP", "COL",
-    "1TH", "2TH", "1TI", "2TI", "TIT", "PHM", "HEB", "JAS", "1PE", "2PE", "1JN", "2JN", "3JN", "JUD", "REV",
-  ]);
-  const isNt = ntBooks.has(cleanBook);
-  const bridgeSpec = resolveRegionalBridgeLanguage21({ macroRegion, bridgeLang, lang });
-  const verseNums = Array.from(
-    new Set([...Object.keys(maternalVerses || {}), ...Object.keys(bridgeVerses || {})]),
-  )
-    .map((k) => Number(k))
-    .filter((n) => Number.isFinite(n) && n > 0)
-    .sort((a, b) => a - b);
-  if (verseNums.length === 0) verseNums.push(1);
-
-  const gmisByVerse = new Map();
-  for (const r of Array.isArray(gmisRows) ? gmisRows : []) {
-    const vn = Number(r.verse) || 1;
-    if (!gmisByVerse.has(vn)) gmisByVerse.set(vn, []);
-    gmisByVerse.get(vn).push(r);
-  }
-
-  const isHumanMaternalPortion =
-    (sovereignTier === "TIER_2_NT_PLUS_OT_SYNTH" && isNt) ||
-    (sovereignTier === "TIER_3_PORTION_LADDER" && Object.keys(maternalVerses || {}).length > 0);
-
-  const sealCode = isHumanMaternalPortion
-    ? "VERIFIED_MATERNAL_PORTION_PLUS_BRIDGE_21"
-    : sovereignTier === "TIER_4_GMIS_CELF250"
-      ? "GMIS_4LINE_CELF250_SCAFFOLD_PLUS_BRIDGE_21"
-      : "OT_INTERLINEAR_SCAFFOLD_PLUS_BRIDGE_21";
-
-  const rowsHtml = verseNums
-    .map((vNum) => {
-      const osis = `${cleanBook}.${cleanChap}.${vNum}`;
-      const matTxt = String((maternalVerses || {})[String(vNum)] || "").trim();
-      const brTxt = String((bridgeVerses || {})[String(vNum)] || "").trim();
-      let leftCellHtml = "";
-      if (String(lang || "").toLowerCase() === "stp" && !isNt && isStpAtAbstentionVerse(matTxt)) {
-        leftCellHtml = `<div class="diglossic-maternal-abstention" data-maternal-stratum="ABSTENTION_ZERO_ROOTS"><sup>${vNum}</sup> ${renderStpAbstentionPillHtml(osis, bridgeSpec.code)}</div>`;
-      } else if (isHumanMaternalPortion && matTxt) {
-        leftCellHtml = `<div class="diglossic-maternal-human" data-maternal-stratum="HUMAN_VERIFIED"><sup>${vNum}</sup> ${escapeHtml(matTxt)}</div>`;
-      } else {
-        const vRows = gmisByVerse.get(vNum) || [];
-        const l1 = vRows.map((x) => escapeHtml(x.c05_orig_text || x.morph || "—")).join(" · ") || escapeHtml(matTxt || `[Andamiaje ${osis}]`);
-        const l2 = vRows.map((x) => escapeHtml(x.c08_morph_code || x.leipzig || "GLOSA")).join(" · ") || "Morfología Leipzig";
-        const l3 = vRows.map((x) => escapeHtml(x.c13_nsm_65 || "ALGUIEN / DECIR")).join(" · ");
-        leftCellHtml =
-          `<div class="diglossic-gmis-4line" data-maternal-stratum="GMIS_SCAFFOLD" data-gmis-lines="4">` +
-          `<div data-gmis-line="1"><strong>L1 Original/Morfemas:</strong> ${l1}</div>` +
-          `<div data-gmis-line="2"><strong>L2 Glosa lingüística:</strong> ${l2}</div>` +
-          `<div data-gmis-line="3"><strong>L3 Sentido universal:</strong> ${l3}</div>` +
-          `<div data-gmis-line="4"><strong>L4 Revisión comunitaria (${escapeHtml(lang)}):</strong> ${escapeHtml(celfPrompt || `Semilla de traducción para ${osis}`)}</div>` +
-          `</div>`;
-      }
-      const rightCellHtml =
-        `<div class="diglossic-bridge-21" data-bridge-lang="${escapeHtml(bridgeSpec.code)}">` +
-        `<sup>${vNum}</sup> ${escapeHtml(brTxt || `[Puente ${bridgeSpec.code.toUpperCase()} ${osis}]`)}` +
-        `</div>`;
-      return (
-        `<div class="diglossic-parallel-row" data-osis="${escapeHtml(osis)}">` +
-        leftCellHtml +
-        rightCellHtml +
-        `</div>`
-      );
-    })
-    .join("\n");
-
-  return (
-    `<section class="diglossic-parallel-bridge" data-diglossic-bridge="true" data-lang="${escapeHtml(lang)}" data-bridge-lang="${escapeHtml(bridgeSpec.code)}" data-sovereign-tier="${escapeHtml(sovereignTier)}" data-epistemic-seal="${sealCode}" data-epistemic-honesty="ZERO_SYNTHETIC_BIBLE">` +
-    `<header class="diglossic-bridge-header">` +
-    `<span><strong>Columna Materna (<code>${escapeHtml(lang)}</code>):</strong> ${isHumanMaternalPortion ? "Porción Humana Verificada" : "Andamiaje Interlineal de Campo (0% Texto Sintético)"}</span>` +
-    `<span><strong>Lengua Puente Siglo XXI (<code>${escapeHtml(bridgeSpec.code)}</code>):</strong> ${escapeHtml(bridgeSpec.label)}</span>` +
-    `</header>` +
-    rowsHtml +
-    `</section>`
-  );
+export function renderDiglossicParallelBridge(opts = {}) {
+  return renderProgressiveTwoStrataDiglossicBridge({
+    sovereignTier: "TIER_2_NT_PLUS_OT_SYNTH",
+    expandAllLeipzig: false,
+    ...opts,
+  });
 }
 
 export function renderChapterPreviewHtml(

@@ -207,7 +207,7 @@ export function renderOralPorticoWasmConsole({
     `<label for="audioCadenceWpmSelect">${isEn ? "Pace:" : "Cadencia:"} ` +
     `<select id="audioCadenceWpmSelect">` +
     [90, 120, 135, 150, 160]
-      .map((w) => `<option value="${w}"${w === prosody.wpm ? " selected" : ""}>${w} WPM</option>`)
+      .map((w) => `<option value="${w}"${w === prosody.wpm ? " selected" : ""}>${w} ${isEn ? "WPM" : "ppm"}</option>`)
       .join("") +
     `</select></label>` +
     `<label for="audioElapsedRange">${isEn ? "Position:" : "Posición:"} ` +
@@ -215,7 +215,7 @@ export function renderOralPorticoWasmConsole({
     `</label>` +
     `</div></div>` +
     (prosody.syllables.length > 0
-      ? `<details class="tech-details ek-mt-xs" data-advanced-audit="true"><summary>${isEn ? "Technical pace & syllable timing" : "Detalles técnicos de ritmo y sílabas"}</summary>` +
+      ? `<details class="tech-details ek-mt-xs ek-portico-cadence-chip" data-advanced-audit="true"><summary>${isEn ? "Technical pace & syllable timing" : "Detalles técnicos de ritmo y sílabas"}</summary>` +
         `<div class="prosody-syllable-strip oral-portico-secondary">` +
         `<span class="uls-badge" data-prosodic-cursor="true">${isEn ? `Syllable #${prosody.activeSyllableIndex + 1}/${prosody.syllables.length}: «${escapeHtml(prosody.activeSyllable)}»` : `Sílaba #${prosody.activeSyllableIndex + 1}/${prosody.syllables.length}: «${escapeHtml(prosody.activeSyllable)}»`}</span> ` +
         `${syllablesHtml}</div>` +
@@ -223,7 +223,7 @@ export function renderOralPorticoWasmConsole({
         `<span class="uls-badge" data-prosodic-pause="comma">${isEn ? "τ₁ Comma" : "τ₁ Coma"}: ${prosody.pauseCommaMs} ms</span> ` +
         `<span class="uls-badge" data-prosodic-pause="semicolon">${isEn ? "τ₂ Semicolon" : "τ₂ Punto y coma"}: ${prosody.pauseSemicolonMs} ms</span> ` +
         `<span class="uls-badge" data-prosodic-pause="period">${isEn ? "τ₃ Period / Selah" : "τ₃ Punto / Selah"}: ${prosody.pausePeriodSelahMs} ms</span> ` +
-        `<span class="uls-badge">0 Bytes Audio · ${prosody.wpm} WPM (~${prosody.targetBitsPerSec} bits/s) · CRC-16=${escapeHtml(prosody.crc16Hex)}</span>` +
+        `<span class="uls-badge">0 Bytes Audio · ${prosody.wpm} ${isEn ? "WPM" : "ppm"} (~${prosody.targetBitsPerSec} bits/s) · CRC-16=${escapeHtml(prosody.crc16Hex)}</span>` +
         `</div></details>`
       : "") +
     `</div>`;

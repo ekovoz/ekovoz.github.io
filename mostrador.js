@@ -21,6 +21,7 @@ import {
   ARTIFACT_PROJECTION_SCHEMA, MOSTRADOR_DOM_SCOPE_CONTRACTS, STATUS, computeProsodyAndSyllableAlignmentInWasm, createDataLayer,
   createFetchSource, loadNsmRealiaLexicon, projectNsmRealiaLexicon3NF, resolveLocalizedBookMeta, verifyArtifactProjectionClosure, verifyVplDomScopeContainment,
 } from "./mostrador/data_layer.js";
+import { auditSingleOwnerContract } from "./mostrador/dom_projection_contracts.js";
 import {
   applySpanish21DiachronicRegister, computeAnalyticalRegisterMetrics, hasDiachronicVariants, hydrateDiachronicRegister,
   renderAnalyticalThermometerHtml, renderChapterDiachronicAuditCardHtml, renderUnifiedDiachronicContextHtml, resolveEffectiveCorpusTarget,
@@ -347,6 +348,9 @@ export function createMostradorController(options = {}) {
 
   function renderStateToDom(targetDoc = doc, { syncUrl = true, pushUrl = false } = {}) {
     if (!targetDoc) return state.lastSerializedUrl || "";
+    if (!state._singleOwnerChecked && typeof targetDoc?.body?.innerHTML === "string") {
+      state._singleOwnerChecked = auditSingleOwnerContract(targetDoc.body.innerHTML).ok;
+    }
     hydrateBookAndChapterSelectors(targetDoc);
     updateCompassTriggerDom(targetDoc);
     syncOrthographyPillsVisibility(targetDoc);
@@ -596,13 +600,11 @@ export function createMostradorController(options = {}) {
         const regionalSlot = REGIONAL_BRIDGE_LANGUAGES_10[macroRegion] || REGIONAL_BRIDGE_LANGUAGES_10[1];
         const explicitBridge = String(state.bridgeLang || catalogEntry?.bridge_lang || "").trim();
         const resolvedBridgeCode = explicitBridge || (o1Route?.isLusophone ? "pt" : regionalSlot?.code || "");
-        const bridgeSpec = explicitBridge
-          ? { code: explicitBridge, label: `Bridge (${explicitBridge})` }
-          : resolveRegionalBridgeLanguage21({
-              lang: normCorpusLang || state.lang || "",
-              macroRegion,
-              bridgeLang: resolvedBridgeCode,
-            });
+        const bridgeSpec = resolveRegionalBridgeLanguage21({
+          lang: normCorpusLang || state.lang || "",
+          macroRegion,
+          bridgeLang: resolvedBridgeCode,
+        });
         let bridgeVerses = {};
         try {
           let brRes = await dataLayer.loadChapter({

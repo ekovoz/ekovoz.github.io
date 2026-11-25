@@ -282,11 +282,9 @@
     "study.acc.typology": "🌐 भाषायी प्रारूप और संपादकीय परंपरा",
     "corpus.search.placeholder": "7,164 भाषाएँ खोजें (ISO, स्वनाम, देश)...",
     "mostrador.preview_hint": "प्रिंट के लिए तैयार पाठ का लाइव पूर्वावलोकन",
-    "printStage.heading": "चरणों में PDF प्रिंट या डाउनलोड करें",
     "printStage.dose1": "1. इस अध्याय का PDF",
-    "printStage.dose2": "2. पुस्तिका / पुस्तक PDF",
-    "printStage.dose3": "3. संपूर्ण बाइबिल PDF (66)",
     "printStage.moreFormats": "कागज़ आकार, ब्रेल और ऑफ़लाइन कॉपी",
-    "print.btn.cancelJob": "रद्द करें"
+    "print.btn.cancelJob": "रद्द करें",
+    "share.auth.unifiedTitle": "सत्यापन योग्य संपादकीय प्रमाणपत्र"
   }
 }

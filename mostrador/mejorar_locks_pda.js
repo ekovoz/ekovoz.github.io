@@ -2,6 +2,7 @@
 // estado hidratable del Taller de Campo y constructores deterministas de parches L1-L5 y CELF-250 (`D11-V2C`, ∂(C)=0).
 
 import { normalizeRootNotesEntries } from "./drawer_hydrators.js";
+import { isWorkVisible } from "./projection_contract.js";
 
 export const CASCADE_LEVELS = ["L1", "L2", "L3", "L4", "L5"];
 
@@ -558,6 +559,7 @@ export function computeSisterWorksCascade({
   ref = "GEN.1.1",
   level = "L2",
   workshopData = null,
+  previewWorks = null,
 } = {}) {
   if (workshopData) hydrateFieldWorkshopData(workshopData);
   const cleanStrong = String(strongId || "H0430").toUpperCase();
@@ -601,30 +603,34 @@ export function computeSisterWorksCascade({
       ? evangeliosEntries.slice(0, 3).map((e) => `${e.verse_id || "JHN.1.1"} (${e.work || "evangelios"})`)
       : ["Semana 01 (JHN.1.1–18)", "Semana 14 (LUK.15.1–32)", "Semana 52 (MAT.28.16–20)"];
 
+  const allWorks = [
+    {
+      workId: "biblia",
+      workLabel: "1. La Biblia (66 Libros · 31,102 vv.)",
+      ConcordantOccurrences: bibliaCount,
+      sampleTargets: bibliaTargets,
+    },
+    {
+      workId: "felices",
+      workLabel: "2. Los Felices (12 Dichas · Salmo 1 + Mateo 5)",
+      ConcordantOccurrences: felicesCount,
+      sampleTargets: felicesTargets,
+    },
+    {
+      workId: "evangelios",
+      workLabel: "3. Los Evangelios (52 Semanas Litúrgicas)",
+      ConcordantOccurrences: evangeliosCount,
+      sampleTargets: evangeliosTargets,
+    },
+  ];
+  const visibleWorks = Array.isArray(previewWorks)
+    ? allWorks.filter((w) => isWorkVisible(w.workId, { previewWorks }))
+    : allWorks;
   return {
     strongId: cleanStrong,
     sourceRef: cleanRef,
     level: cleanLevel,
-    sisterWorks: [
-      {
-        workId: "biblia",
-        workLabel: "1. La Biblia (66 Libros · 31,102 vv.)",
-        ConcordantOccurrences: bibliaCount,
-        sampleTargets: bibliaTargets,
-      },
-      {
-        workId: "felices",
-        workLabel: "2. Los Felices (12 Dichas · Salmo 1 + Mateo 5)",
-        ConcordantOccurrences: felicesCount,
-        sampleTargets: felicesTargets,
-      },
-      {
-        workId: "evangelios",
-        workLabel: "3. Los Evangelios (52 Semanas Litúrgicas)",
-        ConcordantOccurrences: evangeliosCount,
-        sampleTargets: evangeliosTargets,
-      },
-    ],
+    sisterWorks: visibleWorks,
   };
 }
 

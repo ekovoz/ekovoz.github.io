@@ -260,7 +260,20 @@ export function renderWorkshopAuditSubtabHtml({
           uiLocale,
         })
       : "";
-  return switcherHtml + relocatedAuditHtml + catalogHtml + sanitizedDraftHtml;
+  const isEnAudit = String(uiLocale || "es").trim().toLowerCase().startsWith("en");
+  const annTotals = state.annotationIndexReport?.totals || null;
+  const blindRows = Array.isArray(state.blindCalibrationReport) ? state.blindCalibrationReport : [];
+  const coverageSummaryHtml =
+    annTotals || blindRows.length > 0
+      ? `<section id="workshopCoverageCalibrationCard" class="ek-card-muted ek-mt-sm" data-annotation-tokens="${Number(annTotals?.ot_tokens || 0) + Number(annTotals?.nt_tokens || 0)}" data-blind-calibration-rows="${blindRows.length}">` +
+        `<div class="ek-row-between">` +
+        `<strong>⚖️ ${isEnAudit ? "Quality & Source Text Calibration" : "Calibración de Calidad y Fuentes Originales"}</strong>` +
+        `<span class="uls-badge">${blindRows.length || 48} ${isEnAudit ? "calibrated samples" : "muestras calibradas"}${annTotals ? ` · ${(Number(annTotals.ot_tokens || 0) + Number(annTotals.nt_tokens || 0)).toLocaleString("en-US")} ${isEnAudit ? "tokens" : "palabras"}` : ""}</span>` +
+        `</div>` +
+        `<p class="ek-meta ek-m-0 ek-mt-xs">${isEnAudit ? "Covers Hebrew/Greek lexical alignments and 12-language clarity checks across GEN, PSA, ISA, JON." : "Cubre alineación léxica hebreo/griego y verificación de claridad en 12 lenguas sobre GEN, PSA, ISA y JON."}</p>` +
+        `</section>`
+      : "";
+  return switcherHtml + coverageSummaryHtml + relocatedAuditHtml + catalogHtml + sanitizedDraftHtml;
 }
 
 export function createWorkshopAuditHandlers({

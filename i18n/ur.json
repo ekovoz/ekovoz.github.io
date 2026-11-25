@@ -282,11 +282,9 @@
     "study.acc.typology": "🌐 لسانی خاکہ اور ادارتی روایت",
     "corpus.search.placeholder": "7,164 زبانیں تلاش کریں (ISO، اصل نام، ملک)...",
     "mostrador.preview_hint": "پرنٹ کے لیے تیار متن کا براہِ راست پیش منظر",
-    "printStage.heading": "مراحل وار PDF پرنٹ یا ڈاؤن لوڈ کریں",
     "printStage.dose1": "1. اس باب کا PDF",
-    "printStage.dose2": "2. کتابچہ / کتاب PDF",
-    "printStage.dose3": "3. مکمل بائبل PDF (66)",
     "printStage.moreFormats": "کاغذ، بریل اور آف لائن کاپی",
-    "print.btn.cancelJob": "منسوخ کریں"
+    "print.btn.cancelJob": "منسوخ کریں",
+    "share.auth.unifiedTitle": "قابل تصدیق ادارتی سرٹیفکیٹ"
   }
 }

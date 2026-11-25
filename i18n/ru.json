@@ -282,11 +282,9 @@
     "study.acc.typology": "🌐 Типологический Профиль и Традиция",
     "corpus.search.placeholder": "Поиск среди 7 164 языков (ISO, автоним, страна)...",
     "mostrador.preview_hint": "Предпросмотр текста перед печатью",
-    "printStage.heading": "Печать или скачивание PDF по этапам",
     "printStage.dose1": "1. PDF этой главы",
-    "printStage.dose2": "2. Буклет / Книга PDF",
-    "printStage.dose3": "3. Полная Библия PDF (66)",
     "printStage.moreFormats": "Бумага, Брайль и офлайн-копия",
-    "print.btn.cancelJob": "Отмена"
+    "print.btn.cancelJob": "Отмена",
+    "share.auth.unifiedTitle": "Проверяемый редакционный сертификат"
   }
 }

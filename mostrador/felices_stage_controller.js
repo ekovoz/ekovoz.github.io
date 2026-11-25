@@ -52,7 +52,7 @@ export function renderLocalizedFelicesPlateCardHtml({
       : "Plate";
   const badgeLang = cleanLang.toUpperCase();
   return (
-    `<article class="felices-localized-plate-card is-unoccluded" lang="${escapeHtml(cleanLang)}" dir="${cleanDir}" data-localized-plate="${Number(plateIndex) || 1}" data-plate-lang="${escapeHtml(cleanLang)}">` +
+    `<article class="felices-localized-plate-card is-unoccluded" data-hides-overlay-duplicate="true" lang="${escapeHtml(cleanLang)}" dir="${cleanDir}" data-localized-plate="${Number(plateIndex) || 1}" data-plate-lang="${escapeHtml(cleanLang)}">` +
     `<div class="felices-localized-plate-top">` +
     `<svg class="felices-localized-crest" viewBox="0 0 64 20" aria-hidden="true">` +
     `<line x1="2" y1="10" x2="22" y2="10" stroke="currentColor" stroke-width="1.2" />` +

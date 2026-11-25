@@ -58,7 +58,7 @@ import {
 } from "./provenance_and_support_panel.js";
 import { buildOpenGraphSocialCardSvg1200x630 } from "./social_and_photocopy_cards.js";
 import { resolveSafeDownloadFilename } from "./stealth_filename.js";
-import { hydrateVaultStorageManagerPanel } from "./vault_manager_panel.js";
+import { hydrateVaultStorageManagerPanel, renderPortabilityResearchCardHtml } from "./vault_manager_panel.js";
 
 export const HAREL_DOSIS_SUBTABS = ["pdf", "mesh", "graphics"];
 export {
@@ -309,6 +309,23 @@ export function hydrateShareAndAuditDrawerPanel(ctx = {}) {
           : ["ar", "bn", "en", "es", "fa", "fr", "hi", "id"].includes(llmsCleanLang)
             ? `llms/biblia/${llmsCleanLang}.md`
             : "llms.txt";
+    if (!state._downloadsManifestRequested && typeof dataLayer?.loadJson === "function") {
+      state._downloadsManifestRequested = true;
+      Promise.resolve(dataLayer.loadJson("downloads_manifest.json"))
+        .then((dlManifest) => {
+          if (Array.isArray(dlManifest)) {
+            state.downloadsManifestEntries = dlManifest;
+            if (typeof hydrateShareAndAuditDrawer === "function" && packsPanel.isConnected !== false) {
+              hydrateShareAndAuditDrawer(targetDoc);
+            }
+          }
+        })
+        .catch(() => { });
+    }
+    const portabilityCardHtml = renderPortabilityResearchCardHtml({
+      dlEntries: state.downloadsManifestEntries || [],
+      isEn,
+    });
     packsPanel.innerHTML =
       workBannerHtml +
       `<div class="mostrador-offline-packs" data-lang="${escapeHtml(activeLang)}" data-active-work="${escapeHtml(workCtx.activeWork)}" data-pack-mode="${packMode}" data-quine-url="${escapeHtml(quineRelUrl)}">` +
@@ -319,7 +336,8 @@ export function hydrateShareAndAuditDrawerPanel(ctx = {}) {
       `<p class="share-pack-desc">${isEn ? "Zero telemetry · Offline reader package ready for USB, Bluetooth, and MicroSD." : "Cero telemetría · Paquete de lectura sin conexión listo para USB, Bluetooth y MicroSD."}</p>` +
       `<a href="${escapeHtml(quineRelUrl)}" download="${escapeHtml(quineFilename)}" data-quine-download="true" data-pack-mode="${packMode}" hidden></a>` +
       ecoMeshCardHtml +
-      `</div>`;
+      `</div>` +
+      portabilityCardHtml;
 
     const ensureShareChildHost = (hostId, subtabName = "mesh") => {
       const existing = getEl(hostId, targetDoc);

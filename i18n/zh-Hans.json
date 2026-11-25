@@ -282,11 +282,9 @@
     "study.acc.typology": "🌐 语言类型学与编辑传统",
     "corpus.search.placeholder": "搜索 7,164 种语言 (ISO、自称、国家)...",
     "mostrador.preview_hint": "准备打印经文的实时预览",
-    "printStage.heading": "分阶段打印或下载 PDF",
     "printStage.dose1": "1. 本章 PDF",
-    "printStage.dose2": "2. 小册子 / 书卷 PDF",
-    "printStage.dose3": "3. 完整圣经 PDF (66)",
     "printStage.moreFormats": "纸张尺寸、盲文与离线副本",
-    "print.btn.cancelJob": "取消"
+    "print.btn.cancelJob": "取消",
+    "share.auth.unifiedTitle": "可验证编辑证书"
   }
 }

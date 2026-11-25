@@ -282,11 +282,9 @@
     "study.acc.typology": "🌐 نمایه رده‌شناختی و سنت ویرایشی",
     "corpus.search.placeholder": "جستجو در ۷٬۱۶۴ زبان (ISO، نام بومی، کشور)...",
     "mostrador.preview_hint": "پیش‌نمایش زنده متن آماده چاپ",
-    "printStage.heading": "چاپ یا دانلود مرحله‌ای PDF",
     "printStage.dose1": "1. PDF این باب",
-    "printStage.dose2": "2. دفترچه / کتاب PDF",
-    "printStage.dose3": "3. کتاب مقدس کامل PDF (66)",
     "printStage.moreFormats": "اندازه کاغذ، بریل و نسخه آفلاین",
-    "print.btn.cancelJob": "لغو"
+    "print.btn.cancelJob": "لغو",
+    "share.auth.unifiedTitle": "گواهی‌نامه ویراستاری قابل راستی‌آزمایی"
   }
 }

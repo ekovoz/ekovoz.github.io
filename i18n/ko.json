@@ -282,11 +282,9 @@
     "study.acc.typology": "🌐 언어 유형 프로필 및 편집 전통",
     "corpus.search.placeholder": "7,164개 언어 검색 (ISO, 자칭, 국가)...",
     "mostrador.preview_hint": "인쇄할 본문 실시간 미리보기",
-    "printStage.heading": "단계별 PDF 인쇄 또는 다운로드",
     "printStage.dose1": "1. 이 장 PDF",
-    "printStage.dose2": "2. 소책자 / 성경 권 PDF",
-    "printStage.dose3": "3. 성경 전체 PDF (66)",
     "printStage.moreFormats": "용지 크기, 점자 및 오프라인 복사본",
-    "print.btn.cancelJob": "취소"
+    "print.btn.cancelJob": "취소",
+    "share.auth.unifiedTitle": "검증 가능한 편집 인증서"
   }
 }

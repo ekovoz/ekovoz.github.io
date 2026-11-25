@@ -124,7 +124,8 @@ dialog::backdrop {background:rgba(0, 0, 0, 0.65);backdrop-filter:blur(4px);}
 #bibleVerseViewport[data-inspector-open="true"] {min-height:200px;overflow-y:auto;}
 .register-selector-group {display:flex;flex-wrap:wrap;align-items:center;gap:0.25rem;}
 .chip-wrap-row {display:flex;flex-wrap:wrap;gap:0.35rem;}
-.geo-funnel-row {display:flex;flex-wrap:wrap;gap:0.5rem;}
+.geo-funnel-row {display:grid;grid-template-columns:repeat(auto-fit, minmax(160px, 1fr));gap:0.45rem;width:100%;}
+.geo-funnel-row select {width:100%;min-width:0;max-width:100%;}
 .field-search-input {flex:1;width:100%;min-width:180px;min-height:48px;padding:0.4rem 0.7rem;border-radius:10px;border:1px solid var(--select-border);background:var(--select-bg);color:var(--text-primary);}
 .compass-grid {display:grid;grid-template-columns:repeat(auto-fill, minmax(76px, 1fr));gap:0.4rem;max-height:55vh;overflow-y:auto;}
 .compass-book-cell {min-width:48px;min-height:48px;display:flex;flex-direction:column;align-items:center;justify-content:center;}
@@ -548,7 +549,14 @@ summary.ek-title-sm {min-height:48px;box-sizing:border-box;}
 .print-stage-grid,.print-stage-actions-row{grid-template-columns:repeat(3,minmax(0,1fr));gap:.25rem;}
 .print-stage-btn{padding:.22rem .3rem;min-height:44px;align-items:center;text-align:center;}
 .print-stage-btn strong,.print-stage-title{font-size:.74rem;line-height:1.15;}
-.chapter-pericopes-ribbon,.ortho-pills-bar,#bibleRegisterSelector,#bibleVerifiedCorpusPills,#corpusWorkLanguagesBar{flex-wrap:nowrap;overflow-x:auto;padding-bottom:.15rem;margin-bottom:.2rem;}
+.chapter-pericopes-ribbon,.ortho-pills-bar,#bibleRegisterSelector,#bibleVerifiedCorpusPills,#corpusWorkLanguagesBar{flex-wrap:nowrap;overflow-x:auto;max-width:100%;padding-bottom:.25rem;margin-bottom:.25rem;scrollbar-width:thin;}
+.ek-chip-rail>*,.chapter-pericopes-ribbon>*,.ortho-pills-bar>*,.register-selector-group>*,.chip-wrap-row>*{flex:0 0 auto;white-space:nowrap;}
+#felicesSovereignSection .focal-quick-actions .btn-micro-action{justify-content:center;text-align:center;width:100%;}
+#focalPlateFrame:has(.felices-localized-plate-host:not([hidden]))+.focal-plate-overlay .focal-plate-verse{display:none;}
+#focalPlateFrame:has(.felices-localized-plate-host:not([hidden]))+.focal-plate-overlay{justify-content:center;}
+#bibleOpticalQrStreamPanel .qrbeam-matrix-svg,#qrBeamMatrixCanvas svg,#qrBeamMatrixCanvas canvas{max-width:min(240px,100%);max-height:220px;width:auto;height:auto;margin-inline:auto;display:block;}
+.kindle-configurator>label{display:flex;align-items:center;flex-wrap:wrap;gap:.45rem;}
+.ek-portico-cadence-chip{display:inline-flex;align-items:center;gap:.35rem;font-size:.76rem;}
 body[data-mobile-sheet-open="false"][data-overlay-open="true"] #sovereignGlobalDrawersHost:not([hidden]),
 body[data-mobile-sheet-open="false"][data-work="felices"] #sovereignGlobalDrawersHost:not([hidden]),
 body[data-mobile-sheet-open="false"][data-work="evangelios"] #sovereignGlobalDrawersHost:not([hidden]),

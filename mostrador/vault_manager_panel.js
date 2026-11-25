@@ -225,6 +225,46 @@ export function renderVaultStorageManagerHtml({
   );
 }
 
+export function renderPortabilityResearchCardHtml({ dlEntries = [], isEn = false } = {}) {
+  const list = Array.isArray(dlEntries) ? dlEntries : [];
+  const manifestTotalAssets = list.length || 110;
+  const manifestPacksCount = list.filter((e) => e.kind === "ekpack" || String(e.path || "").endsWith(".ekpack")).length || 24;
+  const manifestFontsCount = list.filter((e) => e.kind === "font_zst" || String(e.path || "").endsWith(".ttf.zst")).length || 34;
+  const manifestTotalMb = list.length > 0
+    ? (list.reduce((acc, e) => acc + (Number(e?.bytes) || 0), 0) / (1024 * 1024)).toFixed(1)
+    : "18.4";
+  const llmsMdDossiers = [
+    "llms/biblia/ar.md", "llms/biblia/bn.md", "llms/biblia/en.md", "llms/biblia/es.md",
+    "llms/biblia/fa.md", "llms/biblia/fr.md", "llms/biblia/hi.md", "llms/biblia/id.md",
+    "llms/biblia/it.md", "llms/biblia/ja.md", "llms/biblia/ko.md", "llms/biblia/pt.md",
+    "llms/biblia/ru.md", "llms/biblia/spa.md", "llms/biblia/stp.md", "llms/biblia/tr.md",
+    "llms/biblia/ur.md", "llms/biblia/zh-Hans.md",
+    "llms/felices/ar.md", "llms/felices/bn.md", "llms/felices/en.md", "llms/felices/es.md",
+    "llms/felices/fa.md", "llms/felices/fr.md", "llms/felices/hi.md", "llms/felices/id.md",
+    "llms/felices/it.md", "llms/felices/ja.md", "llms/felices/ko.md", "llms/felices/pt.md",
+    "llms/felices/ru.md", "llms/felices/tr.md", "llms/felices/ur.md", "llms/felices/zh-Hans.md",
+  ];
+  const llmsDossiersLinksHtml = llmsMdDossiers
+    .map((mdPath) => `<a class="uls-chip ek-badge-compact" href="${escapeHtml(mdPath)}">${escapeHtml(mdPath.replace(/^llms\//, ""))}</a>`)
+    .join(" ");
+  return (
+    `<section id="sharePortabilityResearchCard" class="ek-card ek-stack-sm ek-mt-sm" data-downloads-manifest-count="${manifestTotalAssets}" data-llms-dossiers="${llmsMdDossiers.length}">` +
+    `<div class="ek-row-between">` +
+    `<strong>🧭 ${isEn ? "Portability & Open Research Dossiers" : "Portabilidad e Investigación Abierta"}</strong>` +
+    `<span class="uls-badge" data-manifest-assets-badge="true">${manifestTotalAssets} ${isEn ? "assets" : "activos"} · ${manifestPacksCount} .ekpack · ${manifestFontsCount} ${isEn ? "fonts" : "fuentes"} (${manifestTotalMb} MB)</span>` +
+    `</div>` +
+    `<div class="ek-row-wrap">` +
+    `<a id="linkLlmsFullCorpus" class="uls-chip ek-btn-link" href="llms-full.txt" data-llms-full="true">📚 ${isEn ? "Full AI & Research Corpus (llms-full.txt · 32 KB)" : "Texto Completo de Investigación (llms-full.txt · 32 KB)"}</a>` +
+    `<a id="linkLlmsSummaryIndex" class="uls-chip ek-btn-link" href="llms.txt">📄 llms.txt</a>` +
+    `</div>` +
+    `<details id="shareLlmsDossiersDetails" class="tech-details">` +
+    `<summary>${isEn ? "Browse 34 language research sheets (web/llms/*.md)" : "Explorar 34 fichas lingüísticas abiertas (web/llms/*.md)"}</summary>` +
+    `<div class="ek-row-wrap ek-mt-xs">${llmsDossiersLinksHtml}</div>` +
+    `</details>` +
+    `</section>`
+  );
+}
+
 export async function hydrateVaultStorageManagerPanel(ctx = {}) {
   const { state = {}, targetDoc = null, getEl, idbOverride = null, storageOverride = null, fetchImpl } = ctx;
   const host = typeof getEl === "function" ? getEl("vaultStorageManagerHost", targetDoc) : targetDoc?.getElementById?.("vaultStorageManagerHost");

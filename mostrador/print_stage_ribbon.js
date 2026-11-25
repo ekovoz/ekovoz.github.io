@@ -230,13 +230,23 @@ export function resolvePrintStageDescriptorsForTier({
 export function renderPrintStageRibbonHtml(opts = {}) {
   const spec = resolvePrintStageDescriptorsForTier(opts);
   const isEn = String(opts?.uiLocale || "en").trim().toLowerCase().startsWith("en");
-  const buttonsHtml = spec.stages
-    .map((s) => {
-      const cls = s.primary ? "print-stage-btn is-primary-stage" : "print-stage-btn";
-      return `<div class="print-stage-card" data-ergos-homogeneous-card="print-stage"><button type="button" id="${escHtml(s.id)}" class="${cls}" data-print-stage-action="${escHtml(s.action)}"><span class="print-stage-title">${escHtml(s.label)}</span><span class="print-stage-meta">${escHtml(s.sublabel)} · ${escHtml(s.badge)}</span></button></div>`;
-    })
-    .join("");
-  return `<div class="print-stage-header" data-ribbon-compact="true" data-compact-mobile="true" data-cowan-budget="3"><span class="print-stage-kicker">${escHtml(spec.heading)}</span><div class="ek-flex-wrap-inline"><button type="button" id="${escHtml(spec.secondaryAction.id)}" class="uls-chip print-stage-more" data-print-stage-action="${escHtml(spec.secondaryAction.action)}">${escHtml(spec.secondaryAction.label)}</button><button type="button" id="btnStageRibbonShareOffline" class="uls-chip print-stage-more" data-print-stage-action="open-share">${isEn ? "Carry offline" : "Llevar sin internet"}</button></div></div><div class="print-stage-actions-row" role="group" aria-label="${escHtml(spec.heading)}">${buttonsHtml}</div>`;
+  const primaryStage = spec.stages[0] || {
+    id: "btnStagePdfDose1",
+    action: "dose1",
+    label: isEn ? "Print current chapter · PDF" : "Imprimir capítulo actual · PDF",
+    sublabel: "",
+    badge: "",
+  };
+  const moreLabel = isEn ? "More formats…" : "Más formatos…";
+  const ctaText = isEn
+    ? `🖨️ Print chapter · ${primaryStage.sublabel}${primaryStage.badge ? ` (${primaryStage.badge})` : ""}`
+    : `🖨️ Imprimir capítulo actual · ${primaryStage.sublabel}${primaryStage.badge ? ` (${primaryStage.badge})` : ""}`;
+  return (
+    `<div class="print-stage-header" data-ribbon-compact="true" data-compact-mobile="true" data-cowan-budget="2">` +
+    `<button type="button" id="${escHtml(primaryStage.id)}" class="print-stage-btn is-primary-stage" data-print-stage-action="${escHtml(primaryStage.action)}" title="${escHtml(spec.heading)}">${escHtml(ctaText)}</button>` +
+    `<button type="button" id="btnStagePdfMoreFormats" class="uls-chip print-stage-more" data-print-stage-action="open-print">${escHtml(moreLabel)}</button>` +
+    `</div>`
+  );
 }
 
 /**

@@ -245,9 +245,11 @@ export function renderPrintDrawerPanelsSyncInDrawer(ctx = {}) {
 
   const fieldPdfsHost = getEl("printFieldPdfsHost", targetDoc);
   if (fieldPdfsHost) {
-    const kitsTitle = isEn ? "Emergency Field Kits (Refuge & Checklist PDFs)" : "Kits de Campo e Impresión de Refugio (PDFs Listos)";
+    const kitsTitle = isEn
+      ? "Goal: Refuge Booklet (4 sheets) & 80 Canonical Blocks · Widow-free PDF with bookmarks"
+      : "Por objetivo: Refugio de Bolsillo (4 hojas) y 80 Bloques · PDF con marcadores y doble cara sin viudas";
     mountSlotView(fieldPdfsHost, {
-      html: `<details id="printFieldKitsDetails" class="r9-stratum-accordion"><summary>🏕️ ${kitsTitle}</summary>${renderFieldRefugeAndChecklistHtml(state.editorialProfiles || null, state.uiLocale || "es")}</details>`,
+      html: `<details id="printFieldKitsDetails" class="r9-stratum-accordion" open><summary>🏕️ ${kitsTitle}</summary>${renderFieldRefugeAndChecklistHtml(state.editorialProfiles || null, state.uiLocale || "es")}</details>`,
       ownerId: "drawer_print:doses:field_pdfs",
       orderIndex: 2,
     });

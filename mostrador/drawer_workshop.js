@@ -192,6 +192,22 @@ export async function hydrateImproveDrawerPanel(ctx = {}) {
         // Non-fatal
       }
     }
+    if (!state.annotationIndexReport && typeof dataLayer?.loadAnnotationIndexReport === "function") {
+      try {
+        const ann = await dataLayer.loadAnnotationIndexReport();
+        if (ann) state.annotationIndexReport = ann;
+      } catch {
+        // Non-fatal
+      }
+    }
+    if (!state.blindCalibrationReport && typeof dataLayer?.loadBlindCalibrationReport === "function") {
+      try {
+        const blind = await dataLayer.loadBlindCalibrationReport();
+        if (blind) state.blindCalibrationReport = blind;
+      } catch {
+        // Non-fatal
+      }
+    }
     if (!isCurrent()) return "";
     const i18nInstance = typeof getI18n === "function" ? getI18n() : null;
     const tFn = i18nInstance ? (k, p) => i18nInstance.t(k, p) : undefined;
@@ -251,6 +267,7 @@ export async function hydrateImproveDrawerPanel(ctx = {}) {
         externalAuditText: state.externalAuditText || "",
         externalAuditResult: state.externalAuditResult || null,
         activeTier3aPair: state.activeTier3aPair || "",
+        previewWorks: Array.isArray(state.previewWorks) ? state.previewWorks : [],
       });
     }
 

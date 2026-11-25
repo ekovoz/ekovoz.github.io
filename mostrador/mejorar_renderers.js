@@ -6,6 +6,7 @@ import {
   renderFieldWorkshopCensus7164Html,
   renderMasterCensus7164CardHtml,
 } from "./drawer_hydrators.js";
+import { humanizeUiCopy } from "./human_labels.js";
 import {
   CANONICAL_5_OT_TRANSLATION_WAVES,
   CASCADE_LEVELS,
@@ -197,7 +198,7 @@ export function renderImproveDrawerHtml({
     `<input id="improveNoteInput" class="ek-input" type="text" value="">` +
     `</label>` +
     `<details id="improvePatchTechReceiptDetails" class="hig-tech-meta hig-tech-receipt-details">` +
-    `<summary>${isEn ? "🧾 View JSONL / SHA-256 cryptographic receipt" : "🧾 Ver recibo criptográfico JSONL / SHA-256"}</summary>` +
+    `<summary>🧾 ${humanizeUiCopy("JSONL / SHA-256", locale)}</summary>` +
     `<pre id="improvePatchOutput" class="ek-pre">${patch.payloadLine}</pre>` +
     `</details>` +
     (includeInlineSeedPanel
@@ -319,6 +320,7 @@ export function renderCascadeAndLadderHtml({
   externalAuditText = "",
   externalAuditResult = null,
   activeTier3aPair = "",
+  previewWorks = null,
 } = {}) {
   const isEn = String(uiLocale || "es").trim().toLowerCase().startsWith("en");
   const cleanLang = sanitizePipeField(lang || "stp").toLowerCase();
@@ -406,6 +408,7 @@ export function renderCascadeAndLadderHtml({
     strongId,
     ref: resolvedRef,
     level: cleanLevel,
+    previewWorks: Array.isArray(previewWorks) ? previewWorks : [],
   });
   const sisterCascadeHtml =
     `<div class="sister-works-cascade-bar ek-auto-grid ek-mb-sm" data-sister-works-cascade="true">` +
@@ -496,6 +499,7 @@ export function renderWorkshopAuditPanelsHtml({
   externalAuditText = "",
   externalAuditResult = null,
   activeTier3aPair = "",
+  previewWorks = null,
 } = {}) {
   const isEn = String(uiLocale || "es").trim().toLowerCase().startsWith("en");
   const cleanLang = sanitizePipeField(lang || "stp").toLowerCase();
@@ -511,7 +515,7 @@ export function renderWorkshopAuditPanelsHtml({
       ? externalAuditResult.results
         .slice(0, 8)
         .map((r) => {
-          const badge = r.passed ? "✅ PASS" : `⛔ ${escAud(r.status)}`;
+          const badge = r.passed ? `✅ ${humanizeUiCopy("PASS", uiLocale)}` : `⛔ ${escAud(r.status)}`;
           return `<li><code>${escAud(r.ref)}</code> · <strong>${badge}</strong> — ${escAud(String(r.text || "").slice(0, 90))}</li>`;
         })
         .join("")
@@ -525,7 +529,7 @@ export function renderWorkshopAuditPanelsHtml({
     `<div id="externalAudit8LocksPanel" class="ek-card-muted ek-mt-sm" data-audit-lang="${escAud(cleanLang)}" data-external-audit-8-locks="true" data-all-8-locks-passed="${Boolean(extAudit.all_8_locks_passed)}">` +
     `<div class="ek-row-between">` +
     `<strong>🛡️ ${isEn ? "External Editorial Review · 8-Lock USFM Audit" : "Revisión Editorial Externa · Auditoría 8 Candados"}</strong>` +
-    `<span class="uls-badge ek-badge-compact">${extAudit.all_8_locks_passed !== false ? "✅ 8/8 PASS" : "⛔ VETO"} · ${Number(extAudit.rosetta_key_terms_extracted || 552)} ${isEn ? "key terms" : "términos"}</span>` +
+    `<span class="uls-badge ek-badge-compact">${extAudit.all_8_locks_passed !== false ? `✅ ${humanizeUiCopy("8/8 PASS", uiLocale)}` : "⛔ VETO"} · ${Number(extAudit.rosetta_key_terms_extracted || 552)} ${isEn ? "key terms" : "términos"}</span>` +
     `</div>` +
     `<textarea id="externalAuditTextInput" class="ek-field-input ek-textarea-full ek-mt-xs" rows="3" placeholder="\\id GEN&#10;\\c 1&#10;\\v 1 Tu'xich jumai...">${escAud(externalAuditText || "")}</textarea>` +
     `<div class="ek-row-wrap ek-mt-xs">` +

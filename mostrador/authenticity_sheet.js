@@ -20,10 +20,9 @@ export function renderAuthenticityAndLicenseSheetHtml({
   const doi = String(prov.doi || prov.zenodoDoi || "10.5281/zenodo.ekovoz");
   const license = String(prov.license || "CC0 1.0");
   return (
-    `<aside id="authenticityLicenseIsolationNotice" class="ek-mt-xs ek-text-secondary" data-authenticity-isolated="true" data-work="${escapeHtml(activeWork)}" data-lang="${escapeHtml(activeLang)}">` +
-    `<strong>${isEn ? "Authenticity & Public Domain Seal" : "Verificación Criptográfica y Dominio Público"}</strong> · ` +
-    `<span>${escapeHtml(license)} · DOI ${escapeHtml(doi)}</span>` +
-    `</aside>`
+    `<div id="authenticityLicenseIsolationNotice" class="ek-mt-xs ek-text-secondary" data-authenticity-unified="true" data-authenticity-isolated="true" data-work="${escapeHtml(activeWork)}" data-lang="${escapeHtml(activeLang)}">` +
+    `<span>${isEn ? "Public domain seal" : "Sello de dominio público"}: <strong>${escapeHtml(license)}</strong> · DOI ${escapeHtml(doi)}</span>` +
+    `</div>`
   );
 }
 

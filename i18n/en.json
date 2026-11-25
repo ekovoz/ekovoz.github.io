@@ -91,7 +91,7 @@
     "dose.paper.a4": "A4",
     "dose.paper.a3": "A3",
     "dose.paper.folio": "Folio",
-    "dose.paper.b70": "B70 Braille",
+    "dose.paper.b70": "B70 Tactile (280×292 mm)",
     "study.title": "{book} {chapter} — original words",
     "improve.open": "Help improve this verse",
     "improve.title": "Suggest an improvement",
@@ -214,8 +214,8 @@
     "print.col.3": "3 Columns (Compact)",
     "print.orient.landscape": "↔️ Landscape (Center Fold)",
     "print.orient.portrait": "↕️ Portrait",
-    "print.foliation.saddle": "📘 Folded Booklet (Saddle-Stitch · 9.2 mm spine)",
-    "print.foliation.loose": "📄 Loose Sheets (20 mm Binder Margin + 2-Hole Punch)",
+    "print.foliation.saddle": "📘 Folded Booklet (9.2 mm spine)",
+    "print.foliation.loose": "📄 Loose Sheets (20 mm margin)",
     "felices.open_in_bible": "📖 Open passage in The Bible",
     "felices.quick_actions": "Quick plate actions",
     "felices.folding_optical_summary": "📖 Folding Guide, Optical Transfer & Contact",
@@ -282,11 +282,9 @@
     "study.acc.typology": "🌐 Typological Profile & Editorial Tradition",
     "corpus.search.placeholder": "Search 7,164 languages (ISO, autonym, country)...",
     "mostrador.preview_hint": "Live preview of the passage ready to print",
-    "printStage.heading": "Print or download PDF by stage",
-    "printStage.dose1": "1. This Chapter PDF",
-    "printStage.dose2": "2. Booklet / Book PDF",
-    "printStage.dose3": "3. Full Bible PDF (66)",
-    "printStage.moreFormats": "Paper size, Braille & offline copy",
-    "print.btn.cancelJob": "Cancel"
+    "printStage.dose1": "🖨️ Print this chapter · PDF",
+    "printStage.moreFormats": "More formats…",
+    "print.btn.cancelJob": "Cancel",
+    "share.auth.unifiedTitle": "Verifiable Editorial Certificate"
   }
 }

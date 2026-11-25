@@ -229,21 +229,24 @@ export function hydrateOpticalTxAndRxPanels({
     const isPlaying = Boolean(state.qrBeamAutoPlaying);
     const formatPhaseLabel = (tf) =>
       tf.isEndOfStreamEcom
-        ? (isEn ? "ECOM Integrity EOF" : "Fin de Trama ECOM")
+        ? (isEn ? "Integrity confirmation" : "Cierre verificado")
         : tf.isSystematicPhase
-          ? (isEn ? `Systematic ${tf.grid.seq + 1}/${tf.encoder.K}` : `Sistemático ${tf.grid.seq + 1}/${tf.encoder.K}`)
-          : (isEn ? `LT SplitMix64 #${tf.grid.seq}` : `Solitón SplitMix64 #${tf.grid.seq}`);
+          ? (isEn ? `Secure optical transfer · block ${tf.grid.seq + 1}/${tf.encoder.K}` : `Transferencia óptica segura · bloque ${tf.grid.seq + 1}/${tf.encoder.K}`)
+          : (isEn ? `Recovery frame #${tf.grid.seq}` : `Cuadro de recuperación #${tf.grid.seq}`);
     const phaseLabel = formatPhaseLabel(txFrame);
 
     const activeQrMode = state.qrShareSubmode === "receive" ? "receive" : "send";
     const camHostEl = targetDoc?.getElementById?.("opticalCameraViewportHost") || null;
     const relayBtnEl = targetDoc?.getElementById?.("btnOpticalRelayTx") || null;
     const camBtnEl = targetDoc?.getElementById?.("btnToggleOpticalCameraRx") || null;
-    const rxPanelEl = targetDoc?.getElementById?.("opticalReceiverRxPanel") || null;
+    const rxPanelEl = rxPanel || targetDoc?.getElementById?.("opticalReceiverRxPanel") || null;
     if (camHostEl) camHostEl.hidden = activeQrMode !== "receive";
     if (relayBtnEl) relayBtnEl.hidden = activeQrMode !== "receive";
     if (camBtnEl) camBtnEl.hidden = activeQrMode !== "receive";
-    if (rxPanelEl) rxPanelEl.hidden = activeQrMode !== "receive";
+    if (rxPanelEl) {
+      rxPanelEl.hidden = activeQrMode !== "receive";
+      if (activeQrMode !== "receive") rxPanelEl.innerHTML = "";
+    }
 
     qrPanel.innerHTML =
       `<div id="qrBeamStreamRoot" class="mostrador-qrbeam-stream" data-fps="${activeCadenceKey}" data-nyquist-safe="${Boolean(nyquistCheck?.valid ?? nyquistCheck?.nyquistSafe)}" data-nyquist-channel-limit="4096" data-lt-peeling-decoded="${ltComplete}" data-eco1-bytes="${packetBytes.byteLength}" data-packet-kind="${txFrame.packetKind}" data-systematic-phase="${isSystematicPhase}" data-ecom-frame="${isEndOfStreamEcom}" data-frame-interval-ms="${cadencePreset.intervalMs}" data-total-blocks="${encoder.K}" data-seq="${grid.seq}" data-degree="${grid.degree}" data-parity="${grid.parityBit}" data-qr-mode="${activeQrMode}">` +
@@ -252,7 +255,7 @@ export function hydrateOpticalTxAndRxPanels({
       `<button type="button" id="btnQrModeReceive" class="uls-chip" role="tab" aria-selected="${activeQrMode === "receive"}" aria-pressed="${activeQrMode === "receive"}" data-qr-mode="receive">📷 ${isEn ? "Receive Camera" : "Recibir cámara"}</button>` +
       `</div>` +
       `<div class="ek-row-between ek-mb-sm">` +
-      `<strong>📡 ${isEn ? "Offline Optical QR" : "QR Óptico sin internet"} (<span id="opticalFrameCounter" data-seq="${grid.seq}" data-packet-kind="${txFrame.packetKind}">${activeCadenceKey} fps · ${phaseLabel} · ${isEn ? "Parity" : "Paridad"} ${grid.parityBit}</span>)</strong>` +
+      `<strong>📡 ${isEn ? "Offline Optical QR" : "QR Óptico sin internet"} (<span id="opticalFrameCounter" data-seq="${grid.seq}" data-packet-kind="${txFrame.packetKind}">${activeCadenceKey} fps · ${phaseLabel}</span>)</strong>` +
       `<div class="ek-flex-wrap-inline">` +
       `<button type="button" id="btnToggleQrBeamAutoPlay" class="uls-chip qrbeam-btn">${isPlaying ? (isEn ? "⏸ Pause Beam" : "⏸ Pausar Emisión") : isEn ? "▶ Auto Beam" : "▶ Emisión Continua"}</button>` +
       `<button type="button" id="btnNextQrBeamFrame" class="uls-chip qrbeam-btn">⏭ ${isEn ? "Next Frame" : "Siguiente cuadro"} (#${grid.seq + 1})</button>` +
@@ -354,7 +357,7 @@ export function hydrateOpticalTxAndRxPanels({
     }
   }
 
-  if (rxPanel) {
+  if (rxPanel && state?.qrShareSubmode === "receive") {
     const verseText =
       state.lastNavResult?.chapter?.verses?.[String(state.verse)] ||
       `${state.book}.${state.chapter}.${state.verse}`;

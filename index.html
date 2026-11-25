@@ -348,30 +348,12 @@
         </div>
         <div id="printFirstStageRibbon" class="print-stage-ribbon" role="region"
             aria-label="Download Printable Bible PDF by Stage" data-print-tier="1" data-ribbon-compact="true">
-            <div class="print-stage-header" data-ribbon-compact="true" data-cowan-budget="3">
-                <span class="print-stage-kicker" data-i18n="printStage.heading">Print or download PDF by stage</span>
-                <div class="ek-flex-wrap-inline">
-                    <button type="button" id="btnStagePdfMoreFormats" class="uls-chip print-stage-more"
-                        data-print-stage-action="open-print" data-i18n="printStage.moreFormats">Paper size, Braille
-                        &amp;
-                        offline copy</button>
-                    <button type="button" id="btnStageRibbonShareOffline" class="uls-chip print-stage-more"
-                        data-print-stage-action="open-share" data-i18n-autonym="true">Carry offline</button>
-                </div>
-            </div>
-            <div class="print-stage-grid">
-                <div class="print-stage-card" data-ergos-homogeneous-card="print-stage"><button type="button"
-                        id="btnStagePdfDose1" class="print-stage-btn is-primary" data-print-stage-action="dose1"><strong
-                            data-i18n="printStage.dose1">1. This Chapter PDF</strong><span>JHN 1 · &lt;= 12
-                            pp.</span></button></div>
-                <div class="print-stage-card" data-ergos-homogeneous-card="print-stage"><button type="button"
-                        id="btnStagePdfDose2" class="print-stage-btn is-primary" data-print-stage-action="dose2"><strong
-                            data-i18n="printStage.dose2">2. Booklet / Book PDF</strong><span>Block B01 ·
-                            2-sided</span></button></div>
-                <div class="print-stage-card" data-ergos-homogeneous-card="print-stage"><button type="button"
-                        id="btnStagePdfDose3" class="print-stage-btn is-primary" data-print-stage-action="dose3"><strong
-                            data-i18n="printStage.dose3">3. Full Bible PDF (66)</strong><span>14+2 print
-                            editions</span></button></div>
+            <div class="print-stage-header" data-ribbon-compact="true" data-cowan-budget="2">
+                <button type="button" id="btnStagePdfDose1" class="print-stage-btn is-primary-stage"
+                    data-print-stage-action="dose1" data-i18n="printStage.dose1">🖨️ Print this chapter · PDF (JHN
+                    1)</button>
+                <button type="button" id="btnStagePdfMoreFormats" class="uls-chip print-stage-more"
+                    data-print-stage-action="open-print" data-i18n="printStage.moreFormats">More formats…</button>
             </div>
         </div>
 
@@ -771,6 +753,12 @@
                 <div id="studyFormulaicParallelsHost"></div>
                 <div id="tskCrossRefsStratumCard"></div>
             </details>
+            <div id="bibleAnalyticalThermometerPanel" data-study-subtab-panel="calibrate" hidden></div>
+            <details id="studyOrthographyAccordion" class="r9-stratum-accordion" data-study-subtab-panel="calibrate"
+                open hidden>
+                <summary data-i18n="study.acc.orthography">✍️ Conditional Orthography &amp; Scriptio Continua</summary>
+                <div id="wfstAndScriptioContinuaHost"></div>
+            </details>
             <div id="philologyRosettaStaticHost" data-study-subtab-panel="calibrate" hidden class="rosetta-static-slot">
                 <select id="rosettaFilterCategorySelect" aria-label="Philology Rosetta Category">
                     <option value="all" selected data-i18n="rosetta.filter.all">All 5 alignment classes (4,036 tokens)
@@ -791,12 +779,6 @@
                     placeholder="Search H7225, G3056, GEN.31.55...">
                 <div id="rosettaExplorerResultsRows" role="region" aria-live="polite"></div>
             </div>
-            <div id="bibleAnalyticalThermometerPanel" data-study-subtab-panel="calibrate" hidden></div>
-            <details id="studyOrthographyAccordion" class="r9-stratum-accordion" data-study-subtab-panel="calibrate"
-                hidden>
-                <summary data-i18n="study.acc.orthography">✍️ Conditional Orthography &amp; Scriptio Continua</summary>
-                <div id="wfstAndScriptioContinuaHost"></div>
-            </details>
             <details id="diachronicSubstitutionsDetails" data-study-subtab-panel="calibrate" hidden
                 class="diachronic-substitutions-details">
                 <summary id="diachronicSubstitutionsSummary" data-i18n="study.diachronic_summary">View 1909 → 21st
@@ -895,7 +877,7 @@
                     <option value="letter" data-i18n="dose.paper.letter">Letter / Carta (216×279 mm · Americas)</option>
                     <option value="a3" data-i18n="dose.paper.a3">A3 (297×420 mm · Mural Sheet)</option>
                     <option value="folio" data-i18n="dose.paper.folio">Folio / Oficio (216×330 mm)</option>
-                    <option value="b70" data-i18n="dose.paper.b70">B70 Braille (280×292 mm · BEB Tactile)</option>
+                    <option value="b70" data-i18n="dose.paper.b70">B70 (280×292 mm)</option>
                 </select>
                 <button type="button" id="btnQuickBrailleB70" class="uls-chip" data-i18n="print.btn.brailleB70"
                     aria-pressed="false">♿ Braille B70 (.brf)</button>
@@ -905,10 +887,8 @@
                     </option>
                 </select>
                 <select id="bibleFoliationModeSelect" aria-label="Foliation and Binding Mode">
-                    <option value="saddle_stitch" selected data-i18n="print.foliation.saddle">📘 Folded Booklet
-                        (Saddle-Stitch · 9.2 mm spine)</option>
-                    <option value="single_sheet_20mm" data-i18n="print.foliation.loose">📄 Loose Sheets (20 mm Binder
-                        Margin + 2-Hole Punch)</option>
+                    <option value="saddle_stitch" selected data-i18n="print.foliation.saddle">📘 Folded Booklet (9.2 mm spine)</option>
+                    <option value="single_sheet_20mm" data-i18n="print.foliation.loose">📄 Loose Sheets (20 mm margin)</option>
                 </select>
                 <label class="hig-toggle-row"><input type="checkbox" id="kindleDuplexToggle" class="hig-switch" checked>
                     <span id="kindleDuplexLabelText" data-i18n="dose.1.duplex_label">Double-sided printing
@@ -1024,9 +1004,12 @@
             </div>
             <div id="opticalReceiverRxPanel" data-dosis-subtab-panel="pdf" hidden></div>
             <section id="shareAuthenticityUnifiedCard" class="ek-card" data-dosis-subtab-panel="graphics"
-                data-slot-order="1" hidden>
-                <button type="button" id="btnVerifyEd25519Signature" class="uls-chip" data-dosis-subtab-panel="graphics"
-                    data-i18n="share.btn.verifySig" hidden>🔐 Verify Authentic Editorial Signature</button>
+                data-slot-order="1" data-unified-authenticity-card="true" hidden>
+                <div class="ek-row-between ek-mb-sm">
+                    <strong>🛡️ <span data-i18n="share.auth.unifiedTitle">Verifiable Editorial Certificate</span></strong>
+                    <button type="button" id="btnVerifyEd25519Signature" class="uls-chip" data-dosis-subtab-panel="graphics"
+                        data-i18n="share.btn.verifySig" hidden>🔐 Verify Authentic Editorial Signature</button>
+                </div>
                 <div id="editorialAuditStatusPanel" data-dosis-subtab-panel="graphics" hidden class="ek-status-panel">
                 </div>
                 <div id="editorialProvenanceCardHost" data-dosis-subtab-panel="graphics" hidden></div>

@@ -10,6 +10,7 @@ import {
   VERSE_SPECIFIC_TSK_ECHOES,
 } from "./estudio_schemas.js";
 import { humanizeTechnicalCode } from "./human_labels.js";
+import { buildCompactVersificationSummary } from "./study_verse_viewmodel.js";
 
 function escapeHtml(str) {
   return String(str ?? "")
@@ -406,7 +407,7 @@ export function renderPhilologyRosettaInspectorHtml(activeRows = [], options = {
     `<li data-blind-calibration-chrf="${escapeHtml(chrfScore)}" data-blind-calibration-langs="${calSummary.langsCount}" data-blind-calibration-rows="${calSummary.rowsCount}">` +
     `<strong>${isEn ? `Verified fidelity across ${calSummary.langsCount} languages` : `Fidelidad verificada en ${calSummary.langsCount} lenguas`}:</strong> ` +
     `${calSummary.passRatePct}% ${isEn ? "verified across" : "verificada en"} ${calSummary.rowsCount} ${isEn ? "passages" : "pasajes"}` +
-    `<details class="tech-details ek-mt-xs"><summary>${isEn ? `Multilingual calibration details (${escapeHtml(chrfScore)} chrF++)` : `Detalles de calibración multilingüe (${escapeHtml(chrfScore)} chrF++)`}</summary>` +
+    `<details class="tech-details ek-mt-xs"><summary>${isEn ? `Multilingual calibration details (${escapeHtml(chrfScore)}%)` : `Detalles de calibración multilingüe (${escapeHtml(chrfScore)}%)`}</summary>` +
     `<div id="rosettaBlindCalibration12Table" class="ek-row-wrap ek-gap-xs ek-mt-xs">${byLangPills}</div>` +
     `</details>` +
     `</li>`;
@@ -519,9 +520,30 @@ export function searchPhilologyRosettaIndex(
 
   if (cleanCat === "all" || cleanCat === "versification") {
     const vList = idx?.versification_eng_org || PHILOLOGY_ROSETTA_DEFAULT_INDEX.versification_eng_org;
+    const compactAllOverview = cleanCat === "all" && !cleanQuery;
+    let compactAdded = false;
     for (const ve of vList || []) {
       const refCode = normalizeRefCode(ve.eng_range, "PSA.23.1");
       if (/[:.]0\b/.test(String(ve.eng_range || "")) || /[:.]0\b/.test(refCode)) continue;
+      if (compactAllOverview) {
+        if (!compactAdded) {
+          compactAdded = true;
+          const summary = buildCompactVersificationSummary({
+            mtRef: ve.org_range,
+            occidentalRef: ve.eng_range,
+            hasDivergence: true,
+          });
+          items.push({
+            category: "versification",
+            id: "versification-compact-summary",
+            title: summary.oneLineText,
+            detail: `${ve.tradition}: ${ve.note}`,
+            strong: "H0430",
+            ref: refCode,
+          });
+        }
+        continue;
+      }
       items.push({
         category: "versification",
         id: ve.eng_range,
@@ -537,10 +559,13 @@ export function searchPhilologyRosettaIndex(
     const rules =
       idx?.bicanonical_divergence_rules || PHILOLOGY_ROSETTA_DEFAULT_INDEX.bicanonical_divergence_rules;
     for (const rule of rules || []) {
+      const regimeLabel = rule.regime === "PSA_SUPERSCRIPTION_AND_LXX_NUMBERING"
+        ? "Salmos MT ↔ LXX"
+        : String(rule.regime || "").replace(/_/g, " ").toLowerCase();
       items.push({
         category: "divergence",
         id: rule.regime,
-        title: `${rule.book} ${rule.chapter_min}–${rule.chapter_max} (${rule.regime})`,
+        title: `${rule.book} ${rule.chapter_min}–${rule.chapter_max} (${regimeLabel})`,
         detail: `Δcap MT=${rule.mt_chapter_delta}, Δv MT=${rule.mt_verse_delta}, Δcap LXX=${rule.lxx_chapter_delta}`,
         strong: "H0430",
         ref: `${rule.book}.${rule.chapter_min}.${rule.verse_min || 1}`,

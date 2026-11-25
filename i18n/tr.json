@@ -282,11 +282,9 @@
     "study.acc.typology": "🌐 Tipolojik Profil ve Yayın Geleneği",
     "corpus.search.placeholder": "7.164 dilde ara (ISO, özerk ad, ülke)...",
     "mostrador.preview_hint": "Yazdırmaya hazır metnin canlı önizlemesi",
-    "printStage.heading": "Aşamalı PDF yazdır veya indir",
     "printStage.dose1": "1. Bu Bölüm PDF",
-    "printStage.dose2": "2. Kitapçık / Kitap PDF",
-    "printStage.dose3": "3. Tam Kutsal Kitap PDF (66)",
     "printStage.moreFormats": "Kağıt boyutu, Braille ve çevrimdışı",
-    "print.btn.cancelJob": "İptal"
+    "print.btn.cancelJob": "İptal",
+    "share.auth.unifiedTitle": "Doğrulanabilir Yayın Sertifikası"
   }
 }

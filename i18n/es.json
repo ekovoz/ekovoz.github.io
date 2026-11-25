@@ -91,7 +91,7 @@
     "dose.paper.a4": "A4",
     "dose.paper.a3": "A3",
     "dose.paper.folio": "Folio (Oficio)",
-    "dose.paper.b70": "B70 Braille",
+    "dose.paper.b70": "B70 Táctil (280×292 mm)",
     "study.title": "{book} {chapter} — palabras originales",
     "improve.open": "Ayudar a mejorar este versículo",
     "improve.title": "Sugerir una mejora",
@@ -214,8 +214,8 @@
     "print.col.3": "3 Columnas (Compacto)",
     "print.orient.landscape": "↔️ Horizontal (Pliegue central)",
     "print.orient.portrait": "↕️ Vertical",
-    "print.foliation.saddle": "📘 Cuadernillo doblado (A caballo · lomo 9.2 mm)",
-    "print.foliation.loose": "📄 Hojas sueltas (Margen 20 mm + 2 perforaciones)",
+    "print.foliation.saddle": "📘 Cuadernillo doblado (lomo 9.2 mm)",
+    "print.foliation.loose": "📄 Hojas sueltas (margen 20 mm)",
     "felices.open_in_bible": "📖 Abrir pasaje en La Biblia",
     "felices.quick_actions": "Acciones rápidas de lámina",
     "felices.folding_optical_summary": "📖 Guía de doblado, transferencia óptica y contacto",
@@ -282,11 +282,9 @@
     "study.acc.typology": "🌐 Perfil Tipológico y Tradición Editorial",
     "corpus.search.placeholder": "Buscar 7,164 idiomas (ISO, autónimo, país)...",
     "mostrador.preview_hint": "Vista previa en vivo del texto que vas a imprimir",
-    "printStage.heading": "Descarga o imprime en PDF por etapas",
-    "printStage.dose1": "1. PDF de este capítulo",
-    "printStage.dose2": "2. Cuadernillo / Libro PDF",
-    "printStage.dose3": "3. Biblia Completa PDF (66)",
-    "printStage.moreFormats": "Tamaño, Braille y copia sin internet",
-    "print.btn.cancelJob": "Cancelar"
+    "printStage.dose1": "🖨️ Imprimir capítulo actual · PDF",
+    "printStage.moreFormats": "Más formatos…",
+    "print.btn.cancelJob": "Cancelar",
+    "share.auth.unifiedTitle": "Certificado Editorial Verificable"
   }
 }

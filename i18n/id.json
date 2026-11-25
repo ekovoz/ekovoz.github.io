@@ -282,11 +282,9 @@
     "study.acc.typology": "🌐 Profil Tipologis & Tradisi Editorial",
     "corpus.search.placeholder": "Cari 7.164 bahasa (ISO, autonim, negara)...",
     "mostrador.preview_hint": "Pratinjau langsung teks siap cetak",
-    "printStage.heading": "Cetak atau unduh PDF bertahap",
     "printStage.dose1": "1. PDF Pasal Ini",
-    "printStage.dose2": "2. Buklet / Kitab PDF",
-    "printStage.dose3": "3. Alkitab Lengkap PDF (66)",
     "printStage.moreFormats": "Ukuran kertas, Braille & offline",
-    "print.btn.cancelJob": "Batal"
+    "print.btn.cancelJob": "Batal",
+    "share.auth.unifiedTitle": "Sertifikat Editorial Terverifikasi"
   }
 }

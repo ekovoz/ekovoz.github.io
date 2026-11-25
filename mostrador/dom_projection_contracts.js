@@ -376,6 +376,54 @@ export function verifyArtifactProjectionClosure({
   };
 }
 
+export const SINGLE_OWNER_CAPABILITY_CONTRACTS = Object.freeze({
+  print_action_ribbon: {
+    canonicalOwner: "#printFirstStageRibbon",
+    forbiddenDuplicateSelectors: ["#btnStageRibbonShareOffline"],
+    maxPrimaryCtas: 1,
+    zeroEmptyVisibleHosts: true,
+  },
+  braille_b70_export: {
+    canonicalOwner: "#btnQuickBrailleB70",
+    forbiddenDuplicateSelectors: ["#btnDuplicateBrailleB70"],
+    maxPrimaryCtas: 1,
+  },
+  authenticity_verification: {
+    canonicalOwner: "#shareAuthenticityUnifiedCard",
+    forbiddenDuplicateSelectors: ["#authenticityDuplicateBanner"],
+    zeroEmptyVisibleHosts: true,
+  },
+  optical_qr_rx: {
+    canonicalOwner: "#opticalReceiverRxPanel",
+    forbiddenDuplicateSelectors: [],
+    zeroEmptyVisibleHosts: true,
+  },
+  study_philology_roots: {
+    canonicalOwner: "#bibleCalibrationAndAuditSheet",
+    forbiddenDuplicateSelectors: [],
+    requiredSurfaceIds: ["#wfstAndScriptioContinuaHost", "#bibleAnalyticalThermometerPanel"],
+  },
+  share_portability_research: {
+    canonicalOwner: "#vaultStorageManagerHost",
+    forbiddenDuplicateSelectors: [],
+    requiredArtifacts: ["llms-full.txt", "llms.txt", "downloads_manifest.json"],
+  },
+});
+
+export function auditSingleOwnerContract(htmlSource = "") {
+  const html = String(htmlSource || "");
+  const duplicateForbidden = [];
+  for (const [key, spec] of Object.entries(SINGLE_OWNER_CAPABILITY_CONTRACTS)) {
+    for (const sel of spec.forbiddenDuplicateSelectors || []) {
+      const id = String(sel).replace(/^#/, "");
+      if (id && (html.includes(`id="${id}"`) || html.includes(`id='${id}'`))) {
+        duplicateForbidden.push({ contract: key, selector: sel });
+      }
+    }
+  }
+  return { ok: duplicateForbidden.length === 0, duplicateForbidden };
+}
+
 export const INTENT_CAPABILITY_CONTRACT = Object.freeze({
   exit_print: { maxHops: 2, sheet: "print", capabilities: ["print_first_stage_ribbon", "print_unified_options_v3"] },
   exit_offline: { maxHops: 2, sheet: "share", capabilities: ["offline_quine_usb", "optical_qr_beam"] },

@@ -282,11 +282,9 @@
     "study.acc.typology": "🌐 言語類型プロファイルと編集伝統",
     "corpus.search.placeholder": "7,164言語を検索 (ISO・自称・国名)...",
     "mostrador.preview_hint": "印刷する箇所のライブプレビュー",
-    "printStage.heading": "段階別に PDF を印刷・ダウンロード",
     "printStage.dose1": "1. この章の PDF",
-    "printStage.dose2": "2. 小冊子 / 書巻 PDF",
-    "printStage.dose3": "3. 全66巻聖書 PDF (66)",
     "printStage.moreFormats": "用紙サイズ・点字・オフライン版",
-    "print.btn.cancelJob": "キャンセル"
+    "print.btn.cancelJob": "キャンセル",
+    "share.auth.unifiedTitle": "検証可能な編集証明書"
   }
 }

@@ -10,9 +10,12 @@ import {
   REGIONAL_BRIDGE_LANGUAGES_10,
   escapeHtml,
   isBookHumanVerifiedByEpistemicTier,
+  isStpAtAbstentionVerse,
+  renderStpAbstentionPillHtml,
   resolveRegionalBridgeLanguage21,
 } from "./bridge_and_chapter.js";
 import { STATUS } from "./data_layer.js";
+import { humanizeUiCopy } from "./human_labels.js";
 import { lookupIso639MacroRegionO1 } from "./lang_funnel.js";
 
 const TIER0_AUTOGRAPH_LANGS = new Set(["he", "hbo", "heb", "grc", "el"]);
@@ -203,13 +206,11 @@ export function renderProgressiveTwoStrataDiglossicBridge({
   const regionalSlot =
     REGIONAL_BRIDGE_LANGUAGES_10[resolvedMacroRegion] || REGIONAL_BRIDGE_LANGUAGES_10[1];
   const explicitBridge = String(bridgeLang || "").trim();
-  const bridgeSpec = explicitBridge && explicitBridge.toLowerCase() !== String(lang || "").trim().toLowerCase()
-    ? { code: explicitBridge, label: `Bridge (${explicitBridge})` }
-    : resolveRegionalBridgeLanguage21({
-        macroRegion: resolvedMacroRegion,
-        bridgeLang: o1Region.isLusophone ? "pt" : regionalSlot?.code || "",
-        lang,
-      });
+  const bridgeSpec = resolveRegionalBridgeLanguage21({
+    macroRegion: resolvedMacroRegion,
+    bridgeLang: explicitBridge || (o1Region.isLusophone ? "pt" : regionalSlot?.code || ""),
+    lang,
+  });
 
   const gmisByVerse = new Map();
   for (const r of Array.isArray(gmisRows) ? gmisRows : []) {
@@ -249,27 +250,27 @@ export function renderProgressiveTwoStrataDiglossicBridge({
     const osis = `${cleanBook}.${cleanChap}.${vNum}`;
     const matTxt = String(matMap[String(vNum)] || "").trim();
     const brTxt = String(brMap[String(vNum)] || "").trim();
-    const isExpanded = expandAllLeipzig || vNum === selV;
+    const isExpanded = Boolean(expandAllLeipzig);
 
     const isSelected = vNum === selV;
     let leftCellHtml = "";
-    if (isHumanMaternalPortion && matTxt) {
+    if (String(lang || "").toLowerCase() === "stp" && !isNt && isStpAtAbstentionVerse(matTxt)) {
+      leftCellHtml = `<div class="mostrador-verse bible-verse-line${isSelected ? " is-selected" : ""} diglossic-maternal-abstention" data-verse="${vNum}" data-osis="${escapeHtml(osis)}" data-maternal-stratum="ABSTENTION_ZERO_ROOTS" data-stratum="1-foveal"><sup>${vNum}</sup> ${renderStpAbstentionPillHtml(osis, bridgeSpec.code)}</div>`;
+    } else if (isHumanMaternalPortion && matTxt) {
       leftCellHtml = `<div class="mostrador-verse bible-verse-line${isSelected ? " is-selected" : ""} diglossic-maternal-human" data-verse="${vNum}" data-osis="${escapeHtml(osis)}" data-maternal-stratum="HUMAN_VERIFIED" data-stratum="1-foveal"><sup>${vNum}</sup> ${escapeHtml(matTxt)}</div>`;
     } else {
       const vRows = gmisByVerse.get(vNum) || [];
       const l1 =
         vRows.map((x) => escapeHtml(x.c05_orig_text || x.morph || "—")).join(" · ") ||
         escapeHtml(matTxt || `— (${osis})`);
-      const l2 =
-        vRows.map((x) => escapeHtml(x.c08_morph_code || x.leipzig || "GLOSA")).join(" · ") ||
-        "Morfología Leipzig";
-      const l3 = vRows.map((x) => escapeHtml(x.c13_nsm_65 || "ALGUIEN / DECIR")).join(" · ");
+      const l2Human = humanizeUiCopy("L2 Glosa lingüística", "es");
+      const l3 = vRows.map((x) => escapeHtml(humanizeUiCopy(x.c13_nsm_65 || "ALGUIEN / DECIR", "es"))).join(" · ");
       const openAttr = isExpanded ? " open" : "";
       leftCellHtml =
         `<details class="diglossic-gmis-4line" data-maternal-stratum="GMIS_SCAFFOLD" data-gmis-lines="4" data-stratum="2-leipzig"${openAttr}>` +
         `<summary class="mostrador-verse bible-verse-line${isSelected ? " is-selected" : ""} diglossic-foveal-summary" data-verse="${vNum}" data-osis="${escapeHtml(osis)}" data-stratum="1-foveal"><sup>${vNum}</sup> ${escapeHtml(matTxt || l3 || `[Semilla ${osis}]`)}</summary>` +
-        `<div data-gmis-line="1"><strong>L1 Original/Morfemas:</strong> ${l1}</div>` +
-        `<div data-gmis-line="2"><strong>L2 Glosa lingüística:</strong> ${l2}</div>` +
+        `<div data-gmis-line="1"><strong>L1 Palabra original:</strong> ${l1}</div>` +
+        `<div data-gmis-line="2"><strong>${escapeHtml(l2Human)}:</strong> Ver análisis completo en Estudio (${escapeHtml(osis)})</div>` +
         `<div data-gmis-line="3"><strong>L3 Sentido universal:</strong> ${l3}</div>` +
         `<div data-gmis-line="4"><strong>L4 Revisión comunitaria (${escapeHtml(lang)}):</strong> ${escapeHtml(celfPrompt || `Semilla de traducción para ${osis}`)}</div>` +
         `</details>`;

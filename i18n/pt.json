@@ -282,11 +282,9 @@
     "study.acc.typology": "🌐 Perfil Tipológico e Tradição Editorial",
     "corpus.search.placeholder": "Buscar 7.164 idiomas (ISO, autônimo, país)...",
     "mostrador.preview_hint": "Prévia ao vivo do texto para imprimir",
-    "printStage.heading": "Baixe ou imprima em PDF por etapas",
     "printStage.dose1": "1. PDF deste capítulo",
-    "printStage.dose2": "2. Livreto / Livro PDF",
-    "printStage.dose3": "3. Bíblia Completa PDF (66)",
     "printStage.moreFormats": "Papel, Braille e cópia offline",
-    "print.btn.cancelJob": "Cancelar"
+    "print.btn.cancelJob": "Cancelar",
+    "share.auth.unifiedTitle": "Certificado Editorial Verificável"
   }
 }

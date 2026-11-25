@@ -92,7 +92,7 @@ function renderAnnotationAndBlindCalibrationCardHtml({
       `<section class="calibration-mass-conservation-card" data-annotation-mass-conservation="true" data-total-tokens="${totalTokens}" data-total-residuals="${totalResiduals}" data-canonical-verses="${canonicalVerses}" data-matrix-columns="${canonicalCols}" data-index-sha256="${escHtml(indexSha.slice(0, 16))}" data-residuals-sha256="${escHtml(residualsSha.slice(0, 16))}">` +
       `<div class="calib-card-header">` +
       `<strong>⚖️ ${isEn ? "Lexical Concordance Coverage" : "Cobertura Léxica Completa"} (${totalTokens.toLocaleString("en-US")} ${isEn ? "words" : "palabras"} · ${canonicalVerses.toLocaleString("en-US")} vv.)</strong>` +
-      `<span class="uls-badge" data-thresholds-pass="${gatePass}">${gatePass ? (isEn ? "✅ Quality Verified (chrF++)" : "✅ Calidad Verificada (chrF++)") : "⚠️"}</span>` +
+      `<span class="uls-badge" data-chrf-plus-plus="true" data-thresholds-pass="${gatePass}">${gatePass ? (isEn ? "✅ Quality Verified" : "✅ Calidad Verificada") : "⚠️"}</span>` +
       `</div>` +
       `<details class="tech-details">` +
       `<summary>${isEn ? "Technical verification details (Mass Conservation · Residuals)" : "Detalles técnicos de verificación (Masa léxica · Residuales)"}</summary>` +
@@ -166,7 +166,8 @@ function renderAnnotationAndBlindCalibrationCardHtml({
       `<section class="blind-calibration-chrf-card" data-blind-calibration-matrix="true" data-langs-count="${byLang.size}" data-books-count="${booksOrder.length}">` +
       `<strong class="calib-matrix-title">🎯 ${isEn ? `Cross-Language Translation Benchmark (${byLang.size} Languages × 4 Passages)` : `Calibración Comparativa (${byLang.size} Lenguas × 4 Pasajes)`}</strong>` +
       `<details class="tech-details">` +
-      `<summary>${isEn ? "Technical matrix (chrF++ · Gale-Church · MATTR50)" : "Matriz técnica (chrF++ · Gale-Church · MATTR50)"}</summary>` +
+      `<summary>${isEn ? `Technical fidelity matrix (${byLang.size} languages)` : `Matriz técnica de fidelidad (${byLang.size} lenguas)`}</summary>` +
+      `<div class="hig-tech-meta">chrF++ · Gale-Church · MATTR50</div>` +
       `<table class="calib-matrix-table">` +
       `<thead><tr><th class="calib-th-lang">${isEn ? "Lang / Family" : "Lengua / Familia"}</th>${headerCells}</tr></thead>` +
       `<tbody>${bodyRows}</tbody>` +

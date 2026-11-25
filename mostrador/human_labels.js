@@ -204,6 +204,15 @@ export function humanizeUiCopy(rawText, uiLocale = "es", { allowExpert = false }
     [/\bNT\+Taller OT\b/gi, isEn ? "NT verified + OT workbook" : "NT verificado + taller AT"],
     [/\bWLC\b/g, isEn ? "Hebrew source" : "Hebreo fuente"],
     [/\bSBLGNT\b/g, isEn ? "Greek source" : "Griego fuente"],
+    [/\bTaller comunitario OT\b/gi, isEn ? "OT community workshop" : "Taller comunitario AT"],
+    [/\b8\/8 PASS\b/g, isEn ? "8/8 checks verified" : "8/8 controles verificados"],
+    [/\bPASS\b/g, isEn ? "Verified" : "Verificado"],
+    [/Sistemático\s*1\/16\s*·\s*Paridad\s*0/gi, isEn ? "Safe optical transfer · block 1/16" : "Transferencia óptica segura · bloque 1/16"],
+    [/(\d+)\s*WPM\b/gi, isEn ? "$1 WPM" : "$1 ppm"],
+    [/\bBridge\s*\(([a-zA-Z-]+)\)/g, (_, code) => (isEn ? `Bridge (${String(code).toUpperCase()})` : `Lengua puente (${String(code).toLowerCase()})`)],
+    [/\bJSONL\s*\/\s*SHA-256\b/gi, isEn ? "Signed audit log" : "Bitácora verificada"],
+    [/\bL2 Glosa lingüística:\s*HR\/Ncfsa\b/gi, isEn ? "Grammatical detail in Study" : "Detalle gramatical en Estudiar"],
+    [/\bPRIM:\s*/gi, isEn ? "Core meaning: " : "Sentido básico: "],
   ];
   let out = src;
   for (const [rx, sub] of replacements) {

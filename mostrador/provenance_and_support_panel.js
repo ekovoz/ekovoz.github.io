@@ -125,9 +125,9 @@ export function renderEditorialAuditAttestationHtml({
     : (isEn ? "⛔ Unverified signature" : "⛔ Firma no verificada");
 
   return (
-    `<div class="editorial-attestation-receipt ek-card ek-stack-sm" data-ed25519-verified="${ed25519GateAttr}" data-eight-locks-status="${escapeHtml(eightLocksReport.status)}" data-zero-truncation="${zeroTrunc}" data-living-languages="${totalLangs}" data-rust-surface-score="${surfaceScore}">` +
+    `<div class="editorial-attestation-receipt ek-stack-sm ek-mt-xs" data-ed25519-verified="${ed25519GateAttr}" data-eight-locks-status="${escapeHtml(eightLocksReport.status)}" data-zero-truncation="${zeroTrunc}" data-living-languages="${totalLangs}" data-rust-surface-score="${surfaceScore}">` +
     `<div class="ek-row-between">` +
-    `<strong>🛡️ ${humanAttestationTitle}</strong>` +
+    `<span class="ek-semibold">🛡️ ${humanAttestationTitle}</span>` +
     `<span class="uls-badge">${humanAttestationStatus} · ${totalLangs.toLocaleString("en-US")} ${isEn ? "languages" : "lenguas"}</span>` +
     `</div>` +
     `<details class="tech-details">` +
@@ -189,12 +189,11 @@ export function renderEditorialProvenanceCardHtml(provenance = null, uiLocale = 
     .join("");
 
   return (
-    `<article id="editorialProvenanceIntegrityCard" class="editorial-provenance-card" data-berne-commitment="${escapeHtml(berne.creator_commitment_hash)}" data-zenodo-doi="${escapeHtml(p.zenodo_doi_concept)}" data-zenodo-version="${escapeHtml(zenodoVersion)}">` +
-    `<header class="provenance-card-header ek-stack-sm">` +
-    `<strong>🛡️ ${isEn ? "Integrity & Open Licenses" : "Integridad y Licencias Abiertas"}</strong>` +
-    `<div><span class="uls-badge">${escapeHtml(p.license_primary)} / ${escapeHtml(p.license_media)} · v${escapeHtml(zenodoVersion)}</span></div>` +
-    `</header>` +
-    `<p class="provenance-privacy-note">${escapeHtml(privacyText)}</p>` +
+    `<div id="editorialProvenanceIntegrityCard" class="editorial-provenance-card ek-stack-sm" data-berne-commitment="${escapeHtml(berne.creator_commitment_hash)}" data-zenodo-doi="${escapeHtml(p.zenodo_doi_concept)}" data-zenodo-version="${escapeHtml(zenodoVersion)}">` +
+    `<div class="ek-row-between">` +
+    `<span class="ek-meta">${escapeHtml(privacyText)}</span>` +
+    `<span class="uls-badge">${escapeHtml(p.license_primary)} · DOI ${escapeHtml(p.zenodo_doi_concept)} (v${escapeHtml(zenodoVersion)})</span>` +
+    `</div>` +
     `<div id="berneCommitmentVerifierCard" class="ek-stack-sm ek-mt-xs">` +
     `<div class="ek-row-wrap">` +
     `<input type="text" id="bernePreimageInput" class="ek-input-compact" placeholder="${isEn ? "Authorship phrase" : "Frase de autoría"}" aria-label="${isEn ? "Authorship verification phrase" : "Frase de verificación de autoría"}">` +
@@ -215,7 +214,7 @@ export function renderEditorialProvenanceCardHtml(provenance = null, uiLocale = 
     `</dl>` +
     `<table id="distMerkleRootsTable" class="ek-table-compact ek-mt-xs"><thead><tr><th>${isEn ? "Surface" : "Superficie"}</th><th>Merkle Root</th></tr></thead><tbody>${merkleRowsHtml}</tbody></table>` +
     `</details>` +
-    `</article>`
+    `</div>`
   );
 }
 

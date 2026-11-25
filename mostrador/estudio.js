@@ -5,6 +5,7 @@ export { renderDiglossicParallelBridge, resolveRegionalBridgeLanguage21 };
 
 import { MATRIX_ROW_COLUMNS } from "./data_layer.js";
 import { humanizeUiCopy } from "./human_labels.js";
+import { resolveTestamentRegime, selectPrimaryLexicalToken } from "./study_verse_viewmodel.js";
 import {
   aggregateBlindCalibration12Langs,
   detectContextualCulturalGlossesForVerse,
@@ -354,12 +355,13 @@ export function renderStudy14ColDrawerHtml(matrixShard, options = {}) {
   const isChapterScope = scope === "chapter";
   const isVerseScope = !isGmisScope && !isChapterScope && Boolean(filterVerse);
   const effectiveScopeAttr = isGmisScope ? "gmis" : isVerseScope ? "verse" : "chapter";
-  const bicanon = resolveBicanonicalDivergence(
+  const rawBicanon = resolveBicanonicalDivergence(
     book,
     chapter,
     activeVerseNum,
     options.rosettaIndex || shard?.rosettaIndex || null,
   );
+  const bicanon = resolveTestamentRegime(book, chapter, activeVerseNum, rawBicanon, uiLocale);
   const wordSummaryText = isEn
     ? `${normalizedRows.length} of ${rawRows.length} words`
     : `${normalizedRows.length} de ${rawRows.length} palabras`;
@@ -700,7 +702,8 @@ export function renderStudyStrataCards(matrixShard, options = {}) {
     : VERSE_SPECIFIC_TSK_ECHOES[activeOsis] ||
     CANONICAL_TSK_ECHOES[book] ||
     ["GEN.1.1", "PSA.23.1", "ISA.53.5", "JHN.1.14", "ROM.1.16"];
-  const firstStrong = activeRows[0]?.c07_strong_id || "H0430";
+  const isLexicalRow = (r) => Boolean(r?.c07_strong_id && r.c07_strong_id !== "∅" && (String(r.c07_strong_id).includes("+") || !isClosedClassFunctionTag(r.c11_semantic_domain, r.c09_macula_role, r.c08_morph_code, r.c13_nsm_65)));
+  const firstStrong = selectPrimaryLexicalToken(activeRows, isLexicalRow).strongId;
   const rosettaHtml = renderPhilologyRosettaInspectorHtml(activeRows, {
     book,
     chapter,

@@ -103,6 +103,7 @@ export const SHELL_CORE_ASSETS = [
   "/mostrador/state_store.js",
   "/mostrador/stealth_filename.js",
   "/mostrador/study_onomasticon_and_ubs.js",
+  "/mostrador/study_verse_viewmodel.js",
   "/mostrador/surface_compositor.js",
   "/mostrador/sw_routing_core.js",
   "/mostrador/url_route_lens.js",

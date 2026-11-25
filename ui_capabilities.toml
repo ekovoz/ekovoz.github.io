@@ -909,6 +909,18 @@ handler       = "renderPolyglotRecycledWindow"
 test_file     = "tests/web/polyglot_7k_and_workshop_v3.test.mjs"
 test_name     = "SLICE_V3HIG_10: stage_dom_bindings < 840 LOC, uiLocale en #appearancePopover y ventana reciclada <= 36 filas"
 
+[capability.study_verse_viewmodel]
+surface         = "public-ui"
+exposure_tier   = "drawer-secondary"
+release_stage   = "public"
+intent          = "study"
+canonical_owner = "#bibleEasyDrawer"
+selector        = "#bibleEasyDrawer"
+module          = "mostrador/study_verse_viewmodel.js"
+handler         = "resolveTestamentRegime"
+test_file       = "tests/web/concordance_and_audit_r8.test.mjs"
+test_name       = "SLICE_EKO_HIG3_07: testament regime rejects MT on ROM.8.28 and picks primary lexical token on MAT.1.23"
+
 [intent_contracts]
 max_hops = 2
 exit_print = ["print_first_stage_ribbon", "print_unified_options_v3"]
