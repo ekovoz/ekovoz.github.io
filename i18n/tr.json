@@ -285,6 +285,7 @@
     "printStage.dose1": "1. Bu Bölüm PDF",
     "printStage.moreFormats": "Kağıt boyutu, Braille ve çevrimdışı",
     "print.btn.cancelJob": "İptal",
-    "share.auth.unifiedTitle": "Doğrulanabilir Yayın Sertifikası"
+    "share.auth.unifiedTitle": "Doğrulanabilir Yayın Sertifikası",
+    "seal.loading": "Doğrulanmış bölüm yükleniyor…"
   }
 }

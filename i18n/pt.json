@@ -285,6 +285,7 @@
     "printStage.dose1": "1. PDF deste capítulo",
     "printStage.moreFormats": "Papel, Braille e cópia offline",
     "print.btn.cancelJob": "Cancelar",
-    "share.auth.unifiedTitle": "Certificado Editorial Verificável"
+    "share.auth.unifiedTitle": "Certificado Editorial Verificável",
+    "seal.loading": "Carregando passagem verificada…"
   }
 }

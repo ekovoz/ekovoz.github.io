@@ -7,6 +7,7 @@ import { BIBLE_CONSTANTS } from "./data_layer.js";
 import {
   getAll156DiachronicSubstitutionsCatalog,
   hydrateDiachronicRegister,
+  renderAnalyticalThermometerHtml,
   renderChapterDiachronicAuditCardHtml,
   renderUnifiedDiachronicContextHtml,
 } from "./diachronic_register.js";
@@ -88,8 +89,10 @@ function renderAnnotationAndBlindCalibrationCardHtml({
     const otKetivRatio = ((Number(ratios.ot_ketiv) || 0) * 100).toFixed(3);
     const maxOtKetiv = ((Number(thresholds.max_ot_ketiv) || 0.005) * 100).toFixed(1);
 
+    const indexRelPath = String(annotationReport.index_rel_path || "obras/biblia/original_matrix/annotation_index_v1.tsv.zst");
+
     parts.push(
-      `<section class="calibration-mass-conservation-card" data-annotation-mass-conservation="true" data-total-tokens="${totalTokens}" data-total-residuals="${totalResiduals}" data-canonical-verses="${canonicalVerses}" data-matrix-columns="${canonicalCols}" data-index-sha256="${escHtml(indexSha.slice(0, 16))}" data-residuals-sha256="${escHtml(residualsSha.slice(0, 16))}">` +
+      `<section class="calibration-mass-conservation-card" data-annotation-mass-conservation="true" data-total-tokens="${totalTokens}" data-total-residuals="${totalResiduals}" data-canonical-verses="${canonicalVerses}" data-matrix-columns="${canonicalCols}" data-index-sha256="${escHtml(indexSha.slice(0, 16))}" data-residuals-sha256="${escHtml(residualsSha.slice(0, 16))}" data-index-rel-path="${escHtml(indexRelPath)}">` +
       `<div class="calib-card-header">` +
       `<strong>⚖️ ${isEn ? "Lexical Concordance Coverage" : "Cobertura Léxica Completa"} (${totalTokens.toLocaleString("en-US")} ${isEn ? "words" : "palabras"} · ${canonicalVerses.toLocaleString("en-US")} vv.)</strong>` +
       `<span class="uls-badge" data-chrf-plus-plus="true" data-thresholds-pass="${gatePass}">${gatePass ? (isEn ? "✅ Quality Verified" : "✅ Calidad Verificada") : "⚠️"}</span>` +
@@ -353,6 +356,35 @@ export async function hydrateStudyDrawerPanel(ctx = {}) {
     hydrateBookAndChapterSelectors,
     transitionSheet,
   } = ctx;
+  const profilesSync = listOrthographyProfilesForLang(state.lang);
+  const wfstHostSync = getEl("wfstAndScriptioContinuaHost", targetDoc);
+  if (wfstHostSync) {
+    const syncVerseText = state.lastNavResult?.chapter?.verses?.[String(state.verse)] || "";
+    wfstHostSync.innerHTML =
+      renderWfstAndScriptioContinuaInspectorHtml({
+        lang: state.lang,
+        profileId: state.orthographyProfile || profilesSync[0]?.id || "INALI_PRACTICAL",
+        sampleText: syncVerseText || undefined,
+        uiLocale: state.uiLocale || "es",
+      }) +
+      renderAnnotationAndBlindCalibrationCardHtml({
+        annotationReport: state.annotationIndexReport || dataLayer?.getHydratedAnnotationIndexReport?.() || null,
+        blindCalibrationRows: state.blindCalibrationReport || dataLayer?.getHydratedBlindCalibrationReport?.() || null,
+        activeLang: state.lang,
+        activeBook: state.book,
+        uiLocale: state.uiLocale || "es",
+      });
+  }
+  const thermoPanelSync = getEl("bibleAnalyticalThermometerPanel", targetDoc);
+  if (thermoPanelSync) {
+    thermoPanelSync.innerHTML = renderAnalyticalThermometerHtml({
+      verses: state.lastNavResult?.chapter?.verses || {},
+      bookCode: state.book,
+      osisRef: `${state.book}.${state.chapter}.${state.verse}`,
+      includeInlineSubstitutionsDetails: false,
+      uiLocale: state.uiLocale || state.lang || "es",
+    });
+  }
   const mod = await loadStudyModule();
   const matrixChapter = await dataLayer.loadMatrixChapter(state.book, state.chapter);
   const nsmLexicon =
@@ -430,11 +462,10 @@ export async function hydrateStudyDrawerPanel(ctx = {}) {
   const isEnStudy = String(state.uiLocale || "es").trim().toLowerCase().startsWith("en");
   const matrixPackHref = String(state.matrixTier0Url || "data/packs/matrix_tier0.ekpack");
   const studyMatrixCardHtml =
-    `<section id="studyMatrixDownloadCard" class="ek-card-muted ek-row-between ek-mb-sm" data-matrix-tier0="true">` +
-    `<div><strong>📚 ${isEnStudy ? "Original Biblical Text Study (15 columns)" : "Texto Fuente Original de Estudio (15 columnas)"}</strong> ` +
-    `<span id="studyQualityCalibrationBadge" class="uls-badge" data-chrf-calibrated="chrF++ 12-lang">${isEnStudy ? "✅ Verified · 12 languages" : "✅ Verificada · 12 lenguas"}</span></div>` +
-    `<a id="btnDownloadStudyMatrixTier0" class="uls-chip ek-btn-link" data-tech-key="matrix_tier0.ekpack" href="${escHtml(matrixPackHref)}" download="matrix_tier0.ekpack">⬇️ ${isEnStudy ? "Download source study pack" : "Descargar paquete de estudio"}</a>` +
-    `</section>`;
+    `<div id="studyMatrixDownloadCard" class="ek-row-between ek-meta ek-mb-xs" data-matrix-tier0="true">` +
+    `<span>📚 ${isEnStudy ? "Original Study (15 col)" : "Estudio Original (15 col)"} · <span id="studyQualityCalibrationBadge" data-chrf-calibrated="chrF++ 12-lang" title="chrF++ 12-lang">${isEnStudy ? "✅ Verified (12 langs)" : "✅ Verificada (12 lenguas)"}</span></span>` +
+    `<a id="btnDownloadStudyMatrixTier0" class="ek-btn-link" data-tech-key="matrix_tier0.ekpack" href="${escHtml(matrixPackHref)}" download="matrix_tier0.ekpack">⬇️ ${isEnStudy ? "Vault (4. Share)" : "Bóveda (4. Compartir)"}</a>` +
+    `</div>`;
   const html = workBannerHtml + studyMatrixCardHtml + mod.renderStudy14ColDrawerHtml(matrixChapter, studyOpts);
   const container =
     getEl("leipzig14ColStratumAction", targetDoc) ||

@@ -326,14 +326,12 @@ export function hydrateShareAndAuditDrawerPanel(ctx = {}) {
       dlEntries: state.downloadsManifestEntries || [],
       isEn,
     });
+    const sharePacksDetailsEl = getEl("shareOfflinePacksDetails", targetDoc);
+    sharePacksDetailsEl?.setAttribute?.("hidden", "");
     packsPanel.innerHTML =
       workBannerHtml +
       `<div class="mostrador-offline-packs" data-lang="${escapeHtml(activeLang)}" data-active-work="${escapeHtml(workCtx.activeWork)}" data-pack-mode="${packMode}" data-quine-url="${escapeHtml(quineRelUrl)}">` +
-      `<div class="ek-row-between">` +
-      `<strong>${isEn ? `Offline Package (${escapeHtml(activeLang.toUpperCase())})` : `Paquete sin conexión (${escapeHtml(activeLang.toUpperCase())})`}</strong>` +
       `<a id="linkActiveLlmsManifest" class="uls-chip ek-btn-link" href="${escapeHtml(llmsHref)}" data-work="${escapeHtml(workCtx.activeWork)}">🤖 ${isEn ? "Open Text Guide (llms)" : "Índice textual limpio (llms)"}</a>` +
-      `</div>` +
-      `<p class="share-pack-desc">${isEn ? "Zero telemetry · Offline reader package ready for USB, Bluetooth, and MicroSD." : "Cero telemetría · Paquete de lectura sin conexión listo para USB, Bluetooth y MicroSD."}</p>` +
       `<a href="${escapeHtml(quineRelUrl)}" download="${escapeHtml(quineFilename)}" data-quine-download="true" data-pack-mode="${packMode}" hidden></a>` +
       ecoMeshCardHtml +
       `</div>` +
@@ -762,7 +760,7 @@ export function hydrateShareAndAuditDrawerPanel(ctx = {}) {
       authCard.insertBefore(provHost, authCard.firstChild);
     }
     provHost.innerHTML = renderEditorialProvenanceCardHtml(state.editorialProvenance || null, state.uiLocale || "es");
-    bindProvenanceVerifierEvents(provHost, state.editorialProvenance || null, state.uiLocale || "es");
+    bindProvenanceVerifierEvents(provHost, state.editorialProvenance || null, state.uiLocale || "es", { dataLayer });
     if (!state.editorialProvenance && dataLayer && typeof dataLayer.loadEditorialProvenance === "function") {
       Promise.resolve(dataLayer.loadEditorialProvenance())
         .then((prov) => {
@@ -770,7 +768,7 @@ export function hydrateShareAndAuditDrawerPanel(ctx = {}) {
             state.editorialProvenance = prov;
             provHost.innerHTML = renderEditorialProvenanceCardHtml(prov, state.uiLocale || "es");
             provHost._berneVerifierBound = false;
-            bindProvenanceVerifierEvents(provHost, prov, state.uiLocale || "es");
+            bindProvenanceVerifierEvents(provHost, prov, state.uiLocale || "es", { dataLayer });
           }
         })
         .catch(() => { });

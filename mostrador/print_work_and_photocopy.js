@@ -572,9 +572,9 @@ export function renderDuplexAssistantCardHtml({
     : "Notación matemática táctil (Nemeth)";
   const nemethToggleHtml =
     `<div class="braille-actions-row">` +
-    `<label class="hig-toggle-row uls-chip">` +
-    `<input type="checkbox" id="chkBrailleNemethToggle" class="hig-switch" data-action="toggle-braille-nemeth" data-edition-slug="11_braille_nemeth_b70"${nemethCheckedAttr} />` +
-    `<span>${escapeHtml(nemethLabel)}</span></label>` +
+    `<label class="hig-toggle-row uls-chip" data-braille-switch-label="true">` +
+    `<input type="checkbox" id="chkBrailleNemethToggle" class="hig-switch" data-action="toggle-braille-nemeth" data-edition-slug="11_braille_nemeth_b70" aria-label="${escapeHtml(nemethLabel)}"${nemethCheckedAttr} />` +
+    `<span id="brailleNemethSwitchLabel">${escapeHtml(nemethLabel)}</span></label>` +
     `<a id="btnDownloadBrailleBrf" class="uls-chip" href="${escapeHtml(brfHref)}" download="${escapeHtml(brfFilename)}" data-edition-slug="11_braille_nemeth_b70">` +
     `⠋ ${isEn ? "Download Tactile .brf (Ed. 11)" : "Descargar .brf Táctil (Ed. 11)"}</a>` +
     `</div>`;

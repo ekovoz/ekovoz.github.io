@@ -131,6 +131,15 @@ let TOTAL_VERSES_AUDITED = 31102;
 const CORE_SUBSTITUTIONS = [];
 let PERICOPE_RECEIPTS_COMPACT = [];
 let LEDGER_BLAKE3_ROOT = "";
+let DIACHRONIC_PROVENANCE_META = {
+  classic_stratum_preserved: "es-1909",
+  ledger_sha256_root: "b4e5c45d54a75dd3eabab548ad09dd172261cd2ce4531eaa8954c47909245787",
+  source_provenance: "dual_anchor_v2_verified",
+  modernization_tier: "LEXICAL_SYNTACTIC_MODERNIZED_V2",
+  max_batch_verses: 20,
+  build_ledger_path: "obras/biblia/build/es_modernization_ledger.json",
+  dual_anchor_ledger_path: "obras/biblia/corpus/es/es_modernization_ledger.json",
+};
 
 /**
  * Humaniza el `source` de una regla RegExp para la UI (`D3-R44` / `DEB-R44-05`):
@@ -274,6 +283,19 @@ export function hydrateDiachronicRegister(artifact) {
   }
   if (typeof artifact.ledger_blake3_root === "string" && artifact.ledger_blake3_root.trim()) {
     LEDGER_BLAKE3_ROOT = artifact.ledger_blake3_root.trim();
+  }
+  for (const key of [
+    "classic_stratum_preserved",
+    "ledger_sha256_root",
+    "source_provenance",
+    "modernization_tier",
+    "max_batch_verses",
+    "build_ledger_path",
+    "dual_anchor_ledger_path",
+  ]) {
+    if (artifact[key] !== undefined && artifact[key] !== null && artifact[key] !== "") {
+      DIACHRONIC_PROVENANCE_META[key] = artifact[key];
+    }
   }
   return REGISTER_AUDIT_ES_BASELINE;
 }
@@ -948,6 +970,15 @@ export function renderChapterDiachronicAuditCardHtml({
     `<span class="uls-badge" data-audit-book-eipen="${bookEipen}">Vector ${summary.bookCode}: AoA ${bookAoa}a (≤${maxAoa}a) · Prev ${(bookPrev * 100).toFixed(1)}% (≥${(minPrev * 100).toFixed(0)}%) · MDD ${bookMdd} (≤${maxMdd}) · Eipen-L ${bookEipen} (≥${minEipen})</span>` +
     `</div>` +
     `<div class="ek-w-full ek-mt-xs">${witnessesHtml}</div>` +
+    `<details class="tech-details ek-mt-xs" data-diachronic-provenance="true" data-classic-stratum="${DIACHRONIC_PROVENANCE_META.classic_stratum_preserved}" data-modernization-tier="${DIACHRONIC_PROVENANCE_META.modernization_tier}" data-source-provenance="${DIACHRONIC_PROVENANCE_META.source_provenance}" data-max-batch-verses="${Number(DIACHRONIC_PROVENANCE_META.max_batch_verses) || 20}">` +
+    `<summary>🧾 Registro y trazabilidad diacrónica (${DIACHRONIC_PROVENANCE_META.classic_stratum_preserved} → ${DIACHRONIC_PROVENANCE_META.modernization_tier})</summary>` +
+    `<div class="ek-row-wrap ek-meta ek-mt-xs">` +
+    `<span>Origen: <code>${DIACHRONIC_PROVENANCE_META.source_provenance}</code></span> · ` +
+    `<span>Lote máx: <code>${Number(DIACHRONIC_PROVENANCE_META.max_batch_verses) || 20} vv.</code></span> · ` +
+    `<span>SHA-256: <code>${String(DIACHRONIC_PROVENANCE_META.ledger_sha256_root || "").slice(0, 16)}…</code></span> · ` +
+    `<span>Ledger build: <code>${DIACHRONIC_PROVENANCE_META.build_ledger_path}</code></span> · ` +
+    `<span>Ledger corpus: <code>${DIACHRONIC_PROVENANCE_META.dual_anchor_ledger_path}</code></span>` +
+    `</div></details>` +
     `<details id="diachronicAll156RulesExplorer">` +
     `<summary>🔎 Explorar catálogo completo de reglas diacrónicas (${catalog.length} sustituciones FST en 3 capas)</summary>` +
     `<div class="ek-row-wrap ek-mt-sm">` +

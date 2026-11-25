@@ -285,6 +285,7 @@
     "printStage.dose1": "1. এই অধ্যায়ের PDF",
     "printStage.moreFormats": "কাগজের মাপ, ব্রেইল ও অফলাইন কপি",
     "print.btn.cancelJob": "বাতিল",
-    "share.auth.unifiedTitle": "যাচাইযোগ্য সম্পাদকীয় শংসাপত্র"
+    "share.auth.unifiedTitle": "যাচাইযোগ্য সম্পাদকীয় শংসাপত্র",
+    "seal.loading": "যাচাইকৃত পাঠ লোড হচ্ছে…"
   }
 }

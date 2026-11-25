@@ -100,3 +100,48 @@ export function buildCompactVersificationSummary(engOrgMapping = null, ubsCompar
     detailsToggleLabel: isEn ? "View edition comparison table" : "Ver tabla entre tradiciones",
   };
 }
+
+/**
+ * Resuelve la ancla Strong inicial del pasaje evitando `H0430` en NT (usa `G2316` como respaldo NT).
+ */
+export function resolveDefaultStrongForPassage(book = "GEN", activeRows = [], fallbackStrong = "") {
+  const cleanFallback = String(fallbackStrong || "").trim().toUpperCase();
+  if (cleanFallback && cleanFallback !== "∅") return cleanFallback;
+  const rows = Array.isArray(activeRows) ? activeRows : [];
+  for (const r of rows) {
+    const s = String(r?.c07_strong_id || r?.strong_id || r?.strong || "").trim().toUpperCase();
+    if (s && s !== "∅") return s;
+  }
+  const cleanBook = String(book || "GEN").trim().toUpperCase();
+  return NT_BOOK_CODES.has(cleanBook) ? "G2316" : "H0430";
+}
+
+/**
+ * Suprime etiquetas vacías tipo `Sentido básico: ∅` devolviendo cadena vacía cuando no hay sentido válido.
+ */
+export function formatNonEmptyCoreMeaning(raw = "", uiLocale = "es") {
+  const clean = String(raw || "").trim();
+  if (!clean || /^(?:∅|—|-|none|null|prim:\s*(?:∅|none|-))$/i.test(clean)) return "";
+  const isEn = String(uiLocale || "es").trim().toLowerCase().startsWith("en");
+  return `${isEn ? "Core meaning" : "Sentido básico"}: ${clean}`;
+}
+
+/**
+ * Separa filas léxicas de contenido y partículas funcionales para focalizar `02a`/`02b`.
+ */
+export function partitionContentAndFunctionRows(rows = [], isClosedClassFn = null) {
+  const list = Array.isArray(rows) ? rows : [];
+  const contentRows = [];
+  const functionRows = [];
+  for (const r of list) {
+    const strong = String(r?.c07_strong_id || r?.strong_id || "").trim();
+    const hasStrong = Boolean(strong && strong !== "∅");
+    const isFunc =
+      typeof isClosedClassFn === "function" &&
+      !strong.includes("+") &&
+      isClosedClassFn(r?.c11_semantic_domain, r?.c09_macula_role, r?.c08_morph_code, r?.c13_nsm_65);
+    if (hasStrong && !isFunc) contentRows.push(r);
+    else functionRows.push(r);
+  }
+  return { contentRows, functionRows };
+}

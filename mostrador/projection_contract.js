@@ -88,17 +88,17 @@ export const SURFACE_SLOT_MANIFEST = Object.freeze({
     ]),
   }),
   "study:calibrate": Object.freeze({
-    primary: "philologyRosettaStaticHost",
+    primary: "bibleAnalyticalThermometerPanel",
     collapsibles: Object.freeze([
-      "rosettaCalibrationAuditDetails",
       "wfstAndScriptioContinuaHost",
+      "rosettaCalibrationAuditDetails",
       "diachronicSubstitutionsDetails",
       "bibleBranchAndTypologyPanel",
     ]),
     slotOrder: Object.freeze([
-      "philologyRosettaStaticHost",
       "bibleAnalyticalThermometerPanel",
       "studyOrthographyAccordion",
+      "philologyRosettaStaticHost",
       "diachronicSubstitutionsDetails",
       "studyTypologyAccordion",
     ]),

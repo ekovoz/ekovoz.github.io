@@ -285,6 +285,7 @@
     "printStage.dose1": "1. この章の PDF",
     "printStage.moreFormats": "用紙サイズ・点字・オフライン版",
     "print.btn.cancelJob": "キャンセル",
-    "share.auth.unifiedTitle": "検証可能な編集証明書"
+    "share.auth.unifiedTitle": "検証可能な編集証明書",
+    "seal.loading": "検証済みテキストを読み込み中…"
   }
 }

@@ -285,6 +285,7 @@
     "printStage.dose1": "🖨️ Imprimir capítulo actual · PDF",
     "printStage.moreFormats": "Más formatos…",
     "print.btn.cancelJob": "Cancelar",
-    "share.auth.unifiedTitle": "Certificado Editorial Verificable"
+    "share.auth.unifiedTitle": "Certificado Editorial Verificable",
+    "seal.loading": "Cargando pasaje verificado…"
   }
 }

@@ -164,6 +164,14 @@ export function renderPrintDrawerPanelsSyncInDrawer(ctx = {}) {
     effectivePaper,
     hydratePrintDrawerPanels,
   });
+  const btnEd16 = getEl("btnJumpSpecialEditions16", targetDoc);
+  if (btnEd16) {
+    btnEd16.textContent = isEn ? "📚 16 Special Editions" : "📚 16 Ediciones Especiales";
+    if (typeof btnEd16.addEventListener === "function" && !btnEd16._ed16Bound) {
+      btnEd16._ed16Bound = true;
+      btnEd16.addEventListener("click", () => getEl("bibleEditionsCatalogGrid", targetDoc)?.scrollIntoView?.({ behavior: "smooth", block: "start" }));
+    }
+  }
   const budget = computeKindlePrintBudget({
     fontPt: activeFontPt,
     columns: state.columns || 2,

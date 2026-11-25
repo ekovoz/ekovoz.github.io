@@ -149,6 +149,7 @@ export function createMostradorController(options = {}) {
     activeSheet: null,
     mobileSheetOpen: false,
     userTouchedSheet: false,
+    intentSeq: 0,
     activeIntent: options.activeIntent || (options.surfaceMode === "studio" ? "study" : "read"),
     surfaceMode: options.surfaceMode || "reader",
     appearanceTheme: options.appearanceTheme || "light",
@@ -157,7 +158,7 @@ export function createMostradorController(options = {}) {
     stealthMode: Boolean(options.stealthMode),
     corpusLang: options.lang || "es",
     status: STATUS.IDLE,
-    seal: "seal.unavailable",
+    seal: "seal.loading",
     lastNavResult: null,
     lastBridgeChapter: null,
     studyLoaded: false,
@@ -495,6 +496,7 @@ export function createMostradorController(options = {}) {
     syncUrlFromState(targetDoc, { push: Boolean(partial.pushHistory) });
 
     state.status = STATUS.LOADING;
+    updateSealDom("seal.loading", targetDoc);
     const viewport = getEl("bibleVerseViewport", targetDoc);
     if (viewport) {
       viewport.setAttribute("data-status", STATUS.LOADING);
@@ -760,28 +762,20 @@ export function createMostradorController(options = {}) {
     };
   }
 
-  async function hydrateStudyDrawer(targetDoc = doc) {
-    return hydrateStudyDrawerPanel(buildDrawerHydratorContext(targetDoc));
-  }
+  async function hydrateStudyDrawer(targetDoc = doc) { return hydrateStudyDrawerPanel(buildDrawerHydratorContext(targetDoc)); }
+  async function hydrateImproveDrawer(targetDoc = doc) { return hydrateImproveDrawerPanel(buildDrawerHydratorContext(targetDoc)); }
+  function renderPrintDrawerPanelsSync(targetDoc = doc) { return renderPrintDrawerPanelsSyncInDrawer(buildDrawerHydratorContext(targetDoc)); }
+  async function hydratePrintDrawerPanels(targetDoc = doc) { return hydratePrintDrawerPanelsInDrawer(buildDrawerHydratorContext(targetDoc)); }
+  function hydrateShareAndAuditDrawer(targetDoc = doc) { return hydrateShareAndAuditDrawerPanel(buildDrawerHydratorContext(targetDoc)); }
 
-  async function hydrateImproveDrawer(targetDoc = doc) {
-    return hydrateImproveDrawerPanel(buildDrawerHydratorContext(targetDoc));
-  }
-
-  function renderPrintDrawerPanelsSync(targetDoc = doc) {
-    return renderPrintDrawerPanelsSyncInDrawer(buildDrawerHydratorContext(targetDoc));
-  }
-
-  async function hydratePrintDrawerPanels(targetDoc = doc) {
-    return hydratePrintDrawerPanelsInDrawer(buildDrawerHydratorContext(targetDoc));
-  }
-
-  function hydrateShareAndAuditDrawer(targetDoc = doc) {
-    return hydrateShareAndAuditDrawerPanel(buildDrawerHydratorContext(targetDoc));
-  }
-
-  async function transitionSheet(rawSheetName, targetDoc = doc, { mode = "toggle", fromUser = false } = {}) {
-    if (fromUser) state.userTouchedSheet = true;
+  async function transitionSheet(rawSheetName, targetDoc = doc, { mode = "toggle", fromUser = false, source = "", expectedIntentSeq = undefined } = {}) {
+    if (source === "boot") {
+      if (state.userTouchedSheet || (expectedIntentSeq !== undefined && Number(state.intentSeq || 0) !== Number(expectedIntentSeq))) return state.activeSheet || null;
+    } else {
+      state.intentSeq = (Number(state.intentSeq) || 0) + 1;
+      if (fromUser) state.userTouchedSheet = true;
+    }
+    const callIntentSeq = Number(state.intentSeq || 0);
     const normalized = rawSheetName === "improve" ? "field" : rawSheetName === "workshop" ? "field" : rawSheetName === "dosis" ? "share" : rawSheetName;
     if (!normalized || !HAREL_SHEET_MAP[normalized]) {
       closeSheet(store);
@@ -792,23 +786,16 @@ export function createMostradorController(options = {}) {
     }
 
     const prevSheet = state.activeSheet || null;
-    const nextSheet =
-      mode === "open"
-        ? openSheet(store, normalized)
-        : mode === "close"
-          ? closeSheet(store)
-          : toggleSheet(store, normalized);
+    const nextSheet = mode === "open" ? openSheet(store, normalized) : mode === "close" ? closeSheet(store) : toggleSheet(store, normalized);
     const willOpen = Boolean(nextSheet);
 
-    if (willOpen && nextSheet === "study") {
-      await hydrateStudyDrawer(targetDoc);
-    } else if (willOpen && nextSheet === "field") {
-      await hydrateImproveDrawer(targetDoc);
-    } else if (willOpen && nextSheet === "print") {
-      await updateDoseLinks(targetDoc);
-      await hydratePrintDrawerPanels(targetDoc);
-    } else if (willOpen && nextSheet === "share") {
-      hydrateShareAndAuditDrawer(targetDoc);
+    if (willOpen && nextSheet === "study") await hydrateStudyDrawer(targetDoc);
+    else if (willOpen && nextSheet === "field") await hydrateImproveDrawer(targetDoc);
+    else if (willOpen && nextSheet === "print") { await updateDoseLinks(targetDoc); await hydratePrintDrawerPanels(targetDoc); }
+    else if (willOpen && nextSheet === "share") hydrateShareAndAuditDrawer(targetDoc);
+
+    if ((source === "boot" && state.userTouchedSheet) || Number(state.intentSeq || 0) !== (source === "boot" && expectedIntentSeq !== undefined ? Number(expectedIntentSeq) : callIntentSeq)) {
+      return state.activeSheet || null;
     }
 
     if (willOpen && prevSheet !== nextSheet) {
@@ -1102,6 +1089,7 @@ export async function bootBrowserMostrador(
     await controller.navigate({ lang: langCode }, doc);
   };
 
+  const bootIntentSeq = Number(controller.state.intentSeq || 0);
   controller.bindDomEvents(doc);
   const ovTask = ensureStateOverlaysHydrated(controller.state, route.lang).then(() => { if (controller.state.liveCascadeOverlays?.length && controller.state.lastNavResult) controller.renderStateToDom(doc, { syncUrl: false }); }).catch(() => { });
   await Promise.race([ovTask, new Promise((r) => setTimeout(r, 60))]);
@@ -1125,7 +1113,7 @@ export async function bootBrowserMostrador(
     controller.syncUrlFromState(doc, { push: false });
   }
 
-  if (!controller.state.userTouchedSheet) {
+  if (!controller.state.userTouchedSheet && Number(controller.state.intentSeq || 0) === bootIntentSeq) {
     applyInitialSurfaceModeFromUrl({
       store: controller.store,
       state: controller.state,
@@ -1137,7 +1125,11 @@ export async function bootBrowserMostrador(
     const intentLayer = resolveCapabilityIntentLayer(controller.state.activeIntent || "read");
     doc?.body?.setAttribute?.("data-capability-intent-hops", String(intentLayer.maxHops));
     if (bootTargetSheet && controller.state.activeWork === "biblia") {
-      await controller.transitionSheet(bootTargetSheet, doc, { mode: "open" });
+      await controller.transitionSheet(bootTargetSheet, doc, {
+        mode: "open",
+        source: "boot",
+        expectedIntentSeq: bootIntentSeq,
+      });
     }
   }
 

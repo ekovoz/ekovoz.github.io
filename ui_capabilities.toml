@@ -243,12 +243,13 @@ test_name = "foliation_layout_20mm_punch_marks_rtl_inversion_and_sauvola_3rd_gen
 
 exposure_tier = "drawer-secondary"
 [capability.sauvola_3rd_gen_photocopy_simulator]
-surface   = "public-ui"
-selector  = "#btnSimulatePhotocopy3Gen"
-module    = "mostrador/dosis.js"
-handler   = "simulateThirdGenPhotocopySauvola"
-test_file = "mostrador/dosis.test.mjs"
-test_name = "foliation_layout_20mm_punch_marks_rtl_inversion_and_sauvola_3rd_gen_photocopy"
+surface         = "public-ui"
+selector        = "#btnSimulatePhotocopy3Gen"
+template_module = "mostrador/social_and_photocopy_cards.js"
+module          = "mostrador/dosis.js"
+handler         = "simulateThirdGenPhotocopySauvola"
+test_file       = "mostrador/dosis.test.mjs"
+test_name       = "foliation_layout_20mm_punch_marks_rtl_inversion_and_sauvola_3rd_gen_photocopy"
 
 exposure_tier = "drawer-secondary"
 [capability.optical_gf2_gaussian_camera_rx]
@@ -920,6 +921,32 @@ module          = "mostrador/study_verse_viewmodel.js"
 handler         = "resolveTestamentRegime"
 test_file       = "tests/web/concordance_and_audit_r8.test.mjs"
 test_name       = "SLICE_EKO_HIG3_07: testament regime rejects MT on ROM.8.28 and picks primary lexical token on MAT.1.23"
+
+[capability.local_ekpack_wasm_verifier]
+surface         = "public-ui"
+exposure_tier   = "drawer-secondary"
+release_stage   = "public"
+intent          = "share"
+canonical_owner = "#shareAuthenticityUnifiedCard"
+selector        = "#inputVerifyLocalEkpack"
+template_module = "mostrador/provenance_and_support_panel.js"
+module          = "mostrador/provenance_and_support_panel.js"
+handler         = "verifyLocalEkpackFileBuffer"
+test_file       = "tests/web/hig4_reactive_parity.test.mjs"
+test_name       = "SLICE_EKO_HIG4_11_12: compact studyMatrixDownloadCard, vault tier0/fonts metadata, local ekpack verifier, and single G3 Sauvola pill"
+
+[capability.workshop_modernize_readability_audit]
+surface         = "public-ui"
+exposure_tier   = "drawer-secondary"
+release_stage   = "public"
+intent          = "workshop"
+canonical_owner = "#tallerArtifactsCatalog"
+selector        = "#btnRunExternalAudit"
+template_module = "mostrador/mejorar_renderers.js"
+module          = "mostrador/workshop_audit_and_langs.js"
+handler         = "computeClientModernizeReadabilityAudit"
+test_file       = "tests/web/hig4_reactive_parity.test.mjs"
+test_name       = "SLICE_EKO_HIG4_09_10: diachronic 7 keys, annotation index_rel_path, ladder probes, and modernize AoA/MDD audit"
 
 [intent_contracts]
 max_hops = 2

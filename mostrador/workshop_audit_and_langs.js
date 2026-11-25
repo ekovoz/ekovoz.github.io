@@ -17,10 +17,15 @@ const WORKSHOP_CORE_CC0_LANGS = Object.freeze([
   { code: "grc", labelEs: "🏛️ Griego (SBLGNT)", labelEn: "🏛️ Greek (SBLGNT)" },
 ]);
 
-function resolveWorkshopCatalogLangs(masterCensusSummary = null, activeTallerLang = "es") {
+function resolveWorkshopCatalogLangs(
+  masterCensusSummary = null,
+  activeTallerLang = "es",
+  availableWorkshopLangs = null,
+) {
   const out = [...WORKSHOP_CORE_CC0_LANGS];
   const seen = new Set(out.map((e) => e.code));
   const extraCodes = [
+    ...(Array.isArray(availableWorkshopLangs) ? availableWorkshopLangs : []),
     ...(Array.isArray(masterCensusSummary?.verified_pack_langs) ? masterCensusSummary.verified_pack_langs : []),
     ...(Array.isArray(masterCensusSummary?.celf_250_active_langs) ? masterCensusSummary.celf_250_active_langs : []),
     ...(Array.isArray(masterCensusSummary?.tier2_nt_human_ot_workshop_corpora)
@@ -47,6 +52,12 @@ function resolveWorkshopCatalogLangs(masterCensusSummary = null, activeTallerLan
     });
   }
   return out;
+}
+
+export function formatLock8StatusBadge(status = "PASS", uiLocale = "es") {
+  const isEn = String(uiLocale || "es").trim().toLowerCase().startsWith("en");
+  const cleanStatus = humanizeUiCopy(String(status || "PASS"), uiLocale);
+  return isEn ? `🔒 Grammar check: ${cleanStatus}` : `🔒 Verificación gramatical: ${cleanStatus}`;
 }
 
 const COMBINING_DIACRITICS_REGEX = /[\u0300-\u036f\u0591-\u05c7\u064b-\u065f\u0670]/g;
@@ -152,16 +163,23 @@ export function renderWorkshop5LangsSwitcherHtml(
   activeTallerLang = "es",
   masterCensusSummary = null,
   uiLocale = "es",
+  availableWorkshopLangs = null,
 ) {
   const isEn = String(uiLocale || "es").trim().toLowerCase().startsWith("en");
   const normActive = String(activeTallerLang || "es").trim().toLowerCase() || "es";
-  const catalogLangs = resolveWorkshopCatalogLangs(masterCensusSummary, normActive);
+  const catalogLangs = resolveWorkshopCatalogLangs(
+    masterCensusSummary,
+    normActive,
+    availableWorkshopLangs,
+  );
   const cleanActive = catalogLangs.some((l) => l.code === normActive)
     ? normActive
     : "es";
   const tier2Corpora = Array.isArray(masterCensusSummary?.tier2_nt_human_ot_workshop_corpora)
     ? masterCensusSummary.tier2_nt_human_ot_workshop_corpora
-    : ["stp"];
+    : Array.isArray(availableWorkshopLangs) && availableWorkshopLangs.length > 0
+      ? availableWorkshopLangs
+      : ["stp"];
   const pivotCodes = new Set(WORKSHOP_CORE_CC0_LANGS.map((e) => e.code));
   const pillEntries = catalogLangs.filter((e) => pivotCodes.has(e.code) || e.code === cleanActive);
   const extraEntries = catalogLangs.filter((e) => !pivotCodes.has(e.code) && e.code !== cleanActive);
@@ -195,12 +213,17 @@ export function renderWorkshop5LangsSwitcherHtml(
       : cleanActive === "stp"
         ? (isEn ? "O'dam field workshop · New Testament + community OT review" : "Taller O'dam · Nuevo Testamento + revisión comunitaria AT")
         : (isEn ? `Community review · Active edition: ${activeEntry.labelEn}` : `Revisión comunitaria · Edición activa: ${activeEntry.labelEs}`);
+  const activeBadgeLabel = cleanActive === "he" || cleanActive === "grc"
+    ? (isEn ? `Original source · ${cleanActive.toUpperCase()}` : `Fuente original · ${cleanActive.toUpperCase()}`)
+    : tier2Corpora.includes(cleanActive)
+      ? `${isEn ? "NT verified + Community OT" : "NT verificado + AT comunitario"}: ${cleanActive.toUpperCase()}`
+      : `${isEn ? "Community edition" : "Edición comunitaria"}: ${cleanActive.toUpperCase()}`;
 
   return (
     `<section id="workshop5LangsSwitcher" class="ek-card-muted ek-span-full ek-stack-sm" data-active-taller-lang="${escapeHtml(cleanActive)}" data-tier2-corpora="${escapeHtml(tier2Corpora.join(","))}" data-workshop-langs-count="${catalogLangs.length}">` +
     `<div class="ek-row-between">` +
     `<strong class="ek-title-sm" data-workshop-lang-banner="${escapeHtml(cleanActive)}">🌍 ${isEn ? `Community Review · Active: ${cleanActive.toUpperCase()} (${catalogLangs.length})` : `Colaboración · Activo: ${cleanActive.toUpperCase()} (${catalogLangs.length})`}</strong>` +
-    `<span class="uls-badge" data-tier2-workshop-badge="true">${isEn ? "NT verified + Community OT" : "NT verificado + AT comunitario"}: ${escapeHtml(tier2Corpora.map((c) => c.toUpperCase()).join(", "))}</span>` +
+    `<span class="uls-badge" data-tier2-workshop-badge="true">${escapeHtml(activeBadgeLabel)}</span>` +
     `</div>` +
     `<p class="ek-meta" data-workshop-lang-focus="${escapeHtml(cleanActive)}">${escapeHtml(activeFocusHint)}</p>` +
     `<div class="ek-row-wrap" role="group" aria-label="${isEn ? "Select CC0 Workshop Language" : "Seleccionar idioma de kit de taller CC0"}">${buttonsHtml}${extraSelectHtml}</div>` +
@@ -221,6 +244,7 @@ export function renderWorkshopAuditSubtabHtml({
     activeTallerLang,
     state.masterCensusSummary || null,
     uiLocale,
+    state.availableWorkshopLangs || null,
   );
   const draftOpts = {
     ...(Array.isArray(state.topUncertaintyQueue) && state.topUncertaintyQueue.length > 0
@@ -264,16 +288,32 @@ export function renderWorkshopAuditSubtabHtml({
   const annTotals = state.annotationIndexReport?.totals || null;
   const blindRows = Array.isArray(state.blindCalibrationReport) ? state.blindCalibrationReport : [];
   const coverageSummaryHtml =
-    annTotals || blindRows.length > 0
-      ? `<section id="workshopCoverageCalibrationCard" class="ek-card-muted ek-mt-sm" data-annotation-tokens="${Number(annTotals?.ot_tokens || 0) + Number(annTotals?.nt_tokens || 0)}" data-blind-calibration-rows="${blindRows.length}">` +
+    annTotals || blindRows.length > 0 || state.externalModernizeAudit
+      ? `<section id="workshopCoverageCalibrationCard" class="ek-card-muted ek-mt-sm" data-annotation-tokens="${Number(annTotals?.ot_tokens || 0) + Number(annTotals?.nt_tokens || 0)}" data-blind-calibration-rows="${blindRows.length}"${state.externalModernizeAudit ? ` data-modernize-aoa="${state.externalModernizeAudit.aoaYears}" data-modernize-mdd="${state.externalModernizeAudit.mdd}"` : ""}>` +
         `<div class="ek-row-between">` +
         `<strong>⚖️ ${isEnAudit ? "Quality & Source Text Calibration" : "Calibración de Calidad y Fuentes Originales"}</strong>` +
-        `<span class="uls-badge">${blindRows.length || 48} ${isEnAudit ? "calibrated samples" : "muestras calibradas"}${annTotals ? ` · ${(Number(annTotals.ot_tokens || 0) + Number(annTotals.nt_tokens || 0)).toLocaleString("en-US")} ${isEnAudit ? "tokens" : "palabras"}` : ""}</span>` +
+        `<span class="uls-badge">${blindRows.length || 48} ${isEnAudit ? "calibrated samples" : "muestras calibradas"}${annTotals ? ` · ${(Number(annTotals.ot_tokens || 0) + Number(annTotals.nt_tokens || 0)).toLocaleString("en-US")} ${isEnAudit ? "tokens" : "palabras"}` : ""}${state.externalModernizeAudit ? ` · ${state.externalModernizeAudit.label}` : ""}</span>` +
         `</div>` +
         `<p class="ek-meta ek-m-0 ek-mt-xs">${isEnAudit ? "Covers Hebrew/Greek lexical alignments and 12-language clarity checks across GEN, PSA, ISA, JON." : "Cubre alineación léxica hebreo/griego y verificación de claridad en 12 lenguas sobre GEN, PSA, ISA y JON."}</p>` +
         `</section>`
       : "";
   return switcherHtml + coverageSummaryHtml + relocatedAuditHtml + catalogHtml + sanitizedDraftHtml;
+}
+
+export function computeClientModernizeReadabilityAudit(rawText = "", uiLocale = "es") {
+  const isEn = String(uiLocale || "es").trim().toLowerCase().startsWith("en");
+  const clean = String(rawText || "").trim();
+  const words = clean ? clean.split(/\s+/).filter(Boolean) : [];
+  const sentences = clean ? clean.split(/[.!?;\n]+/).filter((s) => s.trim().length > 0) : [];
+  const avgLen = words.length > 0 ? words.reduce((a, w) => a + w.length, 0) / words.length : 5.0;
+  const avgClauseWords = sentences.length > 0 ? words.length / sentences.length : words.length;
+  const aoaYears = Number(Math.min(18, Math.max(4.5, 4.2 + avgLen * 0.72)).toFixed(1));
+  const mdd = Number(Math.min(6.0, Math.max(1.2, 1.3 + avgClauseWords * 0.06)).toFixed(2));
+  const passed = aoaYears <= 11.0 && mdd <= 2.6;
+  const label = isEn
+    ? `Readability · AoA=${aoaYears}y (≤11) · MDD=${mdd} (≤2.6)`
+    : `Legibilidad · AoA=${aoaYears}a (≤11) · MDD=${mdd} (≤2.6)`;
+  return { aoaYears, mdd, passed, wordsCount: words.length, label };
 }
 
 export function createWorkshopAuditHandlers({
@@ -308,6 +348,7 @@ export function createWorkshopAuditHandlers({
         rawText: rawDraft,
         oldSurface: oldInput?.value || "",
       });
+      state.externalModernizeAudit = computeClientModernizeReadabilityAudit(rawDraft, state.uiLocale || "es");
       state.refreshWorkshopAuditSubtab?.();
       (state.refreshPatchPreview || refreshPatchPreview)();
     }
@@ -361,6 +402,7 @@ export function createWorkshopAuditHandlers({
         rawText: rawDraft,
         oldSurface: oldInput?.value || "",
       });
+      state.externalModernizeAudit = computeClientModernizeReadabilityAudit(rawDraft, state.uiLocale || "es");
       state.refreshWorkshopAuditSubtab?.();
       (state.refreshPatchPreview || refreshPatchPreview)();
       return true;

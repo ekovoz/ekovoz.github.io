@@ -307,6 +307,11 @@ export function bindStageDomEvents(ctx = {}) {
     });
   }
 
+  const isEnRole = String(state.uiLocale || "es").trim().toLowerCase().startsWith("en");
+  getEl("sovereignCorpusLangBtn", targetDoc)?.setAttribute?.("data-lang-role", "corpus");
+  getEl("sovereignCorpusLangBtn", targetDoc)?.setAttribute?.("aria-label", isEnRole ? "Bible text language (24 Bibles and 7,164 languages)" : "Idioma del texto bíblico (24 Biblias y 7,164 lenguas)");
+  getEl("ulsTriggerBtn", targetDoc)?.setAttribute?.("data-lang-role", "app-ui");
+  if (getEl("ulsUiCountBadge", targetDoc)) getEl("ulsUiCountBadge", targetDoc).textContent = isEnRole ? "App language · 18" : "Idioma de la app · 18";
   bindCorpusPolyglotAndUiPreferences({
     state,
     dataLayer,

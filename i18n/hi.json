@@ -285,6 +285,7 @@
     "printStage.dose1": "1. इस अध्याय का PDF",
     "printStage.moreFormats": "कागज़ आकार, ब्रेल और ऑफ़लाइन कॉपी",
     "print.btn.cancelJob": "रद्द करें",
-    "share.auth.unifiedTitle": "सत्यापन योग्य संपादकीय प्रमाणपत्र"
+    "share.auth.unifiedTitle": "सत्यापन योग्य संपादकीय प्रमाणपत्र",
+    "seal.loading": "सत्यापित पाठ लोड हो रहा है…"
   }
 }

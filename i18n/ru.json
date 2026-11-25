@@ -285,6 +285,7 @@
     "printStage.dose1": "1. PDF этой главы",
     "printStage.moreFormats": "Бумага, Брайль и офлайн-копия",
     "print.btn.cancelJob": "Отмена",
-    "share.auth.unifiedTitle": "Проверяемый редакционный сертификат"
+    "share.auth.unifiedTitle": "Проверяемый редакционный сертификат",
+    "seal.loading": "Загрузка проверенного отрывка…"
   }
 }

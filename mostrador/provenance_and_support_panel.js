@@ -4,6 +4,7 @@
 // ============================================================================
 
 import { escapeHtml } from "./bridge_and_chapter.js";
+import { parseEkpackPreamble32Js, sha256BytesSyncPureJs } from "./ekpack_binary_codec.js";
 import { validateAllEightLocksPda } from "./mejorar.js";
 
 const DEFAULT_PROVENANCE = Object.freeze({
@@ -158,6 +159,28 @@ export function renderEditorialAuditAttestationHtml({
   );
 }
 
+export function verifyLocalEkpackFileBuffer(bytes, { wasmMod = null, uiLocale = "es" } = {}) {
+  const isEn = String(uiLocale || "es").trim().toLowerCase().startsWith("en");
+  const u8 = bytes instanceof Uint8Array ? bytes : new Uint8Array(bytes || []);
+  const preamble = parseEkpackPreamble32Js(u8);
+  const sha256Hex =
+    u8.byteLength > 0
+      ? Array.from(sha256BytesSyncPureJs(u8))
+          .map((b) => b.toString(16).padStart(2, "0"))
+          .join("")
+      : "";
+  const valid = Boolean(preamble && preamble.frame0Offset + preamble.frame0ByteLen <= u8.byteLength);
+  const hasWasm = Boolean(wasmMod?.exports);
+  const summary = valid
+    ? isEn
+      ? `✅ Valid .ekpack (${preamble.bookCount} books · ${preamble.totalVerses} vv.${hasWasm ? " · WASM ready" : ""}) · SHA-256 ${sha256Hex.slice(0, 16)}…`
+      : `✅ Paquete .ekpack válido (${preamble.bookCount} libros · ${preamble.totalVerses} vv.${hasWasm ? " · WASM activo" : ""}) · SHA-256 ${sha256Hex.slice(0, 16)}…`
+    : isEn
+      ? "⛔ Invalid or truncated .ekpack binary container."
+      : "⛔ Archivo .ekpack inválido o truncado.";
+  return { valid, preamble, sha256Hex, wasmRuntimeReady: hasWasm, summary };
+}
+
 export function renderEditorialProvenanceCardHtml(provenance = null, uiLocale = "es") {
   const isEn = String(uiLocale || "es").trim().toLowerCase().startsWith("en");
   const p = provenance && typeof provenance === "object" ? { ...DEFAULT_PROVENANCE, ...provenance } : DEFAULT_PROVENANCE;
@@ -198,8 +221,10 @@ export function renderEditorialProvenanceCardHtml(provenance = null, uiLocale = 
     `<div class="ek-row-wrap">` +
     `<input type="text" id="bernePreimageInput" class="ek-input-compact" placeholder="${isEn ? "Authorship phrase" : "Frase de autoría"}" aria-label="${isEn ? "Authorship verification phrase" : "Frase de verificación de autoría"}">` +
     `<button type="button" id="btnVerifyBerneCommitment" class="uls-chip">🔐 ${isEn ? "Check file authenticity" : "Comprobar autenticidad del archivo"}</button>` +
+    `<label for="inputVerifyLocalEkpack" class="uls-chip ek-file-picker-btn">📦 ${isEn ? "Verify local .ekpack (WASM)" : "Verificar .ekpack local (WASM)"}<input type="file" id="inputVerifyLocalEkpack" class="sr-only-file-input" accept=".ekpack" aria-label="${isEn ? "Select local .ekpack file to verify" : "Seleccionar archivo .ekpack local para verificar"}"></label>` +
     `</div>` +
     `<output id="berneVerifyStatus" class="ek-meta" aria-live="polite"></output>` +
+    `<output id="localEkpackVerifyStatus" class="ek-meta" aria-live="polite"></output>` +
     `</div>` +
     `<details class="tech-details ek-mt-xs" data-advanced-audit="true"><summary>${isEn ? "🔍 Cryptographic verification fingerprints" : "🔍 Huellas de verificación y registro público"}</summary>` +
     `<dl class="provenance-meta-list">` +
@@ -218,7 +243,7 @@ export function renderEditorialProvenanceCardHtml(provenance = null, uiLocale = 
   );
 }
 
-export function bindProvenanceVerifierEvents(containerEl, provenance = null, uiLocale = "es") {
+export function bindProvenanceVerifierEvents(containerEl, provenance = null, uiLocale = "es", opts = {}) {
   if (!containerEl || typeof containerEl.addEventListener !== "function" || containerEl._berneVerifierBound) {
     return;
   }
@@ -226,6 +251,22 @@ export function bindProvenanceVerifierEvents(containerEl, provenance = null, uiL
   const p = provenance && typeof provenance === "object" ? provenance : DEFAULT_PROVENANCE;
   const expectedHash = String(p?.berne_article_15_3?.creator_commitment_hash || DEFAULT_PROVENANCE.berne_article_15_3.creator_commitment_hash);
   const isEn = String(uiLocale || "es").trim().toLowerCase().startsWith("en");
+  containerEl.addEventListener("change", async (ev) => {
+    if (ev?.target?.id !== "inputVerifyLocalEkpack") return;
+    const file = ev.target?.files?.[0];
+    if (!file || typeof file.arrayBuffer !== "function") return;
+    const ownerDoc = containerEl.ownerDocument || globalThis.document;
+    const out = containerEl.querySelector?.("#localEkpackVerifyStatus") || ownerDoc?.getElementById?.("localEkpackVerifyStatus");
+    const dl = opts?.dataLayer;
+    const wasmMod = dl?.getHydratedWasmModule?.("ekovoz_player_wasm") || (typeof dl?.loadWasmModule === "function" ? await dl.loadWasmModule("ekovoz_player_wasm").catch(() => null) : null);
+    const bytes = new Uint8Array(await file.arrayBuffer());
+    const res = verifyLocalEkpackFileBuffer(bytes, { wasmMod, uiLocale });
+    if (out) {
+      out.setAttribute?.("data-local-ekpack-valid", String(res.valid));
+      out.setAttribute?.("data-local-ekpack-sha256", res.sha256Hex);
+      out.textContent = res.summary;
+    }
+  });
   containerEl.addEventListener("click", async (ev) => {
     const btn = ev?.target?.closest ? ev.target.closest("#btnVerifyBerneCommitment") : ev?.target?.id === "btnVerifyBerneCommitment" ? ev.target : null;
     if (!btn) return;

@@ -106,8 +106,11 @@ export function renderVaultStorageManagerHtml({
   matrixTier0Url = "",
   matrixTier0Bytes = 7562231,
   filterQuery = "",
+  fontsManifest = null,
   uiLocale = "es",
 } = {}) {
+  const tier0BundleBytes = Number(fontsManifest?.tier0_offline_bundle_bytes || 825864);
+  const totalFontsCount = Number(fontsManifest?.total_fonts || 34);
   const isEn = String(uiLocale || "es").trim().toLowerCase().startsWith("en");
   const packMap = new Map();
   for (const row of Array.isArray(storedPacks) ? storedPacks : []) {
@@ -205,10 +208,10 @@ export function renderVaultStorageManagerHtml({
     : `${installedBiblesCount} de ${mergedLangs.length} Biblias listas · ${formatMegabytes(usedBytes)}${quotaSuffix}`;
 
   return (
-    `<section id="vaultStorageManagerPanel" class="vault-manager-card" data-vault-langs-count="${mergedLangs.length}" data-installed-packs="${packMap.size}" data-installed-fonts="${(storedFonts || []).length}" data-tech-key="ekovoz_vault_v2">` +
+    `<section id="vaultStorageManagerPanel" class="vault-manager-card" data-vault-langs-count="${mergedLangs.length}" data-installed-packs="${packMap.size}" data-installed-fonts="${(storedFonts || []).length}" data-tier0-offline-bundle-bytes="${tier0BundleBytes}" data-total-fonts="${totalFontsCount}" data-tech-key="ekovoz_vault_v2">` +
     `<header class="vault-manager-header">` +
     `<strong>🗄️ ${isEn ? "Offline Device Vault" : "Bóveda sin conexión del dispositivo"}</strong>` +
-    `<span class="uls-badge" data-vault-quota-badge="true">${escapeHtml(summaryLabel)}</span>` +
+    `<span class="uls-badge" data-vault-quota-badge="true">${escapeHtml(summaryLabel)} · ${totalFontsCount} ${isEn ? "fonts" : "fuentes"} (${formatMegabytes(tier0BundleBytes)})</span>` +
     `</header>` +
     `<progress class="vault-quota-bar" max="100" value="${pct}"${pct === 0 ? " hidden" : ""}>${pct}%</progress>` +
     `<ul class="vault-pack-list vault-pack-priority-list">${priorityRowsHtml}</ul>` +
@@ -288,6 +291,7 @@ export async function hydrateVaultStorageManagerPanel(ctx = {}) {
       matrixTier0Url: state.matrixTier0Url || "data/packs/matrix_tier0.ekpack",
       matrixTier0Bytes: Number(state.matrixTier0Bytes) || 7562231,
       filterQuery: state.vaultFilterQuery || "",
+      fontsManifest: state.fontsZstManifest || null,
       uiLocale: state.uiLocale || "es",
     });
   };

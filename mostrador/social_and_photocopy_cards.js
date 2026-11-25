@@ -171,7 +171,7 @@ export function renderEditorialGraphicsAndPrintSpecsCard({
   const genBadges = generations
     .map(
       (g) =>
-        `<button type="button" class="uls-chip photocopy-gen-btn photocopy-seg-btn${g.active ? " is-selected" : ""}" data-photocopy-gen="${g.gen}" data-gen-label="${escHtml(g.label)}" data-contrast-ratio="${g.contrast}" data-sauvola-k="${g.sauvolaK}" title="${escHtml(g.label)}: ${g.contrast}" aria-pressed="${g.active ? "true" : "false"}">` +
+        `<button type="button"${g.gen === 3 ? ' id="btnSimulatePhotocopy3Gen"' : ""} class="uls-chip photocopy-gen-btn photocopy-seg-btn${g.active ? " is-selected" : ""}" data-photocopy-gen="${g.gen}" data-gen-label="${escHtml(g.label)}" data-contrast-ratio="${g.contrast}" data-sauvola-k="${g.sauvolaK}" title="${escHtml(g.label)}: ${g.contrast}" aria-pressed="${g.active ? "true" : "false"}">` +
         `<strong>${g.shortLabel}</strong> · ${g.contrast}` +
         `</button>`,
     )

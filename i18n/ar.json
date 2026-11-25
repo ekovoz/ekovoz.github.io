@@ -285,6 +285,7 @@
     "printStage.dose1": "1. PDF هذا الإصحاح",
     "printStage.moreFormats": "حجم الورق وبرايل والنسخة دون إنترنت",
     "print.btn.cancelJob": "إلغاء",
-    "share.auth.unifiedTitle": "الشهادة التحريرية الموثقة"
+    "share.auth.unifiedTitle": "الشهادة التحريرية الموثقة",
+    "seal.loading": "جارٍ تحميل المقطع الموثق…"
   }
 }

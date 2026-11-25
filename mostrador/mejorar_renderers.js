@@ -7,6 +7,7 @@ import {
   renderMasterCensus7164CardHtml,
 } from "./drawer_hydrators.js";
 import { humanizeUiCopy } from "./human_labels.js";
+import { isWorkVisible } from "./projection_contract.js";
 import {
   CANONICAL_5_OT_TRANSLATION_WAVES,
   CASCADE_LEVELS,
@@ -155,7 +156,7 @@ export function renderImproveDrawerHtml({
     `<p class="ek-subtitle" data-i18n="improve.subtitle">${t("improve.subtitle")}</p>` +
     `</div>` +
     `<div class="lock8-status-row">` +
-    `<span class="uls-badge" data-lock8-badge="true">🔒 ${isEn ? `Grammar check: ${lock8Result.status}` : `Verificación gramatical: ${lock8Result.status}`}</span>` +
+    `<span class="uls-badge" data-lock8-badge="true">🔒 ${isEn ? `Grammar check: ${humanizeUiCopy(lock8Result.status, isEn ? "en" : "es")}` : `Verificación gramatical: ${humanizeUiCopy(lock8Result.status, "es")}`}</span>` +
     `<details class="tech-details"><summary>${isEn ? "Technical details" : "Detalles técnicos"}</summary>` +
     `<code>${isEn ? "Lock 8 (MACULA A0/A1 + Jespersen)" : "Candado 8 (MACULA A0/A1 + Jespersen)"}</code>` +
     (includeEightLocksBar
@@ -465,20 +466,25 @@ export function renderCascadeAndLadderHtml({
     strongIds: [sanitizePipeField(strongId || "").toUpperCase()].filter(Boolean),
     responseText: "",
   });
+  const tier2OtProbeVerses = Number(ladderItems?.tier2_ot_probe_verses ?? 1);
+  const modernizedFstProbeChars = Number(ladderItems?.modernized_fst_probe_chars ?? 23);
   const celfSummaryBlock = showElicitationLadder
-    ? `<details id="celf250TechDetails" class="tech-details hig-tech-receipt-details ek-mb-sm" data-advanced-audit="true" data-celf250-ladder="true" data-celf250-rank="${seed250.rank}">` +
+    ? `<details id="celf250TechDetails" class="tech-details hig-tech-receipt-details ek-mb-sm" data-advanced-audit="true" data-celf250-ladder="true" data-celf250-rank="${seed250.rank}" data-tier2-ot-probe-verses="${tier2OtProbeVerses}" data-modernized-fst-probe-chars="${modernizedFstProbeChars}">` +
     `<summary>${isEn ? `Technical details · Community step #${seed250.rank}/250` : `Detalles técnicos · Paso #${seed250.rank}/250 (${totalCount} pasos)`}</summary>` +
-    `<p class="ek-meta ek-mt-xs">${isEn ? `Community review sequence (${totalCount} steps · Community consensus)` : `Secuencia de revisión (${totalCount} pasos · Consenso comunitario)`}</p>` +
+    `<p class="ek-meta ek-mt-xs">${isEn ? `Community review sequence (${totalCount} steps · Probes: ${tier2OtProbeVerses} OT v. / ${modernizedFstProbeChars} FST ch)` : `Secuencia de revisión (${totalCount} pasos · Sonda AT: ${tier2OtProbeVerses} v. · FST: ${modernizedFstProbeChars} car.)`}</p>` +
     `<pre id="celf250SeedOutput" class="ek-pre-compact">${seed250.payloadLine}</pre>` +
     `</details>`
     : "";
 
   const headerStrongSuffix = strongId ? ` · ${sanitizePipeField(strongId)}` : "";
+  const showEvangeliosCopy = isWorkVisible("evangelios", { previewWorks });
+  const sisterWorksPhraseEn = showEvangeliosCopy ? "Bible, Gospels, and Beatitudes" : "Bible and Beatitudes";
+  const sisterWorksPhraseEs = showEvangeliosCopy ? "Biblia, Evangelios y Felices" : "Biblia y Felices";
   return (
     `<div class="cascade-impact-box ek-card" data-cascade-level="${cleanLevel}" data-cascade-lang="${cleanLang}" data-celf-total="${totalCount}" data-active-ot-wave="${waveNum}">` +
     `<strong class="ek-title-sm">🌊 ${isEn ? `Cascade Propagation ${cleanLevel} (${totalCount} steps${headerStrongSuffix} in ${resolvedRef})` : `Propagación de Mejora ${cleanLevel} (${totalCount} pasos${headerStrongSuffix} en ${resolvedRef})`}</strong>` +
     `<p class="ek-subtitle ek-mb-sm">` +
-    `${isEn ? `Refining this root in <code>${cleanLang}</code> updates matching verses across Bible, Gospels, and Beatitudes. Tap any step to inspect:` : `Al corregir esta raíz en <code>${cleanLang}</code>, el ajuste se propaga a Biblia, Evangelios y Felices. Pulsa un paso para revisarlo:`}` +
+    `${isEn ? `Refining this root in <code>${cleanLang}</code> updates matching verses across ${sisterWorksPhraseEn}. Tap any step to inspect:` : `Al corregir esta raíz en <code>${cleanLang}</code>, el ajuste se propaga a ${sisterWorksPhraseEs}. Pulsa un paso para revisarlo:`}` +
     `</p>` +
     celfSummaryBlock +
     sisterCascadeHtml +

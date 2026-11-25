@@ -285,6 +285,7 @@
     "printStage.dose1": "1. 이 장 PDF",
     "printStage.moreFormats": "용지 크기, 점자 및 오프라인 복사본",
     "print.btn.cancelJob": "취소",
-    "share.auth.unifiedTitle": "검증 가능한 편집 인증서"
+    "share.auth.unifiedTitle": "검증 가능한 편집 인증서",
+    "seal.loading": "검증된 본문 불러오는 중…"
   }
 }

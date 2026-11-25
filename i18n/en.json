@@ -285,6 +285,7 @@
     "printStage.dose1": "🖨️ Print this chapter · PDF",
     "printStage.moreFormats": "More formats…",
     "print.btn.cancelJob": "Cancel",
-    "share.auth.unifiedTitle": "Verifiable Editorial Certificate"
+    "share.auth.unifiedTitle": "Verifiable Editorial Certificate",
+    "seal.loading": "Loading verified passage…"
   }
 }

@@ -5,7 +5,7 @@ export { renderDiglossicParallelBridge, resolveRegionalBridgeLanguage21 };
 
 import { MATRIX_ROW_COLUMNS } from "./data_layer.js";
 import { humanizeUiCopy } from "./human_labels.js";
-import { resolveTestamentRegime, selectPrimaryLexicalToken } from "./study_verse_viewmodel.js";
+import { formatNonEmptyCoreMeaning, partitionContentAndFunctionRows, resolveDefaultStrongForPassage, resolveTestamentRegime, selectPrimaryLexicalToken } from "./study_verse_viewmodel.js";
 import {
   aggregateBlindCalibration12Langs,
   detectContextualCulturalGlossesForVerse,
@@ -409,7 +409,7 @@ export function renderStudy14ColDrawerHtml(matrixShard, options = {}) {
         `<div class="leipzig-orig-text" data-col="c05_orig_text">${escapeHtml(r.c05_orig_text)}</div>` +
         `<div class="leipzig-translit" data-col="c06_translit">${escapeHtml(r.c06_translit)}</div>` +
         `<div data-col="c12_gloss_es" class="leipzig-primary-gloss">${escapeHtml(r.c12_gloss_es)}</div>` +
-        `<div data-col="c13_nsm_65" class="leipzig-nsm-gloss">${isEn ? "Core meaning" : "Sentido básico"}: ${escapeHtml(nsmDisplay)}</div>` +
+        `<div data-col="c13_nsm_65" class="leipzig-nsm-gloss"${formatNonEmptyCoreMeaning(nsmDisplay, uiLocale) ? "" : " hidden"}>${escapeHtml(formatNonEmptyCoreMeaning(nsmDisplay, uiLocale))}</div>` +
         `<div data-col="c14_target_gloss" class="leipzig-target-gloss"${suppressVisibleTarget ? " hidden" : ""}>${isEn ? "Target" : "Meta"}: ${escapeHtml(rawTarget)}</div>` +
         `<details class="tech-details leipzig-tech-morph">` +
         `<summary>${isEn ? "Linguistic codes" : "Códigos lingüísticos"} (${escapeHtml(r.c07_strong_id)})</summary>` +
@@ -432,9 +432,9 @@ export function renderStudy14ColDrawerHtml(matrixShard, options = {}) {
     })
     .join("");
 
-  const isLexicalRow = (r) => Boolean(r?.c07_strong_id && r.c07_strong_id !== "∅" && (String(r.c07_strong_id).includes("+") || !isClosedClassFunctionTag(r.c11_semantic_domain, r.c09_macula_role, r.c08_morph_code, r.c13_nsm_65)));
-  const firstTokenRow = normalizedRows.find(isLexicalRow) || normalizedRows.find((r) => r.c07_strong_id && r.c07_strong_id !== "∅") || normalizedRows[0] || null;
-  const focusedStrongId = activeStrongTarget || String(firstTokenRow?.c07_strong_id || "H0430");
+  const { contentRows } = partitionContentAndFunctionRows(normalizedRows, isClosedClassFunctionTag);
+  const firstTokenRow = contentRows[0] || normalizedRows.find((r) => r.c07_strong_id && r.c07_strong_id !== "∅") || normalizedRows[0] || null;
+  const focusedStrongId = resolveDefaultStrongForPassage(book, contentRows.length ? contentRows : normalizedRows, activeStrongTarget);
   const focusedOsisRef = String(firstTokenRow?.c02_ref || `${book}.${chapter}.${activeVerseNum}`);
   const focusedActionBarHtml = normalizedRows.length > 0
     ? `<div id="studyFocusedTokenActionBar" class="study-focused-token-bar ek-row-between ek-mb-xs" data-focused-token-actions="true">` +
@@ -579,39 +579,20 @@ export function renderStudyStrataCards(matrixShard, options = {}) {
   const uniqueNsm = new Map();
   for (const r of activeRows) {
     const key = `${r.c07_strong_id}|${r.c13_nsm_65}`;
-    if (!uniqueNsm.has(key) && r.c13_nsm_65 && r.c13_nsm_65 !== "∅") {
-      uniqueNsm.set(key, r);
-    }
+    if (!uniqueNsm.has(key) && r.c13_nsm_65 && r.c13_nsm_65 !== "∅") uniqueNsm.set(key, r);
   }
-  const nsmItems = Array.from(uniqueNsm.values())
-    .sort((a, b) => {
-      const aClosed = isClosedClassFunctionTag(a.c11_semantic_domain, a.c09_macula_role, a.c08_morph_code, a.c13_nsm_65) ? 1 : 0;
-      const bClosed = isClosedClassFunctionTag(b.c11_semantic_domain, b.c09_macula_role, b.c08_morph_code, b.c13_nsm_65) ? 1 : 0;
-      return aClosed - bClosed;
-    })
-    .slice(0, 8);
-  const nsmHeading = humanizeUiCopy(
-    isEn
-      ? `Stratum 1 · Universal Semantic Primitives NSM-65 (${book} ${chapter}:${verse})`
-      : `Estrato 1 · Primitivos Semánticos Universales NSM-65 (${book} ${chapter}:${verse})`,
-    uiLocale,
-  );
-  const nsmEmpty = humanizeUiCopy(
-    isEn ? "No NSM-65 primitives recorded for this verse" : "Sin primitivos NSM-65 registrados en este versículo",
-    uiLocale,
-  );
+  const { contentRows: nsmContent, functionRows: nsmFunc } = partitionContentAndFunctionRows(Array.from(uniqueNsm.values()), isClosedClassFunctionTag);
+  const renderNsmLi = (r) => `<li data-nsm-strong="${escapeHtml(r.c07_strong_id)}"><code>${escapeHtml(r.c07_strong_id)}</code> <strong>${escapeHtml(r.c05_orig_text)}</strong> (${escapeHtml(r.c12_gloss_es)}) → <span class="nsm-human-gloss">${escapeHtml(formatNsmSentenceCase(formatHumanReadable15ColFields(r, uiLocale).nsmHuman))}</span></li>`;
+  const nsmPrimary = (nsmContent.length > 0 ? nsmContent : nsmFunc).slice(0, 8);
+  const nsmExtraFunc = nsmContent.length > 0 ? nsmFunc.slice(0, 6) : [];
+  const nsmHeading = humanizeUiCopy(isEn ? `Stratum 1 · Universal Semantic Primitives NSM-65 (${book} ${chapter}:${verse})` : `Estrato 1 · Primitivos Semánticos Universales NSM-65 (${book} ${chapter}:${verse})`, uiLocale);
+  const nsmEmpty = humanizeUiCopy(isEn ? "No NSM-65 primitives recorded for this verse" : "Sin primitivos NSM-65 registrados en este versículo", uiLocale);
   const nsmHtml =
     `<div class="stratum-card nsm65-stratum" data-stratum="nsm65" data-ref="${escapeHtml(activeOsis)}">` +
     `<strong class="stratum-title">🧭 ${escapeHtml(nsmHeading)}</strong>` +
-    (nsmItems.length > 0
-      ? `<ul class="study-list stratum-list">` +
-      nsmItems
-        .map(
-          (r) =>
-            `<li data-nsm-strong="${escapeHtml(r.c07_strong_id)}"><code>${escapeHtml(r.c07_strong_id)}</code> <strong>${escapeHtml(r.c05_orig_text)}</strong> (${escapeHtml(r.c12_gloss_es)}) → <span class="nsm-human-gloss">${escapeHtml(formatNsmSentenceCase(formatHumanReadable15ColFields(r, uiLocale).nsmHuman))}</span></li>`
-        )
-        .join("") +
-      `</ul>`
+    (nsmPrimary.length > 0
+      ? `<ul class="study-list stratum-list">${nsmPrimary.map(renderNsmLi).join("")}</ul>` +
+        (nsmExtraFunc.length > 0 ? `<details class="tech-details"><summary>${isEn ? `Grammatical particles (${nsmExtraFunc.length})` : `Partículas gramaticales (${nsmExtraFunc.length})`}</summary><ul class="study-list stratum-list">${nsmExtraFunc.map(renderNsmLi).join("")}</ul></details>` : "")
       : `<p class="stratum-empty-note">∅ (${escapeHtml(nsmEmpty)}).</p>`) +
     `</div>`;
 

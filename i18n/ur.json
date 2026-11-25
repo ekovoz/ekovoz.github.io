@@ -285,6 +285,7 @@
     "printStage.dose1": "1. اس باب کا PDF",
     "printStage.moreFormats": "کاغذ، بریل اور آف لائن کاپی",
     "print.btn.cancelJob": "منسوخ کریں",
-    "share.auth.unifiedTitle": "قابل تصدیق ادارتی سرٹیفکیٹ"
+    "share.auth.unifiedTitle": "قابل تصدیق ادارتی سرٹیفکیٹ",
+    "seal.loading": "توثیق شدہ متن لوڈ ہو رہا ہے…"
   }
 }

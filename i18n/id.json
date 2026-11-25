@@ -285,6 +285,7 @@
     "printStage.dose1": "1. PDF Pasal Ini",
     "printStage.moreFormats": "Ukuran kertas, Braille & offline",
     "print.btn.cancelJob": "Batal",
-    "share.auth.unifiedTitle": "Sertifikat Editorial Terverifikasi"
+    "share.auth.unifiedTitle": "Sertifikat Editorial Terverifikasi",
+    "seal.loading": "Memuat bagian terverifikasi…"
   }
 }

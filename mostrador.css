@@ -539,17 +539,20 @@ summary.ek-title-sm {min-height:48px;box-sizing:border-box;}
 .print-stage-btn span,.print-stage-meta{font-size:.76rem;color:var(--text-secondary);}
 .print-stage-more,.print-stage-more-btn{font-size:.78rem;padding:.25rem .55rem;}
 .print-stage-ribbon[data-ribbon-compact="true"]{padding:.42rem .6rem;}
+.print-stage-ribbon[data-ribbon-compact="true"] .print-stage-header{display:flex;flex-wrap:nowrap;align-items:center;gap:.4rem;}
+.print-stage-ribbon[data-ribbon-compact="true"] .print-stage-btn{flex:1 1 auto;width:auto;min-height:44px;flex-direction:row;align-items:center;justify-content:center;}
+.print-stage-ribbon[data-ribbon-compact="true"] .print-stage-more{flex:0 0 auto;min-height:48px;white-space:nowrap;}
 .chapter-pericopes-ribbon{display:flex;flex-wrap:wrap;overflow-x:auto;max-width:100%;box-sizing:border-box;gap:.3rem;}
 @media (max-width:767px) {#bibleSovereignSection{padding:.35rem .5rem;}
 #bibleMainHeading{font-size:.96rem;line-height:1.2;margin:0 0 .1rem;}
 #bibleLivePreviewHint {display:none;}
 .print-stage-ribbon,.print-stage-ribbon[data-ribbon-compact="true"]{padding:.25rem .35rem;margin:.2rem 0 .25rem;}
-.print-stage-ribbon .print-stage-header {display:none;}
 .print-stage-btn span.print-stage-meta,.print-stage-subline{display:none;}
 .print-stage-grid,.print-stage-actions-row{grid-template-columns:repeat(3,minmax(0,1fr));gap:.25rem;}
 .print-stage-btn{padding:.22rem .3rem;min-height:44px;align-items:center;text-align:center;}
 .print-stage-btn strong,.print-stage-title{font-size:.74rem;line-height:1.15;}
 .chapter-pericopes-ribbon,.ortho-pills-bar,#bibleRegisterSelector,#bibleVerifiedCorpusPills,#corpusWorkLanguagesBar{flex-wrap:nowrap;overflow-x:auto;max-width:100%;padding-bottom:.25rem;margin-bottom:.25rem;scrollbar-width:thin;}
+.chapter-pericopes-ribbon{padding-right:1.25rem;-webkit-mask-image:linear-gradient(90deg,#000 0,#000 calc(100% - 20px),transparent 100%);mask-image:linear-gradient(90deg,#000 0,#000 calc(100% - 20px),transparent 100%);}
 .ek-chip-rail>*,.chapter-pericopes-ribbon>*,.ortho-pills-bar>*,.register-selector-group>*,.chip-wrap-row>*{flex:0 0 auto;white-space:nowrap;}
 #felicesSovereignSection .focal-quick-actions .btn-micro-action{justify-content:center;text-align:center;width:100%;}
 #focalPlateFrame:has(.felices-localized-plate-host:not([hidden]))+.focal-plate-overlay .focal-plate-verse{display:none;}
@@ -573,7 +576,12 @@ body[data-work="felices"] #corpusWorkLanguagesBar{order:-1;}
 .tanda-progress-head{display:flex;align-items:center;justify-content:space-between;gap:.5rem;margin-bottom:.3rem;font-size:.84rem;}
 .print-cancel-btn{font-size:.78rem;padding:.2rem .55rem;}
 .natural-stage-title{display:block;font-size:.8rem;color:var(--text-secondary);margin-bottom:.3rem;}
-.print-guide-steps{margin:.3rem 0 0;padding-inline-start:1.2rem;font-size:.84rem;display:grid;gap:.2rem;}}
+.print-guide-steps{margin:.3rem 0 0;padding-inline-start:1.2rem;font-size:.84rem;display:grid;gap:.2rem;}
+.study-scope-bar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:.35rem;margin-bottom:.4rem;}
+.bicanonical-badge{white-space:nowrap;flex-shrink:0;}
+.study-scope-actions{display:flex;flex-wrap:wrap;gap:.3rem;width:100%;}
+.study-scope-btn{flex:1 1 auto;min-height:48px;min-width:68px;padding:.25rem .55rem;font-size:.76rem;text-align:center;justify-content:center;white-space:nowrap;}
+#duplexAssistantPanel .hig-toggle-row span{display:inline-block;white-space:normal;font-size:.84rem;}}
 @layer states {.uls-chip[aria-selected="true"],.uls-chip[aria-pressed="true"],.uls-chip.is-active,.uls-chip.is-selected,.uls-chip[data-open="true"] {background:var(--accent-primary);color:var(--card-bg);border-color:var(--accent-primary);font-weight:600;}
 :root[data-theme="dark"] .uls-chip[aria-selected="true"],:root[data-theme="dark"] .uls-chip[aria-pressed="true"],:root[data-theme="dark"] .uls-chip.is-active,:root[data-theme="dark"] .uls-chip.is-selected,:root[data-theme="dark"] .uls-chip[data-open="true"] {background:#f5f5f4;color:#1c1917;border-color:#f5f5f4;}}
 @layer utilities {.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;}

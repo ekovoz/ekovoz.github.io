@@ -285,6 +285,7 @@
     "printStage.dose1": "1. 本章 PDF",
     "printStage.moreFormats": "纸张尺寸、盲文与离线副本",
     "print.btn.cancelJob": "取消",
-    "share.auth.unifiedTitle": "可验证编辑证书"
+    "share.auth.unifiedTitle": "可验证编辑证书",
+    "seal.loading": "正在加载已验证经文…"
   }
 }

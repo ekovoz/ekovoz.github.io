@@ -285,6 +285,7 @@
     "printStage.dose1": "1. PDF این باب",
     "printStage.moreFormats": "اندازه کاغذ، بریل و نسخه آفلاین",
     "print.btn.cancelJob": "لغو",
-    "share.auth.unifiedTitle": "گواهی‌نامه ویراستاری قابل راستی‌آزمایی"
+    "share.auth.unifiedTitle": "گواهی‌نامه ویراستاری قابل راستی‌آزمایی",
+    "seal.loading": "در حال بارگذاری متن تاییدشده…"
   }
 }

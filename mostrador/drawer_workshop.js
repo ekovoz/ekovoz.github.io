@@ -37,12 +37,8 @@ import {
 import { computeEcoPackCrc32Hex } from "./offline_mesh.js";
 import { resolveActiveWorkDrawerContext } from "./projection_contract.js";
 import { projectSurfaceLayoutFromState } from "./surface_compositor.js";
-import {
-  createWorkshopAuditHandlers,
-  deriveVerseLockAnchors,
-  renderWorkshop5LangsSwitcherHtml,
-  renderWorkshopAuditSubtabHtml,
-} from "./workshop_audit_and_langs.js";
+import { formatLock8StatusBadge, createWorkshopAuditHandlers, deriveVerseLockAnchors, renderWorkshop5LangsSwitcherHtml, renderWorkshopAuditSubtabHtml } from "./workshop_audit_and_langs.js";
+import { resolveDefaultStrongForPassage } from "./study_verse_viewmodel.js";
 import {
   OVERLAY_AUTHORITY_LOCAL_SELF_SIGNED,
   OVERLAY_AUTHORITY_MAINTAINER_ED25519,
@@ -112,6 +108,7 @@ export async function hydrateImproveDrawerPanel(ctx = {}) {
         state?.activeTallerLang || state?.lang || "es",
         state?.masterCensusSummary || null,
         state?.uiLocale || "es",
+        state?.availableWorkshopLangs || null,
       );
     };
     if (state && typeof state.refreshWorkshopAuditSubtab !== "function") {
@@ -172,10 +169,14 @@ export async function hydrateImproveDrawerPanel(ctx = {}) {
       const fwData = await dataLayer.loadFieldWorkshopData(fieldWorkshopActiveLang);
       if (fwData) {
         hydrateFieldWorkshopData(fwData, ladder250);
+        state.availableWorkshopLangs = Array.isArray(fwData.available_workshop_langs)
+          ? fwData.available_workshop_langs
+          : [];
         state.topUncertaintyQueue = Array.isArray(fwData.top_uncertainty_queue)
           ? fwData.top_uncertainty_queue
           : [];
       } else {
+        state.availableWorkshopLangs = [];
         state.topUncertaintyQueue = [];
       }
     }
@@ -373,9 +374,7 @@ export function bindImproveFormControlsInDrawer(mod, ctx = {}) {
     }
     const lock8BadgeEl = targetDoc?.querySelector?.('[data-lock8-badge="true"]');
     if (lock8BadgeEl) {
-      lock8BadgeEl.textContent = isEnLocale
-        ? `🔒 Grammar check: ${lock8Result.status}`
-        : `🔒 Verificación gramatical: ${lock8Result.status}`;
+      lock8BadgeEl.textContent = formatLock8StatusBadge(lock8Result.status, state.uiLocale);
     }
     const eightLocksBarEl = targetDoc?.querySelector?.('[data-eight-locks-bar="true"]');
     if (eightLocksBarEl) {
@@ -545,7 +544,7 @@ export function bindImproveFormControlsInDrawer(mod, ctx = {}) {
           lang_code: state.lang || "stp",
           cascade_level: levelSel?.value || state.cascadeLevel || "L2",
           target_ref: osis,
-          strong_id: state.activeStrongId || "H0430",
+          strong_id: resolveDefaultStrongForPassage(state.book, [], state.activeStrongId),
           old_surface: oldInput?.value || "",
           new_surface: newInput?.value || "",
           note_pure_text: noteInput?.value || "",
@@ -748,7 +747,7 @@ export function bindImproveFormControlsInDrawer(mod, ctx = {}) {
         lang: state.lang || "stp",
         level: levelSel?.value || state.cascadeLevel || "L2",
         ref: osis,
-        strongId: state.activeStrongId || "H0430",
+        strongId: resolveDefaultStrongForPassage(state.book, [], state.activeStrongId),
         oldSurface: oldSurfStr,
         note: noteInput?.value || "",
         votes: communityVotes,
@@ -864,7 +863,7 @@ export function bindImproveFormControlsInDrawer(mod, ctx = {}) {
           cascade_level: preview.level || "L2",
           semilattice_priority: CASCADE_SEMILATTICE_PRIORITY.L1_DIRECT,
           target_ref: preview.ref || `${String(state.book || "GEN").toUpperCase()}.${state.chapter || 1}.${state.verse || 1}`,
-          strong_id: preview.strongId || preview.strong || "H0430",
+          strong_id: preview.strongId || preview.strong || resolveDefaultStrongForPassage(state.book),
           new_surface: restoredSurface,
           authorityTier: OVERLAY_AUTHORITY_LOCAL_SELF_SIGNED,
           savedAtIso: new Date().toISOString(),

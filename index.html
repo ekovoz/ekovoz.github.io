@@ -343,8 +343,8 @@
             <h2 id="bibleMainHeading" data-i18n="mostrador.heading">Print or Download the Bible in Your Language</h2>
             <p id="bibleLivePreviewHint" class="stage-preview-hint" data-i18n="mostrador.preview_hint">Live preview of
                 the passage ready to print</p>
-            <span id="epistemicStatusSeal" class="uls-badge" data-seal="seal.unavailable"
-                data-i18n="seal.unavailable">Translation not yet available</span>
+            <span id="epistemicStatusSeal" class="uls-badge" data-seal="seal.loading"
+                data-i18n="seal.loading">Loading verified passage…</span>
         </div>
         <div id="printFirstStageRibbon" class="print-stage-ribbon" role="region"
             aria-label="Download Printable Bible PDF by Stage" data-print-tier="1" data-ribbon-compact="true">
@@ -847,6 +847,7 @@
                 </label>
                 <button type="button" id="btnPrintCssPagedMedia" class="uls-chip"
                     data-i18n="print.btn.cssPagedMedia">🖨️ Print from browser</button>
+                <button type="button" id="btnJumpSpecialEditions16" class="uls-chip" data-i18n-autonym="true">📚 16 Ediciones Especiales</button>
             </div>
             <div id="tanda-offline-font-notice" class="tanda-offline-notice" role="status" hidden></div>
             <div id="tandaWorkerProgressWrap" class="ek-mt-xs" data-print-subtab-panel="doses"
@@ -911,8 +912,7 @@
             <section id="photocopyResilienceUnifiedSection" class="photocopy-unified-card"
                 data-print-subtab-panel="stationery">
                 <div class="photocopy-header-row">
-                    <button type="button" id="btnSimulatePhotocopy3Gen" class="uls-chip"
-                        data-i18n="print.btn.photocopy3gen">🔬 Test Photocopy Legibility (3rd Gen)</button>
+                    <span class="ek-meta" data-i18n="print.btn.photocopy3gen">🔬 Test Photocopy Legibility (3rd Gen)</span>
                     <span id="biblePhotocopySimBadge" class="uls-badge" data-euler-delta="0"
                         data-min-stroke-pt="0.75">3ª Gen · Sauvola k=0.25 · ≥0.75 pt · Δχ=0</span>
                 </div>
