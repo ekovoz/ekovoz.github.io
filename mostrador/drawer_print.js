@@ -185,6 +185,8 @@ export function renderPrintDrawerPanelsSyncInDrawer(ctx = {}) {
   const printSheetEl = getEl("biblePrintEditionsSheet", targetDoc);
   if (printSheetEl && typeof printSheetEl.setAttribute === "function") {
     printSheetEl.setAttribute("data-work-print-mode", workAdapter.printMode || "bible_editions");
+    printSheetEl.setAttribute("data-print-progressive", "2-step");
+    printSheetEl.setAttribute("data-print-active-step", state.activeSubtabBySheet?.print === "imposition" ? "2" : "1");
   }
 
   ensureDirectEditionsAndGrambankControls({
@@ -211,6 +213,7 @@ export function renderPrintDrawerPanelsSyncInDrawer(ctx = {}) {
     const defaultTypo = resolveDefaultTypologyForLang(state.effectiveCorpusLang || state.lang || "es");
     const activeBranchId = state.activeBranchId || defaultTypo.branchId;
     const activeTypoId = state.activeTypologyId || defaultTypo.typologyId;
+    typologyHost.setAttribute?.("data-typology-auto-resolved", "true");
     mountSlotView(typologyHost, {
       html: renderCompactTypologySelectorHtml({
         branches: state.editorialProfiles?.branch_profiles_12 || CANONICAL_12_BRANCH_PROFILES,

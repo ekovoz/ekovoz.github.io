@@ -120,8 +120,8 @@
             <div class="ek-row-wrap ek-divider-top" role="group" aria-label="App Interface Language">
                 <button type="button" class="uls-trigger-btn" id="ulsTriggerBtn" data-i18n-autonym="true"
                     aria-haspopup="listbox" aria-expanded="false" aria-controls="langSelect">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
                         <circle cx="12" cy="12" r="10"></circle>
                         <line x1="2" y1="12" x2="22" y2="12"></line>
                         <path
@@ -347,7 +347,18 @@
                 data-i18n="seal.unavailable">Translation not yet available</span>
         </div>
         <div id="printFirstStageRibbon" class="print-stage-ribbon" role="region"
-            aria-label="Download Printable Bible PDF by Stage" data-print-tier="1">
+            aria-label="Download Printable Bible PDF by Stage" data-print-tier="1" data-ribbon-compact="true">
+            <div class="print-stage-header" data-ribbon-compact="true" data-cowan-budget="3">
+                <span class="print-stage-kicker" data-i18n="printStage.heading">Print or download PDF by stage</span>
+                <div class="ek-flex-wrap-inline">
+                    <button type="button" id="btnStagePdfMoreFormats" class="uls-chip print-stage-more"
+                        data-print-stage-action="open-print" data-i18n="printStage.moreFormats">Paper size, Braille
+                        &amp;
+                        offline copy</button>
+                    <button type="button" id="btnStageRibbonShareOffline" class="uls-chip print-stage-more"
+                        data-print-stage-action="open-share" data-i18n-autonym="true">Carry offline</button>
+                </div>
+            </div>
             <div class="print-stage-grid">
                 <div class="print-stage-card" data-ergos-homogeneous-card="print-stage"><button type="button"
                         id="btnStagePdfDose1" class="print-stage-btn is-primary" data-print-stage-action="dose1"><strong
@@ -361,12 +372,6 @@
                         id="btnStagePdfDose3" class="print-stage-btn is-primary" data-print-stage-action="dose3"><strong
                             data-i18n="printStage.dose3">3. Full Bible PDF (66)</strong><span>14+2 print
                             editions</span></button></div>
-            </div>
-            <div class="print-stage-footer">
-                <span class="print-stage-sub" data-i18n="printStage.heading">Print or download PDF by stage</span>
-                <button type="button" id="btnStagePdfMoreFormats" class="uls-chip print-stage-more-btn"
-                    data-print-stage-action="open-print" data-i18n="printStage.moreFormats">Paper size, Braille &amp;
-                    offline copy</button>
             </div>
         </div>
 
@@ -446,11 +451,12 @@
             <div class="compass-search-row">
                 <input type="text" id="mostradorRefInput" class="field-search-input"
                     data-i18n-attr="placeholder:mostrador.step2.placeholder"
-                    placeholder="Cita (Jn 3:16) o palabra (pastor, misericordia)">
+                    placeholder="Buscar libro, cita (Jn 3:16) o palabra bíblica">
                 <button type="button" id="btnGoReference" class="uls-chip"
                     data-i18n="mostrador.step2.open_compass">Go</button>
             </div>
-            <div id="compassPanelConcordance" role="tabpanel" aria-labelledby="btnCompassTabConcordance" hidden>
+            <div id="compassPanelConcordance" role="tabpanel" aria-labelledby="btnCompassTabConcordance"
+                aria-label="Búsqueda de palabras y versículos en la Biblia" hidden>
                 <div class="compass-search-row">
                     <select id="compassConcordanceScopeSelect" aria-label="Concordance Scope">
                         <option value="book" selected>Libro actual</option>

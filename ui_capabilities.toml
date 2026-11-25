@@ -908,3 +908,12 @@ module        = "mostrador/polyglot_picker_view.js"
 handler       = "renderPolyglotRecycledWindow"
 test_file     = "tests/web/polyglot_7k_and_workshop_v3.test.mjs"
 test_name     = "SLICE_V3HIG_10: stage_dom_bindings < 840 LOC, uiLocale en #appearancePopover y ventana reciclada <= 36 filas"
+
+[intent_contracts]
+max_hops = 2
+exit_print = ["print_first_stage_ribbon", "print_unified_options_v3"]
+exit_offline = ["offline_quine_usb", "optical_qr_beam"]
+language_picker = ["reading_language_selector", "polyglot_picker_window_36"]
+study_context = ["study_14col_drawer"]
+workshop_collaborator = ["workshop_cascade"]
+draft_work_gate = "evangelios"

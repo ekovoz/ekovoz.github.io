@@ -145,10 +145,10 @@ export function renderFieldWorkshopCensus7164Html(
     Array.isArray(census.sovereign_tiers_4) && census.sovereign_tiers_4.length === 4
       ? census.sovereign_tiers_4
       : [
-        { tier: "T0", count: 2, label: "Tier 0 · Fuentes Originales Disjuntas (WLC/TAHOT + SRGNT/TAGNT)" },
-        { tier: "T1", count: 1020, label: "Tier 1 · Biblia Humana Completa 66/66" },
-        { tier: "T2", count: 1550, label: "Tier 2 · NT Humano + AT Taller en Revisión (stp)" },
-        { tier: "T3", count: 4594, label: "Tiers 3–4 · Porciones / Escalera CELF-250 Oral" },
+        { tier: "T0", count: 2, label: "Fuentes Originales (Hebreo y Griego)" },
+        { tier: "T1", count: 1020, label: "Biblias Completas (66 libros)" },
+        { tier: "T2", count: 1550, label: "Nuevo Testamento + Antiguo Testamento en revisión" },
+        { tier: "T3", count: 4594, label: "Comunidades · Porciones y tradición oral" },
       ];
 
   const batchInfo = resolveAtomicBatchForPassage(

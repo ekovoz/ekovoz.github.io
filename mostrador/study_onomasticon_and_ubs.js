@@ -186,7 +186,7 @@ export function renderUbsSixTraditionsComparatorHtml({
   return (
     `<section id="studyUbsComparatorPanel" class="ubs-comparator-card" data-ubs-regime="${escapeHtml(cmp.regime)}" data-ubs-has-divergence="${cmp.hasDivergence ? "true" : "false"}" data-active-tradition="${escapeHtml(cleanTrad)}">` +
     `<header class="ubs-comparator-header">` +
-    `<strong>⚖️ ${isEn ? "6-Tradition UBS Versification Comparator" : "Comparador de las 6 Tradiciones Bicanónicas UBS"}</strong>` +
+    `<strong>⚖️ ${isEn ? "Parallel Verse & Chapter Numbering (6 Traditions)" : "Numeración en Biblias y Manuscritos Paralelos (6 tradiciones)"}</strong>` +
     `<span class="uls-badge">${escapeHtml(cmp.summary)}</span>` +
     `</header>` +
     `<div class="ubs-tradition-pills" role="group" aria-label="${isEn ? "Select UBS Tradition" : "Seleccionar tradición UBS"}">${selectorPills}</div>` +

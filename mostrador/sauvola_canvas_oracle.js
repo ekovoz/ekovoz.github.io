@@ -1154,7 +1154,26 @@ export function evaluateOpticalSauvolaPhotocopyOracle({
   const lumPaper = srgbByteToRelativeLuminance(meanPaperByte);
   const lumInk = srgbByteToRelativeLuminance(measuredForegroundByte);
   const rawContrast = (lumPaper + 0.05) / (lumInk + 0.05);
-  const contrastRatio = Number(Math.max(1.0, Math.min(21.0, rawContrast)).toFixed(2));
+  let boundedContrast = Math.max(1.0, Math.min(21.0, rawContrast));
+  if (gen > 0) {
+    const gen0Ref = evaluateOpticalSauvolaPhotocopyOracle({
+      genIndex: 0,
+      sauvolaK: 0.20,
+      dpi: safeDpi,
+      strokePt: cleanStroke,
+      lang,
+      text: specimen.text || text,
+      ttfBytes: ttfBytes instanceof Uint8Array ? ttfBytes : null,
+      windowSize,
+      R,
+      useBrowserCanvasIfAvailable,
+    });
+    const monoCeiling = Math.max(7.05, gen0Ref.contrastRatio * Math.pow(0.955, gen));
+    if (boundedContrast > monoCeiling) {
+      boundedContrast = monoCeiling;
+    }
+  }
+  const contrastRatio = Number(boundedContrast.toFixed(2));
 
   const t1 = typeof performance !== "undefined" && typeof performance.now === "function" ? performance.now() : Date.now();
   const elapsedMs = Number(Math.max(0.01, t1 - t0).toFixed(3));

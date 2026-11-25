@@ -117,7 +117,35 @@ const HUMAN_PHILOLOGY_LABELS = Object.freeze({
     es: "16 ediciones listas para imprimir",
     en: "16 print-ready editions",
   }),
+  RUNG1SWADESHANDNSM65: Object.freeze({
+    es: "Nivel 1 · Vocabulario básico",
+    en: "Stage 1 · Core words",
+  }),
+  "CELF-250": Object.freeze({
+    es: "Revisión comunitaria (250 versículos)",
+    en: "Community review (250 verses)",
+  }),
+  "CHRF++": Object.freeze({
+    es: "Calibración de fidelidad textual",
+    en: "Text fidelity calibration",
+  }),
+  "CRC-16": Object.freeze({
+    es: "Verificación de integridad de audio",
+    en: "Audio integrity check",
+  }),
+  "MATRIX_TIER0.EKPACK": Object.freeze({
+    es: "Texto fuente original (15 columnas)",
+    en: "Original study text (15 columns)",
+  }),
+  "BRIDGE: AUTO": Object.freeze({
+    es: "Puente: Automático",
+    en: "Bridge: Auto",
+  }),
 });
+
+export function isExpertVocabularyEnabled(searchStr = "") {
+  return /(?:^|[?&])expert=1(?:&|$)/i.test(String(searchStr || ""));
+}
 
 export function humanizeTechnicalCode(rawCode, uiLocale = "es") {
   const clean = String(rawCode || "").trim();

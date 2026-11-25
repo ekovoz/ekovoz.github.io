@@ -45,7 +45,7 @@ export function updateFocalPlate(d = D(), lO = "", n = true, uO = "", st = stRef
   const isEsCorpus = L(l).startsWith("es");
   let locHost = $(d, "focalPlateLocalizedArt");
   if (!locHost && fFr && typeof d.createElement === "function") { locHost = d.createElement("div"); locHost.id = "focalPlateLocalizedArt"; locHost.className = "felices-localized-plate-host"; fFr.insertBefore?.(locHost, im?.nextSibling || null); }
-  if (im) { im.src = u; im.alt = lb; im.hidden = !isEsCorpus; }
+  if (im) { im.src = u; im.alt = lb; im.hidden = false; }
   if (locHost) {
     locHost.hidden = isEsCorpus;
     if (!isEsCorpus) locHost.innerHTML = renderLocalizedFelicesPlateCardHtml({ plateIndex: pIdx, totalPlates: N, lang: l, uiLocale: uL, verseText: tx, refLabel: `${c.book} ${c.chapter}:${c.verse}`, dir: LANGUAGE_PACKS.find(p => p.code === l || p.code === pLc(l))?.dir || "ltr" });

@@ -488,12 +488,15 @@ export function ensureDirectEditionsAndGrambankControls(ctx = {}) {
   const defaultTypo = resolveDefaultTypologyForLang(state.effectiveCorpusLang || state.lang || "es");
   const branchId = state.activeBranchId || defaultTypo.branchId;
   const typoId = state.activeTypologyId || defaultTypo.typologyId;
+  state.activeBranchId = branchId;
+  state.activeTypologyId = typoId;
+  wrap.setAttribute?.("data-auto-typology", "true");
   wrap.innerHTML =
     `<div id="activeEditionImpositionSummary" class="ek-row-wrap" data-active-edition-id="${escapeHtml(activeEd)}">` +
     `<span><strong>${isEn ? "Active edition:" : "Edición activa:"}</strong> ${escapeHtml(activeBadge)}</span>` +
     `</div>` +
     `<button type="button" id="btnApplyGrambankToPrint" class="uls-chip" data-grambank-apply-print="true" data-branch-id="${escapeHtml(branchId)}" data-typology-id="${escapeHtml(typoId)}">` +
-    `${isEn ? "🌐 Apply typological profile to Print" : "🌐 Aplicar perfil tipológico a Impresión"}</button>`;
+    `${isEn ? "🌐 Auto-adjust layout for language" : "🌐 Autoajustar diseño para esta lengua"}</button>`;
   if (isNewWrap && typeof cfgHost.appendChild === "function") {
     cfgHost.appendChild(wrap);
   }

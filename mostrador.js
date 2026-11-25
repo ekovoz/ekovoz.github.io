@@ -86,6 +86,7 @@ import {
 } from "./mostrador/orthography_wfst.js";
 import { countPdfPages, extractPdfPages } from "./mostrador/pdf_pages.js";
 import { patchStoreState } from "./mostrador/dom_patch.js";
+import { resolveCapabilityIntentLayer } from "./mostrador/dom_projection_contracts.js";
 import { syncStickyDrawerContextHeader, projectStoreAttributesToDom } from "./mostrador/projection_contract.js";
 import {
   closeSheet, createEkovozStore, createGuardedStateProxy, openSheet, setActiveIntent, toggleSheet,
@@ -1131,6 +1132,8 @@ export async function bootBrowserMostrador(
       getEl: (id, d) => (d || doc)?.getElementById?.(id) || null,
     });
     const bootTargetSheet = route.sheet || (controller.state.activeIntent !== "read" ? controller.state.activeIntent : null);
+    const intentLayer = resolveCapabilityIntentLayer(controller.state.activeIntent || "read");
+    doc?.body?.setAttribute?.("data-capability-intent-hops", String(intentLayer.maxHops));
     if (bootTargetSheet && controller.state.activeWork === "biblia") {
       await controller.transitionSheet(bootTargetSheet, doc, { mode: "open" });
     }

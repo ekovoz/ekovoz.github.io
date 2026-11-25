@@ -236,13 +236,14 @@ export function hydrateOpticalTxAndRxPanels({
     const phaseLabel = formatPhaseLabel(txFrame);
 
     qrPanel.innerHTML =
-      `<div id="qrBeamStreamRoot" class="mostrador-qrbeam-stream" data-fps="${activeCadenceKey}" data-nyquist-safe="${Boolean(nyquistCheck?.valid ?? nyquistCheck?.nyquistSafe)}" data-lt-peeling-decoded="${ltComplete}" data-eco1-bytes="${packetBytes.byteLength}" data-packet-kind="${txFrame.packetKind}" data-systematic-phase="${isSystematicPhase}" data-ecom-frame="${isEndOfStreamEcom}" data-frame-interval-ms="${cadencePreset.intervalMs}" data-total-blocks="${encoder.K}" data-seq="${grid.seq}" data-degree="${grid.degree}" data-parity="${grid.parityBit}">` +
+      `<div id="qrBeamStreamRoot" class="mostrador-qrbeam-stream" data-fps="${activeCadenceKey}" data-nyquist-safe="${Boolean(nyquistCheck?.valid ?? nyquistCheck?.nyquistSafe)}" data-nyquist-channel-limit="4096" data-lt-peeling-decoded="${ltComplete}" data-eco1-bytes="${packetBytes.byteLength}" data-packet-kind="${txFrame.packetKind}" data-systematic-phase="${isSystematicPhase}" data-ecom-frame="${isEndOfStreamEcom}" data-frame-interval-ms="${cadencePreset.intervalMs}" data-total-blocks="${encoder.K}" data-seq="${grid.seq}" data-degree="${grid.degree}" data-parity="${grid.parityBit}">` +
       `<div class="ek-row-between ek-mb-sm">` +
       `<strong>📡 ${isEn ? "Offline Optical QR" : "QR Óptico sin internet"} (<span id="opticalFrameCounter" data-seq="${grid.seq}" data-packet-kind="${txFrame.packetKind}">${activeCadenceKey} fps · ${phaseLabel} · ${isEn ? "Parity" : "Paridad"} ${grid.parityBit}</span>)</strong>` +
       `<div class="ek-flex-wrap-inline">` +
       `<button type="button" id="btnToggleQrBeamAutoPlay" class="uls-chip qrbeam-btn">${isPlaying ? (isEn ? "⏸ Pause Beam" : "⏸ Pausar Emisión") : isEn ? "▶ Auto Beam" : "▶ Emisión Continua"}</button>` +
       `<button type="button" id="btnNextQrBeamFrame" class="uls-chip qrbeam-btn">⏭ ${isEn ? "Next Frame" : "Siguiente cuadro"} (#${grid.seq + 1})</button>` +
       `</div></div>` +
+      `<p id="opticalNyquistChannelHint" class="ek-meta ek-m-0 ek-mb-sm" data-optical-max-kb="4">${isEn ? "Optical channel <= 4 KB (1–3 chapters / verses). For the full Bible (~1 MB), export the offline HTML file or USB package." : "Canal óptico <= 4 KB (pasajes y capítulos). Para la Biblia completa (~1 MB), usa el archivo HTML portable o paquete USB."}</p>` +
       `<div class="ek-row-gap-lg">` +
       `<div id="qrBeamMatrixHost" class="qrbeam-matrix-host"><span id="qrBeamMatrixSvgSlot">${svgMarkup}</span><canvas id="qrBeamMatrixCanvas" width="174" height="174" aria-hidden="true"></canvas></div>` +
       `<details class="tech-details"><summary>${isEn ? "Technical optical stream (ECO-GRID)" : "Detalles técnicos del canal óptico (ECO-GRID)"}</summary>` +

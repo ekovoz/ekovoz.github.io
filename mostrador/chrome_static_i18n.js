@@ -3,6 +3,8 @@
 // Traducción determinista de rótulos estáticos del cromo bilingüe y obras hermanas.
 // ============================================================================
 
+import { humanizeTechnicalCode, isExpertVocabularyEnabled } from "./human_labels.js";
+
 /**
  * Traduce los rótulos estáticos del cromo bilingüe y obras hermanas cuando cambia `uiLocale` (`D6-R41` / `D8-R38`).
  */
@@ -10,6 +12,16 @@ export function applyStaticChromeTranslations(targetDoc, uiLocale = "es", state 
   if (!targetDoc || typeof targetDoc.getElementById !== "function") return;
   const isEn = String(uiLocale || "es").toLowerCase().startsWith("en");
   const getEl = (id) => targetDoc.getElementById(id);
+  const expertMode = isExpertVocabularyEnabled(state?.search || targetDoc?.location?.search || globalThis.location?.search || "");
+  targetDoc.documentElement?.setAttribute?.("data-expert-mode", expertMode ? "true" : "false");
+  const bridgeSel = getEl("bibleBridgeLangSelect");
+  if (bridgeSel?.options) {
+    for (const opt of Array.from(bridgeSel.options)) {
+      if (!String(opt?.value || "").trim()) {
+        opt.textContent = humanizeTechnicalCode("BRIDGE: AUTO", uiLocale);
+      }
+    }
+  }
 
   const workTabs = getEl("sovereignWorkTabs");
   if (workTabs && typeof workTabs.setAttribute === "function") {

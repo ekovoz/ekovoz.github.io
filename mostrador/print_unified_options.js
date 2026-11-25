@@ -30,6 +30,8 @@ export function bindStealthAndPagedMediaControls({
   if (chkStealth) {
     chkStealth.checked = Boolean(state.stealthMode);
     chkStealth.setAttribute?.("data-action", "toggle-stealth-mode");
+    chkStealth.setAttribute?.("data-stealth-first-class", "true");
+    chkStealth.closest?.("label.hig-toggle-row")?.setAttribute?.("data-ergos-fitts-min", "48");
     bindSurfaceActions(chkStealth, {
       "toggle-stealth-mode": (ev) => {
         const nextStealth = Boolean(ev?.target?.checked ?? chkStealth.checked);
@@ -147,6 +149,7 @@ export function renderAndBindPhotocopyPanel({
     ttfBytes: state.activePrintTtfBytes || null,
   });
   const photocopyBadge = getEl("biblePhotocopySimBadge", targetDoc);
+  const graphicsHost = getEl("editorialGraphicsPhotocopyHost", targetDoc);
   if (photocopyBadge) {
     const sim3rd = simulateThirdGenPhotocopySauvola({
       strokePt: (state.fontSizePt || 9.5) >= 9.0 ? 0.85 : 0.75,
@@ -156,15 +159,14 @@ export function renderAndBindPhotocopyPanel({
       text: activeVerseForPhotocopy,
       ttfBytes: state.activePrintTtfBytes || null,
     });
+    const unifiedDelta = String(simLive.eulerCharacteristicDelta);
     photocopyBadge.textContent = formatPhotocopySimBadgeText(simLive);
-    photocopyBadge.setAttribute("data-euler-delta", String(simLive.eulerCharacteristicDelta));
+    photocopyBadge.setAttribute("data-euler-delta", unifiedDelta);
     photocopyBadge.setAttribute("data-survives-3rd-gen", String(Boolean(simLive.wcagPassAaa && sim3rd.survives3rdGen)));
     photocopyBadge.setAttribute("data-photocopy-gen", String(simLive.genIndex));
     photocopyBadge.setAttribute("data-sauvola-k", String(simLive.sauvolaK));
     photocopyBadge.setAttribute("data-contrast-ratio", String(simLive.contrastLabel));
   }
-
-  const graphicsHost = getEl("editorialGraphicsPhotocopyHost", targetDoc);
   if (!graphicsHost) return;
   graphicsHost.innerHTML = renderPhotocopyResilienceAndSocialCardHtml({
     book: state.book,

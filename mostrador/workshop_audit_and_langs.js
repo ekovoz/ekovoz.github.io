@@ -41,8 +41,8 @@ function resolveWorkshopCatalogLangs(masterCensusSummary = null, activeTallerLan
     seen.add(code);
     out.push({
       code,
-      labelEs: `🌐 ${code.toUpperCase()} (CELF-250 / L1-L3)`,
-      labelEn: `🌐 ${code.toUpperCase()} (CELF-250 / L1-L3)`,
+      labelEs: `🌐 ${code.toUpperCase()} (Revisión comunitaria)`,
+      labelEn: `🌐 ${code.toUpperCase()} (Community review)`,
     });
   }
   return out;
@@ -175,8 +175,8 @@ export function renderWorkshop5LangsSwitcherHtml(
   return (
     `<section id="workshop5LangsSwitcher" class="ek-card-muted ek-span-full ek-stack-sm" data-active-taller-lang="${escapeHtml(cleanActive)}" data-tier2-corpora="${escapeHtml(tier2Corpora.join(","))}" data-workshop-langs-count="${catalogLangs.length}">` +
     `<div class="ek-row-between">` +
-    `<strong class="ek-title-sm">🌍 ${isEn ? `Workshop CC0 Language Artifacts (${catalogLangs.length} languages)` : `Kits de Taller CC0 por idioma (${catalogLangs.length} idiomas)`}</strong>` +
-    `<span class="uls-badge" data-tier2-workshop-badge="true">${isEn ? "Human NT + OT Workshop" : "NT humano + Taller AT"}: ${escapeHtml(tier2Corpora.map((c) => c.toUpperCase()).join(", "))}</span>` +
+    `<strong class="ek-title-sm" data-workshop-lang-banner="${escapeHtml(cleanActive)}">🌍 ${isEn ? `Community Review Tools · Active: ${cleanActive.toUpperCase()} (${catalogLangs.length} languages)` : `Colaboración Comunitaria · Lengua activa: ${cleanActive.toUpperCase()} (${catalogLangs.length} idiomas)`}</strong>` +
+    `<span class="uls-badge" data-tier2-workshop-badge="true">${isEn ? "New Testament + Community OT" : "NT verificado + AT comunitario"}: ${escapeHtml(tier2Corpora.map((c) => c.toUpperCase()).join(", "))}</span>` +
     `</div>` +
     `<div class="ek-row-wrap" role="group" aria-label="${isEn ? "Select CC0 Workshop Language" : "Seleccionar idioma de kit de taller CC0"}">${buttonsHtml}</div>` +
     `</section>`

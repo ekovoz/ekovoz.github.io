@@ -375,3 +375,21 @@ export function verifyArtifactProjectionClosure({
     scopeViolations: vplScope.violations,
   };
 }
+
+export const INTENT_CAPABILITY_CONTRACT = Object.freeze({
+  exit_print: { maxHops: 2, sheet: "print", capabilities: ["print_first_stage_ribbon", "print_unified_options_v3"] },
+  exit_offline: { maxHops: 2, sheet: "share", capabilities: ["offline_quine_usb", "optical_qr_beam"] },
+  language_picker: { maxHops: 1, sheet: null, capabilities: ["reading_language_selector", "polyglot_picker_window_36"] },
+  study_context: { maxHops: 2, sheet: "study", capabilities: ["study_14col_drawer", "rosetta_strata"] },
+  workshop_collaborator: { maxHops: 2, sheet: "field", capabilities: ["workshop_cascade", "census_7164"] },
+  authenticity_cc0: { maxHops: 2, sheet: "share", capabilities: ["ed25519_provenance", "berne_15_3"] },
+});
+
+export function resolveCapabilityIntentLayer(intentKey = "read") {
+  const key = String(intentKey || "read").trim().toLowerCase();
+  if (key === "print") return INTENT_CAPABILITY_CONTRACT.exit_print;
+  if (key === "share" || key === "offline") return INTENT_CAPABILITY_CONTRACT.exit_offline;
+  if (key === "study") return INTENT_CAPABILITY_CONTRACT.study_context;
+  if (key === "field" || key === "workshop" || key === "improve") return INTENT_CAPABILITY_CONTRACT.workshop_collaborator;
+  return { maxHops: 1, sheet: null, capabilities: ["async_chapter_viewport", "epistemic_seal_badge"] };
+}

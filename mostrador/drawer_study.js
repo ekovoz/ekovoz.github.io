@@ -439,15 +439,16 @@ export async function hydrateStudyDrawerPanel(ctx = {}) {
   const matrixPackHref = String(state.matrixTier0Url || "data/packs/matrix_tier0.ekpack");
   const studyMatrixCardHtml =
     `<section id="studyMatrixDownloadCard" class="ek-card-muted ek-row-between ek-mb-sm" data-matrix-tier0="true">` +
-    `<div><strong>📚 ${isEnStudy ? "15-Column Original Study Matrix" : "Matriz Original de Estudio (15 columnas)"}</strong> ` +
-    `<span id="studyQualityCalibrationBadge" class="uls-badge" data-chrf-calibrated="true">${isEnStudy ? "✅ Verified · chrF++ 12-lang" : "✅ Verificada · chrF++ 12 lenguas"}</span></div>` +
-    `<a id="btnDownloadStudyMatrixTier0" class="uls-chip ek-btn-link" href="${escHtml(matrixPackHref)}" download="matrix_tier0.ekpack">⬇️ matrix_tier0.ekpack</a>` +
+    `<div><strong>📚 ${isEnStudy ? "Original Biblical Text Study (15 columns)" : "Texto Fuente Original de Estudio (15 columnas)"}</strong> ` +
+    `<span id="studyQualityCalibrationBadge" class="uls-badge" data-chrf-calibrated="chrF++ 12-lang">${isEnStudy ? "✅ Verified · 12 languages" : "✅ Verificada · 12 lenguas"}</span></div>` +
+    `<a id="btnDownloadStudyMatrixTier0" class="uls-chip ek-btn-link" data-tech-key="matrix_tier0.ekpack" href="${escHtml(matrixPackHref)}" download="matrix_tier0.ekpack">⬇️ ${isEnStudy ? "Download source study pack" : "Descargar paquete de estudio"}</a>` +
     `</section>`;
   const html = workBannerHtml + studyMatrixCardHtml + mod.renderStudy14ColDrawerHtml(matrixChapter, studyOpts);
   const container =
     getEl("leipzig14ColStratumAction", targetDoc) ||
     getEl("bibleEasyDrawerPanel", targetDoc);
   if (container) {
+    container.setAttribute?.("data-study-contextual-tabs", "3");
     if (targetDoc?.activeElement?.id !== "rosettaSearchInput") {
       container.innerHTML = html;
     }

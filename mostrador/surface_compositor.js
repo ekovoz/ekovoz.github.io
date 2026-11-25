@@ -226,6 +226,7 @@ export function projectSurfaceLayoutFromState(state = {}, rootDoc, getEl) {
       btn.setAttribute?.("aria-expanded", isOpen ? "true" : "false");
       btn.setAttribute?.("aria-pressed", isOpen ? "true" : "false");
       btn.setAttribute?.("data-chrome-priority", resolveDrawerChromePriority(sheetKey));
+      btn.setAttribute?.("data-chrome-salience", isOpen ? "active" : "idle");
     }
   }
 

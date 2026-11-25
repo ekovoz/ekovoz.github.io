@@ -390,11 +390,14 @@ export function renderCascadeAndLadderHtml({
       const refStr = sanitizePipeField(item.verse_id || item.ref || "GEN.1.1").toUpperCase();
       const rankNum = Number(item.rank) || idx + 1;
       const rungName = sanitizePipeField(item.rung || "CELF-250");
+      const rungHuman = rungName === "Rung1SwadeshAndNsm65"
+        ? (isEn ? "Stage 1 · Core words" : "Nivel 1 · Vocabulario básico")
+        : CELF_RUNG_LABELS[rungName] || (isEn ? "Community stage" : "Etapa comunitaria");
       const gainBits = Number(item.marginal_gain_bits ?? item.marginal_gain ?? 0);
-      const gainBadge = gainBits > 0 ? ` · +${gainBits.toFixed(1)}b` : "";
+      const gainBadge = gainBits > 0 ? ` · +${gainBits.toFixed(1)}` : "";
       return (
         `<button type="button" class="uls-chip mostrador-celf-rung-btn ek-btn-fitts" data-ladder-ref="${refStr}" data-ladder-rank="${rankNum}" data-ladder-rung="${rungName}">` +
-        `#${rankNum} · ${refStr} (${rungName}${gainBadge})` +
+        `#${rankNum} · ${refStr} (${rungHuman}${gainBadge})` +
         `</button>`
       );
     })

@@ -197,7 +197,7 @@ export function renderEditorialProvenanceCardHtml(provenance = null, uiLocale = 
     `<p class="provenance-privacy-note">${escapeHtml(privacyText)}</p>` +
     `<div id="berneCommitmentVerifierCard" class="ek-stack-sm ek-mt-xs">` +
     `<div class="ek-row-wrap">` +
-    `<input type="text" id="bernePreimageInput" class="ek-input-compact" placeholder="${isEn ? "Enter authorship passphrase (Berne Art. 15.3)..." : "Ingresa frase de autoría (Berna Art. 15.3)..."}" aria-label="${isEn ? "Berne 15.3 preimage" : "Preimagen Berna 15.3"}">` +
+    `<input type="text" id="bernePreimageInput" class="ek-input-compact" placeholder="${isEn ? "Passphrase (Berne 15.3)" : "Frase de autoría (Berna 15.3)"}" aria-label="${isEn ? "Berne 15.3 preimage" : "Preimagen Berna 15.3"}">` +
     `<button type="button" id="btnVerifyBerneCommitment" class="uls-chip">🔐 ${isEn ? "Verify Berne 15.3 SHA-256" : "Verificar SHA-256 Berna 15.3"}</button>` +
     `</div>` +
     `<output id="berneVerifyStatus" class="ek-meta" aria-live="polite"></output>` +
@@ -262,7 +262,7 @@ export function bindSupportContactDialog({ state = {}, store = null, doc = null,
       `<label class="support-honeypot-field" hidden aria-hidden="true">Website<input type="text" id="supportHoneypotInput" name="website_hp" tabindex="-1" autocomplete="off" /></label>` +
       `<div class="support-form-actions">` +
       `<button type="submit" id="btnSubmitSupportReport" class="btn-modal-action">${isEn ? "Prepare Report" : "Preparar reporte"}</button>` +
-      `<a id="supportProtonFallbackLink" class="uls-chip" href="mailto:ekovoz-support@proton.me?subject=Ekovoz%20Report">${isEn ? "✉️ ProtonMail (Offline Fallback)" : "✉️ ProtonMail (Respaldo sin conexión)"}</a>` +
+      `<a id="supportProtonFallbackLink" class="uls-chip" href="mailto:ekovoz-support@proton.me?subject=Ekovoz%20Report">${isEn ? "✉️ Encrypted contact (requires internet)" : "✉️ Contacto cifrado · requiere internet"}</a>` +
       `</div>` +
       `<div id="supportReportStatus" role="status" aria-live="polite"></div>` +
       `</form>`;
@@ -307,7 +307,7 @@ export function bindSupportContactDialog({ state = {}, store = null, doc = null,
       const link = resolve("supportProtonFallbackLink");
       if (link) link.href = mailto;
       if (status) {
-        status.textContent = isEn ? "Ready to send via ProtonMail offline fallback." : "Listo para enviar mediante el enlace ProtonMail.";
+        status.textContent = isEn ? "Ready to send via ProtonMail (requires internet)." : "Listo para enviar por ProtonMail (requiere conexión).";
         status.setAttribute?.("data-honeypot-blocked", "false");
       }
     });

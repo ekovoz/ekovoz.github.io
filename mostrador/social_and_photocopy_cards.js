@@ -42,7 +42,8 @@ export function simulateKanungoSauvolaGeneration(genIndex = 5, sauvolaK = 0.32, 
 export function formatPhotocopySimBadgeText(simResult = null) {
   const sim = simResult || simulateKanungoSauvolaGeneration(5, 0.32, 300);
   const genLabel = sim.genIndex === 0 ? "Original 300 DPI" : `${sim.genIndex}ª Gen`;
-  return `✅ ${genLabel} · Sauvola k=${Number(sim.sauvolaK).toFixed(2)} (Contraste ${sim.contrastLabel} ≥ 7.0:1 AAA · Δχ=${sim.eulerCharacteristicDelta})`;
+  const legibleVerdict = sim.wcagPassAaa !== false ? "Legible para fotocopiar" : "Ajustar contraste";
+  return `✅ ${genLabel} · ${legibleVerdict} (Contraste ${sim.contrastLabel} ≥ 7.0:1 · Δχ=${sim.eulerCharacteristicDelta})`;
 }
 
 function wrapSvgTextLines(rawText, maxCharsPerLine = 40, maxLines = 4) {

@@ -197,9 +197,10 @@ export function renderOralPorticoWasmConsole({
     `data-pause-semicolon-ms="${prosody.pauseSemicolonMs}" ` +
     `data-pause-period-ms="${prosody.pausePeriodSelahMs}" ` +
     `data-audio-crc16="${escapeHtml(prosody.crc16Hex)}" ` +
+    `data-oral-status="verified" ` +
     `data-wasm-backed="${prosody.wasmBacked}">` +
     `<div class="ek-row-between ek-mb-sm">` +
-    `<strong>🗣️ ${isEn ? "Guided Reading" : "Lectura Guiada"} (${escapeHtml(`${state.book} ${state.chapter}:${state.verse}`)}) <small class="ek-meta">${escapeHtml(voiceStatusText)}</small></strong>` +
+    `<strong>🗣️ ${isEn ? "Listen to passage" : "Escuchar pasaje"} (${escapeHtml(`${state.book} ${state.chapter}:${state.verse}`)}) <span class="uls-badge" data-oral-verified="true">${isEn ? "Verified audio" : "Audio verificado"}</span> <small class="ek-meta">${escapeHtml(voiceStatusText)}</small></strong>` +
     `<div class="ek-flex-wrap-inline">` +
     `<button type="button" id="btnPlayPauseOralPorticoCadence" class="uls-chip oral-portico-cadence-btn">${guideBtnLabel}</button>` +
     `<button type="button" id="btnOralVoiceToggle" class="uls-chip oral-portico-cadence-btn" aria-pressed="${voiceActive}">${voiceToggleLabel}</button>` +
@@ -213,7 +214,7 @@ export function renderOralPorticoWasmConsole({
     `<input id="audioElapsedRange" type="range" min="0" max="${prosody.totalMs}" step="250" value="${prosody.elapsedMs}">` +
     `</label>` +
     `</div></div>` +
-    `<details class="tech-details ek-mt-xs"><summary>${isEn ? "Technical cadence, syllables & CRC-16 timing" : "Detalles técnicos de sílabas, cadencia y CRC-16"}</summary>` +
+    `<details class="tech-details ek-mt-xs"><summary>${isEn ? "Technical pace & syllable timing" : "Detalles técnicos de ritmo y sílabas"}</summary>` +
     `<div class="prosody-syllable-strip oral-portico-secondary">` +
     `<span class="uls-badge" data-prosodic-cursor="true">${isEn ? `Syllable #${prosody.activeSyllableIndex + 1}/${prosody.syllables.length}: «${escapeHtml(prosody.activeSyllable)}»` : `Sílaba #${prosody.activeSyllableIndex + 1}/${prosody.syllables.length}: «${escapeHtml(prosody.activeSyllable)}»`}</span> ` +
     `${syllablesHtml}</div>` +

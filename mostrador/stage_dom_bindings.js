@@ -814,6 +814,13 @@ export function bindStageDomEvents(ctx = {}) {
   }
 
   bindSupportContactDialog({ state, store: ctx.store, doc: targetDoc, getEl });
+  if (typeof targetDoc.addEventListener === "function" && !targetDoc._oralTriggerBound) {
+    targetDoc._oralTriggerBound = true;
+    targetDoc.addEventListener("click", (ev) => {
+      const trig = ev?.target?.closest?.("[data-oral-portico-trigger]") || (ev?.target?.getAttribute?.("data-oral-portico-trigger") ? ev.target : null);
+      if (trig) getEl("btnToggleAudioNarakeet", targetDoc)?.click?.();
+    });
+  }
 
   return switchWork;
 }

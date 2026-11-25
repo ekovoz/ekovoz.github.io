@@ -44,6 +44,7 @@ import {
   verifyManifestAndMerkleAudit,
 } from "./optical_lt.js";
 
+import { bindAuthenticitySheetIsolation, renderAuthenticityAndLicenseSheetHtml } from "./authenticity_sheet.js";
 import { resolveCanonicalBlockCode } from "./dosis.js";
 import {
   mountOfflineFontNoticeWithLocalImporter,
@@ -205,8 +206,24 @@ export function hydrateShareAndAuditDrawerPanel(ctx = {}) {
   const workCtx = resolveActiveWorkDrawerContext(state);
   const workAdapter = resolveWorkDrawerAdapter(state);
   const shareSheetEl = getEl("bibleShareAndAuditSheet", targetDoc);
-  if (shareSheetEl && typeof shareSheetEl.setAttribute === "function") {
-    shareSheetEl.setAttribute("data-work-share-target", workAdapter.shareTarget || "biblia_quine");
+  if (shareSheetEl) {
+    shareSheetEl.removeAttribute?.("hidden");
+    shareSheetEl.setAttribute?.("data-work-share-target", workAdapter.shareTarget || "biblia_quine");
+    shareSheetEl.setAttribute?.("data-unified-offline-vault", "true");
+  }
+  const sharePacksDetailsEl = getEl("shareOfflinePacksDetails", targetDoc);
+  sharePacksDetailsEl?.setAttribute?.("data-vault-unified", "true");
+  bindAuthenticitySheetIsolation({ targetDoc, getEl });
+  const authHost = getEl("editorialProvenanceCardHost", targetDoc);
+  if (authHost && !getEl("authenticityLicenseIsolationNotice", targetDoc) && typeof targetDoc?.createElement === "function") {
+    const notice = targetDoc.createElement("div");
+    notice.innerHTML = renderAuthenticityAndLicenseSheetHtml({
+      activeWork: workCtx.activeWork,
+      activeLang: packLang,
+      editorialProvenance: state.editorialProvenance || null,
+      uiLocale: state.uiLocale || "es",
+    });
+    authHost.appendChild?.(notice);
   }
 
   const packsPanel = getEl("offlinePacksCatalogPanel", targetDoc);
@@ -216,7 +233,7 @@ export function hydrateShareAndAuditDrawerPanel(ctx = {}) {
       !state._vaultShareHydratingPromise &&
       typeof listPacksFromIndexedDbAsync === "function"
     ) {
-      state._vaultShareHydratingPromise = Promise.resolve(
+      state._vaultShareHydratingPromise = Promise.resolve().then(() =>
         listPacksFromIndexedDbAsync({ force: !Array.isArray(state._hydratedVaultPacks) }),
       )
         .then((vaultPacks) => {

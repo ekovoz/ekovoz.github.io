@@ -12,6 +12,11 @@ import {
   listLanguagesWindow,
   searchLanguages,
 } from "./lang_funnel.js";
+import {
+  localizeBridgeLangSelectLabels,
+  partitionLanguagesTier1AndLongTail,
+  renderDecoupledLanguageSelectorHtml,
+} from "./language_selector_view.js";
 import { hydratePackLanguagesFromManifest } from "./reference.js";
 
 export const POLYGLOT_RECYCLED_WINDOW_CAP = 36;
@@ -112,6 +117,9 @@ export function bindCorpusPolyglotAndUiPreferences({
   const langFilterInput = getEl("quickLangFilterInput", targetDoc);
   const windowHost = getEl("polyglotRecycledListHost", targetDoc);
   const bridgeSelect = getEl("bibleBridgeLangSelect", targetDoc);
+  if (bridgeSelect) {
+    localizeBridgeLangSelectLabels(bridgeSelect, state.uiLocale || "es");
+  }
 
   const ensureRegionIndexLoaded = async () => {
     if (state.regionIndex) return state.regionIndex;
@@ -123,7 +131,26 @@ export function bindCorpusPolyglotAndUiPreferences({
   };
 
   const projectLangChoices = (items = []) => {
-    const capped = renderPolyglotRecycledWindow(windowHost, items, { activeLang: state.lang, targetDoc });
+    const partitioned = partitionLanguagesTier1AndLongTail(items, {
+      activeWork: state.activeWork || "biblia",
+      previewEvangelios: Boolean(state.previewEvangelios),
+    });
+    const visibleItems = [...partitioned.tier1, ...partitioned.longTail];
+    if (windowHost && typeof windowHost.setAttribute === "function") {
+      windowHost.setAttribute("data-active-work", partitioned.activeWork);
+      windowHost.setAttribute("data-tier1-count", String(partitioned.counts.tier1Count));
+      windowHost.setAttribute("data-longtail-count", String(partitioned.counts.longTailCount));
+    }
+    if (windowHost && typeof targetDoc?.createElement !== "function") {
+      windowHost.innerHTML = renderDecoupledLanguageSelectorHtml({
+        entries: visibleItems,
+        activeLang: state.lang,
+        activeWork: state.activeWork || "biblia",
+        previewEvangelios: Boolean(state.previewEvangelios),
+        uiLocale: state.uiLocale || "es",
+      });
+    }
+    const capped = renderPolyglotRecycledWindow(windowHost, visibleItems, { activeLang: state.lang, targetDoc });
     if (langSelect && capped.length > 0) {
       langSelect.innerHTML = capped
         .map(
@@ -169,10 +196,10 @@ export function bindCorpusPolyglotAndUiPreferences({
         byCountry.length > 0
           ? byCountry.slice(0, POLYGLOT_RECYCLED_WINDOW_CAP)
           : listLanguagesWindow(idx, {
-              macroRegionId: state.regionCode || 1,
-              subregionName: subName,
-              limit: POLYGLOT_RECYCLED_WINDOW_CAP,
-            }),
+            macroRegionId: state.regionCode || 1,
+            subregionName: subName,
+            limit: POLYGLOT_RECYCLED_WINDOW_CAP,
+          }),
       );
       await updateDoseLinks?.(targetDoc);
     });

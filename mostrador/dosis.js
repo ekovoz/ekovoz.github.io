@@ -897,6 +897,7 @@ export function simulateThirdGenPhotocopySauvola({
   const survives3rdGen =
     cleanStroke >= minStrokePt && oracle.eulerCharacteristicDelta === 0 && oracle.wcagPassAaa;
   const eulerDelta = survives3rdGen ? 0 : -Math.max(1, oracle.eulerCharacteristicDelta);
+  const verdict = survives3rdGen ? "Legible hasta 3ª fotocopia" : "Aumentar tamaño de letra";
 
   return {
     algorithm: "Sauvola-Integral-2000",
@@ -911,7 +912,7 @@ export function simulateThirdGenPhotocopySauvola({
     survives3rdGen,
     contrastRatio: oracle.contrastRatio,
     rasterSource: oracle.rasterSource,
-    badgeText: `Sauvola T=${oracle.meanThreshold} (k=${cleanK.toFixed(2)}, R=${cleanR}) · Trazo ${cleanStroke.toFixed(2)} pt ≥ 0.75 pt · Δχ=${eulerDelta}`,
+    badgeText: `${verdict} · Trazo ${cleanStroke.toFixed(2)} pt (mín. 0.75 pt) · Contraste ${oracle.contrastRatio.toFixed(2)}:1 · Δχ=${eulerDelta}`,
   };
 }
 
