@@ -726,7 +726,7 @@ export function renderChapterPreviewHtml(
       if (oralPorticoActive) {
         const pausePeriodMs = Math.max(250, Number(options.pausePeriodSelahMs) || 650);
         currentSpans.push(
-          `<span class="mostrador-oral-pause" data-pause-period-ms="${pausePeriodMs}" aria-label="Pausa silenciosa 3 segundos">[Pausa silenciosa · 3s]</span>`
+          `<span class="mostrador-oral-pause prosodic-pause-cue" data-pause-period-ms="${pausePeriodMs}" role="note" aria-label="Pausa silenciosa 3 segundos"></span>`
         );
       }
       const masoreticSymbol = currentBlockKind === "petuhah" ? "פ" : "ס";
@@ -771,7 +771,7 @@ export function renderChapterPreviewHtml(
     if (oralPorticoActive) {
       const pausePeriodMs = Math.max(250, Number(options.pausePeriodSelahMs) || 650);
       currentSpans.push(
-        `<span class="mostrador-oral-pause" data-pause-period-ms="${pausePeriodMs}" aria-label="Pausa silenciosa 3 segundos">[Pausa silenciosa · 3s]</span>`
+        `<span class="mostrador-oral-pause prosodic-pause-cue" data-pause-period-ms="${pausePeriodMs}" role="note" aria-label="Pausa silenciosa 3 segundos"></span>`
       );
     }
     const masoreticSymbol = currentBlockKind === "petuhah" ? "פ" : "ס";

@@ -445,6 +445,7 @@ export function searchPhilologyRosettaIndex(
   category = "all",
   limit = 12,
   rosettaIndex = null,
+  activeRef = "",
 ) {
   const idx = rosettaIndex || PHILOLOGY_ROSETTA_DEFAULT_INDEX;
   const cleanCat = String(category || "all").trim().toLowerCase();
@@ -576,7 +577,23 @@ export function searchPhilologyRosettaIndex(
     })
     : items;
 
-  return filtered.slice(0, maxItems);
+  const normActiveRef = activeRef ? normalizeRefCode(activeRef, "") : "";
+  const ordered = normActiveRef
+    ? (() => {
+      const [actBook, actCh] = normActiveRef.split(".");
+      const scoreRef = (itRef) => {
+        const normIt = normalizeRefCode(itRef, "");
+        if (normIt === normActiveRef) return 3;
+        const [ib, ic] = normIt.split(".");
+        if (ib === actBook && ic === actCh) return 2;
+        if (ib === actBook) return 1;
+        return 0;
+      };
+      return [...filtered].sort((a, b) => scoreRef(b.ref) - scoreRef(a.ref));
+    })()
+    : filtered;
+
+  return ordered.slice(0, maxItems);
 }
 
 /**
@@ -586,11 +603,12 @@ export function searchPhilologyRosettaIndex(
 export function renderPhilologyRosettaResultsRowsHtml({
   query = "",
   category = "all",
+  activeRef = "",
   rosettaIndex = null,
 } = {}) {
   const cleanCat = String(category || "all").trim().toLowerCase();
   const cleanQuery = String(query || "").trim();
-  const results = searchPhilologyRosettaIndex(cleanQuery, cleanCat, 12, rosettaIndex);
+  const results = searchPhilologyRosettaIndex(cleanQuery, cleanCat, 12, rosettaIndex, activeRef);
   return results
     .map(
       (item) =>
@@ -612,7 +630,7 @@ export function renderPhilologyRosettaExplorerHtml({
   const isEn = String(uiLocale || "es").trim().toLowerCase().startsWith("en");
   const cleanCat = String(category || "all").trim().toLowerCase();
   const cleanQuery = String(query || "").trim();
-  const results = searchPhilologyRosettaIndex(cleanQuery, cleanCat, 12, rosettaIndex);
+  const results = searchPhilologyRosettaIndex(cleanQuery, cleanCat, 12, rosettaIndex, activeRef);
   const catPairs = [
     ["all", "All manuscript & reading notes", "Todas las notas y variantes textuales"],
     ["roots", "1. Semitic consonantal roots", "1. Raíces consonánticas semíticas"],

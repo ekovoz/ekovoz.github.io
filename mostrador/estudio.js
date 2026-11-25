@@ -252,38 +252,34 @@ function formatNsmSentenceCase(raw) {
   return lower.charAt(0).toUpperCase() + lower.slice(1);
 }
 
-/**
- * Guardia semantica sub-dominio Louw-Nida (`D3-R10`): evita que LN:23.46..60 (gestacion/nacimiento)
- * proyecte el primitivo grueso de alimento en filas cacheadas de `matrix_tier0.ekpack`.
- */
-function resolveCoherentNsm65ForDomain(rawDomain = "", rawNsm = "", uiLocale = "es") {
+/** Compuerta estricta de clase cerrada (`D6-R12`): detecta `FUNC:*` o morfología cerrada antes de `LN:23`. */
+export function isClosedClassFunctionTag(rawDomain = "", rawRole = "", rawMorph = "", rawNsm = "") {
+  if (/\bFUNC:[a-z0-9_-]+/i.test(`${rawDomain} ${rawRole} ${rawNsm}`)) return true;
+  const morph = String(rawMorph || "").trim();
+  return /^(?:C|P|D|T|COND|CONJ|PREP|DET|PART|PRON|INTERJ)(?:-|$)/i.test(morph) || /^(?:H[CRDT]|HC|HR|HT)/.test(morph);
+}
+
+/** Guardia semántica Louw-Nida (`D3-R10` + `D6-R12`): prioriza `FUNC:*` antes de `LN:23.46..60`. */
+function resolveCoherentNsm65ForDomain(rawDomain = "", rawNsm = "", uiLocale = "es", row = null) {
   const isEn = !String(uiLocale || "es").trim().toLowerCase().startsWith("es");
-  const dLow = String(rawDomain || "").toLowerCase();
-  const nsmLow = String(rawNsm || "").toLowerCase();
+  const dLow = String(rawDomain || "").toLowerCase(), nsmLow = String(rawNsm || "").toLowerCase();
+  const roleRaw = row ? String(row.c09_macula_role || "") : "", morphRaw = row ? String(row.c08_morph_code || "") : "";
   const ln23Match = /\bln:23\.(\d+)/i.exec(dLow);
+  if (isClosedClassFunctionTag(rawDomain, roleRaw, morphRaw, rawNsm)) {
+    if (ln23Match || /\bln:89\./i.test(dLow) || nsmLow.includes("alimento") || nsmLow.includes("nacimiento")) {
+      return isEn ? "Grammatical function link" : "Palabra de enlace gramatical";
+    }
+    if (/\bFUNC:[a-z0-9_-]+/i.test(rawNsm)) return humanizeSemanticTagChain(rawNsm, uiLocale) || (isEn ? "Grammatical function link" : "Palabra de enlace gramatical");
+    const funcSrc = `${rawDomain}|${roleRaw}`.split("|").filter((s) => /\bFUNC:/i.test(s)).join("|");
+    if (funcSrc) return humanizeSemanticTagChain(funcSrc, uiLocale) || (isEn ? "Grammatical function link" : "Palabra de enlace gramatical");
+  }
   if (ln23Match) {
     const sub = Number(ln23Match[1]) || 0;
-    if (sub >= 46 && sub <= 60) {
-      return isEn
-        ? "Birth, pregnancy, and new life coming into the world"
-        : "Nacimiento, gestación y vida nueva que viene al mundo";
-    }
-    if (sub >= 61 && sub <= 112 && nsmLow.includes("alimento")) {
-      return isEn
-        ? "Vital process of breathing, sleeping, living, or dying"
-        : "Proceso vital de respirar, dormir, vivir o morir";
-    }
-    if (sub >= 113 && nsmLow.includes("alimento")) {
-      return isEn
-        ? "Health, strength, or healing of the human body"
-        : "Salud, fuerza o sanidad del cuerpo humano";
-    }
+    if (sub >= 46 && sub <= 60) return isEn ? "Birth, pregnancy, and new life coming into the world" : "Nacimiento, gestación y vida nueva que viene al mundo";
+    if (sub >= 61 && sub <= 112 && nsmLow.includes("alimento")) return isEn ? "Vital process of breathing, sleeping, living, or dying" : "Proceso vital de respirar, dormir, vivir o morir";
+    if (sub >= 113 && nsmLow.includes("alimento")) return isEn ? "Health, strength, or healing of the human body" : "Salud, fuerza o sanidad del cuerpo humano";
   }
-  if (/\bln:89\./i.test(dLow) && nsmLow.includes("tiempo cuando hay luz")) {
-    return isEn
-      ? "Logical link joining words or ideas in speech"
-      : "Relación lógica que une palabras o ideas en el discurso";
-  }
+  if (/\bln:89\./i.test(dLow) && nsmLow.includes("tiempo cuando hay luz")) return isEn ? "Logical link joining words or ideas in speech" : "Relación lógica que une palabras o ideas en el discurso";
   return "";
 }
 
@@ -306,7 +302,7 @@ export function formatHumanReadable15ColFields(row = {}, uiLocale = "es") {
   const clauseHuman = !rawClause || rawClause === "∅" ? "C1" : rawClause;
   const domainHuman = humanizeSemanticTagChain(rawDomain, uiLocale) || decodedDomain.label || "General";
 
-  let nsmCandidate = resolveCoherentNsm65ForDomain(rawDomain, rawNsm, uiLocale);
+  let nsmCandidate = resolveCoherentNsm65ForDomain(rawDomain, rawNsm, uiLocale, row);
   if (!nsmCandidate) {
     if (/PRIM:/i.test(rawNsm)) {
       nsmCandidate = translateNsm65PrimePhrase(rawNsm.slice(rawNsm.search(/PRIM:/i)), uiLocale);
@@ -428,11 +424,20 @@ export function renderStudy14ColDrawerHtml(matrixShard, options = {}) {
         `<span data-col="c11_semantic_domain">${isEn ? "Domain" : "Dominio"}: ${escapeHtml(human.domainHuman)}</span>` +
         `</div>` +
         `</details>` +
-        `<button type="button" class="uls-chip btn-propose-strong-root" data-propose-strong-id="${escapeHtml(r.c07_strong_id)}" data-osis-ref="${escapeHtml(r.c02_ref)}">✍️ ${isEn ? "Improve root" : "Mejorar raíz"} (${escapeHtml(r.c07_strong_id)})</button>` +
         `</article>`
       );
     })
     .join("");
+
+  const firstTokenRow = normalizedRows.find((r) => r.c07_strong_id && r.c07_strong_id !== "∅") || normalizedRows[0] || null;
+  const focusedStrongId = activeStrongTarget || String(firstTokenRow?.c07_strong_id || "H0430");
+  const focusedOsisRef = String(firstTokenRow?.c02_ref || `${book}.${chapter}.${activeVerseNum}`);
+  const focusedActionBarHtml = normalizedRows.length > 0
+    ? `<div id="studyFocusedTokenActionBar" class="study-focused-token-bar ek-row-between ek-mb-xs" data-focused-token-actions="true">` +
+      `<span class="ek-meta">${isEn ? "Selected word" : "Palabra enfocada"}: <code>${escapeHtml(focusedStrongId)}</code></span>` +
+      `<button type="button" id="btnFocusedTokenProposeRoot" class="uls-chip btn-propose-strong-root" data-propose-strong-id="${escapeHtml(focusedStrongId)}" data-osis-ref="${escapeHtml(focusedOsisRef)}">✍️ ${isEn ? "Improve root" : "Mejorar raíz"} (${escapeHtml(focusedStrongId)})</button>` +
+      `</div>`
+    : "";
 
   const nsmEntries = shard?.nsm && typeof shard.nsm === "object" ? Object.values(shard.nsm) : [];
   const rawRealiaEntries = Array.isArray(shard?.realia) ? shard.realia : [];
@@ -513,6 +518,7 @@ export function renderStudy14ColDrawerHtml(matrixShard, options = {}) {
   return (
     `<section class="study-14col-drawer" data-book="${escapeHtml(book)}" data-chapter="${chapter}" data-verse="${activeVerseNum}" data-scope="${effectiveScopeAttr}" data-rows-rendered="${normalizedRows.length}">` +
     scopeBarHtml +
+    focusedActionBarHtml +
     gmisSectionHtml +
     `<div class="leipzig-14col-grid">` +
     wordCardsHtml +

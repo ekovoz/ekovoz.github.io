@@ -308,6 +308,15 @@ export function syncActiveStrongInStudyDrawer(
     searchInp.value = cleanStrong;
   }
 
+  const focusedBtn = getEl("btnFocusedTokenProposeRoot", targetDoc);
+  if (focusedBtn && typeof focusedBtn.setAttribute === "function") {
+    const isEnUi = String(state?.uiLocale || "es").trim().toLowerCase().startsWith("en");
+    const activeOsis = `${state?.book || "GEN"}.${Number(state?.chapter) || 1}.${Number(state?.verse) || 1}`;
+    focusedBtn.setAttribute("data-propose-strong-id", cleanStrong);
+    focusedBtn.setAttribute("data-osis-ref", activeOsis);
+    focusedBtn.textContent = `✍️ ${isEnUi ? "Improve root" : "Mejorar raíz"} (${cleanStrong})`;
+  }
+
   const rowsEl = getEl("rosettaExplorerResultsRows", targetDoc);
   if (rowsEl) {
     const renderRowsFn =
@@ -315,9 +324,11 @@ export function syncActiveStrongInStudyDrawer(
         ? mod.renderPhilologyRosettaResultsRowsHtml
         : renderPhilologyRosettaResultsRowsHtml;
     const activeCat = state?.rosettaCategory || "all";
+    const activeRef = state?.book ? `${state.book}.${Number(state.chapter) || 1}.${Number(state.verse) || 1}` : "";
     rowsEl.innerHTML = renderRowsFn({
       query: cleanStrong,
       category: activeCat,
+      activeRef,
       rosettaIndex: rosettaIndex || state?.rosettaIndex || null,
     });
     const listEl = getEl("rosettaExplorerResultsList", targetDoc);
@@ -327,6 +338,7 @@ export function syncActiveStrongInStudyDrawer(
         activeCat,
         12,
         rosettaIndex || state?.rosettaIndex || null,
+        activeRef,
       );
       listEl.setAttribute("data-results-count", String(items.length));
     }
@@ -494,6 +506,7 @@ export async function hydrateStudyDrawerPanel(ctx = {}) {
         staticRowsEl.innerHTML = renderRowsFn({
           query: state.rosettaQuery || "",
           category: state.rosettaCategory || "all",
+          activeRef: `${state.book}.${state.chapter}.${state.verse}`,
           rosettaIndex,
         });
       }
@@ -501,11 +514,13 @@ export async function hydrateStudyDrawerPanel(ctx = {}) {
     const syncRosettaRows = () => {
       const rowsEl = getEl("rosettaExplorerResultsRows", targetDoc);
       if (rowsEl) {
+        const activeRef = `${state.book}.${state.chapter}.${state.verse}`;
         const items = searchPhilologyRosettaIndex(
           state.rosettaQuery || "",
           state.rosettaCategory || "all",
           12,
           rosettaIndex,
+          activeRef,
         );
         if (typeof rowsEl.insertBefore === "function" && targetDoc?.createElement) {
           reconcileKeyedList(
@@ -538,6 +553,7 @@ export async function hydrateStudyDrawerPanel(ctx = {}) {
           rowsEl.innerHTML = renderRowsFn({
             query: state.rosettaQuery || "",
             category: state.rosettaCategory || "all",
+            activeRef,
             rosettaIndex,
           });
         }
@@ -887,7 +903,6 @@ export async function resolvePrimaryStrongForVerse(state, dataLayer) {
   } catch {
     // Fallback by testament
   }
-  const isNt = /^(MAT|MRK|MAR|LUK|JHN|ACT|ROM|1CO|2CO|GAL|EPH|PHP|COL|1TH|2TH|1TI|2TI|TIT|PHM|HEB|JAS|1PE|2PE|1JN|2JN|3JN|JUD|REV)$/i.test(state.book);
-  return isNt ? "G3056" : "H0430";
+  return "";
 }
 

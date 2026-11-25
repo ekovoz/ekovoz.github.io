@@ -7,6 +7,7 @@ import {
   resolveRegionalPrintDefaults,
   simulateFifthGenPhotocopySauvolaBilateral,
 } from "./dosis.js";
+import { createLatestSlotRunner } from "./dom_patch.js";
 import {
   HAREL_PRINT_SUBTABS,
   formatPhotocopySimBadgeText as formatPhotocopySimBadgeTextImpl,
@@ -55,6 +56,7 @@ export {
   HAREL_STUDY_SUBTABS,
   HAREL_WORKSHOP_SUBTABS,
   bindImproveFormControlsInDrawer,
+  createLatestSlotRunner,
   exportBundleAsFile,
   hydrateBookNamesSourceBadge,
   hydrateLifeTrailsFromPericopesArtifact,

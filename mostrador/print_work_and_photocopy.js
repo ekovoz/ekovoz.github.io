@@ -533,15 +533,15 @@ export function renderCompactTypologySelectorHtml({
   }).join("");
 
   return (
-    `<div id="printTypologyBridgeCard" class="ek-card-muted ek-stack-sm ek-mt-xs" data-typology-bridge="true">` +
-    `<strong class="ek-title-sm">🌐 ${isEn ? "Linguistic Adaptation for Layout (Branch & Syntax)" : "Adaptación lingüística de maquetación (Rama y sintaxis)"}</strong>` +
-    `<div class="ek-form-pair">` +
+    `<details id="printTypologyBridgeCard" class="tech-details ek-card-muted ek-stack-sm ek-mt-xs" data-typology-bridge="true">` +
+    `<summary class="ek-title-sm">🌐 ${isEn ? "Advanced linguistic layout adaptation" : "Adaptación lingüística avanzada de maquetación"}</summary>` +
+    `<div class="ek-form-pair ek-mt-xs">` +
     `<label class="ek-label-sm">${isEn ? "Linguistic branch (12)" : "Rama lingüística (12)"}` +
     `<select id="printBranchProfileSelect" class="ek-input">${branchOptions}</select></label>` +
     `<label class="ek-label-sm">${isEn ? "Typological syntax (16)" : "Perfil sintáctico (16)"}` +
     `<select id="printTypologyProfileSelect" class="ek-input">${typoOptions}</select></label>` +
     `</div>` +
-    `</div>`
+    `</details>`
   );
 }
 
@@ -572,7 +572,7 @@ export function renderDuplexAssistantCardHtml({
   const nemethToggleHtml =
     `<div class="braille-actions-row">` +
     `<label class="hig-toggle-row uls-chip">` +
-    `<input type="checkbox" id="chkBrailleNemethToggle" data-action="toggle-braille-nemeth" data-edition-slug="11_braille_nemeth_b70"${nemethCheckedAttr} />` +
+    `<input type="checkbox" id="chkBrailleNemethToggle" class="hig-switch" data-action="toggle-braille-nemeth" data-edition-slug="11_braille_nemeth_b70"${nemethCheckedAttr} />` +
     `<span>${escapeHtml(nemethLabel)}</span></label>` +
     `<a id="btnDownloadBrailleBrf" class="uls-chip" href="${escapeHtml(brfHref)}" download="${escapeHtml(brfFilename)}" data-edition-slug="11_braille_nemeth_b70">` +
     `⠋ ${isEn ? "Download Tactile .brf (Ed. 11)" : "Descargar .brf Táctil (Ed. 11)"}</a>` +

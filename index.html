@@ -87,7 +87,7 @@
                     Beatitudes</button>
                 <button type="button" id="tabWorkEvangelios" class="uls-chip" role="tab" aria-selected="false"
                     aria-controls="evangeliosSovereignSection" data-work-tab="evangelios" data-work-i18n="evangelios"
-                    data-i18n="mostrador.tab.evangelios" hidden>🌅 The Gospels (52)</button>
+                    data-i18n="mostrador.tab.evangelios">🌅 The Gospels (52)</button>
             </nav>
             <div class="language-region-pill-group" role="group" aria-label="Language and Appearance">
                 <button type="button" class="uls-chip" id="sovereignCorpusLangBtn" data-i18n-autonym="true"
@@ -113,56 +113,9 @@
                 aria-label="Decrease text size">A-</button>
             <button type="button" id="btnScaleUp" class="uls-chip" data-i18n-autonym="true"
                 aria-label="Increase text size">A+</button>
-            <div id="bibleRegisterSelector" class="register-selector-group ek-row-wrap ek-divider-top" role="group"
-                aria-label="Reading Mode">
-                <button type="button" id="btnRegIntergeneracional" class="uls-chip" data-register="intergeneracional"
-                    data-i18n="mostrador.register.intergenerational">🕊️ Clear
-                    contemporary reading</button>
-                <button type="button" id="btnRegClasica" class="uls-chip" data-register="clasica"
-                    data-i18n="mostrador.register.classic">📜 Classic tradition
-                    (1909)</button>
-                <button type="button" id="btnRegBilingue" class="uls-chip" data-register="bilingue"
-                    data-i18n="mostrador.register.bilingual">👥 Side-by-side
-                    bilingual (62/38)</button>
-                <button type="button" id="toggleRollMode" class="uls-chip" data-i18n="mostrador.register.roll_toggle">📄
-                    Page view ↔
-                    Continuous scroll</button>
-            </div>
-            <div class="ek-row-wrap ek-divider-top" role="group" aria-label="App Interface Language">
-                <button type="button" class="uls-trigger-btn" id="ulsTriggerBtn" data-i18n-autonym="true"
-                    aria-haspopup="listbox" aria-expanded="false" aria-controls="langSelect">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                        stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="12" cy="12" r="10"></circle>
-                        <line x1="2" y1="12" x2="22" y2="12"></line>
-                        <path
-                            d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z">
-                        </path>
-                    </svg>
-                    <span id="ulsCurrentLang">English</span>
-                    <span class="uls-badge" id="ulsUiCountBadge">18 UI</span>
-                </button>
-                <select id="langSelect" aria-label="Language / Idioma" hidden>
-                    <option value="en" selected>English</option>
-                    <option value="es">Español</option>
-                    <option value="bn-BD">বাংলা — বাংলাদেশ (Bangladesh · ঈসা মসীহ)</option>
-                    <option value="bn-IN">বাংলা — ভারত/প্রচলিত (West Bengal · প্রভু যীশু)</option>
-                    <option value="bn">বাংলা</option>
-                    <option value="fr">Français</option>
-                    <option value="pt">Português</option>
-                    <option value="it">Italiano</option>
-                    <option value="id">Bahasa Indonesia</option>
-                    <option value="tr">Türkçe</option>
-                    <option value="ru">Русский</option>
-                    <option value="zh-Hans">简体中文</option>
-                    <option value="ja">日本語</option>
-                    <option value="ko">한국어</option>
-                    <option value="hi">हिन्दी</option>
-                    <option value="ar">العربية</option>
-                    <option value="ur">اردو</option>
-                    <option value="fa">فارسی</option>
-                </select>
-            </div>
+            <button type="button" id="toggleRollMode" class="uls-chip" data-i18n="mostrador.register.roll_toggle">📄
+                Page view ↔
+                Continuous scroll</button>
         </div>
         <!-- Global Orthogonal Corpus Language Funnel (24 Bibles & Portions + Sister Works Languages + SIL 7,164 Census) -->
         <details class="advanced-editorial-drawer advanced-editorial-drawer corpus-drawer"
@@ -170,14 +123,61 @@
             <summary hidden aria-hidden="true" data-i18n="mostrador.step1.title">
                 1. Choose language: 24 Bibles &amp; Portions or SIL Census (7,164)</summary>
             <div>
+                <div id="bibleRegisterSelector" class="register-selector-group ek-row-wrap ek-mb-sm" role="group"
+                    aria-label="Reading Mode">
+                    <button type="button" id="btnRegIntergeneracional" class="uls-chip"
+                        data-register="intergeneracional" data-i18n="mostrador.register.intergenerational">🕊️ Clear
+                        contemporary reading</button>
+                    <button type="button" id="btnRegClasica" class="uls-chip" data-register="clasica"
+                        data-i18n="mostrador.register.classic">📜 Classic tradition
+                        (1909)</button>
+                    <button type="button" id="btnRegBilingue" class="uls-chip" data-register="bilingue"
+                        data-i18n="mostrador.register.bilingual">👥 Side-by-side
+                        bilingual (62/38)</button>
+                </div>
+                <div class="ek-row-wrap ek-mb-sm ek-divider-top" role="group" aria-label="App Interface Language">
+                    <button type="button" class="uls-trigger-btn" id="ulsTriggerBtn" data-i18n-autonym="true"
+                        aria-haspopup="listbox" aria-expanded="false" aria-controls="langSelect">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="2" y1="12" x2="22" y2="12"></line>
+                            <path
+                                d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z">
+                            </path>
+                        </svg>
+                        <span id="ulsCurrentLang">English</span>
+                        <span class="uls-badge" id="ulsUiCountBadge">18 UI</span>
+                    </button>
+                    <select id="langSelect" aria-label="Language / Idioma" hidden>
+                        <option value="en" selected>English</option>
+                        <option value="es">Español</option>
+                        <option value="bn-BD">বাংলা — বাংলাদেশ (Bangladesh · ঈসা মসীহ)</option>
+                        <option value="bn-IN">বাংলা — ভারত/প্রচলিত (West Bengal · প্রভু যীশু)</option>
+                        <option value="bn">বাংলা</option>
+                        <option value="fr">Français</option>
+                        <option value="pt">Português</option>
+                        <option value="it">Italiano</option>
+                        <option value="id">Bahasa Indonesia</option>
+                        <option value="tr">Türkçe</option>
+                        <option value="ru">Русский</option>
+                        <option value="zh-Hans">简体中文</option>
+                        <option value="ja">日本語</option>
+                        <option value="ko">한국어</option>
+                        <option value="hi">हिन्दी</option>
+                        <option value="ar">العربية</option>
+                        <option value="ur">اردو</option>
+                        <option value="fa">فارسی</option>
+                    </select>
+                </div>
                 <p class="ek-title-sm" data-i18n="corpus.tab.bibles">📖 Bibles &amp; Languages (24)</p>
                 <div id="corpusWorkLanguagesBar" class="chip-wrap-row ek-mb-sm" role="group"
                     aria-label="Sister Work Editions (Evangelios and Felices)">
                     <button type="button" id="quickWorkLangGn" class="uls-chip" data-i18n-autonym="true"
-                        data-corpus-lang="gn" data-work-scope="evangelios" hidden>🇵🇾 Avañe'ẽ Guaraní (gn ·
+                        data-corpus-lang="gn" data-work-scope="evangelios">🇵🇾 Avañe'ẽ Guaraní (gn ·
                         Evangelios)</button>
                     <button type="button" id="quickWorkLangQuc" class="uls-chip" data-i18n-autonym="true"
-                        data-corpus-lang="quc" data-work-scope="evangelios" hidden>🇬🇹 K'iche' (quc · Evangelios)</button>
+                        data-corpus-lang="quc" data-work-scope="evangelios">🇬🇹 K'iche' (quc · Evangelios)</button>
                     <button type="button" id="quickWorkLangBnBd" class="uls-chip" data-i18n-autonym="true"
                         data-corpus-lang="bn-BD" data-work-scope="felices">🇧🇩 বাংলা বাংলাদেশ (bn-BD ·
                         Felices)</button>
@@ -202,7 +202,7 @@
                         <button type="button" id="quickLangIt" class="uls-chip" data-i18n-autonym="true"
                             data-corpus-lang="it">🇮🇹 Italiano (66)</button>
                         <button type="button" id="quickLangStp" class="uls-chip" data-i18n-autonym="true"
-                            data-corpus-lang="stp">🏔️ O'dam Tepehuano (66)</button>
+                            data-corpus-lang="stp">🏔️ O'dam Tepehuano (27 NT + Taller AT)</button>
                         <button type="button" id="quickLangHe" class="uls-chip" data-i18n-autonym="true"
                             data-corpus-lang="he">🕎 עברית WLC+Delitzsch (66)</button>
                         <button type="button" id="quickLangGrc" class="uls-chip" data-i18n-autonym="true"
@@ -306,7 +306,7 @@
                             <option value="ja">日本語 (ja)</option>
                             <option value="ko">한국어 (ko)</option>
                             <option value="quc">K'iche' (quc)</option>
-                            <option value="gn" data-work-scope="evangelios" hidden>Avañe'ẽ · Guaraní (gn · Evangelios)</option>
+                            <option value="gn" data-work-scope="evangelios">Avañe'ẽ · Guaraní (gn · Evangelios)</option>
                             <option value="arp">Hinónoʼeitíít · Arapaho (arp · Porciones)</option>
                             <option value="bre">Brezhoneg · Breton (bre · Porciones)</option>
                             <option value="cha">Finuʼ Chamorro (cha · Porciones)</option>
@@ -391,18 +391,31 @@
                 <button type="button" class="modal-close" id="btnCloseCompassModal" data-i18n-autonym="true"
                     aria-label="Close">✕</button>
             </div>
-            <div id="compassModeTabsBar" class="subtabs-bar" role="tablist" aria-label="Books or Reading Trails">
+            <div id="compassModeTabsBar" class="subtabs-bar" role="tablist"
+                aria-label="Books, Concordance or Reading Trails">
                 <button type="button" id="btnCompassTabBooks" class="uls-chip" role="tab" aria-selected="true"
-                    aria-controls="compassPanelBooks" data-i18n-autonym="true">📖 66</button>
+                    aria-controls="compassPanelBooks" data-i18n-autonym="true">📖 66 Libros</button>
+                <button type="button" id="btnCompassTabConcordance" class="uls-chip" role="tab" aria-selected="false"
+                    aria-controls="compassPanelConcordance" data-i18n-autonym="true">🔎 Concordancia</button>
                 <button type="button" id="btnCompassTabTrails" class="uls-chip" role="tab" aria-selected="false"
                     aria-controls="compassPanelTrails" data-i18n="corpus.tab.trails">🧭 8 Reading Trails</button>
             </div>
             <div class="compass-search-row">
                 <input type="text" id="mostradorRefInput" class="field-search-input"
                     data-i18n-attr="placeholder:mostrador.step2.placeholder"
-                    placeholder="Book &amp; chapter (e.g. Jn 3:16 or Ps 23)">
+                    placeholder="Cita (Jn 3:16) o palabra (pastor, misericordia)">
                 <button type="button" id="btnGoReference" class="uls-chip"
                     data-i18n="mostrador.step2.open_compass">Go</button>
+            </div>
+            <div id="compassPanelConcordance" role="tabpanel" aria-labelledby="btnCompassTabConcordance" hidden>
+                <div class="compass-search-row">
+                    <select id="compassConcordanceScopeSelect" aria-label="Concordance Scope">
+                        <option value="book" selected>Libro actual</option>
+                        <option value="vault">Biblias en Bóveda</option>
+                    </select>
+                </div>
+                <div id="compassConcordanceResults" class="spotlight-results-list" role="region" aria-live="polite">
+                </div>
             </div>
             <div id="spotlightSearchResults" class="spotlight-results-list" role="listbox"
                 aria-label="Spotlight Corpus Results" hidden>
@@ -609,7 +622,8 @@
         <div>
             <h2 id="evangeliosMainHeading">🌅 Los Evangelios · 52
                 Láminas</h2>
-            <span id="evangeliosDraftPreviewBadge" class="uls-badge" data-preview-badge="true" hidden>🧪 Borrador · Vista previa interna</span>
+            <span id="evangeliosDraftPreviewBadge" class="uls-badge" data-preview-badge="true" hidden>🧪 Borrador ·
+                Vista previa interna</span>
             <select id="evangeliosLangSelect" aria-label="Idioma de Los Evangelios" hidden>
                 <option value="es" selected>🇲🇽 Español (es)</option>
                 <option value="en">🇺🇸 English (en)</option>
@@ -795,9 +809,9 @@
                         class="btn-modal-secondary dose-card-cta" data-i18n="dose.3.cta">📚 Full Bible</a>
                 </div>
             </div>
-            <div data-print-subtab-panel="doses">
+            <div data-print-subtab-panel="doses" data-print-step="1">
                 <label class="hig-toggle-row">
-                    <input type="checkbox" id="chkStealthPackMode">
+                    <input type="checkbox" id="chkStealthPackMode" class="hig-switch">
                     <span data-i18n="print.stealthMode">🥷 Private filenames (neutral study names)</span>
                 </label>
                 <button type="button" id="btnPrintCssPagedMedia" class="uls-chip"
@@ -812,7 +826,7 @@
             <div id="bibleEditionsCatalogGrid" data-print-subtab-panel="doses">
             </div>
             <div id="bibleKindleConfigurator" class="kindle-configurator" data-print-subtab-panel="imposition"
-                aria-label="Paper and Sheet Count Settings">
+                data-print-step="2" aria-label="Paper and Sheet Count Settings">
                 <label><span id="kindleFontSizeLabel" data-i18n="print.fontSizeLabel">Font size (pt):</span> <output
                         id="kindleFontSizeValue" class="uls-badge" for="kindleFontSizeSlider">9.5 pt</output> <input
                         type="range" id="kindleFontSizeSlider" min="7.2" max="16" step="0.3" value="9.5"></label>
@@ -842,8 +856,8 @@
                     <option value="single_sheet_20mm" data-i18n="print.foliation.loose">📄 Loose Sheets (20 mm Binder
                         Margin + 2-Hole Punch)</option>
                 </select>
-                <label class="hig-toggle-row"><input type="checkbox" id="kindleDuplexToggle" checked> <span
-                        id="kindleDuplexLabelText" data-i18n="dose.1.duplex_label">Double-sided printing
+                <label class="hig-toggle-row"><input type="checkbox" id="kindleDuplexToggle" class="hig-switch" checked>
+                    <span id="kindleDuplexLabelText" data-i18n="dose.1.duplex_label">Double-sided printing
                         (duplex)</span></label>
                 <output id="kindleBudgetOutput">9.5pt · 2 col · Portrait · A4 (58
                     cpl)</output>
@@ -944,24 +958,25 @@
             </div>
             <div id="vaultStorageManagerHost" data-dosis-subtab-panel="mesh"></div>
             <details id="shareOfflinePacksDetails" class="r9-stratum-accordion" data-dosis-subtab-panel="mesh">
-                <summary data-i18n="share.subtab.mesh">📦 Offline Packs &amp; USB/Bluetooth Quine</summary>
+                <summary>📦 Paquetes offline y copia USB/Bluetooth</summary>
                 <div id="offlinePacksCatalogPanel"></div>
             </details>
             <details id="shareFontVaultDetails" class="r9-stratum-accordion" data-dosis-subtab-panel="mesh">
-                <summary>🔤 Offline Font Pack (34 TTF / .zst)</summary>
+                <summary>🔤 Fuentes tipográficas sin conexión (34 fuentes)</summary>
                 <div id="editorialFontPackVaultPanel"></div>
             </details>
             <div id="bibleOpticalQrStreamPanel" data-dosis-subtab-panel="pdf" hidden>
             </div>
             <div id="opticalReceiverRxPanel" data-dosis-subtab-panel="pdf" hidden></div>
-            <section id="shareAuthenticityUnifiedCard" class="ek-card" data-dosis-subtab-panel="graphics" hidden>
+            <section id="shareAuthenticityUnifiedCard" class="ek-card" data-dosis-subtab-panel="graphics"
+                data-slot-order="1" hidden>
                 <button type="button" id="btnVerifyEd25519Signature" class="uls-chip" data-dosis-subtab-panel="graphics"
                     data-i18n="share.btn.verifySig" hidden>🔐 Verify Authentic Editorial Signature</button>
                 <div id="editorialAuditStatusPanel" data-dosis-subtab-panel="graphics" hidden class="ek-status-panel">
                 </div>
                 <div id="editorialProvenanceCardHost" data-dosis-subtab-panel="graphics" hidden></div>
             </section>
-            <div id="shareOpenGraphCardPanel" data-dosis-subtab-panel="graphics" hidden></div>
+            <div id="shareOpenGraphCardPanel" data-dosis-subtab-panel="graphics" data-slot-order="0" hidden></div>
         </section>
     </section>
 

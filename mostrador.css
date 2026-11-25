@@ -1525,231 +1525,33 @@
     min-height: 48px;
   }
 
-  .hig-tech-receipt-details,
-  .tech-details {
-    font-size: 0.78rem;
-    color: var(--text-secondary);
-    margin-top: 0.35rem;
-  }
-
-  header,
-  section,
-  main,
-  nav,
-  .apple-sheet,
-  pre,
-  code {
-    width: 100%;
-    min-width: 0;
-    max-width: 100%;
-    overflow-x: clip;
-    overflow-wrap: break-word;
-    word-break: normal;
-  }
-
-  pre,
-  code {
-    overflow-x: auto;
-    white-space: pre-wrap;
-    word-break: break-word;
-  }
-
-  #sovereignGlobalDrawersHost .subtabs-bar {
-    flex-wrap: wrap;
-    gap: 0.35rem;
-  }
-
-  #sovereignGlobalDrawersHost .subtabs-bar>button {
-    flex: 1 1 auto;
-    white-space: nowrap;
-    font-size: 0.78rem;
-    padding: 0.35rem 0.6rem;
-    text-align: center;
-  }
-
-  .leipzig-card-header {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.45rem;
-  }
-
-  .lock8-status-row {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.35rem;
-    margin-bottom: 0.45rem;
-  }
-
-  .evangelios-passage-blockquote {
-    margin: 0.6rem 0;
-    padding: 0.75rem 0.9rem;
-    border-left: 3px solid var(--accent-amber);
-    background: var(--bg-secondary);
-    border-radius: 0 10px 10px 0;
-    font-size: 0.95rem;
-    line-height: 1.5;
-  }
-
-  #bibleOpticalQrStreamPanel .qrbeam-matrix-svg {
-    max-width: 240px;
-    height: auto;
-  }
-
-  .felices-localized-plate-host:not([hidden])~.focal-plate-overlay .focal-plate-verse {
-    display: none;
-  }
-
-  .bible-chapter-dropcap {
-    float: left;
-    font-size: 2.15em;
-    line-height: 0.88;
-    font-weight: 700;
-    padding-right: 0.22rem;
-    color: var(--accent-amber);
-  }
-
-  .mostrador-diptych-row {
-    display: grid;
-    grid-template-columns: 62fr 38fr;
-    gap: 0.65rem;
-    padding: 0.35rem 0;
-    border-bottom: 1px dashed var(--card-border);
-    align-items: baseline;
-  }
-
-  @media (max-width: 480px) {
-    .mostrador-diptych-row {
-      grid-template-columns: 1fr;
-    }
-  }
-
-  button,
-  select,
-  .uls-chip,
-  .uls-trigger-btn,
-  summary {
-    min-height: 48px;
-    min-width: 48px;
-  }
-
-  input[type="range"] {
-    min-height: 44px;
-    min-width: 140px;
-    color: var(--text-primary);
-    background-color: var(--card-bg);
-    accent-color: var(--accent-primary);
-  }
-
-  input[type="checkbox"],
-  input[type="radio"] {
-    min-height: 32px;
-    min-width: 32px;
-    width: 32px;
-    height: 32px;
-    flex-shrink: 0;
-    cursor: pointer;
-    color: #1c1917;
-    background-color: #ffffff;
-    border: 2px solid #1c1917;
-    border-radius: 6px;
-    accent-color: #1c1917;
-    color-scheme: light;
-  }
-
-  [data-theme="dark"] input[type="checkbox"],
-  [data-theme="dark"] input[type="radio"] {
-    color: #f5f5f4;
-    background-color: #1c1917;
-    border-color: #f5f5f4;
-    accent-color: #f5f5f4;
-    color-scheme: dark;
-  }
-
-  @media (max-width: 1023px) {
-
-    input[type="checkbox"],
-    input[type="radio"] {
-      min-height: 48px;
-      min-width: 48px;
-      width: 48px;
-      height: 48px;
-    }
-
-    input[type="range"] {
-      min-height: 48px;
-      height: 48px;
-    }
-  }
-
-  a[href],
-  .ot-echo-jump-chip,
-  .rosetta-jump-chip {
-    min-height: 48px;
-    min-width: 48px;
-    display: inline-flex;
-    align-items: center;
-    box-sizing: border-box;
-    color: var(--text-primary);
-  }
-
-  .btn-sheets,
-  a[href].btn-sheets {
-    background: var(--accent-primary);
-    color: #ffffff;
-    border: 1px solid rgba(0, 0, 0, 0.2);
-    box-shadow: 0 4px 14px -2px rgba(28, 25, 23, 0.22);
-    justify-content: center;
-  }
-
-  .btn-sheets:hover,
-  a[href].btn-sheets:hover {
-    background: var(--accent-primary-hover);
-    color: #ffffff;
-    box-shadow: 0 8px 20px -3px rgba(28, 25, 23, 0.32);
-  }
-
-  [data-theme="dark"] .btn-sheets,
-  [data-theme="dark"] a[href].btn-sheets {
-    color: #1c1917;
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    box-shadow: 0 4px 14px -2px rgba(0, 0, 0, 0.5);
-  }
-
-  .hig-tech-meta {
-    font-size: 0.72rem;
-    opacity: 0.78;
-    margin-left: 0.25rem;
-  }
-
-  @media (max-width: 640px) {
-    #bibleProgressiveSheetDoors .hig-tech-meta {
-      display: none;
-    }
-  }
-
-  summary {
-    display: inline-flex;
-    align-items: center;
-    background-color: var(--accent-secondary-bg);
-    color: var(--text-primary);
-    padding: 0.25rem 0.55rem;
-    border-radius: 8px;
-    cursor: pointer;
-  }
-
-  .btn-micro-action,
-  .fold-guide-trigger,
-  #footerContactBtn {
-    color: var(--text-primary);
-    background-color: var(--bg-secondary);
-  }
-
-  #bibleLanguageAndRegisterDrawer>summary {
-    display: none;
-  }
+  .hig-tech-receipt-details, .tech-details { font-size: 0.78rem; color: var(--text-secondary); margin-top: 0.35rem; }
+  header, section, main, nav, .apple-sheet, pre, code { width: 100%; min-width: 0; max-width: 100%; overflow-x: clip; overflow-wrap: break-word; word-break: normal; }
+  pre, code { overflow-x: auto; white-space: pre-wrap; word-break: break-word; }
+  #sovereignGlobalDrawersHost .subtabs-bar { flex-wrap: wrap; gap: 0.35rem; }
+  #sovereignGlobalDrawersHost .subtabs-bar>button { flex: 1 1 auto; white-space: nowrap; font-size: 0.78rem; padding: 0.35rem 0.6rem; text-align: center; }
+  .leipzig-card-header { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.45rem; }
+  .lock8-status-row { display: flex; flex-direction: column; align-items: flex-start; gap: 0.35rem; margin-bottom: 0.45rem; }
+  .evangelios-passage-blockquote { margin: 0.6rem 0; padding: 0.75rem 0.9rem; border-left: 3px solid var(--accent-amber); background: var(--bg-secondary); border-radius: 0 10px 10px 0; font-size: 0.95rem; line-height: 1.5; }
+  #bibleOpticalQrStreamPanel .qrbeam-matrix-svg { max-width: 240px; height: auto; }
+  .felices-localized-plate-host:not([hidden])~.focal-plate-overlay .focal-plate-verse { display: none; }
+  .bible-chapter-dropcap { float: left; font-size: 2.15em; line-height: 0.88; font-weight: 700; padding-right: 0.22rem; color: var(--accent-amber); }
+  .mostrador-diptych-row { display: grid; grid-template-columns: 62fr 38fr; gap: 0.65rem; padding: 0.35rem 0; border-bottom: 1px dashed var(--card-border); align-items: baseline; }
+  @media (max-width: 480px) { .mostrador-diptych-row { grid-template-columns: 1fr; } }
+  button, select, .uls-chip, .uls-trigger-btn, summary { min-height: 48px; min-width: 48px; }
+  input[type="range"] { min-height: 44px; min-width: 140px; color: var(--text-primary); background-color: var(--card-bg); accent-color: var(--accent-primary); }
+  input[type="checkbox"], input[type="radio"] { min-height: 32px; min-width: 32px; width: 32px; height: 32px; flex-shrink: 0; cursor: pointer; color: #1c1917; background-color: #ffffff; border: 2px solid #1c1917; border-radius: 6px; accent-color: #1c1917; color-scheme: light; }
+  [data-theme="dark"] input[type="checkbox"], [data-theme="dark"] input[type="radio"] { color: #f5f5f4; background-color: #1c1917; border-color: #f5f5f4; accent-color: #f5f5f4; color-scheme: dark; }
+  @media (max-width: 1023px) { input[type="range"] { min-height: 48px; height: 48px; } }
+  a[href], .ot-echo-jump-chip, .rosetta-jump-chip { min-height: 48px; min-width: 48px; display: inline-flex; align-items: center; box-sizing: border-box; color: var(--text-primary); }
+  .btn-sheets, a[href].btn-sheets { background: var(--accent-primary); color: #ffffff; border: 1px solid rgba(0, 0, 0, 0.2); box-shadow: 0 4px 14px -2px rgba(28, 25, 23, 0.22); justify-content: center; }
+  .btn-sheets:hover, a[href].btn-sheets:hover { background: var(--accent-primary-hover); color: #ffffff; box-shadow: 0 8px 20px -3px rgba(28, 25, 23, 0.32); }
+  [data-theme="dark"] .btn-sheets, [data-theme="dark"] a[href].btn-sheets { color: #1c1917; border: 1px solid rgba(255, 255, 255, 0.15); box-shadow: 0 4px 14px -2px rgba(0, 0, 0, 0.5); }
+  .hig-tech-meta { font-size: 0.72rem; opacity: 0.78; margin-left: 0.25rem; }
+  @media (max-width: 640px) { #bibleProgressiveSheetDoors .hig-tech-meta { display: none; } }
+  summary { display: inline-flex; align-items: center; background-color: var(--accent-secondary-bg); color: var(--text-primary); padding: 0.25rem 0.55rem; border-radius: 8px; cursor: pointer; }
+  .btn-micro-action, .fold-guide-trigger, #footerContactBtn { color: var(--text-primary); background-color: var(--bg-secondary); }
+  #bibleLanguageAndRegisterDrawer>summary { display: none; }
 
   #evangeliosQuarterTabs {
     display: grid;
@@ -2492,181 +2294,44 @@
     line-height: 1.4;
   }
 
-  .onomasticon-source-banner {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    align-items: center;
-    gap: 0.35rem;
-    margin: 0.3rem 0;
-    font-size: 0.75rem;
-    color: var(--text-secondary);
-  }
-
-  #evangeliosQuarterTabs button,
-  .evangelios-chip-single-line {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    min-width: 0;
-  }
-
-  .r9-stratum-accordion {
-    border: 1px solid var(--card-border);
-    border-radius: 12px;
-    padding: 0.35rem 0.65rem;
-    margin: 0.45rem 0;
-    background: var(--bg-secondary);
-  }
-
-  .r9-stratum-accordion > summary {
-    cursor: pointer;
-    font-weight: 600;
-    font-size: 0.85rem;
-    min-height: 48px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .work-context-drawer-banner {
-    padding: 0.45rem 0.65rem;
-    margin-bottom: 0.55rem;
-    border-radius: 10px;
-    border: 1px solid color-mix(in srgb, var(--accent-amber) 45%, var(--card-border));
-    background: color-mix(in srgb, var(--accent-amber) 12%, var(--card-bg));
-    font-size: 0.8rem;
-  }
-
-  .photocopy-unified-card {
-    display: flex;
-    flex-direction: column;
-    gap: 0.55rem;
-    margin-top: 0.65rem;
-    padding-top: 0.5rem;
-    border-top: 1px solid var(--card-border);
-  }
-
-  .photocopy-header-row {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.45rem;
-  }
-
-  .compass-search-row {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin: 0.5rem 0;
-  }
-
-  .compass-search-row .field-search-input {
-    flex: 1 1 auto;
-    min-width: 0;
-    margin: 0;
-  }
-
-  .support-contact-form {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-  }
-
-  .support-field-label {
-    display: flex;
-    flex-direction: column;
-    gap: 0.35rem;
-    width: 100%;
-    font-weight: 600;
-    font-size: 0.85rem;
-  }
-
-  .support-field-label select,
-  .support-field-label textarea {
-    width: 100%;
-    box-sizing: border-box;
-    padding: 0.55rem 0.65rem;
-    border-radius: 10px;
-    border: 1px solid var(--card-border);
-    background: var(--card-bg);
-    color: var(--text-primary);
-    font: inherit;
-  }
-
-  .support-form-actions {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.5rem;
-  }
-
-  #nsm65StratumCard,
-  #studyUbsComparatorHost,
-  #studyOnomasticonExplorerHost,
-  #realiaMetrologyStratumCard,
-  #tskCrossRefsStratumCard,
-  #studyFormulaicParallelsHost,
-  #philologyRosettaStaticHost,
-  #bibleAnalyticalThermometerPanel,
-  #wfstAndScriptioContinuaHost,
-  #diachronicSubstitutionsDetails,
-  #bibleBranchAndTypologyPanel,
-  #bibleKindleConfigurator,
-  #duplexAssistantPanel,
-  #impositionBookletPreviewHost {
-    scroll-margin-top: 3.5rem;
-  }
-
-  .concordance-match-btn {
-    width: 100%;
-    text-align: left;
-    justify-content: flex-start;
-    margin-bottom: 0.35rem;
-  }
-
-  .search-hit-mark {
-    background: color-mix(in srgb, var(--accent-amber) 24%, transparent);
-    color: inherit;
-    padding: 0 0.15rem;
-    border-radius: 3px;
-  }
-
-  .uls-badge.is-active-syllable {
-    font-weight: 700;
-    border-color: var(--accent-amber);
-    opacity: 1;
-  }
-
-  .uls-badge[data-syllable-index]:not(.is-active-syllable) {
-    opacity: 0.8;
-  }
-
-  @media (min-width: 1024px) {
-    #bibleVerseViewport:not(.is-bilingual) {
-      max-width: 68ch;
-      margin-inline: auto;
-    }
-  }
-
-  .evangelios-reading-body {
-    text-align: left;
-  }
-
-  .evangelios-reading-body .evangelios-stage-card-header {
-    text-align: center;
-  }
-
-  a.uls-chip,
-  a.btn-card,
-  a.btn-modal-secondary {
-    text-decoration: none;
-  }
-
-  .hig-toggle-row > input[type="checkbox"] { width: 32px; height: 32px; min-width: 32px; min-height: 32px; margin: 0; accent-color: var(--accent-primary); }
+  .onomasticon-source-banner { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 0.35rem; margin: 0.3rem 0; font-size: 0.75rem; color: var(--text-secondary); }
+  #evangeliosQuarterTabs button, .evangelios-chip-single-line { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+  .r9-stratum-accordion { border: 1px solid var(--card-border); border-radius: 12px; padding: 0.35rem 0.65rem; margin: 0.45rem 0; background: var(--bg-secondary); }
+  .r9-stratum-accordion > summary { cursor: pointer; font-weight: 600; font-size: 0.85rem; min-height: 48px; display: flex; align-items: center; justify-content: space-between; }
+  .work-context-drawer-banner { padding: 0.45rem 0.65rem; margin-bottom: 0.55rem; border-radius: 10px; border: 1px solid color-mix(in srgb, var(--accent-amber) 45%, var(--card-border)); background: color-mix(in srgb, var(--accent-amber) 12%, var(--card-bg)); font-size: 0.8rem; }
+  .photocopy-unified-card { display: flex; flex-direction: column; gap: 0.55rem; margin-top: 0.65rem; padding-top: 0.5rem; border-top: 1px solid var(--card-border); }
+  .photocopy-header-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.45rem; }
+  .compass-search-row { display: flex; align-items: center; gap: 0.5rem; margin: 0.5rem 0; }
+  .compass-search-row .field-search-input { flex: 1 1 auto; min-width: 0; margin: 0; }
+  .support-contact-form { display: flex; flex-direction: column; gap: 0.75rem; }
+  .support-field-label { display: flex; flex-direction: column; gap: 0.35rem; width: 100%; font-weight: 600; font-size: 0.85rem; }
+  .support-field-label select, .support-field-label textarea { width: 100%; box-sizing: border-box; padding: 0.55rem 0.65rem; border-radius: 10px; border: 1px solid var(--card-border); background: var(--card-bg); color: var(--text-primary); font: inherit; }
+  .support-form-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; }
+  #nsm65StratumCard, #studyUbsComparatorHost, #studyOnomasticonExplorerHost, #realiaMetrologyStratumCard, #tskCrossRefsStratumCard, #studyFormulaicParallelsHost, #philologyRosettaStaticHost, #bibleAnalyticalThermometerPanel, #wfstAndScriptioContinuaHost, #diachronicSubstitutionsDetails, #bibleBranchAndTypologyPanel, #bibleKindleConfigurator, #duplexAssistantPanel, #impositionBookletPreviewHost { scroll-margin-top: 3.5rem; }
+  .concordance-match-btn { width: 100%; text-align: left; justify-content: flex-start; margin-bottom: 0.35rem; }
+  .search-hit-mark { background: color-mix(in srgb, var(--accent-amber) 24%, transparent); color: inherit; padding: 0 0.15rem; border-radius: 3px; }
+  .uls-badge.is-active-syllable { font-weight: 700; border-color: var(--accent-amber); opacity: 1; }
+  .uls-badge[data-syllable-index]:not(.is-active-syllable) { opacity: 0.8; }
+  @media (min-width: 1024px) { #bibleVerseViewport:not(.is-bilingual) { max-width: 68ch; margin-inline: auto; } }
+  .evangelios-reading-body { text-align: left; }
+  .evangelios-reading-body .evangelios-stage-card-header { text-align: center; }
+  a.uls-chip, a.btn-card, a.btn-modal-secondary { text-decoration: none; }
+  .top-bar-shell { position: relative; }
+  #appearancePopover:not([hidden]), #bibleLanguageAndRegisterDrawer[open] { position: absolute; top: calc(100% + 4px); left: 0; right: 0; z-index: 60; box-shadow: 0 12px 32px rgba(28, 25, 23, 0.18); background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 14px; padding: 0.75rem; max-height: 75dvh; overflow-y: auto; }
+  .apple-sheet:not([hidden]) { display: flex; flex-direction: column; gap: 0.55rem; }
+  .apple-sheet > .subtabs-bar, .apple-sheet > .sr-only { order: -2; }
+  [data-slot-order="0"] { order: 0; }
+  [data-slot-order="1"] { order: 1; }
+  [data-slot-order="2"] { order: 2; }
+  [data-slot-order="3"] { order: 3; }
+  [data-slot-order="4"] { order: 4; }
+  [data-slot-order="5"] { order: 5; }
+  #bibleSovereignSection, #felicesSovereignSection, #evangeliosSovereignSection { padding-bottom: calc(5.75rem + env(safe-area-inset-bottom, 0px)); }
+  .hig-toggle-row > input[type="checkbox"], .hig-switch { appearance: none; width: 44px; height: 24px; min-width: 44px; min-height: 24px; border-radius: 999px; position: relative; margin: 0; background: var(--card-border); border: 1px solid var(--accent-secondary-border); transition: background 0.15s; }
+  .hig-toggle-row > input[type="checkbox"]:checked, .hig-switch:checked { background: var(--accent-primary); border-color: var(--accent-primary); }
+  .hig-toggle-row > input[type="checkbox"]::after, .hig-switch::after { content: ""; position: absolute; top: 2px; left: 2px; width: 18px; height: 18px; border-radius: 50%; background: var(--card-bg); transition: transform 0.15s; }
+  .hig-toggle-row > input[type="checkbox"]:checked::after, .hig-switch:checked::after { transform: translateX(20px); }
   @media (max-width: 1023px) {
-    .hig-toggle-row > input[type="checkbox"] { width: 48px; height: 48px; min-width: 48px; min-height: 48px; }
     body[data-mobile-sheet-open="true"] #sovereignGlobalDrawersHost .apple-sheet:not([hidden]) { margin-top: 0.25rem; padding: 0.55rem 0.65rem; }
     #sovereignGlobalDrawersHost .subtabs-bar { margin-bottom: 0.35rem; gap: 0.25rem; }
     #shareAuthenticityUnifiedCard { padding: 0.45rem 0.55rem; }
@@ -2679,8 +2344,16 @@
   .ek-textarea-full { width: 100%; box-sizing: border-box; }
   .sr-only-file-input { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
   .ek-file-picker-btn { position: relative; cursor: pointer; display: inline-flex; align-items: center; gap: 0.35rem; }
-  .photocopy-segmented-bar { display: flex; flex-wrap: nowrap; overflow-x: auto; gap: 0.25rem; }
+  .photocopy-segmented-bar { display: flex; flex-wrap: wrap; gap: 0.25rem; }
   .photocopy-seg-btn { flex: 1 0 auto; font-size: 0.76rem; padding: 0.28rem 0.5rem; }
+  .photocopy-preview-img { max-width: 100%; height: auto; display: block; }
+  #bibleOpticalFpsSelect { max-width: 100%; width: 100%; box-sizing: border-box; }
+  .prosodic-pause-cue { display: inline-block; width: 0.75rem; height: 2px; vertical-align: middle; margin-inline: 0.25rem; background: var(--accent-amber); border-radius: 99px; }
+  @media (max-width: 640px) {
+    #evangeliosMainHeading, #felicesSovereignSection h1 { font-size: 1.05rem; margin: 0.15rem 0; }
+    #felicesSovereignSection .subtitle { margin-bottom: 0.25rem; font-size: 0.82rem; }
+    #evangeliosQuarterTabs, #felicesDichasAndPlatesBar { gap: 0.25rem; margin-bottom: 0.35rem; }
+  }
   .vault-pack-row.is-matrix-highlight { border-color: var(--accent-amber); background: var(--badge-bg); }
 }
 
@@ -2709,80 +2382,14 @@
 }
 
 @layer utilities {
-  .sr-only {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-    border: 0;
-  }
-
-  [hidden] {
-    display: none;
-  }
-
+  .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+  [hidden] { display: none; }
   @media print {
-    body {
-      background: #ffffff;
-      color: #000000;
-      padding: 0;
-      margin: 0;
-    }
-
-    .container {
-      box-shadow: none;
-      border: none;
-      padding: 0;
-      max-width: 100%;
-      background: #ffffff;
-    }
-
-    header,
-    nav,
-    .category-badge,
-    h1,
-    .subtitle,
-    .paper-toggle-wrapper,
-    .language-wrapper,
-    .actions-group,
-    .optical-trigger,
-    .offline-badge,
-    .footer-note,
-    footer,
-    dialog,
-    .focal-controls,
-    .focal-quick-actions,
-    .focal-plate-overlay,
-    .toast,
-    .fold-guide-trigger {
-      display: none;
-    }
-
-    .focal-viewer {
-      margin: 0;
-      max-width: 100%;
-    }
-
-    .focal-plate-frame {
-      border: none;
-      box-shadow: none;
-      max-height: none;
-      height: 98vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .focal-plate-frame img {
-      max-width: 100%;
-      max-height: 98vh;
-      width: auto;
-      height: auto;
-      object-fit: contain;
-    }
+    body { background: #fff; color: #000; padding: 0; margin: 0; }
+    .container { box-shadow: none; border: none; padding: 0; max-width: 100%; background: #fff; }
+    header, nav, .category-badge, h1, .subtitle, .paper-toggle-wrapper, .language-wrapper, .actions-group, .optical-trigger, .offline-badge, .footer-note, footer, dialog, .focal-controls, .focal-quick-actions, .focal-plate-overlay, .toast, .fold-guide-trigger { display: none; }
+    .focal-viewer { margin: 0; max-width: 100%; }
+    .focal-plate-frame { border: none; box-shadow: none; max-height: none; height: 98vh; display: flex; align-items: center; justify-content: center; }
+    .focal-plate-frame img { max-width: 100%; max-height: 98vh; width: auto; height: auto; object-fit: contain; }
   }
 }

@@ -339,13 +339,49 @@ export async function resolveEditionSubstrateForProfile(
 /**
  * Computes optimal typological print preset from Grambank 12 branches + 16 typologies.
  */
+export function resolveDefaultTypologyForLang(langCode = "es") {
+  const base = String(langCode || "es").trim().toLowerCase().split("-")[0];
+  const typoMap = {
+    es: ["G_01_latin_extended", "es_typology"],
+    en: ["G_01_latin_extended", "en_typology"],
+    fr: ["G_01_latin_extended", "fr_typology"],
+    pt: ["G_01_latin_extended", "pt_typology"],
+    it: ["G_01_latin_extended", "it_typology"],
+    id: ["G_06_austronesian", "id_typology"],
+    tr: ["G_03_turkic_altaic", "tr_typology"],
+    ru: ["G_02_cyrillic_slavic", "ru_typology"],
+    he: ["G_04_semitic_hebrew", "he_typology"],
+    grc: ["G_01_latin_extended", "grc_typology"],
+    ar: ["G_05_arabic_persian", "ar_typology"],
+    fa: ["G_05_arabic_persian", "fa_typology"],
+    ur: ["G_05_arabic_persian", "ur_typology"],
+    hi: ["G_07_indo_aryan", "hi_typology"],
+    bn: ["G_07_indo_aryan", "bn_typology"],
+    ja: ["G_08_cjk", "ja_typology"],
+    ko: ["G_08_cjk", "ko_typology"],
+    zh: ["G_08_cjk", "zh_typology"],
+    stp: ["G_10_americas_uto_aztecan", "stp_typology"],
+    quc: ["G_10_americas_uto_aztecan", "quc_typology"],
+    gn: ["G_10_americas_uto_aztecan", "gn_typology"],
+  };
+  const [branchId, typologyId] = typoMap[base] || ["G_01_latin_extended", "es_typology"];
+  const hasBranch = CANONICAL_12_BRANCH_PROFILES.some((b) => b.id === branchId);
+  const hasTypo = CANONICAL_16_TYPOLOGY_PROFILES.some((t) => t.id === typologyId);
+  return {
+    branchId: hasBranch ? branchId : (CANONICAL_12_BRANCH_PROFILES.find((b) => b.parsed?.word_order === "SVO")?.id || CANONICAL_12_BRANCH_PROFILES[0]?.id || "G_01_latin_extended"),
+    typologyId: hasTypo ? typologyId : (CANONICAL_16_TYPOLOGY_PROFILES.find((t) => t.lang_code === base || t.id === "es_typology")?.id || CANONICAL_16_TYPOLOGY_PROFILES[0]?.id || "es_typology"),
+  };
+}
+
 export function resolveGrambankTypologyPrintPreset(branchId = "", typologyId = "") {
   const branch =
     CANONICAL_12_BRANCH_PROFILES.find((b) => b.id === branchId) ||
+    CANONICAL_12_BRANCH_PROFILES.find((b) => b.parsed?.word_order === "SVO") ||
     CANONICAL_12_BRANCH_PROFILES[0] ||
     { id: "G_01_latin_extended", parsed: { word_order: "SVO" } };
   const typology =
     CANONICAL_16_TYPOLOGY_PROFILES.find((t) => t.id === typologyId) ||
+    CANONICAL_16_TYPOLOGY_PROFILES.find((t) => t.id === "es_typology") ||
     CANONICAL_16_TYPOLOGY_PROFILES[0] ||
     { id: "es_typology", lang_code: "es", word_order: "SVO" };
   const bid = String(branch.id || "");
@@ -402,10 +438,10 @@ export async function applyGrambankTypologyToPrint(ctx = {}, branchId, typologyI
     const renderSpec =
       editionId > 0
         ? buildEditionRenderSpecBytes16(editionId, {
-            columns: preset.columns,
-            fontTenthsPt: Math.round(preset.fontSizePt * 10),
-            paperCode: encodePaperFormatCode(state.paperFormat || "a4", preset.orientation),
-          })
+          columns: preset.columns,
+          fontTenthsPt: Math.round(preset.fontSizePt * 10),
+          paperCode: encodePaperFormatCode(state.paperFormat || "a4", preset.orientation),
+        })
         : null;
     jobResult = await dispatchTandaWorkerJob({
       lang: langCode,
@@ -458,8 +494,9 @@ export function ensureDirectEditionsAndGrambankControls(ctx = {}) {
       : activeMeta?.id === "07_cuaderno_5lineas_apaisado"
         ? isEn ? `Ed. 16 · Field Notebook CC0 (45 mm · ${livePaper})` : `Ed. 16 · Cuaderno de Campo CC0 (margen 45 mm · ${livePaper})`
         : `${baseLabel} (${liveCols} col · ${livePt}pt · ${livePaper})`;
-  const branchId = state.activeBranchId || CANONICAL_12_BRANCH_PROFILES[0]?.id || "G_01_latin_extended";
-  const typoId = state.activeTypologyId || CANONICAL_16_TYPOLOGY_PROFILES[0]?.id || "es_typology";
+  const defaultTypo = resolveDefaultTypologyForLang(state.effectiveCorpusLang || state.lang || "es");
+  const branchId = state.activeBranchId || defaultTypo.branchId;
+  const typoId = state.activeTypologyId || defaultTypo.typologyId;
   wrap.innerHTML =
     `<div id="activeEditionImpositionSummary" class="ek-row-wrap" data-active-edition-id="${escapeHtml(activeEd)}">` +
     `<span><strong>${isEn ? "Active edition:" : "Edición activa:"}</strong> ${escapeHtml(activeBadge)}</span>` +
@@ -474,8 +511,9 @@ export function ensureDirectEditionsAndGrambankControls(ctx = {}) {
   if (gBtn && !gBtn._grambankApplyBound && typeof gBtn.addEventListener === "function") {
     gBtn._grambankApplyBound = true;
     gBtn.addEventListener("click", async () => {
-      const bId = gBtn.getAttribute?.("data-branch-id") || state.activeBranchId || "G_01_latin_extended";
-      const tId = gBtn.getAttribute?.("data-typology-id") || state.activeTypologyId || "es_typology";
+      const fallback = resolveDefaultTypologyForLang(state.effectiveCorpusLang || state.lang || "es");
+      const bId = gBtn.getAttribute?.("data-branch-id") || state.activeBranchId || fallback.branchId;
+      const tId = gBtn.getAttribute?.("data-typology-id") || state.activeTypologyId || fallback.typologyId;
       await applyGrambankTypologyToPrint(ctx, bId, tId, { triggerJob: true });
       onConfigChanged?.();
     });

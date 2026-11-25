@@ -97,11 +97,7 @@ export function renderImproveDrawerHtml({
   )
     ? String(level).trim().toUpperCase()
     : "L2";
-  const isNewTestament =
-    /^(MAT|MRK|MAR|LUK|JHN|ACT|ROM|1CO|2CO|GAL|EPH|PHP|COL|1TH|2TH|1TI|2TI|TIT|PHM|HEB|JAS|1PE|2PE|1JN|2JN|3JN|JUD|REV)\b/i.test(
-      resolvedRef,
-    );
-  const resolvedStrong = sanitizePipeField(strongId || (isNewTestament ? "G3056" : "H0430")).toUpperCase();
+  const resolvedStrong = sanitizePipeField(strongId || "").toUpperCase();
   const isEn = String(locale || "es").trim().toLowerCase().startsWith("en");
   const fallbackDict = isEn ? IMPROVE_I18N_FALLBACKS : IMPROVE_I18N_FALLBACKS_ES;
   const t = (k, vars) => {
@@ -455,32 +451,33 @@ export function renderCascadeAndLadderHtml({
       })
       : "";
 
+  const showElicitationLadder = cleanLang !== "es" && cleanLang !== "en";
   const seed250 = buildElicitationSeedPayload({
     lang: cleanLang,
     rung: activeRung && activeRung !== "ALL" ? activeRung : "Rung1SwadeshAndNsm65",
     rank: 1,
     verseId: resolvedRef,
-    strongIds: [sanitizePipeField(strongId || "H0430").toUpperCase()],
+    strongIds: [sanitizePipeField(strongId || "").toUpperCase()].filter(Boolean),
     responseText: "",
   });
-  const celfSummaryBlock =
-    `<details id="celf250TechDetails" class="tech-details hig-tech-receipt-details ek-mb-sm" data-celf250-ladder="true" data-celf250-rank="${seed250.rank}">` +
+  const celfSummaryBlock = showElicitationLadder
+    ? `<details id="celf250TechDetails" class="tech-details hig-tech-receipt-details ek-mb-sm" data-celf250-ladder="true" data-celf250-rank="${seed250.rank}">` +
     `<summary>${isEn ? `Technical details · Community step #${seed250.rank}/250` : `Detalles técnicos · Paso #${seed250.rank}/250 (${totalCount} pasos)`}</summary>` +
     `<p class="ek-meta ek-mt-xs">${isEn ? `Review ladder (${totalCount} steps · Community consensus · CELF-250)` : `Escalera de revisión (${totalCount} pasos · Consenso comunitario · CELF-250)`}</p>` +
     `<pre id="celf250SeedOutput" class="ek-pre-compact">${seed250.payloadLine}</pre>` +
-    `</details>`;
+    `</details>`
+    : "";
 
+  const headerStrongSuffix = strongId ? ` · ${sanitizePipeField(strongId)}` : "";
   return (
     `<div class="cascade-impact-box ek-card" data-cascade-level="${cleanLevel}" data-cascade-lang="${cleanLang}" data-celf-total="${totalCount}" data-active-ot-wave="${waveNum}">` +
-    `<strong class="ek-title-sm">🌊 ${isEn ? `Cascade Propagation ${cleanLevel} (${totalCount} steps · ${sanitizePipeField(strongId)} in ${resolvedRef})` : `Propagación de Mejora ${cleanLevel} (${totalCount} pasos · ${sanitizePipeField(strongId)} en ${resolvedRef})`}</strong>` +
+    `<strong class="ek-title-sm">🌊 ${isEn ? `Cascade Propagation ${cleanLevel} (${totalCount} steps${headerStrongSuffix} in ${resolvedRef})` : `Propagación de Mejora ${cleanLevel} (${totalCount} pasos${headerStrongSuffix} en ${resolvedRef})`}</strong>` +
     `<p class="ek-subtitle ek-mb-sm">` +
     `${isEn ? `Refining this root in <code>${cleanLang}</code> updates matching verses across Bible, Gospels, and Beatitudes. Tap any step to inspect:` : `Al corregir esta raíz en <code>${cleanLang}</code>, el ajuste se propaga a Biblia, Evangelios y Felices. Pulsa un paso para revisarlo:`}` +
     `</p>` +
     celfSummaryBlock +
     sisterCascadeHtml +
-    rungFilterHtml +
-    `<div class="ek-row-wrap">${ladderButtons}</div>` +
-    otWavesHtml +
+    (showElicitationLadder ? `${rungFilterHtml}<div class="ek-row-wrap">${ladderButtons}</div>${otWavesHtml}` : "") +
     auditPanelsHtml +
     `<div class="ek-stack ek-mt-sm">` +
     masterCensusAndLedgerHtml +

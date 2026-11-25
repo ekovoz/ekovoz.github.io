@@ -7,50 +7,50 @@
 import { STORE_DOMAIN_OWNERS, VALID_ACTIVE_INTENTS, VALID_ACTIVE_MODALS } from "./state_store.js";
 
 /**
- * Ciclo de vida declarativo por obra editorial (`D1-R11`, `ARB-EKOVOZ-R11`).
- * Para reactivar una obra en borrador, cambiar `"draft"` a `"public"`.
+ * Ciclo de vida declarativo por obra editorial (`D1-R11`, `D3-R12`).
+ * Para pausar una obra como borrador interno, cambiar `"public"` a `"draft"`.
  */
 export const WORK_LIFECYCLE = Object.freeze({
   biblia: "public",
   felices: "public",
-  evangelios: "draft",
+  evangelios: "public",
 });
 
 /**
  * Parsea `?preview=...` (`?preview=1`, `?preview=true`, `?preview=all` o lista CSV como `?preview=evangelios`).
  */
-export function parsePreviewWorksParam(rawPreview = "") {
+export function parsePreviewWorksParam(rawPreview = "", lifecycle = WORK_LIFECYCLE) {
   const clean = String(rawPreview || "").trim().toLowerCase();
   if (!clean || clean === "0" || clean === "false" || clean === "off") return [];
   if (clean === "1" || clean === "true" || clean === "all") {
-    return Object.keys(WORK_LIFECYCLE).filter((k) => WORK_LIFECYCLE[k] !== "public");
+    return Object.keys(lifecycle).filter((k) => lifecycle[k] !== "public");
   }
   const tokens = clean.split(/[\s,]+/).filter(Boolean);
-  return Array.from(new Set(tokens.filter((t) => Object.prototype.hasOwnProperty.call(WORK_LIFECYCLE, t))));
+  return Array.from(new Set(tokens.filter((t) => Object.prototype.hasOwnProperty.call(lifecycle, t))));
 }
 
 /**
  * Indica si `workId` es visible para el usuario o sesión actual (`public` o autorizado vía `previewWorks`).
  */
-export function isWorkVisible(workId, stateOrPreview = null) {
+export function isWorkVisible(workId, stateOrPreview = null, lifecycle = WORK_LIFECYCLE) {
   const key = String(workId || "").trim().toLowerCase();
-  const stage = WORK_LIFECYCLE[key];
+  const stage = lifecycle[key];
   if (!stage) return false;
   if (stage === "public") return true;
   const previewList = Array.isArray(stateOrPreview)
     ? stateOrPreview
     : Array.isArray(stateOrPreview?.previewWorks)
       ? stateOrPreview.previewWorks
-      : parsePreviewWorksParam(stateOrPreview?.preview || stateOrPreview?.previewParam);
+      : parsePreviewWorksParam(stateOrPreview?.preview || stateOrPreview?.previewParam, lifecycle);
   return previewList.includes(key);
 }
 
 /**
  * Resuelve la obra efectiva garantizando degradación segura hacia `"biblia"` cuando una obra está en `draft` sin permiso.
  */
-export function resolvePublicOrPreviewWork(requestedWork, stateOrPreview = null) {
+export function resolvePublicOrPreviewWork(requestedWork, stateOrPreview = null, lifecycle = WORK_LIFECYCLE) {
   const key = String(requestedWork || "biblia").trim().toLowerCase();
-  return isWorkVisible(key, stateOrPreview) ? key : "biblia";
+  return isWorkVisible(key, stateOrPreview, lifecycle) ? key : "biblia";
 }
 
 /**

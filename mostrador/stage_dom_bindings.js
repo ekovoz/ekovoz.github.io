@@ -19,7 +19,7 @@ import {
   lookupWordTokenStrongEntry,
   projectCrossWorkCoordinate,
 } from "./bridge_and_chapter.js";
-import { searchBookVersesConcordance } from "./concordance_search.js";
+import { searchMultiBookConcordance } from "./concordance_search.js";
 import { bindSurfaceActions } from "./dom_patch.js";
 import { normalizeEditionSlug } from "./dosis.js";
 import { DEFAULT_PRINT_CONFIG } from "./dosis_profiles_schema.js";
@@ -111,19 +111,28 @@ export function bindStageDomEvents(ctx = {}) {
   }
 
   const compassTabBooks = getEl("btnCompassTabBooks", targetDoc);
+  const compassTabConcordance = getEl("btnCompassTabConcordance", targetDoc);
   const compassTabTrails = getEl("btnCompassTabTrails", targetDoc);
   const compassPanelBooks = getEl("compassPanelBooks", targetDoc);
+  const compassPanelConcordance = getEl("compassPanelConcordance", targetDoc);
   const compassPanelTrails = getEl("compassPanelTrails", targetDoc);
   const switchCompassTab = (tabName) => {
-    const isTrails = tabName === "trails";
-    if (compassTabBooks) compassTabBooks.setAttribute("aria-selected", isTrails ? "false" : "true");
-    if (compassTabTrails) compassTabTrails.setAttribute("aria-selected", isTrails ? "true" : "false");
-    if (compassPanelBooks) compassPanelBooks.hidden = isTrails;
-    if (compassPanelTrails) compassPanelTrails.hidden = !isTrails;
+    const mode = tabName === "trails" ? "trails" : tabName === "concordance" ? "concordance" : "books";
+    state.activeCompassTab = mode;
+    compassTabBooks?.setAttribute?.("aria-selected", mode === "books" ? "true" : "false");
+    compassTabConcordance?.setAttribute?.("aria-selected", mode === "concordance" ? "true" : "false");
+    compassTabTrails?.setAttribute?.("aria-selected", mode === "trails" ? "true" : "false");
+    if (compassPanelBooks) compassPanelBooks.hidden = mode !== "books";
+    if (compassPanelConcordance) compassPanelConcordance.hidden = mode !== "concordance";
+    if (compassPanelTrails) compassPanelTrails.hidden = mode !== "trails";
   };
   if (compassTabBooks) {
     compassTabBooks.setAttribute?.("data-action", "compass-tab-books");
     bindSurfaceActions(compassTabBooks, { "compass-tab-books": () => switchCompassTab("books") }, { scope: "compass-books", events: ["click"] });
+  }
+  if (compassTabConcordance) {
+    compassTabConcordance.setAttribute?.("data-action", "compass-tab-concordance");
+    bindSurfaceActions(compassTabConcordance, { "compass-tab-concordance": () => switchCompassTab("concordance") }, { scope: "compass-concordance", events: ["click"] });
   }
   if (compassTabTrails) {
     compassTabTrails.setAttribute?.("data-action", "compass-tab-trails");
@@ -679,6 +688,14 @@ export function bindStageDomEvents(ctx = {}) {
     return true;
   };
 
+  const scopeSel = getEl("compassConcordanceScopeSelect", targetDoc);
+  const concordanceResultsHost = getEl("compassConcordanceResults", targetDoc);
+  if (scopeSel && typeof scopeSel.addEventListener === "function") {
+    scopeSel.addEventListener("change", () => {
+      if (refInput?.value) renderSpotlightResults(refInput.value);
+    });
+  }
+
   const renderSpotlightResults = async (rawQuery) => {
     const qStr = String(rawQuery || "").trim();
     const seq = ++activeSpotlightSeq;
@@ -687,6 +704,7 @@ export function bindStageDomEvents(ctx = {}) {
         spotlightHost.hidden = true;
         spotlightHost.innerHTML = "";
       }
+      if (concordanceResultsHost) concordanceResultsHost.innerHTML = "";
       return [];
     }
     if (!state.canonLexicon && typeof dataLayer?.loadJson === "function") {
@@ -705,27 +723,24 @@ export function bindStageDomEvents(ctx = {}) {
       lang: state.lang || "es",
       limit: 6,
     });
+    const concScope =
+      scopeSel?.value === "vault" || state.activeCompassTab === "concordance" && scopeSel?.value === "vault"
+        ? "vault"
+        : "book";
     let concMatches = [];
     if (
       qStr.length >= 2 &&
       !parseBiblicalCoordinateReference(qStr) &&
       typeof dataLayer?.loadBookText === "function"
     ) {
-      try {
-        const activeBook = String(state.book || "GEN").toUpperCase();
-        const activeLang = String(state.lang || "es").trim() || "es";
-        const bookRes = await dataLayer.loadBookText(activeLang, activeBook);
-        if (bookRes?.status === "ready" && bookRes?.data) {
-          concMatches = searchBookVersesConcordance({
-            bookData: bookRes.data,
-            book: activeBook,
-            query: qStr,
-            limit: 6,
-          });
-        }
-      } catch {
-        concMatches = [];
-      }
+      concMatches = await searchMultiBookConcordance({
+        dataLayer,
+        lang: String(state.lang || "es").trim() || "es",
+        activeBook: String(state.book || "GEN").toUpperCase(),
+        query: qStr,
+        scope: concScope,
+        limit: 8,
+      });
     }
     if (seq !== activeSpotlightSeq) return [];
     const seenKeys = new Set();
@@ -737,21 +752,21 @@ export function bindStageDomEvents(ctx = {}) {
       matches.push(m);
       if (matches.length >= 10) break;
     }
+    const htmlList = matches
+      .map(
+        (m, idx) =>
+          `<button type="button" class="uls-chip ${m.kind === "concordance" ? "concordance-match-btn" : "spotlight-result-chip"}" role="option" data-spotlight-idx="${idx}" data-spotlight-kind="${m.kind}" data-spotlight-book="${m.book || ""}" data-spotlight-chapter="${m.chapter || 1}" data-spotlight-verse="${m.verse || 1}">` +
+          `🔎 <strong>${escapeHtml(m.label)}</strong>${m.snippet ? ` — ${escapeHtml(String(m.snippet).replace(/[\r\n]+/g, " "))}` : ""}</button>`,
+      )
+      .join("");
     if (spotlightHost) {
-      if (matches.length === 0) {
-        spotlightHost.hidden = true;
-        spotlightHost.innerHTML = "";
-      } else {
-        spotlightHost.hidden = false;
-        spotlightHost.innerHTML = matches
-          .map(
-            (m, idx) =>
-              `<button type="button" class="uls-chip ${m.kind === "concordance" ? "concordance-match-btn" : "spotlight-result-chip"}" role="option" data-spotlight-idx="${idx}" data-spotlight-kind="${m.kind}" data-spotlight-book="${m.book || ""}" data-spotlight-chapter="${m.chapter || 1}" data-spotlight-verse="${m.verse || 1}">` +
-              `🔎 <strong>${escapeHtml(m.label)}</strong>${m.snippet ? ` — ${escapeHtml(String(m.snippet).replace(/[\r\n]+/g, " "))}` : ""}</button>`,
-          )
-          .join("");
-        spotlightHost._lastMatches = matches;
-      }
+      spotlightHost.hidden = matches.length === 0;
+      spotlightHost.innerHTML = htmlList;
+      spotlightHost._lastMatches = matches;
+    }
+    if (concordanceResultsHost) {
+      concordanceResultsHost.innerHTML = htmlList;
+      concordanceResultsHost._lastMatches = matches;
     }
     return matches;
   };

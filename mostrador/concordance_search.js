@@ -234,3 +234,52 @@ export function highlightSearchMatchHtml(escapedText, rawQuery = "") {
     })
     .join("");
 }
+
+const DEFAULT_CONCORDANCE_VAULT_BOOKS = [
+  "GEN", "EXO", "PSA", "PRO", "ISA", "MAT", "MRK", "LUK", "JHN", "ACT", "ROM", "1CO", "GAL", "EPH", "PHP", "HEB", "JAS", "1JN", "REV",
+];
+
+/**
+ * Multi-book RAM concordance (`D5-R12`): searches `activeBook` first, and optionally spans
+ * cached/vault books when `scope === "vault"` without inflating `stage_dom_bindings.js`.
+ */
+export async function searchMultiBookConcordance({
+  dataLayer,
+  lang = "es",
+  activeBook = "GEN",
+  query = "",
+  scope = "book",
+  candidateBooks = DEFAULT_CONCORDANCE_VAULT_BOOKS,
+  limit = 16,
+} = {}) {
+  const cleanQuery = String(query ?? "").trim();
+  const cleanLang = String(lang || "es").trim() || "es";
+  const cleanActive = String(activeBook || "GEN").toUpperCase();
+  const maxResults = Math.max(1, Number(limit) || 16);
+  if (cleanQuery.length < 2 || typeof dataLayer?.loadBookText !== "function") {
+    return [];
+  }
+  const booksToScan =
+    scope === "vault"
+      ? Array.from(new Set([cleanActive, ...(candidateBooks || []).map((b) => String(b).toUpperCase())]))
+      : [cleanActive];
+  const allHits = [];
+  for (const bookCode of booksToScan) {
+    if (allHits.length >= maxResults) break;
+    try {
+      const bookRes = await dataLayer.loadBookText(cleanLang, bookCode);
+      if (bookRes?.status === "ready" && bookRes?.data) {
+        const hits = searchBookVersesConcordance({
+          bookData: bookRes.data,
+          book: bookCode,
+          query: cleanQuery,
+          limit: maxResults - allHits.length,
+        });
+        allHits.push(...hits);
+      }
+    } catch {
+      // Non-fatal skip for missing book in partial offline portion
+    }
+  }
+  return allHits.slice(0, maxResults);
+}

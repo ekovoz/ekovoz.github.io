@@ -172,3 +172,45 @@ export function patchStoreState(ctx, patch = {}, domain = "*") {
   }
   return false;
 }
+
+/**
+ * Latest-wins async slot runner (`lite-stream` 3-path structural cleanup + AbortSignal, `D4-R12`).
+ * Prevents stale await chains (e.g. Taller init or background PDF workers) from overwriting newer state (L0 guard)
+ */
+export function createLatestSlotRunner() {
+  const active = new Map();
+  const abort = (slotKey) => {
+    const key = String(slotKey || "default");
+    const prev = active.get(key);
+    if (prev) {
+      prev.controller?.abort();
+      active.delete(key);
+    }
+  };
+  const abortAll = () => {
+    for (const entry of active.values()) {
+      entry.controller?.abort();
+    }
+    active.clear();
+  };
+  const activeGeneration = (slotKey) => active.get(String(slotKey || "default"))?.gen || 0;
+  const run = async (slotKey, taskFn) => {
+    const key = String(slotKey || "default");
+    const prev = active.get(key);
+    const nextGen = (prev?.gen || 0) + 1;
+    if (prev?.controller) prev.controller.abort();
+    const controller = typeof AbortController === "function" ? new AbortController() : null;
+    const entry = { gen: nextGen, controller };
+    active.set(key, entry);
+    try {
+      const res = await taskFn(controller?.signal || null, () => active.get(key)?.gen === nextGen);
+      if (active.get(key)?.gen !== nextGen) return null;
+      return res;
+    } finally {
+      if (active.get(key) === entry) {
+        active.delete(key);
+      }
+    }
+  };
+  return { run, abort, abortAll, activeGeneration };
+}

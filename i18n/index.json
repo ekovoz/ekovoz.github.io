@@ -166,6 +166,8 @@
   ],
   "messages": {
     "print.stealthMode": "🥷 Private filenames (neutral study names)",
-    "print.btn.brailleB70": "♿ Braille B70 (.brf)"
+    "print.btn.brailleB70": "♿ Braille B70 (.brf)",
+    "improve.subtitle": "Deterministic plain-text field patch (silent offline text)",
+    "improve.celf_active_title": "Active 250 Ladder (#{rank}/250 · 30 Hours · Silent guide)"
   }
 }

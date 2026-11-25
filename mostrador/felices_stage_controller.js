@@ -45,7 +45,11 @@ export function renderLocalizedFelicesPlateCardHtml({
   const cleanLang = String(lang || "en").trim();
   const cleanUi = String(uiLocale || cleanLang || "es").trim().toLowerCase();
   const cleanDir = dir === "rtl" ? "rtl" : "ltr";
-  const plateWord = cleanUi.startsWith("es") ? "Lámina" : "Plate";
+  const plateWord = cleanLang.toLowerCase().startsWith("bn") || cleanUi.startsWith("bn")
+    ? "পাতা"
+    : cleanUi.startsWith("es")
+      ? "Lámina"
+      : "Plate";
   const badgeLang = cleanLang.toUpperCase();
   return (
     `<article class="felices-localized-plate-card is-unoccluded" lang="${escapeHtml(cleanLang)}" dir="${cleanDir}" data-localized-plate="${Number(plateIndex) || 1}" data-plate-lang="${escapeHtml(cleanLang)}">` +

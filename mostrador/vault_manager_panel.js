@@ -185,9 +185,11 @@ export function renderVaultStorageManagerHtml({
     )
     .join("");
   const remainingRowsHtml = filteredRemainingCodes.map((lc) => renderPackRow(lc)).join("");
+  const showQuotaCap = totalQuota > 0 && totalQuota <= 512 * 1024 * 1024;
+  const quotaSuffix = showQuotaCap ? ` / ${formatMegabytes(totalQuota)} (${pct}%)` : "";
   const summaryLabel = isEn
-    ? `${installedBiblesCount} of ${mergedLangs.length} Bibles ready · ${formatMegabytes(usedBytes)}${totalQuota > 0 ? ` / ${formatMegabytes(totalQuota)} (${pct}%)` : ""}`
-    : `${installedBiblesCount} de ${mergedLangs.length} Biblias listas · ${formatMegabytes(usedBytes)}${totalQuota > 0 ? ` / ${formatMegabytes(totalQuota)} (${pct}%)` : ""}`;
+    ? `${installedBiblesCount} of ${mergedLangs.length} Bibles ready · ${formatMegabytes(usedBytes)}${quotaSuffix}`
+    : `${installedBiblesCount} de ${mergedLangs.length} Biblias listas · ${formatMegabytes(usedBytes)}${quotaSuffix}`;
 
   return (
     `<section id="vaultStorageManagerPanel" class="vault-manager-card" data-vault-langs-count="${mergedLangs.length}" data-installed-packs="${packMap.size}" data-installed-fonts="${(storedFonts || []).length}" data-tech-key="ekovoz_vault_v2">` +
@@ -195,16 +197,16 @@ export function renderVaultStorageManagerHtml({
     `<strong>🗄️ ${isEn ? "Offline Device Vault" : "Bóveda sin conexión del dispositivo"}</strong>` +
     `<span class="uls-badge" data-vault-quota-badge="true">${escapeHtml(summaryLabel)}</span>` +
     `</header>` +
-    `<progress class="vault-quota-bar" max="100" value="${pct}">${pct}%</progress>` +
+    `<progress class="vault-quota-bar" max="100" value="${pct}"${pct === 0 ? " hidden" : ""}>${pct}%</progress>` +
     `<ul class="vault-pack-list vault-pack-priority-list">${priorityRowsHtml}</ul>` +
     (remainingCodes.length > 0
       ? `<details id="vaultMorePacksDetails" class="r9-stratum-accordion ek-mt-xs"${cleanFilter ? " open" : ""}>` +
-        `<summary>📚 ${isEn ? `More offline Bible languages (${remainingCodes.length})` : `Más idiomas offline disponibles (${remainingCodes.length})`}</summary>` +
-        `<div class="ek-mt-xs">` +
-        `<input type="search" id="vaultPacksFilterInput" class="ek-input-compact ek-mb-xs" value="${escapeHtml(filterQuery)}" placeholder="${isEn ? "Filter language (pt, fr, ar, stp...)" : "Filtrar idioma (pt, fr, ar, stp...)"}">` +
-        `<ul class="vault-pack-list vault-pack-list-compact">${remainingRowsHtml}</ul>` +
-        `</div>` +
-        `</details>`
+      `<summary>📚 ${isEn ? `More offline Bible languages (${remainingCodes.length})` : `Más idiomas offline disponibles (${remainingCodes.length})`}</summary>` +
+      `<div class="ek-mt-xs">` +
+      `<input type="search" id="vaultPacksFilterInput" class="ek-input-compact ek-mb-xs" value="${escapeHtml(filterQuery)}" placeholder="${isEn ? "Filter language (pt, fr, ar, stp...)" : "Filtrar idioma (pt, fr, ar, stp...)"}">` +
+      `<ul class="vault-pack-list vault-pack-list-compact">${remainingRowsHtml}</ul>` +
+      `</div>` +
+      `</details>`
       : "") +
     `</section>`
   );

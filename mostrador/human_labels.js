@@ -57,6 +57,30 @@ const HUMAN_PHILOLOGY_LABELS = Object.freeze({
     es: "Enlace óptico multiparte",
     en: "Multi-part optical link",
   }),
+  "TRILITERAL-SEMITIC": Object.freeze({
+    es: "Raíz consonántica semítica",
+    en: "Semitic consonantal root",
+  }),
+  "0 BYTES AUDIO": Object.freeze({
+    es: "Lectura ligera sin audio",
+    en: "Lightweight text-only guide",
+  }),
+  PASS: Object.freeze({
+    es: "Verificado",
+    en: "Verified",
+  }),
+  "OFFLINE FONT PACK": Object.freeze({
+    es: "Fuentes para lectura sin conexión",
+    en: "Offline reading fonts",
+  }),
+  SUBCLADES: Object.freeze({
+    es: "Subfamilias lingüísticas",
+    en: "Language subfamilies",
+  }),
+  CC0: Object.freeze({
+    es: "Dominio público abierto",
+    en: "Open public domain",
+  }),
 });
 
 export function humanizeTechnicalCode(rawCode, uiLocale = "es") {

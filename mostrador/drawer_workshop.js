@@ -12,7 +12,8 @@ import {
   projectChapterThroughCascadeSemilattice,
 } from "./cascade_l1_l5.js";
 import { runClientExternalAudit8Locks } from "./concordance_search.js";
-import { bindSurfaceActions, patchStoreState } from "./dom_patch.js";
+import { bindSurfaceActions, createLatestSlotRunner, patchStoreState } from "./dom_patch.js";
+const workshopSlotRunner = createLatestSlotRunner();
 import { resolvePrimaryStrongForVerse } from "./drawer_study.js";
 import {
   normalizeRootNotesEntries,
@@ -88,169 +89,187 @@ export async function hydrateImproveDrawerPanel(ctx = {}) {
     getI18n,
     loadImproveModule,
   } = ctx;
-  const mod = await loadImproveModule();
-  const currentVerseText =
-    state.lastNavResult?.chapter?.verses?.[String(state.verse)] || "";
-  const osis = `${state.book}.${state.chapter}.${state.verse}`;
-  // SLICE-EKO-V2I-25: Hidratar perezosamente `matrixRows` del capítulo + `formulaic_index.json` al abrir Gaveta 3
-  if (!state.lastNavResult?.matrix?.rows) {
-    const loadMatFn =
-      typeof dataLayer?.loadChapterMatrix === "function"
-        ? dataLayer.loadChapterMatrix.bind(dataLayer)
-        : typeof dataLayer?.loadMatrixChapter === "function"
-          ? dataLayer.loadMatrixChapter.bind(dataLayer)
-          : null;
-    if (loadMatFn) {
-      try {
-        const matRes = await loadMatFn(state.book || "GEN", state.chapter || 1);
-        const rows = Array.isArray(matRes?.rows)
-          ? matRes.rows
-          : Array.isArray(matRes?.data?.rows)
-            ? matRes.data.rows
+  const earlyAuditEl = getEl?.("tallerArtifactsCatalog", targetDoc);
+  const earlyHandlers = createWorkshopAuditHandlers({
+    state,
+    targetDoc,
+    getEl,
+    oldInput: getEl?.("improveOldSurfaceInput", targetDoc),
+    refreshPatchPreview: () => state.refreshPatchPreview?.(),
+    navigate: ctx.navigate,
+    hydrateBookAndChapterSelectors: ctx.hydrateBookAndChapterSelectors,
+  });
+  if (earlyAuditEl && typeof earlyAuditEl.addEventListener === "function" && !earlyAuditEl._auditPanelsBound) {
+    earlyAuditEl._auditPanelsBound = true;
+    earlyAuditEl.addEventListener("change", earlyHandlers.onAuditChange);
+    earlyAuditEl.addEventListener("click", earlyHandlers.onAuditClick);
+  }
+  return workshopSlotRunner.run("workshop", async (_signal, isCurrent) => {
+    const mod = await loadImproveModule();
+    if (!isCurrent()) return "";
+    const currentVerseText =
+      state.lastNavResult?.chapter?.verses?.[String(state.verse)] || "";
+    const osis = `${state.book}.${state.chapter}.${state.verse}`;
+    if (!state.lastNavResult?.matrix?.rows) {
+      const loadMatFn =
+        typeof dataLayer?.loadChapterMatrix === "function"
+          ? dataLayer.loadChapterMatrix.bind(dataLayer)
+          : typeof dataLayer?.loadMatrixChapter === "function"
+            ? dataLayer.loadMatrixChapter.bind(dataLayer)
             : null;
-        if (rows && rows.length > 0) {
-          if (!state.lastNavResult) state.lastNavResult = {};
-          state.lastNavResult.matrix = { rows };
+      if (loadMatFn) {
+        try {
+          const matRes = await loadMatFn(state.book || "GEN", state.chapter || 1);
+          const rows = Array.isArray(matRes?.rows)
+            ? matRes.rows
+            : Array.isArray(matRes?.data?.rows)
+              ? matRes.data.rows
+              : null;
+          if (rows && rows.length > 0) {
+            if (!state.lastNavResult) state.lastNavResult = {};
+            state.lastNavResult.matrix = { rows };
+          }
+        } catch {
+          // Mantener operación degradada limpia cuando matrix_tier0 no está disponible
+        }
+      }
+    }
+    if (!state.formulaicIndexHydrated && typeof dataLayer?.loadJson === "function") {
+      try {
+        const fj = await dataLayer.loadJson("data/formulaic_index.json");
+        if (fj) {
+          hydrateFormulaicParallelsIndex(fj);
+          state.formulaicIndexHydrated = true;
         }
       } catch {
-        // Mantener operación degradada limpia cuando matrix_tier0 no está disponible
+        // Non-fatal
       }
     }
-  }
-  if (!state.formulaicIndexHydrated && typeof dataLayer?.loadJson === "function") {
-    try {
-      const fj = await dataLayer.loadJson("data/formulaic_index.json");
-      if (fj) {
-        hydrateFormulaicParallelsIndex(fj);
-        state.formulaicIndexHydrated = true;
-      }
-    } catch {
-      // Non-fatal
-    }
-  }
-  const activeStrongId = await resolvePrimaryStrongForVerse(state, dataLayer);
-  state.activeStrongId = activeStrongId;
-  const ladder250 =
-    typeof dataLayer.loadElicitationLadder250 === "function"
-      ? await dataLayer.loadElicitationLadder250()
-      : [];
-  state.celfLadder250 = ladder250;
-  const fieldWorkshopActiveLang = String(state.lang || "stp").trim().toLowerCase() || "stp";
-  if (typeof dataLayer.loadFieldWorkshopData === "function") {
-    const fwData = await dataLayer.loadFieldWorkshopData(fieldWorkshopActiveLang);
-    if (fwData) {
-      hydrateFieldWorkshopData(fwData, ladder250);
-      state.topUncertaintyQueue = Array.isArray(fwData.top_uncertainty_queue)
-        ? fwData.top_uncertainty_queue
+    const activeStrongId = await resolvePrimaryStrongForVerse(state, dataLayer);
+    state.activeStrongId = activeStrongId;
+    const ladder250 =
+      typeof dataLayer.loadElicitationLadder250 === "function"
+        ? await dataLayer.loadElicitationLadder250()
         : [];
-    } else {
-      state.topUncertaintyQueue = [];
+    state.celfLadder250 = ladder250;
+    const fieldWorkshopActiveLang = String(state.lang || "stp").trim().toLowerCase() || "stp";
+    if (typeof dataLayer.loadFieldWorkshopData === "function") {
+      const fwData = await dataLayer.loadFieldWorkshopData(fieldWorkshopActiveLang);
+      if (fwData) {
+        hydrateFieldWorkshopData(fwData, ladder250);
+        state.topUncertaintyQueue = Array.isArray(fwData.top_uncertainty_queue)
+          ? fwData.top_uncertainty_queue
+          : [];
+      } else {
+        state.topUncertaintyQueue = [];
+      }
     }
-  }
-  const persistedOverlays = await loadLiveCascadeOverlaysIdb(state.lang).catch(() => []);
-  if (persistedOverlays.length > 0) {
-    state.liveCascadeOverlays = persistedOverlays;
-    applyOverlayEntriesToLiveState(state, persistedOverlays);
-  }
-  if (!state.masterCensusSummary && typeof dataLayer.loadMasterCensusSummary === "function") {
-    try {
-      const censusData = await dataLayer.loadMasterCensusSummary();
-      if (censusData) state.masterCensusSummary = censusData;
-    } catch {
-      // Non-fatal
+    const persistedOverlays = await loadLiveCascadeOverlaysIdb(state.lang).catch(() => []);
+    if (persistedOverlays.length > 0) {
+      state.liveCascadeOverlays = persistedOverlays;
+      applyOverlayEntriesToLiveState(state, persistedOverlays);
     }
-  }
-  const i18nInstance = typeof getI18n === "function" ? getI18n() : null;
-  const tFn = i18nInstance ? (k, p) => i18nInstance.t(k, p) : undefined;
-  const cascadeEl = getEl("cascadeImpactPreviewList", targetDoc);
-  const lockAnchors = deriveVerseLockAnchors(state, currentVerseText);
-  const html = mod.renderImproveDrawerHtml({
-    kind: "verse",
-    lang: state.lang,
-    locale: state.uiLocale,
-    uiLocale: state.uiLocale,
-    ref: osis,
-    osis,
-    strongId: activeStrongId,
-    currentVerseText,
-    currentSurface: currentVerseText,
-    proposedSurface: "",
-    expectedProperNouns: lockAnchors.expectedProperNouns,
-    expectedAgent: lockAnchors.expectedAgent,
-    expectedPatient: lockAnchors.expectedPatient,
-    level: state.cascadeLevel || "L2",
-    includeInlineSeedPanel: !Boolean(cascadeEl),
-    includeEightLocksBar: true,
-    i18n: i18nInstance,
-    t: tFn,
-  });
-  const workCtx = resolveActiveWorkDrawerContext(state);
-  const workBannerHtml = workCtx.isSisterWork
-    ? `<aside class="work-context-drawer-banner" data-work-context="${workCtx.activeWork}"><strong>${workCtx.bannerText}</strong></aside>`
-    : "";
-  const container =
-    getEl("socraticElicitorContainer", targetDoc) ||
-    getEl("bibleFieldWorkshopSheet", targetDoc);
-  if (container) {
-    container.innerHTML = workBannerHtml + html;
-    container.setAttribute?.("data-field-workshop-lang", fieldWorkshopActiveLang);
-    container.setAttribute?.("data-active-work", workCtx.activeWork);
-    container.removeAttribute?.("data-field-workshop-fallback");
-  }
-
-  if (cascadeEl && typeof mod.renderCascadeAndLadderHtml === "function") {
-    cascadeEl.innerHTML = mod.renderCascadeAndLadderHtml({
-      ladderItems: ladder250,
+    if (!state.masterCensusSummary && typeof dataLayer.loadMasterCensusSummary === "function") {
+      try {
+        const censusData = await dataLayer.loadMasterCensusSummary();
+        if (censusData) state.masterCensusSummary = censusData;
+      } catch {
+        // Non-fatal
+      }
+    }
+    if (!isCurrent()) return "";
+    const i18nInstance = typeof getI18n === "function" ? getI18n() : null;
+    const tFn = i18nInstance ? (k, p) => i18nInstance.t(k, p) : undefined;
+    const cascadeEl = getEl("cascadeImpactPreviewList", targetDoc);
+    const lockAnchors = deriveVerseLockAnchors(state, currentVerseText);
+    const html = mod.renderImproveDrawerHtml({
+      kind: "verse",
       lang: state.lang,
-      currentRef: osis,
+      locale: state.uiLocale,
+      uiLocale: state.uiLocale,
+      ref: osis,
       osis,
       strongId: activeStrongId,
+      currentVerseText,
+      currentSurface: currentVerseText,
+      proposedSurface: "",
+      expectedProperNouns: lockAnchors.expectedProperNouns,
+      expectedAgent: lockAnchors.expectedAgent,
+      expectedPatient: lockAnchors.expectedPatient,
       level: state.cascadeLevel || "L2",
-      activeRung: state.activeCelfRung || "ALL",
-      activeOtWave: state.activeOtWave || 0,
-      limit: 24,
-      includeWalCard: false,
-      includeCensusCard: false,
-      uiLocale: state.uiLocale || "es",
-      uqPage: state.uncertaintyQueuePage || 1,
-      externalAuditText: state.externalAuditText || "",
-      externalAuditResult: state.externalAuditResult || null,
-      activeTier3aPair: state.activeTier3aPair || "",
+      includeInlineSeedPanel: !Boolean(cascadeEl),
+      includeEightLocksBar: true,
+      i18n: i18nInstance,
+      t: tFn,
     });
-  }
-
-  const lexHost = getEl("stpLexiconExplorerHost", targetDoc);
-  const isStpLang = String(state.lang || "").toLowerCase() === "stp";
-  if (lexHost) {
-    if (isStpLang) {
-      const renderLexFn =
-        typeof mod.renderStpLexiconExplorerHtml === "function"
-          ? mod.renderStpLexiconExplorerHtml
-          : renderStpLexiconExplorerHtml;
-      lexHost.innerHTML = renderLexFn({
-        query: state.stpLexiconQuery || "",
-        activeWave: state.activeOtWave || 0,
-        limit: 24,
-      });
-    } else {
-      lexHost.innerHTML = "";
+    const workCtx = resolveActiveWorkDrawerContext(state);
+    const workBannerHtml = workCtx.isSisterWork
+      ? `<aside class="work-context-drawer-banner" data-work-context="${workCtx.activeWork}"><strong>${workCtx.bannerText}</strong></aside>`
+      : "";
+    const container =
+      getEl("socraticElicitorContainer", targetDoc) ||
+      getEl("bibleFieldWorkshopSheet", targetDoc);
+    if (container) {
+      container.innerHTML = workBannerHtml + html;
+      container.setAttribute?.("data-field-workshop-lang", fieldWorkshopActiveLang);
+      container.setAttribute?.("data-active-work", workCtx.activeWork);
+      container.removeAttribute?.("data-field-workshop-fallback");
     }
-  }
 
-  const renderAuditSubtabPanels = () => {
-    const tallerHost = getEl("tallerArtifactsCatalog", targetDoc);
-    if (!tallerHost) return;
-    tallerHost.innerHTML = renderWorkshopAuditSubtabHtml({
-      mod,
-      state,
-    });
-  };
-  state.refreshWorkshopAuditSubtab = renderAuditSubtabPanels;
-  renderAuditSubtabPanels();
+    if (cascadeEl && typeof mod.renderCascadeAndLadderHtml === "function") {
+      cascadeEl.innerHTML = mod.renderCascadeAndLadderHtml({
+        ladderItems: ladder250,
+        lang: state.lang,
+        currentRef: osis,
+        osis,
+        strongId: activeStrongId,
+        level: state.cascadeLevel || "L2",
+        activeRung: state.activeCelfRung || "ALL",
+        activeOtWave: state.activeOtWave || 0,
+        limit: 24,
+        includeWalCard: false,
+        includeCensusCard: false,
+        uiLocale: state.uiLocale || "es",
+        uqPage: state.uncertaintyQueuePage || 1,
+        externalAuditText: state.externalAuditText || "",
+        externalAuditResult: state.externalAuditResult || null,
+        activeTier3aPair: state.activeTier3aPair || "",
+      });
+    }
 
-  bindImproveFormControlsInDrawer(mod, ctx);
-  projectSurfaceLayoutFromState(state, targetDoc, getEl);
-  return html;
+    const lexHost = getEl("stpLexiconExplorerHost", targetDoc);
+    const isStpLang = String(state.lang || "").toLowerCase() === "stp";
+    if (lexHost) {
+      if (isStpLang) {
+        const renderLexFn =
+          typeof mod.renderStpLexiconExplorerHtml === "function"
+            ? mod.renderStpLexiconExplorerHtml
+            : renderStpLexiconExplorerHtml;
+        lexHost.innerHTML = renderLexFn({
+          query: state.stpLexiconQuery || "",
+          activeWave: state.activeOtWave || 0,
+          limit: 24,
+        });
+      } else {
+        lexHost.innerHTML = "";
+      }
+    }
+
+    const renderAuditSubtabPanels = () => {
+      const tallerHost = getEl("tallerArtifactsCatalog", targetDoc);
+      if (!tallerHost) return;
+      tallerHost.innerHTML = renderWorkshopAuditSubtabHtml({
+        mod,
+        state,
+      });
+    };
+    state.refreshWorkshopAuditSubtab = renderAuditSubtabPanels;
+    renderAuditSubtabPanels();
+
+    bindImproveFormControlsInDrawer(mod, ctx);
+    projectSurfaceLayoutFromState(state, targetDoc, getEl);
+    return html;
+  });
 }
 
 export function bindImproveFormControlsInDrawer(mod, ctx = {}) {
@@ -284,7 +303,7 @@ export function bindImproveFormControlsInDrawer(mod, ctx = {}) {
       lang: state.lang,
       locale: state.uiLocale,
       ref: osis,
-      strongId: state.activeStrongId || "H0430",
+      strongId: state.activeStrongId || "",
       oldSurface: currentOldSurf,
       newSurface: currentNewSurf,
       note: noteInput?.value || "",
@@ -333,7 +352,7 @@ export function bindImproveFormControlsInDrawer(mod, ctx = {}) {
         lang: state.lang,
         currentRef: osis,
         osis,
-        strongId: state.activeStrongId || "H0430",
+        strongId: state.activeStrongId || "",
         level: selectedLevel,
         activeRung: state.activeCelfRung || "ALL",
         activeOtWave: state.activeOtWave || 0,

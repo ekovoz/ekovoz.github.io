@@ -48,6 +48,7 @@ import {
   ensureDirectEditionsAndGrambankControls,
   filterBookEntriesRange,
   flattenLoadedBookChapters,
+  resolveDefaultTypologyForLang,
   resolveEditionSubstrateForProfile,
   resolveGrambankTypologyPrintPreset,
 } from "./print_config_projector.js";
@@ -300,8 +301,9 @@ export function renderPrintDrawerPanelsSyncInDrawer(ctx = {}) {
 
   const typologyHost = getEl("printTypologyBridgeHost", targetDoc);
   if (typologyHost) {
-    const activeBranchId = state.activeBranchId || CANONICAL_12_BRANCH_PROFILES[0]?.id || "G_01_latin_extended";
-    const activeTypoId = state.activeTypologyId || CANONICAL_16_TYPOLOGY_PROFILES[0]?.id || "es_typology";
+    const defaultTypo = resolveDefaultTypologyForLang(state.effectiveCorpusLang || state.lang || "es");
+    const activeBranchId = state.activeBranchId || defaultTypo.branchId;
+    const activeTypoId = state.activeTypologyId || defaultTypo.typologyId;
     mountSlotView(typologyHost, {
       html: renderCompactTypologySelectorHtml({
         branches: state.editorialProfiles?.branch_profiles_12 || CANONICAL_12_BRANCH_PROFILES,
@@ -742,8 +744,20 @@ export async function hydratePrintDrawerPanelsInDrawer(ctx = {}) {
     Math.max(1, Math.min(16, Number(state.activeMacroTandaNumber) || resolveMacroTandaForBlock(activeBlockNum).macroTandaNumber)) - 1
     ] || resolveMacroTandaForBlock(activeBlockNum);
   const full66Flag = state.generateFull66BookBible ? "FULL66" : `MT${activeMacroTanda.macroTandaNumber}`;
+  const workerWrap = getEl("tandaWorkerProgressWrap", targetDoc);
+  const workerBar = getEl("tandaWorkerProgress", targetDoc);
+  const workerLabel = getEl("tandaWorkerProgressLabel", targetDoc);
+  const activePrintSubtab = state.activeSubtabBySheet?.print || state.activeSubtabs?.print || "doses";
+  if (activePrintSubtab !== "doses" || ctx.skipSpeculativeWorker === true) {
+    workerWrap?.setAttribute?.("hidden", "");
+    workerBar?.removeAttribute?.("data-ergos-active-job");
+    if (workerLabel) workerLabel.textContent = "";
+  }
+  const explicitWorkerReq = Boolean(ctx.userRequestedPdfBuild || state.generateFull66BookBible);
+  const allowWorkerHydrate = activePrintSubtab === "doses" && (explicitWorkerReq || (typeof globalThis.window === "undefined" && ctx.skipSpeculativeWorker !== true));
   const workerCacheKey = `${effectiveLang}:${state.book || "GEN"}:B${activeBlockNum}:${full66Flag}:${activeCols}:${activeFontPt}:${state.paperFormat || "a4"}`;
   if (
+    allowWorkerHydrate &&
     state.lastHydratedWorkerTandaKey !== workerCacheKey &&
     typeof dataLayer?.loadBookFromEkpackRange === "function"
   ) {
@@ -829,16 +843,15 @@ export async function hydratePrintDrawerPanelsInDrawer(ctx = {}) {
             paperCode: encodePaperFormatCode(state.paperFormat || "a4", state.orientation || "portrait"),
           })
           : null;
-        const workerWrap = getEl("tandaWorkerProgressWrap", targetDoc);
-        const workerBar = getEl("tandaWorkerProgress", targetDoc);
-        const workerLabel = getEl("tandaWorkerProgressLabel", targetDoc);
-        if (workerWrap) workerWrap.removeAttribute?.("hidden");
-        if (workerBar) workerBar.value = 35;
-        if (workerLabel) {
-          workerLabel.textContent =
-            String(state.uiLocale || "es").startsWith("en")
+        if ((state.activeSubtabBySheet?.print || activePrintSubtab) === "doses" && explicitWorkerReq) {
+          workerWrap?.removeAttribute?.("hidden");
+          workerBar?.setAttribute?.("data-ergos-active-job", "true");
+          if (workerBar) workerBar.value = 35;
+          if (workerLabel) {
+            workerLabel.textContent = String(state.uiLocale || "es").startsWith("en")
               ? "Preparing PDF sheets in background…"
               : "Preparando pliegos PDF sin bloqueo…";
+          }
         }
         const [dose2Res, dose3Res] = await Promise.all([
           skipDose2Redundant
@@ -877,8 +890,6 @@ export async function hydratePrintDrawerPanelsInDrawer(ctx = {}) {
           }),
         ]);
         if (workerBar) workerBar.value = 100;
-        if (workerLabel) workerLabel.textContent = "";
-        if (workerWrap) workerWrap.setAttribute?.("hidden", "");
         if (dose2Res?.type === "tanda-offline-font-notice" || dose3Res?.type === "tanda-offline-font-notice") {
           const noticeEl = getEl("tanda-offline-font-notice", targetDoc);
           const activeNotice = dose2Res?.type === "tanda-offline-font-notice" ? dose2Res : dose3Res;
@@ -895,6 +906,9 @@ export async function hydratePrintDrawerPanelsInDrawer(ctx = {}) {
     } catch {
       // Non-fatal fallback
     } finally {
+      if (workerLabel) workerLabel.textContent = "";
+      workerBar?.removeAttribute?.("data-ergos-active-job");
+      workerWrap?.setAttribute?.("hidden", "");
       state.generateFull66BookBible = false;
     }
   } else {
@@ -904,15 +918,13 @@ export async function hydratePrintDrawerPanelsInDrawer(ctx = {}) {
 
 export function revokePrintObjectUrls(targetState) {
   if (!targetState || typeof targetState !== "object") return;
-  for (const key of ["dose2ObjectUrl", "dose3ObjectUrl"]) {
-    const urlVal = targetState[key];
-    if (typeof urlVal === "string" && urlVal.startsWith("blob:")) {
-      try {
-        globalThis.URL?.revokeObjectURL?.(urlVal);
-      } catch {
-        // Non-fatal
-      }
+  const revokeIfBlob = (u) => {
+    if (typeof u === "string" && u.startsWith("blob:")) {
+      try { globalThis.URL?.revokeObjectURL?.(u); } catch {}
     }
+  };
+  for (const key of ["dose2ObjectUrl", "dose3ObjectUrl"]) {
+    revokeIfBlob(targetState[key]);
     targetState[key] = "";
   }
   targetState._dose3Streamed16Of16 = false;
@@ -920,15 +932,7 @@ export function revokePrintObjectUrls(targetState) {
   for (const mapKey of ["editionObjectUrls", "brfObjectUrls"]) {
     const urlMap = targetState[mapKey];
     if (urlMap && typeof urlMap === "object") {
-      for (const prevUrl of Object.values(urlMap)) {
-        if (typeof prevUrl === "string" && prevUrl.startsWith("blob:")) {
-          try {
-            globalThis.URL?.revokeObjectURL?.(prevUrl);
-          } catch {
-            // Non-fatal
-          }
-        }
-      }
+      Object.values(urlMap).forEach(revokeIfBlob);
       targetState[mapKey] = {};
     }
   }
