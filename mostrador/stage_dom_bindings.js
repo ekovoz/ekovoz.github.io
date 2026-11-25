@@ -30,6 +30,7 @@ import {
   listLanguagesInCountry,
   searchLanguages,
 } from "./lang_funnel.js";
+import { bindPrintFirstStageRibbon } from "./print_stage_ribbon.js";
 import { resolvePublicOrPreviewWork } from "./projection_contract.js";
 import { bindSupportContactDialog } from "./provenance_and_support_panel.js";
 import {
@@ -848,6 +849,7 @@ export function bindStageDomEvents(ctx = {}) {
       btnDose1.addEventListener("click", handleDose1Trigger);
     }
   }
+  bindPrintFirstStageRibbon({ targetDoc, getEl, state, handleDose1Trigger, transitionSheet, hydratePrintDrawerPanels });
 
   const fontSlider = getEl("kindleFontSizeSlider", targetDoc);
   const colSel = getEl("kindleColumnSelector", targetDoc);

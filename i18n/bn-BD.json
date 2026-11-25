@@ -121,7 +121,7 @@
     "mostrador.nav.prev": "Previous chapter",
     "mostrador.nav.next": "Next chapter",
     "mostrador.step2.placeholder": "কিতাব ও অধ্যায় (যেমন ইউহান্না ৩:১৬ বা জবুর ২৩)",
-    "mostrador.heading": "Polyglot Bible Reader (66 Books · Printable & Shareable PDFs)",
+    "mostrador.heading": "আপনার ভাষায় বাইবেল প্রিন্ট বা ডাউনলোড করুন",
     "seal.unavailable": "Translation not yet available",
     "mostrador.step2.open_compass": "Go",
     "mostrador.oral_portico.toggle": "🗣️ পাঠ",
@@ -280,6 +280,13 @@
     "study.acc.tskFormulaic": "🔗 TSK তথ্যসূত্র ও তৌরাত↔ইঞ্জিল সমান্তরাল",
     "study.acc.orthography": "✍️ বানান তুলনা ও শব্দ সংরক্ষণ",
     "study.acc.typology": "🌐 ভাষাতাত্ত্বিক রূপরেখা ও প্রকাশনা রীতি",
-    "corpus.search.placeholder": "৭,১৬৪টি ভাষা খুঁজুন (ISO, নিজ নাম, দেশ)..."
+    "corpus.search.placeholder": "৭,১৬৪টি ভাষা খুঁজুন (ISO, নিজ নাম, দেশ)...",
+    "mostrador.preview_hint": "প্রিন্টের জন্য প্রস্তুত পাঠের সরাসরি প্রিভিউ",
+    "printStage.heading": "ধাপে ধাপে PDF প্রিন্ট বা ডাউনলোড করুন",
+    "printStage.dose1": "1. এই অধ্যায়ের PDF",
+    "printStage.dose2": "2. পুস্তিকা / বই PDF",
+    "printStage.dose3": "3. সম্পূর্ণ বাইবেল PDF (66)",
+    "printStage.moreFormats": "কাগজের মাপ, ব্রেইল ও অফলাইন কপি",
+    "print.btn.cancelJob": "বাতিল"
   }
 }

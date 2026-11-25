@@ -16,6 +16,7 @@ handler   = "createI18n"
 test_file = "mostrador/i18n.test.mjs"
 test_name = "negotiate_es_mx_to_es"
 
+exposure_tier = "primary-stage"
 [capability.reading_language_selector]
 surface   = "public-ui"
 selector  = "#bibleSelectLang"
@@ -24,6 +25,7 @@ handler   = "indexRegionShards"
 test_file = "mostrador/lang_funnel.test.mjs"
 test_name = "region_shards_total_7164_unique_iso"
 
+exposure_tier = "primary-stage"
 [capability.geo_funnel_7164]
 surface   = "public-ui"
 selector  = "#bibleGeoFunnel"
@@ -32,6 +34,7 @@ handler   = "searchLanguages"
 test_file = "mostrador/lang_funnel.test.mjs"
 test_name = "search_finds_stp_by_autonym_exonym_and_iso"
 
+exposure_tier = "drawer-secondary"
 [capability.reference_resolver]
 surface   = "public-ui"
 selector  = "#mostradorRefInput"
@@ -40,6 +43,7 @@ handler   = "createReferenceResolver"
 test_file = "mostrador/reference.test.mjs"
 test_name = "resolves_spanish_names_abbreviations_and_aliases"
 
+exposure_tier = "primary-stage"
 [capability.async_chapter_viewport]
 surface   = "public-ui"
 intent    = "read"
@@ -49,6 +53,7 @@ handler   = "createDataLayer"
 test_file = "mostrador/data_layer.test.mjs"
 test_name = "rom_1_es_contains_pablo"
 
+exposure_tier = "primary-stage"
 [capability.epistemic_seal_badge]
 surface   = "public-ui"
 selector  = "#epistemicStatusSeal"
@@ -57,6 +62,7 @@ handler   = "deriveEpistemicSeal"
 test_file = "mostrador/tribunal.test.mjs"
 test_name = "seal_derived_from_loaded_data_not_hardcoded"
 
+exposure_tier = "primary-stage"
 [capability.dose1_sheets_around_verse]
 surface   = "public-ui"
 intent    = "print"
@@ -66,6 +72,7 @@ handler   = "createMostradorController"
 test_file = "mostrador/tribunal.test.mjs"
 test_name = "dose1_button_extracts_real_typst_pdf_pages"
 
+exposure_tier = "primary-stage"
 [capability.dose1_pdf_page_extractor]
 surface   = "public-ui"
 selector  = "#btnDose1Sheets"
@@ -74,6 +81,7 @@ handler   = "extractPdfPages"
 test_file = "mostrador/pdf_pages.test.mjs"
 test_name = "extract_returns_requested_page_count"
 
+exposure_tier = "primary-stage"
 [capability.dose2_signature_block]
 surface   = "public-ui"
 selector  = "#linkDose2BlockPdf"
@@ -82,6 +90,7 @@ handler   = "planDose2"
 test_file = "mostrador/dosis.test.mjs"
 test_name = "dose2_and_dose3_from_real_index_and_manifest"
 
+exposure_tier = "primary-stage"
 [capability.dose3_full_bible_pdf]
 surface   = "public-ui"
 selector  = "#linkDose3FullBiblePdf"
@@ -91,6 +100,7 @@ test_file = "mostrador/dosis.test.mjs"
 test_name = "dose2_and_dose3_from_real_index_and_manifest"
 
 # Contrato de capacidades UI (`study_14col_drawer` conserva ID estable mientras proyecta 15 cols `col01..col15_translit`)
+exposure_tier = "primary-stage"
 [capability.study_14col_drawer]
 surface   = "public-ui"
 intent    = "study"
@@ -100,6 +110,7 @@ handler   = "renderStudy14ColDrawerHtml"
 test_file = "mostrador/estudio.test.mjs"
 test_name = "renders_all_14_columns_for_genesis_1"
 
+exposure_tier = "drawer-secondary"
 [capability.community_patch_drawer]
 surface   = "public-ui"
 intent    = "workshop"
@@ -109,6 +120,7 @@ handler   = "buildPatchPayload"
 test_file = "mostrador/mejorar.test.mjs"
 test_name = "patch_fields_match_patch_template_toml"
 
+exposure_tier = "drawer-secondary"
 [capability.optical_lt_fountain]
 surface   = "public-ui"
 intent    = "share"
@@ -118,31 +130,37 @@ handler   = "LTEncoder"
 test_file = "mostrador/optical_lt.test.mjs"
 test_name = "recovers_payload_under_30pct_random_drop"
 
+exposure_tier = "drawer-secondary"
 [capability.extract_rosetta]
 surface        = "editor-cli"
 cli_subcommand = "extract-rosetta"
 reason         = "Herramienta pesada de alineación léxica corpus-a-corpus; exclusiva de ekovoz-cli."
 
+exposure_tier = "editor-cli"
 [capability.complete_bible]
 surface        = "editor-cli"
 cli_subcommand = "complete-bible"
 reason         = "Motor de síntesis de lotes completos en disco; exclusivo de ekovoz-cli."
 
+exposure_tier = "editor-cli"
 [capability.cldf_mirror]
 surface        = "editor-cli"
 cli_subcommand = "cldf-mirror"
 reason         = "Sincronizador de catálogos Glottolog/CLDF en repositorio local; exclusivo de ekovoz-cli."
 
+exposure_tier = "editor-cli"
 [capability.census]
 surface        = "editor-cli"
 cli_subcommand = "census"
 reason         = "Generador de MASTER_CENSUS.json y RELACION_MAESTRA.md; exclusivo de ekovoz-cli."
 
+exposure_tier = "editor-cli"
 [capability.modernize_register]
 surface        = "editor-cli"
 cli_subcommand = "modernize-register"
 reason         = "Reescritura FST por lote sobre archivos USFM; la UI pública solo selecciona edición precompilada."
 
+exposure_tier = "editor-cli"
 [capability.pericope_inline_verse_selection]
 surface   = "public-ui"
 selector  = "#bibleVerseViewport"
@@ -151,6 +169,7 @@ handler   = "renderChapterPreviewHtml"
 test_file = "mostrador/tribunal.test.mjs"
 test_name = "pericope_blocks_and_inline_verse_selection_update_state_and_study"
 
+exposure_tier = "drawer-secondary"
 [capability.register_switcher_es1909_bilingue]
 surface   = "public-ui"
 selector  = "#btnRegClasica"
@@ -159,6 +178,7 @@ handler   = "createMostradorController"
 test_file = "mostrador/tribunal.test.mjs"
 test_name = "register_switching_loads_es1909_and_bilingual_58_42_diptych"
 
+exposure_tier = "drawer-secondary"
 [capability.dose1_secondary_drawer_button]
 surface   = "public-ui"
 selector  = "#btnDose1Sheets"
@@ -167,6 +187,7 @@ handler   = "createMostradorController"
 test_file = "mostrador/tribunal.test.mjs"
 test_name = "both_dose1_buttons_receive_listeners_and_print_config_updates_edition"
 
+exposure_tier = "drawer-secondary"
 [capability.study_3_semantic_strata]
 surface   = "public-ui"
 selector  = "#nsm65StratumCard"
@@ -175,6 +196,7 @@ handler   = "renderStudyStrataCards"
 test_file = "mostrador/estudio.test.mjs"
 test_name = "renders_three_semantic_strata_cards_nsm65_realia_and_tsk"
 
+exposure_tier = "drawer-secondary"
 [capability.field_celf250_and_taller_cc0]
 surface   = "public-ui"
 selector  = "#cascadeImpactPreviewList"
@@ -183,6 +205,7 @@ handler   = "renderCascadeAndLadderHtml"
 test_file = "mostrador/mejorar.test.mjs"
 test_name = "renders_cascade_preview_and_6_taller_cc0_artifacts_without_raw_i18n_keys"
 
+exposure_tier = "drawer-secondary"
 [capability.compass_oral_portico_life_trails]
 surface   = "public-ui"
 selector  = "#btnToggleAudioNarakeet"
@@ -191,6 +214,7 @@ handler   = "createMostradorController"
 test_file = "mostrador/tribunal.test.mjs"
 test_name = "compass_modal_oral_portico_and_8_life_trails_navigate_to_anchor_passages"
 
+exposure_tier = "drawer-secondary"
 [capability.conditional_orthography_wfst]
 surface   = "public-ui"
 selector  = "#bibleOrthographyPills"
@@ -199,6 +223,7 @@ handler   = "applyOrthographyProfile"
 test_file = "mostrador/tribunal.test.mjs"
 test_name = "compass_modal_oral_portico_and_8_life_trails_navigate_to_anchor_passages"
 
+exposure_tier = "drawer-secondary"
 [capability.qrbeam_systematic_whitened_stream]
 surface   = "public-ui"
 selector  = "#bibleOpticalQrStreamPanel"
@@ -207,6 +232,7 @@ handler   = "whitenBlockXor"
 test_file = "mostrador/optical_lt.test.mjs"
 test_name = "systematic_first_pass_completes_in_exactly_K_droplets_when_zero_loss"
 
+exposure_tier = "drawer-secondary"
 [capability.foliation_20mm_punch_and_rtl_inversion]
 surface   = "public-ui"
 selector  = "#bibleFoliationModeSelect"
@@ -215,6 +241,7 @@ handler   = "computeFoliationLayout"
 test_file = "mostrador/dosis.test.mjs"
 test_name = "foliation_layout_20mm_punch_marks_rtl_inversion_and_sauvola_3rd_gen_photocopy"
 
+exposure_tier = "drawer-secondary"
 [capability.sauvola_3rd_gen_photocopy_simulator]
 surface   = "public-ui"
 selector  = "#btnSimulatePhotocopy3Gen"
@@ -223,6 +250,7 @@ handler   = "simulateThirdGenPhotocopySauvola"
 test_file = "mostrador/dosis.test.mjs"
 test_name = "foliation_layout_20mm_punch_marks_rtl_inversion_and_sauvola_3rd_gen_photocopy"
 
+exposure_tier = "drawer-secondary"
 [capability.optical_gf2_gaussian_camera_rx]
 surface   = "public-ui"
 selector  = "#btnToggleOpticalCameraRx"
@@ -231,6 +259,7 @@ handler   = "createRelayEncoderFromDecoded"
 test_file = "mostrador/optical_lt.test.mjs"
 test_name = "gaussian_gf2_elimination_resolves_stopping_sets_without_degree1_and_supports_relay"
 
+exposure_tier = "drawer-secondary"
 [capability.bicanonical_wlc_occidental_alignment]
 surface   = "public-ui"
 selector  = "#bibleEasyDrawer"
@@ -239,6 +268,7 @@ handler   = "resolveBicanonicalDivergence"
 test_file = "mostrador/estudio.test.mjs"
 test_name = "resolves_bicanonical_wlc_occidental_divergence_and_enforces_48px_tap_targets"
 
+exposure_tier = "drawer-secondary"
 [capability.lock8_jespersen_macula_and_entropy_queue]
 surface   = "public-ui"
 selector  = "#btnOpenFieldWorkshopSheet"
@@ -247,6 +277,7 @@ handler   = "verifyLock8PredicativeAndNegation"
 test_file = "mostrador/mejorar.test.mjs"
 test_name = "patch_and_seed_include_eco_patch_json_hash_and_accept_osis_and_object_lang"
 
+exposure_tier = "drawer-secondary"
 [capability.wfst_reverse_orthography_and_scriptio_continua]
 surface   = "public-ui"
 selector  = "#bibleOrthographyPills"
@@ -255,6 +286,7 @@ handler   = "transduceOrthographyWeb"
 test_file = "mostrador/orthography_wfst.test.mjs"
 test_name = "D1-B+: Reglas contextuales WFST en stp (INALI_2018 <-> ILV_1950) preservan préstamos y contexto vocálico"
 
+exposure_tier = "drawer-secondary"
 [capability.diachronic_register_enclitics_and_aoa_metrics]
 surface   = "public-ui"
 selector  = "#btnRegIntergeneracional"
@@ -263,6 +295,7 @@ handler   = "applySpanish21DiachronicRegister"
 test_file = "mostrador/diachronic_register.test.mjs"
 test_name = "D2-B+: Modernizador diacrónico ejecuta las 3 capas (Tier 1 léxico, Tier 2 morfología, Tier 3 inversión de enclíticos)"
 
+exposure_tier = "drawer-secondary"
 [capability.philology_rosetta_root_lxx_ketiv_qere]
 surface   = "public-ui"
 selector  = "#bibleEasyDrawer"
@@ -271,6 +304,7 @@ handler   = "resolveConsonantalRootFamily"
 test_file = "mostrador/estudio.test.mjs"
 test_name = "d3_b_plus_philology_rosetta_index_consonantal_root_lxx_mt_bridge_and_ketiv_qere"
 
+exposure_tier = "drawer-secondary"
 [capability.multi_signature_4n_imposition_and_80_blocks]
 surface   = "public-ui"
 selector  = "#btnOpenPrintEditionsSheet"
@@ -279,6 +313,7 @@ handler   = "computeMultiSignatureImposition"
 test_file = "mostrador/dosis.test.mjs"
 test_name = "d4_b_plus_multi_signature_4n_imposition_creep_bound_9_toml_profiles_and_80_blocks"
 
+exposure_tier = "drawer-secondary"
 [capability.eight_locks_pda_sister_cascade_and_5_ot_waves]
 surface   = "public-ui"
 selector  = "#btnOpenFieldWorkshopSheet"
@@ -287,6 +322,7 @@ handler   = "validateAllEightLocksPda"
 test_file = "mostrador/mejorar.test.mjs"
 test_name = "d5_b_plus_pda_quote_balance_llm_metatext_leak_all_8_locks_sister_cascade_and_5_ot_waves"
 
+exposure_tier = "drawer-secondary"
 [capability.eco1_ecom_binary_protocol_and_qr_stream_session]
 surface   = "public-ui"
 selector  = "#bibleOpticalQrStreamPanel"
@@ -295,6 +331,7 @@ handler   = "encodeEco1BinaryPacket"
 test_file = "mostrador/optical_lt.test.mjs"
 test_name = "d6_b_plus_eco1_ecom_binary_protocol_nyquist_bounds_corner_toggle_and_qr_stream_session"
 
+exposure_tier = "drawer-secondary"
 [capability.masoretic_pericopes_and_global_harel_drawers]
 surface   = "public-ui"
 selector  = "#sovereignGlobalDrawersHost"
@@ -303,6 +340,7 @@ handler   = "resolveMasoreticPericopeBreaks"
 test_file = "mostrador/tribunal.test.mjs"
 test_name = "d1_to_d9_b_plus_sovereign_parity_wfst_diachronic_rosetta_imposition_pda_eco1_and_global_drawers"
 
+exposure_tier = "drawer-secondary"
 [capability.wfst_5_families_and_reverse_lemma_map]
 surface   = "public-ui"
 selector  = "#bibleOrthographyPills"
@@ -311,6 +349,7 @@ handler   = "listOrthographyProfilesForLang"
 test_file = "mostrador/tribunal.test.mjs"
 test_name = "D1_to_D9_S21_plus_ARB_EKOVOZ_63_complete_section_2_1_backend_surface_projection"
 
+exposure_tier = "drawer-secondary"
 [capability.catalog_all_14_print_profiles]
 surface   = "public-ui"
 selector  = "#bibleEditionsCatalogGrid"
@@ -319,6 +358,7 @@ handler   = "listAll14PrintEditionsForLang"
 test_file = "mostrador/tribunal.test.mjs"
 test_name = "D1_to_D9_S21_plus_ARB_EKOVOZ_63_complete_section_2_1_backend_surface_projection"
 
+exposure_tier = "drawer-secondary"
 [capability.canonical_80_blocks_selector]
 surface   = "public-ui"
 selector  = "#duplexAssistantPanel"
@@ -327,6 +367,7 @@ handler   = "resolveCanonicalBlockForPassage"
 test_file = "mostrador/tribunal.test.mjs"
 test_name = "D1_to_D9_S21_plus_ARB_EKOVOZ_63_complete_section_2_1_backend_surface_projection"
 
+exposure_tier = "drawer-secondary"
 [capability.grambank_12_branches_and_16_typology_sheets]
 surface   = "public-ui"
 selector  = "#bibleBranchAndTypologyPanel"
@@ -335,6 +376,7 @@ handler   = "renderBranchAndTypologyInspectorHtml"
 test_file = "mostrador/tribunal.test.mjs"
 test_name = "D1_to_D9_S21_plus_ARB_EKOVOZ_63_complete_section_2_1_backend_surface_projection"
 
+exposure_tier = "drawer-secondary"
 [capability.wasm_prosodic_pause_and_syllable_cursor]
 surface   = "public-ui"
 selector  = "#bibleOralPorticoBanner"
@@ -343,6 +385,7 @@ handler   = "computeProsodyAndSyllableAlignmentInWasm"
 test_file = "mostrador/tribunal.test.mjs"
 test_name = "D1_to_D9_S21_plus_ARB_EKOVOZ_63_complete_section_2_1_backend_surface_projection"
 
+exposure_tier = "drawer-secondary"
 [capability.optical_receiver_qr_stream_session_and_nyquist]
 surface   = "public-ui"
 selector  = "#opticalReceiverRxPanel"
@@ -351,6 +394,7 @@ handler   = "runOpticalReceiverBurstSession"
 test_file = "mostrador/tribunal.test.mjs"
 test_name = "D1_to_D9_S21_plus_ARB_EKOVOZ_63_complete_section_2_1_backend_surface_projection"
 
+exposure_tier = "drawer-secondary"
 [capability.stp_lexicon_600_explorer_and_ot_waves_filter]
 surface   = "public-ui"
 selector  = "#stpLexiconExplorerHost"
@@ -359,6 +403,7 @@ handler   = "renderStpLexiconExplorerHtml"
 test_file = "mostrador/tribunal.test.mjs"
 test_name = "D1_to_D9_S21_plus_ARB_EKOVOZ_63_complete_section_2_1_backend_surface_projection"
 
+exposure_tier = "drawer-secondary"
 [capability.diachronic_3_tiers_and_66_book_vectors_thermometer]
 surface   = "public-ui"
 selector  = "#bibleAnalyticalThermometerPanel"
@@ -367,6 +412,7 @@ handler   = "renderAnalyticalThermometerHtml"
 test_file = "mostrador/tribunal.test.mjs"
 test_name = "D1_to_D9_S21_plus_ARB_EKOVOZ_63_complete_section_2_1_backend_surface_projection"
 
+exposure_tier = "drawer-secondary"
 [capability.philology_rosetta_explorer_u7]
 surface   = "public-ui"
 selector  = "#bibleEasyDrawer"
@@ -375,6 +421,7 @@ handler   = "renderPhilologyRosettaExplorerHtml"
 test_file = "mostrador/tribunal.test.mjs"
 test_name = "D52_to_D59_ARB_EKOVOZ_64_stage3_apple_hig_and_rosetta_explorer_u7"
 
+exposure_tier = "drawer-secondary"
 [capability.felices_dichas_and_plates_bar]
 surface   = "public-ui"
 selector  = "#felicesDichasAndPlatesBar"
@@ -383,6 +430,7 @@ handler   = "projectCrossWorkCoordinate"
 test_file = "mostrador/tribunal.test.mjs"
 test_name = "D52_to_D59_ARB_EKOVOZ_64_stage3_apple_hig_and_rosetta_explorer_u7"
 
+exposure_tier = "drawer-secondary"
 [capability.isomorphic_url_route_codec]
 surface   = "public-ui"
 selector  = "#sovereignTopBar"
@@ -391,6 +439,7 @@ handler   = "parseInitialRouteAndLocale"
 test_file = "mostrador/tribunal.test.mjs"
 test_name = "D52_to_D59_ARB_EKOVOZ_64_stage3_apple_hig_and_rosetta_explorer_u7"
 
+exposure_tier = "drawer-secondary"
 [capability.felices_preview_carousel_modal]
 surface   = "public-ui"
 selector  = "#btnOpenPreviewCarousel"
@@ -399,6 +448,7 @@ handler   = "openModal"
 test_file = "mostrador/tribunal_packs_crypto.test.mjs"
 test_name = "D62_to_D69_ARB_EKOVOZ_65_reactive_router_quotient_lens_focus_preservation_and_zero_404"
 
+exposure_tier = "drawer-secondary"
 [capability.paper_format_toggle_carta_a4]
 surface   = "public-ui"
 selector  = "#toggleA4"
@@ -407,6 +457,7 @@ handler   = "setPaper"
 test_file = "mostrador/tribunal_packs_crypto.test.mjs"
 test_name = "D1_to_D10_A_plus_ARB_EKOVOZ_61_triple_provenance_closure_and_full_backend_ui_parity"
 
+exposure_tier = "drawer-secondary"
 [capability.evangelios_polyglot_7_lang_selector]
 surface       = "public-ui"
 release_stage = "draft"
@@ -416,6 +467,7 @@ handler       = "hydrateEvangeliosSection"
 test_file     = "mostrador/tribunal_packs_crypto.test.mjs"
 test_name     = "D1_to_D10_A_plus_ARB_EKOVOZ_61_triple_provenance_closure_and_full_backend_ui_parity"
 
+exposure_tier = "draft-maintainer-gated"
 [capability.bible_chapter_pericopes_ribbon]
 surface   = "public-ui"
 selector  = "#bibleChapterPericopesRibbon"
@@ -424,6 +476,7 @@ handler   = "renderChapterPericopesRibbonHtml"
 test_file = "mostrador/tribunal_packs_crypto.test.mjs"
 test_name = "D1_to_D10_A_plus_ARB_EKOVOZ_61_triple_provenance_closure_and_full_backend_ui_parity"
 
+exposure_tier = "drawer-secondary"
 [capability.felices_socratic_wonder_card]
 surface   = "public-ui"
 selector  = "#felicesSocraticWonderCard"
@@ -432,6 +485,7 @@ handler   = "renderFelicesSocraticWonderCardHtml"
 test_file = "mostrador/tribunal_packs_crypto.test.mjs"
 test_name = "D1_to_D10_A_plus_ARB_EKOVOZ_61_triple_provenance_closure_and_full_backend_ui_parity"
 
+exposure_tier = "drawer-secondary"
 [capability.intent_workshop_first_class]
 surface   = "public-ui"
 intent    = "workshop"
@@ -441,6 +495,7 @@ handler   = "projectStoreAttributesToDom"
 test_file = "mostrador/state_store_v3ux.test.mjs"
 test_name = "SLICE_EKO_V3UX_06_07_sovereign_corpus_lang_tabs_and_store_dom_projection"
 
+exposure_tier = "drawer-secondary"
 [capability.appearance_popover_typography_theme]
 surface   = "public-ui"
 selector  = "#btnAppearanceMenu"
@@ -449,6 +504,7 @@ handler   = "bindStageDomEvents"
 test_file = "mostrador/state_store_v3ux.test.mjs"
 test_name = "SLICE_EKO_V3UX_06_07_sovereign_corpus_lang_tabs_and_store_dom_projection"
 
+exposure_tier = "drawer-secondary"
 [capability.appearance_theme_sepia_dark_control]
 surface   = "public-ui"
 selector  = "#btnThemeSepia"
@@ -457,6 +513,7 @@ handler   = "createEkovozStore"
 test_file = "mostrador/state_store_v3ux.test.mjs"
 test_name = "SLICE_EKO_V3UX_05_store_ownership_registry_and_glitch_free_batch"
 
+exposure_tier = "drawer-secondary"
 [capability.spotlight_corpus_24_packs_search]
 surface   = "public-ui"
 selector  = "#bibleVerifiedCorpusPills"
@@ -465,6 +522,7 @@ handler   = "hydratePackLanguagesFromManifest"
 test_file = "mostrador/reference.test.mjs"
 test_name = "SLICE_EKO_V3UX_13_hydrates_24_ekpacks_and_searches_spotlight_corpus"
 
+exposure_tier = "drawer-secondary"
 [capability.offline_fonts_vault_ekfonts_34]
 surface   = "public-ui"
 selector  = "#editorialFontPackVaultPanel"
@@ -473,6 +531,7 @@ handler   = "summarizeOfflineFontsVaultCatalog"
 test_file = "mostrador/typeset_multiscript_v2ld.test.mjs"
 test_name = "SLICE_EKO_V3UX_14_fonts_vault_catalog_34_and_opengraph_1200x630_in_share"
 
+exposure_tier = "drawer-secondary"
 [capability.opengraph_social_svg_in_share]
 surface   = "public-ui"
 selector  = "#shareOpenGraphCardPanel"
@@ -481,6 +540,7 @@ handler   = "buildOpenGraphSocialCardSvg1200x630"
 test_file = "mostrador/typeset_multiscript_v2ld.test.mjs"
 test_name = "SLICE_EKO_V3UX_14_fonts_vault_catalog_34_and_opengraph_1200x630_in_share"
 
+exposure_tier = "drawer-secondary"
 [capability.stealth_pack_neutral_filenames]
 surface   = "public-ui"
 selector  = "#chkStealthPackMode"
@@ -489,6 +549,7 @@ handler   = "resolveLocalPrintArtifactFallback"
 test_file = "mostrador/dosis_editions_v2i.test.mjs"
 test_name = "SLICE_EKO_V3UX_15_stealth_mode_css_paged_media_and_local_dist_fallback"
 
+exposure_tier = "drawer-secondary"
 [capability.css_paged_media_direct_print]
 surface   = "public-ui"
 selector  = "#btnPrintCssPagedMedia"
@@ -497,6 +558,7 @@ handler   = "buildCssPagedMediaPrintHtml"
 test_file = "mostrador/dosis_editions_v2i.test.mjs"
 test_name = "SLICE_EKO_V3UX_15_stealth_mode_css_paged_media_and_local_dist_fallback"
 
+exposure_tier = "drawer-secondary"
 [capability.felices_multilingual_svg_plates]
 surface   = "public-ui"
 selector  = "#focalPlateFrame"
@@ -505,6 +567,7 @@ handler   = "renderLocalizedFelicesPlateCardHtml"
 test_file = "mostrador/felices_i18n.test.mjs"
 test_name = "SLICE_R3_03_04_bn_bd_localized_svg_plate_spanish_label_and_dicha_consistency"
 
+exposure_tier = "drawer-secondary"
 [capability.evangelios_unified_header_and_print]
 surface       = "public-ui"
 release_stage = "draft"
@@ -514,6 +577,7 @@ handler       = "renderEvangeliosStageCardHtml"
 test_file     = "mostrador/evangelios.test.mjs"
 test_name     = "R45_SLICE_178_all_52_evangelios_plates_bijective_and_zero_raw_slugs"
 
+exposure_tier = "draft-maintainer-gated"
 [capability.onomasticon_explorer]
 surface   = "public-ui"
 selector  = "#studyOnomasticonExplorerHost"
@@ -522,6 +586,7 @@ handler   = "hydrateOnomasticonAndUbsPanels"
 test_file = "mostrador/estudio.test.mjs"
 test_name = "SLICE_R2_B02_B03_B04_ubs_6_traditions_and_onomasticon_explorer_zero_inline_styles"
 
+exposure_tier = "drawer-secondary"
 [capability.ubs_six_traditions_comparator]
 surface   = "public-ui"
 selector  = "#studyUbsComparatorHost"
@@ -530,6 +595,7 @@ handler   = "renderUbsSixTraditionsComparatorHtml"
 test_file = "mostrador/estudio.test.mjs"
 test_name = "SLICE_R2_B02_B03_B04_ubs_6_traditions_and_onomasticon_explorer_zero_inline_styles"
 
+exposure_tier = "drawer-secondary"
 [capability.vault_storage_manager]
 surface   = "public-ui"
 selector  = "#vaultStorageManagerHost"
@@ -538,6 +604,7 @@ handler   = "hydrateVaultStorageManagerPanel"
 test_file = "mostrador/vault_idb_v2ld.test.mjs"
 test_name = "SLICE_R2_B05_B06_B08_vault_delete_quota_chunk_progress_and_24_pack_manager"
 
+exposure_tier = "drawer-secondary"
 [capability.editorial_provenance_card]
 surface   = "public-ui"
 selector  = "#editorialProvenanceCardHost"
@@ -546,6 +613,7 @@ handler   = "renderEditorialProvenanceCardHtml"
 test_file = "mostrador/tribunal_packs_crypto.test.mjs"
 test_name = "SLICE_R2_B07_B08_provenance_integrity_card_and_support_contact_honeypot_dialog"
 
+exposure_tier = "drawer-secondary"
 [capability.support_contact_dialog]
 surface   = "public-ui"
 selector  = "#footerContactBtn"
@@ -554,6 +622,7 @@ handler   = "bindSupportContactDialog"
 test_file = "mostrador/tribunal_packs_crypto.test.mjs"
 test_name = "SLICE_R2_B07_B08_provenance_integrity_card_and_support_contact_honeypot_dialog"
 
+exposure_tier = "drawer-secondary"
 [capability.surface_slot_compositor]
 surface   = "public-ui"
 selector  = "#sovereignGlobalDrawersHost"
@@ -562,6 +631,7 @@ handler   = "enforceSubtractiveSlotOwnership"
 test_file = "web/surface_compositor_r9.test.mjs"
 test_name = "SLICE_R9_01: SURFACE_SLOT_MANIFEST and resolveActiveWorkDrawerContext cover all 12 subtabs and 3 works"
 
+exposure_tier = "drawer-secondary"
 [capability.multi_work_drawer_context]
 surface   = "public-ui"
 selector  = "#sovereignWorkTabs"
@@ -570,6 +640,7 @@ handler   = "resolveActiveWorkDrawerContext"
 test_file = "web/surface_compositor_r9.test.mjs"
 test_name = "SLICE_R9_01: SURFACE_SLOT_MANIFEST and resolveActiveWorkDrawerContext cover all 12 subtabs and 3 works"
 
+exposure_tier = "drawer-secondary"
 [capability.unified_sauvola_photocopy]
 surface   = "public-ui"
 selector  = "#photocopyResilienceUnifiedSection"
@@ -578,6 +649,7 @@ handler   = "resolveUnifiedSauvolaState"
 test_file = "web/subtractive_parity_r9.test.mjs"
 test_name = "SLICE_R9_06_07: drawer_print < 1000 LOC, SSOT A4/Letter, Sauvola unified, Braille B70 preview"
 
+exposure_tier = "drawer-secondary"
 [capability.unified_ed25519_authenticity]
 surface   = "public-ui"
 selector  = "#shareAuthenticityUnifiedCard"
@@ -586,6 +658,7 @@ handler   = "hydrateShareAndAuditDrawerPanel"
 test_file = "web/subtractive_parity_r9.test.mjs"
 test_name = "SLICE_R9_08_09: Share Vault promoted above accordions, Workshop audit moved to Revisión, Formulaic parallels exposed"
 
+exposure_tier = "drawer-secondary"
 [capability.formulaic_parallels_study]
 surface   = "public-ui"
 selector  = "#studyFormulaicParallelsHost"
@@ -594,6 +667,7 @@ handler   = "renderFormulaicParallelsCardHtml"
 test_file = "web/subtractive_parity_r9.test.mjs"
 test_name = "SLICE_R9_08_09: Share Vault promoted above accordions, Workshop audit moved to Revisión, Formulaic parallels exposed"
 
+exposure_tier = "drawer-secondary"
 [capability.braille_b70_live_preview]
 surface   = "public-ui"
 selector  = "#duplexAssistantPanel"
@@ -602,6 +676,7 @@ handler   = "renderUnifiedBraillePreviewHtml"
 test_file = "web/subtractive_parity_r9.test.mjs"
 test_name = "SLICE_R9_06_07: drawer_print < 1000 LOC, SSOT A4/Letter, Sauvola unified, Braille B70 preview"
 
+exposure_tier = "drawer-secondary"
 [capability.creator_commitment_merkle_verifier]
 surface   = "public-ui"
 intent    = "share"
@@ -611,6 +686,7 @@ handler   = "verifyBerneCommitmentSha256"
 test_file = "web/apple_hig_parity_r10.test.mjs"
 test_name = "SLICE_R10_08_09: Berne 15.3 SHA-256 WebCrypto verifier, dist_merkle_roots, Onomasticon and llms link"
 
+exposure_tier = "drawer-secondary"
 [capability.workshop_5_langs_switcher]
 surface   = "public-ui"
 intent    = "workshop"
@@ -620,6 +696,7 @@ handler   = "renderWorkshop5LangsSwitcherHtml"
 test_file = "web/apple_hig_parity_r10.test.mjs"
 test_name = "SLICE_R10_10: Workshop 5 CC0 langs switcher, single tech details, and zero false Audio/Rung jargon"
 
+exposure_tier = "drawer-secondary"
 [capability.typology_print_integrated_picker]
 surface   = "public-ui"
 intent    = "print"
@@ -629,6 +706,7 @@ handler   = "renderCompactTypologySelectorHtml"
 test_file = "web/subtractive_parity_r9.test.mjs"
 test_name = "SLICE_R9_06_07: drawer_print < 1000 LOC, SSOT A4/Letter, Sauvola unified, Braille B70 preview"
 
+exposure_tier = "drawer-secondary"
 [capability.field_pdfs_and_worker_progress]
 surface   = "public-ui"
 intent    = "print"
@@ -638,6 +716,7 @@ handler   = "renderFieldRefugeAndChecklistHtml"
 test_file = "web/subtractive_parity_r9.test.mjs"
 test_name = "SLICE_R9_06_07: drawer_print < 1000 LOC, SSOT A4/Letter, Sauvola unified, Braille B70 preview"
 
+exposure_tier = "drawer-secondary"
 [capability.zstd_fonts_and_matrix_tier0_vault]
 surface   = "public-ui"
 intent    = "share"
@@ -647,6 +726,7 @@ handler   = "renderVaultStorageManagerHtml"
 test_file = "web/vault_idb_v2ld.test.mjs"
 test_name = "SLICE_R2_B05_B06_B08_vault_delete_quota_chunk_progress_and_24_pack_manager"
 
+exposure_tier = "drawer-secondary"
 [capability.llms_dual_head_explorer]
 surface   = "public-ui"
 intent    = "share"
@@ -656,86 +736,103 @@ handler   = "hydrateShareAndAuditDrawerPanel"
 test_file = "web/apple_hig_parity_r10.test.mjs"
 test_name = "SLICE_R10_08_09: Berne 15.3 SHA-256 WebCrypto verifier, dist_merkle_roots, Onomasticon and llms link"
 
+exposure_tier = "drawer-secondary"
 [capability.cli_compile]
 surface        = "editor-cli"
 cli_subcommand = "compile"
 reason         = "Compilador completo de PDFs/imposición Typst en disco; exclusivo de ekovoz-cli."
 
+exposure_tier = "editor-cli"
 [capability.cli_verify_canon]
 surface        = "editor-cli"
 cli_subcommand = "verify-canon"
 reason         = "Auditoría estructural del canon y artefactos en disco; exclusivo de ekovoz-cli."
 
+exposure_tier = "editor-cli"
 [capability.cli_pack]
 surface        = "editor-cli"
 cli_subcommand = "pack"
 reason         = "Empaquetador batch de archivos .eco/.ekpack; exclusivo de ekovoz-cli."
 
+exposure_tier = "editor-cli"
 [capability.cli_new_lang]
 surface        = "editor-cli"
 cli_subcommand = "new-lang"
 reason         = "Generador de andamiaje de idioma en filesystem local; exclusivo de ekovoz-cli."
 
+exposure_tier = "editor-cli"
 [capability.cli_new_work]
 surface        = "editor-cli"
 cli_subcommand = "new-work"
 reason         = "Generador de nueva obra en obras/<work_id>; exclusivo de ekovoz-cli."
 
+exposure_tier = "editor-cli"
 [capability.cli_audit_external]
 surface        = "editor-cli"
 cli_subcommand = "audit-external"
 reason         = "Auditoría forense USFM externo con 8 candados y Versification Sniffing; exclusivo de ekovoz-cli."
 
+exposure_tier = "editor-cli"
 [capability.cli_apply_patch]
 surface        = "editor-cli"
 cli_subcommand = "apply-patch"
 reason         = "Escritura directa al ledger CRDT .wal.jsonl en disco; exclusivo de ekovoz-cli."
 
+exposure_tier = "editor-cli"
 [capability.cli_export_taller]
 surface        = "editor-cli"
 cli_subcommand = "export-taller"
 reason         = "Materialización por lotes CC0-1.0 en dist/taller; exclusivo de ekovoz-cli."
 
+exposure_tier = "editor-cli"
 [capability.cli_fetch_sources]
 surface        = "editor-cli"
 cli_subcommand = "fetch-sources"
 reason         = "Sincronización de tablas e índices en polyglot_matrix/; exclusivo de ekovoz-cli."
 
+exposure_tier = "editor-cli"
 [capability.cli_build_matrix]
 surface        = "editor-cli"
 cli_subcommand = "build-matrix"
 reason         = "Constructor de Matriz Original 15-col sobre 66 libros; exclusivo de ekovoz-cli."
 
+exposure_tier = "editor-cli"
 [capability.cli_stealth_pack]
 surface        = "editor-cli"
 cli_subcommand = "stealth-pack"
 reason         = "Empaquetador Clase C con nombres neutros de los 80 bloques; exclusivo de ekovoz-cli."
 
+exposure_tier = "editor-cli"
 [capability.cli_verify_pack]
 surface        = "editor-cli"
 cli_subcommand = "verify-pack"
 reason         = "Verificador criptográfico/preimage Ed25519 en disco; exclusivo de ekovoz-cli."
 
+exposure_tier = "editor-cli"
 [capability.cli_modernize_audit]
 surface        = "editor-cli"
 cli_subcommand = "modernize-audit"
 reason         = "Triaje de legibilidad intergeneracional por lotes USFM; exclusivo de ekovoz-cli."
 
+exposure_tier = "editor-cli"
 [capability.cli_elicit_session]
 surface        = "editor-cli"
 cli_subcommand = "elicit-session"
 reason         = "Generador offline de sesiones socráticas de 15 escenas; exclusivo de ekovoz-cli."
 
+exposure_tier = "editor-cli"
 [capability.cli_apply_cascade]
 surface        = "editor-cli"
 cli_subcommand = "apply-cascade"
 reason         = "Mutación transaccional L1-L5 con rollback SHA-256 sobre .usfm; exclusivo de ekovoz-cli."
 
+exposure_tier = "editor-cli"
 [capability.cli_sync_js_constants]
 surface        = "editor-cli"
 cli_subcommand = "sync-js-constants"
 reason         = "Generador de constantes compartidas Rust->JS ESM en build time; exclusivo de ekovoz-cli."
 
+exposure_tier = "editor-cli"
 [capability.compass_concordance_tab]
 surface       = "public-ui"
 release_stage = "public"
@@ -745,6 +842,7 @@ handler       = "searchMultiBookConcordance"
 test_file     = "mostrador/concordance_and_audit_r8.test.mjs"
 test_name     = "SLICE_R12_08: Compass exposes btnCompassTabConcordance, 66 Libros label, and multi-book vault search finds PSA 23:1 from GEN"
 
+exposure_tier = "drawer-secondary"
 [capability.hig_switch_toggles]
 surface       = "public-ui"
 release_stage = "public"
@@ -753,3 +851,27 @@ module        = "mostrador/drawer_print.js"
 handler       = "renderPrintDrawerPanelsSyncInDrawer"
 test_file     = "mostrador/dosis_editions_v2i.test.mjs"
 test_name     = "SLICE_EKO_V3UX_15_stealth_mode_css_paged_media_and_local_dist_fallback"
+
+exposure_tier = "drawer-secondary"
+
+[capability.print_first_stage_ribbon]
+surface       = "public-ui"
+exposure_tier = "primary-stage"
+release_stage = "public"
+intent        = "print"
+selector      = "#printFirstStageRibbon"
+module        = "mostrador/print_stage_ribbon.js"
+handler       = "renderPrintStageRibbonHtml"
+test_file     = "tests/web/print_first_stage_r13.test.mjs"
+test_name     = "SLICE_R13_04_05: web/index.html expone #printFirstStageRibbon arriba del pliegue y delega clics dose1..dose3 y tiers"
+
+[capability.tanda_progress_cancel]
+surface       = "public-ui"
+exposure_tier = "drawer-secondary"
+release_stage = "public"
+intent        = "print"
+selector      = "#tandaWorkerProgressWrap"
+module        = "mostrador/print_guide_and_progress.js"
+handler       = "renderTandaProgressCardHtml"
+test_file     = "tests/web/print_first_stage_r13.test.mjs"
+test_name     = "SLICE_R13_03: print_guide_and_progress renders k/66 progress, cancel button, natural stages, and 3-step guide"

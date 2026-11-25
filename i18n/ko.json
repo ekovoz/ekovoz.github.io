@@ -121,7 +121,7 @@
     "mostrador.nav.prev": "Previous chapter",
     "mostrador.nav.next": "Next chapter",
     "mostrador.step2.placeholder": "성경 권과 장 (예: 요 3:16 또는 시 23)",
-    "mostrador.heading": "Polyglot Bible Reader (66 Books · Printable & Shareable PDFs)",
+    "mostrador.heading": "내 언어로 성경 인쇄 또는 다운로드",
     "seal.unavailable": "Translation not yet available",
     "mostrador.step2.open_compass": "Go",
     "mostrador.oral_portico.toggle": "🗣️ 읽기",
@@ -280,6 +280,13 @@
     "study.acc.tskFormulaic": "🔗 TSK 관주 및 구약↔신약 병행구",
     "study.acc.orthography": "✍️ 표기법 비교 및 어휘 보존",
     "study.acc.typology": "🌐 언어 유형 프로필 및 편집 전통",
-    "corpus.search.placeholder": "7,164개 언어 검색 (ISO, 자칭, 국가)..."
+    "corpus.search.placeholder": "7,164개 언어 검색 (ISO, 자칭, 국가)...",
+    "mostrador.preview_hint": "인쇄할 본문 실시간 미리보기",
+    "printStage.heading": "단계별 PDF 인쇄 또는 다운로드",
+    "printStage.dose1": "1. 이 장 PDF",
+    "printStage.dose2": "2. 소책자 / 성경 권 PDF",
+    "printStage.dose3": "3. 성경 전체 PDF (66)",
+    "printStage.moreFormats": "용지 크기, 점자 및 오프라인 복사본",
+    "print.btn.cancelJob": "취소"
   }
 }

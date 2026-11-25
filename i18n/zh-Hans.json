@@ -121,7 +121,7 @@
     "mostrador.nav.prev": "Previous chapter",
     "mostrador.nav.next": "Next chapter",
     "mostrador.step2.placeholder": "书卷与章节（如 约 3:16 或 诗 23）",
-    "mostrador.heading": "Polyglot Bible Reader (66 Books · Printable & Shareable PDFs)",
+    "mostrador.heading": "用您的语言打印或下载圣经",
     "seal.unavailable": "Translation not yet available",
     "mostrador.step2.open_compass": "Go",
     "mostrador.oral_portico.toggle": "🗣️ 导读",
@@ -280,6 +280,13 @@
     "study.acc.tskFormulaic": "🔗 TSK 串珠与旧约↔新约平行",
     "study.acc.orthography": "✍️ 正字法比较与词汇守恒",
     "study.acc.typology": "🌐 语言类型学与编辑传统",
-    "corpus.search.placeholder": "搜索 7,164 种语言 (ISO、自称、国家)..."
+    "corpus.search.placeholder": "搜索 7,164 种语言 (ISO、自称、国家)...",
+    "mostrador.preview_hint": "准备打印经文的实时预览",
+    "printStage.heading": "分阶段打印或下载 PDF",
+    "printStage.dose1": "1. 本章 PDF",
+    "printStage.dose2": "2. 小册子 / 书卷 PDF",
+    "printStage.dose3": "3. 完整圣经 PDF (66)",
+    "printStage.moreFormats": "纸张尺寸、盲文与离线副本",
+    "print.btn.cancelJob": "取消"
   }
 }

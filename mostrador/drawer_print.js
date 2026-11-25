@@ -78,6 +78,12 @@ import {
   simulateKanungoSauvolaGeneration,
 } from "./social_and_photocopy_cards.js";
 import { isStealthFilenameActive, resolveSafeDownloadFilename } from "./stealth_filename.js";
+import {
+  bindDose2And3LazySynthLinks,
+  bindNaturalStagePresetsInDrawer,
+  collectBlockAndTandaVerses,
+  executeDose2And3WorkerDispatch,
+} from "./print_guide_and_progress.js";
 import { mountSlotView } from "./surface_compositor.js";
 import {
   encodePaperFormatCode,
@@ -112,59 +118,15 @@ export function renderPrintDrawerPanelsSyncInDrawer(ctx = {}) {
     state.activeBlockNumber = liveBlock.blockNumber || 1;
   }
   syncDose2AndDose3LinksForActiveLang({ state, targetDoc, getEl });
-  for (const [linkId, flag] of [
-    ["linkDose2BlockPdf", "_dose2Bound"],
-    ["linkDose3FullBiblePdf", "_dose3Bound"],
-  ]) {
-    const linkEl = getEl(linkId, targetDoc);
-    if (linkEl && typeof linkEl.addEventListener === "function" && !linkEl[flag]) {
-      linkEl[flag] = true;
-      linkEl.addEventListener("click", async (ev) => {
-        if (linkEl._directSynthesizedClick) return;
-        const curHref = String(linkEl.getAttribute?.("href") || linkEl.href || "");
-        const needsSynthesis =
-          !curHref ||
-          curHref.startsWith("#") ||
-          curHref.startsWith("data:") ||
-          (linkId === "linkDose2BlockPdf"
-            ? !state.dose2ObjectUrl
-            : !state.dose3ObjectUrl || !state._dose3Streamed16Of16);
-        if (needsSynthesis) {
-          ev?.preventDefault?.();
-          if (linkId === "linkDose3FullBiblePdf") {
-            state.fullBible16MacroTandasPlan = planSequential16MacroTandasGeneration({
-              lang: state.effectiveCorpusLang || state.lang || "es",
-              columns: state.columns || 2,
-              fontPt: state.fontSizePt || 9.5,
-              paper: state.paperFormat || "a4",
-              dir: isRtlLocale(state.lang) ? "rtl" : "ltr",
-            });
-            state.generateFull66BookBible = true;
-          }
-          state.lastHydratedWorkerTandaKey = "";
-          try {
-            await hydratePrintDrawerPanels?.(targetDoc);
-          } finally {
-            if (linkId === "linkDose3FullBiblePdf") {
-              state.generateFull66BookBible = false;
-            }
-          }
-          const readyHref =
-            linkId === "linkDose2BlockPdf"
-              ? state.dose2ObjectUrl || String(linkEl.getAttribute?.("href") || linkEl.href || "")
-              : state.dose3ObjectUrl || String(linkEl.getAttribute?.("href") || linkEl.href || "");
-          if (readyHref && !readyHref.startsWith("#") && typeof linkEl.click === "function") {
-            linkEl._directSynthesizedClick = true;
-            try {
-              linkEl.click();
-            } finally {
-              linkEl._directSynthesizedClick = false;
-            }
-          }
-        }
-      });
-    }
-  }
+  bindDose2And3LazySynthLinks({
+    state,
+    targetDoc,
+    getEl,
+    planSequential16MacroTandasGeneration,
+    isRtlLocale,
+    hydratePrintDrawerPanels,
+  });
+  bindNaturalStagePresetsInDrawer({ state, targetDoc, getEl, hydratePrintDrawerPanels });
 
   const stealthActive = isStealthFilenameActive(state);
   const stealthBlkNum = Number(state.activeBlockNumber) || liveBlock.blockNumber || 1;
@@ -781,56 +743,20 @@ export async function hydratePrintDrawerPanelsInDrawer(ctx = {}) {
       if (fullBookVerses.length > 0) {
         state.fullBookVerses = fullBookVerses;
 
-        const blockVerses = [];
-        if (activeBlockSpec) {
-          const normBlockBook = (b) => {
-            const u = String(b || "").trim().toUpperCase();
-            return ({ EZE: "EZK", JOE: "JOL", NAH: "NAM", PHI: "PHP", SOL: "SNG" })[u] || u;
-          };
-          const startB = normBlockBook(activeBlockSpec.startBook);
-          const endB = normBlockBook(activeBlockSpec.endBook);
-          const mtForBlock = resolveMacroTandaForBlock(activeBlockNum);
-          const candidateBooks = Array.isArray(mtForBlock?.booksIncluded)
-            ? mtForBlock.booksIncluded.map(normBlockBook)
-            : [normBlockBook(activeBook)];
-          const sBookIdx = candidateBooks.indexOf(startB);
-          const eBookIdx = candidateBooks.indexOf(endB);
-          const blockBooks = sBookIdx >= 0 && eBookIdx >= sBookIdx
-            ? candidateBooks.slice(sBookIdx, eBookIdx + 1)
-            : [startB, endB].filter(Boolean);
-          for (const bCode of [...new Set(blockBooks)]) {
-            const entries = await fetchBookEntries(bCode);
-            const minCh = bCode === startB ? activeBlockSpec.startChapter : 1;
-            const maxCh = bCode === endB ? activeBlockSpec.endChapter : 999;
-            for (const item of filterBookEntriesRange(entries, bCode, minCh, maxCh, 1, 999)) {
-              blockVerses.push(item);
-            }
-          }
-        }
-        const dose2Payload = blockVerses.length > 0 ? blockVerses : fullBookVerses;
-
-        const tandaVerses = [];
         const targetMacroPlans =
           state.generateFull66BookBible && Array.isArray(state.fullBible16MacroTandasPlan) && state.fullBible16MacroTandasPlan.length === 16
             ? state.fullBible16MacroTandasPlan
             : [activeMacroTanda];
-        const seenBooks = new Set();
-        for (const mtStep of targetMacroPlans) {
-          const macroBooks =
-            Array.isArray(mtStep.booksIncluded) && mtStep.booksIncluded.length > 0
-              ? mtStep.booksIncluded
-              : [activeBook];
-          for (const targetBook of macroBooks) {
-            if (seenBooks.has(targetBook)) continue;
-            seenBooks.add(targetBook);
-            for (const item of await fetchBookEntries(targetBook)) {
-              tandaVerses.push(item);
-            }
-          }
-        }
-        if (tandaVerses.length === 0) {
-          for (const item of fullBookVerses) tandaVerses.push(item);
-        }
+        const { dose2Payload, tandaVerses } = await collectBlockAndTandaVerses({
+          activeBook,
+          activeBlockSpec,
+          activeBlockNumber: activeBlockNum,
+          targetMacroPlans,
+          fullBookVerses,
+          fetchBookEntries,
+          filterBookEntriesRange,
+          resolveMacroTandaForBlock,
+        });
         state.bibleTandaVerses = tandaVerses;
 
         const skipDose2Redundant = Boolean(state.generateFull66BookBible);
@@ -843,65 +769,36 @@ export async function hydratePrintDrawerPanelsInDrawer(ctx = {}) {
             paperCode: encodePaperFormatCode(state.paperFormat || "a4", state.orientation || "portrait"),
           })
           : null;
-        if ((state.activeSubtabBySheet?.print || activePrintSubtab) === "doses" && explicitWorkerReq) {
-          workerWrap?.removeAttribute?.("hidden");
-          workerBar?.setAttribute?.("data-ergos-active-job", "true");
-          if (workerBar) workerBar.value = 35;
-          if (workerLabel) {
-            workerLabel.textContent = String(state.uiLocale || "es").startsWith("en")
-              ? "Preparing PDF sheets in background…"
-              : "Preparando pliegos PDF sin bloqueo…";
-          }
-        }
-        const [dose2Res, dose3Res] = await Promise.all([
-          skipDose2Redundant
-            ? Promise.resolve(null)
-            : dispatchTandaWorkerJob({
-              lang: effectiveLang,
-              book: activeBlockSpec?.startBook || activeBook,
-              chapter: activeBlockSpec?.startChapter || 1,
-              verses: dose2Payload,
-              editionId: activeEditionId,
-              editionRenderSpec: activeRenderSpec,
-              columns: activeCols,
-              fontPt: activeFontPt,
-              paper: state.paperFormat || "a4",
-              orientation: state.orientation || "portrait",
-              includeBoldFont: true,
-              dir,
-              booklet4n: state.foliationMode === "saddle_stitch",
-              maxPagesPerTanda: 0,
-            }),
-          dispatchTandaWorkerJob({
-            lang: effectiveLang,
-            book: state.generateFull66BookBible ? "GEN" : activeMacroTanda.startBook || activeBook,
-            chapter: state.generateFull66BookBible ? 1 : activeMacroTanda.startChapter || 1,
-            verses: tandaVerses,
-            editionId: activeEditionId,
-            editionRenderSpec: activeRenderSpec,
-            columns: activeCols,
-            fontPt: activeFontPt,
-            paper: state.paperFormat || "a4",
-            orientation: state.orientation || "portrait",
-            includeBoldFont: true,
-            dir,
-            booklet4n: true,
-            maxPagesPerTanda: 0,
-          }),
-        ]);
-        if (workerBar) workerBar.value = 100;
-        if (dose2Res?.type === "tanda-offline-font-notice" || dose3Res?.type === "tanda-offline-font-notice") {
-          const noticeEl = getEl("tanda-offline-font-notice", targetDoc);
-          const activeNotice = dose2Res?.type === "tanda-offline-font-notice" ? dose2Res : dose3Res;
-          mountOfflineFontNoticeWithLocalImporter(noticeEl, activeNotice, {
-            targetDoc,
-            onImported: () => hydratePrintDrawerPanels?.(targetDoc),
-          });
-        }
-        storeWorkerTandaPdfResult(state, "dose2", dose2Res, 1);
-        storeWorkerTandaPdfResult(state, "dose3", dose3Res, targetMacroPlans.length);
-        syncDose2AndDose3LinksForActiveLang({ state, targetDoc, getEl });
-        renderPrintDrawerPanelsSyncInDrawer(ctx);
+        await executeDose2And3WorkerDispatch({
+          state,
+          effectiveLang,
+          activeBook,
+          activeBlockSpec,
+          activeMacroTanda,
+          targetMacroPlans,
+          dose2Payload,
+          tandaVerses,
+          activeEditionId,
+          activeRenderSpec,
+          activeCols,
+          activeFontPt,
+          dir,
+          skipDose2Redundant,
+          dispatchTandaWorkerJob,
+          workerWrap,
+          workerBar,
+          workerLabel,
+          explicitWorkerReq,
+          activePrintSubtab,
+          mountOfflineFontNoticeWithLocalImporter,
+          storeWorkerTandaPdfResult,
+          syncDose2AndDose3LinksForActiveLang,
+          renderPrintDrawerPanelsSyncInDrawer,
+          hydratePrintDrawerPanels: ctx.hydratePrintDrawerPanels,
+          ctx,
+          targetDoc,
+          getEl,
+        });
       }
     } catch {
       // Non-fatal fallback

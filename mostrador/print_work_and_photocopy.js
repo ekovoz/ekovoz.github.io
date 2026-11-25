@@ -11,6 +11,7 @@ import { buildEditionRenderSpecBytes16, resolveNumericEditionId } from "./dosis_
 import { isRtlLocale } from "./i18n.js";
 import { mountOfflineFontNoticeWithLocalImporter } from "./offline_font_bundle.js";
 import { resolveEditionSubstrateForProfile } from "./print_config_projector.js";
+import { renderPhysicalPrintGuideHtml } from "./print_guide_and_progress.js";
 import { resolveActiveWorkDrawerContext } from "./projection_contract.js";
 import { updatePrintConfig } from "./state_store.js";
 import { resolveSafeDownloadFilename } from "./stealth_filename.js";
@@ -584,7 +585,14 @@ export function renderDuplexAssistantCardHtml({
     isEn,
     nemethEnabled: nemethChecked,
   });
-  return `<div class="mostrador-duplex-assistant" data-edition="${escapeHtml(slug)}" data-foliation-mode="${escapeHtml(foliation.mode || "saddle_stitch")}" data-binding-edge="${escapeHtml(foliation.bindingEdge || "left")}" data-flip-edge="${escapeHtml(flipEdgeInfo.edge || "short")}"><strong>${duplexHeader}</strong><p class="duplex-summary-text">${duplexBody}</p>${nemethToggleHtml}${braillePreviewHtml}${multiSigHtml}${macroTandas16Html}</div>`;
+  const physicalGuideHtml = renderPhysicalPrintGuideHtml(
+    foliation?.paper || "a4",
+    isEn ? "en" : "es",
+  );
+  const techDetailsTitle = isEn
+    ? "Technical booklet & imposition details"
+    : "Detalles técnicos de pliegos e imposición";
+  return `<div class="mostrador-duplex-assistant" data-edition="${escapeHtml(slug)}" data-foliation-mode="${escapeHtml(foliation.mode || "saddle_stitch")}" data-binding-edge="${escapeHtml(foliation.bindingEdge || "left")}" data-flip-edge="${escapeHtml(flipEdgeInfo.edge || "short")}">${physicalGuideHtml}<details class="tech-details"><summary>${techDetailsTitle}</summary><strong>${duplexHeader}</strong><p class="duplex-summary-text">${duplexBody}</p></details>${nemethToggleHtml}${braillePreviewHtml}${multiSigHtml}${macroTandas16Html}</div>`;
 }
 
 export function renderStationeryPostcardHtml({

@@ -121,7 +121,7 @@
     "mostrador.nav.prev": "Previous chapter",
     "mostrador.nav.next": "Next chapter",
     "mostrador.step2.placeholder": "Livro e capítulo (ex. Jo 3:16 ou Sl 23)",
-    "mostrador.heading": "Polyglot Bible Reader (66 Books · Printable & Shareable PDFs)",
+    "mostrador.heading": "Imprima ou baixe a Bíblia no seu idioma",
     "seal.unavailable": "Translation not yet available",
     "mostrador.step2.open_compass": "Go",
     "mostrador.oral_portico.toggle": "🗣️ Guia",
@@ -280,6 +280,13 @@
     "study.acc.tskFormulaic": "🔗 Referências TSK e Paralelos AT↔NT",
     "study.acc.orthography": "✍️ Comparador Ortográfico e Conservação",
     "study.acc.typology": "🌐 Perfil Tipológico e Tradição Editorial",
-    "corpus.search.placeholder": "Buscar 7.164 idiomas (ISO, autônimo, país)..."
+    "corpus.search.placeholder": "Buscar 7.164 idiomas (ISO, autônimo, país)...",
+    "mostrador.preview_hint": "Prévia ao vivo do texto para imprimir",
+    "printStage.heading": "Baixe ou imprima em PDF por etapas",
+    "printStage.dose1": "1. PDF deste capítulo",
+    "printStage.dose2": "2. Livreto / Livro PDF",
+    "printStage.dose3": "3. Bíblia Completa PDF (66)",
+    "printStage.moreFormats": "Papel, Braille e cópia offline",
+    "print.btn.cancelJob": "Cancelar"
   }
 }

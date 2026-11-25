@@ -637,6 +637,7 @@ function executeWasmStreamingPdfSession(
   } = {},
   emitProgress = () => { },
   fontFile = "CharisSIL-Regular.ttf",
+  checkCancelled = null,
 ) {
   if (
     typeof wasmExports?.wasm_pdf_session_begin !== "function" ||
@@ -758,7 +759,13 @@ function executeWasmStreamingPdfSession(
     let maxObservedRam = 65536;
 
     for (let idx = 0; idx < tandaSlices.length; idx += 1) {
-      const { utf8, bridgeUtf8 } = tandaSlices[idx];
+      if (typeof checkCancelled === "function" && checkCancelled()) {
+        const abortErr = new Error("Tanda PDF job cancelled");
+        abortErr.name = "AbortError";
+        throw abortErr;
+      }
+      const sliceMeta = tandaSlices[idx];
+      const { utf8, bridgeUtf8 } = sliceMeta;
       const tLen = utf8.byteLength;
       const bLen = bridgeUtf8 ? bridgeUtf8.byteLength : 0;
       const tPtr = wasmExports.wasm_alloc(tLen) >>> 0;
@@ -794,6 +801,10 @@ function executeWasmStreamingPdfSession(
           type: "tanda-progress",
           tandaIndex: idx + 1,
           totalTandas: tandaSlices.length,
+          progressBookIndex: sliceMeta.progressBookIndex || idx + 1,
+          progressTotalBooks: sliceMeta.progressTotalBooks || tandaSlices.length,
+          currentBookCode: sliceMeta.currentBookCode || "GEN",
+          estimatedMb: Number(((totalBlobBytes || drainedBytes) / (1024 * 1024)).toFixed(2)),
           pages: pagesEmitted,
           bytes: drainedBytes,
           peakRamBytes: linearRam,
@@ -962,8 +973,18 @@ export function typesetTandaWithCachedWasmSync({
   });
 }
 
+const cancelledWorkerJobIds = new Set();
+
+function makeTandaAbortError() {
+  const err = new Error("Tanda PDF job cancelled");
+  err.name = "AbortError";
+  return err;
+}
+
 export async function runWorkerTandaJob(payload = {}, emitProgress = () => { }) {
   const {
+    jobId = "",
+    signal = null,
     lang = "es",
     script = "",
     book = "GEN",
@@ -1091,6 +1112,20 @@ export async function runWorkerTandaJob(payload = {}, emitProgress = () => { }) 
     },
   );
 
+  const checkCancelled = () => Boolean(signal?.aborted || (jobId && cancelledWorkerJobIds.has(String(jobId))));
+  if (checkCancelled()) throw makeTandaAbortError();
+
+  const distinctBooks = [];
+  const seenBooks = new Set();
+  for (const e of entries) {
+    const bk = String(e.ref || "").trim().split(/\s+/)[0].toUpperCase() || String(book || "GEN").toUpperCase();
+    if (!seenBooks.has(bk)) {
+      seenBooks.add(bk);
+      distinctBooks.push(bk);
+    }
+  }
+  const totalBookCount = Math.max(1, distinctBooks.length);
+
   const tandaSlices = [];
   for (let tIdx = 0; tIdx < totalTandas; tIdx += 1) {
     const slice = entries.slice(tIdx * versesPerTanda, (tIdx + 1) * versesPerTanda);
@@ -1101,7 +1136,15 @@ export async function runWorkerTandaJob(payload = {}, emitProgress = () => { }) 
       bSlice.length > 0
         ? new TextEncoder().encode(bSlice.map((e) => `${e.ref} ${e.text}`).join("\n"))
         : null;
-    tandaSlices.push({ utf8, bridgeUtf8 });
+    const sliceBook = String(slice[0]?.ref || "").trim().split(/\s+/)[0].toUpperCase() || distinctBooks[0] || String(book || "GEN").toUpperCase();
+    const bookOrd = Math.max(1, distinctBooks.indexOf(sliceBook) + 1);
+    tandaSlices.push({
+      utf8,
+      bridgeUtf8,
+      currentBookCode: sliceBook,
+      progressBookIndex: bookOrd,
+      progressTotalBooks: totalBookCount,
+    });
   }
 
   // Cuando hay múltiples tandas (`totalTandas > 1`), ejecutamos `StreamingPdfSession` por `BlobParts[]`
@@ -1128,6 +1171,7 @@ export async function runWorkerTandaJob(payload = {}, emitProgress = () => { }) 
       },
       emitProgress,
       fontFile,
+      checkCancelled,
     );
     if (!streamed || !Array.isArray(streamed.blobParts) || streamed.blobParts.length === 0 || streamed.byteLength === 0) {
       throw new Error(
@@ -1206,6 +1250,10 @@ export async function runWorkerTandaJob(payload = {}, emitProgress = () => { }) 
     type: "tanda-progress",
     tandaIndex: 1,
     totalTandas: 1,
+    progressBookIndex: 1,
+    progressTotalBooks: totalBookCount,
+    currentBookCode: distinctBooks[0] || String(book || "GEN").toUpperCase(),
+    estimatedMb: Number((pdfBytes.byteLength / (1024 * 1024)).toFixed(2)),
     bytes: pdfBytes.byteLength,
     peakRamBytes,
     fontFile,
@@ -1242,14 +1290,24 @@ export async function runWorkerTandaJob(payload = {}, emitProgress = () => { }) 
 
 if (typeof self !== "undefined" && typeof self.addEventListener === "function" && typeof self.postMessage === "function") {
   self.addEventListener("message", async (ev) => {
+    const data = ev?.data || {};
+    if (data.type === "CANCEL_JOB" && data.jobId) {
+      cancelledWorkerJobIds.add(String(data.jobId));
+      return;
+    }
+    const activeJobId = data.jobId ? String(data.jobId) : "";
     try {
-      const result = await runWorkerTandaJob(ev.data || {}, (prog) => self.postMessage(prog));
+      const result = await runWorkerTandaJob(data, (prog) => self.postMessage(prog));
       self.postMessage(result);
     } catch (err) {
       self.postMessage({
         type: "tanda-error",
+        aborted: err?.name === "AbortError",
+        name: err?.name || "Error",
         error: String(err?.message || err),
       });
+    } finally {
+      if (activeJobId) cancelledWorkerJobIds.delete(activeJobId);
     }
   });
 }

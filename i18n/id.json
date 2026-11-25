@@ -121,7 +121,7 @@
     "mostrador.nav.prev": "Previous chapter",
     "mostrador.nav.next": "Next chapter",
     "mostrador.step2.placeholder": "Kitab & pasal (mis. Yoh 3:16 atau Mzm 23)",
-    "mostrador.heading": "Polyglot Bible Reader (66 Books · Printable & Shareable PDFs)",
+    "mostrador.heading": "Cetak atau Unduh Alkitab dalam Bahasa Anda",
     "seal.unavailable": "Translation not yet available",
     "mostrador.step2.open_compass": "Go",
     "mostrador.oral_portico.toggle": "🗣️ Pandu",
@@ -280,6 +280,13 @@
     "study.acc.tskFormulaic": "🔗 Referensi Silang TSK & Paralel PL↔PB",
     "study.acc.orthography": "✍️ Pembanding Ortografi & Konservasi Leksikal",
     "study.acc.typology": "🌐 Profil Tipologis & Tradisi Editorial",
-    "corpus.search.placeholder": "Cari 7.164 bahasa (ISO, autonim, negara)..."
+    "corpus.search.placeholder": "Cari 7.164 bahasa (ISO, autonim, negara)...",
+    "mostrador.preview_hint": "Pratinjau langsung teks siap cetak",
+    "printStage.heading": "Cetak atau unduh PDF bertahap",
+    "printStage.dose1": "1. PDF Pasal Ini",
+    "printStage.dose2": "2. Buklet / Kitab PDF",
+    "printStage.dose3": "3. Alkitab Lengkap PDF (66)",
+    "printStage.moreFormats": "Ukuran kertas, Braille & offline",
+    "print.btn.cancelJob": "Batal"
   }
 }

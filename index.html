@@ -323,9 +323,26 @@
     <section id="bibleSovereignSection" class="bible-stage-card" data-active-work="true" data-roll-mode="chapter"
         data-cowan-focal-groups="4" data-audio-bytes="0" data-jpg-bytes="0">
         <div>
-            <h2 id="bibleMainHeading" data-i18n="mostrador.heading">Bible Reader (66 Books)</h2>
+            <h2 id="bibleMainHeading" data-i18n="mostrador.heading">Print or Download the Bible in Your Language</h2>
+            <p id="bibleLivePreviewHint" class="stage-preview-hint" data-i18n="mostrador.preview_hint">Live preview of the passage ready to print</p>
             <span id="epistemicStatusSeal" class="uls-badge" data-seal="seal.unavailable"
                 data-i18n="seal.unavailable">Translation not yet available</span>
+        </div>
+        <div id="printFirstStageRibbon" class="print-stage-ribbon" role="region"
+            aria-label="Download Printable Bible PDF by Stage" data-print-tier="1">
+            <div class="print-stage-grid">
+                <button type="button" id="btnStagePdfDose1" class="print-stage-btn is-primary"
+                    data-print-stage-action="dose1"><strong data-i18n="printStage.dose1">1. This Chapter PDF</strong><span>JHN 1 · &lt;= 12 pp.</span></button>
+                <button type="button" id="btnStagePdfDose2" class="print-stage-btn is-primary"
+                    data-print-stage-action="dose2"><strong data-i18n="printStage.dose2">2. Booklet / Book PDF</strong><span>Block B01 · 2-sided</span></button>
+                <button type="button" id="btnStagePdfDose3" class="print-stage-btn is-primary"
+                    data-print-stage-action="dose3"><strong data-i18n="printStage.dose3">3. Full Bible PDF (66)</strong><span>14+2 print editions</span></button>
+            </div>
+            <div class="print-stage-footer">
+                <span class="print-stage-sub" data-i18n="printStage.heading">Print or download PDF by stage</span>
+                <button type="button" id="btnStagePdfMoreFormats" class="uls-chip print-stage-more-btn"
+                    data-print-stage-action="open-print" data-i18n="printStage.moreFormats">Paper size, Braille &amp; offline copy</button>
+            </div>
         </div>
 
         <!-- Step 1: Compact Single-Row Spatial Navigation Above the Fold (y <= 116px) -->
@@ -822,7 +839,9 @@
             <div id="tandaWorkerProgressWrap" class="ek-mt-xs" data-print-subtab-panel="doses" hidden>
                 <progress id="tandaWorkerProgress" max="100" value="0">0%</progress>
                 <span id="tandaWorkerProgressLabel" class="ek-meta"></span>
+                <button type="button" id="btnCancelTandaPdfJob" class="uls-chip print-cancel-btn" data-i18n="print.btn.cancelJob" hidden>Cancel</button>
             </div>
+            <div id="printNaturalStagesHost" data-print-subtab-panel="doses"></div>
             <div id="printFieldPdfsHost" data-print-subtab-panel="doses"></div>
             <div id="bibleEditionsCatalogGrid" data-print-subtab-panel="doses">
             </div>

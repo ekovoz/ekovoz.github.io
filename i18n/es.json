@@ -121,7 +121,7 @@
     "mostrador.nav.prev": "Capítulo anterior",
     "mostrador.nav.next": "Capítulo siguiente",
     "mostrador.step2.placeholder": "Libro y capítulo (ej. Jn 3:16 o Sal 23)",
-    "mostrador.heading": "Ekovoz — Lectura y Estudio Bíblico Políglota (66 Libros)",
+    "mostrador.heading": "Imprime o descarga la Biblia en tu idioma",
     "seal.unavailable": "Traducción aún no disponible",
     "mostrador.step2.open_compass": "Ir",
     "mostrador.oral_portico.toggle": "🗣️ Guía",
@@ -280,6 +280,13 @@
     "study.acc.tskFormulaic": "🔗 Referencias TSK y Paralelos AT↔NT",
     "study.acc.orthography": "✍️ Comparador Ortográfico y Conservación",
     "study.acc.typology": "🌐 Perfil Tipológico y Tradición Editorial",
-    "corpus.search.placeholder": "Buscar 7,164 idiomas (ISO, autónimo, país)..."
+    "corpus.search.placeholder": "Buscar 7,164 idiomas (ISO, autónimo, país)...",
+    "mostrador.preview_hint": "Vista previa en vivo del texto que vas a imprimir",
+    "printStage.heading": "Descarga o imprime en PDF por etapas",
+    "printStage.dose1": "1. PDF de este capítulo",
+    "printStage.dose2": "2. Cuadernillo / Libro PDF",
+    "printStage.dose3": "3. Biblia Completa PDF (66)",
+    "printStage.moreFormats": "Tamaño, Braille y copia sin internet",
+    "print.btn.cancelJob": "Cancelar"
   }
 }

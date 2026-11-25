@@ -335,3 +335,21 @@ export function projectStoreAttributesToDom(state = {}, targetDoc) {
   return true;
 }
 
+/**
+ * Jerarquía visual de cromo 98% impresor / 2% estudioso-traductor (`D4-R13`, `SLICE-R13-06`).
+ * Todas las gavetas permanecen 100% accesibles en DOM; las de uso diario se enfatizan sobre las de taller.
+ */
+export const CHROME_DRAWER_PRIORITY = Object.freeze({
+  print: "primary",
+  share: "primary",
+  study: "expert",
+  field: "expert",
+  improve: "expert",
+});
+
+export function resolveDrawerChromePriority(sheetKey = "") {
+  const clean = String(sheetKey || "").trim().toLowerCase();
+  return CHROME_DRAWER_PRIORITY[clean] || "expert";
+}
+
+

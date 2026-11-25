@@ -88,6 +88,8 @@ const SHELL_CORE_ASSETS = [
   "/mostrador/sister_works_controller.js",
   "/mostrador/social_and_photocopy_cards.js",
   "/mostrador/print_config_projector.js",
+  "/mostrador/print_guide_and_progress.js",
+  "/mostrador/print_stage_ribbon.js",
   "/mostrador/print_work_and_photocopy.js",
   "/mostrador/stage_dom_bindings.js",
   "/mostrador/state_store.js",

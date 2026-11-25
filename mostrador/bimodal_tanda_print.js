@@ -364,32 +364,80 @@ export function typesetTandaPdfBytes({
  * `Web Worker` real (`new Worker(new URL("./tanda_print_worker.js", import.meta.url), { type: "module" })`)
  * en navegador, o ejecuta `runWorkerTandaJob` directamente en entornos sin API DOM `Worker`.
  */
-export async function dispatchTandaWorkerJob(payload = {}, onProgress = () => { }) {
+export async function dispatchTandaWorkerJob(payload = {}, onProgressOrOpts = () => { }) {
+  const isFn = typeof onProgressOrOpts === "function";
+  const onProgress = isFn
+    ? onProgressOrOpts
+    : typeof onProgressOrOpts?.onProgress === "function"
+      ? onProgressOrOpts.onProgress
+      : () => { };
+  const signal = (!isFn && onProgressOrOpts?.signal) || payload?.signal || null;
+  const jobId =
+    String(payload?.jobId || `tanda-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`);
+  if (signal?.aborted) {
+    const abortErr = new Error("Tanda PDF job cancelled");
+    abortErr.name = "AbortError";
+    throw abortErr;
+  }
+  const cleanPayload = { ...(payload || {}), jobId };
+  delete cleanPayload.signal;
+
   if (typeof globalThis.Worker === "function" && typeof globalThis.window !== "undefined") {
     return new Promise((resolve, reject) => {
       const worker = new globalThis.Worker(new URL("./tanda_print_worker.js", import.meta.url), {
         type: "module",
       });
+      let settled = false;
       const cleanup = () => {
+        if (signal && typeof signal.removeEventListener === "function") {
+          try {
+            signal.removeEventListener("abort", onAbort);
+          } catch {
+            // Non-fatal
+          }
+        }
         try {
           worker.terminate();
         } catch {
           // Non-fatal
         }
       };
+      const onAbort = () => {
+        if (settled) return;
+        settled = true;
+        try {
+          worker.postMessage({ type: "CANCEL_JOB", jobId });
+        } catch {
+          // Non-fatal
+        }
+        cleanup();
+        const abortErr = new Error("Tanda PDF job cancelled");
+        abortErr.name = "AbortError";
+        reject(abortErr);
+      };
+      if (signal && typeof signal.addEventListener === "function") {
+        signal.addEventListener("abort", onAbort, { once: true });
+      }
       worker.addEventListener("message", (ev) => {
+        if (settled) return;
         const msg = ev?.data || {};
         if (msg.type === "tanda-progress") {
           onProgress(msg);
         } else if (msg.type === "tanda-complete" || msg.type === "tanda-offline-font-notice") {
+          settled = true;
           cleanup();
           resolve(msg);
         } else if (msg.type === "tanda-error") {
+          settled = true;
           cleanup();
-          reject(new Error(msg.error || "Worker tanda job failed"));
+          const err = new Error(msg.error || "Worker tanda job failed");
+          if (msg.aborted || msg.name === "AbortError") err.name = "AbortError";
+          reject(err);
         }
       });
       worker.addEventListener("error", (err) => {
+        if (settled) return;
+        settled = true;
         cleanup();
         reject(err instanceof Error ? err : new Error(String(err?.message || "Worker error")));
       });
@@ -400,11 +448,11 @@ export async function dispatchTandaWorkerJob(payload = {}, onProgress = () => { 
           : extractMetaFederationBase();
       worker.postMessage({
         ...(fedBase ? { federationBaseUrl: fedBase } : {}),
-        ...payload,
+        ...cleanPayload,
       });
     });
   }
-  return runWorkerTandaJob(payload, onProgress);
+  return runWorkerTandaJob({ ...cleanPayload, signal }, onProgress);
 }
 
 /**

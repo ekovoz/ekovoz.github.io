@@ -24,6 +24,7 @@ import {
   ordinalOf,
   planBimodalClientPrint,
   planDose1,
+  resolveCanonicalBlockCode,
   syncDose2AndDose3LinksForActiveLang,
 } from "./dosis.js";
 import { projectChapterWithLiveOverlays } from "./drawer_workshop.js";
@@ -33,6 +34,7 @@ import { decodeRfc8878RawZstdFrameJs } from "./offline_mesh.js";
 import { renderOralPorticoWasmConsole } from "./oral_portico_wasm.js";
 import { ReverseOrthographyMap } from "./orthography_wfst.js";
 import { countPdfPages, extractPdfPages } from "./pdf_pages.js";
+import { renderPrintStageRibbonHtml, resolveCorpusPrintTier } from "./print_stage_ribbon.js";
 import { resolveFontFileForLangOrScript } from "./tanda_print_worker.js";
 
 export function renderMostradorViewportFromState({
@@ -77,6 +79,29 @@ export function renderMostradorViewportFromState({
     pericopesRibbon.hidden = !String(ribbonHtml || "").trim();
   }
 
+  const packedBookTiers =
+    res.provenance?.book_epistemic_tiers ||
+    res.chapter?.provenance?.book_epistemic_tiers ||
+    res.bookEpistemicTiers ||
+    null;
+
+  const printStageRibbon = getEl("printFirstStageRibbon", targetDoc);
+  if (printStageRibbon) {
+    const canonicalBlock = resolveCanonicalBlockCode(state.book, state.chapter, state.verse);
+    printStageRibbon.setAttribute?.(
+      "data-print-tier",
+      String(resolveCorpusPrintTier(effectiveLang, packedBookTiers)),
+    );
+    printStageRibbon.innerHTML = renderPrintStageRibbonHtml({
+      lang: effectiveLang,
+      book: state.book,
+      chapter: state.chapter,
+      canonicalBlock,
+      bookEpistemicTiers: packedBookTiers,
+      uiLocale: state.uiLocale || state.lang || "es",
+    });
+  }
+
   const reverseMap = new ReverseOrthographyMap(state.lang, state.orthographyProfile);
   const overlayProj =
     res.status === STATUS.READY && res.chapter
@@ -89,11 +114,6 @@ export function renderMostradorViewportFromState({
   // En `stp` (`Tier 2`), el NT humano verificado (`40_MAT..66_REV`, `book_epistemic_tiers == 0b01`)
   // se renderiza en mostrador monolingüe canónico con sello verificado; el AT (`01_GEN..39_MAL`, `0b10`)
   // se renderiza en Puente Diglósico de 2 columnas.
-  const packedBookTiers =
-    res.provenance?.book_epistemic_tiers ||
-    res.chapter?.provenance?.book_epistemic_tiers ||
-    res.bookEpistemicTiers ||
-    null;
   const bookTierBits = unpackBookEpistemicTier2Bit(packedBookTiers, state.book);
   viewport.setAttribute(
     "data-book-epistemic-tier-bits",

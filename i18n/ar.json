@@ -121,7 +121,7 @@
     "mostrador.nav.prev": "Previous chapter",
     "mostrador.nav.next": "Next chapter",
     "mostrador.step2.placeholder": "السفر والإصحاح (مثال: يو 3:16 أو مز 23)",
-    "mostrador.heading": "Polyglot Bible Reader (66 Books · Printable & Shareable PDFs)",
+    "mostrador.heading": "اطبع الكتاب المقدس أو نزّله بلغتك",
     "seal.unavailable": "Translation not yet available",
     "mostrador.step2.open_compass": "Go",
     "mostrador.oral_portico.toggle": "🗣️ قراءة",
@@ -280,6 +280,13 @@
     "study.acc.tskFormulaic": "🔗 شواهد TSK ومتوازيات العهدين",
     "study.acc.orthography": "✍️ مقارنة الرسم الإملائي وحفظ الألفاظ",
     "study.acc.typology": "🌐 الملف اللغوي والتقليد التحريري",
-    "corpus.search.placeholder": "ابحث في 7,164 لغة (ISO، الاسم الذاتي، البلد)..."
+    "corpus.search.placeholder": "ابحث في 7,164 لغة (ISO، الاسم الذاتي، البلد)...",
+    "mostrador.preview_hint": "معاينة مباشرة للنص الجاهز للطباعة",
+    "printStage.heading": "اطبع أو نزّل ملف PDF على مراحل",
+    "printStage.dose1": "1. PDF هذا الإصحاح",
+    "printStage.dose2": "2. كتيب / سفر PDF",
+    "printStage.dose3": "3. الكتاب المقدس كاملًا PDF (66)",
+    "printStage.moreFormats": "حجم الورق وبرايل والنسخة دون إنترنت",
+    "print.btn.cancelJob": "إلغاء"
   }
 }

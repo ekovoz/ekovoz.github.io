@@ -12,6 +12,7 @@ import {
   isWorkVisible,
   projectStoreAttributesToDom,
   resolveActiveWorkDrawerContext,
+  resolveDrawerChromePriority,
   resolvePublicOrPreviewWork,
   resolveWorkDrawerAdapter,
   syncStickyDrawerContextHeader,
@@ -208,6 +209,8 @@ export function projectSurfaceLayoutFromState(state = {}, rootDoc, getEl) {
     const showDrawersHost = true;
     drawersHost.hidden = !showDrawersHost;
     drawersHost.setAttribute?.("data-inspector-open", hasOpenSheet ? "true" : "false");
+    const isExpertFocus = state.activeIntent === "study" || state.activeIntent === "improve" || state.activeIntent === "field";
+    drawersHost.setAttribute?.("data-chrome-audience", isExpertFocus ? "studio" : "print-first");
   }
 
   for (const [sheetKey, cfg] of Object.entries(HAREL_SHEET_MAP)) {
@@ -221,6 +224,7 @@ export function projectSurfaceLayoutFromState(state = {}, rootDoc, getEl) {
       btn.setAttribute?.("data-open", isOpen ? "true" : "false");
       btn.setAttribute?.("aria-expanded", isOpen ? "true" : "false");
       btn.setAttribute?.("aria-pressed", isOpen ? "true" : "false");
+      btn.setAttribute?.("data-chrome-priority", resolveDrawerChromePriority(sheetKey));
     }
   }
 

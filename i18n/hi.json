@@ -121,7 +121,7 @@
     "mostrador.nav.prev": "Previous chapter",
     "mostrador.nav.next": "Next chapter",
     "mostrador.step2.placeholder": "पुस्तक और अध्याय (जैसे यूहन्ना 3:16 या भजन 23)",
-    "mostrador.heading": "Polyglot Bible Reader (66 Books · Printable & Shareable PDFs)",
+    "mostrador.heading": "अपनी भाषा में बाइबिल प्रिंट या डाउनलोड करें",
     "seal.unavailable": "Translation not yet available",
     "mostrador.step2.open_compass": "Go",
     "mostrador.oral_portico.toggle": "🗣️ पठन",
@@ -280,6 +280,13 @@
     "study.acc.tskFormulaic": "🔗 TSK संदर्भ और पुराना↔नया नियम समानांतर",
     "study.acc.orthography": "✍️ वर्तनी तुलना और शब्द संरक्षण",
     "study.acc.typology": "🌐 भाषायी प्रारूप और संपादकीय परंपरा",
-    "corpus.search.placeholder": "7,164 भाषाएँ खोजें (ISO, स्वनाम, देश)..."
+    "corpus.search.placeholder": "7,164 भाषाएँ खोजें (ISO, स्वनाम, देश)...",
+    "mostrador.preview_hint": "प्रिंट के लिए तैयार पाठ का लाइव पूर्वावलोकन",
+    "printStage.heading": "चरणों में PDF प्रिंट या डाउनलोड करें",
+    "printStage.dose1": "1. इस अध्याय का PDF",
+    "printStage.dose2": "2. पुस्तिका / पुस्तक PDF",
+    "printStage.dose3": "3. संपूर्ण बाइबिल PDF (66)",
+    "printStage.moreFormats": "कागज़ आकार, ब्रेल और ऑफ़लाइन कॉपी",
+    "print.btn.cancelJob": "रद्द करें"
   }
 }

@@ -121,7 +121,7 @@
     "mostrador.nav.prev": "Previous chapter",
     "mostrador.nav.next": "Next chapter",
     "mostrador.step2.placeholder": "Kitap ve bölüm (örn. Yu 3:16 veya Mez 23)",
-    "mostrador.heading": "Polyglot Bible Reader (66 Books · Printable & Shareable PDFs)",
+    "mostrador.heading": "Kutsal Kitabı Kendi Dilinizde Yazdırın veya İndirin",
     "seal.unavailable": "Translation not yet available",
     "mostrador.step2.open_compass": "Go",
     "mostrador.oral_portico.toggle": "🗣️ Oku",
@@ -280,6 +280,13 @@
     "study.acc.tskFormulaic": "🔗 TSK Çapraz Başvurular ve EA↔YA Paralelleri",
     "study.acc.orthography": "✍️ Yazım Karşılaştırıcı ve Sözcük Koruma",
     "study.acc.typology": "🌐 Tipolojik Profil ve Yayın Geleneği",
-    "corpus.search.placeholder": "7.164 dilde ara (ISO, özerk ad, ülke)..."
+    "corpus.search.placeholder": "7.164 dilde ara (ISO, özerk ad, ülke)...",
+    "mostrador.preview_hint": "Yazdırmaya hazır metnin canlı önizlemesi",
+    "printStage.heading": "Aşamalı PDF yazdır veya indir",
+    "printStage.dose1": "1. Bu Bölüm PDF",
+    "printStage.dose2": "2. Kitapçık / Kitap PDF",
+    "printStage.dose3": "3. Tam Kutsal Kitap PDF (66)",
+    "printStage.moreFormats": "Kağıt boyutu, Braille ve çevrimdışı",
+    "print.btn.cancelJob": "İptal"
   }
 }

@@ -121,7 +121,7 @@
     "mostrador.nav.prev": "Previous chapter",
     "mostrador.nav.next": "Next chapter",
     "mostrador.step2.placeholder": "書名と章節（例: ヨハ 3:16 または 詩 23）",
-    "mostrador.heading": "Polyglot Bible Reader (66 Books · Printable & Shareable PDFs)",
+    "mostrador.heading": "あなたの言語で聖書を印刷・ダウンロード",
     "seal.unavailable": "Translation not yet available",
     "mostrador.step2.open_compass": "Go",
     "mostrador.oral_portico.toggle": "🗣️ 朗読",
@@ -280,6 +280,13 @@
     "study.acc.tskFormulaic": "🔗 TSK 相互参照と旧約↔新約並行箇所",
     "study.acc.orthography": "✍️ 正書法比較と語彙保持",
     "study.acc.typology": "🌐 言語類型プロファイルと編集伝統",
-    "corpus.search.placeholder": "7,164言語を検索 (ISO・自称・国名)..."
+    "corpus.search.placeholder": "7,164言語を検索 (ISO・自称・国名)...",
+    "mostrador.preview_hint": "印刷する箇所のライブプレビュー",
+    "printStage.heading": "段階別に PDF を印刷・ダウンロード",
+    "printStage.dose1": "1. この章の PDF",
+    "printStage.dose2": "2. 小冊子 / 書巻 PDF",
+    "printStage.dose3": "3. 全66巻聖書 PDF (66)",
+    "printStage.moreFormats": "用紙サイズ・点字・オフライン版",
+    "print.btn.cancelJob": "キャンセル"
   }
 }
