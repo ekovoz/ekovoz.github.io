@@ -6,7 +6,7 @@
 
 import { escapeHtml } from "./bridge_and_chapter.js";
 import { auditExternalFileClient, runClientExternalAudit8Locks } from "./concordance_search.js";
-import { humanizeUiCopy } from "./human_labels.js";
+import { formatIsoLangPillBadge, humanizeUiCopy } from "./human_labels.js";
 import { renderStpDraftCheckHtml } from "./mejorar.js";
 import {
   buildWorkshopCldfCsvAndJson,
@@ -16,11 +16,11 @@ import {
 } from "./workshop_elicit_and_cldf.js";
 
 const WORKSHOP_CORE_CC0_LANGS = Object.freeze([
-  { code: "es", labelEs: "🇲🇽 Español", labelEn: "🇲🇽 Spanish" },
-  { code: "en", labelEs: "🇺🇸 English", labelEn: "🇺🇸 English" },
-  { code: "stp", labelEs: "🏔️ O'dam (Tepehuano)", labelEn: "🏔️ O'dam (Tepehuano)" },
-  { code: "he", labelEs: "🇮🇱 Hebreo (WLC)", labelEn: "🇮🇱 Hebrew (WLC)" },
-  { code: "grc", labelEs: "🏛️ Griego (SBLGNT)", labelEn: "🏛️ Greek (SBLGNT)" },
+  { code: "es", labelEs: formatIsoLangPillBadge("ES", "Español"), labelEn: formatIsoLangPillBadge("ES", "Spanish") },
+  { code: "en", labelEs: formatIsoLangPillBadge("EN", "English"), labelEn: formatIsoLangPillBadge("EN", "English") },
+  { code: "stp", labelEs: formatIsoLangPillBadge("STP", "O'dam (Tepehuano)"), labelEn: formatIsoLangPillBadge("STP", "O'dam (Tepehuano)") },
+  { code: "he", labelEs: formatIsoLangPillBadge("HE", "Hebreo (WLC)"), labelEn: formatIsoLangPillBadge("HE", "Hebrew (WLC)") },
+  { code: "grc", labelEs: formatIsoLangPillBadge("GRC", "Griego (SBLGNT)"), labelEn: formatIsoLangPillBadge("GRC", "Greek (SBLGNT)") },
 ]);
 
 function resolveWorkshopCatalogLangs(
@@ -310,20 +310,23 @@ export function renderWorkshopAuditSubtabHtml({
     ladderItems: state.celfLadder250 || [],
   });
   const activeVerseKey = String(state.verse || 1);
+  const exportBarHtml =
+    `<div id="workshopDirectExportBar" class="ek-row-wrap ek-mt-sm">` +
+    `<a id="btnExportWorkshopCsv" class="uls-chip ek-btn-link" href="${cldfBundle.csvHref}" download="${escapeHtml(cldfBundle.csvFilename)}">⬇️ ${isEnAudit ? `Export CSV (${cldfBundle.rowCount} rows)` : `Exportar CSV (${cldfBundle.rowCount} filas)`}</a>` +
+    `<a id="btnExportWorkshopCldfJson" class="uls-chip ek-btn-link" href="${cldfBundle.jsonHref}" download="${escapeHtml(cldfBundle.jsonFilename)}">📦 ${isEnAudit ? "Export open word-list JSON" : "Exportar glosario JSON"}</a>` +
+    `</div>`;
   const elicitAndCldfHtml =
+    exportBarHtml +
     `<details id="workshopElicitCldfDetails" class="tech-details ek-mt-sm" data-cldf-rows="${cldfBundle.rowCount}">` +
-    `<summary>📤 ${isEnAudit ? "Field Elicitation Session, Canon Progress & CLDF Export" : "Sesión de Elicitación, Avance Canónico y Exportación CLDF"}</summary>` +
+    `<summary>📤 ${isEnAudit ? "Field Elicitation Session & Register Comparator" : "Sesión de Elicitación en Campo y Registro"}</summary>` +
     renderStpLedgerProgressHtml(state.masterCensusSummary || null, uiLocale) +
-    renderElicitSessionCardHtml(state.celfLadder250 || null, uiLocale) +
+    renderElicitSessionCardHtml(state.celfLadder250 || null, uiLocale, { index: state.elicitSessionIndex || 0, activeBook: state.book || "GEN" }) +
     renderModernizeRegisterDiffHtml({
       modernText: state.lastNavResult?.chapter?.verses?.[activeVerseKey] || "",
       classicText: state.lastNavResult?.bridgeChapter?.verses?.[activeVerseKey] || "",
       uiLocale,
     }) +
-    `<div class="ek-row-wrap ek-mt-xs">` +
-    `<a id="btnExportWorkshopCsv" class="uls-chip ek-btn-link" href="${cldfBundle.csvHref}" download="${escapeHtml(cldfBundle.csvFilename)}">⬇️ ${isEnAudit ? `Export CSV (${cldfBundle.rowCount} rows)` : `Exportar CSV (${cldfBundle.rowCount} filas)`}</a>` +
-    `<a id="btnExportWorkshopCldfJson" class="uls-chip ek-btn-link" href="${cldfBundle.jsonHref}" download="${escapeHtml(cldfBundle.jsonFilename)}">📦 ${isEnAudit ? "Export CLDF JSON" : "Exportar CLDF JSON"}</a>` +
-    `</div></details>`;
+    `</details>`;
   return switcherHtml + coverageSummaryHtml + elicitAndCldfHtml + relocatedAuditHtml + catalogHtml + sanitizedDraftHtml;
 }
 

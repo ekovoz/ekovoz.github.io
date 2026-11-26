@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
-
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -74,7 +73,6 @@ content="27 láminas para imprimir y colorear. Sin registros, sin anuncios. Desc
 </script>
 <link rel="stylesheet" href="./mostrador.css">
 </head>
-
 <body data-intent="read" data-work="biblia" data-overlay-open="false" data-theme="light" data-font-family="serif" data-stealth-mode="false">
 <header id="sovereignTopBar" class="top-bar-shell site-header">
 <div class="top-bar-row">
@@ -199,23 +197,20 @@ orthography</button>
 data-ortho="Fonética" data-ortho-lang="stp" data-ortho-profile="FONETICA_IPA">Everyday orthography
 (WhatsApp)</button>
 <button type="button" id="btnOrthoBnBd" class="uls-chip" data-i18n-autonym="true" data-ortho="bn-BD"
-data-ortho-lang="bn" data-ortho-profile="bn-BD" hidden>🇧🇩 বাংলা বাংলাদেশ (bn-BD · ঈসা মসীহ)</button>
+data-ortho-lang="bn" data-ortho-profile="bn-BD" hidden><span class="ek-iso-tag">BD</span> বাংলা বাংলাদেশ (ঈসা মসীহ)</button>
 <button type="button" id="btnOrthoBnIn" class="uls-chip" data-i18n-autonym="true" data-ortho="bn-IN"
-data-ortho-lang="bn" data-ortho-profile="bn-IN" hidden>🇮🇳 বাংলা ভারত/প্রচলিত (bn-IN · প্রভু
-যীশু)</button>
+data-ortho-lang="bn" data-ortho-profile="bn-IN" hidden><span class="ek-iso-tag">IN</span> বাংলা ভারত/প্রচলিত (প্রভু যীশু)</button>
 <button type="button" id="btnOrthoArbTashkeel" class="uls-chip" data-i18n-autonym="true"
 data-ortho="TASHKEEL_STRIPPED" data-ortho-lang="arb" data-ortho-profile="TASHKEEL_STRIPPED"
 data-ortho-alt-profile="VOWELIZED" hidden>🕌 العربية بدون تشكيل (Tashkeel ↔ Vocalizado)</button>
 <button type="button" id="btnOrthoUznCyrl" class="uls-chip" data-i18n-autonym="true" data-ortho="CYRL"
-data-ortho-lang="uzn" data-ortho-profile="CYRL" data-ortho-alt-profile="LATN" hidden>🇺🇿 Ўзбек Кирилл
-(CYRL ↔ LATN)</button>
+data-ortho-lang="uzn" data-ortho-profile="CYRL" data-ortho-alt-profile="LATN" hidden><span class="ek-iso-tag">UZ</span> Ўзбек Кирилл (CYRL ↔ LATN)</button>
 <button type="button" id="btnOrthoTzmTfng" class="uls-chip" data-i18n-autonym="true" data-ortho="TFNG"
 data-ortho-lang="tzm" data-ortho-profile="TFNG" data-ortho-alt-profile="LATN" hidden>ⵣ ⵜⴰⵎⴰⵣⵉⵖⵜ Tifinagh
 (TFNG ↔ LATN)</button>
 </div>
-<p class="ek-title-sm" data-i18n="corpus.tab.bibles">📖 Bibles &amp; Languages (24)</p>
 <div id="corpusTabPanelBibles" role="region" aria-label="24 Verified Bibles and 7,164 Languages">
-<p id="corpusVerifiedSectionTitle" class="ek-meta ek-mt-xs" data-i18n="corpus.verified.heading">Biblias y porciones verificadas (24)</p>
+<p id="corpusVerifiedSectionTitle" class="ek-title-sm ek-mt-xs" data-i18n="corpus.verified.heading">Biblias verificadas (24)</p>
 <p id="corpusExplorerSectionTitle" class="ek-meta ek-mt-sm" data-i18n="corpus.explorer.heading">Explorador global SIL (7,164 lenguas)</p>
 <div class="ek-mt-sm">
 <input type="search" id="quickLangFilterInput" class="field-search-input"
@@ -228,71 +223,70 @@ data-polyglot-window="true" role="listbox" aria-label="Filtered languages window
 <div id="bibleVerifiedCorpusPills" class="chip-wrap-row" role="group"
 aria-label="24 Verified Bibles and Portions">
 <button type="button" id="quickLangEs" class="uls-chip" data-i18n-autonym="true"
-data-corpus-lang="es">🇲🇽 Español Siglo XXI (66)</button>
+data-corpus-lang="es"><span class="ek-iso-tag">ES</span> Español Siglo XXI (66)</button>
 <button type="button" id="quickLangEs1909" class="uls-chip" data-i18n-autonym="true"
 data-corpus-lang="es-1909">📜 Español Clásica 1909 (66)</button>
 <button type="button" id="quickLangEn" class="uls-chip" data-i18n-autonym="true"
-data-corpus-lang="en">🇺🇸 English KJV (66)</button>
+data-corpus-lang="en"><span class="ek-iso-tag">EN</span> English (66)</button>
 <button type="button" id="quickLangPt" class="uls-chip" data-i18n-autonym="true"
-data-corpus-lang="pt">🇧🇷 Português (66)</button>
+data-corpus-lang="pt"><span class="ek-iso-tag">PT</span> Português (66)</button>
 <button type="button" id="quickLangFr" class="uls-chip" data-i18n-autonym="true"
-data-corpus-lang="fr">🇫🇷 Français (66)</button>
+data-corpus-lang="fr"><span class="ek-iso-tag">FR</span> Français (66)</button>
 <button type="button" id="quickLangDe" class="uls-chip" data-i18n-autonym="true"
-data-corpus-lang="de">🇩🇪 Deutsch (66)</button>
+data-corpus-lang="de"><span class="ek-iso-tag">DE</span> Deutsch (66)</button>
 <button type="button" id="quickLangIt" class="uls-chip" data-i18n-autonym="true"
-data-corpus-lang="it">🇮🇹 Italiano (66)</button>
+data-corpus-lang="it"><span class="ek-iso-tag">IT</span> Italiano (66)</button>
 <button type="button" id="quickLangHe" class="uls-chip" data-i18n-autonym="true"
-data-corpus-lang="he">🕎 עברית WLC+Delitzsch (66)</button>
+data-corpus-lang="he"><span class="ek-iso-tag">HE</span> עברית WLC+Delitzsch (66)</button>
 <button type="button" id="quickLangGrc" class="uls-chip" data-i18n-autonym="true"
-data-corpus-lang="grc">🏛️ Ἑλληνική LXX+SRGNT (66)</button>
+data-corpus-lang="grc"><span class="ek-iso-tag">GRC</span> Ἑλληνική LXX+SRGNT (66)</button>
 <button type="button" id="quickLangAr" class="uls-chip" data-i18n-autonym="true"
-data-corpus-lang="ar">🇸🇦 العربية (66)</button>
+data-corpus-lang="ar"><span class="ek-iso-tag">AR</span> العربية (66)</button>
 <button type="button" id="quickLangFa" class="uls-chip" data-i18n-autonym="true"
-data-corpus-lang="fa">🇮🇷 فارسی (66)</button>
+data-corpus-lang="fa"><span class="ek-iso-tag">FA</span> فارسی (66)</button>
 <button type="button" id="quickLangUr" class="uls-chip" data-i18n-autonym="true"
-data-corpus-lang="ur">🇵🇰 اردو (66)</button>
+data-corpus-lang="ur"><span class="ek-iso-tag">UR</span> اردو (66)</button>
 <button type="button" id="quickLangHi" class="uls-chip" data-i18n-autonym="true"
-data-corpus-lang="hi">🇮🇳 हिन्दी (66)</button>
+data-corpus-lang="hi"><span class="ek-iso-tag">HI</span> हिन्दी (66)</button>
 <button type="button" id="quickLangBn" class="uls-chip" data-i18n-autonym="true"
-data-corpus-lang="bn">🇧🇩 বাংলা (66)</button>
+data-corpus-lang="bn"><span class="ek-iso-tag">BN</span> বাংলা (66)</button>
 <button type="button" id="quickLangId" class="uls-chip" data-i18n-autonym="true"
-data-corpus-lang="id">🇮🇩 Bahasa Indonesia (66)</button>
+data-corpus-lang="id"><span class="ek-iso-tag">ID</span> Bahasa Indonesia (66)</button>
 <button type="button" id="quickLangSw" class="uls-chip" data-i18n-autonym="true"
-data-corpus-lang="sw">🇰🇪 Kiswahili (66)</button>
+data-corpus-lang="sw"><span class="ek-iso-tag">SW</span> Kiswahili (66)</button>
 <button type="button" id="quickLangTr" class="uls-chip" data-i18n-autonym="true"
-data-corpus-lang="tr">🇹🇷 Türkçe (66)</button>
+data-corpus-lang="tr"><span class="ek-iso-tag">TR</span> Türkçe (66)</button>
 <button type="button" id="quickLangRu" class="uls-chip" data-i18n-autonym="true"
-data-corpus-lang="ru">🇷🇺 Русский (66)</button>
+data-corpus-lang="ru"><span class="ek-iso-tag">RU</span> Русский (66)</button>
 <button type="button" id="quickLangZhHans" class="uls-chip" data-i18n-autonym="true"
-data-corpus-lang="zh-Hans">🇨🇳 简体中文 (66)</button>
+data-corpus-lang="zh-Hans"><span class="ek-iso-tag">ZH</span> 简体中文 (66)</button>
 <button type="button" id="quickLangJa" class="uls-chip" data-i18n-autonym="true"
-data-corpus-lang="ja">🇯🇵 日本語 (66)</button>
+data-corpus-lang="ja"><span class="ek-iso-tag">JA</span> 日本語 (66)</button>
 <button type="button" id="quickLangKo" class="uls-chip" data-i18n-autonym="true"
-data-corpus-lang="ko">🇰🇷 한국어 (66)</button>
+data-corpus-lang="ko"><span class="ek-iso-tag">KO</span> 한국어 (66)</button>
 <button type="button" id="quickLangStp" class="uls-chip" data-i18n-autonym="true"
-data-corpus-lang="stp">🏔️ O'dam Tepehuano (27 NT + Taller AT)</button>
+data-corpus-lang="stp"><span class="ek-iso-tag">STP</span> O'dam Tepehuano (27 NT + Taller AT)</button>
 <button type="button" id="quickLangArp" class="uls-chip" data-i18n-autonym="true"
-data-corpus-lang="arp">🪶 Arapaho (Porción)</button>
+data-corpus-lang="arp"><span class="ek-iso-tag">ARP</span> Arapaho (Porción)</button>
 <button type="button" id="quickLangBre" class="uls-chip" data-i18n-autonym="true"
-data-corpus-lang="bre">🌊 Brezhoneg (Porción)</button>
+data-corpus-lang="bre"><span class="ek-iso-tag">BRE</span> Brezhoneg (Porción)</button>
 <button type="button" id="quickLangCha" class="uls-chip" data-i18n-autonym="true"
-data-corpus-lang="cha">🌺 Chamorro (Porción)</button>
+data-corpus-lang="cha"><span class="ek-iso-tag">CHA</span> Chamorro (Porción)</button>
 </div>
 <div id="corpusWorkLanguagesBar" class="chip-wrap-row ek-mt-xs" role="group"
 aria-label="Sister Work Editions (Evangelios and Felices)">
 <button type="button" id="quickWorkLangGn" class="uls-chip" data-i18n-autonym="true"
-data-corpus-lang="gn" data-work-scope="evangelios" hidden>🇵🇾 Avañe'ẽ Guaraní (gn ·
-Evangelios)</button>
+data-corpus-lang="gn" data-work-scope="evangelios" hidden><span class="ek-iso-tag">GN</span> Avañe'ẽ Guaraní (Evangelios)</button>
 <button type="button" id="quickWorkLangQuc" class="uls-chip" data-i18n-autonym="true"
-data-corpus-lang="quc" data-work-scope="evangelios" hidden>🇬🇹 K'iche' (quc ·
-Evangelios)</button>
+data-corpus-lang="quc" data-work-scope="evangelios" hidden><span class="ek-iso-tag">QUC</span> K'iche' (Evangelios)</button>
 <button type="button" id="quickWorkLangBnBd" class="uls-chip" data-i18n-autonym="true"
-data-corpus-lang="bn-BD" data-work-scope="felices">🇧🇩 বাংলা বাংলাদেশ (bn-BD ·
-Felices)</button>
+data-corpus-lang="bn-BD" data-work-scope="felices"><span class="ek-iso-tag">BN-BD</span> বাংলা বাংলাদেশ (Felices)</button>
 <button type="button" id="quickWorkLangBnIn" class="uls-chip" data-i18n-autonym="true"
-data-corpus-lang="bn-IN" data-work-scope="felices">🇮🇳 বাংলা ভারত (bn-IN · Felices)</button>
+data-corpus-lang="bn-IN" data-work-scope="felices"><span class="ek-iso-tag">BN-IN</span> বাংলা ভারত (Felices)</button>
 </div>
-<div id="bibleGeoFunnel" class="geo-funnel-row" aria-label="Geographic 3-Tap Funnel">
+<details id="corpusGeoFilterDetails" class="tech-details ek-mt-xs">
+<summary data-i18n-autonym="true">Filtros geográficos SIL (región y país)</summary>
+<div id="bibleGeoFunnel" class="geo-funnel-row ek-mt-xs" aria-label="Geographic 3-Tap Funnel">
 <select id="bibleSelectRegion" aria-label="World Region">
 <option value="americas-mesoamerica" data-i18n="region.americas-mesoamerica">Mesoamerica
 &amp;
@@ -364,11 +358,11 @@ Southeast Asia</option>
 <option value="kgv">Kalamang (kgv · Draft)</option>
 </select>
 </div>
+</details>
 </div>
 </div>
 </details>
 </header>
-
 <section id="bibleSovereignSection" class="bible-stage-card" data-active-work="true" data-roll-mode="chapter"
 data-cowan-focal-groups="4" data-audio-bytes="0" data-jpg-bytes="0">
 <div class="stage-heading-row">
@@ -387,7 +381,6 @@ data-print-stage-action="dose1" data-i18n="printStage.dose1">🖨️ Print · PD
 data-print-stage-action="open-print" data-i18n="printStage.moreFormats">Formats…</button>
 </div>
 </div>
-
 <!-- Step 1: Compact Single-Row Spatial Navigation Above the Fold (y <= 116px) -->
 <div id="bibleSpatialNav" class="spatial-nav-bar" aria-label="Book and Chapter Navigator">
 <button type="button" id="btnPrevChapter" class="spatial-nav-btn spatial-nav-arrow"
@@ -403,23 +396,18 @@ data-i18n="mostrador.oral_portico.toggle" data-i18n-aria-label="mostrador.oral_p
 data-i18n-attr="aria-label:mostrador.oral_portico.aria;title:mostrador.oral_portico.aria">🗣️
 Listen</button>
 </div>
-
 <div id="bibleOralPorticoBanner" class="oral-portico-banner" data-audio-bytes="0" hidden>
 </div>
-
 <!-- External Paratextual Pericopes & Synoptic Parallels Ribbon (D5-A+ / D1-A++) -->
 <nav id="bibleChapterPericopesRibbon" class="chapter-pericopes-ribbon"
 aria-label="Perícopas y Paralelos Sinópticos del Capítulo" hidden>
 </nav>
-
 <!-- Primary Focal Viewport Above the Fold (y ≈ 116px on 360x740px) -->
 <div id="bibleVerseViewport" class="bible-verse-viewport" data-current-ref="JHN.1" data-lang="es"
 data-register="intergeneracional" data-status="idle">
 <p class="bible-verse-line" data-i18n="mostrador.status.loading">Loading passage…</p>
 </div>
-
 <div id="stage-action"></div>
-
 <dialog id="bibleCoordinateCompassModal" aria-label="Tactile 66-Book Compass">
 <div class="modal-header">
 <h3 class="modal-title" data-i18n="mostrador.step2.title">Compass &amp; Search</h3>
@@ -501,7 +489,6 @@ data-i18n="trail.creacion">Creation (Gen 1)</button>
 </div>
 </dialog>
 </section>
-
 <main class="container" id="felicesSovereignSection" data-active-work="false" hidden>
 <section id="felicesStageDiagnostic">
 <div>
@@ -515,24 +502,24 @@ Resource</span>
 <div id="felicesDichasAndPlatesBar">
 <select id="felicesLangSelect" hidden aria-label="Idioma de Los Felices"
 data-i18n-attr="aria-label:felices.langSelectAria">
-<option value="es" selected>🇲🇽 Español (es)</option>
-<option value="en">🇺🇸 English (en)</option>
-<option value="pt">🇧🇷 Português (pt)</option>
-<option value="fr">🇫🇷 Français (fr)</option>
-<option value="it">🇮🇹 Italiano (it)</option>
-<option value="id">🇮🇩 Bahasa Indonesia (id)</option>
-<option value="tr">🇹🇷 Türkçe (tr)</option>
-<option value="ru">🇷🇺 Русский (ru)</option>
-<option value="zh-Hans">🇨🇳 简体中文 (zh-Hans)</option>
-<option value="ja">🇯🇵 日本語 (ja)</option>
-<option value="ko">🇰🇷 한국어 (ko)</option>
-<option value="hi">🇮🇳 हिन्दी (hi)</option>
-<option value="bn">🇧🇩 বাংলা (bn)</option>
-<option value="bn-BD">🇧🇩 বাংলা বাংলাদেশ (bn-BD)</option>
-<option value="bn-IN">🇮🇳 বাংলা ভারত (bn-IN)</option>
-<option value="ar">🇸🇦 العربية (ar)</option>
-<option value="ur">🇵🇰 اردو (ur)</option>
-<option value="fa">🇮🇷 فارسی (fa)</option>
+<option value="es" selected>Español (es)</option>
+<option value="en">English (en)</option>
+<option value="pt">Português (pt)</option>
+<option value="fr">Français (fr)</option>
+<option value="it">Italiano (it)</option>
+<option value="id">Bahasa Indonesia (id)</option>
+<option value="tr">Türkçe (tr)</option>
+<option value="ru">Русский (ru)</option>
+<option value="zh-Hans">简体中文 (zh-Hans)</option>
+<option value="ja">日本語 (ja)</option>
+<option value="ko">한국어 (ko)</option>
+<option value="hi">हिन्दी (hi)</option>
+<option value="bn">বাংলা (bn)</option>
+<option value="bn-BD">বাংলা বাংলাদেশ (bn-BD)</option>
+<option value="bn-IN">বাংলা ভারত (bn-IN)</option>
+<option value="ar">العربية (ar)</option>
+<option value="ur">اردو (ur)</option>
+<option value="fa">فارسی (fa)</option>
 </select>
 <select id="felicesDichaSelect" aria-label="12 Dichas de Los Felices">
 <option value="1">Dicha 1 · Mt 5:1 (Jesús sube al Monte)</option>
@@ -654,7 +641,6 @@ data-i18n="felices.offlineBadge">100% offline and screen-to-camera transferable<
 Matthew 5. Free to print, color, and share.</p>
 </section>
 </main>
-
 <section id="evangeliosSovereignSection" class="container" data-active-work="false" hidden>
 <div>
 <h2 id="evangeliosMainHeading">🌅 Los Evangelios · 52
@@ -662,13 +648,13 @@ Láminas</h2>
 <span id="evangeliosDraftPreviewBadge" class="uls-badge" data-preview-badge="true" hidden>🧪 Borrador ·
 Vista previa interna</span>
 <select id="evangeliosLangSelect" aria-label="Idioma de Los Evangelios" hidden>
-<option value="es" selected>🇲🇽 Español (es)</option>
-<option value="en">🇺🇸 English (en)</option>
-<option value="pt">🇧🇷 Português (pt)</option>
-<option value="fr">🇫🇷 Français (fr)</option>
-<option value="quc">🇬🇹 K'iche' (quc)</option>
-<option value="gn">🇵🇾 Avañe'ẽ Guaraní (gn)</option>
-<option value="stp">🏔️ O'dam Tepehuano (stp)</option>
+<option value="es" selected>Español (es)</option>
+<option value="en">English (en)</option>
+<option value="pt">Português (pt)</option>
+<option value="fr">Français (fr)</option>
+<option value="quc">K'iche' (quc)</option>
+<option value="gn">Avañe'ẽ Guaraní (gn)</option>
+<option value="stp">O'dam Tepehuano (stp)</option>
 </select>
 </div>
 <div id="evangeliosQuarterTabs" role="tablist" aria-label="Liturgical Quarters">
@@ -691,7 +677,6 @@ W40–52</button>
 <div id="evangeliosActivePlateCard" data-evangelios-id="s01">
 </div>
 </section>
-
 <!-- Global Harel Drawers Host (Shared across La Biblia, Los Felices, and Los Evangelios · D8-B+) -->
 <div id="mobileSheetBackdrop" class="mobile-sheet-backdrop" hidden></div>
 <section id="sovereignGlobalDrawersHost" data-global-harel-host="true">
@@ -719,7 +704,6 @@ data-i18n="mostrador.door.improve">🌱 3. Workshop (L1–L5)</strong></button>
 aria-expanded="false" aria-controls="bibleShareAndAuditSheet"><strong
 data-i18n="mostrador.door.share">📲 4. Share Offline</strong></button>
 </nav>
-
 <!-- Drawer 1: 15-Column Word-by-Word Study (Lazy-loaded via estudio.js) -->
 <section id="bibleEasyDrawerPanel" class="apple-sheet" data-sheet="study" data-strong-id="G3056" hidden>
 <h3 class="sr-only" data-i18n="study.title">15-Column Word-by-Word Study
@@ -750,7 +734,7 @@ hidden>
 <div id="studyOnomasticonExplorerHost"></div>
 </details>
 <details id="studyRealiaAccordion" class="r9-stratum-accordion" data-study-subtab-panel="rosetta" hidden>
-<summary data-i18n="study.acc.realia">🏺 Cultural Realia &amp; Metrology (1,800)</summary>
+<summary data-i18n="study.acc.realia">🏺 Biblical Culture, Objects &amp; Measures (1,800)</summary>
 <div id="realiaMetrologyStratumCard"></div>
 </details>
 <details id="studyTskFormulaicAccordion" class="r9-stratum-accordion" data-study-subtab-panel="rosetta"
@@ -798,7 +782,6 @@ hidden>
 <div id="bibleBranchAndTypologyPanel"></div>
 </details>
 </section>
-
 <!-- Drawer 2: Print Settings & 14 Canonical PDF Editions -->
 <section id="biblePrintEditionsSheet" class="apple-sheet" data-sheet="print" hidden>
 <h3 class="sr-only" data-i18n="mostrador.door.print">🖨️ 2. Print &amp; 14
@@ -815,9 +798,16 @@ aria-pressed="false">🖨️ 2. Imposition &amp; Duplex</button>
 data-print-subtab-btn="stationery" data-i18n="print.subtab.stationery" aria-selected="false"
 aria-pressed="false">🎨 3. Stationery A6 &amp; Copy Quality</button>
 </nav>
-<!-- Post-Fixation 1-Row Tri-Column Paper Dispenser (Dose 1, Dose 2, Dose 3 · D5-R38) -->
+<!-- Consolidado HIG7: 1 selector de alcance + 1 acción primaria visible (`SLICE-EKO-HIG7-07`) -->
 <div id="mostradorDoseCards" class="mostrador-dose-grid" data-print-subtab-panel="doses"
 aria-label="Choose printable dose">
+<label class="ek-row-wrap ek-mb-sm" for="doseScopeSelect"><span class="ek-meta" data-i18n-autonym="true">Alcance / Scope:</span>
+<select id="doseScopeSelect" class="ek-select-compact">
+<option value="1" selected>Pasaje actual (~4 hojas)</option>
+<option value="2">Sección o libro completo</option>
+<option value="3">Biblia completa (66 libros)</option>
+</select>
+</label>
 <div class="dose-card" data-dose="1">
 <div class="dose-card-meta">
 <strong data-i18n="dose.1.title">Dose 1 · Sheets around this verse</strong>
@@ -827,16 +817,16 @@ printable sheets with the exact pages (~35 KB)</p>
 <button type="button" id="btnDose1Sheets" class="btn-modal-action dose-card-cta"
 data-i18n="dose.1.cta">🖨️ 4 Sheets (PDF)</button>
 </div>
-<div class="dose-card" data-dose="2">
+<div class="dose-card" data-dose="2" hidden>
 <div class="dose-card-meta">
 <strong data-i18n="dose.2.title">Dose 2 · Study Booklet (Block)</strong>
 <p data-i18n="dose.2.subtitle">
 Canonical block booklet ready to fold &amp; staple (~120 KB)</p>
 </div>
-<a id="linkDose2BlockPdf" href="#biblePrintEditionsSheet" download="ekovoz-es-B65.pdf"
+<a id="linkDose2BlockPdf" href="#biblePrintEditionsSheet" download="ekovoz-es-section.pdf"
 class="btn-modal-secondary dose-card-cta" data-i18n="dose.2.cta">📘 Block PDF</a>
 </div>
-<div class="dose-card" data-dose="3">
+<div class="dose-card" data-dose="3" hidden>
 <div class="dose-card-meta">
 <strong data-i18n="dose.3.title">Dose 3 · Complete Bible (66 Books)</strong>
 <p data-i18n="dose.3.subtitle">Full
@@ -864,11 +854,8 @@ data-worker-active="false" hidden>
 <button type="button" id="btnCancelTandaPdfJob" class="uls-chip print-cancel-btn"
 data-i18n="print.btn.cancelJob" hidden>Cancel</button>
 </div>
-<details id="printStagePresetsDetails" class="tech-details" data-print-subtab-panel="doses">
-<summary class="tech-details-summary" data-i18n-autonym="true">📚 Etapas rápidas y folletos listos</summary>
-<div id="printNaturalStagesHost"></div>
-<div id="printFieldPdfsHost"></div>
-</details>
+<div id="printNaturalStagesHost" data-print-subtab-panel="doses"></div>
+<div id="printFieldPdfsHost" data-print-subtab-panel="doses"></div>
 <div id="bibleEditionsCatalogGrid" data-print-subtab-panel="doses">
 </div>
 <div id="bibleKindleConfigurator" class="kindle-configurator" data-print-subtab-panel="imposition"
@@ -905,20 +892,12 @@ aria-pressed="false">♿ Braille B70 (.brf)</button>
 <label class="hig-toggle-row"><input type="checkbox" id="kindleDuplexToggle" class="hig-switch" checked>
 <span id="kindleDuplexLabelText" data-i18n="dose.1.duplex_label">Double-sided printing
 (duplex)</span></label>
-<output id="kindleBudgetOutput">9.5pt · 2 col · Portrait · A4 (58
+<output id="kindleBudgetOutput" data-print-tool="layout">9.5pt · 2 col · Portrait · A4 (58
 cpl)</output>
 </div>
 <div id="printTypologyBridgeHost" data-print-subtab-panel="imposition"></div>
-<div data-print-subtab-panel="imposition">
-<button type="button" id="btnCalculateImposition" class="uls-chip" data-print-tool="imposition"
-data-i18n="print.btn.imposition">📐
-Calculate Booklet Folding</button>
-<button type="button" id="btnCalculateLayout" class="uls-chip" data-print-tool="layout"
-data-i18n="print.btn.layout">📏 Check Page
-Margins (A4 / Letter)</button>
-</div>
 <div id="duplexAssistantPanel" data-print-subtab-panel="imposition"></div>
-<div id="impositionBookletPreviewHost" data-print-subtab-panel="imposition"></div>
+<div id="impositionBookletPreviewHost" data-print-subtab-panel="imposition" data-print-tool="imposition"></div>
 <div id="stationeryCardPanel" data-print-subtab-panel="stationery"></div>
 <section id="photocopyResilienceUnifiedSection" class="photocopy-unified-card"
 data-print-subtab-panel="stationery">
@@ -930,7 +909,6 @@ data-min-stroke-pt="0.75">3ª Gen · Sauvola k=0.25 · ≥0.75 pt · Δχ=0</spa
 <div id="editorialGraphicsPhotocopyHost" data-print-subtab-panel="stationery"></div>
 </section>
 </section>
-
 <!-- Drawer 3: Community Review & Patch Workshop (Lazy-loaded via mejorar.js) -->
 <section id="bibleFieldWorkshopSheet" class="apple-sheet" data-sheet="field" hidden>
 <nav id="workshopHarelSubtabsBar" class="subtabs-bar" role="tablist" aria-label="Field Workshop Subtabs">
@@ -961,7 +939,6 @@ placeholder="Search O'dam, Spanish, or Strong ID...">
 <section id="tier3aDialectContinuumPanel" aria-label="Tier 3A Dialect Continuums"></section>
 </div>
 </section>
-
 <!-- Drawer 4: Offline Sharing, Optical LT Fountain & Save for Offline Use -->
 <section id="bibleShareAndAuditSheet" class="apple-sheet" data-sheet="share" hidden>
 <h3 class="sr-only" data-i18n="mostrador.door.share">📲 4. Share Offline
@@ -1016,12 +993,13 @@ Camera off. Tap «Receive with Camera» to scan QR-Beam frames offline.</div>
 <div id="opticalReceiverRxPanel" data-dosis-subtab-panel="pdf" hidden></div>
 <section id="shareAuthenticityUnifiedCard" class="ek-card" data-dosis-subtab-panel="graphics"
 data-slot-order="1" data-unified-authenticity-card="true" hidden>
-<details id="shareProBovedaDetails" class="r9-stratum-accordion" data-pro-boveda="true">
-<summary>🔐 <span data-i18n="share.auth.unifiedTitle">Verifiable Editorial Certificate</span></summary>
-<div class="ek-row-between ek-mb-sm ek-mt-xs">
-<button type="button" id="btnVerifyEd25519Signature" class="uls-chip" data-dosis-subtab-panel="graphics"
+<div class="ek-row-between ek-mb-sm">
+<strong data-i18n="share.auth.unifiedTitle">Verifiable Editorial Certificate</strong>
+<button type="button" id="btnVerifyEd25519Signature" class="btn-modal-action" data-dosis-subtab-panel="graphics"
 data-i18n="share.btn.verifySig" hidden>🔐 Verify Authentic Editorial Signature</button>
 </div>
+<details id="shareProBovedaDetails" class="r9-stratum-accordion" data-pro-boveda="true">
+<summary data-i18n-autonym="true">Verificación avanzada y auditoría</summary>
 <div id="editorialAuditStatusPanel" data-dosis-subtab-panel="graphics" hidden class="ek-status-panel">
 </div>
 <div id="editorialProvenanceCardHost" data-dosis-subtab-panel="graphics" hidden></div>
@@ -1030,7 +1008,6 @@ data-i18n="share.btn.verifySig" hidden>🔐 Verify Authentic Editorial Signature
 <div id="shareOpenGraphCardPanel" data-dosis-subtab-panel="graphics" data-slot-order="0" hidden></div>
 </section>
 </section>
-
 <dialog id="previewModal">
 <div class="modal-header">
 <h3 class="modal-title" id="previewModalTitle" data-i18n="felices.previewModalTitle">Muestra de Láminas para
@@ -1060,7 +1037,6 @@ aria-label="Lámina 3"></button>
 data-i18n="felices.closeBtn">Cerrar</button>
 </div>
 </dialog>
-
 <dialog id="plateModal">
 <div class="modal-header">
 <h3 class="modal-title" id="plateModalTitle" data-i18n="felices.plateModalTitle">Vista Previa en Alta
@@ -1074,15 +1050,12 @@ Resolución</h3>
 data-i18n="felices.closeBtn">Cerrar</button>
 </div>
 </dialog>
-
-
 <footer id="siteGlobalFooter" class="site-footer">
 <span class="site-footer-note" data-i18n="footer.open_license">CC0 1.0 Public Domain · Zero trackers ·
 Offline-capable</span>
 <button type="button" id="footerContactBtn" class="uls-chip footer-contact-btn"
 data-i18n="felices.contactBtn">Contact, Collaboration &amp; Support</button>
 </footer>
-
 <dialog id="supportContactDialog" aria-label="Report an Issue or Feedback">
 <div class="modal-header">
 <h3 class="modal-title" id="supportContactTitle" data-i18n="support.dialog_title">Report an Issue or
@@ -1092,10 +1065,7 @@ aria-label="Cerrar">✕</button>
 </div>
 <div id="supportContactDialogBody" class="support-dialog-body"></div>
 </dialog>
-
 <div id="toastNotification" class="toast" role="status" aria-live="polite"></div>
-
 <script type="module" src="mostrador.js"></script>
 </body>
-
 </html>

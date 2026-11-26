@@ -469,4 +469,28 @@ export function resolveCliSurfaceKind(commandName = "") {
   return hit ? { command: key, ...hit } : { command: key, kind: "cli-ci-only", surface: "ci" };
 }
 
+/**
+ * Contrato vinculante de revelación en 2 Capas (D1-HIG7 / ARB-EKOVOZ-140).
+ * Capa 1: flujo esencial con 1 dueño por intención y 1 acción primaria visible.
+ * Capa 2: 1 inspector técnico contextual por vista (`maxProdDetails = 18`).
+ */
+export const INTENT_LAYER_CONTRACT = Object.freeze({
+  maxProdDetails: 18,
+  requireInteractiveFlow: true,
+  intents: Object.freeze({
+    read: Object.freeze({ primaryOwner: "bibleVerseViewport", inspectorDrawer: "bibleOralPorticoBanner", singlePrimaryCta: true }),
+    study: Object.freeze({ primaryOwner: "bibleEasyDrawerPanel", inspectorDrawer: "studyDeepCorpusMetricsDetails", singlePrimaryCta: true }),
+    print: Object.freeze({ primaryOwner: "biblePrintEditionsSheet", inspectorDrawer: "printEditorialPreviewsDetails", singlePrimaryCta: true }),
+    workshop: Object.freeze({ primaryOwner: "bibleFieldWorkshopSheet", inspectorDrawer: "tallerCc0DownloadsDetails", singlePrimaryCta: true }),
+    share: Object.freeze({ primaryOwner: "bibleShareAndAuditSheet", inspectorDrawer: "shareProBovedaDossiersDetails", singlePrimaryCta: true }),
+  }),
+});
+
+export function validateTwoLayerContract(detailsCount = 0, contract = INTENT_LAYER_CONTRACT) {
+  const maxAllowed = Number(contract?.maxProdDetails) || 18;
+  const count = Number(detailsCount) || 0;
+  return { valid: count <= maxAllowed, detailsCount: count, maxProdDetails: maxAllowed };
+}
+
+
 

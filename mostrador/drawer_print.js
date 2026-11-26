@@ -26,6 +26,7 @@ import {
   renderCanonical16MacroTandasSelectorHtml,
   renderImpositionAndLayoutPreviewHtml,
   renderMultiSignatureAndPocketRefugeHtml,
+  renderStaticPdfPortalsHtml,
   resolveCanonicalBlockCode,
   resolveMacroTandaForBlock,
   resolveRegionalPrintDefaults,
@@ -252,16 +253,22 @@ export function renderPrintDrawerPanelsSyncInDrawer(ctx = {}) {
     }
   }
 
+  const scopeSel = getEl("doseScopeSelect", targetDoc);
+  const doseCardsHost = getEl("mostradorDoseCards", targetDoc);
+  const syncDoseScope = () => {
+    const active = String(state.activeDoseScope || scopeSel?.value || "1");
+    state.activeDoseScope = active;
+    doseCardsHost?.querySelectorAll?.("[data-dose]")?.forEach?.((c) => { c.hidden = String(c.getAttribute("data-dose")) !== active; });
+  };
+  if (scopeSel && typeof scopeSel.addEventListener === "function" && !scopeSel._scopeBound) {
+    scopeSel._scopeBound = true;
+    scopeSel.addEventListener("change", syncDoseScope);
+  }
+  syncDoseScope();
   const fieldPdfsHost = getEl("printFieldPdfsHost", targetDoc);
   if (fieldPdfsHost) {
-    const kitsTitle = isEn
-      ? "Goal: Refuge Booklet (4 sheets) & 80 Canonical Blocks · Widow-free PDF with bookmarks"
-      : "Por objetivo: Refugio de Bolsillo (4 hojas) y 80 Bloques · PDF con marcadores y doble cara sin viudas";
-    mountSlotView(fieldPdfsHost, {
-      html: `<details id="printFieldKitsDetails" class="r9-stratum-accordion"><summary>🏕️ ${kitsTitle}</summary>${renderFieldRefugeAndChecklistHtml(state.editorialProfiles || null, state.uiLocale || "es")}</details>${renderEditorialPreviewsAndEngineTelemetryHtml({ editorialProfiles: state.editorialProfiles || null, uiLocale: state.uiLocale || "es" })}`,
-      ownerId: "drawer_print:doses:field_pdfs",
-      orderIndex: 2,
-    });
+    const portalsBarHtml = renderStaticPdfPortalsHtml(state.effectiveCorpusLang || state.lang || "es", state.uiLocale || "es");
+    mountSlotView(fieldPdfsHost, { html: `${portalsBarHtml}${renderFieldRefugeAndChecklistHtml(state.editorialProfiles || null, state.uiLocale || "es")}${renderEditorialPreviewsAndEngineTelemetryHtml({ editorialProfiles: state.editorialProfiles || null, uiLocale: state.uiLocale || "es" })}`, ownerId: "drawer_print:doses:field_pdfs", orderIndex: 2 });
   }
 
   const duplexPanel = getEl("duplexAssistantPanel", targetDoc);

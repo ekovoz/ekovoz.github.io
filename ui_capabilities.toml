@@ -1000,8 +1000,22 @@ handler         = "renderEditorialPreviewsAndEngineTelemetryHtml"
 test_file       = "tests/web/hig6_deep_parity_and_states.test.mjs"
 test_name       = "SLICE_EKO_HIG6_07_08_12: 32 hydrated life_trails anchors, 5 standalone offline readers, 6 preview PNGs and no raw Grambank"
 
+[capability.intent_layer_contract]
+surface         = "public-ui"
+exposure_tier   = "primary-stage"
+release_stage   = "public"
+intent          = "read"
+canonical_owner = "#bibleVerseViewport"
+selector        = "#bibleVerseViewport"
+module          = "mostrador/projection_contract.js"
+handler         = "INTENT_LAYER_CONTRACT"
+test_file       = "tests/web/hig7_intent_parity_and_ergonomics.test.mjs"
+test_name       = "HIG7_SLICE_01_15: Two-layer contract <= 18 details, zero forbidden jargon, and interactive parity"
+
 [intent_contracts]
 max_hops = 2
+max_prod_details = 18
+require_interactive_flow = true
 exit_print = ["print_first_stage_ribbon", "print_unified_options_v3"]
 exit_offline = ["offline_quine_usb", "optical_qr_beam"]
 

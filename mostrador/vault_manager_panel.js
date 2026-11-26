@@ -5,6 +5,7 @@
 // ============================================================================
 
 import { escapeHtml } from "./bridge_and_chapter.js";
+import { formatEditorialTraditionLabel } from "./human_labels.js";
 import { DEEP_PROJECTION_SUBKEYS } from "./projection_contract.js";
 import {
   IDB_STORE_FONTS,
@@ -166,18 +167,20 @@ export function renderVaultStorageManagerHtml({
       ? `<details class="tech-details vault-pack-meta-details" data-pack-meta-details="true">` +
         `<summary>${isEn ? "Edition & verification details" : "Ficha técnica y verificación"}</summary>` +
         `<div class="ek-meta ek-stack-xs">` +
-        `<span><strong>${isEn ? "Versification" : "Versificación"}:</strong> ${escapeHtml(String(meta.versificationTradition || "eng"))} · ` +
+        `<span><strong>${isEn ? "Canon tradition" : "Edición"}:</strong> ${escapeHtml(formatEditorialTraditionLabel(meta.versificationTradition || "eng", isEn ? "en" : "es"))} · ` +
         `<strong>${isEn ? "Variants" : "Variantes"}:</strong> ${escapeHtml(Array.isArray(meta.diachronicVariants) && meta.diachronicVariants.length ? meta.diachronicVariants.join(", ") : "canonical")} · ` +
-        `<strong>${isEn ? "Epistemic tiers" : "Niveles epistémicos"}:</strong> ${escapeHtml(String(meta.bookEpistemicTiersLen ?? 0))}</span>` +
+        `<strong>${isEn ? "Epistemic tiers" : "Niveles epistémicos"}:</strong> ${escapeHtml(String(meta.bookEpistemicTiersLen ?? 0))} · subsettedBiblical=${Boolean(meta.subsettedBiblical)}</span>` +
         (meta.merkleRootSha256 ? `<span><strong>Merkle:</strong> <code>${escapeHtml(String(meta.merkleRootSha256).slice(0, 16))}…</code></span>` : "") +
         (meta.contentDigestSha256 ? `<span><strong>Digest:</strong> <code>${escapeHtml(String(meta.contentDigestSha256).slice(0, 16))}…</code></span>` : "") +
+        (meta.origin_url ? `<span><strong>origin_url:</strong> <code>${escapeHtml(String(meta.origin_url))}</code></span>` : "") +
+        (meta.metaZstdSha256 ? `<span><strong>metaZstdSha256:</strong> <code>${escapeHtml(String(meta.metaZstdSha256).slice(0, 16))}…</code></span>` : "") +
         `</div></details>`
       : "";
     return (
       `<li class="vault-pack-row${isMatrix ? " is-matrix-highlight" : ""}" data-vault-pack="${escapeHtml(langCode)}" data-vault-file="${escapeHtml(fileKey)}" data-vault-search="${escapeHtml(searchHay)}" data-vault-installed="${downloaded}"${priorityTag ? ` data-vault-priority="${escapeHtml(priorityTag)}"` : ""}>` +
       `<div class="vault-pack-info">` +
       `<strong>${escapeHtml(humanTitle)}</strong> ` +
-      `<span class="uls-badge">${escapeHtml(statusBadge)}</span>` +
+      `<span class="uls-badge bicanonical-badge">${escapeHtml(statusBadge)}</span>` +
       (prog && prog.pct > 0 && prog.pct < 100
         ? `<progress class="vault-chunk-progress" data-chunk-progress="${prog.pct}" max="100" value="${prog.pct}">${prog.pct}%</progress>`
         : "") +
@@ -226,7 +229,7 @@ export function renderVaultStorageManagerHtml({
     ["he", "עברית (he)"],
     ["stp", "O'dam (stp)"],
   ]
-    .map(([lc, label]) => `<a class="uls-chip ek-btn-link" href="obras/biblia/packs/${lc}/lector_offline_${lc}.html">${escapeHtml(label)}</a>`)
+    .map(([lc, label]) => `<a class="uls-chip ek-badge-compact" href="obras/biblia/packs/${lc}/lector_offline_${lc}.html">${escapeHtml(label)}</a>`)
     .join(" ");
 
   return (

@@ -587,15 +587,41 @@ export function ensureDirectEditionsAndGrambankControls(ctx = {}) {
   const typoId = state.activeTypologyId || defaultTypo.typologyId;
   state.activeBranchId = branchId;
   state.activeTypologyId = typoId;
+  const orderedCatalog = [...CANONICAL_14_PLUS_2_EDITIONS_CATALOG].sort((a, b) => {
+    const primaryOrder = { "01_1col_lectura": 0, "02_2col_pastoral": 1, "03_3col_bolsillo": 2 };
+    const pa = Object.prototype.hasOwnProperty.call(primaryOrder, a.id) ? primaryOrder[a.id] : 10;
+    const pb = Object.prototype.hasOwnProperty.call(primaryOrder, b.id) ? primaryOrder[b.id] : 10;
+    return pa !== pb ? pa - pb : String(a.id).localeCompare(String(b.id));
+  });
+  const moreOptionsHtml = orderedCatalog
+    .map((ed) => {
+      const cleanName = String(ed.label || ed.id).replace(/\s*\(\s*\d+\s*col[^)]*\)/i, "").trim();
+      return `<option value="${escapeHtml(ed.id)}"${ed.id === activeEd ? " selected" : ""}>${escapeHtml(cleanName)}</option>`;
+    })
+    .join("");
   wrap.setAttribute?.("data-auto-typology", "true");
   wrap.innerHTML =
     `<div id="activeEditionImpositionSummary" class="ek-row-wrap" data-active-edition-id="${escapeHtml(activeEd)}">` +
     `<span><strong>${isEn ? "Active edition:" : "Edición activa:"}</strong> ${escapeHtml(activeBadge)}</span>` +
     `</div>` +
+    `<label class="ek-row-wrap ek-mt-xs" for="printMoreFormatsSelect"><span class="ek-meta">${isEn ? "More formats (16):" : "Más formatos (16):"}</span>` +
+    `<select id="printMoreFormatsSelect" class="ek-select-compact">${moreOptionsHtml}</select></label>` +
     `<button type="button" id="btnApplyGrambankToPrint" class="uls-chip" data-grambank-apply-print="true" data-branch-id="${escapeHtml(branchId)}" data-typology-id="${escapeHtml(typoId)}">` +
     `${isEn ? "🌐 Auto-adjust layout for language" : "🌐 Autoajustar diseño para esta lengua"}</button>`;
   if (isNewWrap && typeof cfgHost.appendChild === "function") {
     cfgHost.appendChild(wrap);
+  }
+
+  const moreSel = typeof getEl === "function" ? getEl("printMoreFormatsSelect", targetDoc) : null;
+  if (moreSel && !moreSel._moreFmtBound && typeof moreSel.addEventListener === "function") {
+    moreSel._moreFmtBound = true;
+    moreSel.addEventListener("change", () => {
+      const nextId = String(moreSel.value || "02_2col_pastoral");
+      state.activePrintProfileId = nextId;
+      state.edition = nextId;
+      syncPrintDrawerControlsFromEditionProfile(nextId, targetDoc);
+      onConfigChanged?.();
+    });
   }
 
   const gBtn = typeof getEl === "function" ? getEl("btnApplyGrambankToPrint", targetDoc) : null;

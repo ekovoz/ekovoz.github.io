@@ -138,17 +138,25 @@ export function bindLifeTrailsNavigation({
     }
   };
   const escapeTrailTitle = (trail) => escHtml(trail?.title_es || trail?.trail_id || "");
+  const TRAIL_FALLBACK_REFS = { btnTrailConsuelo: ["PSA.23.1", "PSA.46.1", "MAT.11.28", "REV.21.4"], btnTrailPaz: ["JHN.14.27", "PHP.4.6", "ISA.26.3", "PSA.4.8"], btnTrailPerdon: ["LUK.15.11", "1JN.1.9", "PSA.103.12", "ISA.1.18"], btnTrailSabiduria: ["JAS.1.5", "PRO.3.5", "PSA.119.105", "COL.3.16"], btnTrailAmor: ["1CO.13.4", "1JN.4.8", "JHN.3.16", "ROM.8.39"], btnTrailFamilia: ["1CO.13.4", "EPH.5.25", "COL.3.13", "JOS.24.15"], btnTrailEsperanza: ["ROM.8.28", "JER.29.11", "HEB.11.1", "TIT.2.13"], btnTrailOracion: ["MAT.6.9", "PHP.4.6", "1TH.5.17", "PSA.145.18"], btnTrailCreacion: ["GEN.1.1", "PSA.19.1", "JHN.1.3", "COL.1.16"] };
   for (const [trailBtnId, anchor] of Object.entries(anchors)) {
     const tBtn = getEl(trailBtnId, targetDoc);
     if (!tBtn || typeof tBtn.addEventListener !== "function") continue;
     tBtn.addEventListener("click", async () => {
+      const fbStops = (TRAIL_FALLBACK_REFS[trailBtnId] || []).map(parseLifeTrailRefString).filter(Boolean);
+      const immediateTrail = state.hydratedLifeTrails?.trailByButtonId?.[trailBtnId] || { trail_id: trailBtnId, title_es: anchor?.label || tBtn.textContent?.trim() || trailBtnId, parsedAnchors: fbStops.length > 0 ? fbStops : [{ book: anchor.book, chapter: anchor.chapter, verse: anchor.verse, osis: `${anchor.book}.${anchor.chapter}.${anchor.verse}` }] };
+      if ((immediateTrail.parsedAnchors || []).length > 0) {
+        state.activeLifeTrail = { ...immediateTrail, stepperAnchors: immediateTrail.parsedAnchors };
+        state.activeLifeTrailStepIndex = 0;
+        renderStepper(state.activeLifeTrail, 0);
+      }
       if (!state.hydratedLifeTrails && typeof dataLayer?.loadPericopesAndGlosses === "function") {
         try {
           const pgData = await dataLayer.loadPericopesAndGlosses();
           if (pgData) state.hydratedLifeTrails = hydrateLifeTrailsFromPericopesArtifact(pgData);
         } catch { /* Fallback */ }
       }
-      const trailObj = state.hydratedLifeTrails?.trailByButtonId?.[trailBtnId] || null;
+      const trailObj = state.hydratedLifeTrails?.trailByButtonId?.[trailBtnId] || immediateTrail;
       if (trailObj?.icon_svg_id) tBtn.setAttribute?.("data-trail-icon", String(trailObj.icon_svg_id));
       const baseAnchors = Array.isArray(trailObj?.parsedAnchors) ? trailObj.parsedAnchors : [];
       let startIdx = baseAnchors.findIndex((a) => a.book === anchor.book && a.chapter === anchor.chapter && a.verse === anchor.verse);
@@ -408,13 +416,11 @@ export async function hydrateStudyDrawerPanel(ctx = {}) {
     ? `<aside class="work-context-drawer-banner" data-work-context="${escHtml(workCtx.activeWork)}"><strong>${escHtml(workCtx.bannerText)}</strong></aside>`
     : "";
   const isEnStudy = String(state.uiLocale || "es").trim().toLowerCase().startsWith("en");
-  const matrixPackHref = String(state.matrixTier0Url || "data/packs/matrix_tier0.ekpack");
   const studyMatrixCardHtml =
     `<div id="studyMatrixDownloadCard" class="ek-row-between ek-meta ek-mb-xs" data-matrix-tier0="true">` +
-    `<span>📚 ${isEnStudy ? "Original Study (15 col)" : "Estudio Original (15 col)"}</span>` +
+    `<span>📚 ${isEnStudy ? "Original Study (15 col) · Offline copy in Share → Offline" : "Estudio Original (15 col) · Descarga en Compartir → Sin red"}</span>` +
     `<span class="ek-row-wrap">` +
     `<button type="button" id="btnOpenProBovedaFromStudy" class="uls-chip" data-action="open-pro-boveda">🔐 ${isEnStudy ? "Pro Vault" : "Bóveda Pro"}</button>` +
-    `<a id="btnDownloadStudyMatrixTier0" class="ek-btn-link" data-tech-key="matrix_tier0.ekpack" href="${escHtml(matrixPackHref)}" download="matrix_tier0.ekpack">⬇️ ${isEnStudy ? "Download Matrix (7.21 MB)" : "Descargar Matriz (7.21 MB)"}</a>` +
     `</span></div>`;
   const html = workBannerHtml + studyMatrixCardHtml + mod.renderStudy14ColDrawerHtml(matrixChapter, studyOpts);
   const container =
@@ -506,13 +512,14 @@ export async function hydrateStudyDrawerPanel(ctx = {}) {
       const rowsEl = getEl("rosettaExplorerResultsRows", targetDoc);
       if (rowsEl) {
         const activeRef = `${state.book}.${state.chapter}.${state.verse}`;
+        const bookPref = `${String(state.book || "").toUpperCase()}.`;
         const items = searchPhilologyRosettaIndex(
           state.rosettaQuery || "",
           state.rosettaCategory || "all",
           12,
           rosettaIndex,
           activeRef,
-        );
+        ).sort((a, b) => (String(b?.ref || "").toUpperCase().startsWith(bookPref) ? 1 : 0) - (String(a?.ref || "").toUpperCase().startsWith(bookPref) ? 1 : 0));
         if (typeof rowsEl.insertBefore === "function" && targetDoc?.createElement) {
           reconcileKeyedList(
             rowsEl,

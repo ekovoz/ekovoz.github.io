@@ -6,7 +6,7 @@ import {
   renderFieldWorkshopCensus7164Html,
   renderMasterCensus7164CardHtml,
 } from "./drawer_hydrators.js";
-import { humanizeUiCopy } from "./human_labels.js";
+import { formatEditorialTraditionLabel, formatHumanMetricLabel, humanizeUiCopy } from "./human_labels.js";
 import { isWorkVisible } from "./projection_contract.js";
 import { resolveDefaultStrongForPassage } from "./study_verse_viewmodel.js";
 import {
@@ -370,14 +370,18 @@ export function renderCascadeAndLadderHtml({
       })
       : baseList;
   const filteredList = waveFiltered.length > 0 ? waveFiltered : baseList;
-
-  const sliced = filteredList.slice(0, Math.max(4, Number(limit) || 24));
-  const hasGen11 = sliced.some((it) => String(it.verse_id || it.ref).toUpperCase() === "GEN.1.1");
-  const gen11Item =
-    !hasGen11 && rawList.length > 0
-      ? rawList.find((it) => String(it.verse_id || it.ref).toUpperCase() === "GEN.1.1")
-      : null;
-  const topLadder = gen11Item ? [gen11Item, ...sliced.slice(0, sliced.length - 1)] : sliced;
+  const activeBookPrefix = `${resolvedRef.split(".")[0]}.`;
+  const cleanStrong = sanitizePipeField(strongId || "").toUpperCase();
+  const prioritizedList = [...filteredList].sort((a, b) => {
+    const refA = String(a.verse_id || a.ref || "").toUpperCase();
+    const refB = String(b.verse_id || b.ref || "").toUpperCase();
+    const matchA = refA === resolvedRef ? 4 : refA.startsWith(activeBookPrefix) ? 2 : 0;
+    const matchB = refB === resolvedRef ? 4 : refB.startsWith(activeBookPrefix) ? 2 : 0;
+    const sA = cleanStrong && Array.isArray(a.covered_high_freq_strongs) && a.covered_high_freq_strongs.includes(cleanStrong) ? 1 : 0;
+    const sB = cleanStrong && Array.isArray(b.covered_high_freq_strongs) && b.covered_high_freq_strongs.includes(cleanStrong) ? 1 : 0;
+    return (matchB + sB) - (matchA + sA);
+  });
+  const topLadder = prioritizedList.slice(0, Math.max(4, Number(limit) || 24));
 
   const entropyQueue = selectTopEntropyVerseQueue(rawList, resolvedRef, 3);
   const nextEntropyItem = entropyQueue[0] || { ref: "GEN.1.1", shannon_entropy: 2.45, marginal_gain_bits: 48.2 };
@@ -476,7 +480,7 @@ export function renderCascadeAndLadderHtml({
   const celfSummaryBlock = showElicitationLadder
     ? `<details id="celf250TechDetails" class="tech-details hig-tech-receipt-details ek-mb-sm" data-advanced-audit="true" data-celf250-ladder="true" data-celf250-rank="${seed250.rank}" data-tier2-ot-probe-verses="${tier2OtProbeVerses}" data-modernized-fst-probe-chars="${modernizedFstProbeChars}">` +
     `<summary>${isEn ? `Technical details · Community step #${seed250.rank}/250` : `Detalles técnicos · Paso #${seed250.rank}/250 (${totalCount} pasos)`}</summary>` +
-    `<p class="ek-meta ek-mt-xs">${isEn ? `Community review sequence (${totalCount} steps · Probes: ${tier2OtProbeVerses} OT v. / ${modernizedFstProbeChars} FST ch)` : `Secuencia de revisión (${totalCount} pasos · Sonda AT: ${tier2OtProbeVerses} v. · FST: ${modernizedFstProbeChars} car.)`}</p>` +
+    `<p class="ek-meta ek-mt-xs">${isEn ? `Community review (${totalCount} steps · Probes: ${tier2OtProbeVerses} OT v. / ${modernizedFstProbeChars} FST ch · target_ref_or_lemma=${resolvedRef})` : `Secuencia de revisión (${totalCount} pasos · Sonda AT: ${tier2OtProbeVerses} v. · FST: ${modernizedFstProbeChars} car. · target_ref_or_lemma=${resolvedRef})`}</p>` +
     `<pre id="celf250SeedOutput" class="ek-pre-compact">${seed250.payloadLine}</pre>` +
     `</details>`
     : "";
@@ -493,7 +497,7 @@ export function renderCascadeAndLadderHtml({
     `</p>` +
     celfSummaryBlock +
     sisterCascadeHtml +
-    (showElicitationLadder ? `${rungFilterHtml}<div class="ek-row-wrap">${ladderButtons}</div>${otWavesHtml}` : "") +
+    (showElicitationLadder ? `${rungFilterHtml}<div class="ek-auto-grid">${ladderButtons}</div>${otWavesHtml}` : "") +
     auditPanelsHtml +
     `<div class="ek-stack ek-mt-sm">` +
     masterCensusAndLedgerHtml +
@@ -538,7 +542,7 @@ export function renderWorkshopAuditPanelsHtml({
   const extPdaUnbalanced = Number(extAudit.pda_unbalanced_count ?? 0);
   const extNormalizedCount = Number(extAudit.normalized_verses_count ?? 0);
   const extFormatLabel = String(extAudit.detected_format || "USFM").replace(/_OOXML$/i, "");
-  const extTraditionLabel = String(extAudit.detected_tradition || "KJV");
+  const extTraditionLabel = formatEditorialTraditionLabel(extAudit.detected_tradition || "KJV", uiLocale);
   const extMetaLine = isEn
     ? `Format: ${extFormatLabel} (${extTraditionLabel}) · Normalized verses: ${extNormalizedCount} · Unbalanced quotes/brackets: ${extPdaUnbalanced}`
     : `Formato: ${extFormatLabel} (${extTraditionLabel}) · Versículos normalizados: ${extNormalizedCount} · Comillas/paréntesis sin cierre: ${extPdaUnbalanced}`;
@@ -602,8 +606,8 @@ export function renderWorkshopAuditPanelsHtml({
       (tc) => `${sanitizePipeField(tc.donor_lang)}::${sanitizePipeField(tc.target_lang)}` === activeTier3aPair,
     ) || null;
   const tier3aDetailHtml = selectedPairObj
-    ? `<strong>${escAud(selectedPairObj.donor_lang)} → ${escAud(selectedPairObj.target_lang)}</strong> · ASJP LDND=${Number(selectedPairObj.asjp_ldnd || 0).toFixed(4)} · ${isEn ? "Cognates:" : "Cognados:"} ${escAud(selectedPairObj.sample_projected_cognates || "—")} · ${Number(FLOOR_1_SENTENCE_SPEC.single_sentence_unlocked_floor || 291)} ${isEn ? "languages unlocked from 1 anchor sentence" : "lenguas desbloqueadas desde 1 oración ancla"}`
-    : `${isEn ? "Tap a closely related pair to inspect cognate distance and scaffold floor." : "Pulsa un par cercano para inspeccionar distancia ASJP y cognados proyectados."}`;
+    ? `<strong>${escAud(selectedPairObj.donor_lang)} → ${escAud(selectedPairObj.target_lang)}</strong> · ${formatHumanMetricLabel("asjp", Number(selectedPairObj.asjp_ldnd || 0).toFixed(4), uiLocale)} · ${isEn ? "Cognates:" : "Cognados:"} ${escAud(selectedPairObj.sample_projected_cognates || "—")} · ${Number(FLOOR_1_SENTENCE_SPEC.single_sentence_unlocked_floor || 291)} ${isEn ? "languages unlocked from 1 anchor sentence" : "lenguas desbloqueadas desde 1 oración ancla"}`
+    : `${isEn ? "Tap a closely related pair to inspect shared lexical roots and scaffold floor." : "Pulsa un par cercano para ver raíces compartidas y vocabulario afín."}`;
   const tier3aHtml =
     `<div id="tier3aDialectContinuumPanel" class="ek-card-muted ek-mt-sm" data-tier3a-continuums="${TIER3A_CONTINUUMS.length}" data-floor-1-sentence="${Number(FLOOR_1_SENTENCE_SPEC.single_sentence_unlocked_floor || 291)}" data-reference-tier1="${sanitizePipeField(FLOOR_1_SENTENCE_SPEC.reference_tier1 || "spa_rv1909")}" data-total-sentences="${Number(FLOOR_1_SENTENCE_SPEC.total_sentences || 250)}">` +
     `<strong class="ek-title-sm">🌐 ${isEn ? "Closely Related Languages" : "Lenguas Cercanas"}</strong>` +

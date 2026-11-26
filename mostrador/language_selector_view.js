@@ -110,9 +110,10 @@ export function renderDecoupledLanguageSelectorHtml({
 
   const renderBtn = (item) => {
     const code = String(item.code || item.iso639_3 || "").trim();
-    const label = String(item.displayLabel || item.name || code);
+    const rawLabel = String(item.displayLabel || item.name || code).replace(/^[\u{1F1E6}-\u{1F1FF}]{2}\s*/u, "").trim();
     const sel = code.toLowerCase() === activeNorm ? "true" : "false";
-    return `<button type="button" class="uls-chip polyglot-window-row" role="option" data-corpus-lang="${escapeHtml(code)}" aria-selected="${sel}">${escapeHtml(label)}</button>`;
+    const isoTag = code ? `<span class="ek-iso-tag">${escapeHtml(code.toUpperCase())}</span>` : "";
+    return `<button type="button" class="uls-chip polyglot-window-row" role="option" data-corpus-lang="${escapeHtml(code)}" aria-selected="${sel}">${isoTag}${escapeHtml(rawLabel)}</button>`;
   };
 
   return (

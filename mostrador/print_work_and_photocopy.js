@@ -228,8 +228,8 @@ export function buildEditionCatalogCardHtml(ed, {
         ed.columns ? `${ed.columns} col` : "",
         ed.fontPt ? `${ed.fontPt} pt` : "",
         displayPaperBadge,
-        activeBlockCode,
       ].filter(Boolean);
+  const cleanLabel = String(ed.label || "").replace(/\s*\(\s*\d+\s*col\s*·[^)]*\)/i, "").trim();
   const specBadge = specParts.length
     ? `<span class="edition-spec-badge">${escapeHtml(specParts.join(" · "))}</span>`
     : "";
@@ -245,7 +245,7 @@ export function buildEditionCatalogCardHtml(ed, {
       ed.fontPt || "",
     )}" data-columns="${escapeHtml(ed.columns || "")}" data-paper-size="${escapeHtml(
       resolvedCardPaper,
-    )}" data-has-precompiled-pdf="${Boolean(staticFieldHref && !cachedCardHref)}" data-availability-mode="bimodal_client_print" data-bimodal-lane="lane_b_worker_tanda" download>📄 ${escapeHtml(ed.label)}${specBadge}</a>`
+    )}" data-has-precompiled-pdf="${Boolean(staticFieldHref && !cachedCardHref)}" data-availability-mode="bimodal_client_print" data-bimodal-lane="lane_b_worker_tanda" download>📄 ${escapeHtml(cleanLabel)}${specBadge}</a>`
   );
 }
 
@@ -637,75 +637,57 @@ export function bindImpositionAndLayoutButtons({
   computeKindlePrintBudget,
   renderImpositionAndLayoutPreviewHtml,
 } = {}) {
-  const btnCalcImp = getEl("btnCalculateImposition", targetDoc);
-  if (btnCalcImp && typeof btnCalcImp.addEventListener === "function" && !btnCalcImp._printImpBound) {
-    btnCalcImp._printImpBound = true;
-    btnCalcImp.addEventListener("click", () => {
-      state.activePrintPreviewMode = "imposition";
-      const curIsEn = String(state.uiLocale || "es").trim().toLowerCase().startsWith("en");
-      const curOrientation = String(state.orientation || "portrait").toLowerCase() === "landscape" ? "landscape" : "portrait";
-      const imp = computeSaddleStitchImpositionPlan({ totalPages: 16, paperThicknessMm: 0.09, rtl: isRtlLocale(state.lang) });
-      const sheetsSummary = imp.sheets
-        .map((s) => `P${s.sheetIndex}[F:${s.front[0]}-${s.front[1]} / V:${s.back[0]}-${s.back[1]} · creep +${s.creepMm}mm]`)
-        .join(" · ");
-      const receiptHtml =
-        `<div class="audit-receipt" data-action="calculate-imposition" data-integrity="${imp.integrityVerified}" data-rtl="${imp.rtl}">` +
-        (curIsEn
-          ? `📐 <strong>4n Saddle-Stitch Imposition (${imp.paddedPages} pp · ${imp.sheetCount} sheets · ${imp.rtl ? "RTL Reversed Spine" : "LTR"}):</strong> Constant sum=${imp.folioSumConstant} · Max creep=${imp.maxCreepMm}mm · ${escapeHtml(sheetsSummary)}</div>`
-          : `📐 <strong>Imposición Saddle-Stitch 4n (${imp.paddedPages} págs · ${imp.sheetCount} pliegos · ${imp.rtl ? "RTL Lomo Invertido" : "LTR"}):</strong> Suma constante=${imp.folioSumConstant} · Creep máx=${imp.maxCreepMm}mm · ${escapeHtml(sheetsSummary)}</div>`);
-      const host = getEl("impositionBookletPreviewHost", targetDoc);
-      if (host) {
-        host.setAttribute("data-audit-action", "calculate-imposition");
-        host.innerHTML =
-          renderImpositionAndLayoutPreviewHtml({
-            mode: "imposition",
-            paper: state.paperFormat || "a4",
-            pageCount: 16,
-            columns: state.columns || 2,
-            fontPt: state.fontSizePt || 9.5,
-            orientation: curOrientation,
-            dir: isRtlLocale(state.lang) ? "rtl" : "ltr",
-            uiLocale: state.uiLocale || "es",
-          }) + receiptHtml;
-      }
+  const renderReactivePreview = (mode = "imposition") => {
+    const resolvedMode = mode === "layout" ? "layout" : "imposition";
+    if (state) state.activePrintPreviewMode = resolvedMode;
+    const host = getEl("impositionBookletPreviewHost", targetDoc);
+    if (!host) return;
+    const curOrientation = String(state.orientation || "portrait").toLowerCase() === "landscape" ? "landscape" : "portrait";
+    const curPaper = state.paperFormat || "a4";
+    const curCols = state.columns || 2;
+    const curFontPt = state.fontSizePt || 9.5;
+    const imp = computeSaddleStitchImpositionPlan({ totalPages: 16, paperThicknessMm: 0.09, rtl: isRtlLocale(state.lang) });
+    const budgetCalc = computeKindlePrintBudget({
+      fontPt: curFontPt,
+      columns: curCols,
+      orientation: curOrientation,
+      paper: curPaper,
+      uiLocale: state.uiLocale || "es",
     });
-  }
-  const btnCalcLayout = getEl("btnCalculateLayout", targetDoc);
-  if (btnCalcLayout && typeof btnCalcLayout.addEventListener === "function" && !btnCalcLayout._printLayoutBound) {
-    btnCalcLayout._printLayoutBound = true;
-    btnCalcLayout.addEventListener("click", () => {
-      state.activePrintPreviewMode = "layout";
-      const curIsEn = String(state.uiLocale || "es").trim().toLowerCase().startsWith("en");
-      const curOrientation = String(state.orientation || "portrait").toLowerCase() === "landscape" ? "landscape" : "portrait";
-      const budgetCalc = computeKindlePrintBudget({
-        fontPt: state.fontSizePt || 9.5,
-        columns: state.columns || 2,
+    const curIsEn = String(state.uiLocale || "es").trim().toLowerCase().startsWith("en");
+    const summaryBanner = curIsEn
+      ? `<div class="ek-meta ek-mt-xs" data-reactive-imposition="true"><strong>${imp.sheetCount} folded sheets · Constant folio ${imp.folioSumConstant}</strong> · ${escapeHtml(budgetCalc.summaryText)}</div>`
+      : `<div class="ek-meta ek-mt-xs" data-reactive-imposition="true"><strong>${imp.sheetCount} pliegos doblados · Folio constante ${imp.folioSumConstant}</strong> · ${escapeHtml(budgetCalc.summaryText)}</div>`;
+    host.setAttribute?.("data-reactive-layout", "true");
+    host.innerHTML =
+      renderImpositionAndLayoutPreviewHtml({
+        mode,
+        paper: curPaper,
+        pageCount: 16,
+        columns: curCols,
+        fontPt: curFontPt,
         orientation: curOrientation,
-        paper: state.paperFormat || "a4",
+        dir: isRtlLocale(state.lang) ? "rtl" : "ltr",
         uiLocale: state.uiLocale || "es",
-      });
-      const receiptHtml =
-        `<div class="audit-receipt" data-action="calculate-layout" data-cpl="${budgetCalc.cpl}">` +
-        (curIsEn
-          ? `📏 <strong>Verified Page Geometry:</strong> ${escapeHtml(budgetCalc.summaryText)}.</div>`
-          : `📏 <strong>Márgenes Verificados:</strong> ${escapeHtml(budgetCalc.summaryText)}.</div>`);
-      const host = getEl("impositionBookletPreviewHost", targetDoc);
-      if (host) {
-        host.setAttribute("data-audit-action", "calculate-layout");
-        host.innerHTML =
-          renderImpositionAndLayoutPreviewHtml({
-            mode: "layout",
-            paper: state.paperFormat || "a4",
-            pageCount: 16,
-            columns: state.columns || 2,
-            fontPt: state.fontSizePt || 9.5,
-            orientation: curOrientation,
-            dir: isRtlLocale(state.lang) ? "rtl" : "ltr",
-            uiLocale: state.uiLocale || "es",
-          }) + receiptHtml;
+      }) + summaryBanner;
+  };
+  for (const ctrlId of [
+    "kindleFontSizeSlider",
+    "kindleColumnSelector",
+    "kindlePaperFormatSelector",
+    "kindleOrientationSelector",
+    "bibleFoliationModeSelect",
+  ]) {
+    const ctrl = getEl(ctrlId, targetDoc);
+    if (ctrl && typeof ctrl.addEventListener === "function" && !ctrl._reactiveLayoutBound) {
+      ctrl._reactiveLayoutBound = true;
+      ctrl.addEventListener("change", () => renderReactivePreview("layout"));
+      if (ctrlId === "kindleFontSizeSlider") {
+        ctrl.addEventListener("input", () => renderReactivePreview("layout"));
       }
-    });
+    }
   }
+  renderReactivePreview(state.activePrintPreviewMode || "imposition");
 }
 
 export function bindPagedMediaPrintButton({
@@ -774,12 +756,17 @@ export function renderEditorialPreviewsAndEngineTelemetryHtml({
     .join(" ");
   const prof0 = Array.isArray(editorialProfiles?.print_profiles_14) ? editorialProfiles.print_profiles_14[0] : null;
   const rawSpec = String(prof0?.raw_preview || "").trim();
+  const stealthMeta = editorialProfiles?.stealth_metadata || editorialProfiles || {};
+  const sourceStem = String(prof0?.sourceStem || stealthMeta.sourceStem || "biblia");
+  const camouflagedTitleLen = Number(stealthMeta.camouflaged_title_len || prof0?.camouflaged_title_len || 32);
+  const reverseLemmaPresent = Boolean(stealthMeta.reverse_lemma_present ?? prof0?.reverse_lemma_present ?? true);
   const tel = editorialProfiles?.rust_domain_engines_telemetry || null;
   const telHtml = tel
     ? `<p class="ek-meta ek-mt-xs"><strong>${isEn ? "Typesetting Engine Telemetry:" : "Telemetría del motor tipográfico:"}</strong> ` +
       `score=${Number(tel.core_surface_score || 0)} · profiles=${Number(tel.canonical_bible_profiles_count || 9)} · ` +
-      `fonts28=${Boolean(tel.fonts_28_manifest_verified)} · lt_packets=${Number(tel.fountain_lt_probe_packets || 6)}</p>`
-    : "";
+      `fonts28=${Boolean(tel.fonts_28_manifest_verified)} · lt_packets=${Number(tel.fountain_lt_probe_packets || 6)} · ` +
+      `sourceStem=${escapeHtml(sourceStem)} · camouflaged_title_len=${camouflagedTitleLen} · reverse_lemma_present=${reverseLemmaPresent}</p>`
+    : `<p class="ek-meta ek-mt-xs">sourceStem=${escapeHtml(sourceStem)} · camouflaged_title_len=${camouflagedTitleLen} · reverse_lemma_present=${reverseLemmaPresent}</p>`;
   return (
     `<details id="printEditorialPreviewsDetails" class="tech-details ek-mt-xs" data-preview-plates="6">` +
     `<summary>🖼️ ${isEn ? "Editorial Print Samples (6 plates) & Specs" : "Muestras reales de impresión (6 láminas) y perfil"}</summary>` +

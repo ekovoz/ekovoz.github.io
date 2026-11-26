@@ -55,6 +55,15 @@ function ensurePolyglotRecycledWindowRows(hostEl, totalSlots = POLYGLOT_RECYCLED
 /**
  * Proyecta hasta `<= 36` lenguas en la ventana reciclada y retorna el subconjunto renderizado.
  */
+function cleanPolyglotLabel(rawLabel = "", code = "") {
+  const clean = String(rawLabel || code || "").trim();
+  const c = String(code || "").trim().toLowerCase();
+  const stripped = clean.replace(/^[\u{1F1E6}-\u{1F1FF}]{2}\s*/u, "").trim();
+  if (!c) return stripped;
+  const rxDup = new RegExp(`\\(${c}\\)\\s*·\\s*${c}$`, "i");
+  return stripped.replace(rxDup, `(${c})`).trim();
+}
+
 export function renderPolyglotRecycledWindow(hostEl, entries = [], { activeLang = "", targetDoc = null } = {}) {
   const sliced = (Array.isArray(entries) ? entries : []).slice(0, POLYGLOT_RECYCLED_WINDOW_CAP);
   if (!hostEl) return sliced;
@@ -72,10 +81,10 @@ export function renderPolyglotRecycledWindow(hostEl, entries = [], { activeLang 
         continue;
       }
       const code = String(item.code || item.iso639_3 || "").trim();
-      const label = String(item.displayLabel || item.name || code);
+      const label = cleanPolyglotLabel(item.displayLabel || item.name || code, code);
       const isSelected = Boolean(code && code === activeLang);
       row.hidden = false;
-      row.textContent = label;
+      row.textContent = code ? `[${code.toUpperCase()}] ${label}` : label;
       row.setAttribute?.("data-corpus-lang", code);
       row.setAttribute?.("data-iso", String(item.iso639_3 || code));
       row.setAttribute?.("aria-selected", isSelected ? "true" : "false");
@@ -84,9 +93,10 @@ export function renderPolyglotRecycledWindow(hostEl, entries = [], { activeLang 
     hostEl.innerHTML = sliced
       .map((item) => {
         const code = String(item.code || item.iso639_3 || "").trim();
-        const label = String(item.displayLabel || item.name || code);
+        const label = cleanPolyglotLabel(item.displayLabel || item.name || code, code);
         const sel = code === activeLang ? "true" : "false";
-        return `<button type="button" class="uls-chip polyglot-window-row" role="option" data-polyglot-row="pool" data-corpus-lang="${escapeHtml(code)}" aria-selected="${sel}">${escapeHtml(label)}</button>`;
+        const isoTag = code ? `<span class="ek-iso-tag">${escapeHtml(code.toUpperCase())}</span>` : "";
+        return `<button type="button" class="uls-chip polyglot-window-row" role="option" data-polyglot-row="pool" data-corpus-lang="${escapeHtml(code)}" aria-selected="${sel}">${isoTag}${escapeHtml(label)}</button>`;
       })
       .join("");
   }

@@ -50,7 +50,7 @@ import {
   mountOfflineFontNoticeWithLocalImporter,
   summarizeOfflineFontsVaultCatalog,
 } from "./offline_font_bundle.js";
-import { resolveActiveWorkDrawerContext, resolveWorkDrawerAdapter } from "./projection_contract.js";
+import { INTENT_LAYER_CONTRACT, resolveActiveWorkDrawerContext, resolveWorkDrawerAdapter, validateTwoLayerContract } from "./projection_contract.js";
 import {
   bindProvenanceVerifierEvents,
   renderEditorialAuditAttestationHtml,
@@ -751,6 +751,11 @@ export function hydrateShareAndAuditDrawerPanel(ctx = {}) {
   const provHost = getEl("editorialProvenanceCardHost", targetDoc);
   if (provHost) {
     const authCard = getEl("shareAuthenticityUnifiedCard", targetDoc);
+    if (authCard && typeof authCard.setAttribute === "function") {
+      const twoLayer = validateTwoLayerContract(targetDoc?.querySelectorAll?.("details")?.length || 0, INTENT_LAYER_CONTRACT);
+      authCard.setAttribute("data-max-prod-details", String(twoLayer.maxProdDetails));
+      authCard.setAttribute("data-two-layer-valid", String(twoLayer.valid));
+    }
     if (authCard && provHost.parentNode === authCard && typeof authCard.insertBefore === "function" && authCard.firstChild && authCard.firstChild !== provHost) {
       authCard.insertBefore(provHost, authCard.firstChild);
     }

@@ -19,9 +19,9 @@ export function renderAuthenticityAndLicenseSheetHtml({
   const prov = editorialProvenance && typeof editorialProvenance === "object" ? editorialProvenance : {};
   const doi = String(prov.doi || prov.zenodoDoi || "10.5281/zenodo.ekovoz");
   const license = String(prov.license || "CC0 1.0");
-  const pendingText = isEn ? "Ready to verify authenticity" : "Listo para verificar autenticidad";
+  const pendingText = isEn ? "Ready to verify authenticity & signature" : "Listo para verificar ejemplar y firma";
   return (
-    `<div id="authenticityLicenseIsolationNotice" class="ek-mt-xs ek-text-secondary" data-authenticity-unified="true" data-authenticity-isolated="true" data-authenticity-state="ready" data-work="${escapeHtml(activeWork)}" data-lang="${escapeHtml(activeLang)}">` +
+    `<div id="authenticityLicenseIsolationNotice" class="ek-mt-xs ek-text-secondary" data-authenticity-unified="true" data-authenticity-isolated="true" data-authenticity-state="ready" data-primary-cta="btnVerifyEd25519Signature" data-work="${escapeHtml(activeWork)}" data-lang="${escapeHtml(activeLang)}">` +
     `<span>${escapeHtml(pendingText)} · <strong>${escapeHtml(license)}</strong> · DOI ${escapeHtml(doi)}</span>` +
     `</div>`
   );

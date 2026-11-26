@@ -192,6 +192,13 @@ export function hydrateOpticalTxAndRxPanels({
   isEn = false,
   rehydrateDrawer,
 } = {}) {
+  const activeQrModeInit = state?.qrShareSubmode === "receive" ? "receive" : "send";
+  const initialRxEl = rxPanel || getEl?.("opticalReceiverRxPanel", targetDoc) || targetDoc?.getElementById?.("opticalReceiverRxPanel") || null;
+  if (initialRxEl && activeQrModeInit !== "receive") {
+    initialRxEl.hidden = true;
+    initialRxEl.setAttribute?.("hidden", "");
+    initialRxEl.innerHTML = "";
+  }
   if (qrPanel) {
     const verseText =
       state.lastNavResult?.chapter?.verses?.[String(state.verse)] ||

@@ -21,16 +21,27 @@ function csvCell(val) {
 /**
  * Renderiza la tarjeta de sesión de elicitación (`elicitation_ladder_250.json`).
  */
-export function renderElicitSessionCardHtml(sessionData = null, uiLocale = "es") {
+export function renderElicitSessionCardHtml(sessionData = null, uiLocale = "es", options = {}) {
   const isEn = String(uiLocale || "es").trim().toLowerCase().startsWith("en");
-  const list = Array.isArray(sessionData)
+  const rawList = Array.isArray(sessionData)
     ? sessionData
     : Array.isArray(sessionData?.items)
       ? sessionData.items
       : sessionData && typeof sessionData === "object" && sessionData.verse_id
         ? [sessionData]
         : [];
-  const top = list[0] || {
+  const activeBook = String(options?.activeBook || "").trim().toUpperCase();
+  const activeRung = String(options?.activeRung || "ALL").trim();
+  const list = rawList.filter((it) => {
+    if (activeRung && activeRung !== "ALL" && String(it?.rung || "") !== activeRung) return false;
+    if (activeBook && String(options?.filterByBook) === "true" && !String(it?.verse_id || "").toUpperCase().startsWith(`${activeBook}.`)) return false;
+    return true;
+  });
+  const effectiveList = list.length > 0 ? list : rawList;
+  const total = effectiveList.length || 1;
+  const reqIdx = Number(options?.index) || 0;
+  const idx = ((reqIdx % total) + total) % total;
+  const top = effectiveList[idx] || {
     verse_id: "GEN.3.1",
     rung: "Rung1SwadeshAndNsm65",
     prompt_es: "EMPERO la serpiente era astuta, más que todos los animales del campo que Jehová Dios había hecho...",
@@ -45,18 +56,24 @@ export function renderElicitSessionCardHtml(sessionData = null, uiLocale = "es")
   const strongsList = Array.isArray(top.covered_high_freq_strongs) ? top.covered_high_freq_strongs : [];
   const framesList = Array.isArray(top.covered_syntactic_frames) ? top.covered_syntactic_frames : [];
   const gainBits = Number(top.marginal_gain_bits || 0).toFixed(2);
+  const vRef = esc(top.verse_id || "GEN.3.1");
 
   return (
-    `<section id="workshopElicitSessionCard" class="ek-card-muted ek-mt-sm" data-elicit-ref="${esc(top.verse_id || "GEN.3.1")}" data-elicit-bits="${esc(gainBits)}">` +
+    `<section id="workshopElicitSessionCard" class="ek-card-muted ek-mt-sm" data-elicit-ref="${vRef}" data-elicit-index="${idx}" data-elicit-total="${effectiveList.length || 250}" data-elicit-bits="${esc(gainBits)}">` +
     `<div class="ek-row-between">` +
-    `<strong>🎙️ ${isEn ? "Active Field Elicitation Prompt" : "Sesión de Elicitación en Campo"} · ${esc(top.verse_id || "GEN.3.1")}</strong>` +
-    `<span class="uls-badge">+${esc(gainBits)} bits · ${esc(top.rung || "CELF-250")}</span>` +
+    `<strong>🎙️ ${isEn ? "Field Elicitation Step" : "Elicitación en Campo"} ${idx + 1}/${effectiveList.length || 250} · ${vRef}</strong>` +
+    `<span class="uls-badge">+${esc(gainBits)} bits</span>` +
     `</div>` +
     `<blockquote class="evangelios-passage-blockquote">${esc(promptText)}</blockquote>` +
-    `<div class="ek-meta ek-stack-xs">` +
-    `<span><strong>${isEn ? "Primary meanings (NSM):" : "Sentidos primarios (NSM):"}</strong> ${esc(nsmList.join(", ") || "—")}</span>` +
-    `<span><strong>${isEn ? "High-frequency roots:" : "Raíces frecuentes:"}</strong> ${esc(strongsList.join(", ") || "—")}</span>` +
-    `<span><strong>${isEn ? "Syntactic frames:" : "Estructuras sintácticas:"}</strong> ${esc(framesList.join(", ") || "—")}</span>` +
+    `<div class="ek-row-wrap ek-mt-xs">` +
+    `<button type="button" id="btnElicitPrev" class="uls-chip ek-btn-fitts" data-elicit-step="-1">← ${isEn ? "Prev" : "Anterior"}</button>` +
+    `<button type="button" id="btnElicitNext" class="uls-chip ek-btn-fitts" data-elicit-step="1">${isEn ? "Next" : "Siguiente"} →</button>` +
+    `<button type="button" id="btnElicitPropose" class="btn-modal-action" data-elicit-propose="${esc(promptText)}" data-elicit-ref="${vRef}">${isEn ? "Propose translation" : "Proponer traducción"}</button>` +
+    `</div>` +
+    `<div class="ek-meta ek-stack-xs ek-mt-xs">` +
+    `<span><strong>${isEn ? "Core meanings:" : "Sentidos primarios:"}</strong> ${esc(nsmList.join(", ") || "—")}</span>` +
+    `<span><strong>${isEn ? "Roots:" : "Raíces frecuentes:"}</strong> ${esc(strongsList.join(", ") || "—")}</span>` +
+    `<span><strong>${isEn ? "Structures:" : "Estructuras:"}</strong> ${esc(framesList.join(", ") || "—")}</span>` +
     `</div>` +
     `</section>`
   );
@@ -168,12 +185,48 @@ export function renderModernizeRegisterDiffHtml({
   const changedClassic = clsWords.filter((w) => !modSet.has(w.toLowerCase().replace(/[.,;:!?¿¡"'()]/g, ""))).slice(0, 12);
   return (
     `<div id="workshopModernizeDiffCard" class="ek-card-muted ek-mt-xs" data-modern-words="${modWords.length}" data-classic-words="${clsWords.length}">` +
-    `<div class="ek-row-between"><strong>🔄 ${isEn ? "Register Alignment (Contemporary ↔ Classical)" : "Comparación de Registro (Actual ↔ Clásico)"}</strong>` +
+    `<div class="ek-row-between"><strong>🔄 ${isEn ? "Live Register Comparator (1909 ↔ Contemporary)" : "Comparador Vivo de Registro (1909 ↔ Actual)"}</strong>` +
     `<span class="uls-badge">${changedModern.length} ${isEn ? "updated forms" : "formas actualizadas"}</span></div>` +
-    `<p class="ek-meta ek-mt-xs"><strong>${isEn ? "Contemporary:" : "Actual:"}</strong> ${esc(modWords.slice(0, 26).join(" ") || "—")}</p>` +
+    `<label class="ek-label-sm ek-mt-xs" for="workshopModernizeInput">${isEn ? "Compare active verse or paste classic text:" : "Comparar pasaje activo o pegar texto clásico:"}</label>` +
+    `<textarea id="workshopModernizeInput" class="ek-textarea-full ek-mt-xs" rows="2">${esc(classicText || modernText)}</textarea>` +
+    `<div id="workshopModernizeDiffOut" class="ek-meta ek-mt-xs" aria-live="polite">` +
+    `<p class="ek-m-0"><strong>${isEn ? "Contemporary:" : "Actual:"}</strong> ${esc(modWords.slice(0, 26).join(" ") || "—")}</p>` +
     (clsWords.length > 0
-      ? `<p class="ek-meta"><strong>${isEn ? "Updated tokens:" : "Cambios léxicos:"}</strong> ${esc(changedClassic.slice(0, 6).join(", ") || "—")} → <strong>${esc(changedModern.slice(0, 6).join(", ") || "—")}</strong></p>`
+      ? `<p class="ek-m-0"><strong>${isEn ? "Updated tokens:" : "Cambios léxicos:"}</strong> ${esc(changedClassic.slice(0, 6).join(", ") || "—")} → <strong>${esc(changedModern.slice(0, 6).join(", ") || "—")}</strong></p>`
       : "") +
-    `</div>`
+    `</div></div>`
   );
+}
+
+export function bindElicitAndModernizeControls({ state, targetDoc, getEl, modernizeFn, refreshFn, switchToPatchFn } = {}) {
+  const host = getEl?.("tallerArtifactsCatalog", targetDoc) || getEl?.("tallerArtifactsDynamicList", targetDoc);
+  if (host && typeof host.addEventListener === "function" && !host._elicitModBound) {
+    host._elicitModBound = true;
+    host.addEventListener("click", (ev) => {
+      const stepBtn = ev?.target?.closest ? ev.target.closest("[data-elicit-step]") : null;
+      if (stepBtn) {
+        const delta = Number(stepBtn.getAttribute("data-elicit-step")) || 1;
+        state.elicitSessionIndex = Math.max(0, (Number(state.elicitSessionIndex) || 0) + delta);
+        refreshFn?.();
+        return;
+      }
+      const propBtn = ev?.target?.closest ? ev.target.closest("[data-elicit-propose]") : null;
+      if (propBtn) {
+        const txt = String(propBtn.getAttribute("data-elicit-propose") || "");
+        const inp = getEl?.("improveProposedSurfaceInput", targetDoc) || getEl?.("improveNewSurfaceInput", targetDoc);
+        if (inp) inp.value = txt;
+        switchToPatchFn?.();
+      }
+    });
+    host.addEventListener("input", (ev) => {
+      if (ev?.target?.id === "workshopModernizeInput") {
+        const outEl = getEl?.("workshopModernizeDiffOut", targetDoc);
+        if (!outEl || typeof modernizeFn !== "function") return;
+        const srcTxt = String(ev.target.value || "");
+        const res = modernizeFn(srcTxt);
+        const isEn = String(state?.uiLocale || "es").toLowerCase().startsWith("en");
+        outEl.innerHTML = `<p class="ek-m-0"><strong>${isEn ? "Contemporary:" : "Actual:"}</strong> ${esc(res?.text || srcTxt)} (${Number(res?.appliedTiers?.length || 0)} ${isEn ? "layers" : "capas"})</p>`;
+      }
+    });
+  }
 }

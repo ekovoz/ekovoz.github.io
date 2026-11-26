@@ -34,10 +34,12 @@ import {
   validateAllEightLocksPda,
   verifyLock8PredicativeAndNegation,
 } from "./mejorar_locks_pda.js";
+import { applySpanish21DiachronicRegister } from "./diachronic_register.js";
 import { computeEcoPackCrc32Hex } from "./offline_mesh.js";
 import { resolveActiveWorkDrawerContext } from "./projection_contract.js";
 import { projectSurfaceLayoutFromState } from "./surface_compositor.js";
 import { formatLock8StatusBadge, createWorkshopAuditHandlers, deriveVerseLockAnchors, renderWorkshop5LangsSwitcherHtml, renderWorkshopAuditSubtabHtml } from "./workshop_audit_and_langs.js";
+import { bindElicitAndModernizeControls } from "./workshop_elicit_and_cldf.js";
 import { resolveDefaultStrongForPassage } from "./study_verse_viewmodel.js";
 import {
   OVERLAY_AUTHORITY_LOCAL_SELF_SIGNED,
@@ -317,7 +319,7 @@ export async function hydrateImproveDrawerPanel(ctx = {}) {
     };
     state.refreshWorkshopAuditSubtab = renderAuditSubtabPanels;
     renderAuditSubtabPanels();
-
+    bindElicitAndModernizeControls({ state, targetDoc, getEl, modernizeFn: applySpanish21DiachronicRegister, refreshFn: renderAuditSubtabPanels, switchToPatchFn: () => ctx.switchSubtab?.("patch") });
     bindImproveFormControlsInDrawer(mod, ctx);
     projectSurfaceLayoutFromState(state, targetDoc, getEl);
     return html;
@@ -914,11 +916,7 @@ export function bindImproveFormControlsInDrawer(mod, ctx = {}) {
     cascadeEl.addEventListener("change", onAuditChange);
     cascadeEl.addEventListener("click", async (e) => {
       if (await onAuditClick(e)) return;
-      const waveBtn = e?.target?.closest
-        ? e.target.closest("[data-ot-wave]")
-        : e?.target?.getAttribute?.("data-ot-wave")
-          ? e.target
-          : null;
+      const waveBtn = e?.target?.closest ? e.target.closest("[data-ot-wave]") : e?.target?.getAttribute?.("data-ot-wave") ? e.target : null;
       const waveAttr = waveBtn?.getAttribute?.("data-ot-wave");
       if (waveAttr !== null && waveAttr !== undefined) {
         state.activeOtWave = Number(waveAttr) || 0;

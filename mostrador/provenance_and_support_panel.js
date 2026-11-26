@@ -202,7 +202,17 @@ export function renderEditorialProvenanceCardHtml(provenance = null, uiLocale = 
     !isEn && ots.protocol === DEFAULT_PROVENANCE.opentimestamps.protocol
       ? "OpenTimestamps (atestación en cabecera Bitcoin)"
       : ots.protocol;
+  const otsReceiptExt = String(ots.receipt_ext || ".ots");
+  const berneAlgo = String(berne.commitment_sha256_algorithm || "SHA-256");
   const onoKb = (Number(ono?.zstd_bytes || 79360) / 1024).toFixed(1);
+  const bibliaLlms = ["ar", "bn", "en", "es", "fa", "fr", "hi", "id", "it", "ja", "ko", "pt", "ru", "spa", "stp", "tr", "ur", "zh-Hans"];
+  const felicesLlms = ["ar", "bn", "en", "es", "fa", "fr", "hi", "id", "it", "ja", "ko", "pt", "ru", "tr", "ur", "zh-Hans"];
+  const llmsNavHtml =
+    `<div id="provenanceLlmsGroupedIndex" class="ek-mt-xs ek-stack-xs">` +
+    `<div><strong>${isEn ? "Bible guides (18):" : "Guías Biblia (18):"}</strong> ${bibliaLlms.map((l) => `<a class="uls-chip ek-badge-compact" href="llms/biblia/${l}.md">${l}</a>`).join(" ")}</div>` +
+    `<div><strong>${isEn ? "Beatitudes guides (16):" : "Guías Los Felices (16):"}</strong> ${felicesLlms.map((l) => `<a class="uls-chip ek-badge-compact" href="llms/felices/${l}.md">${l}</a>`).join(" ")}</div>` +
+    `<a class="uls-chip ek-badge-compact" href="llms.txt">llms.txt</a>` +
+    `</div>`;
   const merkleRowsHtml = Object.entries(distRoots)
     .map(
       ([surfaceKey, rootHash]) =>
@@ -228,17 +238,18 @@ export function renderEditorialProvenanceCardHtml(provenance = null, uiLocale = 
     `<output id="berneVerifyStatus" class="ek-meta" aria-live="polite"></output>` +
     `<output id="localEkpackVerifyStatus" class="ek-meta" aria-live="polite"></output>` +
     `</div>` +
-    `<details class="tech-details ek-mt-xs" data-advanced-audit="true"><summary class="tech-details-summary">${isEn ? "🔍 Cryptographic verification fingerprints" : "🔍 Huellas de verificación y registro público"}</summary>` +
+    `<details class="tech-details ek-mt-xs" data-advanced-audit="true"><summary class="tech-details-summary">${isEn ? "🔍 Cryptographic verification fingerprints & 34 guides" : "🔍 Huellas de verificación y 34 guías abiertas"}</summary>` +
     `<dl class="provenance-meta-list">` +
     `<dt>${isEn ? "Authorship Commitment (Berne Art. 15.3)" : "Compromiso de Autoría (Berna Art. 15.3)"}</dt>` +
-    `<dd><code>${escapeHtml(String(berne.creator_commitment_hash || "").slice(0, 24))}…</code></dd>` +
+    `<dd><code>${escapeHtml(berneAlgo)}</code> · <code>${escapeHtml(String(berne.creator_commitment_hash || "").slice(0, 24))}…</code></dd>` +
     `<dt>${isEn ? "Archival Deposit (CERN Zenodo DOI)" : "Depósito Permanente (DOI CERN Zenodo)"}</dt>` +
     `<dd><code>${escapeHtml(p.zenodo_doi_concept)}</code> (v${escapeHtml(zenodoVersion)})</dd>` +
     `<dt>${isEn ? "Compressed Onomasticon Pack" : "Paquete Onomasticon Zstd"}</dt>` +
     `<dd><a class="uls-chip ek-btn-link" href="${escapeHtml(String(ono?.path || "data/onomasticon_3657.json.zst"))}" download="onomasticon_3657.json.zst">📦 ${Number(ono?.entries_count || 3657).toLocaleString("en-US")} (${onoKb} KB Zstd)</a></dd>` +
     `<dt>${isEn ? "Timestamp & Merkle Ledger" : "Sellado Temporal y Raíz Merkle"}</dt>` +
-    `<dd>${escapeHtml(otsText)} · <code>${escapeHtml(merkle.slice(0, 20))}…</code></dd>` +
+    `<dd>${escapeHtml(otsText)} (<code>${escapeHtml(otsReceiptExt)}</code>) · <code>${escapeHtml(merkle.slice(0, 20))}…</code></dd>` +
     `</dl>` +
+    llmsNavHtml +
     `<table id="distMerkleRootsTable" class="ek-table-compact ek-mt-xs"><thead><tr><th>${isEn ? "Surface" : "Superficie"}</th><th>Merkle Root</th></tr></thead><tbody>${merkleRowsHtml}</tbody></table>` +
     `</details>` +
     `</div>`

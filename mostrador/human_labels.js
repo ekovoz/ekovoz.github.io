@@ -213,10 +213,63 @@ export function humanizeUiCopy(rawText, uiLocale = "es", { allowExpert = false }
     [/\bJSONL\s*\/\s*SHA-256\b/gi, isEn ? "Signed audit log" : "Bitácora verificada"],
     [/\bL2 Glosa lingüística:\s*HR\/Ncfsa\b/gi, isEn ? "Grammatical detail in Study" : "Detalle gramatical en Estudiar"],
     [/\bPRIM:\s*/gi, isEn ? "Core meaning: " : "Sentido básico: "],
+    [/\s*\(?0 Bytes Audio\)?/gi, ""],
+    [/\bB01\s*[·:]\s*/g, ""],
+    [/\bEipen\s*L\s*=\s*[\d.,]+/gi, isEn ? "Contemporary flow" : "Fluidez actual"],
+    [/\bAoA\s*=\s*[\d.,]+/gi, isEn ? "Everyday vocabulary" : "Vocabulario cotidiano"],
+    [/\bMDD\s*=\s*[\d.,]+/gi, isEn ? "Clear sentence structure" : "Oración directa"],
+    [/\bPrev\s*=\s*[\d.,]+/gi, isEn ? "Common usage" : "Uso frecuente"],
+    [/\bProtestantKjv\b/gi, isEn ? "Standard 66-book edition" : "Edición clásica (66 libros)"],
+    [/\bASJP\s*LDND\b/gi, isEn ? "Shared lexical roots" : "Raíces compartidas"],
+    [/\bCLDF\b/g, isEn ? "Open word-list package" : "Glosario abierto"],
   ];
   let out = src;
   for (const [rx, sub] of replacements) {
     out = out.replace(rx, sub);
   }
   return out.replace(/\s{2,}/g, " ").trim();
+}
+
+const HUMAN_METRIC_LABELS = Object.freeze({
+  eipen: Object.freeze({ es: "Fluidez contemporánea", en: "Contemporary reading flow" }),
+  eipen_l: Object.freeze({ es: "Fluidez contemporánea", en: "Contemporary reading flow" }),
+  aoa: Object.freeze({ es: "Edad natural de vocabulario", en: "Natural word age" }),
+  mdd: Object.freeze({ es: "Cercanía gramatical", en: "Sentence directness" }),
+  prev: Object.freeze({ es: "Uso cotidiano", en: "Everyday usage" }),
+  prevalence: Object.freeze({ es: "Uso cotidiano", en: "Everyday usage" }),
+  cldf: Object.freeze({ es: "Glosario abierto", en: "Open word-list package" }),
+  asjp: Object.freeze({ es: "Raíces compartidas", en: "Shared lexical roots" }),
+  b01: Object.freeze({ es: "Edición principal", en: "Standard edition" }),
+});
+
+export function formatHumanMetricLabel(metricKey = "", rawValue = "", uiLocale = "es") {
+  const isEn = String(uiLocale || "es").trim().toLowerCase().startsWith("en");
+  const key = String(metricKey || "").trim().toLowerCase();
+  const entry = HUMAN_METRIC_LABELS[key] || { es: "Indicador editorial", en: "Editorial indicator" };
+  const title = isEn ? entry.en : entry.es;
+  const valStr = String(rawValue ?? "").trim();
+  return valStr ? `${title}: ${valStr}` : title;
+}
+
+export function formatEditorialTraditionLabel(traditionKey = "", uiLocale = "es") {
+  const isEn = String(uiLocale || "es").trim().toLowerCase().startsWith("en");
+  const clean = String(traditionKey || "").trim();
+  const norm = clean.toLowerCase();
+  if (norm === "protestantkjv" || norm === "protestant" || norm === "protestant-66") {
+    return isEn ? "Standard 66-book edition" : "Edición clásica (66 libros)";
+  }
+  if (norm === "catholic" || norm === "lxx") {
+    return isEn ? "Greek heritage canon" : "Canon griego histórico";
+  }
+  if (norm === "orthodox") {
+    return isEn ? "Eastern historical canon" : "Canon histórico oriental";
+  }
+  return clean || (isEn ? "Complete Biblical canon" : "Canon bíblico completo");
+}
+
+export function formatIsoLangPillBadge(langCode = "", label = "", { prefix = "" } = {}) {
+  const iso = String(langCode || "").trim().toUpperCase();
+  const tag = iso ? `<span class="ek-iso-tag">${iso}</span>` : "";
+  const pre = prefix ? `${prefix} ` : "";
+  return `${pre}${tag}${String(label || "").trim()}`.trim();
 }

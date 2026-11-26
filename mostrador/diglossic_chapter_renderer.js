@@ -255,9 +255,9 @@ export function renderProgressiveTwoStrataDiglossicBridge({
     const isSelected = vNum === selV;
     let leftCellHtml = "";
     if (String(lang || "").toLowerCase() === "stp" && !isNt && isStpAtAbstentionVerse(matTxt)) {
-      leftCellHtml = `<div class="mostrador-verse bible-verse-line${isSelected ? " is-selected" : ""} diglossic-maternal-abstention" data-verse="${vNum}" data-osis="${escapeHtml(osis)}" data-maternal-stratum="ABSTENTION_ZERO_ROOTS" data-stratum="1-foveal"><sup>${vNum}</sup>&#160;${renderStpAbstentionPillHtml(osis, bridgeSpec.code)}</div>`;
+      leftCellHtml = `<div class="mostrador-verse bible-verse-line${isSelected ? " is-selected" : ""} diglossic-maternal-abstention" data-verse="${vNum}" data-osis="${escapeHtml(osis)}" data-maternal-stratum="ABSTENTION_ZERO_ROOTS" data-stratum="1-foveal"><sup class="diglossic-verse-sup">${vNum}</sup>&#160;${renderStpAbstentionPillHtml(osis, bridgeSpec.code)}</div>`;
     } else if (isHumanMaternalPortion && matTxt) {
-      leftCellHtml = `<div class="mostrador-verse bible-verse-line${isSelected ? " is-selected" : ""} diglossic-maternal-human" data-verse="${vNum}" data-osis="${escapeHtml(osis)}" data-maternal-stratum="HUMAN_VERIFIED" data-stratum="1-foveal"><sup>${vNum}</sup>&#160;${escapeHtml(matTxt)}</div>`;
+      leftCellHtml = `<div class="mostrador-verse bible-verse-line${isSelected ? " is-selected" : ""} diglossic-maternal-human" data-verse="${vNum}" data-osis="${escapeHtml(osis)}" data-maternal-stratum="HUMAN_VERIFIED" data-stratum="1-foveal"><sup class="diglossic-verse-sup">${vNum}</sup>&#160;${escapeHtml(matTxt)}</div>`;
     } else {
       const vRows = gmisByVerse.get(vNum) || [];
       const l1 =
@@ -268,7 +268,7 @@ export function renderProgressiveTwoStrataDiglossicBridge({
       const openAttr = isExpanded ? " open" : "";
       leftCellHtml =
         `<details class="diglossic-gmis-4line" data-maternal-stratum="GMIS_SCAFFOLD" data-gmis-lines="4" data-stratum="2-leipzig"${openAttr}>` +
-        `<summary class="mostrador-verse bible-verse-line${isSelected ? " is-selected" : ""} diglossic-foveal-summary" data-verse="${vNum}" data-osis="${escapeHtml(osis)}" data-stratum="1-foveal"><sup>${vNum}</sup>&#160;${escapeHtml(matTxt || l3 || `[Semilla ${osis}]`)}</summary>` +
+        `<summary class="mostrador-verse bible-verse-line${isSelected ? " is-selected" : ""} diglossic-foveal-summary" data-verse="${vNum}" data-osis="${escapeHtml(osis)}" data-stratum="1-foveal"><sup class="diglossic-verse-sup">${vNum}</sup>&#160;${escapeHtml(matTxt || l3 || `[Semilla ${osis}]`)}</summary>` +
         `<div data-gmis-line="1"><strong>L1 Palabra original:</strong> ${l1}</div>` +
         `<div data-gmis-line="2"><strong>${escapeHtml(l2Human)}:</strong> Ver análisis completo en Estudio (${escapeHtml(osis)})</div>` +
         `<div data-gmis-line="3"><strong>L3 Sentido universal:</strong> ${l3}</div>` +
@@ -278,7 +278,7 @@ export function renderProgressiveTwoStrataDiglossicBridge({
 
     const rightCellHtml =
       `<div class="diglossic-bridge-21" data-bridge-lang="${escapeHtml(bridgeSpec.code)}" data-stratum="1-foveal">` +
-      `<sup>${vNum}</sup>&#160;${escapeHtml(brTxt || `[Puente ${bridgeSpec.code.toUpperCase()} ${osis}]`)}` +
+      `<sup class="diglossic-verse-sup">${vNum}</sup>&#160;${escapeHtml(brTxt || `[Puente ${bridgeSpec.code.toUpperCase()} ${osis}]`)}` +
       `</div>`;
 
     rowsHtml[i] =

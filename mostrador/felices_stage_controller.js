@@ -88,7 +88,11 @@ export function bindFelicesStageEvents(ctx = {}) {
     hydrateShareAndAuditDrawer,
   } = ctx;
 
-  getEl("felicesSovereignSection", targetDoc)?.setAttribute?.("data-desktop-fold-compact", "true");
+  const felicesSec = getEl("felicesSovereignSection", targetDoc);
+  if (felicesSec) {
+    felicesSec.setAttribute?.("data-desktop-fold-compact", "true");
+    felicesSec.setAttribute?.("data-pdf-above-fold", "true");
+  }
 
   registerPlateCoordinateListener(async (coord) => {
     if (!coord) return;

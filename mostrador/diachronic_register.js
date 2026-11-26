@@ -1,7 +1,5 @@
-// Modernizador Diacrónico en 3 Capas (Tier 1/2/3), Inversión de Enclíticos Postverbales
-// y Termómetro Analítico de Legibilidad Intergeneracional (Decisión D2-B+, Arbitrajes #16, #17, #40, #50, #65).
-// Paridad 1:1 con crates/editorial-core/src/modernizer.rs y obras/biblia/register_audit_es.tsv
-// (coastalcph/histnorm + loyd/readability.rs + alejandromunozes/legibilidad).
+// Modernizador Diacrónico en 3 Capas (Tier 1/2/3) y Termómetro Analítico (Decisión D2-B+).
+import { formatHumanMetricLabel } from "./human_labels.js";
 
 const TIER_1_ARCHAIC_LEXICON = [
   ["Jehová", "el Señor"],
@@ -851,13 +849,22 @@ export function renderAnalyticalThermometerHtml({
 
   const inlineDetailsHtml = includeInlineSubstitutionsDetails
     ? `<details id="diachronicSubstitutionsDetails" class="diachronic-substitutions-details">` +
-    `<summary>Ver sustituciones 1909 → Siglo XXI en este capítulo (Tier 1/2/3 · 66 vectores · ΔAoA=${summary.deltaAoaChapter}a · ΔMDD=${summary.deltaMddChapter})</summary>` +
-    `<div class="ek-mt-xs">Léxico: ${tier1Sample} | Enclíticos: ${tier3Sample}</div>` +
+    `<summary>Ver sustituciones 1909 → Siglo XXI en este capítulo</summary>` +
+    `<div class="ek-mt-xs">Léxico: ${tier1Sample} | Enclíticos: ${tier3Sample} | ${formatHumanMetricLabel("eipen_l", metrics.eipenL, uiLocale)} · ${formatHumanMetricLabel("aoa", `${metrics.aoaYears}a`, uiLocale)} · ${formatHumanMetricLabel("mdd", metrics.mdd, uiLocale)}</div>` +
     `<div id="diachronicRegisterAuditPanel" class="ek-mt-sm">` +
     renderChapterDiachronicAuditCardHtml({ verses: textList, bookCode, chapter: Number(String(osisRef).split(".")[1]) || 1, uiLocale }) +
     `</div>` +
     `</details>`
     : "";
+
+  const nonZeroTierBadges = [
+    summary.tier1LexicalCount > 0 ? `<span class="uls-badge" data-diachronic-tier="1">${isEn ? "Vocabulary updated" : "Vocabulario actualizado"}: ${summary.tier1LexicalCount}</span>` : "",
+    summary.tier2MorphologicalCount > 0 ? `<span class="uls-badge" data-diachronic-tier="2">${isEn ? "Verbs updated" : "Verbos actualizados"}: ${summary.tier2MorphologicalCount}</span>` : "",
+    summary.tier3EncliticCount > 0 ? `<span class="uls-badge" data-diachronic-tier="3">${isEn ? "Pronouns updated" : "Pronombres actualizados"}: ${summary.tier3EncliticCount}</span>` : "",
+  ].filter(Boolean).join("");
+  const readingSummary = metrics.passesAllGates
+    ? (isEn ? "Clear contemporary reading · natural vocabulary" : "Lectura clara y cotidiana · vocabulario natural")
+    : (isEn ? "Traditional phrasing detected · review recommended" : "Expresiones clásicas presentes · revisión sugerida");
 
   return (
     `<div class="mostrador-analytical-thermometer" ` +
@@ -874,14 +881,10 @@ export function renderAnalyticalThermometerHtml({
     `data-core-rules-max-aoa="${maxAoaRule}" ` +
     `data-total-verses-audited="${totalAudited}">` +
     `<div>` +
-    `<strong>🌡️ ${isEn ? "Intergenerational Thermometer" : "Termómetro Intergeneracional"} (${summary.bookCode} · ${metrics.passesAllGates ? (isEn ? "✅ 4 Gates OK" : "✅ 4 Candados OK") : (isEn ? "⚠️ Review" : "⚠️ Revisión")} · ${totalAudited} vv.)</strong> ` +
-    `<span class="ek-text-secondary">AoA=${metrics.aoaYears}a (≤${maxAoaRule}a) · Prev=${metrics.lexicalPrevalence} (≥${minPrevRule}) · MDD=${metrics.mdd} (≤${maxMddRule}) · Eipen L=${metrics.eipenL} (${isEn ? "Book" : "Libro"}=${bookEipen})</span>` +
+    `<strong>🌡️ ${isEn ? "Clarity & Reading Flow" : "Claridad de Lectura"} (${summary.bookCode} · ${metrics.passesAllGates ? (isEn ? "✅ Clear" : "✅ Clara") : (isEn ? "⚠️ Review" : "⚠️ Revisión")})</strong> ` +
+    `<span class="ek-text-secondary">${readingSummary}</span>` +
     `</div>` +
-    `<div class="ek-flex-wrap-inline">` +
-    `<span class="uls-badge" data-diachronic-tier="1">Tier 1 ${isEn ? "Lexicon" : "Léxico"} (${summary.tierCatalogSizes.tier1Rules} ${isEn ? "rules" : "reglas"} · ${summary.tier1LexicalCount} ${isEn ? "hits" : "aplic."})</span>` +
-    `<span class="uls-badge" data-diachronic-tier="2">Tier 2 ${isEn ? "Morphology" : "Morfología"} (${summary.tierCatalogSizes.tier2Rules} ${isEn ? "rules" : "reglas"} · ${summary.tier2MorphologicalCount} ${isEn ? "hits" : "aplic."})</span>` +
-    `<span class="uls-badge" data-diachronic-tier="3">Tier 3 ${isEn ? "Enclitics" : "Enclíticos"} (${summary.tierCatalogSizes.tier3Rules} ${isEn ? "rules" : "reglas"} · ${summary.tier3EncliticCount} ${isEn ? "hits" : "aplic."})</span>` +
-    `</div>` +
+    (nonZeroTierBadges ? `<div class="ek-flex-wrap-inline">${nonZeroTierBadges}</div>` : "") +
     inlineDetailsHtml +
     `</div>`
   );

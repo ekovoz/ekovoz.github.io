@@ -173,7 +173,7 @@ export function summarizeAnnotationIndexTotals(annotationReport = null, uiLocale
     html:
       `<div id="studyAnnotationTotalsBox" class="ek-meta ek-stack-xs ek-mt-xs" data-ot-tokens="${Number(t.ot_tokens || 0)}" data-nt-tokens="${Number(t.nt_tokens || 0)}">` +
       `<span><strong>${isEn ? "Source tokens:" : "Tokens fuente:"}</strong> AT ${Number(t.ot_tokens || 0).toLocaleString("en-US")} · NT ${Number(t.nt_tokens || 0).toLocaleString("en-US")} (MACULA ${Number(t.nt_macula_tokens || 0).toLocaleString("en-US")}, SR ${Number(t.nt_sr_tokens || 0).toLocaleString("en-US")}, TAGNT-ES ${Number(t.nt_tagnt_spanish_tokens || 0).toLocaleString("en-US")})</span>` +
-      `<span><strong>${isEn ? "Apparatus & coverage:" : "Aparato y cobertura:"}</strong> Ketiv/Qere ${Number(t.ketiv_tokens || 0)} (${Number(t.tahot_qere_ketiv_rows || 0)} rows) · TR ${Number(t.tr_supplement_tokens || 0)} · OT versification ${Number(t.versification_verses_ot || 0)} · Unannotated: OT ${Number(t.ot_unannotated || 0)} / NT ${Number(t.nt_unannotated || 0)}</span>` +
+      `<span><strong>${isEn ? "Apparatus & coverage:" : "Aparato y cobertura:"}</strong> Ketiv/Qere ${Number(t.ketiv_tokens || 0)} (${Number(t.tahot_qere_ketiv_rows || 0)} rows · osis_ref=${escVm(t.sample_osis_ref || "GEN.1.1")}) · TR ${Number(t.tr_supplement_tokens || 0)} · OT versification ${Number(t.versification_verses_ot || 0)} (eng_ref=${escVm(t.sample_eng_ref || "PSA.23.1")} / org_ref=${escVm(t.sample_org_ref || "PSA.23.2")}) · Unannotated: OT ${Number(t.ot_unannotated || 0)} / NT ${Number(t.nt_unannotated || 0)}</span>` +
       `</div>`,
   };
 }

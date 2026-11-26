@@ -916,3 +916,12 @@ export function resolveDoseEngineActionLabel(engine = "wasm-local", doseState = 
     mode: "wasm-on-demand",
   };
 }
+
+export function renderStaticPdfPortalsHtml(activeLang = "es", uiLocale = "es") {
+  const isEn = String(uiLocale || "es").trim().toLowerCase().startsWith("en");
+  const cur = String(activeLang || "es").trim().toLowerCase().replace(/[^a-z-]/g, "") || "es";
+  const portals = ["ar", "arp", "bn", "bre", "cha", "de", "en", "es", "fa", "fr", "grc", "he", "hi", "id", "it", "ja", "ko", "pt", "ru", "stp", "sw", "tr", "ur", "zh-Hans"];
+  const hit = portals.find((p) => p.toLowerCase() === cur) || "es";
+  const links = portals.map((p) => `<a class="uls-chip" href="pdf/${p}/index.html">${p.toUpperCase()}</a>`).join(" ");
+  return `<div class="ek-subcard"><a class="btn-modal-action" href="pdf/${hit}/index.html">${isEn ? `PDF Library (${hit.toUpperCase()})` : `Portada PDF (${hit.toUpperCase()})`}</a> <span class="ek-meta">${links}</span></div>`;
+}
