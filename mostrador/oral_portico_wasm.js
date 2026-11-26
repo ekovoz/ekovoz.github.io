@@ -179,8 +179,8 @@ export function renderOralPorticoWasmConsole({
     ? (isEn ? "🔊 Device Voice: ON" : "🔊 Voz del dispositivo: SÍ")
     : (isEn ? "🔇 Optional Device Voice" : "🔇 Voz del dispositivo (Opcional)");
   const voiceStatusText = voiceActive && !hasDeviceSpeech
-    ? (isEn ? "No OS voices available — using silent syllable cursor." : "Sin voces del sistema — usando guía visual por sílabas.")
-    : (isEn ? "Silent syllable guide · offline." : "Guía visual por sílabas sin conexión.");
+    ? (isEn ? "No OS voices available — using syllable reading guide." : "Sin voces del sistema — usando lectura guiada por sílabas.")
+    : (isEn ? "Syllable reading guide · optional voice (0 Bytes Audio)." : "Lectura guiada por sílabas · voz opcional (0 Bytes Audio).");
 
   oralBanner.innerHTML =
     `<div id="bibleAudioCadenceBar" class="mostrador-audio-cadence-bar" ` +

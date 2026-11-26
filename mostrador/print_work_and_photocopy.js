@@ -535,7 +535,7 @@ export function renderCompactTypologySelectorHtml({
 
   return (
     `<details id="printTypologyBridgeCard" class="tech-details ek-card-muted ek-stack-sm ek-mt-xs" data-typology-bridge="true">` +
-    `<summary class="ek-title-sm">🌐 ${isEn ? "Advanced · Linguistic layout (Grambank 12×16)" : "Avanzado · Adaptación lingüística (Grambank 12×16)"}</summary>` +
+    `<summary class="ek-title-sm">🌐 ${isEn ? "Advanced · Language-adapted layout (12 families × 16 scripts)" : "Avanzado · Diseño adaptado al idioma (12 familias × 16 escrituras)"}</summary>` +
     `<div class="ek-form-pair ek-mt-xs">` +
     `<label class="ek-label-sm">${isEn ? "Linguistic branch (12)" : "Rama lingüística (12)"}` +
     `<select id="printBranchProfileSelect" class="ek-input">${branchOptions}</select></label>` +
@@ -752,4 +752,40 @@ export function bindPagedMediaPrintButton({
       }
     }
   });
+}
+
+/**
+ * Renderiza bajo demanda las 6 láminas tipográficas reales (`web/preview/*.png`),
+ * las especificaciones TOML crudas (`print_profiles_14[].raw_preview`) y telemetría de motores Rust (`SLICE-EKO-HIG6-12`).
+ */
+export function renderEditorialPreviewsAndEngineTelemetryHtml({
+  editorialProfiles = null,
+  uiLocale = "es",
+} = {}) {
+  const isEn = String(uiLocale || "es").trim().toLowerCase().startsWith("en");
+  const previewFiles = ["0001.png", "0006.png", "0007.png", "0008.png", "0016.png", "0018.png"];
+  const thumbsHtml = previewFiles
+    .map(
+      (fn) =>
+        `<a class="uls-chip ek-btn-link" href="preview/${fn}" target="_blank" rel="noopener">` +
+        `<img src="preview/${fn}" alt="${escapeHtml(`${isEn ? "Print specimen" : "Muestra impresa"} ${fn}`)}" loading="lazy" width="64" height="86" class="photocopy-preview-img"> ` +
+        `<span>${escapeHtml(fn.replace(/\.png$/, ""))}</span></a>`,
+    )
+    .join(" ");
+  const prof0 = Array.isArray(editorialProfiles?.print_profiles_14) ? editorialProfiles.print_profiles_14[0] : null;
+  const rawSpec = String(prof0?.raw_preview || "").trim();
+  const tel = editorialProfiles?.rust_domain_engines_telemetry || null;
+  const telHtml = tel
+    ? `<p class="ek-meta ek-mt-xs"><strong>${isEn ? "Typesetting Engine Telemetry:" : "Telemetría del motor tipográfico:"}</strong> ` +
+      `score=${Number(tel.core_surface_score || 0)} · profiles=${Number(tel.canonical_bible_profiles_count || 9)} · ` +
+      `fonts28=${Boolean(tel.fonts_28_manifest_verified)} · lt_packets=${Number(tel.fountain_lt_probe_packets || 6)}</p>`
+    : "";
+  return (
+    `<details id="printEditorialPreviewsDetails" class="tech-details ek-mt-xs" data-preview-plates="6">` +
+    `<summary>🖼️ ${isEn ? "Editorial Print Samples (6 plates) & Specs" : "Muestras reales de impresión (6 láminas) y perfil"}</summary>` +
+    `<div class="ek-row-wrap ek-mt-xs">${thumbsHtml}</div>` +
+    (rawSpec ? `<pre class="ek-meta ek-mt-xs" data-raw-profile-preview="true">${escapeHtml(rawSpec)}</pre>` : "") +
+    telHtml +
+    `</details>`
+  );
 }

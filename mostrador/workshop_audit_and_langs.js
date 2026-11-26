@@ -8,6 +8,12 @@ import { escapeHtml } from "./bridge_and_chapter.js";
 import { auditExternalFileClient, runClientExternalAudit8Locks } from "./concordance_search.js";
 import { humanizeUiCopy } from "./human_labels.js";
 import { renderStpDraftCheckHtml } from "./mejorar.js";
+import {
+  buildWorkshopCldfCsvAndJson,
+  renderElicitSessionCardHtml,
+  renderModernizeRegisterDiffHtml,
+  renderStpLedgerProgressHtml,
+} from "./workshop_elicit_and_cldf.js";
 
 const WORKSHOP_CORE_CC0_LANGS = Object.freeze([
   { code: "es", labelEs: "🇲🇽 Español", labelEn: "🇲🇽 Spanish" },
@@ -201,9 +207,9 @@ export function renderWorkshop5LangsSwitcherHtml(
   }).join("");
   const extraSelectHtml = extraEntries.length > 0
     ? `<select id="tallerExtraLangSelect" class="ek-select-compact" data-taller-lang-select="true" aria-label="${isEn ? "More workshop languages" : "Más idiomas de taller"}">` +
-      `<option value="">${isEn ? `More languages (${extraEntries.length})` : `Más idiomas (${extraEntries.length})`}</option>` +
-      extraEntries.map((entry) => `<option value="${entry.code}">${formatEntryLabel(entry)}</option>`).join("") +
-      `</select>`
+    `<option value="">${isEn ? `More languages (${extraEntries.length})` : `Más idiomas (${extraEntries.length})`}</option>` +
+    extraEntries.map((entry) => `<option value="${entry.code}">${formatEntryLabel(entry)}</option>`).join("") +
+    `</select>`
     : "";
   const activeEntry = catalogLangs.find((e) => e.code === cleanActive) || WORKSHOP_CORE_CC0_LANGS[0];
   const activeFocusHint = cleanActive === "he"
@@ -266,23 +272,23 @@ export function renderWorkshopAuditSubtabHtml({
   const relocatedAuditHtml =
     typeof mod.renderWorkshopAuditPanelsHtml === "function"
       ? mod.renderWorkshopAuditPanelsHtml({
-          lang: activeTallerLang,
-          uiLocale,
-          uqPage: state.uncertaintyQueuePage || 1,
-          externalAuditText: state.externalAuditText || "",
-          externalAuditResult: state.externalAuditResult || null,
-          activeTier3aPair: state.activeTier3aPair || "",
-        })
+        lang: activeTallerLang,
+        uiLocale,
+        uqPage: state.uncertaintyQueuePage || 1,
+        externalAuditText: state.externalAuditText || "",
+        externalAuditResult: state.externalAuditResult || null,
+        activeTier3aPair: state.activeTier3aPair || "",
+      })
       : "";
   const catalogHtml =
     typeof mod.renderTallerArtifactsCatalogHtml === "function"
       ? mod.renderTallerArtifactsCatalogHtml({
-          lang: activeTallerLang,
-          includeCensusCard: true,
-          includeEightLocksBar: false,
-          masterCensusSummary: state.masterCensusSummary || null,
-          uiLocale,
-        })
+        lang: activeTallerLang,
+        includeCensusCard: true,
+        includeEightLocksBar: false,
+        masterCensusSummary: state.masterCensusSummary || null,
+        uiLocale,
+      })
       : "";
   const isEnAudit = String(uiLocale || "es").trim().toLowerCase().startsWith("en");
   const annTotals = state.annotationIndexReport?.totals || null;
@@ -290,14 +296,35 @@ export function renderWorkshopAuditSubtabHtml({
   const coverageSummaryHtml =
     annTotals || blindRows.length > 0 || state.externalModernizeAudit
       ? `<section id="workshopCoverageCalibrationCard" class="ek-card-muted ek-mt-sm" data-annotation-tokens="${Number(annTotals?.ot_tokens || 0) + Number(annTotals?.nt_tokens || 0)}" data-blind-calibration-rows="${blindRows.length}"${state.externalModernizeAudit ? ` data-modernize-aoa="${state.externalModernizeAudit.aoaYears}" data-modernize-mdd="${state.externalModernizeAudit.mdd}"` : ""}>` +
-        `<div class="ek-row-between">` +
-        `<strong>⚖️ ${isEnAudit ? "Quality & Source Text Calibration" : "Calibración de Calidad y Fuentes Originales"}</strong>` +
-        `<span class="uls-badge">${blindRows.length || 48} ${isEnAudit ? "calibrated samples" : "muestras calibradas"}${annTotals ? ` · ${(Number(annTotals.ot_tokens || 0) + Number(annTotals.nt_tokens || 0)).toLocaleString("en-US")} ${isEnAudit ? "tokens" : "palabras"}` : ""}${state.externalModernizeAudit ? ` · ${state.externalModernizeAudit.label}` : ""}</span>` +
-        `</div>` +
-        `<p class="ek-meta ek-m-0 ek-mt-xs">${isEnAudit ? "Covers Hebrew/Greek lexical alignments and 12-language clarity checks across GEN, PSA, ISA, JON." : "Cubre alineación léxica hebreo/griego y verificación de claridad en 12 lenguas sobre GEN, PSA, ISA y JON."}</p>` +
-        `</section>`
+      `<div class="ek-row-between">` +
+      `<strong>⚖️ ${isEnAudit ? "Quality & Source Text Calibration" : "Calibración de Calidad y Fuentes Originales"}</strong>` +
+      `<span class="uls-badge">${blindRows.length || 48} ${isEnAudit ? "calibrated samples" : "muestras calibradas"}${annTotals ? ` · ${(Number(annTotals.ot_tokens || 0) + Number(annTotals.nt_tokens || 0)).toLocaleString("en-US")} ${isEnAudit ? "tokens" : "palabras"}` : ""}${state.externalModernizeAudit ? ` · ${state.externalModernizeAudit.label}` : ""}</span>` +
+      `</div>` +
+      `<p class="ek-meta ek-m-0 ek-mt-xs">${isEnAudit ? "Covers Hebrew/Greek lexical alignments and 12-language clarity checks across GEN, PSA, ISA, JON." : "Cubre alineación léxica hebreo/griego y verificación de claridad en 12 lenguas sobre GEN, PSA, ISA y JON."}</p>` +
+      `</section>`
       : "";
-  return switcherHtml + coverageSummaryHtml + relocatedAuditHtml + catalogHtml + sanitizedDraftHtml;
+  const cldfBundle = buildWorkshopCldfCsvAndJson({
+    lang: activeTallerLang,
+    book: state.book || "GEN",
+    chapter: state.chapter || 1,
+    ladderItems: state.celfLadder250 || [],
+  });
+  const activeVerseKey = String(state.verse || 1);
+  const elicitAndCldfHtml =
+    `<details id="workshopElicitCldfDetails" class="tech-details ek-mt-sm" data-cldf-rows="${cldfBundle.rowCount}">` +
+    `<summary>📤 ${isEnAudit ? "Field Elicitation Session, Canon Progress & CLDF Export" : "Sesión de Elicitación, Avance Canónico y Exportación CLDF"}</summary>` +
+    renderStpLedgerProgressHtml(state.masterCensusSummary || null, uiLocale) +
+    renderElicitSessionCardHtml(state.celfLadder250 || null, uiLocale) +
+    renderModernizeRegisterDiffHtml({
+      modernText: state.lastNavResult?.chapter?.verses?.[activeVerseKey] || "",
+      classicText: state.lastNavResult?.bridgeChapter?.verses?.[activeVerseKey] || "",
+      uiLocale,
+    }) +
+    `<div class="ek-row-wrap ek-mt-xs">` +
+    `<a id="btnExportWorkshopCsv" class="uls-chip ek-btn-link" href="${cldfBundle.csvHref}" download="${escapeHtml(cldfBundle.csvFilename)}">⬇️ ${isEnAudit ? `Export CSV (${cldfBundle.rowCount} rows)` : `Exportar CSV (${cldfBundle.rowCount} filas)`}</a>` +
+    `<a id="btnExportWorkshopCldfJson" class="uls-chip ek-btn-link" href="${cldfBundle.jsonHref}" download="${escapeHtml(cldfBundle.jsonFilename)}">📦 ${isEnAudit ? "Export CLDF JSON" : "Exportar CLDF JSON"}</a>` +
+    `</div></details>`;
+  return switcherHtml + coverageSummaryHtml + elicitAndCldfHtml + relocatedAuditHtml + catalogHtml + sanitizedDraftHtml;
 }
 
 export function computeClientModernizeReadabilityAudit(rawText = "", uiLocale = "es") {
@@ -351,24 +378,33 @@ export function createWorkshopAuditHandlers({
       const file = e?.target?.files?.[0];
       if (!file) return;
       const isDocx = /\.docx$/i.test(String(file.name || ""));
-      let bytes = null;
-      let rawText = "";
+      let rawDraft = "";
+      let extRes = null;
       if (isDocx && typeof file.arrayBuffer === "function") {
-        bytes = new Uint8Array(await file.arrayBuffer());
+        const res = await auditExternalFileClient({
+          fileName: file.name,
+          bytes: new Uint8Array(await file.arrayBuffer()),
+          oldSurface: oldInput?.value || "",
+        });
+        rawDraft = res.extractedText;
+        extRes = res.audit;
       } else if (typeof file.text === "function") {
-        rawText = await file.text();
+        rawDraft = await file.text();
+        const res = await auditExternalFileClient({
+          fileName: file.name,
+          rawText: rawDraft,
+          oldSurface: oldInput?.value || "",
+        });
+        extRes = res.audit;
       } else {
         return;
       }
-      const clientRes = await auditExternalFileClient({
-        fileName: file.name || "",
-        bytes,
-        rawText,
+      state.externalAuditText = rawDraft;
+      state.externalAuditResult = extRes || runClientExternalAudit8Locks({
+        rawText: rawDraft,
         oldSurface: oldInput?.value || "",
       });
-      state.externalAuditText = clientRes.extractedText;
-      state.externalAuditResult = clientRes.audit;
-      state.externalModernizeAudit = computeClientModernizeReadabilityAudit(clientRes.extractedText, state.uiLocale || "es");
+      state.externalModernizeAudit = computeClientModernizeReadabilityAudit(rawDraft, state.uiLocale || "es");
       state.refreshWorkshopAuditSubtab?.();
       (state.refreshPatchPreview || refreshPatchPreview)();
     }

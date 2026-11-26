@@ -50,6 +50,7 @@ export const SHELL_CORE_ASSETS = [
   "/mostrador/docx_client_reader.js",
   "/mostrador/print_funnel_view.js",
   "/mostrador/workshop_audit_and_langs.js",
+  "/mostrador/workshop_elicit_and_cldf.js",
   "/mostrador/workshop_overlay_store.js",
   "/mostrador/authenticity_sheet.js",
   "/mostrador/drawer_share.js",

@@ -24,6 +24,7 @@ import {
 } from "./drawer_share.js";
 import {
   HAREL_STUDY_SUBTABS,
+  bindLifeTrailsNavigation,
   hydrateBookNamesSourceBadge,
   hydrateLifeTrailsFromPericopesArtifact,
   hydrateStudyDrawerPanel as hydrateStudyDrawerPanelImpl,
@@ -56,6 +57,7 @@ export {
   HAREL_STUDY_SUBTABS,
   HAREL_WORKSHOP_SUBTABS,
   bindImproveFormControlsInDrawer,
+  bindLifeTrailsNavigation,
   createLatestSlotRunner,
   exportBundleAsFile,
   hydrateBookNamesSourceBadge,

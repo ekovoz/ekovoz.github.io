@@ -23,6 +23,7 @@ import { applyGrambankTypologyToPrint } from "./print_config_projector.js";
 import { resolveActiveWorkDrawerContext } from "./projection_contract.js";
 import { parseBiblicalCoordinateReference } from "./reference.js";
 import { hydrateOnomasticonAndUbsPanels, renderFormulaicParallelsCardHtml } from "./study_onomasticon_and_ubs.js";
+import { buildRosettaMultiPivotCompareHtml, summarizeAnnotationIndexTotals, summarizeDiachronicAndBlindCalibration } from "./study_verse_viewmodel.js";
 
 export const HAREL_STUDY_SUBTABS = ["words", "rosetta", "calibrate"];
 
@@ -44,12 +45,38 @@ function renderProBovedaStudyAccordionHtml(uiLocale = "es") {
   );
 }
 
+const TRAIL_BTN_TO_TRAIL_ID = Object.freeze({
+  btnTrailConsuelo: "TRAIL_CONSUELO",
+  btnTrailPaz: "TRAIL_PAZ_ANSIEDAD",
+  btnTrailPerdon: "TRAIL_PERDON",
+  btnTrailSabiduria: "TRAIL_SABIDURIA",
+  btnTrailFamilia: "TRAIL_FAMILIA",
+  btnTrailEsperanza: "TRAIL_ESPERANZA",
+  btnTrailOracion: "TRAIL_JUSTICIA",
+  btnTrailCreacion: "TRAIL_CAMINO_JESUS",
+});
+
+function parseLifeTrailRefString(osisRef = "") {
+  const m = String(osisRef || "").trim().match(/^([1-3]?[A-Z]{2,3})\.(\d+)\.(\d+)$/i);
+  if (!m) return null;
+  return { book: m[1].toUpperCase(), chapter: Number(m[2]) || 1, verse: Number(m[3]) || 1, osis: `${m[1].toUpperCase()}.${Number(m[2]) || 1}.${Number(m[3]) || 1}` };
+}
+
 /**
  * Hidrata los Senderos de Vida (`life_trails`) y Perícopas de Capítulo (`chapter_pericopes`)
- * desde `web/data/pericopes_and_glosses.json` (`D3-B++` · `GOLD-647`).
+ * desde `web/data/pericopes_and_glosses.json` (`D3-B++` · `GOLD-647` · `SLICE-EKO-HIG6-07`).
  */
 export function hydrateLifeTrailsFromPericopesArtifact(artifact = null) {
-  const lifeTrails = Array.isArray(artifact?.life_trails) ? artifact.life_trails : [];
+  const rawTrails = Array.isArray(artifact?.life_trails) ? artifact.life_trails : [];
+  const lifeTrails = rawTrails.map((t) => ({
+    ...t,
+    parsedAnchors: (Array.isArray(t?.anchor_refs) ? t.anchor_refs : []).map(parseLifeTrailRefString).filter(Boolean),
+  }));
+  const trailByButtonId = {};
+  for (const [btnId, trailId] of Object.entries(TRAIL_BTN_TO_TRAIL_ID)) {
+    const found = lifeTrails.find((t) => t.trail_id === trailId);
+    if (found) trailByButtonId[btnId] = found;
+  }
   const chapterPericopes =
     artifact?.chapter_pericopes && typeof artifact.chapter_pericopes === "object"
       ? artifact.chapter_pericopes
@@ -59,12 +86,85 @@ export function hydrateLifeTrailsFromPericopesArtifact(artifact = null) {
     : [];
   return {
     lifeTrails,
+    trailByButtonId,
     chapterPericopes,
     masoreticAndGospel,
     evangeliosMacroThreads: artifact?.evangelios_macro_threads || {},
     felices12Dichas: Array.isArray(artifact?.felices_12_dichas) ? artifact.felices_12_dichas : [],
     felices28Plates: Array.isArray(artifact?.felices_28_plates) ? artifact.felices_28_plates : [],
   };
+}
+
+export function bindLifeTrailsNavigation({
+  state,
+  dataLayer,
+  targetDoc,
+  getEl,
+  navigate,
+  hydrateBookAndChapterSelectors,
+  anchors = {},
+} = {}) {
+  const renderStepper = (trail, stepIdx) => {
+    const stepperEl = getEl("activeLifeTrailStepper", targetDoc);
+    const list = Array.isArray(trail?.stepperAnchors) ? trail.stepperAnchors : trail?.parsedAnchors;
+    if (!stepperEl || !Array.isArray(list) || list.length === 0) return;
+    const total = list.length;
+    const rawStep = stepIdx ?? state.activeLifeTrailStepIndex ?? 0;
+    const safeIdx = ((Number(rawStep) || 0) % total + total) % total;
+    stepperEl.setAttribute?.("data-active-step-index", String(safeIdx));
+    const cur = list[safeIdx];
+    const nextIdx = (safeIdx + 1) % total;
+    const isEn = String(state.uiLocale || "es").toLowerCase().startsWith("en");
+    const chips = list.map((s, i) => `<button type="button" class="uls-chip" data-trail-step-index="${i}" aria-pressed="${i === safeIdx ? "true" : "false"}">${i + 1}. ${escHtml(`${s.book} ${s.chapter}:${s.verse}`)}</button>`).join(" ");
+    stepperEl.hidden = false;
+    stepperEl.setAttribute?.("data-active-trail-id", String(trail.trail_id || ""));
+    stepperEl.setAttribute?.("data-active-trail-icon", String(trail.icon_svg_id || ""));
+    stepperEl.innerHTML = `<span data-trail-step-counter="true"><strong>${escapeTrailTitle(trail)}</strong> · ${isEn ? `Step ${safeIdx + 1}/${total}` : `Paso ${safeIdx + 1}/${total}`} (${escHtml(`${cur.book} ${cur.chapter}:${cur.verse}`)})</span>${chips}<button type="button" id="btnLifeTrailNextStep" class="uls-chip" data-trail-step-index="${nextIdx}">${isEn ? `Next (${nextIdx + 1}/${total}) →` : `Siguiente (${nextIdx + 1}/${total}) →`}</button>`;
+    if (!stepperEl._trailStepperBound && typeof stepperEl.addEventListener === "function") {
+      stepperEl._trailStepperBound = true;
+      stepperEl.addEventListener("click", async (ev) => {
+        const idxAttr = (ev?.target?.closest ? ev.target.closest("[data-trail-step-index]") : ev?.target)?.getAttribute?.("data-trail-step-index");
+        const active = state.activeLifeTrail;
+        const stops = active?.stepperAnchors || active?.parsedAnchors || [];
+        if (idxAttr == null || stops.length === 0) return;
+        const targetIdx = Number(idxAttr) || 0;
+        const stop = stops[targetIdx];
+        if (!stop) return;
+        state.activeLifeTrailStepIndex = targetIdx;
+        await navigate({ book: stop.book, chapter: stop.chapter, verse: stop.verse }, targetDoc);
+        hydrateBookAndChapterSelectors(targetDoc);
+        renderStepper(active, targetIdx);
+      });
+    }
+  };
+  const escapeTrailTitle = (trail) => escHtml(trail?.title_es || trail?.trail_id || "");
+  for (const [trailBtnId, anchor] of Object.entries(anchors)) {
+    const tBtn = getEl(trailBtnId, targetDoc);
+    if (!tBtn || typeof tBtn.addEventListener !== "function") continue;
+    tBtn.addEventListener("click", async () => {
+      if (!state.hydratedLifeTrails && typeof dataLayer?.loadPericopesAndGlosses === "function") {
+        try {
+          const pgData = await dataLayer.loadPericopesAndGlosses();
+          if (pgData) state.hydratedLifeTrails = hydrateLifeTrailsFromPericopesArtifact(pgData);
+        } catch { /* Fallback */ }
+      }
+      const trailObj = state.hydratedLifeTrails?.trailByButtonId?.[trailBtnId] || null;
+      if (trailObj?.icon_svg_id) tBtn.setAttribute?.("data-trail-icon", String(trailObj.icon_svg_id));
+      const baseAnchors = Array.isArray(trailObj?.parsedAnchors) ? trailObj.parsedAnchors : [];
+      let startIdx = baseAnchors.findIndex((a) => a.book === anchor.book && a.chapter === anchor.chapter && a.verse === anchor.verse);
+      const primaryStop = { book: anchor.book, chapter: anchor.chapter, verse: anchor.verse, osis: `${anchor.book}.${anchor.chapter}.${anchor.verse}` };
+      const stepperAnchors = startIdx >= 0 ? baseAnchors : [primaryStop, ...baseAnchors];
+      if (startIdx < 0) startIdx = 0;
+      const stop = stepperAnchors[startIdx] || anchor;
+      await navigate({ book: stop.book, chapter: stop.chapter, verse: stop.verse }, targetDoc);
+      hydrateBookAndChapterSelectors(targetDoc);
+      if (trailObj && stepperAnchors.length > 0) {
+        state.activeLifeTrail = { ...trailObj, stepperAnchors };
+        state.activeLifeTrailStepIndex = startIdx;
+        renderStepper(state.activeLifeTrail, startIdx);
+      }
+    });
+  }
 }
 
 /**
@@ -261,6 +361,7 @@ export async function hydrateStudyDrawerPanel(ctx = {}) {
       if (pgData) {
         hydratePericopesAndGlosses(pgData);
         hydrateCulturalGlossesLexicon(pgData.cultural_glosses || pgData);
+        state.hydratedLifeTrails = hydrateLifeTrailsFromPericopesArtifact(pgData);
       }
     } catch {
       // Non-fatal
@@ -270,10 +371,16 @@ export async function hydrateStudyDrawerPanel(ctx = {}) {
     state.diachronicRegisterLoaded = true;
     try {
       const drData = await dataLayer.loadDiachronicRegisterAudit();
-      if (drData) hydrateDiachronicRegister(drData);
+      if (drData) { state.diachronicRegisterPayload = drData; hydrateDiachronicRegister(drData); }
     } catch {
       // Non-fatal
     }
+  }
+  if (!state.annotationIndexReport && typeof dataLayer?.loadAnnotationIndexReport === "function") {
+    try { const ann = await dataLayer.loadAnnotationIndexReport(); if (ann) state.annotationIndexReport = ann; } catch { /* Non-fatal */ }
+  }
+  if (!state.blindCalibrationReport && typeof dataLayer?.loadBlindCalibrationReport === "function") {
+    try { const br = await dataLayer.loadBlindCalibrationReport(); if (br) state.blindCalibrationReport = br; } catch { /* Non-fatal */ }
   }
   const i18nInstance = typeof getI18n === "function" ? getI18n() : null;
   const tFn = i18nInstance ? (k, p) => i18nInstance.t(k, p) : undefined;
@@ -368,10 +475,19 @@ export async function hydrateStudyDrawerPanel(ctx = {}) {
           typeof mod.renderPhilologyRosettaInspectorHtml === "function"
             ? mod.renderPhilologyRosettaInspectorHtml
             : renderPhilologyRosettaInspectorHtml;
-        summarySlot.innerHTML = renderInspectorFn(matrixChapter?.rows || [], {
-          ...studyOpts,
-          includeExplorer: false,
-        });
+        summarySlot.innerHTML =
+          renderInspectorFn(matrixChapter?.rows || [], {
+            ...studyOpts,
+            includeExplorer: false,
+          }) +
+          buildRosettaMultiPivotCompareHtml({
+            book: state.book,
+            chapter: state.chapter,
+            verse: state.verse,
+            rosettaIndex,
+            activeRows: matrixChapter?.rows || [],
+            uiLocale: state.uiLocale || "es",
+          });
       }
       if (staticRowsEl) {
         const renderRowsFn =
@@ -740,7 +856,16 @@ export async function hydrateStudyDrawerPanel(ctx = {}) {
       uiLocale: state.uiLocale || "es",
     });
     mountCardHtmlIntoHost(diachronicAuditPanel, auditCardHtml);
-    diachronicAuditPanel.innerHTML = `${diachronicAuditPanel.innerHTML || ""}${unifiedCtxHtml}`;
+    const corpusMetricsHtml =
+      `<details id="studyDeepCorpusMetricsDetails" class="tech-details ek-mt-xs"><summary>📐 ${isEnStudySync ? "Corpus Tokens, Calibration & Register Metrics" : "Totales del Corpus, Calibración y Registro"}</summary>` +
+      summarizeAnnotationIndexTotals(state.annotationIndexReport || null, state.uiLocale || "es").html +
+      summarizeDiachronicAndBlindCalibration({
+        corpusSummary: state.diachronicRegisterPayload?.corpus_summary || null,
+        blindReport: state.blindCalibrationReport || null,
+        uiLocale: state.uiLocale || "es",
+      }) +
+      `</details>`;
+    diachronicAuditPanel.innerHTML = `${diachronicAuditPanel.innerHTML || ""}${unifiedCtxHtml}${corpusMetricsHtml}`;
     const diaSearchInp = getEl("diachronicSubstitutionsSearchInput", targetDoc);
     const diaTierSel = getEl("diachronicTierFilterSelect", targetDoc);
     const refreshDiachronicRulesList = () => {

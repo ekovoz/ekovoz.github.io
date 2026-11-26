@@ -698,6 +698,7 @@ export function hydrateShareAndAuditDrawerPanel(ctx = {}) {
     auditStatusPanel.innerHTML = renderEditorialAuditAttestationHtml({
       verseSurface: activeVerseTextForQuine,
       ed25519Verified: ed25519GateValue,
+      explicitUserVerification: Boolean(state.userVerifiedEdition),
       masterCensus: state.masterCensusSummary || dataLayer?.getHydratedMasterCensusSummary?.() || null,
       rustTelemetry:
         state.editorialProfiles?.rust_domain_engines_telemetry ||
@@ -830,6 +831,7 @@ export function bindShareDrawerActionEvents(ctx = {}) {
         statusPanel.innerHTML = `<div class="audit-receipt" data-action="copy-link" data-share-url="${escapeHtml(shareUrl)}">🔗 <strong>Enlace directo copiado:</strong> <code>${escapeHtml(shareUrl)}</code></div>`;
       }
     } else if (shareBtnId === "btnVerifyEd25519Signature") {
+      state.userVerifiedEdition = true;
       const manifest = await dataLayer.loadManifest();
       const merkleObj = typeof dataLayer.loadMerkleRoot === "function" ? await dataLayer.loadMerkleRoot() : null;
       const receipt = verifyManifestAndMerkleAudit({
@@ -869,6 +871,7 @@ export function bindShareDrawerActionEvents(ctx = {}) {
         const baseAttestation = renderEditorialAuditAttestationHtml({
           verseSurface: state.lastNavResult?.chapter?.verses?.[String(state.verse)] || "",
           ed25519Verified: ed25519Ok,
+          explicitUserVerification: true,
           masterCensus: state.masterCensusSummary || dataLayer?.getHydratedMasterCensusSummary?.() || null,
           rustTelemetry: state.editorialProfiles?.rust_domain_engines_telemetry || dataLayer?.getHydratedEditorialProfiles?.()?.rust_domain_engines_telemetry || null,
           uiLocale: state.uiLocale || "es",

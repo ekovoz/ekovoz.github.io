@@ -453,19 +453,27 @@ export function bindOpticalCameraAndCadenceController({
     });
   }
 
+  const initialCamHost = targetDoc?.getElementById?.("opticalCameraViewportHost") || null;
+  if (initialCamHost && !state?.opticalCameraActive) {
+    initialCamHost.hidden = true;
+    initialCamHost.setAttribute?.("data-camera-idle-hidden", "true");
+  }
   if (!camRxBtn || typeof camRxBtn.addEventListener !== "function") return;
 
   camRxBtn.addEventListener("click", async () => {
     const statusPanel = statusPanelGetter();
     const videoEl = videoElGetter();
+    const camHost = targetDoc?.getElementById?.("opticalCameraViewportHost") || null;
     const idleEl = targetDoc?.getElementById?.("opticalCameraIdlePlaceholder") || null;
     const willOpen = videoEl ? Boolean(videoEl.hidden) : !state.opticalCameraActive;
     state.opticalCameraActive = willOpen;
+    if (camHost) camHost.hidden = !willOpen;
     if (videoEl) videoEl.hidden = !willOpen;
     if (idleEl) idleEl.hidden = willOpen;
 
     const stopOpticalCameraSession = () => {
       state.opticalCameraActive = false;
+      if (camHost) camHost.hidden = true;
       if (videoEl) videoEl.hidden = true;
       if (idleEl) idleEl.hidden = false;
       if (

@@ -5,6 +5,7 @@
 // ============================================================================
 
 import { escapeHtml } from "./bridge_and_chapter.js";
+import { DEEP_PROJECTION_SUBKEYS } from "./projection_contract.js";
 import {
   IDB_STORE_FONTS,
   IDB_STORE_PACKS,
@@ -161,6 +162,17 @@ export function renderVaultStorageManagerHtml({
     const statusBadge = downloaded
       ? `✅ ${isEn ? "Ready" : "Listo"}${sizeStr ? ` · ${sizeStr}` : ""}`
       : `${isEn ? "Not downloaded" : "Disponible"}${sizeStr ? ` · ${sizeStr}` : ""}`;
+    const metaDetailsHtml = meta
+      ? `<details class="tech-details vault-pack-meta-details" data-pack-meta-details="true">` +
+        `<summary>${isEn ? "Edition & verification details" : "Ficha técnica y verificación"}</summary>` +
+        `<div class="ek-meta ek-stack-xs">` +
+        `<span><strong>${isEn ? "Versification" : "Versificación"}:</strong> ${escapeHtml(String(meta.versificationTradition || "eng"))} · ` +
+        `<strong>${isEn ? "Variants" : "Variantes"}:</strong> ${escapeHtml(Array.isArray(meta.diachronicVariants) && meta.diachronicVariants.length ? meta.diachronicVariants.join(", ") : "canonical")} · ` +
+        `<strong>${isEn ? "Epistemic tiers" : "Niveles epistémicos"}:</strong> ${escapeHtml(String(meta.bookEpistemicTiersLen ?? 0))}</span>` +
+        (meta.merkleRootSha256 ? `<span><strong>Merkle:</strong> <code>${escapeHtml(String(meta.merkleRootSha256).slice(0, 16))}…</code></span>` : "") +
+        (meta.contentDigestSha256 ? `<span><strong>Digest:</strong> <code>${escapeHtml(String(meta.contentDigestSha256).slice(0, 16))}…</code></span>` : "") +
+        `</div></details>`
+      : "";
     return (
       `<li class="vault-pack-row${isMatrix ? " is-matrix-highlight" : ""}" data-vault-pack="${escapeHtml(langCode)}" data-vault-file="${escapeHtml(fileKey)}" data-vault-search="${escapeHtml(searchHay)}" data-vault-installed="${downloaded}"${priorityTag ? ` data-vault-priority="${escapeHtml(priorityTag)}"` : ""}>` +
       `<div class="vault-pack-info">` +
@@ -169,6 +181,7 @@ export function renderVaultStorageManagerHtml({
       (prog && prog.pct > 0 && prog.pct < 100
         ? `<progress class="vault-chunk-progress" data-chunk-progress="${prog.pct}" max="100" value="${prog.pct}">${prog.pct}%</progress>`
         : "") +
+      metaDetailsHtml +
       `</div>` +
       `<div class="vault-pack-actions">` +
       (!downloaded
@@ -206,9 +219,18 @@ export function renderVaultStorageManagerHtml({
   const summaryLabel = isEn
     ? `${installedBiblesCount} of ${mergedLangs.length} Bibles ready · ${formatMegabytes(usedBytes)}${quotaSuffix}`
     : `${installedBiblesCount} de ${mergedLangs.length} Biblias listas · ${formatMegabytes(usedBytes)}${quotaSuffix}`;
+  const standaloneReadersHtml = [
+    ["es", "Español"],
+    ["en", "English"],
+    ["grc", "Ἑλληνική (grc)"],
+    ["he", "עברית (he)"],
+    ["stp", "O'dam (stp)"],
+  ]
+    .map(([lc, label]) => `<a class="uls-chip ek-btn-link" href="obras/biblia/packs/${lc}/lector_offline_${lc}.html">${escapeHtml(label)}</a>`)
+    .join(" ");
 
   return (
-    `<section id="vaultStorageManagerPanel" class="vault-manager-card" data-vault-langs-count="${mergedLangs.length}" data-installed-packs="${packMap.size}" data-installed-fonts="${(storedFonts || []).length}" data-tier0-offline-bundle-bytes="${tier0BundleBytes}" data-total-fonts="${totalFontsCount}" data-tech-key="ekovoz_vault_v2">` +
+    `<section id="vaultStorageManagerPanel" class="vault-manager-card" data-vault-langs-count="${mergedLangs.length}" data-installed-packs="${packMap.size}" data-installed-fonts="${(storedFonts || []).length}" data-tier0-offline-bundle-bytes="${tier0BundleBytes}" data-total-fonts="${totalFontsCount}" data-deep-projection-keys="${Array.isArray(DEEP_PROJECTION_SUBKEYS["offline_packs_catalog.json"]) ? DEEP_PROJECTION_SUBKEYS["offline_packs_catalog.json"].length : 5}" data-tech-key="ekovoz_vault_v2">` +
     `<header class="vault-manager-header">` +
     `<strong>🗄️ ${isEn ? "Offline Device Vault" : "Bóveda sin conexión del dispositivo"}</strong>` +
     `<span class="uls-badge" data-vault-quota-badge="true">${escapeHtml(summaryLabel)} · ${totalFontsCount} ${isEn ? "fonts" : "fuentes"} (${formatMegabytes(tier0BundleBytes)})</span>` +
@@ -224,6 +246,10 @@ export function renderVaultStorageManagerHtml({
       `</div>` +
       `</details>`
       : "") +
+    `<section id="vaultStandaloneOfflineReadersCard" class="ek-card ek-stack-xs ek-mt-xs" data-standalone-readers="5">` +
+    `<strong>📖 ${isEn ? "Standalone Offline HTML Readers (5)" : "Lectores HTML autónomos sin conexión (5)"}</strong>` +
+    `<div class="ek-row-wrap">${standaloneReadersHtml}</div>` +
+    `</section>` +
     `</section>`
   );
 }

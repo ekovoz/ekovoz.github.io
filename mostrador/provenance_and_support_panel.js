@@ -6,6 +6,7 @@
 import { escapeHtml } from "./bridge_and_chapter.js";
 import { parseEkpackPreamble32Js, sha256BytesSyncPureJs } from "./ekpack_binary_codec.js";
 import { validateAllEightLocksPda } from "./mejorar.js";
+import { resolveCliSurfaceKind } from "./projection_contract.js";
 
 const DEFAULT_PROVENANCE = Object.freeze({
   title: "Ekovoz: Open Polyglot Biblical Resources",
@@ -65,6 +66,7 @@ export async function verifyBerneCommitmentSha256(preimageText = "", expectedHex
 export function renderEditorialAuditAttestationHtml({
   verseSurface = "",
   ed25519Verified = true,
+  explicitUserVerification = true,
   masterCensus = null,
   rustTelemetry = null,
   pericopeReceipt = null,
@@ -121,19 +123,19 @@ export function renderEditorialAuditAttestationHtml({
   const humanAttestationTitle = isEn
     ? "Editorial Authenticity & Integrity Check"
     : "Verificación de Autenticidad Editorial";
-  const humanAttestationStatus = isVerifiedSig
-    ? (isEn ? "✅ Authentic editorial edition" : "✅ Edición editorial auténtica")
-    : (isEn ? "⛔ Unverified signature" : "⛔ Firma no verificada");
+  const humanAttestationStatus = !explicitUserVerification
+    ? (isEn ? "🛡️ Ready to verify" : "🛡️ Listo para verificar")
+    : isVerifiedSig
+      ? (isEn ? "✅ Authentic editorial edition" : "✅ Edición editorial auténtica")
+      : (isEn ? "⛔ Unverified signature" : "⛔ Firma no verificada");
 
   return (
-    `<div class="editorial-attestation-receipt ek-stack-sm ek-mt-xs" data-ed25519-verified="${ed25519GateAttr}" data-eight-locks-status="${escapeHtml(eightLocksReport.status)}" data-zero-truncation="${zeroTrunc}" data-living-languages="${totalLangs}" data-rust-surface-score="${surfaceScore}">` +
+    `<div class="editorial-attestation-receipt ek-stack-sm ek-mt-xs" data-ed25519-verified="${ed25519GateAttr}" data-ed25519-pending="${String(!explicitUserVerification)}" data-eight-locks-status="${escapeHtml(eightLocksReport.status)}" data-zero-truncation="${zeroTrunc}" data-living-languages="${totalLangs}" data-rust-surface-score="${surfaceScore}">` +
     `<div class="ek-row-between">` +
     `<span class="ek-semibold">🛡️ ${humanAttestationTitle}</span>` +
     `<span class="uls-badge">${humanAttestationStatus} · ${totalLangs.toLocaleString("en-US")} ${isEn ? "languages" : "lenguas"}</span>` +
     `</div>` +
-    `<details class="tech-details">` +
-    `<summary>${isEn ? "Technical details & cryptographic signature" : "Detalles técnicos y firma criptográfica"}</summary>` +
-    `<div class="ek-stack-sm ek-mt-sm">` +
+    `<div class="ek-stack-sm ek-mt-sm" data-audit-breakdown="true"${explicitUserVerification ? "" : " hidden"}>` +
     `<span class="uls-badge" data-ed25519-gate="${ed25519GateAttr}">${ed25519BadgeText} · Zero-Truncation=${zeroTrunc ? "OK" : "PENDING"}</span>` +
     `<div class="eight-locks-pda-bar" data-eight-locks-bar="true">${eightLocksPillsHtml}</div>` +
     `<div class="ek-row-wrap" data-master-census-7keys="true">` +
@@ -154,7 +156,6 @@ export function renderEditorialAuditAttestationHtml({
       `</div>`
       : "") +
     `</div>` +
-    `</details>` +
     `</div>`
   );
 }
@@ -173,11 +174,11 @@ export function verifyLocalEkpackFileBuffer(bytes, { wasmMod = null, uiLocale = 
   const hasWasm = Boolean(wasmMod?.exports);
   const summary = valid
     ? isEn
-      ? `✅ Valid .ekpack (${preamble.bookCount} books · ${preamble.totalVerses} vv.${hasWasm ? " · WASM ready" : ""}) · SHA-256 ${sha256Hex.slice(0, 16)}…`
-      : `✅ Paquete .ekpack válido (${preamble.bookCount} libros · ${preamble.totalVerses} vv.${hasWasm ? " · WASM activo" : ""}) · SHA-256 ${sha256Hex.slice(0, 16)}…`
+      ? `✅ Valid local package (${preamble.bookCount} books · ${preamble.totalVerses} vv.) · SHA-256 ${sha256Hex.slice(0, 16)}…`
+      : `✅ Paquete local válido (${preamble.bookCount} libros · ${preamble.totalVerses} vv.) · SHA-256 ${sha256Hex.slice(0, 16)}…`
     : isEn
-      ? "⛔ Invalid or truncated .ekpack binary container."
-      : "⛔ Archivo .ekpack inválido o truncado.";
+      ? "⛔ Invalid or truncated local package file."
+      : "⛔ Archivo de paquete local inválido o truncado.";
   return { valid, preamble, sha256Hex, wasmRuntimeReady: hasWasm, summary };
 }
 
@@ -192,6 +193,7 @@ export function renderEditorialProvenanceCardHtml(provenance = null, uiLocale = 
     : DEFAULT_PROVENANCE.dist_merkle_roots;
   const zenodoVersion = String(p.zenodo_version || "1.0.0");
   const merkle = String(p.web_merkle_root || "").split(/\s+/)[0] || "verified-local";
+  const cliBridgeMeta = resolveCliSurfaceKind("VerifyPack");
   const privacyText =
     !isEn && p.privacy_guarantee === DEFAULT_PROVENANCE.privacy_guarantee
       ? "Cero rastreadores, cero cookies de analítica, 100% operable sin conexión."
@@ -212,7 +214,7 @@ export function renderEditorialProvenanceCardHtml(provenance = null, uiLocale = 
     .join("");
 
   return (
-    `<div id="editorialProvenanceIntegrityCard" class="editorial-provenance-card ek-stack-sm" data-berne-commitment="${escapeHtml(berne.creator_commitment_hash)}" data-zenodo-doi="${escapeHtml(p.zenodo_doi_concept)}" data-zenodo-version="${escapeHtml(zenodoVersion)}">` +
+    `<div id="editorialProvenanceIntegrityCard" class="editorial-provenance-card ek-stack-sm" data-berne-commitment="${escapeHtml(berne.creator_commitment_hash)}" data-zenodo-doi="${escapeHtml(p.zenodo_doi_concept)}" data-zenodo-version="${escapeHtml(zenodoVersion)}" data-cli-bridge-kind="${escapeHtml(cliBridgeMeta.kind)}">` +
     `<div class="ek-row-between">` +
     `<span class="ek-meta">${escapeHtml(privacyText)}</span>` +
     `<span class="uls-badge">${escapeHtml(p.license_primary)} · DOI ${escapeHtml(p.zenodo_doi_concept)} (v${escapeHtml(zenodoVersion)})</span>` +
@@ -220,13 +222,13 @@ export function renderEditorialProvenanceCardHtml(provenance = null, uiLocale = 
     `<div id="berneCommitmentVerifierCard" class="ek-stack-sm ek-mt-xs">` +
     `<div class="ek-row-wrap">` +
     `<input type="text" id="bernePreimageInput" class="ek-input-compact" placeholder="${isEn ? "Authorship phrase" : "Frase de autoría"}" aria-label="${isEn ? "Authorship verification phrase" : "Frase de verificación de autoría"}">` +
-    `<button type="button" id="btnVerifyBerneCommitment" class="uls-chip">🔐 ${isEn ? "Check file authenticity" : "Comprobar autenticidad del archivo"}</button>` +
-    `<label for="inputVerifyLocalEkpack" class="uls-chip ek-file-picker-btn">📦 ${isEn ? "Verify local .ekpack (WASM)" : "Verificar .ekpack local (WASM)"}<input type="file" id="inputVerifyLocalEkpack" class="sr-only-file-input" accept=".ekpack" aria-label="${isEn ? "Select local .ekpack file to verify" : "Seleccionar archivo .ekpack local para verificar"}"></label>` +
+    `<button type="button" id="btnVerifyBerneCommitment" class="uls-chip">🔐 ${isEn ? "Verify authorship phrase" : "Comprobar frase de autoría"}</button>` +
+    `<label for="inputVerifyLocalEkpack" class="uls-chip ek-file-picker-btn">📦 ${isEn ? "Check downloaded package" : "Comprobar paquete descargado"}<input type="file" id="inputVerifyLocalEkpack" class="sr-only-file-input" accept=".ekpack" aria-label="${isEn ? "Select local package file to verify" : "Seleccionar paquete local para verificar"}"></label>` +
     `</div>` +
     `<output id="berneVerifyStatus" class="ek-meta" aria-live="polite"></output>` +
     `<output id="localEkpackVerifyStatus" class="ek-meta" aria-live="polite"></output>` +
     `</div>` +
-    `<details class="tech-details ek-mt-xs" data-advanced-audit="true"><summary>${isEn ? "🔍 Cryptographic verification fingerprints" : "🔍 Huellas de verificación y registro público"}</summary>` +
+    `<details class="tech-details ek-mt-xs" data-advanced-audit="true"><summary class="tech-details-summary">${isEn ? "🔍 Cryptographic verification fingerprints" : "🔍 Huellas de verificación y registro público"}</summary>` +
     `<dl class="provenance-meta-list">` +
     `<dt>${isEn ? "Authorship Commitment (Berne Art. 15.3)" : "Compromiso de Autoría (Berna Art. 15.3)"}</dt>` +
     `<dd><code>${escapeHtml(String(berne.creator_commitment_hash || "").slice(0, 24))}…</code></dd>` +

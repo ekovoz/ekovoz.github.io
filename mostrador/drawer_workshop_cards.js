@@ -313,6 +313,13 @@ export function renderCrdtWalAndLockP2AuditCardHtml(workshopArtifact = null) {
 
   const rollbackId = lockP2.patch_id || lockP2.last_rollback_patch_id || "PATCH-WAL-ROLLBACK-R16";
   const rollbackStatus = lockP2.status || "ROLLED_BACK";
+  const lockP2ErrorReason = lockP2.error_reason ? String(lockP2.error_reason) : "none";
+  const rootMetaRaw = workshopArtifact?.root_notes_stp && !Array.isArray(workshopArtifact.root_notes_stp)
+    ? workshopArtifact.root_notes_stp
+    : {};
+  const rootCascadeSummary = rootMetaRaw.cascade_level
+    ? ` · ${escHtml(String(rootMetaRaw.cascade_level))} (${escHtml(String(rootMetaRaw.last_patch_id || rollbackId))}, ${Number(rootMetaRaw.verses_mutated_count ?? 0)} vv.)`
+    : "";
 
   return (
     `<div id="crdtWalAndLockP2AuditCard" class="crdt-wal-lock-p2-card ek-card ek-span-full" ` +
@@ -321,10 +328,11 @@ export function renderCrdtWalAndLockP2AuditCardHtml(workshopArtifact = null) {
     `data-wal-snapshots-count="${snapshots10.length}" ` +
     `data-root-notes-count="${rootNotes.length}" ` +
     `data-lock-p2-rollback-id="${escHtml(rollbackId)}" ` +
-    `data-lock-p2-status="${escHtml(rollbackStatus)}">` +
+    `data-lock-p2-status="${escHtml(rollbackStatus)}" ` +
+    `data-lock-p2-error-reason="${escHtml(lockP2ErrorReason)}">` +
     `<div class="ek-row-between ek-mb-sm">` +
     `<strong>🪵 Historial comunitario (${rawLines} eventos → ${canonicalCount} cambios consolidados)</strong>` +
-    `<span class="uls-badge" data-lock-p2-veto-badge="true">🛑 Reversión segura (${escHtml(rollbackId)} · ${escHtml(rollbackStatus)})</span>` +
+    `<span class="uls-badge" data-lock-p2-veto-badge="true">🛑 Reversión segura (${escHtml(rollbackId)} · ${escHtml(rollbackStatus)} · error: ${escHtml(lockP2ErrorReason)})</span>` +
     `</div>` +
     `<div class="ek-row-wrap ek-mb-sm">${patchesPills}</div>` +
     `<div class="ek-stack-sm ek-mb-sm">` +
@@ -336,7 +344,7 @@ export function renderCrdtWalAndLockP2AuditCardHtml(workshopArtifact = null) {
     `Copia activa: <code>${escHtml(snapshots10[0]?.patch_id || "PATCH-STP-L2-0001")}</code> (${escHtml(snapshots10[0]?.target_ref || "GEN.1.1")}) · Protección lista para restauración atómica.` +
     `</div>` +
     `<div class="ek-row-wrap ek-text-secondary" data-tech-key="root_notes_stp">` +
-    `<span>📒 Notas de raíces verificadas: <strong>${rootNotes.length}</strong> raíces:</span> ${rootNotesPillsHtml}` +
+    `<span>📒 Notas de raíces verificadas: <strong>${rootNotes.length}</strong> raíces${rootCascadeSummary}:</span> ${rootNotesPillsHtml}` +
     rootNotesDetailsHtml +
     `</div>` +
     `</div>`

@@ -356,4 +356,117 @@ export function resolveDrawerChromePriority(sheetKey = "") {
   return CHROME_DRAWER_PRIORITY[clean] || "expert";
 }
 
+/**
+ * Contrato SSOT de sub-claves profundas por artefacto JSON y artefactos estáticos (`D1-HIG6`).
+ */
+export const DEEP_PROJECTION_SUBKEYS = Object.freeze({
+  "annotation_index_report.json": Object.freeze([
+    "totals.ketiv_tokens",
+    "totals.nt_macula_tokens",
+    "totals.nt_sr_tokens",
+    "totals.nt_tagnt_spanish_tokens",
+    "totals.tahot_qere_ketiv_rows",
+    "totals.tr_supplement_tokens",
+    "totals.versification_verses_nt",
+    "totals.versification_verses_ot",
+  ]),
+  "blind_calibration_report.json": Object.freeze(["verses_evaluated"]),
+  "diachronic_register_es.json": Object.freeze([
+    "corpus_summary.eight_locks_all_passed",
+    "corpus_summary.mean_eipen_l",
+    "corpus_summary.mean_mattr_50",
+    "corpus_summary.tier1_count",
+    "corpus_summary.tier2_count",
+    "corpus_summary.tier3_count",
+  ]),
+  "editorial_profiles.json": Object.freeze([
+    "print_profiles_14[].raw_preview",
+    "rust_domain_engines_telemetry.font_pool_bytes",
+    "rust_domain_engines_telemetry.fountain_lt_probe_packets",
+    "rust_domain_engines_telemetry.dropcap_typst_len",
+    "rust_domain_engines_telemetry.layflat_typst_len",
+  ]),
+  "elicitation_ladder_250.json": Object.freeze([
+    "items[].prompt_es",
+    "items[].prompt_en",
+    "items[].covered_nsm_primitives",
+    "items[].covered_high_freq_strongs",
+    "items[].covered_syntactic_frames",
+    "items[].marginal_gain_bits",
+  ]),
+  "field_workshop_stp.json": Object.freeze([
+    "stp_ot_lexicon_600[].en_gloss",
+    "external_audit_8_locks.pda_unbalanced_count",
+    "external_audit_8_locks.normalized_verses_count",
+    "external_audit_8_locks.input_source",
+    "patch_journal_lock_p2.error_reason",
+    "root_notes_stp.verses_mutated_count",
+    "root_notes_stp.updated_usfm_files_count",
+  ]),
+  "formulaic_index.json": Object.freeze(["templates[].parameterized_skeleton"]),
+  "master_census_summary.json": Object.freeze([
+    "stp_ledger_progress.completed_verses",
+    "stp_ledger_progress.nt_human_verified_verses",
+    "stp_ledger_progress.ot_workshop_scaffold_verses",
+    "stp_ledger_progress.total_batches_planned",
+  ]),
+  "offline_packs_catalog.json": Object.freeze([
+    "packs[].versificationTradition",
+    "packs[].diachronicVariants",
+    "packs[].bookEpistemicTiersLen",
+    "packs[].merkleRootSha256",
+    "packs[].contentDigestSha256",
+  ]),
+  "pericopes_and_glosses.json": Object.freeze([
+    "life_trails[].anchor_refs",
+    "life_trails[].icon_svg_id",
+  ]),
+  "static_assets": Object.freeze([
+    "preview/0001.png",
+    "preview/0006.png",
+    "preview/0007.png",
+    "preview/0008.png",
+    "preview/0016.png",
+    "preview/0018.png",
+    "obras/biblia/packs/en/lector_offline_en.html",
+    "obras/biblia/packs/es/lector_offline_es.html",
+    "obras/biblia/packs/grc/lector_offline_grc.html",
+    "obras/biblia/packs/he/lector_offline_he.html",
+    "obras/biblia/packs/stp/lector_offline_stp.html",
+  ]),
+});
+
+/**
+ * Frontera declarativa de los 21 subcomandos de `ekovoz-cli`: web pública vs. infraestructura CI (`D1-HIG6`).
+ */
+export const CLI_BRIDGE_SURFACE_MAP = Object.freeze({
+  Compile: Object.freeze({ kind: "web-live", surface: "print:doses" }),
+  Pack: Object.freeze({ kind: "web-live", surface: "share:mesh" }),
+  ApplyPatch: Object.freeze({ kind: "web-live", surface: "workshop:patch" }),
+  AuditExternal: Object.freeze({ kind: "web-live", surface: "workshop:audit" }),
+  VerifyPack: Object.freeze({ kind: "web-live", surface: "share:graphics" }),
+  ModernizeAudit: Object.freeze({ kind: "web-live", surface: "workshop:audit" }),
+  StealthPack: Object.freeze({ kind: "web-live", surface: "print:doses" }),
+  ApplyCascade: Object.freeze({ kind: "web-live", surface: "workshop:ladder" }),
+  Census: Object.freeze({ kind: "web-live", surface: "workshop:audit" }),
+  ElicitSession: Object.freeze({ kind: "web-live", surface: "workshop:ladder" }),
+  ExtractRosetta: Object.freeze({ kind: "web-live", surface: "study:calibrate" }),
+  ExportTaller: Object.freeze({ kind: "web-live", surface: "workshop:audit" }),
+  CldfMirror: Object.freeze({ kind: "web-live", surface: "workshop:audit" }),
+  ModernizeRegister: Object.freeze({ kind: "web-live", surface: "workshop:audit" }),
+  FetchSources: Object.freeze({ kind: "cli-ci-only", surface: "ci" }),
+  BuildMatrix: Object.freeze({ kind: "cli-ci-only", surface: "ci" }),
+  NewLang: Object.freeze({ kind: "cli-ci-only", surface: "ci" }),
+  NewWork: Object.freeze({ kind: "cli-ci-only", surface: "ci" }),
+  VerifyCanon: Object.freeze({ kind: "cli-ci-only", surface: "ci" }),
+  CompleteBible: Object.freeze({ kind: "cli-ci-only", surface: "ci" }),
+  SyncJsConstants: Object.freeze({ kind: "cli-ci-only", surface: "ci" }),
+});
+
+export function resolveCliSurfaceKind(commandName = "") {
+  const key = String(commandName || "").trim();
+  const hit = CLI_BRIDGE_SURFACE_MAP[key];
+  return hit ? { command: key, ...hit } : { command: key, kind: "cli-ci-only", surface: "ci" };
+}
+
 

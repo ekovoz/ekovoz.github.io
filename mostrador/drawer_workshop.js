@@ -157,7 +157,8 @@ export async function hydrateImproveDrawerPanel(ctx = {}) {
         // Non-fatal
       }
     }
-    const activeStrongId = await resolvePrimaryStrongForVerse(state, dataLayer);
+    const rawPrimaryStrong = await resolvePrimaryStrongForVerse(state, dataLayer);
+    const activeStrongId = rawPrimaryStrong || resolveDefaultStrongForPassage(state.book, [], "");
     state.activeStrongId = activeStrongId;
     const ladder250 =
       typeof dataLayer.loadElicitationLadder250 === "function"
@@ -286,6 +287,7 @@ export async function hydrateImproveDrawerPanel(ctx = {}) {
           query: state.stpLexiconQuery || "",
           activeWave: state.activeOtWave || 0,
           limit: 24,
+          uiLocale: state.uiLocale || "es",
         });
       } else {
         lexHost.innerHTML = "";
@@ -353,7 +355,7 @@ export function bindImproveFormControlsInDrawer(mod, ctx = {}) {
       lang: state.lang,
       locale: state.uiLocale,
       ref: osis,
-      strongId: state.activeStrongId || "",
+      strongId: resolveDefaultStrongForPassage(state.book, [], state.activeStrongId && !(/^(?:MAT|MRK|LUK|JHN|ACT|ROM|1CO|2CO|GAL|EPH|PHP|COL|1TH|2TH|1TI|2TI|TIT|PHM|HEB|JAS|1PE|2PE|1JN|2JN|3JN|JUD|REV)$/i.test(String(state.book || "")) && String(state.activeStrongId).startsWith("H")) ? state.activeStrongId : ""),
       oldSurface: currentOldSurf,
       newSurface: currentNewSurf,
       note: noteInput?.value || "",

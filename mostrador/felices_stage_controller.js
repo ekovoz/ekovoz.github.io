@@ -88,6 +88,8 @@ export function bindFelicesStageEvents(ctx = {}) {
     hydrateShareAndAuditDrawer,
   } = ctx;
 
+  getEl("felicesSovereignSection", targetDoc)?.setAttribute?.("data-desktop-fold-compact", "true");
+
   registerPlateCoordinateListener(async (coord) => {
     if (!coord) return;
     state.activePlateIndex = coord.plateIndex;

@@ -12,16 +12,113 @@ import {
   CANONICAL_16_TYPOLOGY_PROFILES,
   dispatchTandaWorkerJob,
   normalizeEditionSlug,
-  syncPrintDrawerControlsFromEditionProfile,
 } from "./dosis.js";
 import {
   GOSPEL_14_PERICOPES_SPEC,
   REFUGE_4_SHEETS_PASSAGES_SPEC,
   buildEditionRenderSpecBytes16,
+  computeKindlePrintBudget,
   formatCanonical80BlocksChecklistEntries,
   resolveNumericEditionId,
   transduceTextToBrailleBrfAndUnicode,
 } from "./dosis_editions_catalog.js";
+import {
+  CANONICAL_14_PRINT_PROFILES,
+  CANONICAL_9_TOML_PROFILES,
+} from "./dosis_profiles_schema.js";
+
+/**
+ * Sincroniza controles de imposición a partir de un perfil editorial canónico (extraído de dosis.js · C10).
+ */
+export function syncPrintDrawerControlsFromEditionProfile(
+  profileId = "02_2col_pastoral",
+  targetDoc = null,
+  catalog = CANONICAL_14_PRINT_PROFILES,
+) {
+  const list = Array.isArray(catalog) && catalog.length > 0 ? catalog : CANONICAL_14_PRINT_PROFILES;
+  const cleanId = String(profileId || "02_2col_pastoral").trim();
+  const numPrefix = cleanId.match(/^(\d{2})_/)?.[1] || "";
+  const found =
+    list.find((p) => p && (p.id === cleanId || p.editionSlug === cleanId)) ||
+    CANONICAL_9_TOML_PROFILES.find((p) => p && p.id === cleanId) ||
+    CANONICAL_14_PLUS_2_EDITIONS_CATALOG.find((p) => p && p.id === cleanId) ||
+    (numPrefix && list.find((p) => p && String(p.id || "").startsWith(`${numPrefix}_`))) ||
+    CANONICAL_14_PRINT_PROFILES[1] ||
+    CANONICAL_14_PRINT_PROFILES[0];
+
+  const columns = Number(found.columns) || (cleanId.includes("3col") ? 3 : cleanId.includes("1col") ? 1 : 2);
+  const fontPt = Number(found.fontPt) || (cleanId.includes("3col") ? 8.0 : 9.5);
+  const rawPaper = String(found.paperSize || found.paper_size || "A4");
+  const rawPaperLower = rawPaper.toLowerCase();
+  const paper = rawPaperLower.includes("a3")
+    ? "a3"
+    : rawPaperLower.includes("folio") || rawPaperLower.includes("oficio")
+      ? "folio"
+      : rawPaperLower.includes("b70") || rawPaperLower.includes("braille")
+        ? "b70"
+        : rawPaperLower.includes("letter") || rawPaperLower.includes("carta")
+          ? "letter"
+          : "a4";
+  const orientation = rawPaperLower.includes("landscape") ? "landscape" : "portrait";
+  const rawImpMode = String(
+    found.impositionMode ||
+    found.imposition_mode ||
+    found.parsed?.imposition?.mode ||
+    (cleanId.includes("refugio") ||
+      cleanId.includes("3col") ||
+      cleanId.includes("bolsillo") ||
+      cleanId.includes("evangelio")
+      ? "saddle_stitch"
+      : "single_sheet_20mm"),
+  );
+  const foliationMode =
+    rawImpMode === "saddle_stitch" || rawImpMode === "multi_signature_4n"
+      ? "saddle_stitch"
+      : "single_sheet_20mm";
+
+  const budgetPaperLabel =
+    paper === "a3"
+      ? "A3"
+      : paper === "folio"
+        ? "Folio"
+        : paper === "b70"
+          ? "B70"
+          : paper === "letter"
+            ? "Letter"
+            : "A4";
+  const budget = computeKindlePrintBudget({
+    fontPt,
+    columns,
+    orientation,
+    paper: budgetPaperLabel,
+  });
+
+  if (targetDoc && typeof targetDoc.getElementById === "function") {
+    const fontEl = targetDoc.getElementById("kindleFontSizeSlider");
+    if (fontEl) fontEl.value = String(fontPt);
+    const colEl = targetDoc.getElementById("kindleColumnSelector");
+    if (colEl) colEl.value = String(columns);
+    const paperEl = targetDoc.getElementById("kindlePaperFormatSelector");
+    if (paperEl) paperEl.value = paper;
+    const orientEl = targetDoc.getElementById("kindleOrientationSelector");
+    if (orientEl) orientEl.value = orientation;
+    const folEl = targetDoc.getElementById("bibleFoliationModeSelect");
+    if (folEl) folEl.value = foliationMode;
+    const outEl = targetDoc.getElementById("kindleBudgetOutput");
+    if (outEl) outEl.textContent = budget.summaryText;
+  }
+
+  return {
+    profileId: found.id,
+    columns,
+    fontPt,
+    paper,
+    orientation,
+    foliationMode,
+    tomlPath: found.tomlPath || `obras/biblia/profiles/${found.id}.toml`,
+    budget,
+  };
+}
 import { isRtlLocale } from "./i18n.js";
 import { updatePrintConfig } from "./state_store.js";
 import { encodePaperFormatCode } from "./tanda_print_worker.js";

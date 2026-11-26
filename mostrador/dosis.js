@@ -460,15 +460,18 @@ export function syncDose2AndDose3LinksForActiveLang({
         : dose2Href === "#"
           ? "wasm-local"
           : "precompiled";
-    const engine2Label = isEn
-      ? (engine2 === "precompiled" ? "Precompiled PDF" : "Building PDF in local WASM")
-      : (engine2 === "precompiled" ? "PDF precompilado" : "Compilando PDF en WASM local");
+    const fsm2 = resolveDoseEngineActionLabel(
+      engine2,
+      state.doseBuildStates?.dose2 || (dose2Href !== "#" ? "ready" : "idle"),
+      state.uiLocale || "es",
+    );
     linkDose2.href = dose2Href;
     linkDose2.setAttribute?.("href", dose2Href);
     linkDose2.setAttribute?.("download", `ekovoz-${lang}-${book.toLowerCase()}-${activeCols}col-${activeFontPt}pt.pdf`);
-    linkDose2.setAttribute?.("data-dose-mode", dose2Href === "#" ? "wasm-on-demand" : "bimodal-tanda");
+    linkDose2.setAttribute?.("data-dose-mode", fsm2.mode);
+    linkDose2.setAttribute?.("data-dose-state", fsm2.state);
     linkDose2.setAttribute?.("data-pdf-engine", engine2);
-    linkDose2.setAttribute?.("title", engine2Label);
+    linkDose2.setAttribute?.("title", fsm2.label);
     linkDose2.setAttribute?.("data-tanda-scope", Array.isArray(state.fullBookVerses) ? "full-book" : "chapter-seed");
     linkDose2.setAttribute?.("data-worker-url", bimodalDose2.workerUrl || dose2Planned.url);
     linkDose2.setAttribute?.("data-block-code", blockCode);
@@ -482,7 +485,7 @@ export function syncDose2AndDose3LinksForActiveLang({
       isFullBible16: false,
       uiLocale: state.uiLocale || "es",
     });
-    linkDose2.textContent = `${unifiedLabels.dose2Text} · ${engine2Label}`;
+    linkDose2.textContent = `${unifiedLabels.dose2Text} · ${fsm2.label}`;
   }
   if (linkDose3) {
     const isFullBible16 = Boolean(state._dose3Streamed16Of16);
@@ -493,9 +496,11 @@ export function syncDose2AndDose3LinksForActiveLang({
         : dose3Href === "#"
           ? "wasm-local"
           : "precompiled";
-    const engine3Label = isEn
-      ? (engine3 === "precompiled" ? "Precompiled PDF" : "Building PDF in local WASM")
-      : (engine3 === "precompiled" ? "PDF precompilado" : "Compilando PDF en WASM local");
+    const fsm3 = resolveDoseEngineActionLabel(
+      engine3,
+      state.doseBuildStates?.dose3 || (dose3Href !== "#" ? "ready" : "idle"),
+      state.uiLocale || "es",
+    );
     const dose3Scope = isFullBible16
       ? "full-bible-16-tandas"
       : Array.isArray(state.bibleTandaVerses)
@@ -507,9 +512,10 @@ export function syncDose2AndDose3LinksForActiveLang({
     linkDose3.href = dose3Href;
     linkDose3.setAttribute?.("href", dose3Href);
     linkDose3.setAttribute?.("download", dose3Download);
-    linkDose3.setAttribute?.("data-dose-mode", dose3Href === "#" ? "wasm-on-demand" : "bimodal-tanda");
+    linkDose3.setAttribute?.("data-dose-mode", fsm3.mode);
+    linkDose3.setAttribute?.("data-dose-state", fsm3.state);
     linkDose3.setAttribute?.("data-pdf-engine", engine3);
-    linkDose3.setAttribute?.("title", engine3Label);
+    linkDose3.setAttribute?.("title", fsm3.label);
     linkDose3.setAttribute?.("data-tanda-scope", dose3Scope);
     linkDose3.setAttribute?.("data-macro-tanda", isFullBible16 ? "ALL-16" : activeMacroTanda.macroTandaId);
     linkDose3.setAttribute?.("data-worker-url", bimodalDose3.workerUrl);
@@ -523,7 +529,7 @@ export function syncDose2AndDose3LinksForActiveLang({
       isFullBible16,
       uiLocale: state.uiLocale || "es",
     });
-    linkDose3.textContent = `${unifiedLabels.dose3Text} · ${engine3Label}`;
+    linkDose3.textContent = `${unifiedLabels.dose3Text} · ${fsm3.label}`;
   }
   return {
     mode: "bimodal-tanda",
@@ -868,92 +874,45 @@ export function simulateFifthGenPhotocopySauvolaBilateral({
   };
 }
 
-export function syncPrintDrawerControlsFromEditionProfile(
-  profileId = "02_2col_pastoral",
-  targetDoc = null,
-  catalog = CANONICAL_14_PRINT_PROFILES,
-) {
-  const list = Array.isArray(catalog) && catalog.length > 0 ? catalog : CANONICAL_14_PRINT_PROFILES;
-  const cleanId = String(profileId || "02_2col_pastoral").trim();
-  const numPrefix = cleanId.match(/^(\d{2})_/)?.[1] || "";
-  const found =
-    list.find((p) => p && (p.id === cleanId || p.editionSlug === cleanId)) ||
-    CANONICAL_9_TOML_PROFILES.find((p) => p && p.id === cleanId) ||
-    CANONICAL_14_PLUS_2_EDITIONS_CATALOG.find((p) => p && p.id === cleanId) ||
-    (numPrefix && list.find((p) => p && String(p.id || "").startsWith(`${numPrefix}_`))) ||
-    CANONICAL_14_PRINT_PROFILES[1] ||
-    CANONICAL_14_PRINT_PROFILES[0];
+export { syncPrintDrawerControlsFromEditionProfile } from "./print_config_projector.js";
 
-  const columns = Number(found.columns) || (cleanId.includes("3col") ? 3 : cleanId.includes("1col") ? 1 : 2);
-  const fontPt = Number(found.fontPt) || (cleanId.includes("3col") ? 8.0 : 9.5);
-  const rawPaper = String(found.paperSize || found.paper_size || "A4");
-  const rawPaperLower = rawPaper.toLowerCase();
-  const paper = rawPaperLower.includes("a3")
-    ? "a3"
-    : rawPaperLower.includes("folio") || rawPaperLower.includes("oficio")
-      ? "folio"
-      : rawPaperLower.includes("b70") || rawPaperLower.includes("braille")
-        ? "b70"
-        : rawPaperLower.includes("letter") || rawPaperLower.includes("carta")
-          ? "letter"
-          : "a4";
-  const orientation = rawPaperLower.includes("landscape") ? "landscape" : "portrait";
-  const rawImpMode = String(
-    found.impositionMode ||
-    found.imposition_mode ||
-    found.parsed?.imposition?.mode ||
-    (cleanId.includes("refugio") ||
-      cleanId.includes("3col") ||
-      cleanId.includes("bolsillo") ||
-      cleanId.includes("evangelio")
-      ? "saddle_stitch"
-      : "single_sheet_20mm"),
-  );
-  const foliationMode =
-    rawImpMode === "saddle_stitch" || rawImpMode === "multi_signature_4n"
-      ? "saddle_stitch"
-      : "single_sheet_20mm";
-
-  const budgetPaperLabel =
-    paper === "a3"
-      ? "A3"
-      : paper === "folio"
-        ? "Folio"
-        : paper === "b70"
-          ? "B70"
-          : paper === "letter"
-            ? "Letter"
-            : "A4";
-  const budget = computeKindlePrintBudget({
-    fontPt,
-    columns,
-    orientation,
-    paper: budgetPaperLabel,
-  });
-
-  if (targetDoc && typeof targetDoc.getElementById === "function") {
-    const fontEl = targetDoc.getElementById("kindleFontSizeSlider");
-    if (fontEl) fontEl.value = String(fontPt);
-    const colEl = targetDoc.getElementById("kindleColumnSelector");
-    if (colEl) colEl.value = String(columns);
-    const paperEl = targetDoc.getElementById("kindlePaperFormatSelector");
-    if (paperEl) paperEl.value = paper;
-    const orientEl = targetDoc.getElementById("kindleOrientationSelector");
-    if (orientEl) orientEl.value = orientation;
-    const folEl = targetDoc.getElementById("bibleFoliationModeSelect");
-    if (folEl) folEl.value = foliationMode;
-    const outEl = targetDoc.getElementById("kindleBudgetOutput");
-    if (outEl) outEl.textContent = budget.summaryText;
+/**
+ * Resuelve etiqueta honesta según la FSM (`idle | building | ready | error`) sin acrónimos técnicos (`D2-HIG6`).
+ */
+export function resolveDoseEngineActionLabel(engine = "wasm-local", doseState = "idle", uiLocale = "es") {
+  const isEn = String(uiLocale || "es").trim().toLowerCase().startsWith("en");
+  if (engine === "precompiled") {
+    return {
+      state: "ready",
+      label: isEn ? "Precompiled PDF" : "PDF precompilado",
+      mode: "bimodal-tanda",
+    };
   }
-
+  const cleanState = String(doseState || "idle").trim().toLowerCase();
+  if (cleanState === "ready") {
+    return {
+      state: "ready",
+      label: isEn ? "PDF ready (offline)" : "PDF listo (sin red)",
+      mode: "bimodal-tanda",
+    };
+  }
+  if (cleanState === "building") {
+    return {
+      state: "building",
+      label: isEn ? "Building PDF…" : "Generando PDF…",
+      mode: "wasm-building",
+    };
+  }
+  if (cleanState === "error") {
+    return {
+      state: "error",
+      label: isEn ? "Retry PDF" : "Reintentar PDF",
+      mode: "wasm-on-demand",
+    };
+  }
   return {
-    profileId: found.id,
-    columns,
-    fontPt,
-    paper,
-    orientation,
-    foliationMode,
-    tomlPath: found.tomlPath || `obras/biblia/profiles/${found.id}.toml`,
-    budget,
+    state: "idle",
+    label: isEn ? "Instant offline PDF" : "Generar PDF al instante, sin red",
+    mode: "wasm-on-demand",
   };
 }

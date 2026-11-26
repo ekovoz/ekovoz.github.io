@@ -381,8 +381,20 @@ export function renderFormulaicParallelsCardHtml({
     })
     .join(" ");
 
-  const tplSummaryHtml = matchingTemplates.length > 0
-    ? `<div class="ek-meta ek-mt-xs">${matchingTemplates.map((t) => `<span>🧬 ${escapeHtml(t.category || t.template_id)} (${Number(t.covered_verses_count || 0)} vv.) · ${escapeHtml(t.canonical_anchor_ref)}</span>`).join(" · ")}</div>`
+  const tplSummaryHtml = (matchingTemplates.length > 0 ? matchingTemplates : rawTemplates.slice(0, 2)).length > 0
+    ? `<details id="formulaicSkeletonsDetails" class="tech-details ek-mt-xs">` +
+    `<summary>${isEn ? "Formulaic sentence templates (parameterized patterns)" : "Patrones de estructura formulaica"}</summary>` +
+    `<div class="ek-meta ek-stack-xs ek-mt-xs">` +
+    (matchingTemplates.length > 0 ? matchingTemplates : rawTemplates.slice(0, 2))
+      .map(
+        (t) =>
+          `<div data-formulaic-template="${escapeHtml(t.template_id || "")}">` +
+          `<strong>🧬 ${escapeHtml(t.category || t.template_id)}</strong> (${Number(t.covered_verses_count || 0)} vv. · ${escapeHtml(t.canonical_anchor_ref)})` +
+          (t.parameterized_skeleton ? `<br><code>${escapeHtml(t.parameterized_skeleton)}</code>` : "") +
+          `</div>`,
+      )
+      .join("") +
+    `</div></details>`
     : "";
 
   const totalParallels = rawQuotes.length + rawTemplates.length;

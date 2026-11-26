@@ -8,6 +8,7 @@ import {
 } from "./drawer_hydrators.js";
 import { humanizeUiCopy } from "./human_labels.js";
 import { isWorkVisible } from "./projection_contract.js";
+import { resolveDefaultStrongForPassage } from "./study_verse_viewmodel.js";
 import {
   CANONICAL_5_OT_TRANSLATION_WAVES,
   CASCADE_LEVELS,
@@ -99,7 +100,11 @@ export function renderImproveDrawerHtml({
   )
     ? String(level).trim().toUpperCase()
     : "L2";
-  const resolvedStrong = sanitizePipeField(strongId || "").toUpperCase();
+  const cleanBookRef = resolvedRef.split(".")[0];
+  const rawStrongArg = sanitizePipeField(strongId || "").toUpperCase();
+  const isNtBookRef = /^(?:MAT|MRK|LUK|JHN|ACT|ROM|1CO|2CO|GAL|EPH|PHP|COL|1TH|2TH|1TI|2TI|TIT|PHM|HEB|JAS|1PE|2PE|1JN|2JN|3JN|JUD|REV)$/.test(cleanBookRef);
+  const safeStrongArg = isNtBookRef && rawStrongArg.startsWith("H") ? "" : rawStrongArg;
+  const resolvedStrong = resolveDefaultStrongForPassage(cleanBookRef, [], safeStrongArg);
   const isEn = String(locale || "es").trim().toLowerCase().startsWith("en");
   const fallbackDict = isEn ? IMPROVE_I18N_FALLBACKS : IMPROVE_I18N_FALLBACKS_ES;
   const t = (k, vars) => {
@@ -214,7 +219,7 @@ export function renderImproveDrawerHtml({
     `<summary>${isEn ? "🗳️ Community consensus votes" : "🗳️ Votos de consenso comunitario"}</summary>` +
     `<div class="ek-stack-sm ek-mt-sm">` +
     `<label class="ek-label-sm">${isEn ? "Reviewer ID" : "ID revisor"} <input id="improveVoteReviewerIdInput" class="ek-input" type="text" placeholder="hablante_1"></label>` +
-    `<label class="ek-label-sm ek-row"><input id="improveVoteGoldSeedsCheck" type="checkbox"> <span>${isEn ? "Passed 2 Gold Seeds" : "Aprobó 2 semillas de oro"}</span></label>` +
+    `<label class="ek-label-sm hig-toggle-row"><input id="improveVoteGoldSeedsCheck" type="checkbox"> <span>${isEn ? "Passed 2 Gold Seeds" : "Aprobó 2 semillas de oro"}</span></label>` +
     `<div class="ek-row-wrap">` +
     `<button type="button" id="btnAddCommunityVoteApprove" class="uls-chip" data-i18n="improve.vote_approve">👍 ${isEn ? "Approve vote" : "Voto aprobar"}</button>` +
     `<button type="button" id="btnAddCommunityVoteReject" class="uls-chip" data-i18n="improve.vote_reject">👎 ${isEn ? "Reject vote" : "Voto rechazar"}</button>` +
@@ -530,17 +535,25 @@ export function renderWorkshopAuditPanelsHtml({
   const rosettaTermsLabel = Number.isFinite(rosettaTerms) && rosettaTerms > 0
     ? `${rosettaTerms} ${isEn ? "key terms" : "términos"}`
     : (isEn ? "No Rosetta index loaded" : "Sin índice Rosetta cargado");
+  const extPdaUnbalanced = Number(extAudit.pda_unbalanced_count ?? 0);
+  const extNormalizedCount = Number(extAudit.normalized_verses_count ?? 0);
+  const extFormatLabel = String(extAudit.detected_format || "USFM").replace(/_OOXML$/i, "");
+  const extTraditionLabel = String(extAudit.detected_tradition || "KJV");
+  const extMetaLine = isEn
+    ? `Format: ${extFormatLabel} (${extTraditionLabel}) · Normalized verses: ${extNormalizedCount} · Unbalanced quotes/brackets: ${extPdaUnbalanced}`
+    : `Formato: ${extFormatLabel} (${extTraditionLabel}) · Versículos normalizados: ${extNormalizedCount} · Comillas/paréntesis sin cierre: ${extPdaUnbalanced}`;
   const auditResultSummaryHtml = externalAuditResult
     ? externalAuditResult.entriesCount === 0
       ? `<p class="ek-meta ek-mt-xs">${isEn ? "Paste USFM (e.g. \\c 1 \\v 1 ...) or load .usfm/.txt/.docx (<= 8 MiB local preview; CLI ekovoz audit-external for full corpus audit)." : "Pega USFM (ej. \\c 1 \\v 1 ...) o carga .usfm/.txt/.docx (<= 8 MiB en cliente; usa CLI ekovoz audit-external para auditoría completa)."}</p>`
       : `<div class="ek-mt-xs" data-live-audit-passed="${externalAuditResult.allPassed}"><strong class="ek-title-sm">${externalAuditResult.allPassed ? "✅" : "⛔"} ${externalAuditResult.passedCount}/${externalAuditResult.entriesCount} ${isEn ? "units passed 8 locks (local check)" : "unidades pasaron los 8 candados (revisión local)"}</strong><ul>${auditRowsHtml}</ul></div>`
     : `<p class="ek-meta ek-mt-xs">${isEn ? "Validate .usfm/.txt/.docx drafts (<= 8 MiB) locally with 8 deterministic locks. For full corpus audit run ekovoz audit-external." : "Valida borradores .usfm/.txt/.docx (<= 8 MiB) localmente con los 8 candados. Para auditoría completa de corpus usa ekovoz audit-external."}</p>`;
   const externalAuditHtml =
-    `<div id="externalAudit8LocksPanel" class="ek-card-muted ek-mt-sm" data-audit-lang="${escAud(cleanLang)}" data-external-audit-8-locks="true" data-all-8-locks-passed="${Boolean(extAudit.all_8_locks_passed)}">` +
+    `<div id="externalAudit8LocksPanel" class="ek-card-muted ek-mt-sm" data-audit-lang="${escAud(cleanLang)}" data-external-audit-8-locks="true" data-all-8-locks-passed="${Boolean(extAudit.all_8_locks_passed)}" data-pda-unbalanced="${extPdaUnbalanced}" data-normalized-verses="${extNormalizedCount}">` +
     `<div class="ek-row-between">` +
     `<strong>🛡️ ${isEn ? "External Editorial Review · 8-Lock Audit" : "Revisión Editorial Externa · Auditoría 8 Candados"}</strong>` +
     `<span class="uls-badge ek-badge-compact">${extAudit.all_8_locks_passed !== false ? `✅ ${humanizeUiCopy("8/8 PASS", uiLocale)}` : "⛔ VETO"} · ${rosettaTermsLabel}</span>` +
     `</div>` +
+    `<p class="ek-meta ek-mt-xs" data-external-audit-summary="true">${escAud(extMetaLine)}</p>` +
     `<textarea id="externalAuditTextInput" class="ek-field-input ek-textarea-full ek-mt-xs" rows="3" placeholder="\\id GEN&#10;\\c 1&#10;\\v 1 Tu'xich jumai...">${escAud(externalAuditText || "")}</textarea>` +
     `<div class="ek-row-wrap ek-mt-xs">` +
     `<label for="externalAuditFileInput" class="uls-chip ek-file-picker-btn">📂 ${isEn ? "Load .usfm / .txt / .docx (<=8 MB)" : "Cargar .usfm / .txt / .docx (<=8 MB)"}` +
@@ -628,6 +641,7 @@ export function renderStpLexiconResultsRowsHtml({
   query = "",
   activeWave = 0,
   limit = 24,
+  uiLocale = "es",
 } = {}) {
   const pool =
     FIELD_WORKSHOP_STP_LEXICON.length > 0
@@ -635,6 +649,7 @@ export function renderStpLexiconResultsRowsHtml({
       : DEFAULT_STP_LEXICON_SEED;
   const cleanQuery = String(query || "").trim().toLowerCase();
   const waveNum = Number(activeWave) || 0;
+  const isEnLex = String(uiLocale || "es").trim().toLowerCase().startsWith("en");
 
   const filtered = pool.filter((entry) => {
     if (!entry) return false;
@@ -644,10 +659,11 @@ export function renderStpLexiconResultsRowsHtml({
     if (!cleanQuery) return true;
     const strongStr = String(entry.strong || entry.strong_id || "").toLowerCase();
     const glossEs = String(entry.gloss_es || entry.es_gloss || entry.gloss || "").toLowerCase();
+    const glossEn = String(entry.en_gloss || "").toLowerCase();
     const stpSurf = String(
       entry.stp_surface || entry.stp_gloss || entry.stp_vso_classifier_phrase || entry.surface || "",
     ).toLowerCase();
-    return strongStr.includes(cleanQuery) || glossEs.includes(cleanQuery) || stpSurf.includes(cleanQuery);
+    return strongStr.includes(cleanQuery) || glossEs.includes(cleanQuery) || glossEn.includes(cleanQuery) || stpSurf.includes(cleanQuery);
   });
 
   const shown = (filtered.length > 0 ? filtered : pool).slice(0, Math.max(6, Number(limit) || 24));
@@ -669,8 +685,10 @@ export function renderStpLexiconResultsRowsHtml({
     .map((entry) => {
       const strongCode = String(entry.strong || entry.strong_id || "H0430").toUpperCase();
       const glossEs = String(entry.gloss_es || entry.es_gloss || entry.gloss || "Dios");
+      const glossEn = String(entry.en_gloss || "").trim();
+      const activeGloss = isEnLex && glossEn ? glossEn : glossEs;
       const stpSurf = String(
-        entry.stp_surface || entry.stp_gloss || entry.stp_vso_classifier_phrase || entry.surface || glossEs,
+        entry.stp_surface || entry.stp_gloss || entry.stp_vso_classifier_phrase || entry.surface || activeGloss,
       );
       const vsoPhrase = String(entry.stp_vso_classifier_phrase || stpSurf);
       const typoRule = String(
@@ -691,11 +709,12 @@ export function renderStpLexiconResultsRowsHtml({
         `<button type="button" class="uls-chip stp-lexicon-entry-btn ek-btn-stack" ` +
         `data-lex-strong="${esc(strongCode)}" ` +
         `data-lex-surface="${esc(stpSurf)}" ` +
-        `data-lex-gloss="${esc(glossEs)}" ` +
+        `data-lex-gloss="${esc(activeGloss)}" ` +
+        `data-en-gloss="${esc(glossEn)}" ` +
         `data-vso-phrase="${esc(vsoPhrase)}" ` +
         `data-typology-rule="${esc(typoRule)}" ` +
         `data-tier-category="${esc(tierCategory)}">` +
-        `<span><strong>${esc(strongCode)}</strong> · ${esc(stpSurf)} <small class="ek-opacity-muted">(${esc(glossEs)} · VSO: ${esc(vsoPhrase)} · ${occ} vv.)</small></span>` +
+        `<span><strong>${esc(strongCode)}</strong> · ${esc(stpSurf)} <small class="ek-opacity-muted">(${esc(activeGloss)}${glossEn && !isEnLex ? ` / ${esc(glossEn)}` : ""} · VSO: ${esc(vsoPhrase)} · ${occ} vv.)</small></span>` +
         `<span class="stp-inline-root-note" data-root-note="true" data-root-note-source="${matchedRootNote ? "ledger" : "typology"}">📒 ${esc(inlineRootNote)}</span>` +
         `</button>`
       );
@@ -707,6 +726,7 @@ export function renderStpLexiconExplorerHtml({
   query = "",
   activeWave = 0,
   limit = 24,
+  uiLocale = "es",
 } = {}) {
   const pool =
     FIELD_WORKSHOP_STP_LEXICON.length > 0
@@ -723,10 +743,11 @@ export function renderStpLexiconExplorerHtml({
     if (!cleanQuery) return true;
     const strongStr = String(entry.strong || entry.strong_id || "").toLowerCase();
     const glossEs = String(entry.gloss_es || entry.es_gloss || entry.gloss || "").toLowerCase();
+    const glossEn = String(entry.en_gloss || "").toLowerCase();
     const stpSurf = String(
       entry.stp_surface || entry.stp_gloss || entry.stp_vso_classifier_phrase || entry.surface || "",
     ).toLowerCase();
-    return strongStr.includes(cleanQuery) || glossEs.includes(cleanQuery) || stpSurf.includes(cleanQuery);
+    return strongStr.includes(cleanQuery) || glossEs.includes(cleanQuery) || glossEn.includes(cleanQuery) || stpSurf.includes(cleanQuery);
   });
 
   const shown = (filtered.length > 0 ? filtered : pool).slice(0, Math.max(6, Number(limit) || 24));
@@ -737,7 +758,7 @@ export function renderStpLexiconExplorerHtml({
       .replace(/>/g, "&gt;")
       .replace(/"/g, "&quot;");
 
-  const itemsHtml = renderStpLexiconResultsRowsHtml({ query, activeWave, limit });
+  const itemsHtml = renderStpLexiconResultsRowsHtml({ query, activeWave, limit, uiLocale });
   const topKeyTerms = KEY_TERMS_GLOSSARY.filter((kt) => Number(kt.g2_score || 0) >= 15.13).slice(0, 8);
   const dunningGlossaryHtml =
     `<div id="dunningKeyTermsGlossaryPanel" class="ek-divider-top" data-key-terms-total="${KEY_TERMS_GLOSSARY.length}">` +

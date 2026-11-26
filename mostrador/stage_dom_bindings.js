@@ -23,7 +23,7 @@ import { searchMultiBookConcordance } from "./concordance_search.js";
 import { bindSurfaceActions } from "./dom_patch.js";
 import { normalizeEditionSlug } from "./dosis.js";
 import { DEFAULT_PRINT_CONFIG } from "./dosis_profiles_schema.js";
-import { syncActiveStrongInStudyDrawer } from "./drawer_hydrators.js";
+import { syncActiveStrongInStudyDrawer, bindLifeTrailsNavigation } from "./drawer_hydrators.js";
 import { bindPrintFirstStageRibbon } from "./print_stage_ribbon.js";
 import { bindCorpusPolyglotAndUiPreferences } from "./polyglot_picker_view.js";
 import { resolvePublicOrPreviewWork } from "./projection_contract.js";
@@ -381,15 +381,15 @@ export function bindStageDomEvents(ctx = {}) {
     }
   }
 
-  for (const [trailBtnId, anchor] of Object.entries(LIFE_TRAILS_ANCHORS)) {
-    const tBtn = getEl(trailBtnId, targetDoc);
-    if (tBtn && typeof tBtn.addEventListener === "function") {
-      tBtn.addEventListener("click", async () => {
-        await navigate({ book: anchor.book, chapter: anchor.chapter, verse: anchor.verse }, targetDoc);
-        hydrateBookAndChapterSelectors(targetDoc);
-      });
-    }
-  }
+  bindLifeTrailsNavigation({
+    state,
+    dataLayer,
+    targetDoc,
+    getEl,
+    navigate,
+    hydrateBookAndChapterSelectors,
+    anchors: LIFE_TRAILS_ANCHORS,
+  });
 
   const appearanceBtn = getEl("btnAppearanceMenu", targetDoc);
   const appearancePopover = getEl("appearancePopover", targetDoc);

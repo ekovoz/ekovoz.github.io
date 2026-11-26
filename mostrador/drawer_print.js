@@ -68,6 +68,7 @@ import {
   normalizeStandardPaperFormat,
   renderCompactTypologySelectorHtml,
   renderDuplexAssistantCardHtml,
+  renderEditorialPreviewsAndEngineTelemetryHtml,
   renderFieldRefugeAndChecklistHtml,
   renderStationeryPostcardHtml,
   resolveDuplexFlipEdge,
@@ -257,7 +258,7 @@ export function renderPrintDrawerPanelsSyncInDrawer(ctx = {}) {
       ? "Goal: Refuge Booklet (4 sheets) & 80 Canonical Blocks · Widow-free PDF with bookmarks"
       : "Por objetivo: Refugio de Bolsillo (4 hojas) y 80 Bloques · PDF con marcadores y doble cara sin viudas";
     mountSlotView(fieldPdfsHost, {
-      html: `<details id="printFieldKitsDetails" class="r9-stratum-accordion"><summary>🏕️ ${kitsTitle}</summary>${renderFieldRefugeAndChecklistHtml(state.editorialProfiles || null, state.uiLocale || "es")}</details>`,
+      html: `<details id="printFieldKitsDetails" class="r9-stratum-accordion"><summary>🏕️ ${kitsTitle}</summary>${renderFieldRefugeAndChecklistHtml(state.editorialProfiles || null, state.uiLocale || "es")}</details>${renderEditorialPreviewsAndEngineTelemetryHtml({ editorialProfiles: state.editorialProfiles || null, uiLocale: state.uiLocale || "es" })}`,
       ownerId: "drawer_print:doses:field_pdfs",
       orderIndex: 2,
     });
@@ -653,6 +654,12 @@ export async function hydratePrintDrawerPanelsInDrawer(ctx = {}) {
             paperCode: encodePaperFormatCode(state.paperFormat || "a4", state.orientation || "portrait"),
           })
           : null;
+        state.doseBuildStates = {
+          ...(state.doseBuildStates || {}),
+          dose2: skipDose2Redundant ? (state.doseBuildStates?.dose2 || "idle") : "building",
+          dose3: "building",
+        };
+        syncDose2AndDose3LinksForActiveLang({ state, targetDoc, getEl });
         await executeDose2And3WorkerDispatch({
           state,
           effectiveLang,
@@ -683,9 +690,15 @@ export async function hydratePrintDrawerPanelsInDrawer(ctx = {}) {
           targetDoc,
           getEl,
         });
+        state.doseBuildStates = {
+          ...(state.doseBuildStates || {}),
+          dose2: state.dose2ObjectUrl ? "ready" : (state.doseBuildStates?.dose2 || "idle"),
+          dose3: state.dose3ObjectUrl ? "ready" : (state.doseBuildStates?.dose3 || "idle"),
+        };
       }
     } catch {
-      // Non-fatal fallback
+      state.doseBuildStates = { ...(state.doseBuildStates || {}), dose2: "error", dose3: "error" };
+      syncDose2AndDose3LinksForActiveLang({ state, targetDoc, getEl });
     } finally {
       if (workerLabel) workerLabel.textContent = "";
       workerBar?.removeAttribute?.("data-ergos-active-job");

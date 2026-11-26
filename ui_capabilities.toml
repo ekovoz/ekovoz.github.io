@@ -972,12 +972,42 @@ template_module = "mostrador/drawer_study.js"
 module          = "mostrador/drawer_pro_boveda.js"
 handler         = "hydrateProBovedaStudyCalibration"
 test_file       = "tests/web/estudio.test.mjs"
-test_name       = "SLICE_EKO_EXIT_03: calibración I+D lazy-loads desde Bóveda Pro sin contaminar vista estándar"
+test_name       = "R45_SLICE_177_drawer_study_hydrates_annotation_and_blind_calibration_with_zero_duplicate_ids"
+
+[capability.workshop_elicit_and_cldf]
+surface         = "public-ui"
+exposure_tier   = "drawer-secondary"
+release_stage   = "public"
+intent          = "workshop"
+canonical_owner = "#tallerArtifactsCatalog"
+selector        = "#workshopElicitCldfDetails"
+template_module = "mostrador/workshop_audit_and_langs.js"
+module          = "mostrador/workshop_elicit_and_cldf.js"
+handler         = "renderElicitSessionCardHtml"
+test_file       = "tests/web/hig6_deep_parity_and_states.test.mjs"
+test_name       = "SLICE_EKO_HIG6_09_10_11_13: workshop_elicit_and_cldf exports, NT ROM.1.16 G-prefix guard, and deep study totals"
+
+[capability.editorial_print_previews_and_standalone_readers]
+surface         = "public-ui"
+exposure_tier   = "drawer-secondary"
+release_stage   = "public"
+intent          = "print"
+canonical_owner = "#printFieldPdfsHost"
+selector        = "#printEditorialPreviewsDetails"
+template_module = "mostrador/print_work_and_photocopy.js"
+module          = "mostrador/print_work_and_photocopy.js"
+handler         = "renderEditorialPreviewsAndEngineTelemetryHtml"
+test_file       = "tests/web/hig6_deep_parity_and_states.test.mjs"
+test_name       = "SLICE_EKO_HIG6_07_08_12: 32 hydrated life_trails anchors, 5 standalone offline readers, 6 preview PNGs and no raw Grambank"
 
 [intent_contracts]
 max_hops = 2
 exit_print = ["print_first_stage_ribbon", "print_unified_options_v3"]
 exit_offline = ["offline_quine_usb", "optical_qr_beam"]
+
+[cli_bridge]
+web_live = ["Compile", "Pack", "ApplyPatch", "AuditExternal", "VerifyPack", "ModernizeAudit", "StealthPack", "ApplyCascade", "Census", "ElicitSession", "ExtractRosetta", "ExportTaller", "CldfMirror", "ModernizeRegister"]
+cli_ci_only = ["FetchSources", "BuildMatrix", "NewLang", "NewWork", "VerifyCanon", "CompleteBible", "SyncJsConstants"]
 language_picker = ["reading_language_selector", "polyglot_picker_window_36"]
 study_context = ["study_14col_drawer"]
 workshop_collaborator = ["workshop_cascade"]

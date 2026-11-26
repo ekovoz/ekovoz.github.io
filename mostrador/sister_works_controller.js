@@ -82,25 +82,25 @@ export function resolveEvangeliosActiveSelection({
   plateSlug = "",
   fallbackLang = "es",
 } = {}) {
-  const entries = Array.isArray(corpus?.entries) ? corpus.entries : [];
-  if (entries.length === 0) return null;
+  const gospelRows = Array.isArray(corpus?.entries) ? corpus.entries : [];
+  if (gospelRows.length === 0) return null;
   const cleanSlug = String(plateSlug || "").trim().toLowerCase();
   const cleanWeek = String(weekId || "").trim().toLowerCase();
   const matchedGlobal =
-    (cleanSlug ? entries.find((e) => String(e.plate_id || "").toLowerCase() === cleanSlug) : null) ||
+    (cleanSlug ? gospelRows.find((row) => String(row?.["plate_id"] || "").toLowerCase() === cleanSlug) : null) ||
     (cleanWeek
-      ? entries.find(
-        (e) =>
-          String(e.id || "").toLowerCase() === cleanWeek ||
-          String(e.plate_id || "").toLowerCase() === cleanWeek,
+      ? gospelRows.find(
+        (row) =>
+          String(row?.["id"] || "").toLowerCase() === cleanWeek ||
+          String(row?.["plate_id"] || "").toLowerCase() === cleanWeek,
       )
       : null);
-  const effectiveQuarter = matchedGlobal?.quarter || quarterFilter || "T1";
-  const quarterEntries = entries.filter((e) => e.quarter === effectiveQuarter);
-  const pool = quarterEntries.length > 0 ? quarterEntries : entries;
+  const effectiveQuarter = matchedGlobal?.["quarter"] || quarterFilter || "T1";
+  const quarterEntries = gospelRows.filter((row) => row?.["quarter"] === effectiveQuarter);
+  const pool = quarterEntries.length > 0 ? quarterEntries : gospelRows;
   const activeEntry =
     matchedGlobal ||
-    pool.find((e) => String(e.id || "").toLowerCase() === cleanWeek) ||
+    pool.find((row) => String(row?.["id"] || "").toLowerCase() === cleanWeek) ||
     pool[0];
   let coordinate = null;
   const bridgeAnchor =

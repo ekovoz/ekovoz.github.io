@@ -130,8 +130,24 @@ export function bindCorpusPolyglotAndUiPreferences({
     return state.regionIndex;
   };
 
-  const projectLangChoices = (items = []) => {
-    const partitioned = partitionLanguagesTier1AndLongTail(items, {
+  const VERIFIED_CORPUS_ISO_SET = new Set([
+    "es", "spa", "es-1909", "en", "eng", "pt", "por", "fr", "fra", "de", "deu",
+    "it", "ita", "he", "heb", "grc", "ell", "ar", "arb", "fa", "fas", "ur", "urd",
+    "hi", "hin", "bn", "ben", "id", "ind", "sw", "swh", "tr", "tur", "ru", "rus",
+    "zh-hans", "cmn", "zho", "ja", "jpn", "ko", "kor", "stp", "arp", "bre", "cha",
+  ]);
+  const windowCountBadge = getEl("polyglotWindowCountBadge", targetDoc);
+
+  const projectLangChoices = (items = [], { filterQuery = "" } = {}) => {
+    const cleanQ = String(filterQuery || "").trim();
+    const dedupedItems = cleanQ
+      ? items
+      : (Array.isArray(items) ? items : []).filter((m) => {
+        const c1 = String(m?.code || "").trim().toLowerCase();
+        const c2 = String(m?.iso639_3 || "").trim().toLowerCase();
+        return !VERIFIED_CORPUS_ISO_SET.has(c1) && !VERIFIED_CORPUS_ISO_SET.has(c2);
+      });
+    const partitioned = partitionLanguagesTier1AndLongTail(dedupedItems, {
       activeWork: state.activeWork || "biblia",
       previewEvangelios: Boolean(state.previewEvangelios),
     });
@@ -151,6 +167,12 @@ export function bindCorpusPolyglotAndUiPreferences({
       });
     }
     const capped = renderPolyglotRecycledWindow(windowHost, visibleItems, { activeLang: state.lang, targetDoc });
+    if (windowCountBadge) {
+      const isEnUi = String(state.uiLocale || "es").trim().toLowerCase().startsWith("en");
+      windowCountBadge.textContent = capped.length > 0
+        ? (isEnUi ? `Showing 1–${capped.length} of 7,164 languages` : `Mostrando 1–${capped.length} de 7,164 lenguas`)
+        : (isEnUi ? "0 matches in 7,164 languages" : "0 coincidencias en 7,164 lenguas");
+    }
     if (langSelect && capped.length > 0) {
       langSelect.innerHTML = capped
         .map(
@@ -182,7 +204,7 @@ export function bindCorpusPolyglotAndUiPreferences({
           .map((c) => `<option value="${escapeHtml(c.code || c.name)}">${escapeHtml(c.label || c.name)}</option>`)
           .join("");
       }
-      projectLangChoices(listLanguagesWindow(idx, { macroRegionId: state.regionCode, limit: POLYGLOT_RECYCLED_WINDOW_CAP }));
+      projectLangChoices(listLanguagesWindow(idx, { macroRegionId: state.regionCode, limit: POLYGLOT_RECYCLED_WINDOW_CAP * 2 }));
     });
   }
 
@@ -194,11 +216,11 @@ export function bindCorpusPolyglotAndUiPreferences({
       const byCountry = listLanguagesInCountry(idx, state.regionCode || 1, subName);
       projectLangChoices(
         byCountry.length > 0
-          ? byCountry.slice(0, POLYGLOT_RECYCLED_WINDOW_CAP)
+          ? byCountry.slice(0, POLYGLOT_RECYCLED_WINDOW_CAP * 2)
           : listLanguagesWindow(idx, {
             macroRegionId: state.regionCode || 1,
             subregionName: subName,
-            limit: POLYGLOT_RECYCLED_WINDOW_CAP,
+            limit: POLYGLOT_RECYCLED_WINDOW_CAP * 2,
           }),
       );
       await updateDoseLinks?.(targetDoc);
@@ -217,10 +239,8 @@ export function bindCorpusPolyglotAndUiPreferences({
     const idx = await ensureRegionIndexLoaded();
     const matched = q
       ? searchLanguages(idx, q, { limit: POLYGLOT_RECYCLED_WINDOW_CAP })
-      : listLanguagesWindow(idx, { limit: POLYGLOT_RECYCLED_WINDOW_CAP });
-    projectLangChoices(
-      Array.isArray(matched) ? matched.slice(0, POLYGLOT_RECYCLED_WINDOW_CAP) : [],
-    );
+      : listLanguagesWindow(idx, { limit: POLYGLOT_RECYCLED_WINDOW_CAP * 2 });
+    projectLangChoices(Array.isArray(matched) ? matched : [], { filterQuery: q });
   };
   if (corpusDrawer && typeof corpusDrawer.addEventListener === "function") {
     corpusDrawer.addEventListener("toggle", () => {
@@ -238,10 +258,8 @@ export function bindCorpusPolyglotAndUiPreferences({
       const idx = await ensureRegionIndexLoaded();
       const matched = q
         ? searchLanguages(idx, q, { limit: POLYGLOT_RECYCLED_WINDOW_CAP })
-        : listLanguagesWindow(idx, { limit: POLYGLOT_RECYCLED_WINDOW_CAP });
-      projectLangChoices(
-        Array.isArray(matched) ? matched.slice(0, POLYGLOT_RECYCLED_WINDOW_CAP) : [],
-      );
+        : listLanguagesWindow(idx, { limit: POLYGLOT_RECYCLED_WINDOW_CAP * 2 });
+      projectLangChoices(Array.isArray(matched) ? matched : [], { filterQuery: q });
     });
   }
 
