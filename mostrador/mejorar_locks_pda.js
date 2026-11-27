@@ -324,7 +324,7 @@ export const TIER3A_CONTINUUMS = [
 ];
 export let FLOOR_1_SENTENCE_SPEC = {
   single_sentence_unlocked_floor: 291,
-  floor_1_sentence_spec: "GEN.3.1 · 69.53 bits marginal gain · 291 lenguas desbloqueadas con 1 oración",
+  floor_1_sentence_spec: "GEN.3.1 · Prioridad 1 · 291 lenguas desbloqueadas con 1 oración",
   estimated_native_speaker_hours: 30,
   reference_tier1: "spa_rv1909",
   total_sentences: 250,

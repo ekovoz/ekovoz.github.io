@@ -184,17 +184,6 @@ export function bindFelicesStageEvents(ctx = {}) {
   if (felOptShare && typeof felOptShare.addEventListener === "function") {
     felOptShare.addEventListener("click", () => transitionSheet("share", targetDoc));
   }
-  const felLangSel = getEl("felicesLangSelect", targetDoc);
-  if (felLangSel && typeof felLangSel.addEventListener === "function") {
-    felLangSel.addEventListener("change", (e) => {
-      const nextFelLang = String(e?.target?.value || felLangSel.value || "es");
-      state.lang = nextFelLang;
-      syncFelicesWithCorpusLang(nextFelLang, targetDoc);
-      updateFocalPlate(targetDoc, nextFelLang, true, state.uiLocale || nextFelLang, state);
-      updateDownloadLinks(targetDoc, nextFelLang);
-      updateUI(targetDoc);
-    });
-  }
   const felPlateSel = getEl("felicesPlateSelect", targetDoc);
   if (felPlateSel && typeof felPlateSel.addEventListener === "function") {
     felPlateSel.addEventListener("change", (e) => {

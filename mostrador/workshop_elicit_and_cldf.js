@@ -47,7 +47,7 @@ export function renderElicitSessionCardHtml(sessionData = null, uiLocale = "es",
   const top = effectiveList[idx] || {
     verse_id: "GEN.3.1",
     rung: "Rung1SwadeshAndNsm65",
-    prompt_es: "EMPERO la serpiente era astuta, más que todos los animales del campo que Jehová Dios había hecho...",
+    prompt_es: "Pero la serpiente era más astuta que todos los animales del campo que el Señor Dios había hecho...",
     prompt_en: "Now the serpent was more crafty than any beast of the field that the LORD God had made...",
     covered_nsm_primitives: ["ALGUIEN", "DECIR", "PALABRAS", "NO"],
     covered_high_freq_strongs: ["H5869", "H3820", "H0412"],
@@ -68,7 +68,7 @@ export function renderElicitSessionCardHtml(sessionData = null, uiLocale = "es",
     `<section id="workshopElicitSessionCard" class="ek-card-muted ek-mt-sm" data-elicit-ref="${vRef}" data-elicit-index="${idx}" data-elicit-total="${effectiveList.length || 250}" data-elicit-bits="${esc(gainBits)}" data-elicit-scope="${isGlobalPriorityScope ? "global-priority" : "book-match"}">` +
     `<div class="ek-row-between">` +
     `<strong>🎙️ ${cardHeading}</strong>` +
-    `<span class="uls-badge">+${esc(gainBits)} bits</span>` +
+    `<span class="uls-badge" data-elicit-bits="${esc(gainBits)}">${isEn ? "High priority" : "Alta prioridad"}</span>` +
     `</div>` +
     `<blockquote class="evangelios-passage-blockquote">${esc(promptText)}</blockquote>` +
     `<div class="ek-row-wrap ek-mt-xs">` +

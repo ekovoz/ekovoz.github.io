@@ -378,6 +378,7 @@ uqPage: state.uncertaintyQueuePage || 1,
 externalAuditText: state.externalAuditText || "",
 externalAuditResult: state.externalAuditResult || null,
 activeTier3aPair: state.activeTier3aPair || "",
+ladderScope: state.workshopLadderScope || "passage",
 });
 }
 state.refreshWorkshopAuditSubtab?.();
@@ -884,6 +885,13 @@ cascadeEl._celfBound = true;
 cascadeEl.addEventListener("change", onAuditChange);
 cascadeEl.addEventListener("click", async (e) => {
 if (await onAuditClick(e)) return;
+const scopeBtn = e?.target?.closest ? e.target.closest("[data-ladder-scope]") : e?.target?.getAttribute?.("data-ladder-scope") ? e.target : null;
+const nextScope = scopeBtn?.getAttribute?.("data-ladder-scope");
+if (nextScope) {
+state.workshopLadderScope = nextScope === "guided250" ? "guided250" : "passage";
+(state.refreshPatchPreview || refreshPatchPreview)();
+return;
+}
 const waveBtn = e?.target?.closest ? e.target.closest("[data-ot-wave]") : e?.target?.getAttribute?.("data-ot-wave") ? e.target : null;
 const waveAttr = waveBtn?.getAttribute?.("data-ot-wave");
 if (waveAttr !== null && waveAttr !== undefined) {

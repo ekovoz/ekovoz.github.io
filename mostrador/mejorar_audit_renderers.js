@@ -54,6 +54,7 @@ export function renderCascadeAndLadderHtml({
   activeTier3aPair = "",
   previewWorks = null,
   elicitSessionIndex = 0,
+  ladderScope = "passage",
 } = {}) {
   const isEn = String(uiLocale || "es").trim().toLowerCase().startsWith("en");
   const cleanLang = sanitizePipeField(lang || "stp").toLowerCase();
@@ -220,16 +221,26 @@ export function renderCascadeAndLadderHtml({
     index: elicitSessionIndex,
     activeBook: resolvedRef.split(".")[0],
   });
+  const activeScope = ladderScope === "guided250" && showElicitationLadder ? "guided250" : "passage";
+  const scopeTabsHtml = showElicitationLadder
+    ? `<div id="workshopLadderScopeBar" class="subtabs-bar ek-mb-sm" role="tablist" aria-label="${isEn ? "Workshop propagation view" : "Vista de propagación"}">` +
+    `<button type="button" id="btnWorkshopLadderScopePassage" class="uls-chip" role="tab" data-ladder-scope="passage" aria-selected="${activeScope === "passage"}" aria-pressed="${activeScope === "passage"}">${isEn ? "This passage (Cascade)" : "Este pasaje (Cascada)"}</button>` +
+    `<button type="button" id="btnWorkshopLadderScopeGuided250" class="uls-chip" role="tab" data-ladder-scope="guided250" aria-selected="${activeScope === "guided250"}" aria-pressed="${activeScope === "guided250"}">${isEn ? "Guided plan (250 steps)" : "Plan guiado (250 pasos)"}</button>` +
+    `</div>`
+    : "";
+  const passageScopeHtml = `<section id="workshopScopePassagePanel" data-ladder-scope-panel="passage"${activeScope !== "passage" ? " hidden" : ""}>${sisterCascadeHtml}</section>`;
+  const guidedScopeHtml = showElicitationLadder
+    ? `<section id="workshopScopeGuided250Panel" data-ladder-scope-panel="guided250"${activeScope !== "guided250" ? " hidden" : ""}>${elicitCardHtml}${celfSummaryBlock}${rungFilterHtml}<div class="ek-auto-grid">${ladderButtons}</div>${otWavesHtml}</section>`
+    : elicitCardHtml;
   return (
-    `<div class="cascade-impact-box ek-card" data-workshop-task="2" data-cascade-level="${cleanLevel}" data-cascade-lang="${cleanLang}" data-celf-total="${totalCount}" data-active-ot-wave="${waveNum}">` +
+    `<div class="cascade-impact-box ek-card" data-workshop-task="2" data-cascade-level="${cleanLevel}" data-cascade-lang="${cleanLang}" data-celf-total="${totalCount}" data-active-ot-wave="${waveNum}" data-ladder-scope="${activeScope}">` +
     `<strong class="ek-title-sm">🌊 ${isEn ? `2. Validate rule & propagation ${cleanLevel} (${totalCount} steps${headerStrongSuffix} in ${resolvedRef})` : `2. Validar regla y propagación ${cleanLevel} (${totalCount} pasos${headerStrongSuffix} en ${resolvedRef})`}</strong>` +
     `<p class="ek-subtitle ek-mb-sm">` +
     `${isEn ? `Refining this root in <code>${cleanLang}</code> updates matching verses across ${sisterWorksPhraseEn}. Tap any step to inspect:` : `Al corregir esta raíz en <code>${cleanLang}</code>, el ajuste se propaga a ${sisterWorksPhraseEs}. Pulsa un paso para revisarlo:`}` +
     `</p>` +
-    elicitCardHtml +
-    celfSummaryBlock +
-    sisterCascadeHtml +
-    (showElicitationLadder ? `${rungFilterHtml}<div class="ek-auto-grid">${ladderButtons}</div>${otWavesHtml}` : "") +
+    scopeTabsHtml +
+    passageScopeHtml +
+    guidedScopeHtml +
     auditPanelsHtml +
     `<div class="ek-stack ek-mt-sm">` +
     masterCensusAndLedgerHtml +
@@ -279,9 +290,9 @@ export function renderWorkshopAuditPanelsHtml({
     : `Formato: ${extFormatLabel} (${extTraditionLabel}) · Versículos normalizados: ${extNormalizedCount} · Comillas/paréntesis sin cierre: ${extPdaUnbalanced}`;
   const auditResultSummaryHtml = externalAuditResult
     ? externalAuditResult.entriesCount === 0
-      ? `<p class="ek-meta ek-mt-xs">${isEn ? "Paste USFM (e.g. \\c 1 \\v 1 ...) or load .usfm/.txt/.docx (<= 8 MiB local preview; CLI ekovoz audit-external for full corpus audit)." : "Pega USFM (ej. \\c 1 \\v 1 ...) o carga .usfm/.txt/.docx (<= 8 MiB en cliente; usa CLI ekovoz audit-external para auditoría completa)."}</p>`
+      ? `<p class="ek-meta ek-mt-xs">${isEn ? "Paste USFM text or load .usfm/.txt/.docx (up to 8 MiB in browser; use the desktop edition for full books)." : "Pega texto USFM o carga .usfm/.txt/.docx (hasta 8 MiB en el navegador; para libros completos usa la edición de escritorio)."}</p>`
       : `<div class="ek-mt-xs" data-live-audit-passed="${externalAuditResult.allPassed}"><strong class="ek-title-sm">${externalAuditResult.allPassed ? "✅" : "⛔"} ${externalAuditResult.passedCount}/${externalAuditResult.entriesCount} ${isEn ? "units passed 8 locks (local check)" : "unidades pasaron los 8 candados (revisión local)"}</strong><ul>${auditRowsHtml}</ul></div>`
-    : `<p class="ek-meta ek-mt-xs">${isEn ? "Validate .usfm/.txt/.docx drafts (<= 8 MiB) locally with 8 deterministic locks. For full corpus audit run ekovoz audit-external." : "Valida borradores .usfm/.txt/.docx (<= 8 MiB) localmente con los 8 candados. Para auditoría completa de corpus usa ekovoz audit-external."}</p>`;
+    : `<p class="ek-meta ek-mt-xs">${isEn ? "Validate .usfm/.txt/.docx drafts (up to 8 MiB) right in your browser with the 8 integrity checks." : "Valida borradores .usfm/.txt/.docx (hasta 8 MiB) en tu navegador con los 8 candados de integridad."}</p>`;
   const externalAuditHtml =
     `<div id="externalAudit8LocksPanel" class="ek-card-muted ek-mt-sm" data-audit-lang="${escAud(cleanLang)}" data-external-audit-8-locks="true" data-all-8-locks-passed="${hasLiveAuditEntries ? Boolean(externalAuditResult.allPassed) : false}" data-pda-unbalanced="${extPdaUnbalanced}" data-normalized-verses="${extNormalizedCount}">` +
     `<div class="ek-row-between">` +

@@ -109,6 +109,7 @@ export function renderVaultStorageManagerHtml({
   matrixTier0Bytes = 7562231,
   filterQuery = "",
   fontsManifest = null,
+  errorByLang = {},
   uiLocale = "es",
 } = {}) {
   const tier0BundleBytes = Number(fontsManifest?.tier0_offline_bundle_bytes || 825864);
@@ -168,7 +169,7 @@ export function renderVaultStorageManagerHtml({
       ? `<div class="tech-details vault-pack-meta-details" data-pack-meta-details="true">` +
         `<div class="ek-meta ek-stack-xs">` +
         `<span>${escapeHtml(humanMetaLine)}</span>` +
-        `<span class="ek-stack-xs" data-technical-plane="true">` +
+        `<span class="ek-stack-xs" data-contextual-meta="true">` +
         `<span><strong>${isEn ? "Canon:" : "Canon:"}</strong> ${escapeHtml(formatEditorialTraditionLabel(meta.versificationTradition || "eng", isEn ? "en" : "es"))} · ${escapeHtml(Array.isArray(meta.diachronicVariants) && meta.diachronicVariants.length ? meta.diachronicVariants.join(", ") : "canonical")}</span>` +
         (meta.merkleRootSha256 ? `<span><strong>Merkle:</strong> <code>${escapeHtml(String(meta.merkleRootSha256).slice(0, 16))}…</code></span>` : "") +
         (meta.contentDigestSha256 ? `<span><strong>Digest:</strong> <code>${escapeHtml(String(meta.contentDigestSha256).slice(0, 16))}…</code></span>` : "") +
@@ -177,6 +178,7 @@ export function renderVaultStorageManagerHtml({
         `</span>` +
         `</div></div>`
       : "";
+    const packErr = errorByLang?.[langCode] ? String(errorByLang[langCode]) : "";
     return (
       `<li class="vault-pack-row${isMatrix ? " is-matrix-highlight" : ""}" data-vault-pack="${escapeHtml(langCode)}" data-vault-file="${escapeHtml(fileKey)}" data-vault-search="${escapeHtml(searchHay)}" data-vault-installed="${downloaded}"${priorityTag ? ` data-vault-priority="${escapeHtml(priorityTag)}"` : ""}>` +
       `<div class="vault-pack-info">` +
@@ -185,6 +187,7 @@ export function renderVaultStorageManagerHtml({
       (prog && prog.pct > 0 && prog.pct < 100
         ? `<progress class="vault-chunk-progress" data-chunk-progress="${prog.pct}" max="100" value="${prog.pct}">${prog.pct}%</progress>`
         : "") +
+      (packErr ? `<p class="ek-meta" data-vault-error="${escapeHtml(langCode)}">${escapeHtml(packErr)}</p>` : "") +
       metaDetailsHtml +
       `</div>` +
       `<div class="vault-pack-actions">` +
@@ -305,6 +308,8 @@ export async function hydrateVaultStorageManagerPanel(ctx = {}) {
   if (!host) return null;
 
   const progressByLang = state.vaultProgressByLang || (state.vaultProgressByLang = {});
+  const errorByLang = state.vaultErrorByLang || (state.vaultErrorByLang = {});
+  const isEnUi = String(state.uiLocale || "es").trim().toLowerCase().startsWith("en");
   const renderNow = async () => {
     const [storedPacks, storedFonts, quota] = await Promise.all([
       listRecordsFromIndexedDb(IDB_STORE_PACKS, idbOverride),
@@ -318,6 +323,7 @@ export async function hydrateVaultStorageManagerPanel(ctx = {}) {
       hydratedPacks: state.hydratedPacks24 || [],
       availableLangs: state.availablePackLangs24 || [],
       progressByLang,
+      errorByLang,
       activeLang: state.lang || "es",
       matrixTier0Url: state.matrixTier0Url || "data/packs/matrix_tier0.ekpack",
       matrixTier0Bytes: Number(state.matrixTier0Bytes) || 7562231,
@@ -340,6 +346,7 @@ export async function hydrateVaultStorageManagerPanel(ctx = {}) {
       const delBtn = e?.target?.closest ? e.target.closest("[data-vault-delete]") : e?.target?.getAttribute?.("data-vault-delete") ? e.target : null;
       const delLang = delBtn?.getAttribute?.("data-vault-delete");
       if (delLang) {
+        delete errorByLang[delLang];
         await deleteRecordFromIndexedDb(IDB_STORE_PACKS, delLang, idbOverride);
         await renderNow();
         return;
@@ -348,6 +355,7 @@ export async function hydrateVaultStorageManagerPanel(ctx = {}) {
       const dlLang = dlBtn?.getAttribute?.("data-vault-download");
       const dlUrl = dlBtn?.getAttribute?.("data-vault-url") || resolveCanonicalVaultPackUrl(dlLang, null, state.matrixTier0Url || "");
       if (dlLang) {
+        delete errorByLang[dlLang];
         try {
           const bytes = await fetchPackWithChunkProgress(dlUrl, {
             fetchImpl,
@@ -365,8 +373,14 @@ export async function hydrateVaultStorageManagerPanel(ctx = {}) {
             { lang: dlLang, file: `${dlLang}.ekpack`, byteLen: bytes.byteLength, packBytes: bytes, verifiedAt: new Date().toISOString() },
             idbOverride,
           );
-        } catch {
-          // Offline fetch error stays non-fatal in panel
+        } catch (err) {
+          const rawMsg = String(err?.message || err || "");
+          const isMissingPacksMount = dlUrl.startsWith("packs/") || /404|not found/i.test(rawMsg);
+          errorByLang[dlLang] = isMissingPacksMount
+            ? (isEnUi
+              ? "Pack mount (/packs/) unavailable in this local preview; use embedded packs or full static host."
+              : "Paquete (/packs/) no montado en esta vista local; usa los paquetes embebidos o el servidor completo.")
+            : (isEnUi ? `Download unavailable (${rawMsg || "offline"}).` : `Descarga no disponible (${rawMsg || "sin conexión"}).`);
         }
         await renderNow();
       }

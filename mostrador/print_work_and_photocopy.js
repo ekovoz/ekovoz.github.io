@@ -712,7 +712,8 @@ return (
 `<section id="printEditorialPreviewsDetails" class="ek-card-muted ek-mt-xs" data-preview-plates="6">` +
 `<strong class="ek-title-sm">🖼️ ${isEn ? "Editorial Print Samples (6 plates)" : "Muestras reales de impresión (6 láminas)"}</strong>` +
 `<div class="ek-row-wrap ek-mt-xs">${thumbsHtml}</div>` +
-`<div class="tech-details ek-mt-xs" data-advanced-audit="true" data-technical-plane="true">` +
+`<div id="printTypesettingTelemetryDetails" class="tech-details ek-mt-xs" data-advanced-audit="true" data-contextual-details="true" hidden>` +
+`<strong class="ek-title-sm">📐 ${isEn ? "Typesetting profile specifications" : "Especificaciones técnicas de maquetación"}</strong>` +
 (rawSpec ? `<pre class="ek-meta ek-mt-xs" data-raw-profile-preview="true">${escapeHtml(rawSpec)}</pre>` : "") +
 telHtml +
 `</div>` +

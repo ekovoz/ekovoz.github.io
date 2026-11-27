@@ -299,8 +299,8 @@ export function renderWorkshopAuditSubtabHtml({
     ? computeClientModernizeReadabilityAudit(chapterSampleText, uiLocale)
     : null);
   const flowBadgeText = isEnAudit
-    ? "Live in browser (web-live: ExtractRosetta, ModernizeAudit) · Batch CLI (cli-batch: ekovoz census)"
-    : "En vivo en navegador (web-live: ExtractRosetta, ModernizeAudit) · Lote CLI (cli-batch: ekovoz census)";
+    ? "Instant browser check · Full corpus sync on desktop"
+    : "Revisión rápida en navegador · Sincronización completa en escritorio";
   const coverageSummaryHtml =
     annTotals || blindRows.length > 0 || activeModernize
       ? `<section id="workshopCoverageCalibrationCard" class="ek-card-muted ek-mt-sm" data-annotation-tokens="${Number(annTotals?.ot_tokens || 0) + Number(annTotals?.nt_tokens || 0)}" data-blind-calibration-rows="${blindRows.length}"${activeModernize ? ` data-modernize-aoa="${activeModernize.aoaYears}" data-modernize-mdd="${activeModernize.mdd}"` : ""}>` +
@@ -338,7 +338,7 @@ export function renderWorkshopAuditSubtabHtml({
     cldfPreviewHtml +
     renderStpLedgerProgressHtml(state.masterCensusSummary || null, uiLocale) +
     `</details>`;
-  return switcherHtml + coverageSummaryHtml + elicitAndCldfHtml + relocatedAuditHtml + catalogHtml + sanitizedDraftHtml;
+  return switcherHtml + elicitAndCldfHtml + relocatedAuditHtml + coverageSummaryHtml + catalogHtml + sanitizedDraftHtml;
 }
 
 export function computeClientModernizeReadabilityAudit(rawText = "", uiLocale = "es") {

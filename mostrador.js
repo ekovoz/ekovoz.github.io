@@ -1097,6 +1097,13 @@ await controller.navigate({ lang: langCode }, doc);
 };
 
 const bootIntentSeq = Number(controller.state.intentSeq || 0);
+applyInitialSurfaceModeFromUrl({
+store: controller.store,
+state: controller.state,
+search: win.location?.search || "",
+doc,
+getEl: (id, d) => (d || doc)?.getElementById?.(id) || null,
+});
 controller.bindDomEvents(doc);
 const ovTask = ensureStateOverlaysHydrated(controller.state, route.lang).then(() => { if (controller.state.liveCascadeOverlays?.length && controller.state.lastNavResult) controller.renderStateToDom(doc, { syncUrl: false }); }).catch(() => { });
 await Promise.race([ovTask, new Promise((r) => setTimeout(r, 60))]);
@@ -1120,7 +1127,7 @@ await controller.state.switchWork(route.work, doc);
 controller.syncUrlFromState(doc, { push: false });
 }
 
-if (!controller.state.userTouchedSheet && Number(controller.state.intentSeq || 0) === bootIntentSeq) {
+if (!controller.state.userTouchedSheet) {
 applyInitialSurfaceModeFromUrl({
 store: controller.store,
 state: controller.state,
@@ -1128,6 +1135,7 @@ search: win.location?.search || "",
 doc,
 getEl: (id, d) => (d || doc)?.getElementById?.(id) || null,
 });
+const currentBootSeq = Number(controller.state.intentSeq || 0);
 const bootTargetSheet = route.sheet || (controller.state.activeIntent !== "read" ? controller.state.activeIntent : null);
 controller.state._capabilityOwners = SINGLE_OWNER_CAPABILITY_MAP;
 const intentLayer = resolveCapabilityIntentLayer(controller.state.activeIntent || "read");
@@ -1136,7 +1144,7 @@ if (bootTargetSheet && controller.state.activeWork === "biblia") {
 await controller.transitionSheet(bootTargetSheet, doc, {
 mode: "open",
 source: "boot",
-expectedIntentSeq: bootIntentSeq,
+expectedIntentSeq: currentBootSeq,
 });
 }
 }

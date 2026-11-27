@@ -37,7 +37,7 @@ return String(val ?? "")
 function renderProBovedaStudyAccordionHtml(uiLocale = "es") {
 const isEn = String(uiLocale || "es").trim().toLowerCase().startsWith("en");
 return (
-`<details id="proBovedaCalibrationDetails" class="r9-stratum-accordion ek-mt-sm" data-pro-boveda="true" data-technical-plane="true">` +
+`<details id="proBovedaCalibrationDetails" class="r9-stratum-accordion ek-mt-sm" data-pro-boveda="true" data-contextual-details="true">` +
 `<summary>🔬 ${isEn ? "Vault & Verification · I+D Calibration & Corpus Metrics (chrF++, AoA, MDD)" : "Bóveda y verificación · Calibración I+D y Métricas (chrF++, AoA, MDD)"}</summary>` +
 `<div id="proBovedaStudyCalibSlot" class="ek-mt-xs"><p class="ek-meta">${isEn ? "Open to load linguistic benchmark matrices on demand." : "Abre para cargar matrices de calibración I+D bajo demanda."}</p></div>` +
 `</details>`
@@ -418,9 +418,9 @@ const workBannerHtml = workCtx.isSisterWork
 const isEnStudy = String(state.uiLocale || "es").trim().toLowerCase().startsWith("en");
 const hasMatrixRows = Array.isArray(matrixChapter?.rows) && matrixChapter.rows.length > 0;
 const studyMatrixCardHtml =
-`<div id="studyMatrixDownloadCard" class="ek-row-between ek-meta ek-mb-xs" data-matrix-tier0="true"${hasMatrixRows ? ' data-technical-plane="true"' : ""}>` +
+`<div id="studyMatrixDownloadCard" class="ek-row-between ek-meta ek-mb-xs" data-matrix-tier0="true">` +
 `<span>📚 ${isEnStudy ? (hasMatrixRows ? "Original Study (15 col) · Technical pack" : "Word-by-word pack offline · Available in Share → Offline") : (hasMatrixRows ? "Estudio Original (15 col) · Paquete técnico" : "Análisis palabra por palabra · Disponible en Compartir → Sin red")}</span>` +
-`<span class="ek-row-wrap" data-technical-plane="true">` +
+`<span class="ek-row-wrap">` +
 `<a id="btnStudyDownloadMatrixTier0" class="uls-chip ek-btn-link" href="data/packs/matrix_tier0.ekpack" download="matrix_tier0.ekpack">⬇️ ${isEnStudy ? "Original Matrix (.ekpack)" : "Matriz Original (.ekpack)"}</a>` +
 `<button type="button" id="btnOpenProBovedaFromStudy" class="uls-chip" data-action="open-pro-boveda">🔐 ${isEnStudy ? "Vault & Verification" : "Bóveda y verificación"}</button>` +
 `</span></div>`;
@@ -773,7 +773,7 @@ proBovedaStudyBtn.addEventListener("click", async () => {
 patchStoreState(ctx, { activeSubtabBySheet: { ...(state.activeSubtabBySheet || {}), share: "graphics" } }, "sheet");
 await transitionSheet?.("share", targetDoc, { fromUser: true });
 const det = getEl("shareProBovedaDetails", targetDoc);
-if (det) det.open = true;
+if (det) { det.open = true; det.removeAttribute?.("hidden"); }
 });
 }
 

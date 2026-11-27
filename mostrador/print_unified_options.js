@@ -154,10 +154,22 @@ export function renderAndBindContextualTypographyAndFontsVault({
     const countFonts = summary.totalFonts > 0 ? summary.totalFonts : 34;
     vaultHost.setAttribute?.("data-fonts-vault-count", String(countFonts));
     vaultHost.innerHTML =
-      `<section class="ek-card-muted ek-mt-xs"><strong class="ek-title-sm">${isEn ? `Offline font vault (${countFonts} world scripts ready)` : `Bóveda tipográfica sin conexión (${countFonts} escrituras listas)`}</strong>` +
-      `<p class="ek-meta ek-m-0">${isEn ? "Signed offline font pack for embedding crisp outlines with zero internet access." : "Paquete firmado de fuentes para incrustar tipografía nítida sin conexión a internet."}</p>` +
-      `<a class="uls-chip ek-mt-xs" href="${summary.bundleUrl}" download="${summary.bundleFile}">${isEn ? "Download offline font bundle" : "Descargar paquete de fuentes sin conexión"}</a>` +
-      `</section>`;
+      `<div class="ek-row-between ek-card-muted ek-mt-xs">` +
+      `<span class="ek-meta">🔤 ${isEn ? `Script font ready · ${countFonts} scripts ready in Vault` : `${countFonts} escrituras listas · Bóveda sin conexión`}</span>` +
+      `<button type="button" id="btnPrintJumpToFontVault" class="uls-chip ek-btn-secondary">${isEn ? "Open in Vault →" : "Abrir en Bóveda →"}</button>` +
+      `</div>`;
+    const jumpBtn = typeof getEl === "function" ? getEl("btnPrintJumpToFontVault", targetDoc) : null;
+    if (jumpBtn && typeof jumpBtn.addEventListener === "function" && !jumpBtn._jumpFontBound) {
+      jumpBtn._jumpFontBound = true;
+      jumpBtn.addEventListener("click", () => {
+        const shareBtn = getEl("btnOpenShareAndAuditSheet", targetDoc);
+        const meshTab = getEl("btnDosisSubtabMesh", targetDoc);
+        const fontDet = getEl("shareFontVaultDetails", targetDoc);
+        shareBtn?.click?.();
+        meshTab?.click?.();
+        if (fontDet) fontDet.open = true;
+      });
+    }
   }
 }
 

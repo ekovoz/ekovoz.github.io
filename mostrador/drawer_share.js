@@ -778,16 +778,15 @@ bindProvenanceVerifierEvents(provHost, prov, state.uiLocale || "es", { dataLayer
 }
 
 export { applyStaticChromeTranslations } from "./chrome_static_i18n.js";
-
-/**
- * Enlaza las acciones de la Gaveta 4 (Quine, enlace directo, Ed25519/Merkle, cadencia óptica, cámara Rx y relevo LT).
- */
 export function bindShareDrawerActionEvents(ctx = {}) {
 const { state, dataLayer, targetDoc, getEl, hydrateShareAndAuditDrawer } = ctx;
 const executeGaveta4Action = async (shareBtnId) => {
 hydrateShareAndAuditDrawer(targetDoc);
 const statusPanel = getEl("editorialAuditStatusPanel", targetDoc);
-statusPanel?.setAttribute?.("data-status-visible", "true");
+if (statusPanel) {
+statusPanel.removeAttribute?.("hidden");
+statusPanel.setAttribute?.("data-status-visible", "true");
+}
 const packLang = String(state.lang || "es").trim() || "es";
 
 if (shareBtnId === "btnShareQuine") {

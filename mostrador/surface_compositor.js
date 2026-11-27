@@ -166,7 +166,15 @@ export function projectSurfaceLayoutFromState(state = {}, rootDoc, getEl) {
   const techPlaneOn = isTechnicalPlaneEnabled(state, rootDoc?.location?.search || "");
   if (typeof rootDoc.querySelectorAll === "function") {
     for (const techEl of Array.from(rootDoc.querySelectorAll('[data-technical-plane="true"]'))) {
-      techEl.hidden = !techPlaneOn;
+      techEl.hidden = false;
+      if (techEl.tagName === "DETAILS" && techPlaneOn) {
+        techEl.open = true;
+      }
+    }
+    for (const ctxDet of Array.from(rootDoc.querySelectorAll('details[data-contextual-details="true"]'))) {
+      if (techPlaneOn) {
+        ctxDet.open = true;
+      }
     }
   }
 
@@ -423,7 +431,7 @@ export function applyInitialSurfaceModeFromUrl({ store, state, search = "", doc,
       : intentParam === "workshop" || intentParam === "field" || intentParam === "improve"
         ? "field"
         : intentParam === "vault"
-          ? "print"
+          ? "share"
           : ["study", "print", "share"].includes(intentParam)
             ? intentParam
             : isStudio
@@ -444,12 +452,12 @@ export function applyInitialSurfaceModeFromUrl({ store, state, search = "", doc,
   const vaultRequested = intentParam === "vault";
   if (store && typeof store.setState === "function") {
     if (isStudio) setSurfacePlane(store, "technical");
-    if (vaultRequested) setSheetSubtab(store, "print", "doses");
+    if (vaultRequested) setSheetSubtab(store, "share", "mesh");
     setActiveIntent(store, resolvedIntent, { mobileSheetOpen: mobileOpen });
   } else if (state && typeof state === "object") {
     if (isStudio) state.surfacePlane = "technical";
     if (vaultRequested) {
-      state.activeSubtabBySheet = Object.freeze({ ...(state.activeSubtabBySheet || DEFAULT_SUBTABS_BY_SHEET), print: "doses" });
+      state.activeSubtabBySheet = Object.freeze({ ...(state.activeSubtabBySheet || DEFAULT_SUBTABS_BY_SHEET), share: "mesh" });
       state.vaultRequested = true;
     }
     state.activeIntent = resolvedIntent;

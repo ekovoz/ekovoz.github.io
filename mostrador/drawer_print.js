@@ -225,12 +225,17 @@ activeBranchId,
 activeTypologyId: activeTypoId,
 uiLocale: state.uiLocale || "es",
 });
-const inspectorHtml = `<div data-technical-plane="true">${renderBranchAndTypologyInspectorHtml({
+const printIsEn = String(state.uiLocale || "es").trim().toLowerCase().startsWith("en");
+const inspectorHtml =
+`<section id="printTypologyDetails" class="r9-stratum-accordion ek-mt-xs" data-contextual-details="true">` +
+`<h4 class="ek-title-sm">📐 ${printIsEn ? "Editorial typology & script adaptation (12 × 16)" : "Tipología editorial y maquetación por escritura (12 × 16)"}</h4>` +
+renderBranchAndTypologyInspectorHtml({
 lang: state.effectiveCorpusLang || state.lang || "es",
 activeBranchId,
 activeTypologyId: activeTypoId,
 uiLocale: state.uiLocale || "es",
-})}</div>`;
+}) +
+`</section>`;
 mountSlotView(typologyHost, {
 html: `${compactTypoHtml}${inspectorHtml}`,
 ownerId: "drawer_print:imposition:typology",

@@ -32,7 +32,7 @@
     <link rel="alternate" hreflang="fa" href="https://ekovoz.github.io/?lang=fa">
     <link rel="alternate" hreflang="x-default" href="https://ekovoz.github.io/">
     <meta property="og:site_name" content="Ekovoz">
-    <meta property="og:type" content="website">
+    <meta property="og:type" content="book">
     <meta property="og:url" content="https://ekovoz.github.io/">
     <meta property="og:title" content="Ekovoz — Biblia, Imprenta en Papel y Los Felices | Free Print &amp; Study">
     <meta property="og:description"
@@ -79,6 +79,7 @@
     data-stealth-mode="false">
     <header id="sovereignTopBar" class="top-bar-shell site-header">
         <div class="top-bar-row">
+            <span class="top-bar-brand" data-i18n-autonym="true">Ekovoz</span>
             <nav id="sovereignWorkTabs" class="top-bar-work-tabs" role="tablist" aria-label="Editorial Works">
                 <button type="button" id="tabWorkBiblia" class="uls-chip" role="tab" aria-selected="true"
                     aria-controls="bibleSovereignSection" data-work-tab="biblia" data-i18n="mostrador.tab.bible">📖
@@ -132,7 +133,7 @@
                     <span id="ulsCurrentLang">Español</span>
                     <span class="uls-badge" id="ulsUiCountBadge">Menú · 18</span>
                 </button>
-                <select id="langSelect" aria-label="Menu language / Idioma de menús">
+                <select id="langSelect" hidden aria-label="Menu language / Idioma de menús">
                     <option value="en">English</option>
                     <option value="es" selected>Español</option>
                     <option value="bn-BD">বাংলা — বাংলাদেশ (Bangladesh · ঈসা মসীহ)</option>
@@ -155,7 +156,7 @@
             </div>
             <div class="appearance-popover-row" role="group" aria-label="Workspace Plane">
                 <button type="button" id="btnToggleTechnicalPlane" class="uls-chip ek-btn-secondary"
-                    aria-pressed="false" data-i18n-autonym="true">🛠️ Modo Estudio y Taller Pro</button>
+                    aria-pressed="false" data-i18n-autonym="true">🛠️ Expandir detalles técnicos</button>
             </div>
         </div>
         <!-- Global Orthogonal Corpus Language Funnel (24 Bibles & Portions + Sister Works Languages + SIL 7,164 Census) -->
@@ -176,7 +177,7 @@
                         data-i18n="mostrador.register.bilingual">👥 Side-by-side
                         bilingual (62/38)</button>
                     <select id="bibleBridgeLangSelect" aria-label="Bridge Language (62/38)">
-                        <option value="">Bridge: Auto</option>
+                        <option value="">Puente: Automático</option>
                         <option value="es">Bridge: ES</option>
                         <option value="en">Bridge: EN</option>
                         <option value="fr">Bridge: FR</option>
@@ -281,21 +282,28 @@
                         <button type="button" id="quickLangCha" class="uls-chip" data-i18n-autonym="true"
                             data-corpus-lang="cha"><span class="ek-iso-tag">CHA</span> Chamorro (Porción)</button>
                     </div>
-                    <div id="corpusWorkLanguagesBar" class="chip-wrap-row ek-mt-xs" role="group"
-                        aria-label="Sister Work Editions (Evangelios and Felices)" hidden>
-                        <button type="button" id="quickWorkLangGn" class="uls-chip" data-i18n-autonym="true"
-                            data-corpus-lang="gn" data-work-scope="evangelios" hidden><span class="ek-iso-tag">GN</span>
-                            Avañe'ẽ Guaraní (Evangelios)</button>
-                        <button type="button" id="quickWorkLangQuc" class="uls-chip" data-i18n-autonym="true"
-                            data-corpus-lang="quc" data-work-scope="evangelios" hidden><span
-                                class="ek-iso-tag">QUC</span> K'iche' (Evangelios)</button>
-                        <button type="button" id="quickWorkLangBnBd" class="uls-chip" data-i18n-autonym="true"
-                            data-corpus-lang="bn-BD" data-work-scope="felices" hidden><span
-                                class="ek-iso-tag">BN-BD</span> বাংলা বাংলাদেশ (Felices)</button>
-                        <button type="button" id="quickWorkLangBnIn" class="uls-chip" data-i18n-autonym="true"
-                            data-corpus-lang="bn-IN" data-work-scope="felices" hidden><span
-                                class="ek-iso-tag">BN-IN</span> বাংলা ভারত (Felices)</button>
-                    </div>
+<div id="corpusWorkLanguagesBar" class="chip-wrap-row ek-mt-xs" role="group" aria-label="Sister Work Editions (Evangelios and Felices)" hidden>
+<button type="button" id="quickWorkLangGn" class="uls-chip" data-i18n-autonym="true" data-corpus-lang="gn" data-work-scope="evangelios" hidden><span class="ek-iso-tag">GN</span> Avañe'ẽ Guaraní (Evangelios)</button>
+<button type="button" id="quickWorkLangQuc" class="uls-chip" data-i18n-autonym="true" data-corpus-lang="quc" data-work-scope="evangelios" hidden><span class="ek-iso-tag">QUC</span> K'iche' (Evangelios)</button>
+<button type="button" id="quickWorkLangEs" class="uls-chip" data-i18n-autonym="true" data-corpus-lang="es" data-work-scope="felices" hidden><span class="ek-iso-tag">ES</span> Español</button>
+<button type="button" id="quickWorkLangEn" class="uls-chip" data-i18n-autonym="true" data-corpus-lang="en" data-work-scope="felices" hidden><span class="ek-iso-tag">EN</span> English</button>
+<button type="button" id="quickWorkLangPt" class="uls-chip" data-i18n-autonym="true" data-corpus-lang="pt" data-work-scope="felices" hidden><span class="ek-iso-tag">PT</span> Português</button>
+<button type="button" id="quickWorkLangFr" class="uls-chip" data-i18n-autonym="true" data-corpus-lang="fr" data-work-scope="felices" hidden><span class="ek-iso-tag">FR</span> Français</button>
+<button type="button" id="quickWorkLangIt" class="uls-chip" data-i18n-autonym="true" data-corpus-lang="it" data-work-scope="felices" hidden><span class="ek-iso-tag">IT</span> Italiano</button>
+<button type="button" id="quickWorkLangId" class="uls-chip" data-i18n-autonym="true" data-corpus-lang="id" data-work-scope="felices" hidden><span class="ek-iso-tag">ID</span> Bahasa Indonesia</button>
+<button type="button" id="quickWorkLangTr" class="uls-chip" data-i18n-autonym="true" data-corpus-lang="tr" data-work-scope="felices" hidden><span class="ek-iso-tag">TR</span> Türkçe</button>
+<button type="button" id="quickWorkLangRu" class="uls-chip" data-i18n-autonym="true" data-corpus-lang="ru" data-work-scope="felices" hidden><span class="ek-iso-tag">RU</span> Русский</button>
+<button type="button" id="quickWorkLangZhHans" class="uls-chip" data-i18n-autonym="true" data-corpus-lang="zh-Hans" data-work-scope="felices" hidden><span class="ek-iso-tag">ZH-HANS</span> 简体中文</button>
+<button type="button" id="quickWorkLangJa" class="uls-chip" data-i18n-autonym="true" data-corpus-lang="ja" data-work-scope="felices" hidden><span class="ek-iso-tag">JA</span> 日本語</button>
+<button type="button" id="quickWorkLangKo" class="uls-chip" data-i18n-autonym="true" data-corpus-lang="ko" data-work-scope="felices" hidden><span class="ek-iso-tag">KO</span> 한국어</button>
+<button type="button" id="quickWorkLangHi" class="uls-chip" data-i18n-autonym="true" data-corpus-lang="hi" data-work-scope="felices" hidden><span class="ek-iso-tag">HI</span> हिन्दी</button>
+<button type="button" id="quickWorkLangBn" class="uls-chip" data-i18n-autonym="true" data-corpus-lang="bn" data-work-scope="felices" hidden><span class="ek-iso-tag">BN</span> বাংলা</button>
+<button type="button" id="quickWorkLangBnBd" class="uls-chip" data-i18n-autonym="true" data-corpus-lang="bn-BD" data-work-scope="felices" hidden><span class="ek-iso-tag">BN-BD</span> বাংলা বাংলাদেশ</button>
+<button type="button" id="quickWorkLangBnIn" class="uls-chip" data-i18n-autonym="true" data-corpus-lang="bn-IN" data-work-scope="felices" hidden><span class="ek-iso-tag">BN-IN</span> বাংলা ভারত</button>
+<button type="button" id="quickWorkLangAr" class="uls-chip" data-i18n-autonym="true" data-corpus-lang="ar" data-work-scope="felices" hidden><span class="ek-iso-tag">AR</span> العربية</button>
+<button type="button" id="quickWorkLangUr" class="uls-chip" data-i18n-autonym="true" data-corpus-lang="ur" data-work-scope="felices" hidden><span class="ek-iso-tag">UR</span> اردو</button>
+<button type="button" id="quickWorkLangFa" class="uls-chip" data-i18n-autonym="true" data-corpus-lang="fa" data-work-scope="felices" hidden><span class="ek-iso-tag">FA</span> فارسی</button>
+</div>
                     <section id="corpusGeoFilterDetails" class="tech-details ek-mt-xs">
                         <strong class="ek-title-sm" data-i18n-autonym="true">Filtros geográficos SIL (región y
                             país)</strong>
@@ -392,8 +400,9 @@
                     data-i18n="seal.loading">Loading verified passage…</span>
             </div>
             <button type="button" id="btnQuickPrintStage" class="uls-chip ek-foveal-print-btn"
-                aria-label="Print passage or save discreet PDF" data-i18n="mostrador.quick_print_cta"
-                data-i18n-attr="aria-label:mostrador.quick_print_cta_aria">🖨️ Imprimir / PDF</button>
+                data-quick-print-role="1-tap-passage"
+                aria-label="Imprimir pasaje en 1 toque (4 hojas PDF)" data-i18n="mostrador.quick_print_cta"
+                data-i18n-attr="aria-label:mostrador.quick_print_cta_aria">🖨️ Imprimir pasaje (4 hojas)</button>
         </div>
         <!-- Step 1: Compact Single-Row Spatial Navigation Above the Fold (y <= 116px) -->
         <div id="bibleSpatialNav" class="spatial-nav-bar" aria-label="Book and Chapter Navigator">
@@ -513,27 +522,6 @@
             <p class="subtitle" id="workDesc" data-i18n="felices.desc">Beatitudes Coloring Booklet (Matthew 5)
             </p>
             <div id="felicesDichasAndPlatesBar">
-                <select id="felicesLangSelect" hidden aria-label="Idioma de Los Felices"
-                    data-i18n-attr="aria-label:felices.langSelectAria">
-                    <option value="es" selected>Español (es)</option>
-                    <option value="en">English (en)</option>
-                    <option value="pt">Português (pt)</option>
-                    <option value="fr">Français (fr)</option>
-                    <option value="it">Italiano (it)</option>
-                    <option value="id">Bahasa Indonesia (id)</option>
-                    <option value="tr">Türkçe (tr)</option>
-                    <option value="ru">Русский (ru)</option>
-                    <option value="zh-Hans">简体中文 (zh-Hans)</option>
-                    <option value="ja">日本語 (ja)</option>
-                    <option value="ko">한국어 (ko)</option>
-                    <option value="hi">हिन्दी (hi)</option>
-                    <option value="bn">বাংলা (bn)</option>
-                    <option value="bn-BD">বাংলা বাংলাদেশ (bn-BD)</option>
-                    <option value="bn-IN">বাংলা ভারত (bn-IN)</option>
-                    <option value="ar">العربية (ar)</option>
-                    <option value="ur">اردو (ur)</option>
-                    <option value="fa">فارسی (fa)</option>
-                </select>
                 <select id="felicesDichaSelect" aria-label="12 Dichas de Los Felices">
                     <option value="1">Dicha 1 · Mt 5:1 (Jesús sube al Monte)</option>
                     <option value="2">Dicha 2 · Mt 5:3 (Pobres en Espíritu)</option>
@@ -914,12 +902,12 @@
             <div id="duplexAssistantPanel" data-print-subtab-panel="imposition"></div>
             <div id="impositionBookletPreviewHost" data-print-subtab-panel="imposition" data-print-tool="imposition">
             </div>
-            <div id="stationeryCardPanel" data-print-subtab-panel="stationery"></div>
-            <section id="photocopyResilienceUnifiedSection" class="photocopy-unified-card"
+            <div id="stationeryCardPanel" class="ek-card ek-mb-sm" data-print-subtab-panel="stationery"></div>
+            <section id="photocopyResilienceUnifiedSection" class="photocopy-unified-card ek-card ek-mt-sm"
                 data-print-subtab-panel="stationery">
                 <div class="photocopy-header-row">
-                    <span class="ek-meta" data-i18n="print.btn.photocopy3gen">🔬 Test Photocopy Legibility (3rd
-                        Gen)</span>
+                    <strong class="ek-title-sm" data-i18n="print.btn.photocopy3gen">🔬 Test Photocopy Legibility (3rd
+                        Gen)</strong>
                     <span id="biblePhotocopySimBadge" class="uls-badge" data-euler-delta="0"
                         data-min-stroke-pt="0.75">3ª Gen · Sauvola k=0.25 · ≥0.75 pt · Δχ=0</span>
                 </div>
@@ -988,7 +976,7 @@
                 <button type="button" id="btnToggleOpticalCameraRx" class="uls-chip" data-dosis-subtab-panel="pdf"
                     data-i18n="share.btn.cameraRx" hidden>📷 Receive with Camera (No Internet)</button>
                 <button type="button" id="btnOpticalRelayTx" class="uls-chip" data-dosis-subtab-panel="pdf"
-                    data-i18n="share.btn.relayTx">🔁
+                    data-i18n="share.btn.relayTx" hidden>🔁
                     Relay Received Passage to Another Phone</button>
             </div>
             <div id="opticalCameraViewportHost" class="optical-camera-host" data-dosis-subtab-panel="pdf" hidden>
@@ -1018,13 +1006,14 @@
                             Authentic Editorial Signature</button>
                     </div>
                 </div>
+                <div id="editorialAuditStatusPanel" data-dosis-subtab-panel="graphics" hidden
+                    class="ek-status-panel">
+                </div>
+                <div id="editorialProvenanceCardHost" data-dosis-subtab-panel="graphics" hidden></div>
                 <section id="shareProBovedaDetails" class="r9-stratum-accordion" data-pro-boveda="true"
-                    data-technical-plane="true">
-                    <h4 data-i18n-autonym="true">Verificación avanzada y auditoría</h4>
-                    <div id="editorialAuditStatusPanel" data-dosis-subtab-panel="graphics" hidden
-                        class="ek-status-panel">
-                    </div>
-                    <div id="editorialProvenanceCardHost" data-dosis-subtab-panel="graphics" hidden></div>
+                    data-contextual-details="true" hidden>
+                    <h4 class="ek-title-sm" data-i18n-autonym="true">Verificación avanzada y auditoría</h4>
+                    <p class="ek-meta ek-m-0" data-i18n-autonym="true">Incluye verificación criptográfica local de archivos .ekpack, DOI Zenodo y respaldo bajo Berna 15.3 arriba.</p>
                 </section>
             </section>
             <div id="shareOpenGraphCardPanel" data-dosis-subtab-panel="graphics" data-slot-order="0" hidden></div>

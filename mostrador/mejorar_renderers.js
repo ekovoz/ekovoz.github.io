@@ -201,7 +201,7 @@ export function renderImproveDrawerHtml({
     `<span data-i18n="improve.note">${t("improve.note")}</span>` +
     `<input id="improveNoteInput" class="ek-input" type="text" value="">` +
     `</label>` +
-    `<details id="improvePatchTechReceiptDetails" class="hig-tech-meta hig-tech-receipt-details" data-technical-plane="true">` +
+    `<details id="improvePatchTechReceiptDetails" class="hig-tech-meta hig-tech-receipt-details" data-contextual-details="true">` +
     `<summary>🧾 ${humanizeUiCopy("JSONL / SHA-256", locale)}</summary>` +
     `<pre id="improvePatchOutput" class="ek-pre">${patch.payloadLine}</pre>` +
     `</details>` +
@@ -213,8 +213,8 @@ export function renderImproveDrawerHtml({
       `</details>` +
       `</div>`
       : "") +
-    `<section id="improveCommunityVotesDetails" class="hig-tech-meta ek-card-muted" data-technical-plane="true">` +
-    `<strong class="ek-title-sm">${isEn ? "🗳️ Community consensus votes (Pro)" : "🗳️ Votos de consenso comunitario (Pro)"}</strong>` +
+    `<section id="improveCommunityVotesDetails" class="r9-stratum-accordion ek-card-muted" data-contextual-details="true">` +
+    `<h4 class="ek-title-sm">${isEn ? "🗳️ Community consensus votes (Pro)" : "🗳️ Votos de consenso comunitario (Pro)"}</h4>` +
     `<div class="ek-stack-sm ek-mt-sm">` +
     `<label class="ek-label-sm">${isEn ? "Reviewer ID" : "ID revisor"} <input id="improveVoteReviewerIdInput" class="ek-input" type="text" placeholder="hablante_1"></label>` +
     `<label class="ek-label-sm hig-toggle-row"><input id="improveVoteGoldSeedsCheck" type="checkbox"> <span>${isEn ? "Passed 2 Gold Seeds" : "Aprobó 2 semillas de oro"}</span></label>` +

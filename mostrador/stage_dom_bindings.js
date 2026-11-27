@@ -545,7 +545,12 @@ export function bindStageDomEvents(ctx = {}) {
     const fontValEl = getEl("kindleFontSizeValue", targetDoc);
     if (fontValEl) fontValEl.textContent = `${Number(state.fontSizePt || DEFAULT_PRINT_CONFIG.fontPt).toFixed(1)} pt`;
     if (colSel?.value) state.columns = Number(colSel.value) || 2;
-    if (paperSel?.value) state.paperFormat = String(paperSel.value).toLowerCase();
+    if (paperSel?.value) {
+      state.paperFormat = String(paperSel.value).toLowerCase();
+      if (state.paperFormat === "a4" || state.paperFormat === "letter") {
+        setPaperFormat(state.paperFormat, targetDoc);
+      }
+    }
     if (orientSel?.value) state.orientation = String(orientSel.value).toLowerCase();
     if (foliationSel?.value) state.foliationMode = String(foliationSel.value);
     if (duplexToggle && typeof duplexToggle.checked === "boolean") state.duplex = duplexToggle.checked;

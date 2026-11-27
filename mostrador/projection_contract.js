@@ -511,7 +511,7 @@ export const SINGLE_OWNER_CAPABILITY_MAP = Object.freeze({
 });
 
 /**
- * Resuelve el plano de superficie activo (`editorial` por defecto, `technical` bajo `?mode=studio` o opt-in).
+ * Resuelve el plano de superficie activo (`editorial` por defecto, `technical` bajo `?mode=studio` para auto-expandir detalles contextuales sin ocultar funciones).
  */
 export function resolveSurfacePlane(state = {}, search = "") {
   if (state?.surfacePlane === "technical") return "technical";

@@ -1034,5 +1034,12 @@ web_live = ["Compile", "Pack", "ApplyPatch", "AuditExternal", "VerifyPack", "Mod
 cli_ci_only = ["FetchSources", "BuildMatrix", "NewLang", "NewWork", "VerifyCanon", "CompleteBible", "SyncJsConstants"]
 language_picker = ["reading_language_selector", "polyglot_picker_window_36"]
 study_context = ["study_14col_drawer"]
-workshop_collaborator = ["workshop_cascade"]
+workshop_collaborator = ["workshop_cascade", "workshop_scope_passage_vs_guided250"]
 draft_work_gate = "evangelios"
+
+[hig_rc_parity]
+editorial_audit_unblocked = "#editorialAuditStatusPanel"
+felices_compiled_languages = 18
+optical_relay_rx_gated = "#btnOpticalRelayTx"
+workshop_scope_toggle = "#btnWorkshopLadderScopePassage"
+sw_cache_version = "ekovoz-mostrador-v54"

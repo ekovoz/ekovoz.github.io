@@ -348,7 +348,7 @@ export function renderPhilologyRosettaInspectorHtml(activeRows = [], options = {
     .slice(0, 2)
     .map(
       (kq) =>
-        `<li data-ketiv-qere-ref="${escapeHtml(kq.verse_id)}"><strong>Masora Ketiv/Qere (${escapeHtml(kq.verse_id)} · <code>${escapeHtml(kq.strong)}</code>):</strong> ${isEn ? "Ketiv written" : "Ketiv escrito"} <code>${escapeHtml(kq.ketiv_written)}</code> ↔ ${isEn ? "Qere read" : "Qere leído"} <code>${escapeHtml(kq.qere_read)}</code> — ${escapeHtml(kq.masoretic_note)}</li>`,
+        `<li data-ketiv-qere-ref="${escapeHtml(kq.verse_id)}"><strong>${isEn ? "Traditional reading note" : "Nota de lectura tradicional"} (${escapeHtml(kq.verse_id)} · <code>${escapeHtml(kq.strong)}</code>):</strong> ${isEn ? "Written text" : "Texto escrito"} <code>${escapeHtml(kq.ketiv_written)}</code> ↔ ${isEn ? "Traditional reading" : "Lectura tradicional"} <code>${escapeHtml(kq.qere_read)}</code> — ${escapeHtml(kq.masoretic_note)}</li>`,
     )
     .join("");
 
@@ -695,7 +695,7 @@ export function renderPhilologyRosettaExplorerHtml({
     `<div id="philologyRosettaExplorerPanel" data-rosetta-explorer="true" data-rosetta-category="${escapeHtml(cleanCat)}" data-active-ref="${escapeHtml(activeRef)}" data-hg-pairs-total="${hgPairsTotal}" data-strong-seed-total="${strongSeedTotal}">` +
     `<div class="ek-row-wrap ek-mb-sm">` +
     `<select id="rosettaFilterCategorySelect" class="ek-select-pill" aria-label="${isEn ? "Philological Rosetta Index Category" : "Categoría del Índice Rosetta Filológico"}">${catOptions}</select>` +
-    `<input type="search" id="rosettaSearchInput" class="ek-search-pill" value="${escapeHtml(cleanQuery)}" aria-label="${isEn ? "Search in Philological Rosetta Index" : "Buscar en Índice Rosetta Filológico"}" placeholder="${isEn ? "Search root (ברא), Strong (H7225/G3056), Ketiv/Qere or passage..." : "Buscar raíz (ברא), Strong (H7225/G3056), Ketiv/Qere o pasaje..."}">` +
+    `<input type="search" id="rosettaSearchInput" class="ek-search-pill" value="${escapeHtml(cleanQuery)}" aria-label="${isEn ? "Search in Philological Rosetta Index" : "Buscar en Índice Rosetta Filológico"}" placeholder="${isEn ? "Search root (ברא), Strong (H7225/G3056), reading notes or passage..." : "Buscar raíz (ברא), Strong (H7225/G3056), notas de lectura o pasaje..."}">` +
     `</div>` +
     `<div id="rosettaExplorerResultsList" data-results-count="${results.length}"><div id="rosettaExplorerResultsRows" class="ek-row-wrap" data-rosetta-results="true">${chipsHtml}</div></div>` +
     `</div>`

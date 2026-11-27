@@ -321,6 +321,6 @@ export function formatOpticalStreamCaption(metrics = {}, uiLocale = "es") {
   const cur = Number(metrics?.currentFrame ?? 0);
   const tot = Math.max(1, Number(metrics?.totalFrames ?? 1));
   const bytes = Number(metrics?.bytes ?? 0);
-  const kb = (bytes / 1024).toFixed(1);
-  return isEn ? `Transferring packet ${cur} of ${tot} (${kb} KB)` : `Transmitiendo bloque ${cur} de ${tot} (${kb} KB)`;
+  const sizeStr = bytes < 1024 ? `${bytes} B` : `${(bytes / 1024).toFixed(1)} KB`;
+  return isEn ? `Transferring packet ${cur} of ${tot} (${sizeStr})` : `Transmitiendo bloque ${cur} de ${tot} (${sizeStr})`;
 }

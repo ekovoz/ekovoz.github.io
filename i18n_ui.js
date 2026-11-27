@@ -43,7 +43,7 @@ export function updateFocalPlate(d=D(),lO="",n=true,uO="",st=stRef){
   if(loc){loc.hidden=esC;if(!esC)loc.innerHTML=renderLocalizedFelicesPlateCardHtml({plateIndex:pIdx,totalPlates:N,lang:l,uiLocale:uL,verseText:tx,refLabel:`${c.book} ${c.chapter}:${c.verse}`,dir:LANGUAGE_PACKS.find(p=>p.code===l||p.code===pLc(l))?.dir||"ltr"});}
   if(id){id.textContent=lb;sA(id,"data-osis-ref",os);}if(vE){vE.textContent=tx;vE.hidden=!esC;sA(vE,"data-osis-ref",os);sA(vE,"data-overlay-authority",ov?.authorityTier||"");}if(cI)cI.src=u;if(cC)cC.textContent=tx;if(wC)wC.innerHTML=renderFelicesSocraticWonderCardHtml(pIdx,uL);
   sIdx=pIdx<=11?0:pIdx<=23?1:2;for(let j=0;j<3;j++)g(`termPill_${j+1}`)?.classList?.toggle("active",j===sIdx);
-  for(const[k,v]of[["felicesPlateSelect",`${pIdx}`],["felicesDichaSelect",`${dI}`],["felicesLangSelect",l]]){const e=g(k);if(e&&e.value!==v)e.value=v;}
+  for(const[k,v]of[["felicesPlateSelect",`${pIdx}`],["felicesDichaSelect",`${dI}`]]){const e=g(k);if(e&&e.value!==v)e.value=v;}
   for(const o of g("felicesPlateSelect")?.options||[]){const m=S(o.textContent).replace(/(?:\s*·)+/g," ").match(/^(?:Lámina|Lám\.|Plate|Pl\.)?\s*(\d+)\s*\/\s*27\s*(.+)$/i),pn=m?m[1]:S(o.value,"1"),r0=(m?m[2]:S(o.textContent)).replace(/[()]/g,"").trim();sA(o,"data-plate-num",pn);sA(o,"data-plate-ref",r0);o.textContent=`${isEn?"Pl.":"Lám."} ${pn}/27 · ${isEn?r0.replace(/\bSal\b/g,"Ps"):r0.replace(/\bPs\b/g,"Sal")}`;}
   for(const o of g("felicesDichaSelect")?.options||[]){const t=S(o.textContent).replace(/\s*·\s*/g," · ").replace(/\s+\(/," · ").replace(/\)\s*$/,"");o.textContent=isEn?t.replace(/^Dicha\b/,"Beatitude").replace(/\bSal\b/g,"Ps"):t.replace(/^Beatitude\b/,"Dicha").replace(/\bPs\b/g,"Sal");}
   const ob=g("btnFelicesOpenInBible");if(ob){sA(ob,"data-felices-osis",os);ob.textContent=`${isEs?"📖 Abrir pasaje en La Biblia":"📖 Open passage in The Bible"} (${c.book} ${c.chapter}:${c.verse})`;}if(n)onC?.({plateIndex:pIdx,dichaIndex:dI,book:c.book,chapter:c.chapter,verse:c.verse});
@@ -61,7 +61,7 @@ export function applyAriaLabelsToDom(r, d = {}) { const m = d.messages || d || {
 const MD = new Set(["previewModal", "plateModal"]);
 export const openModal = (id, d = D()) => { if (S(id) === "previewModal") updateFocalPlate(d, "", false); if (MD.has(S(id))) $(d, id)?.showModal?.(); };
 export const closeModal = (id, d = D()) => { if (MD.has(S(id))) $(d, id)?.close?.(); };
-export const syncFelicesWithCorpusLang = async (l, d = D()) => { if (d) { await ensureLocaleLoaded(l); updateFocalPlate(d); } };
+export const syncFelicesWithCorpusLang = async (l, d = D()) => { if (d) { await ensureLocaleLoaded(l); await updateUI(d); updateFocalPlate(d, l, false); } };
 export async function updateUI(doc = D()) {
   if (!doc) return; const l = gL(doc); await ensureLocaleLoaded(l); const pk = LANGUAGE_PACKS.find(p => p.code === l) || LANGUAGE_PACKS[0], t = resolveFelicesStrings(l);
   doc.documentElement.lang = pk.code; doc.documentElement.dir = pk.dir;

@@ -54,7 +54,13 @@ export function filterCorpusLanguageDrawerByWork(activeWork = "biblia", targetDo
     if (el) el.hidden = !isBible;
   }
   const sisterBar = getEl("corpusWorkLanguagesBar", targetDoc);
-  if (sisterBar) sisterBar.hidden = isBible;
+  if (sisterBar) {
+    sisterBar.hidden = isBible;
+    for (const pill of Array.from(sisterBar.querySelectorAll?.("[data-work-scope]") || [])) {
+      const sc = pill.getAttribute?.("data-work-scope");
+      pill.hidden = sc !== work;
+    }
+  }
   const drawer = getEl("bibleLanguageAndRegisterDrawer", targetDoc);
   if (drawer) drawer.setAttribute?.("data-active-work", work);
   return work;
@@ -215,13 +221,13 @@ export function bindChromeAndPlaneEvents({
     if (techBtn) {
       techBtn.setAttribute?.("aria-pressed", on ? "true" : "false");
       techBtn.textContent = enNow
-        ? (on ? "🛠️ Studio / Pro Mode (On)" : "🛠️ Studio / Pro Mode")
-        : (on ? "🛠️ Modo Estudio y Taller Pro (Activo)" : "🛠️ Modo Estudio y Taller Pro");
+        ? (on ? "🛠️ Technical details expanded" : "🛠️ Expand technical details")
+        : (on ? "🛠️ Detalles técnicos expandidos" : "🛠️ Expandir detalles técnicos");
     }
     if (exitProPill) {
       exitProPill.hidden = !on;
       exitProPill.setAttribute?.("aria-pressed", on ? "true" : "false");
-      exitProPill.textContent = enNow ? "Pro Mode · Exit" : "Modo Pro · Salir";
+      exitProPill.textContent = enNow ? "Expanded details · Collapse" : "Detalles · Contraer";
     }
   };
   syncPlaneButtonsDom();
@@ -265,8 +271,15 @@ export function bindChromeAndPlaneEvents({
   if (quickPrintBtn && typeof quickPrintBtn.addEventListener === "function") {
     quickPrintBtn.addEventListener("click", async () => {
       closeAppearancePopover();
+      state.activeDoseScope = "1";
+      const scopeSel = getEl("doseScopeSelect", targetDoc);
+      if (scopeSel) scopeSel.value = "1";
       if (typeof transitionSheet === "function") {
         await transitionSheet("print", targetDoc, { fromUser: true });
+      }
+      const btnDose1 = getEl("btnDose1Sheets", targetDoc);
+      if (btnDose1 && typeof btnDose1.focus === "function") {
+        try { btnDose1.focus({ preventScroll: true }); } catch { }
       }
       onQuickPrintOpen?.();
     });

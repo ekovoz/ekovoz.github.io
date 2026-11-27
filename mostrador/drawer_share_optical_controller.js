@@ -250,7 +250,7 @@ const relayBtnEl = targetDoc?.getElementById?.("btnOpticalRelayTx") || null;
 const camBtnEl = targetDoc?.getElementById?.("btnToggleOpticalCameraRx") || null;
 const rxPanelEl = rxPanel || targetDoc?.getElementById?.("opticalReceiverRxPanel") || null;
 if (camHostEl) camHostEl.hidden = activeQrMode !== "receive";
-if (relayBtnEl) relayBtnEl.hidden = false;
+if (relayBtnEl) relayBtnEl.hidden = !(activeQrMode === "receive" && Number(state.opticalRxDecodedBytes || 0) > 0);
 if (camBtnEl) camBtnEl.hidden = activeQrMode !== "receive";
 if (rxPanelEl) {
 rxPanelEl.hidden = activeQrMode !== "receive";
@@ -574,9 +574,12 @@ return state.activeOpticalWasmSession;
 const onBatchDecodedMaybeComplete = (wasmBatch) => {
 if (!wasmBatch || !wasmBatch.complete) return false;
 state.lastOpticalRxReport = wasmBatch;
-stopOpticalCameraSession();
-if (statusPanel) {
 const rxBytes = wasmBatch.reconstructedBytes || wasmBatch.decodedBytes || new Uint8Array(0);
+state.opticalRxDecodedBytes = rxBytes.byteLength || 0;
+stopOpticalCameraSession();
+const relayBtn = targetDoc?.getElementById?.("btnOpticalRelayTx") || null;
+if (relayBtn) relayBtn.hidden = !(Number(state.opticalRxDecodedBytes || 0) > 0);
+if (statusPanel) {
 statusPanel.setAttribute("data-audit-action", "optical-camera-complete");
 statusPanel.setAttribute("data-rx-complete", "true");
 statusPanel.setAttribute("data-rx-bytes", String(rxBytes.byteLength || 0));
