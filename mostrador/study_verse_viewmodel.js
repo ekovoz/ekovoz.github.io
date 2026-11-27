@@ -171,10 +171,12 @@ export function summarizeAnnotationIndexTotals(annotationReport = null, uiLocale
   return {
     totals: t,
     html:
-      `<div id="studyAnnotationTotalsBox" class="ek-meta ek-stack-xs ek-mt-xs" data-ot-tokens="${Number(t.ot_tokens || 0)}" data-nt-tokens="${Number(t.nt_tokens || 0)}">` +
-      `<span><strong>${isEn ? "Source tokens:" : "Tokens fuente:"}</strong> AT ${Number(t.ot_tokens || 0).toLocaleString("en-US")} · NT ${Number(t.nt_tokens || 0).toLocaleString("en-US")} (MACULA ${Number(t.nt_macula_tokens || 0).toLocaleString("en-US")}, SR ${Number(t.nt_sr_tokens || 0).toLocaleString("en-US")}, TAGNT-ES ${Number(t.nt_tagnt_spanish_tokens || 0).toLocaleString("en-US")})</span>` +
-      `<span><strong>${isEn ? "Apparatus & coverage:" : "Aparato y cobertura:"}</strong> Ketiv/Qere ${Number(t.ketiv_tokens || 0)} (${Number(t.tahot_qere_ketiv_rows || 0)} rows · osis_ref=${escVm(t.sample_osis_ref || "GEN.1.1")}) · TR ${Number(t.tr_supplement_tokens || 0)} · OT versification ${Number(t.versification_verses_ot || 0)} (eng_ref=${escVm(t.sample_eng_ref || "PSA.23.1")} / org_ref=${escVm(t.sample_org_ref || "PSA.23.2")}) · Unannotated: OT ${Number(t.ot_unannotated || 0)} / NT ${Number(t.nt_unannotated || 0)}</span>` +
-      `</div>`,
+      `<dl id="studyAnnotationTotalsBox" class="ek-specs-dl ek-meta ek-mt-xs" data-ot-tokens="${Number(t.ot_tokens || 0)}" data-nt-tokens="${Number(t.nt_tokens || 0)}">` +
+      `<dt>${isEn ? "Source tokens" : "Tokens fuente"}</dt>` +
+      `<dd>AT ${Number(t.ot_tokens || 0).toLocaleString("en-US")} · NT ${Number(t.nt_tokens || 0).toLocaleString("en-US")} (MACULA ${Number(t.nt_macula_tokens || 0).toLocaleString("en-US")}, SR ${Number(t.nt_sr_tokens || 0).toLocaleString("en-US")}, TAGNT-ES ${Number(t.nt_tagnt_spanish_tokens || 0).toLocaleString("en-US")})</dd>` +
+      `<dt>${isEn ? "Apparatus & coverage" : "Aparato y cobertura"}</dt>` +
+      `<dd>Ketiv/Qere ${Number(t.ketiv_tokens || 0)} (${Number(t.tahot_qere_ketiv_rows || 0)} rows · osis_ref=${escVm(t.sample_osis_ref || "GEN.1.1")}) · TR ${Number(t.tr_supplement_tokens || 0)} · OT versification ${Number(t.versification_verses_ot || 0)} (eng_ref=${escVm(t.sample_eng_ref || "PSA.23.1")} / org_ref=${escVm(t.sample_org_ref || "PSA.23.2")}) · Unannotated: OT ${Number(t.ot_unannotated || 0)} / NT ${Number(t.nt_unannotated || 0)}</dd>` +
+      `</dl>`,
   };
 }
 
@@ -198,10 +200,12 @@ export function summarizeDiachronicAndBlindCalibration({ corpusSummary = null, b
     ? blindArr.reduce((acc, r) => acc + (Number(r?.verses_evaluated) || 0), 0)
     : Number(blindReport?.verses_evaluated) || 48;
   return (
-    `<div id="studyCorpusCalibrationBox" class="ek-meta ek-stack-xs ek-mt-xs" data-blind-verses-evaluated="${totalEvaluated}" data-mean-aoa="${Number(cs.mean_aoa_years || 7.94)}">` +
-    `<span><strong>${isEn ? "Diachronic Corpus Summary:" : "Resumen Diacrónico del Corpus:"}</strong> AoA ${Number(cs.mean_aoa_years || 7.94)}y · EipenL ${Number(cs.mean_eipen_l || 84.24)} · MATTR ${Number(cs.mean_mattr_50 || 0.725)} · MDD ${Number(cs.mean_mdd || 2.2)}</span>` +
-    `<span><strong>${isEn ? "Lexical Tiers:" : "Niveles léxicos:"}</strong> T1 ${Number(cs.tier1_count || 12697).toLocaleString("en-US")} · T2 ${Number(cs.tier2_count || 17103).toLocaleString("en-US")} · T3 ${Number(cs.tier3_count || 1302).toLocaleString("en-US")} · ${isEn ? "Blind benchmark verses:" : "Versos evaluados (calibración ciega):"} ${totalEvaluated}</span>` +
-    `</div>`
+    `<dl id="studyCorpusCalibrationBox" class="ek-specs-dl ek-meta ek-mt-xs" data-blind-verses-evaluated="${totalEvaluated}" data-mean-aoa="${Number(cs.mean_aoa_years || 7.94)}">` +
+    `<dt>${isEn ? "Diachronic Corpus Summary" : "Resumen Diacrónico del Corpus"}</dt>` +
+    `<dd>AoA ${Number(cs.mean_aoa_years || 7.94)}y · EipenL ${Number(cs.mean_eipen_l || 84.24)} · MATTR ${Number(cs.mean_mattr_50 || 0.725)} · MDD ${Number(cs.mean_mdd || 2.2)}</dd>` +
+    `<dt>${isEn ? "Lexical Tiers" : "Niveles léxicos"}</dt>` +
+    `<dd>T1 ${Number(cs.tier1_count || 12697).toLocaleString("en-US")} · T2 ${Number(cs.tier2_count || 17103).toLocaleString("en-US")} · T3 ${Number(cs.tier3_count || 1302).toLocaleString("en-US")} · ${isEn ? "Blind benchmark verses:" : "Versos evaluados (calibración ciega):"} ${totalEvaluated}</dd>` +
+    `</dl>`
   );
 }
 

@@ -155,21 +155,8 @@ export function renderAndBindContextualTypographyAndFontsVault({
     vaultHost.setAttribute?.("data-fonts-vault-count", String(countFonts));
     vaultHost.innerHTML =
       `<div class="ek-row-between ek-card-muted ek-mt-xs">` +
-      `<span class="ek-meta">🔤 ${isEn ? `Script font ready · ${countFonts} scripts ready in Vault` : `${countFonts} escrituras listas · Bóveda sin conexión`}</span>` +
-      `<button type="button" id="btnPrintJumpToFontVault" class="uls-chip ek-btn-secondary">${isEn ? "Open in Vault →" : "Abrir en Bóveda →"}</button>` +
+      `<span class="ek-meta">🔤 ${isEn ? `Script font ready · ${countFonts} scripts ready for offline PDF` : `${countFonts} escrituras listas para impresión PDF`}</span>` +
       `</div>`;
-    const jumpBtn = typeof getEl === "function" ? getEl("btnPrintJumpToFontVault", targetDoc) : null;
-    if (jumpBtn && typeof jumpBtn.addEventListener === "function" && !jumpBtn._jumpFontBound) {
-      jumpBtn._jumpFontBound = true;
-      jumpBtn.addEventListener("click", () => {
-        const shareBtn = getEl("btnOpenShareAndAuditSheet", targetDoc);
-        const meshTab = getEl("btnDosisSubtabMesh", targetDoc);
-        const fontDet = getEl("shareFontVaultDetails", targetDoc);
-        shareBtn?.click?.();
-        meshTab?.click?.();
-        if (fontDet) fontDet.open = true;
-      });
-    }
   }
 }
 

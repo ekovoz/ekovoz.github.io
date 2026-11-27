@@ -92,6 +92,12 @@
                     aria-controls="evangeliosSovereignSection" data-work-tab="evangelios" data-work-i18n="evangelios"
                     data-i18n="mostrador.tab.evangelios" hidden>🌅 The Gospels (52)</button>
             </nav>
+            <div id="workspaceModeSwitch" class="workspace-seg-group" role="group" aria-label="Workspace">
+                <button type="button" id="btnWorkspaceReader" aria-pressed="true" data-workspace-target="reader"
+                    data-i18n-autonym="true">Lectura</button>
+                <button type="button" id="btnToggleTechnicalPlane" aria-pressed="false" data-workspace-target="studio"
+                    data-i18n-autonym="true">Estudio Pro</button>
+            </div>
             <div class="language-region-pill-group" role="group" aria-label="Language and Appearance">
                 <button type="button" class="uls-chip" id="sovereignCorpusLangBtn" data-i18n-autonym="true"
                     aria-expanded="false" aria-controls="bibleLanguageAndRegisterDrawer">
@@ -99,10 +105,11 @@
                 </button>
                 <button type="button" class="uls-chip" id="btnAppearanceMenu" data-i18n-autonym="true"
                     aria-expanded="false" aria-controls="appearancePopover"
-                    aria-label="Appearance, menu language &amp; Pro mode">Aa · ES</button>
+                    aria-label="Appearance &amp; UI Language">Aa</button>
             </div>
         </div>
-        <div id="appearancePopover" hidden role="region" aria-label="Typography, Theme, Menu Language and Mode">
+        <div id="appearancePopover" hidden role="region"
+            aria-label="Typography, Theme, Reading Register and Menu Language">
             <div class="appearance-group" role="group" aria-label="Theme">
                 <button type="button" id="btnThemeLight" class="uls-chip" data-i18n="top.theme.light"
                     aria-pressed="true">☀️
@@ -126,6 +133,31 @@
             <div class="appearance-group" role="group" aria-label="Reading Mode">
                 <button type="button" id="toggleRollMode" class="uls-chip" data-i18n="mostrador.register.roll_toggle"
                     aria-pressed="false">📄 Page view ↔ Continuous scroll</button>
+            </div>
+            <div id="bibleRegisterSelector" class="register-selector-group ek-row-wrap ek-mb-sm" role="group"
+                aria-label="Reading Mode">
+                <button type="button" id="btnRegIntergeneracional" class="uls-chip" data-register="intergeneracional"
+                    data-i18n="mostrador.register.intergenerational">🕊️ Clear
+                    contemporary reading</button>
+                <button type="button" id="btnRegClasica" class="uls-chip" data-register="clasica"
+                    data-i18n="mostrador.register.classic">📜 Classic tradition
+                    (1909)</button>
+                <button type="button" id="btnRegBilingue" class="uls-chip" data-register="bilingue"
+                    data-i18n="mostrador.register.bilingual">👥 Side-by-side
+                    bilingual (62/38)</button>
+                <select id="bibleBridgeLangSelect" aria-label="Bridge Language (62/38)">
+                    <option value="">Puente: Automático</option>
+                    <option value="es">Bridge: ES</option>
+                    <option value="en">Bridge: EN</option>
+                    <option value="fr">Bridge: FR</option>
+                    <option value="pt">Bridge: PT</option>
+                    <option value="ar">Bridge: AR</option>
+                    <option value="hi">Bridge: HI</option>
+                    <option value="id">Bridge: ID</option>
+                    <option value="ru">Bridge: RU</option>
+                    <option value="sw">Bridge: SW</option>
+                    <option value="zh-Hans">Bridge: ZH</option>
+                </select>
             </div>
             <div class="appearance-popover-row" role="group" aria-label="Menu Language">
                 <button type="button" class="uls-trigger-btn" id="ulsTriggerBtn" data-i18n-autonym="true"
@@ -154,42 +186,13 @@
                     <option value="fa">فارسی</option>
                 </select>
             </div>
-            <div class="appearance-popover-row" role="group" aria-label="Workspace Plane">
-                <button type="button" id="btnToggleTechnicalPlane" class="uls-chip ek-btn-secondary"
-                    aria-pressed="false" data-i18n-autonym="true">🛠️ Expandir detalles técnicos</button>
-            </div>
         </div>
-        <!-- Global Orthogonal Corpus Language Funnel (24 Bibles & Portions + Sister Works Languages + SIL 7,164 Census) -->
+        <!-- Global Orthogonal Corpus Language Funnel (Single-Purpose Language Picker: 24 Bibles + SIL 7,164) -->
         <details class="advanced-editorial-drawer advanced-editorial-drawer corpus-drawer"
             id="bibleLanguageAndRegisterDrawer">
             <summary hidden aria-hidden="true" data-i18n="mostrador.step1.title">
                 1. Choose language: 24 Bibles &amp; Portions or SIL Census (7,164)</summary>
             <div>
-                <div id="bibleRegisterSelector" class="register-selector-group ek-row-wrap ek-mb-sm" role="group"
-                    aria-label="Reading Mode">
-                    <button type="button" id="btnRegIntergeneracional" class="uls-chip"
-                        data-register="intergeneracional" data-i18n="mostrador.register.intergenerational">🕊️ Clear
-                        contemporary reading</button>
-                    <button type="button" id="btnRegClasica" class="uls-chip" data-register="clasica"
-                        data-i18n="mostrador.register.classic">📜 Classic tradition
-                        (1909)</button>
-                    <button type="button" id="btnRegBilingue" class="uls-chip" data-register="bilingue"
-                        data-i18n="mostrador.register.bilingual">👥 Side-by-side
-                        bilingual (62/38)</button>
-                    <select id="bibleBridgeLangSelect" aria-label="Bridge Language (62/38)">
-                        <option value="">Puente: Automático</option>
-                        <option value="es">Bridge: ES</option>
-                        <option value="en">Bridge: EN</option>
-                        <option value="fr">Bridge: FR</option>
-                        <option value="pt">Bridge: PT</option>
-                        <option value="ar">Bridge: AR</option>
-                        <option value="hi">Bridge: HI</option>
-                        <option value="id">Bridge: ID</option>
-                        <option value="ru">Bridge: RU</option>
-                        <option value="sw">Bridge: SW</option>
-                        <option value="zh-Hans">Bridge: ZH</option>
-                    </select>
-                </div>
                 <div id="bibleOrthographyPills" class="chip-wrap-row ortho-pills-bar ek-mb-sm"
                     aria-label="Script Variants" hidden>
                     <button type="button" id="btnOrthoInali" class="uls-chip" data-i18n="ortho.inali" data-ortho="INALI"
@@ -274,7 +277,9 @@
                             data-corpus-lang="ja"><span class="ek-iso-tag">JA</span> 日本語 (66)</button>
                         <button type="button" id="quickLangKo" class="uls-chip" data-i18n-autonym="true"
                             data-corpus-lang="ko"><span class="ek-iso-tag">KO</span> 한국어 (66)</button>
-                        <button type="button" id="quickLangStp" class="uls-chip" data-i18n-autonym="true" data-corpus-lang="stp"><span class="ek-iso-tag">STP</span> O'dam Tepehuano (27 NT + Taller AT)</button>
+                        <button type="button" id="quickLangStp" class="uls-chip" data-i18n-autonym="true"
+                            data-corpus-lang="stp"><span class="ek-iso-tag">STP</span> O'dam Tepehuano (27 NT + Taller
+                            AT)</button>
                         <button type="button" id="quickLangArp" class="uls-chip" data-i18n-autonym="true"
                             data-corpus-lang="arp"><span class="ek-iso-tag">ARP</span> Arapaho (Porción)</button>
                         <button type="button" id="quickLangBre" class="uls-chip" data-i18n-autonym="true"
@@ -282,31 +287,73 @@
                         <button type="button" id="quickLangCha" class="uls-chip" data-i18n-autonym="true"
                             data-corpus-lang="cha"><span class="ek-iso-tag">CHA</span> Chamorro (Porción)</button>
                     </div>
-<div id="corpusWorkLanguagesBar" class="chip-wrap-row ek-mt-xs" role="group" aria-label="Sister Work Editions (Evangelios and Felices)" hidden>
-<button type="button" id="quickWorkLangGn" class="uls-chip" data-i18n-autonym="true" data-corpus-lang="gn" data-work-scope="evangelios" hidden><span class="ek-iso-tag">GN</span> Avañe'ẽ Guaraní (Evangelios)</button>
-<button type="button" id="quickWorkLangQuc" class="uls-chip" data-i18n-autonym="true" data-corpus-lang="quc" data-work-scope="evangelios" hidden><span class="ek-iso-tag">QUC</span> K'iche' (Evangelios)</button>
-<button type="button" id="quickWorkLangEs" class="uls-chip" data-i18n-autonym="true" data-corpus-lang="es" data-work-scope="felices" hidden><span class="ek-iso-tag">ES</span> Español</button>
-<button type="button" id="quickWorkLangEn" class="uls-chip" data-i18n-autonym="true" data-corpus-lang="en" data-work-scope="felices" hidden><span class="ek-iso-tag">EN</span> English</button>
-<button type="button" id="quickWorkLangPt" class="uls-chip" data-i18n-autonym="true" data-corpus-lang="pt" data-work-scope="felices" hidden><span class="ek-iso-tag">PT</span> Português</button>
-<button type="button" id="quickWorkLangFr" class="uls-chip" data-i18n-autonym="true" data-corpus-lang="fr" data-work-scope="felices" hidden><span class="ek-iso-tag">FR</span> Français</button>
-<button type="button" id="quickWorkLangIt" class="uls-chip" data-i18n-autonym="true" data-corpus-lang="it" data-work-scope="felices" hidden><span class="ek-iso-tag">IT</span> Italiano</button>
-<button type="button" id="quickWorkLangId" class="uls-chip" data-i18n-autonym="true" data-corpus-lang="id" data-work-scope="felices" hidden><span class="ek-iso-tag">ID</span> Bahasa Indonesia</button>
-<button type="button" id="quickWorkLangTr" class="uls-chip" data-i18n-autonym="true" data-corpus-lang="tr" data-work-scope="felices" hidden><span class="ek-iso-tag">TR</span> Türkçe</button>
-<button type="button" id="quickWorkLangRu" class="uls-chip" data-i18n-autonym="true" data-corpus-lang="ru" data-work-scope="felices" hidden><span class="ek-iso-tag">RU</span> Русский</button>
-<button type="button" id="quickWorkLangZhHans" class="uls-chip" data-i18n-autonym="true" data-corpus-lang="zh-Hans" data-work-scope="felices" hidden><span class="ek-iso-tag">ZH-HANS</span> 简体中文</button>
-<button type="button" id="quickWorkLangJa" class="uls-chip" data-i18n-autonym="true" data-corpus-lang="ja" data-work-scope="felices" hidden><span class="ek-iso-tag">JA</span> 日本語</button>
-<button type="button" id="quickWorkLangKo" class="uls-chip" data-i18n-autonym="true" data-corpus-lang="ko" data-work-scope="felices" hidden><span class="ek-iso-tag">KO</span> 한국어</button>
-<button type="button" id="quickWorkLangHi" class="uls-chip" data-i18n-autonym="true" data-corpus-lang="hi" data-work-scope="felices" hidden><span class="ek-iso-tag">HI</span> हिन्दी</button>
-<button type="button" id="quickWorkLangBn" class="uls-chip" data-i18n-autonym="true" data-corpus-lang="bn" data-work-scope="felices" hidden><span class="ek-iso-tag">BN</span> বাংলা</button>
-<button type="button" id="quickWorkLangBnBd" class="uls-chip" data-i18n-autonym="true" data-corpus-lang="bn-BD" data-work-scope="felices" hidden><span class="ek-iso-tag">BN-BD</span> বাংলা বাংলাদেশ</button>
-<button type="button" id="quickWorkLangBnIn" class="uls-chip" data-i18n-autonym="true" data-corpus-lang="bn-IN" data-work-scope="felices" hidden><span class="ek-iso-tag">BN-IN</span> বাংলা ভারত</button>
-<button type="button" id="quickWorkLangAr" class="uls-chip" data-i18n-autonym="true" data-corpus-lang="ar" data-work-scope="felices" hidden><span class="ek-iso-tag">AR</span> العربية</button>
-<button type="button" id="quickWorkLangUr" class="uls-chip" data-i18n-autonym="true" data-corpus-lang="ur" data-work-scope="felices" hidden><span class="ek-iso-tag">UR</span> اردو</button>
-<button type="button" id="quickWorkLangFa" class="uls-chip" data-i18n-autonym="true" data-corpus-lang="fa" data-work-scope="felices" hidden><span class="ek-iso-tag">FA</span> فارسی</button>
-</div>
+                    <div id="corpusWorkLanguagesBar" class="chip-wrap-row ek-mt-xs" role="group"
+                        aria-label="Sister Work Editions (Evangelios and Felices)" hidden>
+                        <button type="button" id="quickWorkLangGn" class="uls-chip" data-i18n-autonym="true"
+                            data-corpus-lang="gn" data-work-scope="evangelios" hidden><span class="ek-iso-tag">GN</span>
+                            Avañe'ẽ Guaraní (Evangelios)</button>
+                        <button type="button" id="quickWorkLangQuc" class="uls-chip" data-i18n-autonym="true"
+                            data-corpus-lang="quc" data-work-scope="evangelios" hidden><span
+                                class="ek-iso-tag">QUC</span> K'iche' (Evangelios)</button>
+                        <button type="button" id="quickWorkLangEs" class="uls-chip" data-i18n-autonym="true"
+                            data-corpus-lang="es" data-work-scope="felices" hidden><span class="ek-iso-tag">ES</span>
+                            Español</button>
+                        <button type="button" id="quickWorkLangEn" class="uls-chip" data-i18n-autonym="true"
+                            data-corpus-lang="en" data-work-scope="felices" hidden><span class="ek-iso-tag">EN</span>
+                            English</button>
+                        <button type="button" id="quickWorkLangPt" class="uls-chip" data-i18n-autonym="true"
+                            data-corpus-lang="pt" data-work-scope="felices" hidden><span class="ek-iso-tag">PT</span>
+                            Português</button>
+                        <button type="button" id="quickWorkLangFr" class="uls-chip" data-i18n-autonym="true"
+                            data-corpus-lang="fr" data-work-scope="felices" hidden><span class="ek-iso-tag">FR</span>
+                            Français</button>
+                        <button type="button" id="quickWorkLangIt" class="uls-chip" data-i18n-autonym="true"
+                            data-corpus-lang="it" data-work-scope="felices" hidden><span class="ek-iso-tag">IT</span>
+                            Italiano</button>
+                        <button type="button" id="quickWorkLangId" class="uls-chip" data-i18n-autonym="true"
+                            data-corpus-lang="id" data-work-scope="felices" hidden><span class="ek-iso-tag">ID</span>
+                            Bahasa Indonesia</button>
+                        <button type="button" id="quickWorkLangTr" class="uls-chip" data-i18n-autonym="true"
+                            data-corpus-lang="tr" data-work-scope="felices" hidden><span class="ek-iso-tag">TR</span>
+                            Türkçe</button>
+                        <button type="button" id="quickWorkLangRu" class="uls-chip" data-i18n-autonym="true"
+                            data-corpus-lang="ru" data-work-scope="felices" hidden><span class="ek-iso-tag">RU</span>
+                            Русский</button>
+                        <button type="button" id="quickWorkLangZhHans" class="uls-chip" data-i18n-autonym="true"
+                            data-corpus-lang="zh-Hans" data-work-scope="felices" hidden><span
+                                class="ek-iso-tag">ZH-HANS</span> 简体中文</button>
+                        <button type="button" id="quickWorkLangJa" class="uls-chip" data-i18n-autonym="true"
+                            data-corpus-lang="ja" data-work-scope="felices" hidden><span class="ek-iso-tag">JA</span>
+                            日本語</button>
+                        <button type="button" id="quickWorkLangKo" class="uls-chip" data-i18n-autonym="true"
+                            data-corpus-lang="ko" data-work-scope="felices" hidden><span class="ek-iso-tag">KO</span>
+                            한국어</button>
+                        <button type="button" id="quickWorkLangHi" class="uls-chip" data-i18n-autonym="true"
+                            data-corpus-lang="hi" data-work-scope="felices" hidden><span class="ek-iso-tag">HI</span>
+                            हिन्दी</button>
+                        <button type="button" id="quickWorkLangBn" class="uls-chip" data-i18n-autonym="true"
+                            data-corpus-lang="bn" data-work-scope="felices" hidden><span class="ek-iso-tag">BN</span>
+                            বাংলা</button>
+                        <button type="button" id="quickWorkLangBnBd" class="uls-chip" data-i18n-autonym="true"
+                            data-corpus-lang="bn-BD" data-work-scope="felices" hidden><span
+                                class="ek-iso-tag">BN-BD</span> বাংলা বাংলাদেশ</button>
+                        <button type="button" id="quickWorkLangBnIn" class="uls-chip" data-i18n-autonym="true"
+                            data-corpus-lang="bn-IN" data-work-scope="felices" hidden><span
+                                class="ek-iso-tag">BN-IN</span> বাংলা ভারত</button>
+                        <button type="button" id="quickWorkLangAr" class="uls-chip" data-i18n-autonym="true"
+                            data-corpus-lang="ar" data-work-scope="felices" hidden><span class="ek-iso-tag">AR</span>
+                            العربية</button>
+                        <button type="button" id="quickWorkLangUr" class="uls-chip" data-i18n-autonym="true"
+                            data-corpus-lang="ur" data-work-scope="felices" hidden><span class="ek-iso-tag">UR</span>
+                            اردو</button>
+                        <button type="button" id="quickWorkLangFa" class="uls-chip" data-i18n-autonym="true"
+                            data-corpus-lang="fa" data-work-scope="felices" hidden><span class="ek-iso-tag">FA</span>
+                            فارسی</button>
+                    </div>
                     <section id="corpusGeoFilterDetails" class="tech-details ek-mt-xs">
-                        <strong class="ek-title-sm" data-i18n-autonym="true">Descarga sin conexión y selector de corpus (24 Biblias)</strong>
-                        <div id="bibleGeoFunnel" class="geo-funnel-row ek-mt-xs" aria-label="Corpus and Offline Download">
+                        <strong class="ek-title-sm" data-i18n-autonym="true">Selector por región y país (7,164
+                            lenguas)</strong>
+                        <div id="bibleGeoFunnel" class="geo-funnel-row ek-mt-xs" aria-label="Corpus Language Selector">
                             <select id="bibleSelectLang" aria-label="Reading Language">
                                 <option value="es" selected>Español Siglo XXI (es)</option>
                                 <option value="es-1909">Español Clásica 1909 (es-1909)</option>
@@ -342,7 +389,6 @@
                                 <option value="aud">Au'dam (aud · Draft)</option>
                                 <option value="kgv">Kalamang (kgv · Draft)</option>
                             </select>
-                            <button type="button" id="btnCorpusOfflineDownload" class="uls-chip" data-i18n-autonym="true">📥 Descargar Biblia para usar sin internet</button>
                         </div>
                     </section>
                 </div>
@@ -360,9 +406,9 @@
                     data-i18n="seal.loading">Loading verified passage…</span>
             </div>
             <button type="button" id="btnQuickPrintStage" class="uls-chip ek-foveal-print-btn"
-                data-quick-print-role="1-tap-passage"
-                aria-label="Imprimir pasaje en 1 toque (4 hojas PDF)" data-i18n="mostrador.quick_print_cta"
-                data-i18n-attr="aria-label:mostrador.quick_print_cta_aria">🖨️ Imprimir pasaje (4 hojas)</button>
+                data-quick-print-role="1-tap-passage" aria-label="Imprimir pasaje en 1 toque (4 hojas PDF)"
+                data-i18n="mostrador.quick_print_cta" data-i18n-attr="aria-label:mostrador.quick_print_cta_aria">🖨️
+                Imprimir pasaje (4 hojas)</button>
         </div>
         <!-- Step 1: Compact Single-Row Spatial Navigation Above the Fold (y <= 116px) -->
         <div id="bibleSpatialNav" class="spatial-nav-bar" aria-label="Book and Chapter Navigator">
@@ -558,35 +604,38 @@
                         data-i18n="felices.previewBadge">Preview sheets</button>
                 </div>
             </div>
-            <!-- Paper Format Selector ISO A4 vs US Letter + 32 Official PDFs Above Fold (D1-R8) -->
-            <div class="paper-toggle-wrapper" role="group" aria-label="Paper Format">
-                <button type="button" class="paper-option active" id="toggleCarta" aria-pressed="true">
-                    <span class="paper-name" id="nameCarta" data-i18n="felices.paperCarta">Letter (US/MX)</span>
-                    <span class="paper-sub" id="subCarta" data-i18n="felices.paperSubCarta">8.5 × 11 in · 216 × 279
-                        mm</span>
-                </button>
-                <button type="button" class="paper-option" id="toggleA4" aria-pressed="false">
-                    <span class="paper-name" id="nameA4" data-i18n="felices.paperA4">ISO A4</span>
-                    <span class="paper-sub" id="subA4" data-i18n="felices.paperSubA4">210 × 297 mm ·
-                        International</span>
-                </button>
-            </div>
-            <div class="actions-group">
-                <a id="linkSheets" href="dist/en/v1/mostrador/felices-en-v1-sheets.pdf" class="btn-card btn-sheets"
-                    download="felices-en-v1-sheets.pdf">
-                    <div class="btn-header"><span id="btnTitleSheets" data-i18n="felices.sheetsTitle">Loose Sheets
-                            (PDF)</span></div>
-                    <span class="btn-subtitle" id="btnSubSheets" data-i18n="felices.sheetsSub">1 page per sheet · Ideal
-                        for coloring</span>
-                </a>
-                <div>
-                    <a id="linkBooklet" href="dist/en/v1/mostrador/felices-en-v1-booklet.pdf"
-                        class="btn-card btn-booklet" download="felices-en-v1-booklet.pdf">
-                        <div class="btn-header"><span id="btnTitleBooklet" data-i18n="felices.bookletTitle">Booklet
+            <!-- Paper Format Selector ISO A4 vs US Letter + 32 Official PDFs Above Fold (D1-R8 / HIG12-D8) -->
+            <div class="felices-pdf-download-group" data-felices-pdf-group="true">
+                <div class="paper-toggle-wrapper" role="group" aria-label="Paper Format">
+                    <button type="button" class="paper-option active" id="toggleCarta" aria-pressed="true">
+                        <span class="paper-name" id="nameCarta" data-i18n="felices.paperCarta">Letter (US/MX)</span>
+                        <span class="paper-sub" id="subCarta" data-i18n="felices.paperSubCarta">8.5 × 11 in · 216 × 279
+                            mm</span>
+                    </button>
+                    <button type="button" class="paper-option" id="toggleA4" aria-pressed="false">
+                        <span class="paper-name" id="nameA4" data-i18n="felices.paperA4">ISO A4</span>
+                        <span class="paper-sub" id="subA4" data-i18n="felices.paperSubA4">210 × 297 mm ·
+                            International</span>
+                    </button>
+                </div>
+                <div class="actions-group">
+                    <a id="linkSheets" href="dist/en/v1/mostrador/felices-en-v1-sheets.pdf" class="btn-card btn-sheets"
+                        download="felices-en-v1-sheets.pdf">
+                        <div class="btn-header"><span id="btnTitleSheets" data-i18n="felices.sheetsTitle">Loose Sheets
                                 (PDF)</span></div>
-                        <span class="btn-subtitle" id="btnSubBooklet" data-i18n="felices.bookletSub">Saddle-stitch
-                            booklet ready to fold &amp; staple</span>
+                        <span class="btn-subtitle" id="btnSubSheets" data-i18n="felices.sheetsSub">1 page per sheet ·
+                            Ideal
+                            for coloring</span>
                     </a>
+                    <div>
+                        <a id="linkBooklet" href="dist/en/v1/mostrador/felices-en-v1-booklet.pdf"
+                            class="btn-card btn-booklet" download="felices-en-v1-booklet.pdf">
+                            <div class="btn-header"><span id="btnTitleBooklet" data-i18n="felices.bookletTitle">Booklet
+                                    (PDF)</span></div>
+                            <span class="btn-subtitle" id="btnSubBooklet" data-i18n="felices.bookletSub">Saddle-stitch
+                                booklet ready to fold &amp; staple</span>
+                        </a>
+                    </div>
                 </div>
             </div>
             <!-- Socratic Wonder Pedagogical Card for 27 Plates (D9-A+ / D7-V3UX) -->
@@ -963,8 +1012,7 @@
                             Authentic Editorial Signature</button>
                     </div>
                 </div>
-                <div id="editorialAuditStatusPanel" data-dosis-subtab-panel="graphics" hidden
-                    class="ek-status-panel">
+                <div id="editorialAuditStatusPanel" data-dosis-subtab-panel="graphics" hidden class="ek-status-panel">
                 </div>
                 <div id="editorialProvenanceCardHost" data-dosis-subtab-panel="graphics" hidden></div>
             </section>

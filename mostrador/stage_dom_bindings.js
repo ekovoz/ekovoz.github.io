@@ -77,6 +77,22 @@ export function bindStageDomEvents(ctx = {}) {
   };
   const tskAccEl = getEl("studyTskFormulaicAccordion", targetDoc);
   if (tskAccEl && typeof tskAccEl.addEventListener === "function") tskAccEl.addEventListener("toggle", () => { if (tskAccEl.open) tskAccEl.scrollIntoView?.({ behavior: "smooth", block: "nearest" }); });
+  const pericopesRibbonEl = getEl("bibleChapterPericopesRibbon", targetDoc);
+  if (pericopesRibbonEl && typeof pericopesRibbonEl.addEventListener === "function" && !pericopesRibbonEl._expandBound) {
+    pericopesRibbonEl._expandBound = true;
+    pericopesRibbonEl.addEventListener("click", (ev) => {
+      const toggleBtn = ev?.target?.closest?.(".pericope-ribbon-toggle");
+      if (toggleBtn) {
+        const nextOpen = pericopesRibbonEl.getAttribute?.("data-expanded") !== "true";
+        pericopesRibbonEl.setAttribute?.("data-expanded", nextOpen ? "true" : "false");
+        toggleBtn.setAttribute?.("aria-expanded", nextOpen ? "true" : "false");
+        return;
+      }
+      if (ev?.target?.closest?.("button")) {
+        pericopesRibbonEl.setAttribute?.("data-expanded", pericopesRibbonEl.getAttribute?.("data-expanded") === "true" ? "false" : "true");
+      }
+    });
+  }
   for (const [bId, key] of cTabs) {
     const b = getEl(bId, targetDoc);
     if (b) { b.setAttribute?.("data-action", `compass-tab-${key}`); bindSurfaceActions(b, { [`compass-tab-${key}`]: () => switchCompassTab(key) }, { scope: `compass-${key}`, events: ["click"] }); }
@@ -441,10 +457,28 @@ export function bindStageDomEvents(ctx = {}) {
     const htmlList = matches.map((m, idx) =>
       `<button type="button" class="uls-chip ${m.kind === "concordance" ? "concordance-match-btn" : "spotlight-result-chip"}" role="option" data-spotlight-idx="${idx}" data-spotlight-kind="${m.kind}" data-spotlight-book="${m.book || ""}" data-spotlight-chapter="${m.chapter || 1}" data-spotlight-verse="${m.verse || 1}">🔎 <strong>${escapeHtml(m.label)}</strong>${m.snippet ? ` — ${escapeHtml(String(m.snippet).replace(/[\r\n]+/g, " "))}` : ""}</button>`,
     ).join("");
-    if (spotlightHost) { spotlightHost.hidden = matches.length === 0; spotlightHost.innerHTML = htmlList; spotlightHost._lastMatches = matches; }
+    const isConcordanceTab = state.activeCompassTab === "concordance";
+    if (spotlightHost) {
+      if (isConcordanceTab) {
+        spotlightHost.hidden = true;
+        spotlightHost.innerHTML = "";
+        spotlightHost._lastMatches = [];
+      } else {
+        spotlightHost.hidden = matches.length === 0;
+        spotlightHost.innerHTML = htmlList;
+        spotlightHost._lastMatches = matches;
+      }
+    }
     if (concordanceResultsHost) {
-      if (matches.length === 0) renderConcordanceEmptyGuide(qStr);
-      else { concordanceResultsHost.innerHTML = htmlList; concordanceResultsHost._lastMatches = matches; }
+      if (!isConcordanceTab) {
+        concordanceResultsHost.innerHTML = "";
+        concordanceResultsHost._lastMatches = [];
+      } else if (matches.length === 0) {
+        renderConcordanceEmptyGuide(qStr);
+      } else {
+        concordanceResultsHost.innerHTML = htmlList;
+        concordanceResultsHost._lastMatches = matches;
+      }
     }
     return matches;
   };

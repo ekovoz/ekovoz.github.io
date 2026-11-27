@@ -217,7 +217,7 @@ export function renderEditorialGraphicsAndPrintSpecsCard({
     `<div class="photocopy-controls-row">` +
     `<label for="inputSauvolaK" class="photocopy-slider-label">🎛️ ${isEn ? `Copy contrast level (${activeSim.sauvolaK.toFixed(2)}):` : `Nivel de contraste de copia (${activeSim.sauvolaK.toFixed(2)}):`}</label>` +
     `<input id="inputSauvolaK" class="photocopy-slider-input" type="range" min="0.15" max="0.40" step="0.01" value="${activeSim.sauvolaK.toFixed(2)}" />` +
-    `<div class="tech-details" data-advanced-audit="true"><div class="photocopy-badges-row">${stagesBadges}</div></div>` +
+    `<div class="photocopy-badges-row" data-advanced-audit="true" data-technical-plane="true">${stagesBadges}</div>` +
     `</div>` +
     `<div class="photocopy-preview-caption">` +
     `<img class="photocopy-preview-img" alt="Photocopy Specimen Preview" src="${specimenData.svgDataUrl}" />` +

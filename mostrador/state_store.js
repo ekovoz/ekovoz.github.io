@@ -33,6 +33,7 @@ export const STORE_DOMAIN_OWNERS = Object.freeze({
   intentSeq: "sheet",
   surfaceMode: "surface",
   surfacePlane: "surface",
+  workspaceMode: "surface",
   appearanceTheme: "appearance",
   fontFamily: "appearance",
   fontScale: "appearance",
@@ -153,6 +154,7 @@ export function createEkovozStore(initialState = {}, options = {}) {
     activeIntent: "read",
     surfaceMode: "reader",
     surfacePlane: "editorial",
+    workspaceMode: "reader",
     appearanceTheme: "light",
     fontFamily: "serif",
     fontScale: 1.0,
@@ -563,13 +565,22 @@ export function updatePrintConfig(store, patch = {}) {
   return nextCfg;
 }
 
+export function setWorkspaceMode(store, rawMode = "reader") {
+  const cleanMode = String(rawMode || "").trim().toLowerCase() === "studio" ? "studio" : "reader";
+  const cleanPlane = cleanMode === "studio" ? "technical" : "editorial";
+  if (!store || typeof store.setState !== "function") return cleanMode;
+  store.setState({ workspaceMode: cleanMode, surfacePlane: cleanPlane }, "surface");
+  return cleanMode;
+}
+
 /**
  * Conmuta el plano de superficie (`editorial` | `technical`) bajo dueño único (`D1-HIG9`).
  */
 export function setSurfacePlane(store, rawPlane = "editorial") {
   const cleanPlane = String(rawPlane || "").trim().toLowerCase() === "technical" ? "technical" : "editorial";
+  const cleanMode = cleanPlane === "technical" ? "studio" : "reader";
   if (!store || typeof store.setState !== "function") return cleanPlane;
-  store.setState({ surfacePlane: cleanPlane }, "surface");
+  store.setState({ surfacePlane: cleanPlane, workspaceMode: cleanMode }, "surface");
   return cleanPlane;
 }
 

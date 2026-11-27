@@ -23,6 +23,8 @@ function escHtml(val) {
 export function renderAnnotationAndBlindCalibrationCardHtml({
   annotationReport = null,
   blindCalibrationRows = null,
+  diachronicRegister = null,
+  masterCensus = null,
   sampleRow = null,
   activeLang = "es",
   activeBook = "GEN",
@@ -150,11 +152,53 @@ export function renderAnnotationAndBlindCalibrationCardHtml({
     );
   }
 
+  if (diachronicRegister && typeof diachronicRegister === "object") {
+    const cs = diachronicRegister.corpus_summary || {};
+    const bookVectors = diachronicRegister.book_vectors_66 || {};
+    const normBook = String(activeBook || "GEN").toUpperCase();
+    const bv = bookVectors[normBook] || null;
+    const totalBooks = Object.keys(bookVectors).length;
+    parts.push(
+      `<section class="ek-card ek-mt-sm" data-diachronic-book-vector="${escHtml(normBook)}" data-diachronic-books-total="${totalBooks}">` +
+      `<strong>📈 ${isEn ? `Diachronic Register (${totalBooks || 66} Books · ${normBook})` : `Registro Diacrónico (${totalBooks || 66} Libros · ${normBook})`}</strong>` +
+      `<dl class="ek-specs-dl ek-mt-xs">` +
+      `<dt>${isEn ? "Mean AoA / EipenL" : "AoA Medio / EipenL"}</dt>` +
+      `<dd>${Number(cs.mean_aoa_years || 0).toFixed(2)}y · ${Number(cs.mean_eipen_l || 0).toFixed(2)}</dd>` +
+      `<dt>${isEn ? "Lexical Richness (MATTR-50 / MDD)" : "Riqueza Léxica (MATTR-50 / MDD)"}</dt>` +
+      `<dd>${Number(cs.mean_mattr_50 || 0).toFixed(3)} · MDD ${Number(cs.mean_mdd || 0).toFixed(2)}</dd>` +
+      `<dt>${isEn ? "Corpus Tiers (T1 / T2 / T3)" : "Niveles Corpus (T1 / T2 / T3)"}</dt>` +
+      `<dd>${Number(cs.tier1_count || 0).toLocaleString("en-US")} / ${Number(cs.tier2_count || 0).toLocaleString("en-US")} / ${Number(cs.tier3_count || 0).toLocaleString("en-US")} (${cs.eight_locks_all_passed ? "8/8" : "⚠"})</dd>` +
+      (bv
+        ? `<dt>${escHtml(normBook)} (${Number(bv.audited_verses || 0)} vv.)</dt>` +
+          `<dd>AoA ${Number(bv.mean_aoa_years || 0).toFixed(2)}y · MDD ${Number(bv.mean_mdd || 0).toFixed(2)} · ${Number(bv.mean_tokens || 0).toFixed(1)} tok/v · T1:${Number(bv.tier1_count || 0)} T2:${Number(bv.tier2_count || 0)} T3:${Number(bv.tier3_count || 0)}</dd>`
+        : "") +
+      `</dl></section>`,
+    );
+  }
+
+  if (masterCensus && typeof masterCensus === "object") {
+    const entropy = masterCensus.formulaic_entropy || {};
+    const waves = Array.isArray(masterCensus.stp_ledger_summary?.waves) ? masterCensus.stp_ledger_summary.waves : [];
+    const tiersCount = Array.isArray(masterCensus.sovereign_tiers_4) ? masterCensus.sovereign_tiers_4.length : 4;
+    parts.push(
+      `<section class="ek-card ek-mt-sm" data-master-census-board="true">` +
+      `<strong>🌍 ${isEn ? "Master Living Languages Census" : "Censo Maestro de Lenguas Vivas"}</strong>` +
+      `<dl class="ek-specs-dl ek-mt-xs">` +
+      `<dt>${isEn ? "Living Languages / Regions / Clades" : "Lenguas Vivas / Regiones / Clados"}</dt>` +
+      `<dd>${Number(masterCensus.total_living_languages || 7164).toLocaleString("en-US")} · ${Number(masterCensus.total_macro_regions || 12)} · ${Number(masterCensus.total_phylogenetic_subclades || 380)} (${tiersCount} tiers)</dd>` +
+      `<dt>${isEn ? "Formulaic Entropy Reduction" : "Reducción de Entropía Formulaica"}</dt>` +
+      `<dd>${Number(entropy.deduplicated_verses || 0).toLocaleString("en-US")} / ${Number(entropy.total_verses || 31102).toLocaleString("en-US")} vv. (−${Number(entropy.reduction_pct || 0).toFixed(2)}% · ${Number(entropy.unique_templates || 0).toLocaleString("en-US")} templates)</dd>` +
+      `<dt>${isEn ? "OT Synthesis Waves" : "Oleadas AT"}</dt>` +
+      `<dd>${waves.length || 5} ${isEn ? "structured waves" : "oleadas estructurales"}</dd>` +
+      `</dl></section>`,
+    );
+  }
+
   return parts.join("");
 }
 
 /**
- * Hidrata bajo demanda los datos de Bóveda Pro dentro de Estudio (`annotationReport` + `blindCalibrationRows`).
+ * Hidrata bajo demanda los datos de Bóveda Pro dentro de Estudio (`annotationReport` + `blindCalibrationRows` + `diachronicRegister` + `masterCensus`).
  */
 export async function hydrateProBovedaStudyCalibration({
   slotEl,
@@ -171,9 +215,17 @@ export async function hydrateProBovedaStudyCalibration({
   if (!state.blindCalibrationReport && typeof dataLayer?.loadBlindCalibrationReport === "function") {
     try { state.blindCalibrationReport = await dataLayer.loadBlindCalibrationReport(); } catch { }
   }
+  if (!state.diachronicRegisterPayload && typeof dataLayer?.loadDiachronicRegisterAudit === "function") {
+    try { state.diachronicRegisterPayload = await dataLayer.loadDiachronicRegisterAudit(); } catch { }
+  }
+  if (!state.masterCensusSummary && typeof dataLayer?.loadMasterCensusSummary === "function") {
+    try { state.masterCensusSummary = await dataLayer.loadMasterCensusSummary(); } catch { }
+  }
   const html = renderAnnotationAndBlindCalibrationCardHtml({
     annotationReport: state.annotationIndexReport || dataLayer?.getHydratedAnnotationIndexReport?.() || null,
     blindCalibrationRows: state.blindCalibrationReport || dataLayer?.getHydratedBlindCalibrationReport?.() || null,
+    diachronicRegister: state.diachronicRegisterPayload || null,
+    masterCensus: state.masterCensusSummary || null,
     sampleRow,
     activeLang: state.lang,
     activeBook: state.book,

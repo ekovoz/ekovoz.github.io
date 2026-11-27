@@ -166,21 +166,18 @@ export function renderVaultStorageManagerHtml({
       : `${isEn ? "Not downloaded" : "Disponible"}${sizeStr ? ` · ${sizeStr}` : ""}`;
     const humanMetaLine = meta ? formatVaultEditionMetadata({ ...meta, lang: langCode, booksCount: meta?.booksCount || 66 }, isEn ? "en" : "es") : "";
     const metaDetailsHtml = meta
-      ? `<div class="tech-details vault-pack-meta-details" data-pack-meta-details="true">` +
-      `<div class="ek-meta ek-stack-xs">` +
-      `<span>${escapeHtml(humanMetaLine)} · </span>` +
-      `<div class="ek-stack-xs" data-contextual-meta="true">` +
+      ? `<div class="hig-tech-meta vault-pack-meta-details" data-pack-meta-details="true">` +
+      `<span class="ek-meta">${escapeHtml(humanMetaLine)}</span> ` +
       `<span><strong>${isEn ? "Canon:" : "Canon:"}</strong> ${escapeHtml(formatEditorialTraditionLabel(meta.versificationTradition || "eng", isEn ? "en" : "es"))} · ${escapeHtml(Array.isArray(meta.diachronicVariants) && meta.diachronicVariants.length ? meta.diachronicVariants.join(", ") : "canonical")}</span>` +
-      (meta.merkleRootSha256 ? `<span><strong>Merkle:</strong> <code>${escapeHtml(String(meta.merkleRootSha256).slice(0, 16))}…</code></span>` : "") +
-      (meta.contentDigestSha256 ? `<span><strong>Digest:</strong> <code>${escapeHtml(String(meta.contentDigestSha256).slice(0, 16))}…</code></span>` : "") +
-      (meta.origin_url ? `<span><strong>origin_url:</strong> <code>${escapeHtml(String(meta.origin_url))}</code></span>` : "") +
-      (meta.metaZstdSha256 ? `<span><strong>metaZstdSha256:</strong> <code>${escapeHtml(String(meta.metaZstdSha256).slice(0, 16))}…</code></span>` : "") +
-      `</div>` +
-      `</div></div>`
+      (meta.merkleRootSha256 ? ` <span><strong>Merkle:</strong> <code>${escapeHtml(String(meta.merkleRootSha256).slice(0, 16))}…</code></span>` : "") +
+      (meta.contentDigestSha256 ? ` <span><strong>Digest:</strong> <code>${escapeHtml(String(meta.contentDigestSha256).slice(0, 16))}…</code></span>` : "") +
+      (meta.origin_url ? ` <span><strong>origin_url:</strong> <code>${escapeHtml(String(meta.origin_url))}</code></span>` : "") +
+      (meta.metaZstdSha256 ? ` <span><strong>metaZstdSha256:</strong> <code>${escapeHtml(String(meta.metaZstdSha256).slice(0, 16))}…</code></span>` : "") +
+      `</div>`
       : "";
     const packErr = errorByLang?.[langCode] ? String(errorByLang[langCode]) : "";
     return (
-      `<li class="vault-pack-row${isMatrix ? " is-matrix-highlight" : ""}" data-vault-pack="${escapeHtml(langCode)}" data-vault-file="${escapeHtml(fileKey)}" data-vault-search="${escapeHtml(searchHay)}" data-vault-installed="${downloaded}"${priorityTag ? ` data-vault-priority="${escapeHtml(priorityTag)}"` : ""}>` +
+      `<li class="vault-pack-row offline-compact-row${isMatrix ? " is-matrix-highlight" : ""}" data-vault-pack="${escapeHtml(langCode)}" data-vault-file="${escapeHtml(fileKey)}" data-vault-search="${escapeHtml(searchHay)}" data-vault-installed="${downloaded}"${priorityTag ? ` data-vault-priority="${escapeHtml(priorityTag)}"` : ""}>` +
       `<div class="vault-pack-info">` +
       `<strong>${escapeHtml(humanTitle)}</strong> ` +
       `<span class="uls-badge bicanonical-badge">${escapeHtml(statusBadge)}</span>` +
@@ -244,20 +241,20 @@ export function renderVaultStorageManagerHtml({
     `</header>` +
     `<progress class="vault-quota-bar" max="100" value="${pct}"${pct === 0 ? " hidden" : ""}>${pct}%</progress>` +
     `<ul class="vault-pack-list vault-pack-priority-list">${priorityRowsHtml}</ul>` +
+    `<section id="vaultStandaloneOfflineReadersCard" class="ek-card ek-stack-xs ek-mt-xs" data-standalone-readers="5">` +
+    `<strong>📖 ${isEn ? "Single-file HTML readers (open offline without installing)" : "Lectores HTML de un archivo (abren sin internet ni app)"}</strong>` +
+    `<p class="ek-meta ek-m-0">${isEn ? "Self-contained backup HTML editions ready to save or share:" : "Copias portables en HTML listas para guardar o compartir:"}</p>` +
+    `<div class="ek-row-wrap">${standaloneReadersHtml}</div>` +
+    `</section>` +
     (remainingCodes.length > 0
       ? `<section id="vaultMorePacksDetails" class="r9-stratum-accordion ek-mt-xs"${cleanFilter ? ' data-filtered="true"' : ""}>` +
-      `<strong>📚 ${isEn ? `More offline Bible languages (${remainingCodes.length})` : `Más idiomas offline disponibles (${remainingCodes.length})`}</strong>` +
+      `<strong class="ek-title-sm">📚 ${isEn ? `Search & download other offline languages (${remainingCodes.length})` : `Buscar y descargar otros idiomas sin conexión (${remainingCodes.length})`}</strong>` +
       `<div class="ek-mt-xs">` +
       `<input type="search" id="vaultPacksFilterInput" class="ek-input-compact ek-mb-xs" value="${escapeHtml(filterQuery)}" placeholder="${isEn ? "Filter language (pt, fr, ar, stp...)" : "Filtrar idioma (pt, fr, ar, stp...)"}">` +
       `<ul class="vault-pack-list vault-pack-list-compact">${remainingRowsHtml}</ul>` +
       `</div>` +
       `</section>`
       : "") +
-    `<section id="vaultStandaloneOfflineReadersCard" class="ek-card ek-stack-xs ek-mt-xs" data-standalone-readers="5">` +
-    `<strong>📖 ${isEn ? "Single-file HTML readers (open offline without installing)" : "Lectores HTML de un archivo (abren sin internet ni app)"}</strong>` +
-    `<p class="ek-meta ek-m-0">${isEn ? "Self-contained backup HTML editions ready to save or share:" : "Copias portables en HTML listas para guardar o compartir:"}</p>` +
-    `<div class="ek-row-wrap">${standaloneReadersHtml}</div>` +
-    `</section>` +
     `</section>`
   );
 }

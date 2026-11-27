@@ -295,6 +295,14 @@ function resolveCoherentNsm65ForDomain(rawDomain = "", rawNsm = "", uiLocale = "
     if (sub >= 113 && nsmLow.includes("alimento")) return isEn ? "Health, strength, or healing of the human body" : "Salud, fuerza o sanidad del cuerpo humano";
   }
   if (/\bln:89\./i.test(dLow) && nsmLow.includes("tiempo cuando hay luz")) return isEn ? "Logical link joining words or ideas in speech" : "Relación lógica que une palabras o ideas en el discurso";
+  if (/\bln:33(?:\.\d+)?\b/i.test(dLow)) {
+    if (strongNorm === "G2564" || /^(?:V|HV)(?:-|$)/i.test(morphRaw)) {
+      return isEn ? "To call or give a name to someone" : "Llamar o poner nombre a alguien";
+    }
+    if (strongNorm === "G3686" || /^(?:N|HN)(?:-|$)/i.test(morphRaw)) {
+      return isEn ? "Proper name by which someone is known" : "Nombre propio con que se conoce a alguien";
+    }
+  }
   return "";
 }
 

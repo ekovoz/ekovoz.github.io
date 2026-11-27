@@ -151,7 +151,6 @@ export function renderWorkshop5LangsSwitcherHtml(
     `<span class="uls-badge" data-tier2-workshop-badge="true">${escapeHtml(activeBadgeLabel)}</span>` +
     `</div>` +
     `<p class="ek-meta ek-m-0" data-workshop-lang-focus="${escapeHtml(cleanActive)}">${escapeHtml(activeFocusHint)}</p>` +
-    `<button type="button" class="uls-chip" data-open-corpus-drawer="true">${isEn ? "Change language in top selector" : "Cambiar idioma en selector superior"}</button>` +
     `</section>`
   );
 }
@@ -220,8 +219,8 @@ export function renderWorkshopAuditSubtabHtml({
     ? computeClientModernizeReadabilityAudit(chapterSampleText, uiLocale)
     : null);
   const flowBadgeText = isEnAudit
-    ? "Instant browser check · Full corpus sync on desktop"
-    : "Revisión rápida en navegador · Sincronización completa en escritorio";
+    ? "Local browser check · Full sync via CLI: ekovoz apply-patch"
+    : "Revisión local en navegador · Sincronización CLI: ekovoz apply-patch";
   const coverageSummaryHtml =
     annTotals || blindRows.length > 0 || activeModernize
       ? `<section id="workshopCoverageCalibrationCard" class="ek-card-muted ek-mt-sm" data-annotation-tokens="${Number(annTotals?.ot_tokens || 0) + Number(annTotals?.nt_tokens || 0)}" data-blind-calibration-rows="${blindRows.length}"${activeModernize ? ` data-modernize-aoa="${activeModernize.aoaYears}" data-modernize-mdd="${activeModernize.mdd}"` : ""}>` +
@@ -233,17 +232,26 @@ export function renderWorkshopAuditSubtabHtml({
       `<p class="ek-meta ek-m-0 ek-mt-xs" data-workshop-flow-honesty="true">${flowBadgeText}</p>` +
       `</section>`
       : "";
+  const existingLadder = Array.isArray(state.celfLadder250) ? state.celfLadder250 : [];
+  const autoHydratedSeedRows = existingLadder.length > 0
+    ? existingLadder
+    : rawChVerses && typeof rawChVerses === "object" && Object.keys(rawChVerses).length > 0
+      ? Object.entries(rawChVerses).slice(0, 12).map(([vn, txt]) => ({
+        verse_id: `${state.book || "GEN"}.${state.chapter || 1}.${vn}`,
+        rung: "Rung1SwadeshAndNsm65",
+        surface: typeof txt === "string" ? txt : txt?.text || "",
+      }))
+      : [];
   const cldfBundle = buildWorkshopCldfCsvAndJson({
     lang: activeTallerLang,
     book: state.book || "GEN",
     chapter: state.chapter || 1,
-    ladderItems: state.celfLadder250 || [],
+    ladderItems: autoHydratedSeedRows,
   });
-  const activeVerseKey = String(state.verse || 1);
   const hasExportRows = cldfBundle.rowCount > 0;
   const csvCtaHtml = hasExportRows
     ? `<a id="btnExportWorkshopCsv" class="uls-chip ek-btn-link" href="${cldfBundle.csvHref}" download="${escapeHtml(cldfBundle.csvFilename)}">⬇️ ${isEnAudit ? `Export CSV (${cldfBundle.rowCount} rows)` : `Exportar CSV (${cldfBundle.rowCount} filas)`}</a>`
-    : `<a id="btnExportWorkshopCsv" class="uls-chip ek-btn-link" href="#workshopDirectExportBar" aria-disabled="true" data-export-gated="true">⬇️ ${isEnAudit ? "Export CSV (load steps first · 0 rows)" : "Exportar CSV (carga pasos primero · 0 filas)"}</a>`;
+    : `<a id="btnExportWorkshopCsv" class="uls-chip ek-btn-link" href="#workshopDirectExportBar" aria-disabled="true" data-export-gated="true">⬇️ ${isEnAudit ? "Export CSV (0 rows)" : "Exportar CSV (0 filas)"}</a>`;
   const exportBarHtml =
     `<div id="workshopDirectExportBar" class="ek-row-wrap ek-mt-sm" data-workshop-task="3">` +
     csvCtaHtml +
@@ -259,7 +267,7 @@ export function renderWorkshopAuditSubtabHtml({
     cldfPreviewHtml +
     renderStpLedgerProgressHtml(state.masterCensusSummary || null, uiLocale) +
     `</details>`;
-  return switcherHtml + elicitAndCldfHtml + relocatedAuditHtml + coverageSummaryHtml + catalogHtml + sanitizedDraftHtml;
+  return switcherHtml + relocatedAuditHtml + elicitAndCldfHtml + coverageSummaryHtml + catalogHtml + sanitizedDraftHtml;
 }
 
 export function computeClientModernizeReadabilityAudit(rawText = "", uiLocale = "es") {

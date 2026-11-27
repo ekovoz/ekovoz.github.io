@@ -16,6 +16,7 @@ import {
   resolveDrawerChromePriority,
   resolvePublicOrPreviewWork,
   resolveWorkDrawerAdapter,
+  resolveWorkspaceMode,
   syncStickyDrawerContextHeader,
 } from "./projection_contract.js";
 import {
@@ -163,7 +164,7 @@ export function projectSurfaceLayoutFromState(state = {}, rootDoc, getEl) {
 
   projectStoreAttributesToDom(state, rootDoc);
   projectAllSubtabsFromState(state, rootDoc);
-  const techPlaneOn = isTechnicalPlaneEnabled(state, rootDoc?.location?.search || "");
+  const techPlaneOn = resolveWorkspaceMode(state, rootDoc?.location?.search || "") === "studio" || isTechnicalPlaneEnabled(state, rootDoc?.location?.search || "");
   const syncDetailsPlane = (selector, forceUnhide) => {
     for (const det of Array.from(rootDoc.querySelectorAll(selector))) {
       if (forceUnhide) det.hidden = false;
@@ -264,11 +265,18 @@ export function projectSurfaceLayoutFromState(state = {}, rootDoc, getEl) {
     exitProPill.hidden = !techPlaneOn;
     exitProPill.setAttribute?.("aria-pressed", techPlaneOn ? "true" : "false");
   }
+  const readerBtn = resolveEl("btnWorkspaceReader");
+  if (readerBtn) {
+    readerBtn.setAttribute?.("aria-pressed", techPlaneOn ? "false" : "true");
+  }
+  const studioBtn = resolveEl("btnToggleTechnicalPlane");
+  if (studioBtn) {
+    studioBtn.setAttribute?.("aria-pressed", techPlaneOn ? "true" : "false");
+  }
 
   const appBtn = resolveEl("btnAppearanceMenu");
   if (appBtn && typeof appBtn.textContent === "string") {
-    const isoCode = String(state.uiLocale || "es").trim().split(/[-_]/)[0].toUpperCase().slice(0, 3) || "ES";
-    appBtn.textContent = `Aa · ${isoCode}`;
+    appBtn.textContent = "Aa";
   }
 
   const appPop = resolveEl("appearancePopover");
@@ -459,7 +467,10 @@ export function applyInitialSurfaceModeFromUrl({ store, state, search = "", doc,
     if (vaultRequested) setSheetSubtab(store, "share", "mesh");
     setActiveIntent(store, resolvedIntent, { mobileSheetOpen: mobileOpen });
   } else if (state && typeof state === "object") {
-    if (isStudio) state.surfacePlane = "technical";
+    if (isStudio) {
+      state.surfacePlane = "technical";
+      state.workspaceMode = "studio";
+    }
     if (vaultRequested) {
       state.activeSubtabBySheet = Object.freeze({ ...(state.activeSubtabBySheet || DEFAULT_SUBTABS_BY_SHEET), share: "mesh" });
       state.vaultRequested = true;

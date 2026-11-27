@@ -306,13 +306,15 @@ export function projectStoreAttributesToDom(state = {}, targetDoc) {
   const activeSheet = state.activeSheet ? String(state.activeSheet) : "";
   const mobileSheetOpen = Boolean(state.activeSheet && state.mobileSheetOpen === true);
   const storeDomains = Object.keys(STORE_DOMAIN_OWNERS).join(",");
-  const surfacePlane = resolveSurfacePlane(state, targetDoc?.location?.search || "");
+  const workspaceMode = resolveWorkspaceMode(state, targetDoc?.location?.search || "");
+  const surfacePlane = workspaceMode === "studio" ? "technical" : resolveSurfacePlane(state, targetDoc?.location?.search || "");
 
   for (const el of targets) {
     if (typeof el.setAttribute === "function") {
       el.setAttribute("data-intent", activeIntent);
       el.removeAttribute?.("data-surface-mode");
       el.setAttribute("data-surface-plane", surfacePlane);
+      el.setAttribute("data-workspace-mode", workspaceMode);
       el.setAttribute("data-theme", theme);
       el.setAttribute("data-font-family", fontFamily);
       el.setAttribute("data-stealth-mode", stealth ? "true" : "false");
@@ -511,10 +513,19 @@ export const SINGLE_OWNER_CAPABILITY_MAP = Object.freeze({
 });
 
 /**
+ * Resuelve el espacio de trabajo explícito (`reader` | `studio`) (`D1-HIG12`).
+ */
+export function resolveWorkspaceMode(state = {}, search = "") {
+  if (state?.workspaceMode === "studio" || state?.surfacePlane === "technical") return "studio";
+  if (state?.workspaceMode === "reader" && state?.surfacePlane !== "technical") return "reader";
+  return resolveSurfacePlane(state, search) === "technical" ? "studio" : "reader";
+}
+
+/**
  * Resuelve el plano de superficie activo (`editorial` por defecto, `technical` bajo `?mode=studio` para auto-expandir detalles contextuales sin ocultar funciones).
  */
 export function resolveSurfacePlane(state = {}, search = "") {
-  if (state?.surfacePlane === "technical") return "technical";
+  if (state?.surfacePlane === "technical" || state?.workspaceMode === "studio") return "technical";
   if (state?.surfacePlane === "editorial") return "editorial";
   const rawSearch = String(search || state?.search || globalThis?.location?.search || "");
   if (rawSearch) {

@@ -63,9 +63,13 @@ bindUnifiedBrailleB70Controls,
 renderAndBindPhotocopyPanel,
 } from "./print_unified_options.js";
 import {
+handleCatalogEditionCardClick,
+revokeObjectUrlSafe,
+storeWorkerTandaPdfResult,
+} from "./print_catalog_actions.js";
+import {
 bindImpositionAndLayoutButtons,
 buildEditionCatalogCardHtml,
-handleCatalogEditionCardClick,
 mountOrUpdatePrintActiveWorkBanner,
 normalizeStandardPaperFormat,
 renderCompactPdfPortalsSelectHtml,
@@ -75,8 +79,6 @@ renderEditorialPreviewsAndEngineTelemetryHtml,
 renderFieldRefugeAndChecklistHtml,
 renderStationeryPostcardHtml,
 resolveDuplexFlipEdge,
-revokeObjectUrlSafe,
-storeWorkerTandaPdfResult
 } from "./print_work_and_photocopy.js";
 import { resolveWorkDrawerAdapter } from "./projection_contract.js";
 import {
@@ -86,7 +88,7 @@ renderEditorialGraphicsAndPrintSpecsCard,
 renderPhotocopyResilienceAndSocialCardHtml,
 simulateKanungoSauvolaGeneration,
 } from "./social_and_photocopy_cards.js";
-import { resolveSafeDownloadFilename } from "./stealth_filename.js";
+import { isStealthFilenameActive, resolveSafeDownloadFilename } from "./stealth_filename.js";
 import { mountSlotView } from "./surface_compositor.js";
 import {
 encodePaperFormatCode,
@@ -226,21 +228,8 @@ activeTypologyId: activeTypoId,
 uiLocale: state.uiLocale || "es",
 });
 const printIsEn = String(state.uiLocale || "es").trim().toLowerCase().startsWith("en");
-const inspectorHtml =
-`<section id="printTypologyDetails" class="r9-stratum-accordion ek-mt-xs" data-contextual-details="true">` +
-`<h4 class="ek-title-sm">📐 ${printIsEn ? "Editorial typology & script adaptation (12 × 16)" : "Tipología editorial y maquetación por escritura (12 × 16)"}</h4>` +
-renderBranchAndTypologyInspectorHtml({
-lang: state.effectiveCorpusLang || state.lang || "es",
-activeBranchId,
-activeTypologyId: activeTypoId,
-uiLocale: state.uiLocale || "es",
-}) +
-`</section>`;
-mountSlotView(typologyHost, {
-html: `${compactTypoHtml}${inspectorHtml}`,
-ownerId: "drawer_print:imposition:typology",
-orderIndex: 1,
-});
+const inspectorHtml = `<div id="printTypologyDetails" class="ek-mt-xs" data-technical-plane="true"><strong class="ek-title-sm">📐 ${printIsEn ? "Editorial typology & script adaptation (12 × 16)" : "Tipología editorial y maquetación por escritura (12 × 16)"}</strong>${renderBranchAndTypologyInspectorHtml({ lang: state.effectiveCorpusLang || state.lang || "es", activeBranchId, activeTypologyId: activeTypoId, uiLocale: state.uiLocale || "es" })}</div>`;
+mountSlotView(typologyHost, { html: `${compactTypoHtml}${inspectorHtml}`, ownerId: "drawer_print:imposition:typology", orderIndex: 1 });
 const branchSel = getEl("printBranchProfileSelect", targetDoc);
 const typoSel = getEl("printTypologyProfileSelect", targetDoc);
 const techBranchSel = getEl("branchProfileSelect", targetDoc);
@@ -473,8 +462,7 @@ state.editionObjectUrls = {};
 state._editionObjectUrlsScope = editionScopeSig;
 catalogGrid.setAttribute("data-editions-count", String(editions.length));
 catalogGrid.setAttribute("data-active-block-code", activeBlockCode);
-catalogGrid.innerHTML = editions
-.map((ed) =>
+const editionCards = editions.map((ed) =>
 buildEditionCatalogCardHtml(ed, {
 state,
 activeProfileId,
@@ -486,8 +474,15 @@ isEn,
 buildRelativePdfAssetUrl,
 encodePaperFormatCode,
 }),
-)
-.join("");
+);
+const primaryCardsHtml = editionCards.slice(0, 3).join("");
+const extraCardsHtml = editionCards.slice(3).join("");
+const moreSummaryLabel = isEn
+? `More editions (${Math.max(0, editionCards.length - 3)} formats, Braille B70 & field kits)`
+: `Otras ${Math.max(0, editionCards.length - 3)} ediciones (Braille B70, bilingüe y campo)`;
+catalogGrid.innerHTML = extraCardsHtml
+? `${primaryCardsHtml}<div class="ek-stack-xs ek-mt-xs" data-technical-plane="true"><strong class="ek-title-sm">${moreSummaryLabel}</strong><div class="ek-row-wrap ek-mt-xs">${extraCardsHtml}</div></div>`
+: primaryCardsHtml;
 
 if (typeof catalogGrid.addEventListener === "function" && !catalogGrid._editionsBound) {
 catalogGrid._editionsBound = true;
@@ -503,7 +498,7 @@ state,
 ctx,
 targetDoc,
 getEl,
-isStealthActive: stealthActive,
+isStealthActive: isStealthFilenameActive(state),
 stealthBlkNum,
 renderPrintDrawerPanelsSyncInDrawer,
 hydratePrintDrawerPanels,

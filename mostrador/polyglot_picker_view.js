@@ -150,13 +150,22 @@ export function bindCorpusPolyglotAndUiPreferences({
 
   const projectLangChoices = (items = [], { filterQuery = "" } = {}) => {
     const cleanQ = String(filterQuery || "").trim();
-    const dedupedItems = cleanQ
-      ? items
-      : (Array.isArray(items) ? items : []).filter((m) => {
-        const c1 = String(m?.code || "").trim().toLowerCase();
-        const c2 = String(m?.iso639_3 || "").trim().toLowerCase();
-        return !VERIFIED_CORPUS_ISO_SET.has(c1) && !VERIFIED_CORPUS_ISO_SET.has(c2);
-      });
+    const seenIso = new Set();
+    const dedupedItems = [];
+    for (const m of Array.isArray(items) ? items : []) {
+      const c1 = String(m?.code || "").trim().toLowerCase();
+      const c2 = String(m?.iso639_3 || "").trim().toLowerCase();
+      const isoKey = c2 || c1;
+      if (!isoKey || seenIso.has(isoKey)) continue;
+      const isVerified = VERIFIED_CORPUS_ISO_SET.has(c1) || VERIFIED_CORPUS_ISO_SET.has(c2);
+      if (!cleanQ && isVerified) continue;
+      seenIso.add(isoKey);
+      dedupedItems.push(
+        isVerified
+          ? { ...m, sovereignSeal: m.sovereignSeal || "verified" }
+          : m,
+      );
+    }
     const partitioned = partitionLanguagesTier1AndLongTail(dedupedItems, {
       activeWork: state.activeWork || "biblia",
       previewEvangelios: Boolean(state.previewEvangelios),
@@ -182,21 +191,6 @@ export function bindCorpusPolyglotAndUiPreferences({
       windowCountBadge.textContent = capped.length > 0
         ? (isEnUi ? `Showing 1–${capped.length} of 7,164 languages` : `Mostrando 1–${capped.length} de 7,164 lenguas`)
         : (isEnUi ? "0 matches in 7,164 languages" : "0 coincidencias en 7,164 lenguas");
-    }
-    if (langSelect && capped.length > 0) {
-      const seenOpts = new Set();
-      langSelect.innerHTML = capped
-        .filter((m) => {
-          const k = String(m?.code || "").trim().toLowerCase();
-          if (!k || seenOpts.has(k)) return false;
-          seenOpts.add(k);
-          return true;
-        })
-        .map(
-          (m) =>
-            `<option value="${escapeHtml(m.code)}" data-iso="${escapeHtml(m.iso639_3 || "")}" data-seal="${escapeHtml(m.sovereignSeal || "")}">${escapeHtml(m.displayLabel || m.name || m.code)}</option>`,
-        )
-        .join("");
     }
   };
 
@@ -247,15 +241,6 @@ export function bindCorpusPolyglotAndUiPreferences({
   if (langSelect && typeof langSelect.addEventListener === "function") {
     langSelect.addEventListener("change", async (e) => {
       await applyCorpusLanguageSelection(e?.target?.value || langSelect.value || "es");
-    });
-  }
-  const corpusOfflineBtn = getEl("btnCorpusOfflineDownload", targetDoc);
-  if (corpusOfflineBtn && typeof corpusOfflineBtn.addEventListener === "function") {
-    corpusOfflineBtn.addEventListener("click", () => {
-      const shareTabBtn = getEl("btnOpenShareAndAuditSheet", targetDoc);
-      const meshSubtabBtn = getEl("btnDosisSubtabMesh", targetDoc);
-      shareTabBtn?.click?.();
-      meshSubtabBtn?.click?.();
     });
   }
 

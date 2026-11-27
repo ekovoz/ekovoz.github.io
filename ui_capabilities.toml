@@ -1021,6 +1021,31 @@ handler         = "INTENT_LAYER_CONTRACT"
 test_file       = "tests/web/hig7_intent_parity_and_ergonomics.test.mjs"
 test_name       = "HIG7_SLICE_01_15: Two-layer contract <= 18 details, zero forbidden jargon, and interactive parity"
 
+[capability.workspace_mode_switch_hig12]
+surface         = "public-ui"
+exposure_tier   = "primary-stage"
+release_stage   = "public"
+intent          = "read"
+canonical_owner = "#sovereignTopBar"
+selector        = "#workspaceModeSwitch"
+module          = "mostrador/state_store.js"
+handler         = "setWorkspaceMode"
+test_file       = "tests/web/hig12_apple_grade_closure.test.mjs"
+test_name       = "SLICE_EKO_HIG12_CLOSURE_01_workspace_bidi_and_pro_boards"
+
+[capability.print_catalog_actions_c5]
+surface         = "public-ui"
+exposure_tier   = "drawer-secondary"
+release_stage   = "public"
+intent          = "print"
+canonical_owner = "#biblePrintEditionsSheet"
+template_module = "mostrador/drawer_print.js"
+selector        = "#mostradorDoseCards"
+module          = "mostrador/print_catalog_actions.js"
+handler         = "handleCatalogEditionCardClick"
+test_file       = "tests/web/hig12_containment_rtl_and_modals.test.mjs"
+test_name       = "SLICE_EKO_HIG12_01_04: C5 print click stealth safety, orthogonal RTL, CSS <60KB & previewModal, vault visible, single Brujula & Felices Carta/A4 proximity"
+
 [intent_contracts]
 primary_intents = ["read", "print", "study-workshop-vault"]
 max_hops = 2
@@ -1042,4 +1067,4 @@ editorial_audit_unblocked = "#editorialAuditStatusPanel"
 felices_compiled_languages = 18
 optical_relay_rx_gated = "#btnOpticalRelayTx"
 workshop_scope_toggle = "#btnWorkshopLadderScopePassage"
-sw_cache_version = "ekovoz-mostrador-v54"
+sw_cache_version = "ekovoz-mostrador-v56"

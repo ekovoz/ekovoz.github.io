@@ -5,15 +5,13 @@
 // ============================================================================
 
 import { isTechnicalPlaneEnabled } from "./projection_contract.js";
-import { createNativeDialogController, setSurfacePlane } from "./state_store.js";
+import { createNativeDialogController, setWorkspaceMode } from "./state_store.js";
 
 /**
  * Formatea la insignia compacta del botón `Aa` indicando el idioma de menú activo (`D4'`).
  */
-export function formatAppearanceTriggerBadge(uiLocale = "es") {
-  const raw = String(uiLocale || "es").trim();
-  const base = (raw.split(/[-_]/)[0] || "es").toUpperCase().slice(0, 3);
-  return `Aa · ${base || "ES"}`;
+export function formatAppearanceTriggerBadge(_uiLocale = "es") {
+  return "Aa";
 }
 
 export function syncAppearanceTriggerBadge(targetDoc, getEl, uiLocale = "es") {
@@ -25,7 +23,7 @@ export function syncAppearanceTriggerBadge(targetDoc, getEl, uiLocale = "es") {
     const isEn = String(uiLocale || "es").toLowerCase().startsWith("en");
     btn.setAttribute?.(
       "aria-label",
-      isEn ? `Appearance, menu language & Pro mode (${badgeText})` : `Apariencia, idioma de menú y Modo Pro (${badgeText})`,
+      isEn ? "Appearance, typography & UI language (Aa)" : "Apariencia, tipografía e idioma de menús (Aa)",
     );
   }
   return badgeText;
@@ -40,7 +38,6 @@ export function filterCorpusLanguageDrawerByWork(activeWork = "biblia", targetDo
   const work = String(activeWork || "biblia").trim().toLowerCase();
   const isBible = work === "biblia";
   const bibleOnlyIds = [
-    "bibleRegisterSelector",
     "bibleVerifiedCorpusPills",
     "corpusVerifiedSectionTitle",
     "corpusExplorerSectionTitle",
@@ -213,21 +210,23 @@ export function bindChromeAndPlaneEvents({
     }
   }
 
+  const readerBtn = getEl("btnWorkspaceReader", targetDoc);
   const techBtn = getEl("btnToggleTechnicalPlane", targetDoc);
   const exitProPill = getEl("btnExitTechnicalPlanePill", targetDoc);
   const syncPlaneButtonsDom = () => {
     const on = isTechnicalPlaneEnabled(state, targetDoc?.defaultView?.location?.search || "");
     const enNow = String(state.uiLocale || (isEnRole ? "en" : "es")).toLowerCase().startsWith("en");
+    if (readerBtn) {
+      readerBtn.setAttribute?.("aria-pressed", on ? "false" : "true");
+    }
     if (techBtn) {
       techBtn.setAttribute?.("aria-pressed", on ? "true" : "false");
-      techBtn.textContent = enNow
-        ? (on ? "🛠️ Technical details expanded" : "🛠️ Expand technical details")
-        : (on ? "🛠️ Detalles técnicos expandidos" : "🛠️ Expandir detalles técnicos");
+      techBtn.textContent = enNow ? "Estudio Pro" : "Estudio Pro";
     }
     if (exitProPill) {
       exitProPill.hidden = !on;
       exitProPill.setAttribute?.("aria-pressed", on ? "true" : "false");
-      exitProPill.textContent = enNow ? "Expanded details · Collapse" : "Detalles · Contraer";
+      exitProPill.textContent = enNow ? "Exit Pro Studio" : "Salir de Estudio Pro";
     }
   };
   syncPlaneButtonsDom();
@@ -235,13 +234,20 @@ export function bindChromeAndPlaneEvents({
   const toggleSurfacePlane = (forceMode = null) => {
     const onNow = isTechnicalPlaneEnabled(state, targetDoc?.defaultView?.location?.search || "");
     const next = forceMode || (onNow ? "editorial" : "technical");
+    const nextWorkspace = next === "technical" ? "studio" : "reader";
     const targetStore = store || state.store;
-    if (targetStore) setSurfacePlane(targetStore, next);
-    else state.surfacePlane = next;
+    if (targetStore) setWorkspaceMode(targetStore, nextWorkspace);
+    else {
+      state.surfacePlane = next;
+      state.workspaceMode = nextWorkspace;
+    }
     syncActiveChromeProjection?.(targetDoc);
     syncPlaneButtonsDom();
   };
 
+  if (readerBtn && typeof readerBtn.addEventListener === "function") {
+    readerBtn.addEventListener("click", () => toggleSurfacePlane("editorial"));
+  }
   if (techBtn && typeof techBtn.addEventListener === "function") {
     techBtn.addEventListener("click", () => toggleSurfacePlane(null));
   }

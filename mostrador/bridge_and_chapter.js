@@ -612,17 +612,19 @@ export function renderChapterPreviewHtml(
             tokenStrongPairs: options.tokenStrongPairs || [],
           })
           : highlightSearchMatchHtml(escapeHtml(rawPrimary), searchHighlight);
+      const bridgeLangCode = String(bridgeChapterData.lang || options.bridgeLang || "es");
+      const bridgeDir = isRtlLocale(bridgeLangCode) ? "rtl" : "ltr";
       rowsHtml.push(
         `<div class="mostrador-diptych-row" data-verse="${vNum}" data-osis="${escapeHtml(
           osis
         )}"><span class="mostrador-verse bible-verse-line${isSelected ? " is-selected" : ""
         }" data-verse="${vNum}" data-osis="${escapeHtml(
           osis
-        )}"><sup class="bible-v-sup"${supHiddenAttr}>${escapeHtml(
+        )}" lang="${escapeHtml(lang)}" dir="${dir}"><sup class="bible-v-sup"${supHiddenAttr}>${escapeHtml(
           supNum
-        )}</sup> ${primaryBodyHtml}</span><span class="mostrador-verse-bridge" data-verse="${vNum}">${escapeHtml(
+        )}</sup> <bdi dir="${dir}" lang="${escapeHtml(lang)}">${primaryBodyHtml}</bdi></span><span class="mostrador-verse-bridge" data-verse="${vNum}" lang="${escapeHtml(bridgeLangCode)}" dir="${bridgeDir}"><bdi dir="${bridgeDir}">${escapeHtml(
           rawBridge
-        )}</span></div>`
+        )}</bdi></span></div>`
       );
     }
     const diglossicHtml = options.diglossicBridge ? renderDiglossicParallelBridge({ lang, book, chapter, ...(typeof options.diglossicBridge === "object" ? options.diglossicBridge : {}) }) : "";

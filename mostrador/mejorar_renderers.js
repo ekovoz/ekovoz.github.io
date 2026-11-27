@@ -6,11 +6,9 @@ import {
   renderMasterCensus7164CardHtml,
 } from "./drawer_hydrators.js";
 import { humanizeUiCopy } from "./human_labels.js";
-import { resolveDefaultStrongForPassage } from "./study_verse_viewmodel.js";
 import {
   buildElicitationSeedPayload,
   buildPatchPayload,
-  CASCADE_LEVELS,
   CRDT_WAL_SEMILATTICE,
   EXTERNAL_AUDIT_8_LOCKS,
   FIELD_WORKSHOP_STP_LEXICON,
@@ -24,8 +22,9 @@ import {
   TALLER_CC0_ARTIFACTS,
   UNCERTAINTY_QUEUE_60,
   validateAllEightLocksPda,
-  verifyLock8PredicativeAndNegation,
+  verifyLock8PredicativeAndNegation
 } from "./mejorar_locks_pda.js";
+import { resolveDefaultStrongForPassage } from "./study_verse_viewmodel.js";
 export { renderCascadeAndLadderHtml, renderWorkshopAuditPanelsHtml } from "./mejorar_audit_renderers.js";
 
 export const IMPROVE_I18N_FALLBACKS = {
@@ -189,13 +188,14 @@ export function renderImproveDrawerHtml({
     `</select>` +
     `</label>` +
     `</div>` +
+    `<p class="ek-meta ek-m-0" data-workshop-local-honesty="true">📝 ${isEn ? "Local browser draft · Exportable to community review (ekovoz apply-patch)" : "Borrador local en navegador · Exportable a revisión comunitaria (ekovoz apply-patch)"}</p>` +
     `<label class="ek-label">` +
     `<span data-i18n="improve.current">${t("improve.current")} (${patch.kind === "verse" ? (isEn ? "L1 verse" : "verso L1") : (isEn ? "L2 term/root" : "término L2")})</span>` +
-    `<input id="improveOldSurfaceInput" class="ek-input" type="text" value="${patch.old_surface.replace(/"/g, "&quot;")}">` +
+    `<textarea id="improveOldSurfaceInput" class="ek-input" rows="2">${patch.old_surface.replace(/</g, "&lt;")}</textarea>` +
     `</label>` +
     `<label class="ek-label">` +
     `<span data-i18n="improve.proposed">${t("improve.proposed")}</span>` +
-    `<input id="improveNewSurfaceInput" class="ek-input" type="text" value="${patch.new_surface.replace(/"/g, "&quot;")}">` +
+    `<textarea id="improveNewSurfaceInput" class="ek-input" rows="2">${patch.new_surface.replace(/</g, "&lt;")}</textarea>` +
     `</label>` +
     `<label class="ek-label">` +
     `<span data-i18n="improve.note">${t("improve.note")}</span>` +
