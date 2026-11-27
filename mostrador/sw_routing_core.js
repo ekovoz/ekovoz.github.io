@@ -103,6 +103,7 @@ export const SHELL_CORE_ASSETS = [
   "/mostrador/print_stage_ribbon.js",
   "/mostrador/print_unified_options.js",
   "/mostrador/print_work_and_photocopy.js",
+  "/mostrador/stage_bindings_schema.js",
   "/mostrador/stage_dom_bindings.js",
   "/mostrador/state_store.js",
   "/mostrador/stealth_filename.js",

@@ -10,8 +10,6 @@ import { formatIsoLangPillBadge, humanizeUiCopy } from "./human_labels.js";
 import { renderStpDraftCheckHtml } from "./mejorar.js";
 import {
   buildWorkshopCldfCsvAndJson,
-  renderElicitSessionCardHtml,
-  renderModernizeRegisterDiffHtml,
   renderStpLedgerProgressHtml,
 } from "./workshop_elicit_and_cldf.js";
 
@@ -242,7 +240,7 @@ export function renderWorkshopAuditSubtabHtml({
   state = {},
 } = {}) {
   const activeTallerLang =
-    String(state.activeTallerLang || state.lang || "es")
+    String(state.lang || state.activeTallerLang || "es")
       .trim()
       .toLowerCase() || "es";
   const uiLocale = state.uiLocale || "es";
@@ -325,15 +323,9 @@ export function renderWorkshopAuditSubtabHtml({
   const elicitAndCldfHtml =
     exportBarHtml +
     `<details id="workshopElicitCldfDetails" class="tech-details ek-mt-sm" data-cldf-rows="${cldfBundle.rowCount}">` +
-    `<summary>📤 ${isEnAudit ? "3. Export · Field Elicitation Session & Mirror Preview" : "3. Exportar · Sesión en Campo y Vista Previa"}</summary>` +
+    `<summary>📤 ${isEnAudit ? "3. Export · Census Progress & Mirror Preview" : "3. Exportar · Avance y Vista Previa"}</summary>` +
     cldfPreviewHtml +
     renderStpLedgerProgressHtml(state.masterCensusSummary || null, uiLocale) +
-    renderElicitSessionCardHtml(state.celfLadder250 || null, uiLocale, { index: state.elicitSessionIndex || 0, activeBook: state.book || "GEN" }) +
-    renderModernizeRegisterDiffHtml({
-      modernText: state.lastNavResult?.chapter?.verses?.[activeVerseKey] || "",
-      classicText: state.lastNavResult?.bridgeChapter?.verses?.[activeVerseKey] || "",
-      uiLocale,
-    }) +
     `</details>`;
   return switcherHtml + coverageSummaryHtml + elicitAndCldfHtml + relocatedAuditHtml + catalogHtml + sanitizedDraftHtml;
 }
@@ -377,6 +369,11 @@ export function createWorkshopAuditHandlers({
       const pickedExtra = String(e?.target?.value || "").trim().toLowerCase();
       if (pickedExtra) {
         state.activeTallerLang = pickedExtra;
+        state.lang = pickedExtra;
+        if (typeof navigate === "function") {
+          await navigate({ lang: pickedExtra, register: state.register }, targetDoc);
+          hydrateBookAndChapterSelectors?.(targetDoc);
+        }
         state.refreshWorkshopAuditSubtab?.();
       }
       return;
@@ -428,7 +425,13 @@ export function createWorkshopAuditHandlers({
         : null;
     const pickedTallerLang = langPickBtn?.getAttribute?.("data-taller-lang-pick");
     if (pickedTallerLang) {
-      state.activeTallerLang = String(pickedTallerLang).toLowerCase();
+      const cleanPicked = String(pickedTallerLang).toLowerCase();
+      state.activeTallerLang = cleanPicked;
+      state.lang = cleanPicked;
+      if (typeof navigate === "function") {
+        await navigate({ lang: cleanPicked, register: state.register }, targetDoc);
+        hydrateBookAndChapterSelectors?.(targetDoc);
+      }
       state.refreshWorkshopAuditSubtab?.();
       return true;
     }

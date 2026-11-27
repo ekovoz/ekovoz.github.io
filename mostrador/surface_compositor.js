@@ -9,6 +9,7 @@ import { verifyArtifactProjectionClosure } from "./dom_projection_contracts.js";
 import {
   SURFACE_SLOT_MANIFEST,
   WORK_LIFECYCLE,
+  isTechnicalPlaneEnabled,
   isWorkVisible,
   projectStoreAttributesToDom,
   resolveActiveWorkDrawerContext,
@@ -24,6 +25,7 @@ import {
   resolvePrimaryIntentGroup,
   setActiveIntent,
   setSheetSubtab,
+  setSurfacePlane,
 } from "./state_store.js";
 
 /**
@@ -161,6 +163,12 @@ export function projectSurfaceLayoutFromState(state = {}, rootDoc, getEl) {
 
   projectStoreAttributesToDom(state, rootDoc);
   projectAllSubtabsFromState(state, rootDoc);
+  const techPlaneOn = isTechnicalPlaneEnabled(state, rootDoc?.location?.search || "");
+  if (typeof rootDoc.querySelectorAll === "function") {
+    for (const techEl of Array.from(rootDoc.querySelectorAll('[data-technical-plane="true"]'))) {
+      techEl.hidden = !techPlaneOn;
+    }
+  }
 
   const showEvangelios = isWorkVisible("evangelios", state);
   const activeWork = resolvePublicOrPreviewWork(state.activeWork, state);
@@ -414,8 +422,10 @@ export function applyInitialSurfaceModeFromUrl({ store, state, search = "", doc,
 
   const mobileOpen = isMobileSheetViewport(doc?.defaultView);
   if (store && typeof store.setState === "function") {
+    if (isStudio) setSurfacePlane(store, "technical");
     setActiveIntent(store, resolvedIntent, { mobileSheetOpen: mobileOpen });
   } else if (state && typeof state === "object") {
+    if (isStudio) state.surfacePlane = "technical";
     state.activeIntent = resolvedIntent;
     state.activeSheet = targetSheet;
     state.mobileSheetOpen = Boolean(targetSheet && mobileOpen);

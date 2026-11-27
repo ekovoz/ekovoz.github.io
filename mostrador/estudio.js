@@ -645,6 +645,15 @@ export function renderStudyStrataCards(matrixShard, options = {}) {
   }
 
   const hydratedCulturalMap = getHydratedCulturalGlossesMap();
+  const verseTerms = new Set(activeRows.flatMap((r) => [String(r.c12_gloss_es || "").toLowerCase(), String(r.c04_lemma || "").toLowerCase()]).filter((t) => t.length >= 3));
+  const allCultural = Object.values(hydratedCulturalMap);
+  const matchedCultural = allCultural.filter((cg) => {
+    const tLow = String(cg?.term || "").toLowerCase();
+    for (const vt of verseTerms) {
+      if (tLow && (vt.includes(tLow) || tLow.includes(vt))) return true;
+    }
+    return false;
+  }).slice(0, 4);
   const realiaHtml =
     `<div class="stratum-card realia-metrology-stratum" data-stratum="realia-metrology" data-ref="${escapeHtml(activeOsis)}">` +
     `<strong class="stratum-title">⚖️ ${isEn ? `Stratum 2 · Material Realia & 24 Everyday Metrological Units (${escapeHtml(book)} ${chapter}:${verse})` : `Estrato 2 · Realia Material y 24 Unidades Metrológicas Cotidianas (${escapeHtml(book)} ${chapter}:${verse})`}</strong>` +
@@ -659,6 +668,9 @@ export function renderStudyStrataCards(matrixShard, options = {}) {
         return `<li data-realia-id="${escapeHtml(rId)}"><strong>${escapeHtml(rTitle)}:</strong> ${escapeHtml(rExp)}</li>`;
       })
       .join("") +
+    matchedCultural
+      .map((cg) => `<li data-cultural-gloss-term="${escapeHtml(cg.term)}"><strong>${escapeHtml(cg.term)}</strong> <span class="uls-badge cultural-gloss-cat">${escapeHtml(cg.category)}</span>: ${escapeHtml(cg.nsm_gloss_es)}</li>`)
+      .join("") +
     metrologyEntries
       .map(
         (me) =>
@@ -666,10 +678,10 @@ export function renderStudyStrataCards(matrixShard, options = {}) {
       )
       .join("") +
     `</ul>` +
-    `<details id="studyCulturalGlossesCatalogAccordion" open class="cultural-glosses-accordion">` +
-    `<summary class="cultural-glosses-summary">📚 ${isEn ? `Cultural Glosses (${Object.keys(hydratedCulturalMap).length} terms: Weights, Coins, Crafts & Realia)` : `Glosas Culturales (${Object.keys(hydratedCulturalMap).length} términos: Pesos, Monedas, Oficios y Realia)`}</summary>` +
+    `<details id="studyCulturalGlossesCatalogAccordion" class="cultural-glosses-accordion">` +
+    `<summary class="cultural-glosses-summary">📚 ${isEn ? `All Cultural Glosses (${allCultural.length} terms: Weights, Coins, Crafts & Realia)` : `Catálogo de Glosas Culturales (${allCultural.length} términos: Pesos, Monedas, Oficios y Realia)`}</summary>` +
     `<ul class="study-list stratum-list cultural-glosses-list">` +
-    Object.values(hydratedCulturalMap)
+    allCultural
       .map(
         (cg) =>
           `<li data-cultural-gloss-term="${escapeHtml(cg.term)}"><strong>${escapeHtml(cg.term)}</strong> <span class="uls-badge cultural-gloss-cat">${escapeHtml(cg.category)}</span>: ${escapeHtml(cg.nsm_gloss_es)}</li>`

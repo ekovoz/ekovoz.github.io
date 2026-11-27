@@ -32,6 +32,7 @@ export const STORE_DOMAIN_OWNERS = Object.freeze({
   activeIntent: "surface",
   intentSeq: "sheet",
   surfaceMode: "surface",
+  surfacePlane: "surface",
   appearanceTheme: "appearance",
   fontFamily: "appearance",
   fontScale: "appearance",
@@ -151,10 +152,12 @@ export function createEkovozStore(initialState = {}, options = {}) {
     intentSeq: 0,
     activeIntent: "read",
     surfaceMode: "reader",
+    surfacePlane: "editorial",
     appearanceTheme: "light",
     fontFamily: "serif",
     fontScale: 1.0,
     stealthMode: false,
+    paperFormat: "a4",
     printConfig: DEFAULT_PRINT_CONFIG,
     activeBranchId: null,
     activeTypologyId: null,
@@ -557,4 +560,24 @@ export function updatePrintConfig(store, patch = {}) {
   }
   store.setState(topPatch, "print");
   return nextCfg;
+}
+
+/**
+ * Conmuta el plano de superficie (`editorial` | `technical`) bajo dueño único (`D1-HIG9`).
+ */
+export function setSurfacePlane(store, rawPlane = "editorial") {
+  const cleanPlane = String(rawPlane || "").trim().toLowerCase() === "technical" ? "technical" : "editorial";
+  if (!store || typeof store.setState !== "function") return cleanPlane;
+  store.setState({ surfacePlane: cleanPlane }, "surface");
+  return cleanPlane;
+}
+
+/**
+ * Sincroniza `paperFormat` (`a4` | `letter`) en SSOT compartido entre Impresión y Obras Hermanas (`D11-HIG9`).
+ */
+export function syncCanonicalPaperFormat(store, rawFormat = "a4") {
+  const cleanFmt = String(rawFormat || "").trim().toLowerCase() === "letter" ? "letter" : "a4";
+  if (!store || typeof store.setState !== "function") return cleanFmt;
+  updatePrintConfig(store, { paperFormat: cleanFmt });
+  return cleanFmt;
 }

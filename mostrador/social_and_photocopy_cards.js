@@ -5,6 +5,7 @@
 // ============================================================================
 
 import { simulateFifthGenPhotocopySauvolaBilateral } from "./dosis.js";
+import { formatSauvolaStepLabel } from "./human_labels.js";
 import {
   evaluateOpticalSauvolaPhotocopyOracle,
   filterEphemeralSubpixelIslands1px,
@@ -180,7 +181,7 @@ export function renderEditorialGraphicsAndPrintSpecsCard({
   const stagesBadges = activeSim.stages5
     .map(
       (st) =>
-        `<span class="uls-badge photocopy-stage-badge" data-graphics-stage="${st}">${st}</span>`,
+        `<span class="uls-badge photocopy-stage-badge" data-graphics-stage="${st}">${escHtml(formatSauvolaStepLabel(st, uiLocale))}</span>`,
     )
     .join(" ");
 

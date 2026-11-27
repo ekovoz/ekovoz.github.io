@@ -70,10 +70,10 @@ export function renderElicitSessionCardHtml(sessionData = null, uiLocale = "es",
     `<button type="button" id="btnElicitNext" class="uls-chip ek-btn-fitts" data-elicit-step="1">${isEn ? "Next" : "Siguiente"} →</button>` +
     `<button type="button" id="btnElicitPropose" class="btn-modal-action" data-elicit-propose="${esc(promptText)}" data-elicit-ref="${vRef}">${isEn ? "Propose translation" : "Proponer traducción"}</button>` +
     `</div>` +
-    `<div class="ek-meta ek-stack-xs ek-mt-xs">` +
+    `<div class="ek-meta ek-stack-xs ek-mt-xs" data-technical-plane="true">` +
     `<span><strong>${isEn ? "Core meanings:" : "Sentidos primarios:"}</strong> ${esc(nsmList.join(", ") || "—")}</span>` +
     `<span><strong>${isEn ? "Roots:" : "Raíces frecuentes:"}</strong> ${esc(strongsList.join(", ") || "—")}</span>` +
-    `<span><strong>${isEn ? "Structures:" : "Estructuras:"}</strong> ${esc(framesList.join(", ") || "—")}</span>` +
+    `<span><strong>${isEn ? "Structures:" : "Estructuras:"}</strong> ${esc(framesList.map((f) => String(f || "").toLowerCase().replace(/_/g, " ")).join(", ") || "—")}</span>` +
     `</div>` +
     `</section>`
   );
@@ -125,9 +125,10 @@ export function buildWorkshopCldfCsvAndJson({
   const safeLang = String(lang || "stp").replace(/[^a-z0-9-]/gi, "") || "stp";
   const safeBook = String(book || "GEN").toUpperCase();
   const safeChap = Math.max(1, Number(chapter) || 1);
+  const resolvedLadder = Array.isArray(ladderItems) ? ladderItems : Array.isArray(ladderItems?.items) ? ladderItems.items : [];
   const normalizedRows = (Array.isArray(rows) && rows.length > 0
     ? rows
-    : (Array.isArray(ladderItems) ? ladderItems.slice(0, 12) : []).map((it, idx) => ({
+    : resolvedLadder.slice(0, 12).map((it, idx) => ({
       verse_id: it.verse_id || `${safeBook}.${safeChap}.${idx + 1}`,
       rung: it.rung || "Rung1",
       strong_ids: Array.isArray(it.covered_high_freq_strongs) ? it.covered_high_freq_strongs.join(";") : "",
@@ -177,6 +178,7 @@ export function renderModernizeRegisterDiffHtml({
   modernText = "",
   classicText = "",
   uiLocale = "es",
+  idPrefix = "workshop",
 } = {}) {
   const isEn = String(uiLocale || "es").trim().toLowerCase().startsWith("en");
   const modWords = String(modernText || "").trim().split(/\s+/).filter(Boolean);
@@ -185,13 +187,14 @@ export function renderModernizeRegisterDiffHtml({
   const modSet = new Set(modWords.map((w) => w.toLowerCase().replace(/[.,;:!?¿¡"'()]/g, "")));
   const changedModern = modWords.filter((w) => !clsSet.has(w.toLowerCase().replace(/[.,;:!?¿¡"'()]/g, ""))).slice(0, 12);
   const changedClassic = clsWords.filter((w) => !modSet.has(w.toLowerCase().replace(/[.,;:!?¿¡"'()]/g, ""))).slice(0, 12);
+  const pfx = esc(idPrefix || "workshop");
   return (
-    `<div id="workshopModernizeDiffCard" class="ek-card-muted ek-mt-xs" data-modern-words="${modWords.length}" data-classic-words="${clsWords.length}">` +
+    `<div id="${pfx}ModernizeDiffCard" class="ek-card-muted ek-mt-xs" data-modern-words="${modWords.length}" data-classic-words="${clsWords.length}">` +
     `<div class="ek-row-between"><strong>🔄 ${isEn ? "Live Register Comparator (1909 ↔ Contemporary)" : "Comparador Vivo de Registro (1909 ↔ Actual)"}</strong>` +
     `<span class="uls-badge">${changedModern.length} ${isEn ? "updated forms" : "formas actualizadas"}</span></div>` +
-    `<label class="ek-label-sm ek-mt-xs" for="workshopModernizeInput">${isEn ? "Compare active verse or paste classic text:" : "Comparar pasaje activo o pegar texto clásico:"}</label>` +
-    `<textarea id="workshopModernizeInput" class="ek-textarea-full ek-mt-xs" rows="2">${esc(classicText || modernText)}</textarea>` +
-    `<div id="workshopModernizeDiffOut" class="ek-meta ek-mt-xs" aria-live="polite">` +
+    `<label class="ek-label-sm ek-mt-xs" for="${pfx}ModernizeInput">${isEn ? "Compare active verse or paste classic text:" : "Comparar pasaje activo o pegar texto clásico:"}</label>` +
+    `<textarea id="${pfx}ModernizeInput" class="ek-textarea-full ek-mt-xs" rows="2">${esc(classicText || modernText)}</textarea>` +
+    `<div id="${pfx}ModernizeDiffOut" class="ek-meta ek-mt-xs" aria-live="polite">` +
     `<p class="ek-m-0"><strong>${isEn ? "Contemporary:" : "Actual:"}</strong> ${esc(modWords.slice(0, 26).join(" ") || "—")}</p>` +
     (clsWords.length > 0
       ? `<p class="ek-m-0"><strong>${isEn ? "Updated tokens:" : "Cambios léxicos:"}</strong> ${esc(changedClassic.slice(0, 6).join(", ") || "—")} → <strong>${esc(changedModern.slice(0, 6).join(", ") || "—")}</strong></p>`
@@ -200,8 +203,8 @@ export function renderModernizeRegisterDiffHtml({
   );
 }
 
-export function bindElicitAndModernizeControls({ state, targetDoc, getEl, modernizeFn, refreshFn, switchToPatchFn } = {}) {
-  const host = getEl?.("tallerArtifactsCatalog", targetDoc) || getEl?.("tallerArtifactsDynamicList", targetDoc);
+export function bindElicitAndModernizeControls({ hostId = "", state, targetDoc, getEl, modernizeFn, refreshFn, switchToPatchFn } = {}) {
+  const host = (hostId && getEl?.(hostId, targetDoc)) || getEl?.("tallerArtifactsCatalog", targetDoc) || getEl?.("tallerArtifactsDynamicList", targetDoc);
   if (host && typeof host.addEventListener === "function" && !host._elicitModBound) {
     host._elicitModBound = true;
     host.addEventListener("click", (ev) => {

@@ -5,20 +5,8 @@
 // píldoras de registro/ortografía, configuración de impresión/fotocopia y conmutación entre las 3 Obras Hermanas.
 // ============================================================================
 
-import {
-  getActivePlateIndex,
-  setActivePlateIndex,
-  setPaperFormat,
-  syncFelicesWithCorpusLang,
-  syncI18nUiFromState,
-} from "../i18n_ui.js";
-import {
-  HAREL_SHEET_MAP,
-  LIFE_TRAILS_ANCHORS,
-  escapeHtml,
-  lookupWordTokenStrongEntry,
-  projectCrossWorkCoordinate,
-} from "./bridge_and_chapter.js";
+import { getActivePlateIndex, setActivePlateIndex, setPaperFormat, syncFelicesWithCorpusLang, syncI18nUiFromState } from "../i18n_ui.js";
+import { HAREL_SHEET_MAP, LIFE_TRAILS_ANCHORS, escapeHtml, lookupWordTokenStrongEntry, projectCrossWorkCoordinate } from "./bridge_and_chapter.js";
 import { searchMultiBookConcordance } from "./concordance_search.js";
 import { bindSurfaceActions } from "./dom_patch.js";
 import { normalizeEditionSlug } from "./dosis.js";
@@ -26,15 +14,12 @@ import { DEFAULT_PRINT_CONFIG } from "./dosis_profiles_schema.js";
 import { syncActiveStrongInStudyDrawer, bindLifeTrailsNavigation } from "./drawer_hydrators.js";
 import { resolvePrintStageDescriptorsForTier } from "./print_stage_ribbon.js";
 import { bindCorpusPolyglotAndUiPreferences } from "./polyglot_picker_view.js";
-import { resolvePublicOrPreviewWork } from "./projection_contract.js";
+import { isTechnicalPlaneEnabled, resolvePublicOrPreviewWork } from "./projection_contract.js";
 import { bindSupportContactDialog } from "./provenance_and_support_panel.js";
-import {
-  ROSETTA_66_BOOKS,
-  parseBiblicalCoordinateReference,
-  searchSpotlightCorpus,
-} from "./reference.js";
+import { ROSETTA_66_BOOKS, parseBiblicalCoordinateReference, searchSpotlightCorpus } from "./reference.js";
 import { syncSisterWorksTabsDom } from "./sister_works_controller.js";
-import { createNativeDialogController, setActiveWork } from "./state_store.js";
+import { APPEARANCE_FONT_BINDINGS, APPEARANCE_SCALE_BINDINGS, APPEARANCE_THEME_BINDINGS, ORTHO_PROFILE_BINDINGS, ROVING_TABLIST_SELECTORS, SISTER_WORK_TAB_BINDINGS } from "./stage_bindings_schema.js";
+import { createNativeDialogController, setActiveWork, setSurfacePlane } from "./state_store.js";
 
 /**
  * Conecta los listeners declarativos del escenario principal sobre `targetDoc` con contexto inyectado.
@@ -72,29 +57,17 @@ export function bindStageDomEvents(ctx = {}) {
   const stickyJumpBtn = getEl("btnStickyJumpToCanvas", targetDoc);
   if (stickyJumpBtn && typeof stickyJumpBtn.addEventListener === "function") {
     stickyJumpBtn.setAttribute?.("data-action", "jump-to-canvas");
-    bindSurfaceActions(stickyJumpBtn, {
-      "jump-to-canvas": () => {
-        const vp = getEl("bibleVerseViewport", targetDoc);
-        vp?.scrollIntoView?.({ behavior: "smooth", block: "start" });
-      },
-    }, { scope: "sticky-jump", events: ["click"] });
+    bindSurfaceActions(stickyJumpBtn, { "jump-to-canvas": () => getEl("bibleVerseViewport", targetDoc)?.scrollIntoView?.({ behavior: "smooth", block: "start" }) }, { scope: "sticky-jump", events: ["click"] });
   }
-
-  const compassTabBooks = getEl("btnCompassTabBooks", targetDoc);
-  const compassTabConcordance = getEl("btnCompassTabConcordance", targetDoc);
-  const compassTabTrails = getEl("btnCompassTabTrails", targetDoc);
-  const compassPanelBooks = getEl("compassPanelBooks", targetDoc);
-  const compassPanelConcordance = getEl("compassPanelConcordance", targetDoc);
-  const compassPanelTrails = getEl("compassPanelTrails", targetDoc);
+  const cTabs = [["btnCompassTabBooks", "books", "compassPanelBooks"], ["btnCompassTabConcordance", "concordance", "compassPanelConcordance"], ["btnCompassTabTrails", "trails", "compassPanelTrails"]];
   const switchCompassTab = (tabName) => {
     state.activeCompassTab = tabName === "trails" ? "trails" : tabName === "concordance" ? "concordance" : "books";
     const mode = state.activeCompassTab;
-    compassTabBooks?.setAttribute?.("aria-selected", mode === "books" ? "true" : "false");
-    compassTabConcordance?.setAttribute?.("aria-selected", mode === "concordance" ? "true" : "false");
-    compassTabTrails?.setAttribute?.("aria-selected", mode === "trails" ? "true" : "false");
-    if (compassPanelBooks) compassPanelBooks.hidden = mode !== "books";
-    if (compassPanelConcordance) compassPanelConcordance.hidden = mode !== "concordance";
-    if (compassPanelTrails) compassPanelTrails.hidden = mode !== "trails";
+    for (const [bId, key, pId] of cTabs) {
+      getEl(bId, targetDoc)?.setAttribute?.("aria-selected", mode === key ? "true" : "false");
+      const p = getEl(pId, targetDoc);
+      if (p) p.hidden = mode !== key;
+    }
     const rInp = getEl("mostradorRefInput", targetDoc);
     if (rInp) {
       const isEn = String(state.uiLocale || "es").toLowerCase().startsWith("en");
@@ -102,33 +75,17 @@ export function bindStageDomEvents(ctx = {}) {
     }
   };
   const tskAccEl = getEl("studyTskFormulaicAccordion", targetDoc);
-  if (tskAccEl && typeof tskAccEl.addEventListener === "function") {
-    tskAccEl.addEventListener("toggle", () => { if (tskAccEl.open) tskAccEl.scrollIntoView?.({ behavior: "smooth", block: "nearest" }); });
+  if (tskAccEl && typeof tskAccEl.addEventListener === "function") tskAccEl.addEventListener("toggle", () => { if (tskAccEl.open) tskAccEl.scrollIntoView?.({ behavior: "smooth", block: "nearest" }); });
+  for (const [bId, key] of cTabs) {
+    const b = getEl(bId, targetDoc);
+    if (b) { b.setAttribute?.("data-action", `compass-tab-${key}`); bindSurfaceActions(b, { [`compass-tab-${key}`]: () => switchCompassTab(key) }, { scope: `compass-${key}`, events: ["click"] }); }
   }
-  if (compassTabBooks) {
-    compassTabBooks.setAttribute?.("data-action", "compass-tab-books");
-    bindSurfaceActions(compassTabBooks, { "compass-tab-books": () => switchCompassTab("books") }, { scope: "compass-books", events: ["click"] });
-  }
-  if (compassTabConcordance) {
-    compassTabConcordance.setAttribute?.("data-action", "compass-tab-concordance");
-    bindSurfaceActions(compassTabConcordance, { "compass-tab-concordance": () => switchCompassTab("concordance") }, { scope: "compass-concordance", events: ["click"] });
-  }
-  if (compassTabTrails) {
-    compassTabTrails.setAttribute?.("data-action", "compass-tab-trails");
-    bindSurfaceActions(compassTabTrails, { "compass-tab-trails": () => switchCompassTab("trails") }, { scope: "compass-trails", events: ["click"] });
-  }
-
   if (targetDoc && typeof targetDoc.addEventListener === "function" && !targetDoc._r8JumpDelegationBound) {
     targetDoc._r8JumpDelegationBound = true;
     targetDoc.addEventListener("click", (ev) => {
       const btn = ev?.target?.closest ? ev.target.closest("[data-jump-target]") : ev?.target?.getAttribute?.("data-jump-target") ? ev.target : null;
-      const targetId = btn?.getAttribute?.("data-jump-target");
-      if (!targetId) return;
-      const el = getEl(targetId, targetDoc);
-      if (el) {
-        if (el.hidden) el.hidden = false;
-        el.scrollIntoView?.({ behavior: "smooth", block: "start" });
-      }
+      const el = btn?.getAttribute?.("data-jump-target") ? getEl(btn.getAttribute("data-jump-target"), targetDoc) : null;
+      if (el) { if (el.hidden) el.hidden = false; el.scrollIntoView?.({ behavior: "smooth", block: "start" }); }
     });
   }
 
@@ -360,16 +317,7 @@ export function bindStageDomEvents(ctx = {}) {
     });
   }
 
-  for (const [orthoBtnId, profile, altProfile] of [
-    ["btnOrthoInali", "inali", null],
-    ["btnOrthoTradicional", "tradicional", null],
-    ["btnOrthoFonetica", "fonetica", null],
-    ["btnOrthoBnBd", "bn-BD", null],
-    ["btnOrthoBnIn", "bn-IN", null],
-    ["btnOrthoArbTashkeel", "TASHKEEL_STRIPPED", "VOWELIZED"],
-    ["btnOrthoUznCyrl", "CYRL", "LATN"],
-    ["btnOrthoTzmTfng", "TFNG", "LATN"],
-  ]) {
+  for (const [orthoBtnId, profile, altProfile] of ORTHO_PROFILE_BINDINGS) {
     const oBtn = getEl(orthoBtnId, targetDoc);
     if (oBtn && typeof oBtn.addEventListener === "function") {
       oBtn.addEventListener("click", () => {
@@ -385,10 +333,20 @@ export function bindStageDomEvents(ctx = {}) {
 
   const appearanceBtn = getEl("btnAppearanceMenu", targetDoc);
   const appearancePopover = getEl("appearancePopover", targetDoc);
+  const closeAppearancePopover = () => {
+    if (!appearancePopover || appearancePopover.hidden) return;
+    appearancePopover.hidden = true;
+    appearanceBtn?.setAttribute?.("aria-expanded", "false");
+    if (state.activeModal === "appearance") state.activeModal = null;
+  };
   if (appearanceBtn && typeof appearanceBtn.addEventListener === "function") {
     appearanceBtn.addEventListener("click", () => {
       if (!appearancePopover) return;
       const nextHidden = !appearancePopover.hidden;
+      if (!nextHidden) {
+        const corpD = getEl("bibleLanguageAndRegisterDrawer", targetDoc);
+        if (corpD) corpD.open = false;
+      }
       appearancePopover.hidden = nextHidden;
       appearanceBtn.setAttribute("aria-expanded", nextHidden ? "false" : "true");
       state.activeModal = nextHidden ? null : "appearance";
@@ -403,6 +361,10 @@ export function bindStageDomEvents(ctx = {}) {
         }
       }
     });
+  }
+  if (typeof targetDoc.addEventListener === "function" && !targetDoc._appearanceDismissBound) {
+    targetDoc._appearanceDismissBound = true;
+    targetDoc.addEventListener("keydown", (ev) => { if (ev?.key === "Escape") closeAppearancePopover(); });
   }
 
   const applyStorePatchAndProject = (patch = {}, domain = "appearance") => {
@@ -422,26 +384,19 @@ export function bindStageDomEvents(ctx = {}) {
     }
   };
 
-  for (const [themeBtnId, themeKey] of [
-    ["btnThemeLight", "light"],
-    ["btnThemeSepia", "sepia"],
-    ["btnThemeDark", "dark"],
-  ]) {
+  for (const [themeBtnId, themeKey] of APPEARANCE_THEME_BINDINGS) {
     const tThemeBtn = getEl(themeBtnId, targetDoc);
     if (tThemeBtn && typeof tThemeBtn.addEventListener === "function") {
       tThemeBtn.addEventListener("click", () => {
         applyStorePatchAndProject({ appearanceTheme: themeKey }, "appearance");
-        for (const [id, key] of [["btnThemeLight", "light"], ["btnThemeSepia", "sepia"], ["btnThemeDark", "dark"]]) {
+        for (const [id, key] of APPEARANCE_THEME_BINDINGS) {
           getEl(id, targetDoc)?.setAttribute?.("aria-pressed", key === themeKey ? "true" : "false");
         }
       });
     }
   }
 
-  for (const [fontBtnId, fontKey] of [
-    ["btnFontSerif", "serif"],
-    ["btnFontSans", "sans"],
-  ]) {
+  for (const [fontBtnId, fontKey] of APPEARANCE_FONT_BINDINGS) {
     const fBtn = getEl(fontBtnId, targetDoc);
     if (fBtn && typeof fBtn.addEventListener === "function") {
       fBtn.addEventListener("click", () => {
@@ -452,7 +407,7 @@ export function bindStageDomEvents(ctx = {}) {
     }
   }
 
-  for (const [scaleBtnId, delta] of [["btnScaleDown", -0.1], ["btnScaleUp", 0.1]]) {
+  for (const [scaleBtnId, delta] of APPEARANCE_SCALE_BINDINGS) {
     const sBtn = getEl(scaleBtnId, targetDoc);
     if (sBtn && typeof sBtn.addEventListener === "function") {
       sBtn.addEventListener("click", () => {
@@ -461,6 +416,23 @@ export function bindStageDomEvents(ctx = {}) {
         applyStorePatchAndProject({ fontScale: nextScale }, "appearance");
       });
     }
+  }
+  const techBtn = getEl("btnToggleTechnicalPlane", targetDoc);
+  if (techBtn && typeof techBtn.addEventListener === "function") {
+    const syncTechBtnDom = () => {
+      const on = isTechnicalPlaneEnabled(state, targetDoc?.defaultView?.location?.search || "");
+      techBtn.setAttribute("aria-pressed", on ? "true" : "false");
+      techBtn.textContent = isEnRole ? (on ? "🛠️ Technical / R&D Mode (On)" : "🛠️ Technical / R&D Mode") : (on ? "🛠️ Modo Técnico / I+D (Activo)" : "🛠️ Modo Técnico / I+D");
+    };
+    syncTechBtnDom();
+    techBtn.addEventListener("click", () => {
+      const next = isTechnicalPlaneEnabled(state, targetDoc?.defaultView?.location?.search || "") ? "editorial" : "technical";
+      const targetStore = ctx.store || state.store;
+      if (targetStore) setSurfacePlane(targetStore, next);
+      else state.surfacePlane = next;
+      ctx.syncActiveChromeProjection?.(targetDoc);
+      syncTechBtnDom();
+    });
   }
 
   const corpusLangBtn = getEl("sovereignCorpusLangBtn", targetDoc);
@@ -804,19 +776,40 @@ export function bindStageDomEvents(ctx = {}) {
   ctx.switchWork = switchWork;
   globalThis.switchSovereignWork = (w) => switchWork(w, targetDoc);
 
-  for (const [btnId, workId] of [["tabWorkBiblia", "biblia"], ["tabWorkFelices", "felices"], ["tabWorkEvangelios", "evangelios"]]) {
+  for (const [btnId, workId] of SISTER_WORK_TAB_BINDINGS) {
     const tabBtn = getEl(btnId, targetDoc);
     if (tabBtn && typeof tabBtn.addEventListener === "function") tabBtn.addEventListener("click", () => switchWork(workId, targetDoc));
   }
 
+  if (typeof targetDoc.querySelectorAll === "function") {
+    for (const tablistSel of ROVING_TABLIST_SELECTORS) {
+      const listEl = targetDoc.querySelector?.(tablistSel);
+      if (listEl && typeof listEl.addEventListener === "function" && !listEl._rovingTabBound) {
+        listEl._rovingTabBound = true;
+        listEl.addEventListener("keydown", (ev) => {
+          if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(ev?.key)) return;
+          const tabs = Array.from(listEl.querySelectorAll?.('[role="tab"]:not([hidden])') || []);
+          const curIdx = tabs.indexOf(ev.target);
+          if (tabs.length < 2 || curIdx < 0) return;
+          ev.preventDefault?.();
+          const nextIdx = ev.key === "Home" ? 0 : ev.key === "End" ? tabs.length - 1 : (curIdx + (ev.key === "ArrowRight" ? 1 : tabs.length - 1)) % tabs.length;
+          tabs.forEach((t, i) => t.setAttribute?.("tabindex", i === nextIdx ? "0" : "-1"));
+          tabs[nextIdx]?.focus?.();
+        });
+      }
+    }
+  }
   bindSupportContactDialog({ state, store: ctx.store, doc: targetDoc, getEl });
   if (typeof targetDoc.addEventListener === "function" && !targetDoc._oralTriggerBound) {
     targetDoc._oralTriggerBound = true;
     targetDoc.addEventListener("click", (ev) => {
-      const trig = ev?.target?.closest?.("[data-oral-portico-trigger]") || (ev?.target?.getAttribute?.("data-oral-portico-trigger") ? ev.target : null);
+      const tgt = ev?.target;
+      if (appearancePopover && !appearancePopover.hidden && tgt !== appearanceBtn && !appearanceBtn?.contains?.(tgt) && !appearancePopover.contains?.(tgt)) {
+        closeAppearancePopover();
+      }
+      const trig = tgt?.closest?.("[data-oral-portico-trigger]") || (tgt?.getAttribute?.("data-oral-portico-trigger") ? tgt : null);
       if (trig) getEl("btnToggleAudioNarakeet", targetDoc)?.click?.();
     });
   }
-
   return switchWork;
 }

@@ -201,14 +201,14 @@ export function renderImproveDrawerHtml({
     `<span data-i18n="improve.note">${t("improve.note")}</span>` +
     `<input id="improveNoteInput" class="ek-input" type="text" value="">` +
     `</label>` +
-    `<details id="improvePatchTechReceiptDetails" class="hig-tech-meta hig-tech-receipt-details">` +
+    `<details id="improvePatchTechReceiptDetails" class="hig-tech-meta hig-tech-receipt-details" data-technical-plane="true">` +
     `<summary>🧾 ${humanizeUiCopy("JSONL / SHA-256", locale)}</summary>` +
     `<pre id="improvePatchOutput" class="ek-pre">${patch.payloadLine}</pre>` +
     `</details>` +
     (includeInlineSeedPanel
       ? `<div class="celf250-ladder-panel ek-card-muted" data-celf250-ladder="true" data-celf250-rank="${seed250.rank}">` +
       `<strong class="ek-title-sm">🧬 ${isEn ? `Community Progress Step #${seed250.rank}/250` : `Paso de Revisión Comunitaria #${seed250.rank}/250`}</strong>` +
-      `<details class="hig-tech-receipt-details"><summary>${isEn ? "🧾 Technical seed payload (CELF-250)" : "🧾 Detalles técnicos de semilla (CELF-250)"}</summary>` +
+      `<details class="hig-tech-receipt-details"><summary>${isEn ? "🧾 Technical seed payload (250 steps)" : "🧾 Detalles técnicos de semilla (250 pasos)"}</summary>` +
       `<pre id="celf250SeedOutput" class="ek-pre-compact">${seed250.payloadLine}</pre>` +
       `</details>` +
       `</div>`

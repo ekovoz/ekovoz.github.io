@@ -371,11 +371,20 @@ test_name = "D1_to_D9_S21_plus_ARB_EKOVOZ_63_complete_section_2_1_backend_surfac
 exposure_tier = "drawer-secondary"
 [capability.grambank_12_branches_and_16_typology_sheets]
 surface   = "public-ui"
-selector  = "#bibleBranchAndTypologyPanel"
-module    = "mostrador/dosis.js"
-handler   = "renderBranchAndTypologyInspectorHtml"
-test_file = "mostrador/tribunal.test.mjs"
-test_name = "D1_to_D9_S21_plus_ARB_EKOVOZ_63_complete_section_2_1_backend_surface_projection"
+selector  = "#printTypologyBridgeHost"
+module    = "mostrador/print_work_and_photocopy.js"
+handler   = "renderCompactTypologySelectorHtml"
+test_file = "mostrador/hig9_outside_in_parity.test.mjs"
+test_name = "SLICE_EKO_HIG9_PARITY_01_to_13_outside_in_complete"
+
+exposure_tier = "drawer-secondary"
+[capability.surface_plane_toggle]
+surface   = "public-ui"
+selector  = "#btnToggleTechnicalPlane"
+module    = "mostrador/state_store.js"
+handler   = "setSurfacePlane"
+test_file = "mostrador/hig9_outside_in_parity.test.mjs"
+test_name = "SLICE_EKO_HIG9_PARITY_01_to_13_outside_in_complete"
 
 exposure_tier = "drawer-secondary"
 [capability.wasm_prosodic_pause_and_syllable_cursor]

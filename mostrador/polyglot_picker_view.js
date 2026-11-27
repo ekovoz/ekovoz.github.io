@@ -184,7 +184,14 @@ export function bindCorpusPolyglotAndUiPreferences({
         : (isEnUi ? "0 matches in 7,164 languages" : "0 coincidencias en 7,164 lenguas");
     }
     if (langSelect && capped.length > 0) {
+      const seenOpts = new Set();
       langSelect.innerHTML = capped
+        .filter((m) => {
+          const k = String(m?.code || "").trim().toLowerCase();
+          if (!k || seenOpts.has(k)) return false;
+          seenOpts.add(k);
+          return true;
+        })
         .map(
           (m) =>
             `<option value="${escapeHtml(m.code)}" data-iso="${escapeHtml(m.iso639_3 || "")}" data-seal="${escapeHtml(m.sovereignSeal || "")}">${escapeHtml(m.displayLabel || m.name || m.code)}</option>`,
@@ -262,9 +269,24 @@ export function bindCorpusPolyglotAndUiPreferences({
     const matched = searchLanguages(idx, q, { limit: POLYGLOT_RECYCLED_WINDOW_CAP });
     projectLangChoices(Array.isArray(matched) ? matched : [], { filterQuery: q });
   };
+  const syncWorkLanguagesBarScope = () => {
+    const bar = getEl("corpusWorkLanguagesBar", targetDoc);
+    if (!bar) return;
+    const w = String(state.activeWork || "biblia").toLowerCase();
+    let anyVisible = false;
+    for (const pill of Array.from(bar.querySelectorAll?.("[data-work-scope]") || [])) {
+      const sc = pill.getAttribute?.("data-work-scope");
+      const show = (sc === "felices" && w === "felices") || (sc === "evangelios" && w === "evangelios" && Boolean(state.previewEvangelios));
+      pill.hidden = !show;
+      if (show) anyVisible = true;
+    }
+    bar.hidden = !anyVisible;
+  };
+  syncWorkLanguagesBarScope();
   if (corpusDrawer && typeof corpusDrawer.addEventListener === "function") {
     corpusDrawer.addEventListener("toggle", () => {
       if (!corpusDrawer.open) return;
+      syncWorkLanguagesBarScope();
       projectOnDemandSilWindow(langFilterInput?.value || "").catch(() => { });
       if (langFilterInput && typeof langFilterInput.focus === "function") {
         setTimeout(() => { try { langFilterInput.focus({ preventScroll: true }); } catch { } }, 0);
@@ -302,7 +324,6 @@ export function bindCorpusPolyglotAndUiPreferences({
   const boundQuickIds = new Set();
   const quickLangButtons = [
     ["quickLangEs", "es"],
-    ["quickLangEs1909", "es-1909"],
     ["quickLangEn", "en"],
     ["quickLangPt", "pt"],
     ["quickLangFr", "fr"],

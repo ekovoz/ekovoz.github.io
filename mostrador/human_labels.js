@@ -277,3 +277,39 @@ export function formatIsoLangPillBadge(langCode = "", label = "", { prefix = "" 
   const pre = prefix ? `${prefix} ` : "";
   return `${pre}${tag}${String(label || "").trim()}`.trim();
 }
+
+const SAUVOLA_STEP_LABELS = Object.freeze({
+  "1_GRAYSCALE_LUMINANCE": Object.freeze({ es: "1. Contraste y escala de grises", en: "1. Grayscale contrast balance" }),
+  "2_INTEGRAL_SAUVOLA_THRESHOLD": Object.freeze({ es: "2. Umbral adaptativo de papel", en: "2. Adaptive paper thresholding" }),
+  "3_DESPECKLE_CONTOUR_FILTER": Object.freeze({ es: "3. Limpieza de manchas e impresor", en: "3. Ink speckle cleanup" }),
+  "4_BILATERAL_HALO_PRESERVATION": Object.freeze({ es: "4. Definición nítida de letras", en: "4. Crisp glyph edge preservation" }),
+  "5_EULER_TOPOLOGY_GUARD": Object.freeze({ es: "5. Verificación de trazos cerrados", en: "5. Closed-stroke legibility guard" }),
+});
+
+export function formatSauvolaStepLabel(stepCode = "", uiLocale = "es") {
+  const isEn = String(uiLocale || "es").trim().toLowerCase().startsWith("en");
+  const key = String(stepCode || "").trim().toUpperCase();
+  const hit = SAUVOLA_STEP_LABELS[key];
+  if (hit) return isEn ? hit.en : hit.es;
+  return key.replace(/^\d+_/, "").replace(/_/g, " ").toLowerCase();
+}
+
+export function formatVaultEditionMetadata(pack = {}, uiLocale = "es") {
+  const isEn = String(uiLocale || "es").trim().toLowerCase().startsWith("en");
+  const lang = String(pack?.lang || pack?.code || "es").trim();
+  const booksCount = Number(pack?.booksCount || pack?.books || 66);
+  const labelMap = { es: "Español", "es-1909": "Español (1909)", en: "English", pt: "Português", fr: "Français", de: "Deutsch", it: "Italiano", he: "עברית", grc: "Ελληνικά", stp: "O'dam (Tepehuano)" };
+  const langName = labelMap[lang.toLowerCase()] || lang.toUpperCase();
+  const scope = booksCount >= 66 ? (isEn ? "66 books" : "66 libros") : `${booksCount} ${isEn ? "books" : "libros"}`;
+  const note = pack?.subsettedBiblical ? (isEn ? "embedded script fonts" : "fuentes incluidas") : (isEn ? "ready offline" : "lista sin conexión");
+  return `${langName} · ${scope} · ${note}`;
+}
+
+export function formatOpticalStreamCaption(metrics = {}, uiLocale = "es") {
+  const isEn = String(uiLocale || "es").trim().toLowerCase().startsWith("en");
+  const cur = Number(metrics?.currentFrame ?? 0);
+  const tot = Math.max(1, Number(metrics?.totalFrames ?? 1));
+  const bytes = Number(metrics?.bytes ?? 0);
+  const kb = (bytes / 1024).toFixed(1);
+  return isEn ? `Transferring packet ${cur} of ${tot} (${kb} KB)` : `Transmitiendo bloque ${cur} de ${tot} (${kb} KB)`;
+}

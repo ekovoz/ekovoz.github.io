@@ -69,11 +69,21 @@ const CORPUS_AUTONYM_LABELS = Object.freeze({
   grc: "Ελληνικά", stp: "O'dam",
 });
 
-export function formatActiveCorpusBadgeText(langCode = "es", packsCount = 24, uiLocale = "es") {
+export function formatActiveCorpusBadgeText(langCode = "es", packsCount = 24, uiLocale = "es", opts = {}) {
   const rawCode = String(langCode || "es").trim();
-  const langLabel = CORPUS_AUTONYM_LABELS[rawCode.toLowerCase()] || rawCode;
-  const count = Number(packsCount) > 0 ? Number(packsCount) : 24;
+  const reg = String(opts?.register || "").trim().toLowerCase();
+  const norm = rawCode.toLowerCase();
+  const langLabel = reg === "clasica" && norm === "es"
+    ? CORPUS_AUTONYM_LABELS["es-1909"]
+    : (CORPUS_AUTONYM_LABELS[norm] || rawCode);
   const isUiEn = String(uiLocale || "es").trim().toLowerCase().startsWith("en");
+  if (opts?.activeWork === "felices") {
+    return isUiEn ? `${langLabel} · 18 languages` : `${langLabel} · 18 idiomas`;
+  }
+  const count = Number(packsCount) > 0 ? Number(packsCount) : 24;
+  if (reg === "bilingue") {
+    return isUiEn ? `${langLabel} · Bilingual · ${count} Bibles` : `${langLabel} · Bilingüe · ${count} Biblias`;
+  }
   return isUiEn ? `${langLabel} · ${count} Bibles` : `${langLabel} · ${count} Biblias`;
 }
 

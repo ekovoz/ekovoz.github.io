@@ -9,6 +9,7 @@ import {
   canonicalOrdinalOf,
   canonicalRefOfOrdinal,
 } from "./canonical_versification.js";
+import { humanizeUiCopy } from "./human_labels.js";
 import { foldCrdtWalSemilattice } from "./mejorar.js";
 
 function escHtml(val) {
@@ -177,7 +178,7 @@ export function renderFieldWorkshopCensus7164Html(
     .map(
       (t) =>
         `<span class="uls-chip ek-badge-compact" data-sovereign-tier="${escHtml(t.tier)}" data-tier-count="${t.count}">` +
-        `<strong>${escHtml(t.label || t.tier)}</strong>: ${Number(t.count).toLocaleString("en-US")}` +
+        `<strong>${escHtml(humanizeUiCopy(t.label || t.tier, "es"))}</strong>: ${Number(t.count).toLocaleString("en-US")}` +
         `</span>`,
     )
     .join(" ");

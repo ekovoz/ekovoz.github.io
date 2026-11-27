@@ -7,6 +7,7 @@ import {
 } from "./drawer_hydrators.js";
 import { formatEditorialTraditionLabel, formatHumanMetricLabel, humanizeUiCopy } from "./human_labels.js";
 import { isWorkVisible } from "./projection_contract.js";
+import { renderElicitSessionCardHtml } from "./workshop_elicit_and_cldf.js";
 import {
   CANONICAL_5_OT_TRANSLATION_WAVES,
   CASCADE_LEVELS,
@@ -52,6 +53,7 @@ export function renderCascadeAndLadderHtml({
   externalAuditResult = null,
   activeTier3aPair = "",
   previewWorks = null,
+  elicitSessionIndex = 0,
 } = {}) {
   const isEn = String(uiLocale || "es").trim().toLowerCase().startsWith("en");
   const cleanLang = sanitizePipeField(lang || "stp").toLowerCase();
@@ -214,12 +216,17 @@ export function renderCascadeAndLadderHtml({
   const showEvangeliosCopy = isWorkVisible("evangelios", { previewWorks });
   const sisterWorksPhraseEn = showEvangeliosCopy ? "Bible, Gospels, and Beatitudes" : "Bible and Beatitudes";
   const sisterWorksPhraseEs = showEvangeliosCopy ? "Biblia, Evangelios y Felices" : "Biblia y Felices";
+  const elicitCardHtml = renderElicitSessionCardHtml(rawList, uiLocale, {
+    index: elicitSessionIndex,
+    activeBook: resolvedRef.split(".")[0],
+  });
   return (
     `<div class="cascade-impact-box ek-card" data-workshop-task="2" data-cascade-level="${cleanLevel}" data-cascade-lang="${cleanLang}" data-celf-total="${totalCount}" data-active-ot-wave="${waveNum}">` +
     `<strong class="ek-title-sm">🌊 ${isEn ? `2. Validate rule & propagation ${cleanLevel} (${totalCount} steps${headerStrongSuffix} in ${resolvedRef})` : `2. Validar regla y propagación ${cleanLevel} (${totalCount} pasos${headerStrongSuffix} en ${resolvedRef})`}</strong>` +
     `<p class="ek-subtitle ek-mb-sm">` +
     `${isEn ? `Refining this root in <code>${cleanLang}</code> updates matching verses across ${sisterWorksPhraseEn}. Tap any step to inspect:` : `Al corregir esta raíz en <code>${cleanLang}</code>, el ajuste se propaga a ${sisterWorksPhraseEs}. Pulsa un paso para revisarlo:`}` +
     `</p>` +
+    elicitCardHtml +
     celfSummaryBlock +
     sisterCascadeHtml +
     (showElicitationLadder ? `${rungFilterHtml}<div class="ek-auto-grid">${ladderButtons}</div>${otWavesHtml}` : "") +

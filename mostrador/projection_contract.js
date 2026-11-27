@@ -93,14 +93,12 @@ export const SURFACE_SLOT_MANIFEST = Object.freeze({
       "wfstAndScriptioContinuaHost",
       "rosettaCalibrationAuditDetails",
       "diachronicSubstitutionsDetails",
-      "bibleBranchAndTypologyPanel",
     ]),
     slotOrder: Object.freeze([
       "bibleAnalyticalThermometerPanel",
       "studyOrthographyAccordion",
       "philologyRosettaStaticHost",
       "diachronicSubstitutionsDetails",
-      "studyTypologyAccordion",
     ]),
   }),
   "print:doses": Object.freeze({
@@ -308,11 +306,13 @@ export function projectStoreAttributesToDom(state = {}, targetDoc) {
   const activeSheet = state.activeSheet ? String(state.activeSheet) : "";
   const mobileSheetOpen = Boolean(state.activeSheet && state.mobileSheetOpen === true);
   const storeDomains = Object.keys(STORE_DOMAIN_OWNERS).join(",");
+  const surfacePlane = resolveSurfacePlane(state, targetDoc?.location?.search || "");
 
   for (const el of targets) {
     if (typeof el.setAttribute === "function") {
       el.setAttribute("data-intent", activeIntent);
       el.removeAttribute?.("data-surface-mode");
+      el.setAttribute("data-surface-plane", surfacePlane);
       el.setAttribute("data-theme", theme);
       el.setAttribute("data-font-family", fontFamily);
       el.setAttribute("data-stealth-mode", stealth ? "true" : "false");
@@ -492,5 +492,38 @@ export function validateTwoLayerContract(detailsCount = 0, contract = INTENT_LAY
   return { valid: count <= maxAllowed, detailsCount: count, maxProdDetails: maxAllowed };
 }
 
+/**
+ * Contrato de Dueño Único por Concepto (`Plan HIG9 · D1-HIG9`):
+ * Cada capacidad o dimensión de estado tiene un único propietario en DOM y Store,
+ * separando Plano Editorial (lectura/impresión/uso humano) de Plano Técnico/I+D (opt-in).
+ */
+export const SINGLE_OWNER_CAPABILITY_MAP = Object.freeze({
+  appLocale: Object.freeze({ owner: "#ulsTriggerBtn", storeKey: "uiLocale", plane: "editorial" }),
+  corpusLang: Object.freeze({ owner: "#sovereignCorpusLangBtn", storeKey: "lang", plane: "editorial" }),
+  register: Object.freeze({ owner: "#bibleRegisterSelector", storeKey: "register", plane: "editorial" }),
+  paperFormat: Object.freeze({ owner: "#kindlePaperFormatSelector", storeKey: "paperFormat", plane: "editorial" }),
+  editions16: Object.freeze({ owner: "#bibleEditionsCatalogGrid", storeKey: "edition", plane: "editorial" }),
+  typology12x16: Object.freeze({ owner: "#bibleBranchAndTypologyPanel", storeKey: "activeTypologyId", plane: "editorial" }),
+  brailleB70: Object.freeze({ owner: "#btnQuickBrailleB70", storeKey: "edition", plane: "editorial" }),
+  technicalAuditPlane: Object.freeze({ owner: "#btnToggleTechnicalPlane", storeKey: "surfacePlane", plane: "technical" }),
+});
+
+/**
+ * Resuelve el plano de superficie activo (`editorial` por defecto, `technical` bajo `?mode=studio` o opt-in).
+ */
+export function resolveSurfacePlane(state = {}, search = "") {
+  if (state?.surfacePlane === "technical") return "technical";
+  if (state?.surfacePlane === "editorial") return "editorial";
+  const rawSearch = String(search || state?.search || globalThis?.location?.search || "");
+  if (rawSearch) {
+    const params = new URLSearchParams(rawSearch.replace(/^\?/, ""));
+    if (params.get("mode") === "studio") return "technical";
+  }
+  return "editorial";
+}
+
+export function isTechnicalPlaneEnabled(state = {}, search = "") {
+  return resolveSurfacePlane(state, search) === "technical";
+}
 
 

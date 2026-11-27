@@ -270,7 +270,7 @@ export function mountOfflineFontNoticeWithLocalImporter(
     let importerInput = noticeEl.querySelector?.('input[data-local-font-importer="1"]') || null;
     if (!importerInput) {
       const lbl = docRef.createElement("label");
-      lbl.textContent = ` (${targetFontFile} .ekfonts / .ttf / .ttf.zst) `;
+      lbl.textContent = ` (${targetFontFile.replace(/\.ttf(?:\.zst)?$/i, "")} · paquete tipográfico local) `;
       importerInput = docRef.createElement("input");
       importerInput.type = "file";
       importerInput.multiple = true;
