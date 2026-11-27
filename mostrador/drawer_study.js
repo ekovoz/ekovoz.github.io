@@ -39,7 +39,7 @@ function renderProBovedaStudyAccordionHtml(uiLocale = "es") {
   const isEn = String(uiLocale || "es").trim().toLowerCase().startsWith("en");
   return (
     `<details id="proBovedaCalibrationDetails" class="r9-stratum-accordion ek-mt-sm" data-pro-boveda="true">` +
-    `<summary>🔬 ${isEn ? "Pro Vault · I+D Calibration & Corpus Metrics (chrF++, AoA, MDD)" : "Bóveda Pro · Calibración I+D y Métricas (chrF++, AoA, MDD)"}</summary>` +
+    `<summary>🔬 ${isEn ? "Vault & Verification · I+D Calibration & Corpus Metrics (chrF++, AoA, MDD)" : "Bóveda y verificación · Calibración I+D y Métricas (chrF++, AoA, MDD)"}</summary>` +
     `<div id="proBovedaStudyCalibSlot" class="ek-mt-xs"><p class="ek-meta">${isEn ? "Open to load linguistic benchmark matrices on demand." : "Abre para cargar matrices de calibración I+D bajo demanda."}</p></div>` +
     `</details>`
   );
@@ -143,6 +143,7 @@ export function bindLifeTrailsNavigation({
     const tBtn = getEl(trailBtnId, targetDoc);
     if (!tBtn || typeof tBtn.addEventListener !== "function") continue;
     tBtn.addEventListener("click", async () => {
+      state.activeTrailId = trailBtnId;
       const fbStops = (TRAIL_FALLBACK_REFS[trailBtnId] || []).map(parseLifeTrailRefString).filter(Boolean);
       const immediateTrail = state.hydratedLifeTrails?.trailByButtonId?.[trailBtnId] || { trail_id: trailBtnId, title_es: anchor?.label || tBtn.textContent?.trim() || trailBtnId, parsedAnchors: fbStops.length > 0 ? fbStops : [{ book: anchor.book, chapter: anchor.chapter, verse: anchor.verse, osis: `${anchor.book}.${anchor.chapter}.${anchor.verse}` }] };
       if ((immediateTrail.parsedAnchors || []).length > 0) {
@@ -420,7 +421,8 @@ export async function hydrateStudyDrawerPanel(ctx = {}) {
     `<div id="studyMatrixDownloadCard" class="ek-row-between ek-meta ek-mb-xs" data-matrix-tier0="true">` +
     `<span>📚 ${isEnStudy ? "Original Study (15 col) · Offline copy in Share → Offline" : "Estudio Original (15 col) · Descarga en Compartir → Sin red"}</span>` +
     `<span class="ek-row-wrap">` +
-    `<button type="button" id="btnOpenProBovedaFromStudy" class="uls-chip" data-action="open-pro-boveda">🔐 ${isEnStudy ? "Pro Vault" : "Bóveda Pro"}</button>` +
+    `<a id="btnStudyDownloadMatrixTier0" class="uls-chip ek-btn-link" href="data/packs/matrix_tier0.ekpack" download="matrix_tier0.ekpack">⬇️ ${isEnStudy ? "Original Matrix (.ekpack)" : "Matriz Original (.ekpack)"}</a>` +
+    `<button type="button" id="btnOpenProBovedaFromStudy" class="uls-chip" data-action="open-pro-boveda">🔐 ${isEnStudy ? "Vault & Verification" : "Bóveda y verificación"}</button>` +
     `</span></div>`;
   const html = workBannerHtml + studyMatrixCardHtml + mod.renderStudy14ColDrawerHtml(matrixChapter, studyOpts);
   const container =
@@ -864,14 +866,14 @@ export async function hydrateStudyDrawerPanel(ctx = {}) {
     });
     mountCardHtmlIntoHost(diachronicAuditPanel, auditCardHtml);
     const corpusMetricsHtml =
-      `<details id="studyDeepCorpusMetricsDetails" class="tech-details ek-mt-xs"><summary>📐 ${isEnStudySync ? "Corpus Tokens, Calibration & Register Metrics" : "Totales del Corpus, Calibración y Registro"}</summary>` +
+      `<section id="studyDeepCorpusMetricsDetails" class="tech-details ek-mt-xs"><strong class="ek-title-sm">📐 ${isEnStudySync ? "Corpus Tokens, Calibration & Register Metrics" : "Totales del Corpus, Calibración y Registro"}</strong>` +
       summarizeAnnotationIndexTotals(state.annotationIndexReport || null, state.uiLocale || "es").html +
       summarizeDiachronicAndBlindCalibration({
         corpusSummary: state.diachronicRegisterPayload?.corpus_summary || null,
         blindReport: state.blindCalibrationReport || null,
         uiLocale: state.uiLocale || "es",
       }) +
-      `</details>`;
+      `</section>`;
     diachronicAuditPanel.innerHTML = `${diachronicAuditPanel.innerHTML || ""}${unifiedCtxHtml}${corpusMetricsHtml}`;
     const diaSearchInp = getEl("diachronicSubstitutionsSearchInput", targetDoc);
     const diaTierSel = getEl("diachronicTierFilterSelect", targetDoc);

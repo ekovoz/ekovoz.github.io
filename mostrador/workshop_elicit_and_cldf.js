@@ -157,10 +157,12 @@ export function buildWorkshopCldfCsvAndJson({
     rows: normalizedRows,
   };
   const jsonText = JSON.stringify(jsonObj, null, 2);
+  const previewLines = csvBody ? csvText.split("\n").slice(0, 4).join("\n") : "";
   return {
     rowCount: normalizedRows.length,
     csvText,
     jsonText,
+    previewSnippet: previewLines,
     csvFilename: `ekovoz_taller_${safeLang}_${safeBook}_${safeChap}.csv`,
     jsonFilename: `ekovoz_cldf_${safeLang}_${safeBook}_${safeChap}.cldf.json`,
     csvHref: `data:text/csv;charset=utf-8,${encodeURIComponent(csvText)}`,

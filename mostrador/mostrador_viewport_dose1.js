@@ -34,7 +34,6 @@ import { decodeRfc8878RawZstdFrameJs } from "./offline_mesh.js";
 import { renderOralPorticoWasmConsole } from "./oral_portico_wasm.js";
 import { ReverseOrthographyMap } from "./orthography_wfst.js";
 import { countPdfPages, extractPdfPages } from "./pdf_pages.js";
-import { renderPrintStageRibbonHtml, resolveCorpusPrintTier } from "./print_stage_ribbon.js";
 import { resolveFontFileForLangOrScript } from "./tanda_print_worker.js";
 
 export function renderMostradorViewportFromState({
@@ -84,23 +83,6 @@ export function renderMostradorViewportFromState({
     res.chapter?.provenance?.book_epistemic_tiers ||
     res.bookEpistemicTiers ||
     null;
-
-  const printStageRibbon = getEl("printFirstStageRibbon", targetDoc);
-  if (printStageRibbon) {
-    const canonicalBlock = resolveCanonicalBlockCode(state.book, state.chapter, state.verse);
-    printStageRibbon.setAttribute?.(
-      "data-print-tier",
-      String(resolveCorpusPrintTier(effectiveLang, packedBookTiers)),
-    );
-    printStageRibbon.innerHTML = renderPrintStageRibbonHtml({
-      lang: effectiveLang,
-      book: state.book,
-      chapter: state.chapter,
-      canonicalBlock,
-      bookEpistemicTiers: packedBookTiers,
-      uiLocale: state.uiLocale || state.lang || "es",
-    });
-  }
 
   const reverseMap = new ReverseOrthographyMap(state.lang, state.orthographyProfile);
   const overlayProj =

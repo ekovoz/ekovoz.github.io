@@ -61,6 +61,22 @@ export const LIFE_TRAILS_ANCHORS = {
 export const POETIC_BOOKS = new Set(["PSA", "PRO", "JOB", "SNG", "LAM"]);
 export const MULTI_ORTHO_LANGS = new Set(["stp", "aud", "quc", "nah", "bn", "bn-bd", "bn-in", "tzj", "cak", "mam", "ar", "arb", "uzn", "uz", "tzm", "kk", "ber"]);
 
+const CORPUS_AUTONYM_LABELS = Object.freeze({
+  es: "Español", "es-1909": "Español (1909)", en: "English", pt: "Português", fr: "Français",
+  de: "Deutsch", it: "Italiano", ru: "Русский", ar: "العربية", fa: "فارسی", ur: "اردو",
+  hi: "हिन्दी", bn: "বাংলা", "bn-bd": "বাংলা (BD)", "bn-in": "বাংলা (IN)", id: "Indonesia",
+  sw: "Kiswahili", tr: "Türkçe", ja: "日本語", ko: "한국어", "zh-hans": "中文", he: "עברית",
+  grc: "Ελληνικά", stp: "O'dam",
+});
+
+export function formatActiveCorpusBadgeText(langCode = "es", packsCount = 24, uiLocale = "es") {
+  const rawCode = String(langCode || "es").trim();
+  const langLabel = CORPUS_AUTONYM_LABELS[rawCode.toLowerCase()] || rawCode;
+  const count = Number(packsCount) > 0 ? Number(packsCount) : 24;
+  const isUiEn = String(uiLocale || "es").trim().toLowerCase().startsWith("en");
+  return isUiEn ? `${langLabel} · ${count} Bibles` : `${langLabel} · ${count} Biblias`;
+}
+
 export function syncOrthographyPillsVisibilityInDom({ state, targetDoc, getEl }) {
   const orthoContainer = getEl("bibleOrthographyPills", targetDoc);
   if (!orthoContainer) return;

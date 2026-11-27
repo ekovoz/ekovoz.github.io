@@ -38,7 +38,7 @@ export function updateFocalPlate(d = D(), lO = "", n = true, uO = "", st = stRef
   const im = g("focalPlateImg"), id = g("plateIndexText"), vE = g("focalPlateVerse"), cI = g("carouselImg"), cC = g("carouselCaption"), wC = g("felicesSocraticWonderCard"), fFr = g("focalPlateFrame"), esC = L(l).startsWith("es");
   let loc = g("focalPlateLocalizedArt");
   if (!loc && fFr && d.createElement) { loc = d.createElement("div"); loc.id = "focalPlateLocalizedArt"; loc.className = "felices-localized-plate-host"; fFr.insertBefore?.(loc, im?.nextSibling || null); }
-  if (im) { im.src = u; im.alt = lb; im.hidden = !esC; }
+  if (im) { im.src = u; im.alt = lb; im.hidden = false; }
   if (loc) { loc.hidden = esC; if (!esC) loc.innerHTML = renderLocalizedFelicesPlateCardHtml({ plateIndex: pIdx, totalPlates: N, lang: l, uiLocale: uL, verseText: tx, refLabel: `${c.book} ${c.chapter}:${c.verse}`, dir: LANGUAGE_PACKS.find(p => p.code === l || p.code === pLc(l))?.dir || "ltr" }); }
   if (id) { id.textContent = lb; sA(id, "data-osis-ref", os); } if (vE) { vE.textContent = tx; vE.hidden = !esC; sA(vE, "data-osis-ref", os); sA(vE, "data-overlay-authority", ov?.authorityTier || ""); } if (cI) cI.src = u; if (cC) cC.textContent = tx; if (wC) wC.innerHTML = renderFelicesSocraticWonderCardHtml(pIdx, uL);
   sIdx = pIdx <= 11 ? 0 : pIdx <= 23 ? 1 : 2; for (let j = 0; j < 3; j++)g(`termPill_${j + 1}`)?.classList?.toggle("active", j === sIdx);

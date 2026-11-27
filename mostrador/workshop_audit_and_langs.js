@@ -310,15 +310,23 @@ export function renderWorkshopAuditSubtabHtml({
     ladderItems: state.celfLadder250 || [],
   });
   const activeVerseKey = String(state.verse || 1);
+  const hasExportRows = cldfBundle.rowCount > 0;
+  const csvCtaHtml = hasExportRows
+    ? `<a id="btnExportWorkshopCsv" class="uls-chip ek-btn-link" href="${cldfBundle.csvHref}" download="${escapeHtml(cldfBundle.csvFilename)}">⬇️ ${isEnAudit ? `Export CSV (${cldfBundle.rowCount} rows)` : `Exportar CSV (${cldfBundle.rowCount} filas)`}</a>`
+    : `<a id="btnExportWorkshopCsv" class="uls-chip ek-btn-link" href="#workshopDirectExportBar" aria-disabled="true" data-export-gated="true">⬇️ ${isEnAudit ? "Export CSV (load steps first · 0 rows)" : "Exportar CSV (carga pasos primero · 0 filas)"}</a>`;
   const exportBarHtml =
-    `<div id="workshopDirectExportBar" class="ek-row-wrap ek-mt-sm">` +
-    `<a id="btnExportWorkshopCsv" class="uls-chip ek-btn-link" href="${cldfBundle.csvHref}" download="${escapeHtml(cldfBundle.csvFilename)}">⬇️ ${isEnAudit ? `Export CSV (${cldfBundle.rowCount} rows)` : `Exportar CSV (${cldfBundle.rowCount} filas)`}</a>` +
+    `<div id="workshopDirectExportBar" class="ek-row-wrap ek-mt-sm" data-workshop-task="3">` +
+    csvCtaHtml +
     `<a id="btnExportWorkshopCldfJson" class="uls-chip ek-btn-link" href="${cldfBundle.jsonHref}" download="${escapeHtml(cldfBundle.jsonFilename)}">📦 ${isEnAudit ? "Export open word-list JSON" : "Exportar glosario JSON"}</a>` +
     `</div>`;
+  const cldfPreviewHtml = cldfBundle.previewSnippet
+    ? `<pre id="workshopCldfMirrorPreview" class="ek-pre-compact" data-cldf-preview="true">${escapeHtml(cldfBundle.previewSnippet)}</pre>`
+    : `<p id="workshopCldfMirrorPreview" class="ek-meta ek-m-0" data-cldf-preview="empty">${isEnAudit ? "Select a step in Task 2 to populate rows for CSV export." : "Selecciona pasos en la tarea 2 para poblar las filas del CSV."}</p>`;
   const elicitAndCldfHtml =
     exportBarHtml +
     `<details id="workshopElicitCldfDetails" class="tech-details ek-mt-sm" data-cldf-rows="${cldfBundle.rowCount}">` +
-    `<summary>📤 ${isEnAudit ? "Field Elicitation Session & Register Comparator" : "Sesión de Elicitación en Campo y Registro"}</summary>` +
+    `<summary>📤 ${isEnAudit ? "3. Export · Field Elicitation Session & Mirror Preview" : "3. Exportar · Sesión en Campo y Vista Previa"}</summary>` +
+    cldfPreviewHtml +
     renderStpLedgerProgressHtml(state.masterCensusSummary || null, uiLocale) +
     renderElicitSessionCardHtml(state.celfLadder250 || null, uiLocale, { index: state.elicitSessionIndex || 0, activeBook: state.book || "GEN" }) +
     renderModernizeRegisterDiffHtml({

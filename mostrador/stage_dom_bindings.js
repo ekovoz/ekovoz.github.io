@@ -24,7 +24,7 @@ import { bindSurfaceActions } from "./dom_patch.js";
 import { normalizeEditionSlug } from "./dosis.js";
 import { DEFAULT_PRINT_CONFIG } from "./dosis_profiles_schema.js";
 import { syncActiveStrongInStudyDrawer, bindLifeTrailsNavigation } from "./drawer_hydrators.js";
-import { bindPrintFirstStageRibbon } from "./print_stage_ribbon.js";
+import { resolvePrintStageDescriptorsForTier } from "./print_stage_ribbon.js";
 import { bindCorpusPolyglotAndUiPreferences } from "./polyglot_picker_view.js";
 import { resolvePublicOrPreviewWork } from "./projection_contract.js";
 import { bindSupportContactDialog } from "./provenance_and_support_panel.js";
@@ -87,8 +87,8 @@ export function bindStageDomEvents(ctx = {}) {
   const compassPanelConcordance = getEl("compassPanelConcordance", targetDoc);
   const compassPanelTrails = getEl("compassPanelTrails", targetDoc);
   const switchCompassTab = (tabName) => {
-    const mode = tabName === "trails" ? "trails" : tabName === "concordance" ? "concordance" : "books";
-    state.activeCompassTab = mode;
+    state.activeCompassTab = tabName === "trails" ? "trails" : tabName === "concordance" ? "concordance" : "books";
+    const mode = state.activeCompassTab;
     compassTabBooks?.setAttribute?.("aria-selected", mode === "books" ? "true" : "false");
     compassTabConcordance?.setAttribute?.("aria-selected", mode === "concordance" ? "true" : "false");
     compassTabTrails?.setAttribute?.("aria-selected", mode === "trails" ? "true" : "false");
@@ -381,15 +381,7 @@ export function bindStageDomEvents(ctx = {}) {
     }
   }
 
-  bindLifeTrailsNavigation({
-    state,
-    dataLayer,
-    targetDoc,
-    getEl,
-    navigate,
-    hydrateBookAndChapterSelectors,
-    anchors: LIFE_TRAILS_ANCHORS,
-  });
+  bindLifeTrailsNavigation({ state, dataLayer, targetDoc, getEl, navigate, hydrateBookAndChapterSelectors, anchors: LIFE_TRAILS_ANCHORS });
 
   const appearanceBtn = getEl("btnAppearanceMenu", targetDoc);
   const appearancePopover = getEl("appearancePopover", targetDoc);
@@ -400,6 +392,16 @@ export function bindStageDomEvents(ctx = {}) {
       appearancePopover.hidden = nextHidden;
       appearanceBtn.setAttribute("aria-expanded", nextHidden ? "false" : "true");
       state.activeModal = nextHidden ? null : "appearance";
+      if (!nextHidden && appearancePopover.style) {
+        appearancePopover.style.maxHeight = "calc(100dvh - 64px)";
+        appearancePopover.style.overflowY = "auto";
+        const winW = Number(targetDoc?.defaultView?.innerWidth || (typeof window !== "undefined" ? window.innerWidth : 0)) || 0;
+        if (winW > 0 && typeof appearancePopover.getBoundingClientRect === "function") {
+          const rect = appearancePopover.getBoundingClientRect();
+          if (rect.left < 8) { appearancePopover.style.right = "auto"; appearancePopover.style.left = "8px"; }
+          else if (rect.right > winW - 8) { appearancePopover.style.left = "auto"; appearancePopover.style.right = "8px"; }
+        }
+      }
     });
   }
 
@@ -510,29 +512,29 @@ export function bindStageDomEvents(ctx = {}) {
 
   const scopeSel = getEl("compassConcordanceScopeSelect", targetDoc);
   const concordanceResultsHost = getEl("compassConcordanceResults", targetDoc);
+  const renderConcordanceEmptyGuide = (qStr = "") => {
+    const isEn = String(state.uiLocale || "es").toLowerCase().startsWith("en");
+    if (!concordanceResultsHost) return;
+    concordanceResultsHost.innerHTML = qStr
+      ? `<p class="ek-meta ek-m-0" data-concordance-empty="true">${isEn ? `No matches for "${escapeHtml(qStr)}". Try another word or switch scope to full Vault.` : `Sin resultados para «${escapeHtml(qStr)}». Prueba otro término o cambia el alcance arriba.`}</p>`
+      : `<p class="ek-meta ek-m-0" data-concordance-empty="prompt">${isEn ? "Type a word (e.g., light, shepherd) or verse ref above to search." : "Escribe una palabra (ej. luz, pastor) o cita arriba para buscar."}</p>`;
+    concordanceResultsHost._lastMatches = [];
+  };
+  if (concordanceResultsHost && !concordanceResultsHost.innerHTML.trim()) renderConcordanceEmptyGuide("");
   if (scopeSel && typeof scopeSel.addEventListener === "function") {
-    scopeSel.addEventListener("change", () => {
-      if (refInput?.value) renderSpotlightResults(refInput.value);
-    });
+    scopeSel.addEventListener("change", () => { if (refInput?.value) renderSpotlightResults(refInput.value); });
   }
 
   const renderSpotlightResults = async (rawQuery) => {
     const qStr = String(rawQuery || "").trim();
     const seq = ++activeSpotlightSeq;
     if (!qStr) {
-      if (spotlightHost) {
-        spotlightHost.hidden = true;
-        spotlightHost.innerHTML = "";
-      }
-      if (concordanceResultsHost) concordanceResultsHost.innerHTML = "";
+      if (spotlightHost) { spotlightHost.hidden = true; spotlightHost.innerHTML = ""; }
+      renderConcordanceEmptyGuide("");
       return [];
     }
     if (!state.canonLexicon && typeof dataLayer?.loadJson === "function") {
-      try {
-        state.canonLexicon = await dataLayer.loadJson("canon_lexicon.json");
-      } catch {
-        state.canonLexicon = null;
-      }
+      try { state.canonLexicon = await dataLayer.loadJson("canon_lexicon.json"); } catch { state.canonLexicon = null; }
     }
     const lexMatches = searchSpotlightCorpus({
       query: qStr,
@@ -543,23 +545,12 @@ export function bindStageDomEvents(ctx = {}) {
       lang: state.lang || "es",
       limit: 6,
     });
-    const concScope =
-      scopeSel?.value === "vault" || state.activeCompassTab === "concordance" && scopeSel?.value === "vault"
-        ? "vault"
-        : "book";
+    const concScope = scopeSel?.value === "vault" ? "vault" : "book";
     let concMatches = [];
-    if (
-      qStr.length >= 2 &&
-      !parseBiblicalCoordinateReference(qStr) &&
-      typeof dataLayer?.loadBookText === "function"
-    ) {
+    if (qStr.length >= 2 && !parseBiblicalCoordinateReference(qStr) && typeof dataLayer?.loadBookText === "function") {
       concMatches = await searchMultiBookConcordance({
-        dataLayer,
-        lang: String(state.lang || "es").trim() || "es",
-        activeBook: String(state.book || "GEN").toUpperCase(),
-        query: qStr,
-        scope: concScope,
-        limit: 8,
+        dataLayer, lang: String(state.lang || "es").trim() || "es",
+        activeBook: String(state.book || "GEN").toUpperCase(), query: qStr, scope: concScope, limit: 8,
       });
     }
     if (seq !== activeSpotlightSeq) return [];
@@ -572,21 +563,13 @@ export function bindStageDomEvents(ctx = {}) {
       matches.push(m);
       if (matches.length >= 10) break;
     }
-    const htmlList = matches
-      .map(
-        (m, idx) =>
-          `<button type="button" class="uls-chip ${m.kind === "concordance" ? "concordance-match-btn" : "spotlight-result-chip"}" role="option" data-spotlight-idx="${idx}" data-spotlight-kind="${m.kind}" data-spotlight-book="${m.book || ""}" data-spotlight-chapter="${m.chapter || 1}" data-spotlight-verse="${m.verse || 1}">` +
-          `🔎 <strong>${escapeHtml(m.label)}</strong>${m.snippet ? ` — ${escapeHtml(String(m.snippet).replace(/[\r\n]+/g, " "))}` : ""}</button>`,
-      )
-      .join("");
-    if (spotlightHost) {
-      spotlightHost.hidden = matches.length === 0;
-      spotlightHost.innerHTML = htmlList;
-      spotlightHost._lastMatches = matches;
-    }
+    const htmlList = matches.map((m, idx) =>
+      `<button type="button" class="uls-chip ${m.kind === "concordance" ? "concordance-match-btn" : "spotlight-result-chip"}" role="option" data-spotlight-idx="${idx}" data-spotlight-kind="${m.kind}" data-spotlight-book="${m.book || ""}" data-spotlight-chapter="${m.chapter || 1}" data-spotlight-verse="${m.verse || 1}">🔎 <strong>${escapeHtml(m.label)}</strong>${m.snippet ? ` — ${escapeHtml(String(m.snippet).replace(/[\r\n]+/g, " "))}` : ""}</button>`,
+    ).join("");
+    if (spotlightHost) { spotlightHost.hidden = matches.length === 0; spotlightHost.innerHTML = htmlList; spotlightHost._lastMatches = matches; }
     if (concordanceResultsHost) {
-      concordanceResultsHost.innerHTML = htmlList;
-      concordanceResultsHost._lastMatches = matches;
+      if (matches.length === 0) renderConcordanceEmptyGuide(qStr);
+      else { concordanceResultsHost.innerHTML = htmlList; concordanceResultsHost._lastMatches = matches; }
     }
     return matches;
   };
@@ -664,9 +647,15 @@ export function bindStageDomEvents(ctx = {}) {
 
   const btnDose1 = getEl("btnDose1Sheets", targetDoc);
   if (btnDose1 && typeof btnDose1.addEventListener === "function") {
+    const printDesc = resolvePrintStageDescriptorsForTier({
+      lang: state.effectiveCorpusLang || state.lang || "es",
+      book: state.book || "JHN",
+      chapter: state.chapter || 1,
+      uiLocale: state.uiLocale || "en",
+    });
+    if (printDesc?.heading) btnDose1.setAttribute?.("title", printDesc.heading);
     btnDose1.addEventListener("click", handleDose1Trigger);
   }
-  bindPrintFirstStageRibbon({ targetDoc, getEl, state, handleDose1Trigger, transitionSheet, hydratePrintDrawerPanels });
 
   const fontSlider = getEl("kindleFontSizeSlider", targetDoc);
   const colSel = getEl("kindleColumnSelector", targetDoc);

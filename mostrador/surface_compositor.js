@@ -21,6 +21,7 @@ import {
   DEFAULT_SUBTABS_BY_SHEET,
   closeSheet,
   isMobileSheetViewport,
+  resolvePrimaryIntentGroup,
   setActiveIntent,
   setSheetSubtab,
 } from "./state_store.js";
@@ -210,7 +211,8 @@ export function projectSurfaceLayoutFromState(state = {}, rootDoc, getEl) {
     const showDrawersHost = true;
     drawersHost.hidden = !showDrawersHost;
     drawersHost.setAttribute?.("data-inspector-open", hasOpenSheet ? "true" : "false");
-    const isExpertFocus = state.activeIntent === "study" || state.activeIntent === "improve" || state.activeIntent === "field";
+    drawersHost.setAttribute?.("data-intent-group", resolvePrimaryIntentGroup(state.activeIntent));
+    const isExpertFocus = state.activeIntent === "study" || state.activeIntent === "improve" || state.activeIntent === "field" || state.activeIntent === "workshop";
     drawersHost.setAttribute?.("data-chrome-audience", isExpertFocus ? "studio" : "print-first");
   }
 

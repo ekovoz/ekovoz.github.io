@@ -378,8 +378,8 @@ export function verifyArtifactProjectionClosure({
 
 export const SINGLE_OWNER_CAPABILITY_CONTRACTS = Object.freeze({
   print_action_ribbon: {
-    canonicalOwner: "#printFirstStageRibbon",
-    forbiddenDuplicateSelectors: ["#btnStageRibbonShareOffline"],
+    canonicalOwner: "#btnOpenPrintEditionsSheet",
+    forbiddenDuplicateSelectors: ["#btnStageRibbonShareOffline", "#printFirstStageRibbon"],
     maxPrimaryCtas: 1,
     zeroEmptyVisibleHosts: true,
   },
@@ -425,7 +425,7 @@ export function auditSingleOwnerContract(htmlSource = "") {
 }
 
 export const INTENT_CAPABILITY_CONTRACT = Object.freeze({
-  exit_print: { maxHops: 2, sheet: "print", capabilities: ["print_first_stage_ribbon", "print_unified_options_v3"] },
+  exit_print: { maxHops: 2, sheet: "print", capabilities: ["dose1_sheets_around_verse", "print_unified_options_v3"] },
   exit_offline: { maxHops: 2, sheet: "share", capabilities: ["offline_quine_usb", "optical_qr_beam"] },
   language_picker: { maxHops: 1, sheet: null, capabilities: ["reading_language_selector", "polyglot_picker_window_36"] },
   study_context: { maxHops: 2, sheet: "study", capabilities: ["study_14col_drawer", "rosetta_strata"] },

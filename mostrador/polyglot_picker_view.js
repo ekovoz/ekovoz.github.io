@@ -244,18 +244,28 @@ export function bindCorpusPolyglotAndUiPreferences({
   }
 
   const corpusDrawer = getEl("bibleLanguageAndRegisterDrawer", targetDoc);
-  const hydrateInitialSearchWindow = async () => {
-    const q = String(langFilterInput?.value || "").trim();
+  const projectOnDemandSilWindow = async (rawQuery = "") => {
+    const q = String(rawQuery || "").trim();
+    const isEnUi = String(state.uiLocale || "es").trim().toLowerCase().startsWith("en");
+    if (!q) {
+      if (windowHost) windowHost.hidden = true;
+      renderPolyglotRecycledWindow(windowHost, [], { activeLang: state.lang, targetDoc });
+      if (windowCountBadge) {
+        windowCountBadge.textContent = isEnUi
+          ? "Search name or ISO to explore 7,164 languages (or filter by region)"
+          : "Busca nombre o ISO para explorar 7,164 lenguas (o filtra por región)";
+      }
+      return;
+    }
+    if (windowHost) windowHost.hidden = false;
     const idx = await ensureRegionIndexLoaded();
-    const matched = q
-      ? searchLanguages(idx, q, { limit: POLYGLOT_RECYCLED_WINDOW_CAP })
-      : listLanguagesWindow(idx, { limit: POLYGLOT_RECYCLED_WINDOW_CAP * 2 });
+    const matched = searchLanguages(idx, q, { limit: POLYGLOT_RECYCLED_WINDOW_CAP });
     projectLangChoices(Array.isArray(matched) ? matched : [], { filterQuery: q });
   };
   if (corpusDrawer && typeof corpusDrawer.addEventListener === "function") {
     corpusDrawer.addEventListener("toggle", () => {
       if (!corpusDrawer.open) return;
-      hydrateInitialSearchWindow().catch(() => { });
+      projectOnDemandSilWindow(langFilterInput?.value || "").catch(() => { });
       if (langFilterInput && typeof langFilterInput.focus === "function") {
         setTimeout(() => { try { langFilterInput.focus({ preventScroll: true }); } catch { } }, 0);
       }
@@ -264,12 +274,7 @@ export function bindCorpusPolyglotAndUiPreferences({
 
   if (langFilterInput && typeof langFilterInput.addEventListener === "function") {
     langFilterInput.addEventListener("input", async (e) => {
-      const q = String(e?.target?.value || langFilterInput.value || "").trim();
-      const idx = await ensureRegionIndexLoaded();
-      const matched = q
-        ? searchLanguages(idx, q, { limit: POLYGLOT_RECYCLED_WINDOW_CAP })
-        : listLanguagesWindow(idx, { limit: POLYGLOT_RECYCLED_WINDOW_CAP * 2 });
-      projectLangChoices(Array.isArray(matched) ? matched : [], { filterQuery: q });
+      await projectOnDemandSilWindow(e?.target?.value ?? langFilterInput.value ?? "");
     });
   }
 

@@ -501,7 +501,7 @@ export function computeKindlePrintBudget({
   const pageWidthPt = cleanOrientation === "Landscape" ? baseHeightPt : baseWidthPt;
   const printableWidthPt = pageWidthPt - 72 - (effectiveColumns - 1) * 18;
   const colWidthPt = printableWidthPt / effectiveColumns;
-  const cpl = Math.max(24, Math.min(92, Math.round((colWidthPt / (cleanPt * 0.52)) * 0.42)));
+  const cpl = Math.max(24, Math.min(92, Math.round(colWidthPt / (cleanPt * 0.52))));
   const basePages = 1180;
   const scaleFactor = Math.pow(cleanPt / 9.5, 1.65) * (2 / effectiveColumns);
   const estimatedPages = Math.max(420, Math.round(basePages * scaleFactor));

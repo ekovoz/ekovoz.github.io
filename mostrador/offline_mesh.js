@@ -1029,8 +1029,8 @@ export function renderOfflineMeshEcoCardHtml({
     `<div id="offlineIndexedDbVaultStatus" class="ek-meta ek-mt-sm" data-vault-packs-count="${vaultPacks.length}">` +
     `🗄️ ${isEn ? "Saved offline:" : "Guardados sin conexión:"} <strong>${vaultPacks.length}</strong> ${isEn ? "packs" : "paquetes"}${vaultPacks.length > 0 ? ` (${vaultPacks.map((vp) => vp.lang).join(", ")})` : ""}` +
     `</div>` +
-    `<details class="tech-details">` +
-    `<summary>${isEn ? "Technical details (Ed25519 · HTTP 206 · .ekpack)" : "Detalles técnicos (Ed25519 · HTTP 206 · .ekpack)"}</summary>` +
+    `<section class="tech-details">` +
+    `<strong class="ek-title-sm">${isEn ? "Technical details (Ed25519 · HTTP 206 · .ekpack)" : "Detalles técnicos (Ed25519 · HTTP 206 · .ekpack)"}</strong>` +
     `<div class="ek-meta ek-opacity-muted ek-mt-sm">` +
     `<span id="ecoPackVerificationBadge" class="uls-badge" data-eco-verified="${storedRecord ? "true" : "ready"}">` +
     `${storedRecord ? `✅ Two-Gate CRC32 ${storedRecord.crc32Hex} + Ed25519 RFC 8032` : `⚡ HTTP 206 · Rebase ${rebaseHex}`}` +
@@ -1038,7 +1038,7 @@ export function renderOfflineMeshEcoCardHtml({
     `<span>🔍 .ekpack Frame O(1) (${activeVerseRef}): <code>${probe.versePreview}</code></span> · ` +
     frame67SummaryHtml +
     `</div>` +
-    `</details>` +
+    `</section>` +
     `</div>`
   );
 }

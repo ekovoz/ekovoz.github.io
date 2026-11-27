@@ -692,14 +692,13 @@ export function renderWfstAndScriptioContinuaInspectorHtml({
     `<select id="wfstInspectorProfileSelect" class="ek-select-pill" aria-label="${isEn ? "Orthography Profile" : "Perfil Ortográfico"}">${profileOptionsHtml}</select>` +
     `<span class="uls-badge">${isEn ? "Protected loanwords" : "Préstamos protegidos"}: ${whitelist.length}</span>` +
     `</div>` +
-    `<details class="tech-details">` +
-    `<summary>${isEn ? "Technical orthography details (WFST · Reverse Strong Map)" : "Detalles técnicos de ortografía (WFST · Mapa Strong)"}</summary>` +
+    `<div class="tech-details">` +
     `<div class="ek-row-wrap ek-gap-xs ek-mt-sm"><strong>${isEn ? "Reverse mapping:" : "Mapeo inverso:"}</strong> ${reverseHtml} · U+200B: ${zwspCount}</div>` +
     (whitelist.length > 0
       ? `<div class="ek-row-wrap ek-gap-xs ek-mt-xs"><strong>${isEn ? "Protected loanwords:" : "Préstamos teológicos intactos:"}</strong> ${whitelistHtml}</div>`
       : "") +
     `<div class="ek-row-wrap ek-gap-xs ek-mt-xs"><strong>${isEn ? "7 Scriptio Continua segmenters (U+200B):" : "7 segmentadores Scriptio Continua (U+200B):"}</strong> ${scriptioBadges}</div>` +
-    `</details>` +
+    `</div>` +
     `</div>`
   );
 }

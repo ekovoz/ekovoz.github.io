@@ -382,8 +382,7 @@ export function renderFormulaicParallelsCardHtml({
     .join(" ");
 
   const tplSummaryHtml = (matchingTemplates.length > 0 ? matchingTemplates : rawTemplates.slice(0, 2)).length > 0
-    ? `<details id="formulaicSkeletonsDetails" class="tech-details ek-mt-xs">` +
-    `<summary>${isEn ? "Formulaic sentence templates (parameterized patterns)" : "Patrones de estructura formulaica"}</summary>` +
+    ? `<div id="formulaicSkeletonsDetails" class="tech-details ek-mt-xs">` +
     `<div class="ek-meta ek-stack-xs ek-mt-xs">` +
     (matchingTemplates.length > 0 ? matchingTemplates : rawTemplates.slice(0, 2))
       .map(
@@ -394,7 +393,7 @@ export function renderFormulaicParallelsCardHtml({
           `</div>`,
       )
       .join("") +
-    `</div></details>`
+    `</div></div>`
     : "";
 
   const totalParallels = rawQuotes.length + rawTemplates.length;

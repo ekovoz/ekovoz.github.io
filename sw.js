@@ -71,6 +71,7 @@ const SHELL_CORE_ASSETS = [
   "/mostrador/lang_funnel.js",
   "/mostrador/language_selector_view.js",
   "/mostrador/mejorar.js",
+  "/mostrador/mejorar_audit_renderers.js",
   "/mostrador/mejorar_locks_pda.js",
   "/mostrador/mejorar_renderers.js",
   "/mostrador/mostrador_viewport_dose1.js",

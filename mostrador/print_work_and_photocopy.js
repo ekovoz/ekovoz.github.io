@@ -503,9 +503,9 @@ export function renderFieldRefugeAndChecklistHtml(profilesArtifact = null, uiLoc
     `<a id="linkFieldChecklist80Pdf" class="uls-chip ek-btn-link" href="${escapeHtml(checkPath)}" download="checklist_80_bloques.pdf">` +
     `☑️ ${isEn ? `80-Block Canon Checklist (${checkKb} KB PDF)` : `Lista de 80 Bloques Canónicos (${checkKb} KB PDF)`}</a>` +
     `</div>` +
-    `<details class="tech-details"><summary>${isEn ? "4 Refuge Sheet Anchors" : "Anclas de las 4 hojas de refugio"}</summary>` +
+    `<div class="ek-mt-xs" data-refuge-anchors="true"><strong class="ek-title-sm">${isEn ? "4 Refuge Sheet Anchors" : "Anclas de las 4 hojas de refugio"}</strong>` +
     `<ul class="ek-list-compact ek-mt-xs">${anchorItemsHtml}</ul>` +
-    `</details>` +
+    `</div>` +
     `</section>`
   );
 }
@@ -534,15 +534,15 @@ export function renderCompactTypologySelectorHtml({
   }).join("");
 
   return (
-    `<details id="printTypologyBridgeCard" class="tech-details ek-card-muted ek-stack-sm ek-mt-xs" data-typology-bridge="true">` +
-    `<summary class="ek-title-sm">🌐 ${isEn ? "Advanced · Language-adapted layout (12 families × 16 scripts)" : "Avanzado · Diseño adaptado al idioma (12 familias × 16 escrituras)"}</summary>` +
+    `<section id="printTypologyBridgeCard" class="ek-card-muted ek-stack-sm ek-mt-xs" data-typology-bridge="true">` +
+    `<strong class="ek-title-sm">🌐 ${isEn ? "Language-adapted layout (12 families × 16 scripts)" : "Diseño adaptado al idioma (12 familias × 16 escrituras)"}</strong>` +
     `<div class="ek-form-pair ek-mt-xs">` +
     `<label class="ek-label-sm">${isEn ? "Linguistic branch (12)" : "Rama lingüística (12)"}` +
     `<select id="printBranchProfileSelect" class="ek-input">${branchOptions}</select></label>` +
     `<label class="ek-label-sm">${isEn ? "Typological syntax (16)" : "Perfil sintáctico (16)"}` +
     `<select id="printTypologyProfileSelect" class="ek-input">${typoOptions}</select></label>` +
     `</div>` +
-    `</details>`
+    `</section>`
   );
 }
 
@@ -604,8 +604,9 @@ export function renderStationeryPostcardHtml({
   isEn = false,
 } = {}) {
   return (
-    `<div class="mostrador-stationery-card" data-osis="${escapeHtml(osis)}">` +
-    `<strong>${isEn ? "A6 Typographic Postcard" : "Postal tipográfica A6"} (${escapeHtml(refLabel)})</strong>` +
+    `<div id="printStationeryPostcardCard" class="mostrador-stationery-card" data-osis="${escapeHtml(osis)}" data-stationery-only="true" data-excludes-sauvola="true">` +
+    `<strong>✉️ ${isEn ? "A6 Typographic Gift Postcard" : "Postal tipográfica A6 de regalo"} (${escapeHtml(refLabel)})</strong>` +
+    `<p class="ek-meta ek-m-0">${isEn ? "Clean high-contrast layout for direct printing (independent of photocopy test below)." : "Diseño limpio para regalo o tarjeta personal (independiente de la prueba de fotocopia inferior)."}</p>` +
     `<blockquote class="stationery-quote">"${escapeHtml(verseText)}"</blockquote>` +
     `<a id="btnDownloadStationeryPostcard" class="uls-chip stationery-download-btn" href="${escapeHtml(postalHref)}" download="${escapeHtml(postalDownload)}">✉️ ${isEn ? "Download A6 Postcard (HTML)" : "Descargar Postal A6 (HTML)"}</a>` +
     `</div>`
@@ -740,6 +741,17 @@ export function bindPagedMediaPrintButton({
  * Renderiza bajo demanda las 6 láminas tipográficas reales (`web/preview/*.png`),
  * las especificaciones TOML crudas (`print_profiles_14[].raw_preview`) y telemetría de motores Rust (`SLICE-EKO-HIG6-12`).
  */
+export function renderCompactPdfPortalsSelectHtml(portalsRawHtml = "", uiLocale = "es") {
+  const isEn = String(uiLocale || "es").trim().toLowerCase().startsWith("en");
+  const primaryLinkMatch = String(portalsRawHtml).match(/<a class="btn-modal-action" href="([^"]+)">([^<]+)<\/a>/);
+  if (!primaryLinkMatch) return String(portalsRawHtml || "");
+  const opts = Array.from(String(portalsRawHtml).matchAll(/href="(pdf\/([^"]+)\/index\.html)"[^>]*>([^<]+)<\/a>/g))
+    .slice(1)
+    .map((m) => `<option value="${m[1]}">${m[2]} · PDF</option>`).join("");
+  return `<div class="ek-subcard ek-row-wrap"><a class="btn-modal-action" href="${primaryLinkMatch[1]}">${primaryLinkMatch[2]}</a>` +
+    `<select id="printPdfPortalSelect" class="ek-select-compact" aria-label="${isEn ? "Open PDF portal in another language" : "Abrir portada PDF en otro idioma"}"><option value="">${isEn ? "Other 24 languages…" : "Otros 24 idiomas…"}</option>${opts}</select></div>`;
+}
+
 export function renderEditorialPreviewsAndEngineTelemetryHtml({
   editorialProfiles = null,
   uiLocale = "es",
@@ -768,11 +780,13 @@ export function renderEditorialPreviewsAndEngineTelemetryHtml({
       `sourceStem=${escapeHtml(sourceStem)} · camouflaged_title_len=${camouflagedTitleLen} · reverse_lemma_present=${reverseLemmaPresent}</p>`
     : `<p class="ek-meta ek-mt-xs">sourceStem=${escapeHtml(sourceStem)} · camouflaged_title_len=${camouflagedTitleLen} · reverse_lemma_present=${reverseLemmaPresent}</p>`;
   return (
-    `<details id="printEditorialPreviewsDetails" class="tech-details ek-mt-xs" data-preview-plates="6">` +
-    `<summary>🖼️ ${isEn ? "Editorial Print Samples (6 plates) & Specs" : "Muestras reales de impresión (6 láminas) y perfil"}</summary>` +
+    `<section id="printEditorialPreviewsDetails" class="ek-card-muted ek-mt-xs" data-preview-plates="6">` +
+    `<strong class="ek-title-sm">🖼️ ${isEn ? "Editorial Print Samples (6 plates)" : "Muestras reales de impresión (6 láminas)"}</strong>` +
     `<div class="ek-row-wrap ek-mt-xs">${thumbsHtml}</div>` +
+    `<div class="tech-details ek-mt-xs" data-advanced-audit="true">` +
     (rawSpec ? `<pre class="ek-meta ek-mt-xs" data-raw-profile-preview="true">${escapeHtml(rawSpec)}</pre>` : "") +
     telHtml +
-    `</details>`
+    `</div>` +
+    `</section>`
   );
 }

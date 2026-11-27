@@ -137,7 +137,7 @@ export function renderOralPorticoWasmConsole({
     Math.round((Math.max(1, preProsody.syllableCount) / Math.max(1, targetSyllablesPerSec)) * 1000),
   );
   const totalMs = Number(state.audioTotalMs) || dynamicTotalMs;
-  const elapsedMs = Math.max(0, Math.min(totalMs, Number(state.audioElapsedMs ?? 3000)));
+  const elapsedMs = Math.max(0, Math.min(totalMs, Number(state.audioElapsedMs ?? 0)));
   const prosody = computeProsodyAndSyllableAlignmentInWasm(
     { text: verseText, wpm, elapsedMs, totalMs },
     playerWasm,
@@ -146,7 +146,6 @@ export function renderOralPorticoWasmConsole({
   const isEn = String(state.uiLocale || state.lang || "es").trim().toLowerCase().startsWith("en");
   const isPlaying = Boolean(state.oralPorticoPlaying);
   const voiceActive = Boolean(state.oralVoiceActive);
-  const hasDeviceSpeech = typeof globalThis.speechSynthesis?.speak === "function";
   const mountKey = `${state.book}|${state.chapter}|${state.verse}|${prosody.wpm}|${prosody.totalMs}|${prosody.syllables.length}|${prosody.wasmBacked}|${isEn ? "en" : "es"}|${voiceActive}|${isPlaying || Boolean(state.oralAudioPlayed)}`;
 
   if (
@@ -178,12 +177,9 @@ export function renderOralPorticoWasmConsole({
   const voiceToggleLabel = voiceActive
     ? (isEn ? "🔊 Device Voice: On" : "🔊 Voz del dispositivo: Activa")
     : (isEn ? "🔊 Device Voice: Off" : "🔊 Voz del dispositivo: Apagada");
-  const voiceStatusText = voiceActive && !hasDeviceSpeech
-    ? (isEn ? "No OS voices available; using syllable guide." : "Sin voces del sistema; usando guía por sílabas.")
-    : (isEn ? "Offline syllable reading guide" : "Lectura guiada sin descargas de audio");
 
   oralBanner.innerHTML =
-    `<div id="bibleAudioCadenceBar" class="mostrador-audio-cadence-bar" ` +
+    `<div id="bibleAudioCadenceBar" class="mostrador-audio-cadence-bar" data-portico-compact="true" ` +
     `data-wpm="${prosody.wpm}" ` +
     `data-target-bits-per-sec="${prosody.targetBitsPerSec}" ` +
     `data-elapsed-ms="${prosody.elapsedMs}" ` +
@@ -199,21 +195,17 @@ export function renderOralPorticoWasmConsole({
     `data-audio-crc16="${escapeHtml(prosody.crc16Hex)}" ` +
     `data-oral-status="${isPlaying || state.oralAudioPlayed ? "verified" : "ready"}" ` +
     `data-wasm-backed="${prosody.wasmBacked}">` +
-    `<div class="ek-row-between ek-mb-sm">` +
-    `<strong>🗣️ ${isEn ? "Listen" : "Escuchar"} (${escapeHtml(`${state.book} ${state.chapter}:${state.verse}`)}) ${isPlaying || state.oralAudioPlayed ? `<span class="uls-badge" data-oral-verified="true">${isEn ? "Active" : "Activa"}</span> ` : ""}<small class="ek-meta">${escapeHtml(voiceStatusText)}</small></strong>` +
-    `<div class="ek-flex-wrap-inline">` +
+    `<div class="ek-row-wrap">` +
+    `<strong>🗣️ ${isEn ? "Listen" : "Escuchar"} (${escapeHtml(`${state.book} ${state.chapter}:${state.verse}`)}) ${isPlaying || state.oralAudioPlayed ? `<span class="uls-badge" data-oral-verified="true">${isEn ? "Active" : "Activa"}</span>` : ""}</strong>` +
     `<button type="button" id="btnPlayPauseOralPorticoCadence" class="uls-chip oral-portico-cadence-btn is-primary-guide">${guideBtnLabel}</button>` +
     `<button type="button" id="btnOralVoiceToggle" class="uls-chip oral-portico-cadence-btn is-voice-control" aria-pressed="${voiceActive}">${voiceToggleLabel}</button>` +
-    `<label for="audioCadenceWpmSelect">${isEn ? "Pace:" : "Ritmo:"} ` +
-    `<select id="audioCadenceWpmSelect">` +
+    `<select id="audioCadenceWpmSelect" aria-label="${isEn ? "Reading pace" : "Ritmo de lectura"}">` +
     [90, 120, 135, 150, 160]
       .map((w) => `<option value="${w}"${w === prosody.wpm ? " selected" : ""}>${w} ${isEn ? "WPM" : "ppm"}</option>`)
       .join("") +
-    `</select></label>` +
-    `<label for="audioElapsedRange">${isEn ? "Position:" : "Posición:"} ` +
-    `<input id="audioElapsedRange" type="range" min="0" max="${prosody.totalMs}" step="250" value="${prosody.elapsedMs}">` +
-    `</label>` +
-    `</div></div>` +
+    `</select>` +
+    `<input id="audioElapsedRange" type="range" min="0" max="${prosody.totalMs}" step="250" value="${prosody.elapsedMs}" aria-label="${isEn ? "Reading position" : "Posición en versículo"}">` +
+    `</div>` +
     (prosody.syllables.length > 0
       ? `<div class="prosody-syllable-strip oral-portico-secondary ek-mt-xs">` +
       `<span class="uls-badge" data-prosodic-cursor="true">${isEn ? `Syllable #${prosody.activeSyllableIndex + 1}/${prosody.syllables.length}: «${escapeHtml(prosody.activeSyllable)}»` : `Sílaba #${prosody.activeSyllableIndex + 1}/${prosody.syllables.length}: «${escapeHtml(prosody.activeSyllable)}»`}</span> ` +

@@ -613,8 +613,85 @@ function computeCrc16CcittFallback(bytes) {
   return Math.max(1, crc);
 }
 
-const LATIN_GREEK_CYRILLIC_SYLLABLE_RE =
-  /[^\saeiouyáéíóúüàèìòùâêîôûãõäëïöüāēīōūɨʉəɔɛœæøåαεηιουωάέήίόύώϊϋΐΰаеёиоуыэюяіїє]*[aeiouyáéíóúüàèìòùâêîôûãõäëïöüāēīōūɨʉəɔɛœæøåαεηιουωάέήίόύώϊϋΐΰаеёиоуыэюяіїє]+(?:[^\saeiouyáéíóúüàèìòùâêîôûãõäëïöüāēīōūɨʉəɔɛœæøåαεηιουωάέήίόύώϊϋΐΰаеёиоуыэюяіїє]+(?=[^\saeiouyáéíóúüàèìòùâêîôûãõäëïöüāēīōūɨʉəɔɛœæøåαεηιουωάέήίόύώϊϋΐΰаеёиоуыэюяіїє][aeiouyáéíóúüàèìòùâêîôûãõäëïöüāēīōūɨʉəɔɛœæøåαεηιουωάέήίόύώϊϋΐΰаеёиоуыэюяіїє])|[^\saeiouyáéíóúüàèìòùâêîôûãõäëïöüāēīōūɨʉəɔɛœæøåαεηιουωάέήίόύώϊϋΐΰаеёиоуыэюяіїє]*$)|.+/giu;
+const SPANISH_STRONG_VOWEL_RE = /[aeoáéóíúAEOÁÉÓÍÚ]/;
+const SPANISH_ALL_VOWEL_RE = /[aeiouyáéíóúüAEIOUYÁÉÍÓÚÜ]/;
+const SPANISH_INSEPARABLE_ONSET_SET = new Set([
+  "pr", "pl", "br", "bl", "tr", "dr", "cr", "cl", "gr", "gl", "fr", "fl", "ch", "ll", "rr",
+]);
+
+function isVowelUnitAt(chars, idx) {
+  const ch = chars[idx];
+  if (!ch || !SPANISH_ALL_VOWEL_RE.test(ch)) return false;
+  const low = ch.toLowerCase();
+  const prev = idx > 0 ? chars[idx - 1].toLowerCase() : "";
+  const next = idx + 1 < chars.length ? chars[idx + 1].toLowerCase() : "";
+  // U muda tras 'q' o 'g' delante de e/i/é/í (pero 'ü' sí suena)
+  if (low === "u" && (prev === "q" || prev === "g") && "eiéí".includes(next)) return false;
+  // La 'y' solo actúa como vocal si va tras otra vocal (rey) o aislada (y)
+  if (low === "y" && chars.length > 1 && idx + 1 < chars.length && SPANISH_ALL_VOWEL_RE.test(next)) return false;
+  return true;
+}
+
+function formsHiatusPair(v1, v2) {
+  return SPANISH_STRONG_VOWEL_RE.test(v1) && SPANISH_STRONG_VOWEL_RE.test(v2);
+}
+
+/**
+ * Silabeador ortográfico español determinista (`GOLD-713` / `D3-HIG8`):
+ * respeta diptongos, triptongos, hiatos (`í`, `ú`, vocales fuertes), dígrafos (`ch`, `ll`, `rr`, `qu`, `gu`)
+ * y ataques consonánticos inseparables manteniendo puntuación adjunta.
+ */
+export function splitSpanishOrthographicSyllables(rawToken = "") {
+  const s = String(rawToken || "");
+  const m = s.match(/^([^\p{L}]*)([\p{L}]+)([^\p{L}]*)$/u);
+  if (!m) return s ? [s] : [];
+  const [, pre, word, post] = m;
+  const chars = Array.from(word);
+  const nuclei = [];
+  let i = 0;
+  while (i < chars.length) {
+    if (!isVowelUnitAt(chars, i)) {
+      i += 1;
+      continue;
+    }
+    const start = i;
+    let end = i + 1;
+    while (end < chars.length && isVowelUnitAt(chars, end) && !formsHiatusPair(chars[end - 1], chars[end])) {
+      end += 1;
+    }
+    nuclei.push([start, end]);
+    i = end;
+  }
+  if (nuclei.length <= 1) return [s];
+  const cuts = [0];
+  for (let n = 0; n < nuclei.length - 1; n += 1) {
+    const cStart = nuclei[n][1];
+    const cEnd = nuclei[n + 1][0];
+    const cluster = chars.slice(cStart, cEnd).join("").toLowerCase();
+    let splitAt = cStart;
+    if (cluster.length === 1) {
+      splitAt = cStart;
+    } else if (cluster.length === 2) {
+      splitAt = SPANISH_INSEPARABLE_ONSET_SET.has(cluster) ? cStart : cStart + 1;
+    } else if (cluster.length >= 3) {
+      const last2 = cluster.slice(-2);
+      splitAt = SPANISH_INSEPARABLE_ONSET_SET.has(last2) ? cEnd - 2 : cEnd - 1;
+    }
+    cuts.push(splitAt);
+  }
+  cuts.push(chars.length);
+  const out = [];
+  for (let k = 0; k < cuts.length - 1; k += 1) {
+    let part = chars.slice(cuts[k], cuts[k + 1]).join("");
+    if (k === 0) part = pre + part;
+    if (k === cuts.length - 2) part += post;
+    if (part) out.push(part);
+  }
+  return out.length > 0 ? out : [s];
+}
+
+const GREEK_CYRILLIC_SYLLABLE_RE =
+  /[^\sαεηιουωάέήίόύώϊϋΐΰаеёиоуыэюяіїє]*[αεηιουωάέήίόύώϊϋΐΰаеёиоуыэюяіїє]+(?:[^\sαεηιουωάέήίόύώϊϋΐΰаеёиоуыэюяіїє]+(?=[^\sαεηιουωάέήίόύώϊϋΐΰаеёиоуыэюяіїє][αεηιουωάέήίόύώϊϋΐΰаеёиоуыэюяіїє])|[^\sαεηιουωάέήίόύώϊϋΐΰаеёиоуыэюяіїє]*$)|.+/giu;
 
 export function segmentMultilingualSyllables(cleanText) {
   const rawTokens = String(cleanText || "").trim().split(/\s+/).filter(Boolean);
@@ -652,7 +729,13 @@ export function segmentMultilingualSyllables(cleanText) {
       syllables.push(tok);
       continue;
     }
-    const parts = tok.match(LATIN_GREEK_CYRILLIC_SYLLABLE_RE);
+    if (/^[^\p{L}]*\p{Script=Latin}+[^\p{L}]*$/u.test(tok)) {
+      for (const syl of splitSpanishOrthographicSyllables(tok)) {
+        if (syl) syllables.push(syl);
+      }
+      continue;
+    }
+    const parts = tok.match(GREEK_CYRILLIC_SYLLABLE_RE);
     if (parts && parts.length > 0) {
       for (const p of parts) {
         const cleanPart = p.trim();

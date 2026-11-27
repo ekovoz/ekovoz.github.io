@@ -141,6 +141,10 @@ const HUMAN_PHILOLOGY_LABELS = Object.freeze({
     es: "Puente: Automático",
     en: "Bridge: Auto",
   }),
+  "BÓVEDA PRO": Object.freeze({
+    es: "Bóveda y verificación",
+    en: "Vault & verification",
+  }),
   UBS: Object.freeze({
     es: "Ediciones textuales internacionales",
     en: "International textual editions",

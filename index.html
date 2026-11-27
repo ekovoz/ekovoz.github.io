@@ -91,7 +91,7 @@ data-i18n="mostrador.tab.evangelios" hidden>🌅 The Gospels (52)</button>
 <div class="language-region-pill-group" role="group" aria-label="Language and Appearance">
 <button type="button" class="uls-chip" id="sovereignCorpusLangBtn" data-i18n-autonym="true"
 aria-expanded="false" aria-controls="bibleLanguageAndRegisterDrawer">
-🌍 <span id="sovereignActiveCorpusLabel">Censo SIL (7,164) · 24 Biblias · Español</span>
+🌍 <span id="sovereignActiveCorpusLabel">Español · 24 Biblias</span>
 </button>
 <button type="button" class="uls-chip" id="btnAppearanceMenu" data-i18n-autonym="true"
 aria-expanded="false" aria-controls="appearancePopover" aria-label="Appearance settings">Aa</button>
@@ -284,8 +284,8 @@ data-corpus-lang="bn-BD" data-work-scope="felices"><span class="ek-iso-tag">BN-B
 <button type="button" id="quickWorkLangBnIn" class="uls-chip" data-i18n-autonym="true"
 data-corpus-lang="bn-IN" data-work-scope="felices"><span class="ek-iso-tag">BN-IN</span> বাংলা ভারত (Felices)</button>
 </div>
-<details id="corpusGeoFilterDetails" class="tech-details ek-mt-xs">
-<summary data-i18n-autonym="true">Filtros geográficos SIL (región y país)</summary>
+<section id="corpusGeoFilterDetails" class="tech-details ek-mt-xs">
+<strong class="ek-title-sm" data-i18n-autonym="true">Filtros geográficos SIL (región y país)</strong>
 <div id="bibleGeoFunnel" class="geo-funnel-row ek-mt-xs" aria-label="Geographic 3-Tap Funnel">
 <select id="bibleSelectRegion" aria-label="World Region">
 <option value="americas-mesoamerica" data-i18n="region.americas-mesoamerica">Mesoamerica
@@ -358,7 +358,7 @@ Southeast Asia</option>
 <option value="kgv">Kalamang (kgv · Draft)</option>
 </select>
 </div>
-</details>
+</section>
 </div>
 </div>
 </details>
@@ -371,15 +371,6 @@ data-cowan-focal-groups="4" data-audio-bytes="0" data-jpg-bytes="0">
 reading &amp; print</p>
 <span id="epistemicStatusSeal" class="uls-badge" data-seal="seal.loading"
 data-i18n="seal.loading">Loading verified passage…</span>
-</div>
-<div id="printFirstStageRibbon" class="print-stage-ribbon" role="region"
-aria-label="Download Printable Bible PDF by Stage" data-print-tier="1" data-ribbon-compact="true">
-<div class="print-stage-header" data-ribbon-compact="true" data-cowan-budget="2">
-<button type="button" id="btnStagePdfDose1" class="print-stage-btn is-primary-stage"
-data-print-stage-action="dose1" data-i18n="printStage.dose1">🖨️ Print · PDF</button>
-<button type="button" id="btnStagePdfMoreFormats" class="uls-chip print-stage-more"
-data-print-stage-action="open-print" data-i18n="printStage.moreFormats">Formats…</button>
-</div>
 </div>
 <!-- Step 1: Compact Single-Row Spatial Navigation Above the Fold (y <= 116px) -->
 <div id="bibleSpatialNav" class="spatial-nav-bar" aria-label="Book and Chapter Navigator">
@@ -733,10 +724,10 @@ hidden>
 <summary data-i18n="study.acc.onomasticon">🧭 Onomasticon (3,657 Proper Names)</summary>
 <div id="studyOnomasticonExplorerHost"></div>
 </details>
-<details id="studyRealiaAccordion" class="r9-stratum-accordion" data-study-subtab-panel="rosetta" hidden>
-<summary data-i18n="study.acc.realia">🏺 Biblical Culture, Objects &amp; Measures (1,800)</summary>
+<section id="studyRealiaAccordion" class="r9-stratum-accordion" data-study-subtab-panel="rosetta" hidden>
+<h4 data-i18n="study.acc.realia">🏺 Biblical Culture, Objects &amp; Measures (1,800)</h4>
 <div id="realiaMetrologyStratumCard"></div>
-</details>
+</section>
 <details id="studyTskFormulaicAccordion" class="r9-stratum-accordion" data-study-subtab-panel="rosetta"
 hidden>
 <summary data-i18n="study.acc.tskFormulaic">🔗 Cross-Refs TSK &amp; OT↔NT Formulaic Parallels</summary>
@@ -776,11 +767,11 @@ Century
 substitutions in this chapter</summary>
 <div id="diachronicRegisterAuditPanel"></div>
 </details>
-<details id="studyTypologyAccordion" class="r9-stratum-accordion" data-study-subtab-panel="calibrate"
+<section id="studyTypologyAccordion" class="r9-stratum-accordion" data-study-subtab-panel="calibrate"
 hidden>
-<summary data-i18n="study.acc.typology">🌍 Linguistic Typology &amp; Branches (12 / 16)</summary>
+<h4 data-i18n="study.acc.typology">🌍 Linguistic Typology &amp; Branches (12 / 16)</h4>
 <div id="bibleBranchAndTypologyPanel"></div>
-</details>
+</section>
 </section>
 <!-- Drawer 2: Print Settings & 14 Canonical PDF Editions -->
 <section id="biblePrintEditionsSheet" class="apple-sheet" data-sheet="print" hidden>
@@ -801,7 +792,7 @@ aria-pressed="false">🎨 3. Stationery A6 &amp; Copy Quality</button>
 <!-- Consolidado HIG7: 1 selector de alcance + 1 acción primaria visible (`SLICE-EKO-HIG7-07`) -->
 <div id="mostradorDoseCards" class="mostrador-dose-grid" data-print-subtab-panel="doses"
 aria-label="Choose printable dose">
-<label class="ek-row-wrap ek-mb-sm" for="doseScopeSelect"><span class="ek-meta" data-i18n-autonym="true">Alcance / Scope:</span>
+<label class="ek-row-wrap ek-mb-sm" for="doseScopeSelect"><span class="ek-meta" data-i18n-autonym="true">Alcance:</span>
 <select id="doseScopeSelect" class="ek-select-compact">
 <option value="1" selected>Pasaje actual (~4 hojas)</option>
 <option value="2">Sección o libro completo</option>
@@ -839,7 +830,7 @@ class="btn-modal-secondary dose-card-cta" data-i18n="dose.3.cta">📚 Full Bible
 <div data-print-subtab-panel="doses" data-print-step="1">
 <label class="hig-toggle-row">
 <input type="checkbox" id="chkStealthPackMode" class="hig-switch">
-<span data-i18n="print.stealthMode">🥷 Private filenames (neutral study names)</span>
+<span data-i18n="print.stealthMode">🛡️ Private filenames (neutral study names)</span>
 </label>
 <button type="button" id="btnPrintCssPagedMedia" class="uls-chip"
 data-i18n="print.btn.cssPagedMedia">🖨️ Print from browser</button>
@@ -980,14 +971,14 @@ Camera off. Tap «Receive with Camera» to scan QR-Beam frames offline.</div>
 <video id="bibleOpticalCameraVideo" class="optical-camera-video" hidden playsinline muted></video>
 </div>
 <div id="vaultStorageManagerHost" data-dosis-subtab-panel="mesh"></div>
-<details id="shareOfflinePacksDetails" class="r9-stratum-accordion" data-dosis-subtab-panel="mesh">
-<summary>📦 Paquetes offline y copia USB/Bluetooth</summary>
+<section id="shareOfflinePacksDetails" class="r9-stratum-accordion" data-dosis-subtab-panel="mesh">
+<strong class="ek-title-sm">📦 Paquetes offline y copia USB/Bluetooth</strong>
 <div id="offlinePacksCatalogPanel"></div>
-</details>
-<details id="shareFontVaultDetails" class="r9-stratum-accordion" data-dosis-subtab-panel="mesh">
-<summary>🔤 Fuentes tipográficas sin conexión (34 fuentes)</summary>
+</section>
+<section id="shareFontVaultDetails" class="r9-stratum-accordion" data-dosis-subtab-panel="mesh">
+<strong class="ek-title-sm">🔤 Fuentes tipográficas sin conexión (34 fuentes)</strong>
 <div id="editorialFontPackVaultPanel"></div>
-</details>
+</section>
 <div id="bibleOpticalQrStreamPanel" data-dosis-subtab-panel="pdf" hidden>
 </div>
 <div id="opticalReceiverRxPanel" data-dosis-subtab-panel="pdf" hidden></div>
@@ -998,12 +989,12 @@ data-slot-order="1" data-unified-authenticity-card="true" hidden>
 <button type="button" id="btnVerifyEd25519Signature" class="btn-modal-action" data-dosis-subtab-panel="graphics"
 data-i18n="share.btn.verifySig" hidden>🔐 Verify Authentic Editorial Signature</button>
 </div>
-<details id="shareProBovedaDetails" class="r9-stratum-accordion" data-pro-boveda="true">
-<summary data-i18n-autonym="true">Verificación avanzada y auditoría</summary>
+<section id="shareProBovedaDetails" class="r9-stratum-accordion" data-pro-boveda="true">
+<h4 data-i18n-autonym="true">Verificación avanzada y auditoría</h4>
 <div id="editorialAuditStatusPanel" data-dosis-subtab-panel="graphics" hidden class="ek-status-panel">
 </div>
 <div id="editorialProvenanceCardHost" data-dosis-subtab-panel="graphics" hidden></div>
-</details>
+</section>
 </section>
 <div id="shareOpenGraphCardPanel" data-dosis-subtab-panel="graphics" data-slot-order="0" hidden></div>
 </section>
@@ -1053,6 +1044,8 @@ data-i18n="felices.closeBtn">Cerrar</button>
 <footer id="siteGlobalFooter" class="site-footer">
 <span class="site-footer-note" data-i18n="footer.open_license">CC0 1.0 Public Domain · Zero trackers ·
 Offline-capable</span>
+<a class="uls-chip ek-badge-compact" href="llms.txt">llms.txt</a>
+<a class="uls-chip ek-badge-compact" href="llms-full.txt">llms-full.txt (34)</a>
 <button type="button" id="footerContactBtn" class="uls-chip footer-contact-btn"
 data-i18n="felices.contactBtn">Contact, Collaboration &amp; Support</button>
 </footer>

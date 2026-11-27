@@ -196,8 +196,8 @@ export function renderFieldWorkshopCensus7164Html(
     `<strong>🌍 Relación Maestra Universal (${totalLangs.toLocaleString("en-US")} Lenguas · ${totalRegions} Regiones)</strong>` +
     `<span class="uls-badge" data-stp-ledger-badge="true">📦 Lote ${batchInfo.batchNumber}/${atomicBatches.toLocaleString("en-US")} · vv. ${batchInfo.startOrdinal}–${batchInfo.endOrdinal}</span>` +
     `</div>` +
-    `<details class="tech-details">` +
-    `<summary>Detalles técnicos del censo (${totalSubclades} subclados Glottolog · ${atomicBatches.toLocaleString("en-US")} lotes)</summary>` +
+    `<div class="tech-details">` +
+    `<strong>Detalles técnicos del censo (${totalSubclades} subclados Glottolog · ${atomicBatches.toLocaleString("en-US")} lotes)</strong>` +
     `<div class="ek-row-wrap ek-my-sm">${tiersHtml}</div>` +
     `<div class="ek-row-wrap ek-mb-sm ek-text-secondary">` +
     `<span class="uls-chip ek-badge-compact">Lote <code>${escHtml(batchInfo.batchId)}</code> de ${totalVerses.toLocaleString("en-US")} vv. · Entropía Formulaica η_dedup: <strong>${formulaicPct}%</strong> (${formulaicUnique.toLocaleString("en-US")} plantillas únicas / ${Number(ledger.formulaic_verses_deduplicated ?? ledger.total_deduplicated_formulaic_verses ?? 4482)} vv.)</span>` +
@@ -205,7 +205,7 @@ export function renderFieldWorkshopCensus7164Html(
     `<span class="uls-chip ek-badge-compact">Citas AT→NT congeladas: <strong>${Number(ledger.frozen_ot_in_nt_quotes ?? ledger.frozen_ot_in_nt_quotes_count ?? 282)}</strong></span>` +
     `</div>` +
     `<div class="ek-row-wrap">${regionBadgesHtml}</div>` +
-    `</details>` +
+    `</div>` +
     `</div>`
   );
 }
@@ -299,8 +299,8 @@ export function renderCrdtWalAndLockP2AuditCardHtml(workshopArtifact = null) {
     )
     .join(" ");
   const rootNotesDetailsHtml = rootNotes.length
-    ? `<details id="rootNotesStpFullNotes" class="hig-tech-receipt-details ek-w-full ek-mt-sm">` +
-    `<summary>📖 Notas exegéticas de las ${rootNotes.length} raíces</summary>` +
+    ? `<section id="rootNotesStpFullNotes" class="hig-tech-receipt-details ek-w-full ek-mt-sm">` +
+    `<strong class="ek-title-sm">📖 Notas exegéticas de las ${rootNotes.length} raíces</strong>` +
     `<ul class="ek-list-compact">` +
     rootNotes
       .map(
@@ -308,7 +308,7 @@ export function renderCrdtWalAndLockP2AuditCardHtml(workshopArtifact = null) {
           `<li data-root-note-strong="${escHtml(rn.strong_id)}"><strong>${escHtml(rn.strong_id)} · ${escHtml(rn.surface_stp || "")}</strong> — ${escHtml(rn.note || "")}</li>`,
       )
       .join("") +
-    `</ul></details>`
+    `</ul></section>`
     : "";
 
   const rollbackId = lockP2.patch_id || lockP2.last_rollback_patch_id || "PATCH-WAL-ROLLBACK-R16";

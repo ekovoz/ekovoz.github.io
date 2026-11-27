@@ -68,6 +68,7 @@ import {
   mountOrUpdatePrintActiveWorkBanner,
   normalizeStandardPaperFormat,
   renderCompactTypologySelectorHtml,
+  renderCompactPdfPortalsSelectHtml,
   renderDuplexAssistantCardHtml,
   renderEditorialPreviewsAndEngineTelemetryHtml,
   renderFieldRefugeAndChecklistHtml,
@@ -267,8 +268,13 @@ export function renderPrintDrawerPanelsSyncInDrawer(ctx = {}) {
   syncDoseScope();
   const fieldPdfsHost = getEl("printFieldPdfsHost", targetDoc);
   if (fieldPdfsHost) {
-    const portalsBarHtml = renderStaticPdfPortalsHtml(state.effectiveCorpusLang || state.lang || "es", state.uiLocale || "es");
-    mountSlotView(fieldPdfsHost, { html: `${portalsBarHtml}${renderFieldRefugeAndChecklistHtml(state.editorialProfiles || null, state.uiLocale || "es")}${renderEditorialPreviewsAndEngineTelemetryHtml({ editorialProfiles: state.editorialProfiles || null, uiLocale: state.uiLocale || "es" })}`, ownerId: "drawer_print:doses:field_pdfs", orderIndex: 2 });
+    const portalsCleanHtml = renderCompactPdfPortalsSelectHtml(renderStaticPdfPortalsHtml(state.effectiveCorpusLang || state.lang || "es", state.uiLocale || "es"), state.uiLocale || "es");
+    mountSlotView(fieldPdfsHost, { html: `${portalsCleanHtml}${renderFieldRefugeAndChecklistHtml(state.editorialProfiles || null, state.uiLocale || "es")}${renderEditorialPreviewsAndEngineTelemetryHtml({ editorialProfiles: state.editorialProfiles || null, uiLocale: state.uiLocale || "es" })}`, ownerId: "drawer_print:doses:field_pdfs", orderIndex: 2 });
+    const portalSel = getEl("printPdfPortalSelect", targetDoc);
+    if (portalSel && typeof portalSel.addEventListener === "function" && !portalSel._portalSelBound) {
+      portalSel._portalSelBound = true;
+      portalSel.addEventListener("change", () => { if (portalSel.value && targetDoc?.defaultView?.location) targetDoc.defaultView.location.href = portalSel.value; });
+    }
   }
 
   const duplexPanel = getEl("duplexAssistantPanel", targetDoc);
@@ -398,6 +404,7 @@ export function renderPrintDrawerPanelsSyncInDrawer(ctx = {}) {
 
   const stationeryPanel = getEl("stationeryCardPanel", targetDoc);
   if (stationeryPanel) {
+    stationeryPanel.setAttribute?.("data-photocopy-separated", "true");
     const verseText =
       state.lastNavResult?.chapter?.verses?.[String(state.verse)] ||
       (isEn
@@ -430,39 +437,20 @@ export function renderPrintDrawerPanelsSyncInDrawer(ctx = {}) {
   const impHost = getEl("impositionBookletPreviewHost", targetDoc);
   if (impHost && !impHost.innerHTML) {
     impHost.innerHTML = renderImpositionAndLayoutPreviewHtml({
-      mode: state.activePrintPreviewMode || "imposition",
-      paper: effectivePaper || "a4",
-      pageCount: 16,
-      columns: state.columns || 2,
-      fontPt: state.fontSizePt || 9.5,
-      orientation: state.orientation || "portrait",
-      dir: isRtlLocale(state.lang) ? "rtl" : "ltr",
-      uiLocale: state.uiLocale || "es",
+      mode: state.activePrintPreviewMode || "imposition", paper: effectivePaper || "a4", pageCount: 16,
+      columns: state.columns || 2, fontPt: state.fontSizePt || 9.5, orientation: state.orientation || "portrait",
+      dir: isRtlLocale(state.lang) ? "rtl" : "ltr", uiLocale: state.uiLocale || "es",
     });
   }
-
-  bindImpositionAndLayoutButtons({
-    state,
-    targetDoc,
-    getEl,
-    computeSaddleStitchImpositionPlan,
-    computeKindlePrintBudget,
-    renderImpositionAndLayoutPreviewHtml,
-  });
+  bindImpositionAndLayoutButtons({ state, targetDoc, getEl, computeSaddleStitchImpositionPlan, computeKindlePrintBudget, renderImpositionAndLayoutPreviewHtml });
 
   const catalogGrid = getEl("bibleEditionsCatalogGrid", targetDoc);
   if (catalogGrid) {
     const activeProfileId = state.activePrintProfileId || "02_2col_pastoral";
     const effectiveLang = String(state.effectiveCorpusLang || state.lang || "es").trim() || "es";
     const normPaper = normalizeStandardPaperFormat(effectivePaper);
-    const activeBlockCode = `B${String(
-      Math.max(1, Math.min(80, Number(state.activeBlockNumber) || liveBlock.blockNumber || 1)),
-    ).padStart(2, "0")}`;
-    const editions = listAll14PrintEditionsForLang(
-      effectiveLang,
-      effectiveLang,
-      { uiLocale: state.uiLocale || "es", paperFormat: normPaper },
-    );
+    const activeBlockCode = `B${String(Math.max(1, Math.min(80, Number(state.activeBlockNumber) || liveBlock.blockNumber || 1))).padStart(2, "0")}`;
+    const editions = listAll14PrintEditionsForLang(effectiveLang, effectiveLang, { uiLocale: state.uiLocale || "es", paperFormat: normPaper });
     if (!state.editionObjectUrls || typeof state.editionObjectUrls !== "object") {
       state.editionObjectUrls = {};
     }

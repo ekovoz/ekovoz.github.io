@@ -860,11 +860,11 @@ surface       = "public-ui"
 exposure_tier = "primary-stage"
 release_stage = "public"
 intent        = "print"
-selector      = "#printFirstStageRibbon"
+selector      = "#btnOpenPrintEditionsSheet"
 module        = "mostrador/print_stage_ribbon.js"
-handler       = "renderPrintStageRibbonHtml"
+handler       = "resolvePrintStageDescriptorsForTier"
 test_file     = "tests/web/print_first_stage_r13.test.mjs"
-test_name     = "SLICE_R13_04_05: web/index.html expone #printFirstStageRibbon arriba del pliegue y delega clics dose1..dose3 y tiers"
+test_name     = "SLICE_R13_04_05"
 
 [capability.tanda_progress_cancel]
 surface       = "public-ui"
@@ -942,7 +942,7 @@ release_stage   = "public"
 intent          = "workshop"
 canonical_owner = "#tallerArtifactsCatalog"
 selector        = "#btnRunExternalAudit"
-template_module = "mostrador/mejorar_renderers.js"
+template_module = "mostrador/mejorar_audit_renderers.js"
 module          = "mostrador/workshop_audit_and_langs.js"
 handler         = "computeClientModernizeReadabilityAudit"
 test_file       = "tests/web/hig4_reactive_parity.test.mjs"
@@ -955,7 +955,7 @@ release_stage   = "public"
 intent          = "workshop"
 canonical_owner = "#tallerArtifactsCatalog"
 selector        = "#externalAuditFileInput"
-template_module = "mostrador/mejorar_renderers.js"
+template_module = "mostrador/mejorar_audit_renderers.js"
 module          = "mostrador/docx_client_reader.js"
 handler         = "extractDocxDocumentXmlText"
 test_file       = "tests/web/concordance_and_audit_r8.test.mjs"
@@ -1013,10 +1013,11 @@ test_file       = "tests/web/hig7_intent_parity_and_ergonomics.test.mjs"
 test_name       = "HIG7_SLICE_01_15: Two-layer contract <= 18 details, zero forbidden jargon, and interactive parity"
 
 [intent_contracts]
+primary_intents = ["read", "print", "study-workshop-vault"]
 max_hops = 2
 max_prod_details = 18
 require_interactive_flow = true
-exit_print = ["print_first_stage_ribbon", "print_unified_options_v3"]
+exit_print = ["dose1_sheets_around_verse", "print_unified_options_v3"]
 exit_offline = ["offline_quine_usb", "optical_qr_beam"]
 
 [cli_bridge]

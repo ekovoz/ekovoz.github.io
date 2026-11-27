@@ -58,6 +58,23 @@ export const VALID_ACTIVE_INTENTS = Object.freeze([
   "workshop",
 ]);
 
+/**
+ * Canónica 3-Intenciones (`D1-HIG8`): colapsa las 5 sub-rutas del store en
+ * 3 intenciones de primer nivel con dueño único (`read` | `print` | `studio`).
+ */
+const PRIMARY_INTENT_GROUPS = Object.freeze({
+  read: "read",
+  print: "print",
+  study: "studio",
+  workshop: "studio",
+  share: "studio",
+});
+
+export function resolvePrimaryIntentGroup(rawIntent = "read") {
+  const clean = normalizeIntentId(rawIntent);
+  return PRIMARY_INTENT_GROUPS[clean] || "read";
+}
+
 export const VALID_ACTIVE_MODALS = Object.freeze([
   null,
   "compass",

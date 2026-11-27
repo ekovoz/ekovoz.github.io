@@ -944,7 +944,7 @@ export function renderOpticalReceiverRxPanelHtml(report = null) {
     `<div class="optical-rx-header">` +
     `<strong>📥 Receptor Óptico por Cámara · Enlace sin internet</strong>` +
     `<span class="uls-badge" data-rx-status-badge="true">${activeReport.complete ? "✅ Reconstruido 100%" : "⏳ Escuchando señal óptica"} · Partes=${activeReport.packetsAccepted}/${activeReport.totalChunks}</span>` +
-    `<details class="tech-details" data-advanced-audit="true"><summary>Detalles técnicos ópticos</summary><span>Peeling + GF(2) · Nyquist ${nyq.safeFps} fps · Duplicados=${activeReport.duplicateFramesDropped}</span></details>` +
+    `<div class="tech-details" data-advanced-audit="true"><span>Peeling + GF(2) · Nyquist ${nyq.safeFps} fps · Duplicados=${activeReport.duplicateFramesDropped}</span></div>` +
     `</div>` +
     `<div class="optical-rx-controls">` +
     `<label for="rxShutterUsInput">Obturador CMOS (µs): ` +

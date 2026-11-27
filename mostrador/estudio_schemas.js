@@ -434,9 +434,10 @@ export const PHILOLOGY_ROSETTA_DEFAULT_INDEX = {
     ],
   },
   annotation_index_report: {
-    total_tokens_indexed: 444363,
-    hebrew_aramaic_tokens: 305500,
-    greek_nt_tokens: 138863,
+    total_tokens_indexed: 444364,
+    hebrew_at_tokens: 306753,
+    hebrew_aramaic_tokens: 306753,
+    greek_nt_tokens: 137611,
     oov_rate: 0.0,
     unique_strong_roots: 14294,
   },

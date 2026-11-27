@@ -156,10 +156,9 @@ export function renderCanonical16MacroTandasSelectorHtml({
     `<select id="macroTanda16Select" data-action="select-macro-tanda-16" aria-label="${isEn ? "Select printable section (1 to 16)" : "Seleccionar sección imprimible (1 a 16)"}">${optionsHtml}</select>` +
     `<button type="button" id="btnGenerateAll16MacroTandas" class="uls-chip eco-action-btn ek-semibold" data-action="generate-sequential-16-macro-tandas" data-lang="${lang}" data-cols="${Number(columns) || 2}" data-font-pt="${Number(fontPt) || 9.5}">⚡ ${isEn ? "Prepare All 16 PDFs" : "Preparar los 16 PDFs"}</button>` +
     `</div>` +
-    `<details class="tech-details ek-mt-xs" data-advanced-audit="true">` +
-    `<summary>${isEn ? "Binding & booklet technical metrics" : "Detalles técnicos de cuadernillos"}</summary>` +
+    `<div class="tech-details ek-mt-xs" data-advanced-audit="true">` +
     `<span class="uls-badge" data-macro-tanda-creep="${activeMt.maxCreepMm}">4N: ${activeMt.spreads4nCount} ${isEn ? "spreads" : "pliegos"} · creep ${activeMt.maxCreepMm} mm · &lt;14 MiB Worker</span>` +
-    `</details>` +
+    `</div>` +
     `</div>`
   );
 }
@@ -175,12 +174,18 @@ export function formatUnifiedDoseLinksCopy({
   uiLocale = "es",
 } = {}) {
   const isEn = String(uiLocale || "es").trim().toLowerCase().startsWith("en");
-  const langUpper = String(lang || "es").toUpperCase();
+  const langLower = String(lang || "es").trim().toLowerCase();
+  const langUpper = langLower.toUpperCase();
   const bookUpper = String(book || "GEN").toUpperCase();
+  const bookOrd = CANONICAL_66_USFM.indexOf(USFM_BOOK_ALIAS_MAP[bookUpper] || bookUpper);
+  const isStpOtDraft = langLower === "stp" && bookOrd >= 0 && bookOrd < 39;
+  const bookScopeHint = isStpOtDraft
+    ? (isEn ? `${langUpper} · ${bookUpper} (OT draft)` : `${langUpper} · ${bookUpper} (borrador AT)`)
+    : `${langUpper} · ${bookUpper}`;
   const rangeStr = activeMacroTanda?.rangeLabel || `${bookUpper}`;
   const dose2Text = isEn
-    ? `📚 2. Download Book PDF (${langUpper} · ${bookUpper})`
-    : `📚 2. Descargar Libro PDF (${langUpper} · ${bookUpper})`;
+    ? `📚 2. Download Book PDF (${bookScopeHint})`
+    : `📚 2. Descargar Libro PDF (${bookScopeHint})`;
   const dose3Text = isFullBible16
     ? isEn
       ? `🏛️ 3. Download Full Bible PDF (66 books · ${langUpper})`

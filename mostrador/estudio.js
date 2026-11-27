@@ -592,7 +592,7 @@ export function renderStudyStrataCards(matrixShard, options = {}) {
     `<strong class="stratum-title">🧭 ${escapeHtml(nsmHeading)}</strong>` +
     (nsmPrimary.length > 0
       ? `<ul class="study-list stratum-list">${nsmPrimary.map(renderNsmLi).join("")}</ul>` +
-        (nsmExtraFunc.length > 0 ? `<details class="tech-details"><summary>${isEn ? `Grammatical particles (${nsmExtraFunc.length})` : `Partículas gramaticales (${nsmExtraFunc.length})`}</summary><ul class="study-list stratum-list">${nsmExtraFunc.map(renderNsmLi).join("")}</ul></details>` : "")
+        (nsmExtraFunc.length > 0 ? `<div class="tech-details"><strong class="ek-title-sm">${isEn ? `Grammatical particles (${nsmExtraFunc.length})` : `Partículas gramaticales (${nsmExtraFunc.length})`}</strong><ul class="study-list stratum-list">${nsmExtraFunc.map(renderNsmLi).join("")}</ul></div>` : "")
       : `<p class="stratum-empty-note">∅ (${escapeHtml(nsmEmpty)}).</p>`) +
     `</div>`;
 
@@ -782,9 +782,9 @@ export function renderLeipzig4LineGmisHtml(matrixShard, options = {}) {
     `<section class="gmis-4line-scaffold" data-gmis-scaffold="true" data-lang="${escapeHtml(lang)}" data-book="${escapeHtml(book)}" data-chapter="${chapter}" data-word-order="${escapeHtml(wordOrder)}">` +
     `<header class="gmis-scaffold-header">` +
     `<strong>🔬 ${isEn ? "4-Line Interlinear Analysis" : "Análisis Interlineal en 4 Líneas"}</strong> ` +
-    `<details class="tech-details" data-advanced-audit="true"><summary>${isEn ? "Technical source details" : "Detalles técnicos de fuente"}</summary>` +
-    `<code>GMIS · Leipzig / WLC / SRGNT / NSM-65</code>` +
-    `</details>` +
+    `<div class="tech-details" data-advanced-audit="true">` +
+    `<code>${escapeHtml(isEn ? "4-Line Interlinear · Leipzig / WLC / SRGNT" : "Interlineal 4 líneas · Leipzig / WLC / SRGNT")}</code>` +
+    `</div>` +
     `</header>` +
     verseBlocksHtml +
     `</section>`

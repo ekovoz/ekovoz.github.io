@@ -799,7 +799,7 @@ export function renderChapterDiachronicWitnessesHtml({
     .map(
       (w) =>
         `<div class="diachronic-witness-item" data-diachronic-witness-ref="${w.osisRef}" data-delta-aoa="${w.deltaAoaYears}" data-delta-mdd="${w.deltaMdd}">` +
-        `<strong>${w.osisRef}</strong> (${w.appliedTiers.join("+")} · ΔAoA=${w.deltaAoaYears}a · ΔMDD=${w.deltaMdd}): ` +
+        `<strong>${w.osisRef}</strong> (${w.appliedTiers.join("+")} · edad natural ${w.deltaAoaYears}a · cercanía ${w.deltaMdd}): ` +
         `<span class="ek-strike">${w.text1909.slice(0, 65)}</span> → ` +
         `<strong>${w.text2026.slice(0, 65)}</strong>` +
         `</div>`,
@@ -848,13 +848,13 @@ export function renderAnalyticalThermometerHtml({
     .join(" · ");
 
   const inlineDetailsHtml = includeInlineSubstitutionsDetails
-    ? `<details id="diachronicSubstitutionsDetails" class="diachronic-substitutions-details">` +
-    `<summary>Ver sustituciones 1909 → Siglo XXI en este capítulo</summary>` +
+    ? `<section id="diachronicSubstitutionsDetails" class="diachronic-substitutions-details">` +
+    `<strong class="ek-title-sm">Ver sustituciones 1909 → Siglo XXI en este capítulo</strong>` +
     `<div class="ek-mt-xs">Léxico: ${tier1Sample} | Enclíticos: ${tier3Sample} | ${formatHumanMetricLabel("eipen_l", metrics.eipenL, uiLocale)} · ${formatHumanMetricLabel("aoa", `${metrics.aoaYears}a`, uiLocale)} · ${formatHumanMetricLabel("mdd", metrics.mdd, uiLocale)}</div>` +
     `<div id="diachronicRegisterAuditPanel" class="ek-mt-sm">` +
     renderChapterDiachronicAuditCardHtml({ verses: textList, bookCode, chapter: Number(String(osisRef).split(".")[1]) || 1, uiLocale }) +
     `</div>` +
-    `</details>`
+    `</section>`
     : "";
 
   const nonZeroTierBadges = [
@@ -965,25 +965,25 @@ export function renderChapterDiachronicAuditCardHtml({
     `data-delta-aoa="${summary.deltaAoaChapter}" ` +
     `data-delta-mdd="${summary.deltaMddChapter}" ` +
     `data-catalog-total="${catalog.length}">` +
-    `<strong>📊 Auditoría Diacrónica (${summary.bookCode} ${Number(chapter) || 1} · ${summary.versesInspected} vv. · ${summary.totalTransformations} transformaciones 1909→2026 · ΔAoA=${summary.deltaAoaChapter}a · ΔMDD=${summary.deltaMddChapter})</strong>` +
+    `<strong>📊 Auditoría Diacrónica (${summary.bookCode} ${Number(chapter) || 1} · ${summary.versesInspected} vv. · ${summary.totalTransformations} transformaciones 1909→2026 · edad natural ${summary.deltaAoaChapter}a · cercanía ${summary.deltaMddChapter})</strong>` +
     `<div class="ek-flex-wrap-inline">` +
     `<span class="uls-badge" data-audit-tier="1">Tier 1 Léxico: ${summary.tier1LexicalCount}/${summary.tierCatalogSizes.tier1Rules}</span>` +
     `<span class="uls-badge" data-audit-tier="2">Tier 2 Morfología: ${summary.tier2MorphologicalCount}/${summary.tierCatalogSizes.tier2Rules}</span>` +
     `<span class="uls-badge" data-audit-tier="3">Tier 3 Enclíticos: ${summary.tier3EncliticCount}/${summary.tierCatalogSizes.tier3Rules}</span>` +
-    `<span class="uls-badge" data-audit-book-eipen="${bookEipen}">Vector ${summary.bookCode}: AoA ${bookAoa}a (≤${maxAoa}a) · Prev ${(bookPrev * 100).toFixed(1)}% (≥${(minPrev * 100).toFixed(0)}%) · MDD ${bookMdd} (≤${maxMdd}) · Eipen-L ${bookEipen} (≥${minEipen})</span>` +
+    `<span class="uls-badge" data-audit-book-eipen="${bookEipen}">Vector ${summary.bookCode}: edad ${bookAoa}a (≤${maxAoa}a) · palabras comunes ${(bookPrev * 100).toFixed(1)}% (≥${(minPrev * 100).toFixed(0)}%) · cercanía ${bookMdd} (≤${maxMdd}) · fluidez ${bookEipen} (≥${minEipen})</span>` +
     `</div>` +
     `<div class="ek-w-full ek-mt-xs">${witnessesHtml}</div>` +
-    `<details class="tech-details ek-mt-xs" data-diachronic-provenance="true" data-classic-stratum="${DIACHRONIC_PROVENANCE_META.classic_stratum_preserved}" data-modernization-tier="${DIACHRONIC_PROVENANCE_META.modernization_tier}" data-source-provenance="${DIACHRONIC_PROVENANCE_META.source_provenance}" data-max-batch-verses="${Number(DIACHRONIC_PROVENANCE_META.max_batch_verses) || 20}">` +
-    `<summary>🧾 Registro y trazabilidad diacrónica (${DIACHRONIC_PROVENANCE_META.classic_stratum_preserved} → ${DIACHRONIC_PROVENANCE_META.modernization_tier})</summary>` +
+    `<div class="tech-details ek-mt-xs" data-diachronic-provenance="true" data-classic-stratum="${DIACHRONIC_PROVENANCE_META.classic_stratum_preserved}" data-modernization-tier="${DIACHRONIC_PROVENANCE_META.modernization_tier}" data-source-provenance="${DIACHRONIC_PROVENANCE_META.source_provenance}" data-max-batch-verses="${Number(DIACHRONIC_PROVENANCE_META.max_batch_verses) || 20}">` +
+    `<strong class="ek-title-sm">🧾 Registro y trazabilidad diacrónica (${DIACHRONIC_PROVENANCE_META.classic_stratum_preserved} → ${DIACHRONIC_PROVENANCE_META.modernization_tier})</strong>` +
     `<div class="ek-row-wrap ek-meta ek-mt-xs">` +
     `<span>Origen: <code>${DIACHRONIC_PROVENANCE_META.source_provenance}</code></span> · ` +
     `<span>Lote máx: <code>${Number(DIACHRONIC_PROVENANCE_META.max_batch_verses) || 20} vv.</code></span> · ` +
     `<span>SHA-256: <code>${String(DIACHRONIC_PROVENANCE_META.ledger_sha256_root || "").slice(0, 16)}…</code></span> · ` +
     `<span>Ledger build: <code>${DIACHRONIC_PROVENANCE_META.build_ledger_path}</code></span> · ` +
     `<span>Ledger corpus: <code>${DIACHRONIC_PROVENANCE_META.dual_anchor_ledger_path}</code></span>` +
-    `</div></details>` +
-    `<details id="diachronicAll156RulesExplorer">` +
-    `<summary>🔎 Explorar catálogo completo de reglas diacrónicas (${catalog.length} sustituciones FST en 3 capas)</summary>` +
+    `</div></div>` +
+    `<div id="diachronicAll156RulesExplorer">` +
+    `<strong class="ek-title-sm">🔎 Explorar catálogo completo de reglas diacrónicas (${catalog.length} sustituciones FST en 3 capas)</strong>` +
     `<div class="ek-row-wrap ek-mt-sm">` +
     `<input type="search" id="diachronicSubstitutionsSearchInput" class="ek-search-pill" placeholder="Buscar término 1909 o Siglo XXI..." value="${searchQuery}">` +
     `<select id="diachronicTierFilterSelect" class="ek-select-pill" aria-label="Filtrar por capa diacrónica">` +
@@ -994,7 +994,7 @@ export function renderChapterDiachronicAuditCardHtml({
     `</select>` +
     `</div>` +
     `<div id="diachronicSubstitutionsResultsList" class="ek-row-wrap ek-gap-xs ek-mt-sm" data-shown-rules="${filteredCatalog.length}">${allChipsHtml}</div>` +
-    `</details>` +
+    `</div>` +
     `</div>`
   );
 }

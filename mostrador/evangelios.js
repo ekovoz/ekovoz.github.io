@@ -653,7 +653,7 @@ export function renderEvangeliosPlateActionsHtml({
     `</div>` +
     `<div id="evangeliosQuestionsList" data-evangelios-questions="true" class="evangelios-questions-box">` +
     `<strong>🌅 ${isEnUi ? "Dawn Reflection Questions:" : "Preguntas para el Amanecer:"}</strong>` +
-    `<ol class="evangelios-questions-list">${questionsHtml}</ol>` +
+    `<ol class="evangelios-questions-list" data-aligned-list="true">${questionsHtml}</ol>` +
     `</div>` +
     `</div>`
   );

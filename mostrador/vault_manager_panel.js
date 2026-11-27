@@ -164,17 +164,17 @@ export function renderVaultStorageManagerHtml({
       ? `✅ ${isEn ? "Ready" : "Listo"}${sizeStr ? ` · ${sizeStr}` : ""}`
       : `${isEn ? "Not downloaded" : "Disponible"}${sizeStr ? ` · ${sizeStr}` : ""}`;
     const metaDetailsHtml = meta
-      ? `<details class="tech-details vault-pack-meta-details" data-pack-meta-details="true">` +
-        `<summary>${isEn ? "Edition & verification details" : "Ficha técnica y verificación"}</summary>` +
+      ? `<div class="tech-details vault-pack-meta-details" data-pack-meta-details="true">` +
         `<div class="ek-meta ek-stack-xs">` +
-        `<span><strong>${isEn ? "Canon tradition" : "Edición"}:</strong> ${escapeHtml(formatEditorialTraditionLabel(meta.versificationTradition || "eng", isEn ? "en" : "es"))} · ` +
+        `<span><strong>${isEn ? "Edition & verification details" : "Ficha técnica y verificación"}:</strong> ` +
+        `<strong>${isEn ? "Canon tradition" : "Edición"}:</strong> ${escapeHtml(formatEditorialTraditionLabel(meta.versificationTradition || "eng", isEn ? "en" : "es"))} · ` +
         `<strong>${isEn ? "Variants" : "Variantes"}:</strong> ${escapeHtml(Array.isArray(meta.diachronicVariants) && meta.diachronicVariants.length ? meta.diachronicVariants.join(", ") : "canonical")} · ` +
         `<strong>${isEn ? "Epistemic tiers" : "Niveles epistémicos"}:</strong> ${escapeHtml(String(meta.bookEpistemicTiersLen ?? 0))} · subsettedBiblical=${Boolean(meta.subsettedBiblical)}</span>` +
         (meta.merkleRootSha256 ? `<span><strong>Merkle:</strong> <code>${escapeHtml(String(meta.merkleRootSha256).slice(0, 16))}…</code></span>` : "") +
         (meta.contentDigestSha256 ? `<span><strong>Digest:</strong> <code>${escapeHtml(String(meta.contentDigestSha256).slice(0, 16))}…</code></span>` : "") +
         (meta.origin_url ? `<span><strong>origin_url:</strong> <code>${escapeHtml(String(meta.origin_url))}</code></span>` : "") +
         (meta.metaZstdSha256 ? `<span><strong>metaZstdSha256:</strong> <code>${escapeHtml(String(meta.metaZstdSha256).slice(0, 16))}…</code></span>` : "") +
-        `</div></details>`
+        `</div></div>`
       : "";
     return (
       `<li class="vault-pack-row${isMatrix ? " is-matrix-highlight" : ""}" data-vault-pack="${escapeHtml(langCode)}" data-vault-file="${escapeHtml(fileKey)}" data-vault-search="${escapeHtml(searchHay)}" data-vault-installed="${downloaded}"${priorityTag ? ` data-vault-priority="${escapeHtml(priorityTag)}"` : ""}>` +
@@ -241,13 +241,13 @@ export function renderVaultStorageManagerHtml({
     `<progress class="vault-quota-bar" max="100" value="${pct}"${pct === 0 ? " hidden" : ""}>${pct}%</progress>` +
     `<ul class="vault-pack-list vault-pack-priority-list">${priorityRowsHtml}</ul>` +
     (remainingCodes.length > 0
-      ? `<details id="vaultMorePacksDetails" class="r9-stratum-accordion ek-mt-xs"${cleanFilter ? " open" : ""}>` +
-      `<summary>📚 ${isEn ? `More offline Bible languages (${remainingCodes.length})` : `Más idiomas offline disponibles (${remainingCodes.length})`}</summary>` +
+      ? `<section id="vaultMorePacksDetails" class="r9-stratum-accordion ek-mt-xs"${cleanFilter ? ' data-filtered="true"' : ""}>` +
+      `<strong>📚 ${isEn ? `More offline Bible languages (${remainingCodes.length})` : `Más idiomas offline disponibles (${remainingCodes.length})`}</strong>` +
       `<div class="ek-mt-xs">` +
       `<input type="search" id="vaultPacksFilterInput" class="ek-input-compact ek-mb-xs" value="${escapeHtml(filterQuery)}" placeholder="${isEn ? "Filter language (pt, fr, ar, stp...)" : "Filtrar idioma (pt, fr, ar, stp...)"}">` +
       `<ul class="vault-pack-list vault-pack-list-compact">${remainingRowsHtml}</ul>` +
       `</div>` +
-      `</details>`
+      `</section>`
       : "") +
     `<section id="vaultStandaloneOfflineReadersCard" class="ek-card ek-stack-xs ek-mt-xs" data-standalone-readers="5">` +
     `<strong>📖 ${isEn ? "Standalone Offline HTML Readers (5)" : "Lectores HTML autónomos sin conexión (5)"}</strong>` +
@@ -289,10 +289,10 @@ export function renderPortabilityResearchCardHtml({ dlEntries = [], isEn = false
     `<a id="linkLlmsFullCorpus" class="uls-chip ek-btn-link" href="llms-full.txt" data-llms-full="true">📚 ${isEn ? "Full AI & Research Corpus (llms-full.txt · 32 KB)" : "Texto Completo de Investigación (llms-full.txt · 32 KB)"}</a>` +
     `<a id="linkLlmsSummaryIndex" class="uls-chip ek-btn-link" href="llms.txt">📄 llms.txt</a>` +
     `</div>` +
-    `<details id="shareLlmsDossiersDetails" class="tech-details">` +
-    `<summary>${isEn ? "Browse 34 language research sheets (web/llms/*.md)" : "Explorar 34 fichas lingüísticas abiertas (web/llms/*.md)"}</summary>` +
+    `<section id="shareLlmsDossiersDetails" class="tech-details">` +
+    `<strong>${isEn ? "34 language research sheets (web/llms/*.md)" : "34 fichas lingüísticas abiertas (web/llms/*.md)"}</strong>` +
     `<div class="ek-row-wrap ek-mt-xs">${llmsDossiersLinksHtml}</div>` +
-    `</details>` +
+    `</section>` +
     `</section>`
   );
 }

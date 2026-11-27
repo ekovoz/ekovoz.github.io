@@ -285,6 +285,19 @@ export function renderPhilologyRosettaInspectorHtml(activeRows = [], options = {
     }
   }
 
+  if (options.activeStrongId) {
+    const activeFam = resolveConsonantalRootFamily(options.activeStrongId, rosettaIndex);
+    if (activeFam && !seenRoots.has(activeFam.root_consonants)) {
+      seenRoots.add(activeFam.root_consonants);
+      matchedFamilies.unshift(activeFam);
+    }
+    const activeBridge = resolveLxxMtCognateBridge(options.activeStrongId, rosettaIndex);
+    if (activeBridge && !seenBridges.has(activeBridge.hebrew_strong)) {
+      seenBridges.add(activeBridge.hebrew_strong);
+      matchedBridges.unshift(activeBridge);
+    }
+  }
+
   const isGenesis1_1 = book === "GEN" && chapter === 1 && verse === 1;
   if (matchedFamilies.length === 0 && isGenesis1_1) {
     matchedFamilies.push(PHILOLOGY_ROSETTA_DEFAULT_INDEX.consonantal_root_families["ברא"]);
@@ -357,29 +370,28 @@ export function renderPhilologyRosettaInspectorHtml(activeRows = [], options = {
   const residualClassesLine =
     `<li data-residual-classes-5="true" data-residuals-total="${totalResiduals}">` +
     `<strong>${isEn ? `Transmission variants & notes (${totalResiduals.toLocaleString("en-US")} cases)` : `Variantes y notas de transmisión (${totalResiduals.toLocaleString("en-US")} casos)`}</strong> ` +
-    `<details class="tech-details ek-mt-xs"><summary>${isEn ? "Editorial apparatus breakdown" : "Desglose del aparato textual"} (${totalResiduals.toLocaleString("en-US")})</summary>` +
     `<div class="ek-row-wrap ek-mt-xs">` +
     `<span class="uls-badge" data-residual-kind="KETIV_QERE">${escapeHtml(humanizeTechnicalCode("KETIV_QERE", uiLocale))} (${kqCount})</span> · ` +
     `<span class="uls-badge" data-residual-kind="VERSIFICATION">${escapeHtml(humanizeTechnicalCode("VERSIFICATION", uiLocale))} (${versCount})</span> · ` +
     `<span class="uls-badge" data-residual-kind="TR_SUPPLEMENT">${escapeHtml(humanizeTechnicalCode("TR_SUPPLEMENT", uiLocale))} (${trCount})</span> · ` +
     `<span class="uls-badge" data-residual-kind="SURFACE_VARIANT">${escapeHtml(humanizeTechnicalCode("SURFACE_VARIANT", uiLocale))} (${surfCount})</span> · ` +
     `<span class="uls-badge" data-residual-kind="UNMATCHED">${escapeHtml(humanizeTechnicalCode("UNMATCHED", uiLocale))} (${unmCount})</span>` +
-    `</div></details>` +
+    `</div>` +
     `</li>`;
 
   const annotReport =
     rosettaIndex?.annotation_index_report ||
     PHILOLOGY_ROSETTA_DEFAULT_INDEX.annotation_index_report || {
-      total_tokens_indexed: 444363,
+      total_tokens_indexed: 444364,
       hebrew_at_tokens: 306753,
-      greek_nt_tokens: 137610,
+      greek_nt_tokens: 137611,
       strong_entries: 14296,
       morph_tags: 1148,
       oov_rate: 0.0,
     };
-  const totalTokens = Number(annotReport.total_tokens_indexed || 444363);
+  const totalTokens = Number(annotReport.total_tokens_indexed || 444364);
   const hebrewTokens = Number(annotReport.hebrew_at_tokens || annotReport.at_tokens || 306753);
-  const greekTokens = Number(annotReport.greek_nt_tokens || annotReport.nt_tokens || 137610);
+  const greekTokens = Number(annotReport.greek_nt_tokens || annotReport.nt_tokens || 137611);
   const strongEntriesCount = Number(annotReport.strong_entries || annotReport.unique_strongs || 14296);
   const morphTagsCount = Number(annotReport.morph_tags || annotReport.unique_morph_tags || 1148);
   const oovRate = Number(annotReport.oov_rate || 0.0).toFixed(2);
@@ -387,9 +399,6 @@ export function renderPhilologyRosettaInspectorHtml(activeRows = [], options = {
     `<li data-annotation-tokens="${totalTokens}" data-annotation-hebrew="${hebrewTokens}" data-annotation-greek="${greekTokens}" data-annotation-oov="${oovRate}">` +
     `<strong>${isEn ? "Word-by-word coverage" : "Cobertura palabra por palabra"}:</strong> ` +
     `${totalTokens.toLocaleString("en-US")} ${isEn ? "indexed words" : "palabras indexadas"} · ${strongEntriesCount.toLocaleString("en-US")} ${isEn ? "roots" : "raíces"}` +
-    `<details class="tech-details ek-mt-xs"><summary>${isEn ? "Technical index metrics" : "Métricas técnicas del índice"}</summary>` +
-    `<code>${totalTokens.toLocaleString("en-US")} tokens</code> (${isEn ? "OT Hebrew/Aramaic" : "AT Hebreo/Arameo"}: <code>${hebrewTokens.toLocaleString("en-US")}</code> · ${isEn ? "NT Greek" : "NT Griego"}: <code>${greekTokens.toLocaleString("en-US")}</code> · <code>${strongEntriesCount.toLocaleString("en-US")} Strongs</code> · <code>${morphTagsCount.toLocaleString("en-US")} tags</code> · <code>OOV = ${oovRate}%</code>)` +
-    `</details>` +
     `</li>`;
 
   const calSummary = aggregateBlindCalibration12Langs(
@@ -407,7 +416,8 @@ export function renderPhilologyRosettaInspectorHtml(activeRows = [], options = {
     `<li data-blind-calibration-chrf="${escapeHtml(chrfScore)}" data-blind-calibration-langs="${calSummary.langsCount}" data-blind-calibration-rows="${calSummary.rowsCount}">` +
     `<strong>${isEn ? `Verified fidelity across ${calSummary.langsCount} languages` : `Fidelidad verificada en ${calSummary.langsCount} lenguas`}:</strong> ` +
     `${calSummary.passRatePct}% ${isEn ? "verified across" : "verificada en"} ${calSummary.rowsCount} ${isEn ? "passages" : "pasajes"}` +
-    `<details class="tech-details ek-mt-xs"><summary>${isEn ? `Multilingual calibration details (${escapeHtml(chrfScore)}%)` : `Detalles de calibración multilingüe (${escapeHtml(chrfScore)}%)`}</summary>` +
+    `<details class="tech-details ek-mt-xs"><summary>${isEn ? `Index & calibration metrics (${escapeHtml(chrfScore)}%)` : `Métricas de índice y calibración (${escapeHtml(chrfScore)}%)`}</summary>` +
+    `<code>${totalTokens.toLocaleString("en-US")} tokens</code> (${isEn ? "OT Hebrew/Aramaic" : "AT Hebreo/Arameo"}: <code>${hebrewTokens.toLocaleString("en-US")}</code> · ${isEn ? "NT Greek" : "NT Griego"}: <code>${greekTokens.toLocaleString("en-US")}</code> · <code>${strongEntriesCount.toLocaleString("en-US")} Strongs</code> · <code>${morphTagsCount.toLocaleString("en-US")} tags</code> · <code>OOV = ${oovRate}%</code>)` +
     `<div id="rosettaBlindCalibration12Table" class="ek-row-wrap ek-gap-xs ek-mt-xs">${byLangPills}</div>` +
     `</details>` +
     `</li>`;
@@ -677,7 +687,7 @@ export function renderPhilologyRosettaExplorerHtml({
   const catOptions = catPairs
     .map(([val, enL, esL]) => `<option value="${escapeHtml(val)}"${val === cleanCat ? " selected" : ""}>${escapeHtml(isEn ? enL : esL)}</option>`)
     .join("");
-  const chipsHtml = renderPhilologyRosettaResultsRowsHtml({ query: cleanQuery, category: cleanCat, rosettaIndex });
+  const chipsHtml = renderPhilologyRosettaResultsRowsHtml({ query: cleanQuery, category: cleanCat, activeRef, rosettaIndex });
   const idx = rosettaIndex || PHILOLOGY_ROSETTA_DEFAULT_INDEX;
   const hgPairsTotal = Number(idx?.empirical_hg_pairs_total || 31102);
   const strongSeedTotal = Number(idx?.strong_lexicon_seed_total || 14298);

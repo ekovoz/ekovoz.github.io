@@ -64,6 +64,15 @@ export function normalizeRouteIntent(rawIntent = "", rawMode = "") {
   return "";
 }
 
+export function resolvePrimaryUiIntent(rawIntent = "", rawMode = "") {
+  const normalized = normalizeRouteIntent(rawIntent, rawMode);
+  if (normalized === "print") return "print";
+  if (normalized === "study" || normalized === "workshop" || normalized === "share") {
+    return "study-workshop-vault";
+  }
+  return "read";
+}
+
 export function normalizeRouteDose(rawDose = "") {
   const m = trimStr(rawDose).toLowerCase().match(/^(?:dose)?([123])$/);
   return m ? Number(m[1]) : null;
@@ -193,6 +202,9 @@ export function serializeMostradorRouteQuery(st = {}, fallbackPlate = 24) {
   }
   const sheetVal = trimStr(st.sheet || st.activeSheet).toLowerCase();
   const intentVal = normalizeRouteIntent(st.intent || st.activeIntent);
+  if (st && typeof st === "object" && "primaryIntentGroup" in st) {
+    st.primaryIntentGroup = resolvePrimaryUiIntent(intentVal);
+  }
   const doseVal = normalizeRouteDose(st.dose ?? st.activeDose);
   const bridgeVal = trimStr(st.bridge || st.bridgeLang);
   const profileVal = trimStr(st.profile || st.edition);

@@ -10,9 +10,9 @@ import {
 } from "./i18n_ui.js";
 import {
   CROSS_WORK_BRIDGE_TABLE, HAREL_SHEET_MAP, LIFE_TRAILS_ANCHORS, MOSTRADOR_DOM_BINDINGS, MULTI_ORTHO_LANGS, POETIC_BOOKS,
-  REGIONAL_BRIDGE_LANGUAGES_10, applyOrthographyProfile, deriveEpistemicSeal, escapeHtml, lookupWordTokenStrongEntry,
-  projectCrossWorkCoordinate, renderChapterPreviewHtml, renderDiglossicParallelBridge, renderInteractiveVerseTokensHtml,
-  resolveRegionalBridgeLanguage21, syncOrthographyPillsVisibilityInDom, toUnicodeSuperscript,
+  REGIONAL_BRIDGE_LANGUAGES_10, applyOrthographyProfile, deriveEpistemicSeal, escapeHtml, formatActiveCorpusBadgeText,
+  lookupWordTokenStrongEntry, projectCrossWorkCoordinate, renderChapterPreviewHtml, renderDiglossicParallelBridge,
+  renderInteractiveVerseTokensHtml, resolveRegionalBridgeLanguage21, syncOrthographyPillsVisibilityInDom, toUnicodeSuperscript,
 } from "./mostrador/bridge_and_chapter.js";
 import {
   ARTIFACT_PROJECTION_SCHEMA, MOSTRADOR_DOM_SCOPE_CONTRACTS, STATUS, computeProsodyAndSyllableAlignmentInWasm, createDataLayer,
@@ -291,11 +291,17 @@ export function createMostradorController(options = {}) {
 
   function syncLifeTrailsActiveState(targetDoc = doc) {
     if (!targetDoc) return;
-    for (const [trailBtnId, anchor] of Object.entries(LIFE_TRAILS_ANCHORS)) {
+    if (state.activeTrailId) {
+      const activeAnchor = LIFE_TRAILS_ANCHORS[state.activeTrailId];
+      const chNum = Number(state.chapter);
+      const isCreationSpan = state.activeTrailId === "btnTrailCreacion" && state.book === "GEN" && (chNum === 1 || chNum === 2);
+      const matchesAnchor = activeAnchor && state.book === activeAnchor.book && (isCreationSpan || chNum === Number(activeAnchor.chapter));
+      if (!matchesAnchor) state.activeTrailId = null;
+    }
+    for (const trailBtnId of Object.keys(LIFE_TRAILS_ANCHORS)) {
       const tBtn = getEl(trailBtnId, targetDoc);
       if (tBtn && typeof tBtn.setAttribute === "function") {
-        const isActive =
-          state.book === anchor.book && Number(state.chapter) === Number(anchor.chapter);
+        const isActive = Boolean(state.activeTrailId) && state.activeTrailId === trailBtnId;
         tBtn.setAttribute("aria-pressed", isActive ? "true" : "false");
       }
     }
@@ -342,10 +348,7 @@ export function createMostradorController(options = {}) {
       Array.isArray(state.availablePackLangs24) && state.availablePackLangs24.length > 0
         ? state.availablePackLangs24.length
         : 24;
-    const isUiEn = String(state.uiLocale || "es").trim().toLowerCase().startsWith("en");
-    corpusLbl.textContent = isUiEn
-      ? `Corpus: ${state.lang} · 7,164`
-      : `Corpus: ${state.lang} · 7,164`;
+    corpusLbl.textContent = formatActiveCorpusBadgeText(state.lang, packsCount, state.uiLocale);
   }
 
   function renderStateToDom(targetDoc = doc, { syncUrl = true, pushUrl = false } = {}) {

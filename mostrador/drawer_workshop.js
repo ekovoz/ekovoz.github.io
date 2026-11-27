@@ -321,6 +321,7 @@ export async function hydrateImproveDrawerPanel(ctx = {}) {
     renderAuditSubtabPanels();
     bindElicitAndModernizeControls({ state, targetDoc, getEl, modernizeFn: applySpanish21DiachronicRegister, refreshFn: renderAuditSubtabPanels, switchToPatchFn: () => ctx.switchSubtab?.("patch") });
     bindImproveFormControlsInDrawer(mod, ctx);
+    getEl?.("bibleFieldWorkshopSheet", targetDoc)?.setAttribute?.("data-workshop-tasks", "3");
     projectSurfaceLayoutFromState(state, targetDoc, getEl);
     return html;
   });
