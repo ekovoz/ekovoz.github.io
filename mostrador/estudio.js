@@ -4,8 +4,6 @@ export { renderDiglossicParallelBridge, resolveRegionalBridgeLanguage21 };
 // Ekovoz Mostrador Ronda 20 — Cero dependencias de Node.js, cero relleno sintético.
 
 import { MATRIX_ROW_COLUMNS } from "./data_layer.js";
-import { humanizeUiCopy } from "./human_labels.js";
-import { formatNonEmptyCoreMeaning, partitionContentAndFunctionRows, resolveDefaultStrongForPassage, resolveTestamentRegime, selectPrimaryLexicalToken } from "./study_verse_viewmodel.js";
 import {
   aggregateBlindCalibration12Langs,
   detectContextualCulturalGlossesForVerse,
@@ -24,14 +22,15 @@ import {
 } from "./estudio_rosetta_and_realia.js";
 import {
   CANONICAL_5_RESIDUAL_KINDS,
-  CANONICAL_METROLOGY_FALLBACK,
   CANONICAL_TSK_ECHOES,
   NSM_ES_TO_EN_PHRASES,
   PHILOLOGY_ROSETTA_DEFAULT_INDEX,
   SDBH_HIERARCHICAL_PREFIXES,
   SEMANTIC_TAG_GLOSSARY,
-  VERSE_SPECIFIC_TSK_ECHOES,
+  VERSE_SPECIFIC_TSK_ECHOES
 } from "./estudio_schemas.js";
+import { humanizeUiCopy } from "./human_labels.js";
+import { formatNonEmptyCoreMeaning, partitionContentAndFunctionRows, resolveDefaultStrongForPassage, resolveTestamentRegime, selectPrimaryLexicalToken } from "./study_verse_viewmodel.js";
 export {
   aggregateBlindCalibration12Langs, CANONICAL_5_RESIDUAL_KINDS, detectContextualCulturalGlossesForVerse, hydrateCulturalGlossesLexicon, hydratePhilologyRosettaIndex, PHILOLOGY_ROSETTA_DEFAULT_INDEX, renderPhilologyRosettaExplorerHtml, renderPhilologyRosettaInspectorHtml, renderPhilologyRosettaResultsRowsHtml, resolveBicanonicalDivergence, resolveConsonantalRootFamily, resolveKetivQereResiduals, resolveLxxMtCognateBridge, resolveParatextEngOrgMapping, searchPhilologyRosettaIndex
 };
@@ -275,9 +274,23 @@ function resolveCoherentNsm65ForDomain(rawDomain = "", rawNsm = "", uiLocale = "
     const funcSrc = `${rawDomain}|${roleRaw}`.split("|").filter((s) => /\bFUNC:/i.test(s)).join("|");
     if (funcSrc) return humanizeSemanticTagChain(funcSrc, uiLocale) || (isEn ? "Grammatical function link" : "Palabra de enlace gramatical");
   }
+  const strongNorm = String(row?.c07_strong_id || row?.strong || "").trim().toUpperCase().replace(/^([HG])0+/, "$1");
   if (ln23Match) {
     const sub = Number(ln23Match[1]) || 0;
-    if (sub >= 46 && sub <= 60) return isEn ? "Birth, pregnancy, and new life coming into the world" : "Nacimiento, gestación y vida nueva que viene al mundo";
+    if (sub >= 46 && sub <= 60) {
+      if (strongNorm === "G1064") {
+        return isEn ? "Womb, conception, and birth of new life" : "Vientre materno: nacimiento, gestación y vida nueva";
+      }
+      if (strongNorm === "G2192") {
+        return isEn ? "Pregnancy: carrying new life within" : "Encinta: llevar vida nueva en el vientre";
+      }
+      if (strongNorm === "G5088") {
+        return isEn ? "Childbirth: giving birth to a child" : "Alumbramiento: dar a luz a un hijo";
+      }
+      if (!rawNsm || rawNsm === "∅" || nsmLow.includes("alimento")) {
+        return isEn ? "Birth, pregnancy, and new life coming into the world" : "Nacimiento, gestación y vida nueva que viene al mundo";
+      }
+    }
     if (sub >= 61 && sub <= 112 && nsmLow.includes("alimento")) return isEn ? "Vital process of breathing, sleeping, living, or dying" : "Proceso vital de respirar, dormir, vivir o morir";
     if (sub >= 113 && nsmLow.includes("alimento")) return isEn ? "Health, strength, or healing of the human body" : "Salud, fuerza o sanidad del cuerpo humano";
   }
@@ -438,9 +451,9 @@ export function renderStudy14ColDrawerHtml(matrixShard, options = {}) {
   const focusedOsisRef = String(firstTokenRow?.c02_ref || `${book}.${chapter}.${activeVerseNum}`);
   const focusedActionBarHtml = normalizedRows.length > 0
     ? `<div id="studyFocusedTokenActionBar" class="study-focused-token-bar ek-row-between ek-mb-xs" data-focused-token-actions="true">` +
-      `<span class="ek-meta">${isEn ? "Selected word" : "Palabra enfocada"}: <code>${escapeHtml(focusedStrongId)}</code></span>` +
-      `<button type="button" id="btnFocusedTokenProposeRoot" class="uls-chip btn-propose-strong-root" data-propose-strong-id="${escapeHtml(focusedStrongId)}" data-osis-ref="${escapeHtml(focusedOsisRef)}">✍️ ${isEn ? "Improve root" : "Mejorar raíz"} (${escapeHtml(focusedStrongId)})</button>` +
-      `</div>`
+    `<span class="ek-meta">${isEn ? "Selected word" : "Palabra enfocada"}: <code>${escapeHtml(focusedStrongId)}</code></span>` +
+    `<button type="button" id="btnFocusedTokenProposeRoot" class="uls-chip btn-propose-strong-root" data-propose-strong-id="${escapeHtml(focusedStrongId)}" data-osis-ref="${escapeHtml(focusedOsisRef)}">✍️ ${isEn ? "Improve root" : "Mejorar raíz"} (${escapeHtml(focusedStrongId)})</button>` +
+    `</div>`
     : "";
 
   const nsmEntries = shard?.nsm && typeof shard.nsm === "object" ? Object.values(shard.nsm) : [];
@@ -592,7 +605,7 @@ export function renderStudyStrataCards(matrixShard, options = {}) {
     `<strong class="stratum-title">🧭 ${escapeHtml(nsmHeading)}</strong>` +
     (nsmPrimary.length > 0
       ? `<ul class="study-list stratum-list">${nsmPrimary.map(renderNsmLi).join("")}</ul>` +
-        (nsmExtraFunc.length > 0 ? `<div class="tech-details"><strong class="ek-title-sm">${isEn ? `Grammatical particles (${nsmExtraFunc.length})` : `Partículas gramaticales (${nsmExtraFunc.length})`}</strong><ul class="study-list stratum-list">${nsmExtraFunc.map(renderNsmLi).join("")}</ul></div>` : "")
+      (nsmExtraFunc.length > 0 ? `<div class="tech-details"><strong class="ek-title-sm">${isEn ? `Grammatical particles (${nsmExtraFunc.length})` : `Partículas gramaticales (${nsmExtraFunc.length})`}</strong><ul class="study-list stratum-list">${nsmExtraFunc.map(renderNsmLi).join("")}</ul></div>` : "")
       : `<p class="stratum-empty-note">∅ (${escapeHtml(nsmEmpty)}).</p>`) +
     `</div>`;
 

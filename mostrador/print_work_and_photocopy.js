@@ -703,16 +703,18 @@ const camouflagedTitleLen = Number(stealthMeta.camouflaged_title_len || prof0?.c
 const reverseLemmaPresent = Boolean(stealthMeta.reverse_lemma_present ?? prof0?.reverse_lemma_present ?? true);
 const tel = editorialProfiles?.rust_domain_engines_telemetry || null;
 const telHtml = tel
-? `<p class="ek-meta ek-mt-xs"><strong>${isEn ? "Typesetting Engine Telemetry:" : "Telemetría del motor tipográfico:"}</strong> ` +
-`score=${Number(tel.core_surface_score || 0)} · profiles=${Number(tel.canonical_bible_profiles_count || 9)} · ` +
-`fonts28=${Boolean(tel.fonts_28_manifest_verified)} · lt_packets=${Number(tel.fountain_lt_probe_packets || 6)} · ` +
-`sourceStem=${escapeHtml(sourceStem)} · camouflaged_title_len=${camouflagedTitleLen} · reverse_lemma_present=${reverseLemmaPresent}</p>`
-: `<p class="ek-meta ek-mt-xs">sourceStem=${escapeHtml(sourceStem)} · camouflaged_title_len=${camouflagedTitleLen} · reverse_lemma_present=${reverseLemmaPresent}</p>`;
+? `<p class="ek-meta ek-mt-xs"><strong>${isEn ? "Typesetting Engine Status:" : "Estado del motor tipográfico:"}</strong> ` +
+`${isEn ? "surface score" : "puntuación"} ${Number(tel.core_surface_score || 0)} · ` +
+`${Number(tel.canonical_bible_profiles_count || 9)} ${isEn ? "canonical profiles" : "perfiles canónicos"} · ` +
+`${tel.fonts_28_manifest_verified ? (isEn ? "verified fonts" : "fuentes verificadas") : (isEn ? "font check" : "revisión tipográfica")} · ` +
+`${Number(tel.fountain_lt_probe_packets || 6)} ${isEn ? "control packets" : "paquetes de control"} · ` +
+`${escapeHtml(sourceStem)} (${camouflagedTitleLen} ${isEn ? "chars" : "car."}${reverseLemmaPresent ? (isEn ? ", reverse gloss ready" : ", glosa inversa lista") : ""})</p>`
+: `<p class="ek-meta ek-mt-xs">${escapeHtml(sourceStem)} · ${camouflagedTitleLen} ${isEn ? "chars" : "car."}${reverseLemmaPresent ? (isEn ? " · reverse gloss ready" : " · glosa inversa lista") : ""}</p>`;
 return (
 `<section id="printEditorialPreviewsDetails" class="ek-card-muted ek-mt-xs" data-preview-plates="6">` +
 `<strong class="ek-title-sm">🖼️ ${isEn ? "Editorial Print Samples (6 plates)" : "Muestras reales de impresión (6 láminas)"}</strong>` +
 `<div class="ek-row-wrap ek-mt-xs">${thumbsHtml}</div>` +
-`<div id="printTypesettingTelemetryDetails" class="tech-details ek-mt-xs" data-advanced-audit="true" data-contextual-details="true" hidden>` +
+`<div id="printTypesettingTelemetryDetails" class="tech-details ek-mt-xs" data-advanced-audit="true" data-contextual-details="true">` +
 `<strong class="ek-title-sm">📐 ${isEn ? "Typesetting profile specifications" : "Especificaciones técnicas de maquetación"}</strong>` +
 (rawSpec ? `<pre class="ek-meta ek-mt-xs" data-raw-profile-preview="true">${escapeHtml(rawSpec)}</pre>` : "") +
 telHtml +

@@ -13,51 +13,6 @@ import {
   renderStpLedgerProgressHtml,
 } from "./workshop_elicit_and_cldf.js";
 
-const WORKSHOP_CORE_CC0_LANGS = Object.freeze([
-  { code: "es", labelEs: formatIsoLangPillBadge("ES", "Español"), labelEn: formatIsoLangPillBadge("ES", "Spanish") },
-  { code: "en", labelEs: formatIsoLangPillBadge("EN", "English"), labelEn: formatIsoLangPillBadge("EN", "English") },
-  { code: "stp", labelEs: formatIsoLangPillBadge("STP", "O'dam (Tepehuano)"), labelEn: formatIsoLangPillBadge("STP", "O'dam (Tepehuano)") },
-  { code: "he", labelEs: formatIsoLangPillBadge("HE", "Hebreo (WLC)"), labelEn: formatIsoLangPillBadge("HE", "Hebrew (WLC)") },
-  { code: "grc", labelEs: formatIsoLangPillBadge("GRC", "Griego (SBLGNT)"), labelEn: formatIsoLangPillBadge("GRC", "Greek (SBLGNT)") },
-]);
-
-function resolveWorkshopCatalogLangs(
-  masterCensusSummary = null,
-  activeTallerLang = "es",
-  availableWorkshopLangs = null,
-) {
-  const out = [...WORKSHOP_CORE_CC0_LANGS];
-  const seen = new Set(out.map((e) => e.code));
-  const extraCodes = [
-    ...(Array.isArray(availableWorkshopLangs) ? availableWorkshopLangs : []),
-    ...(Array.isArray(masterCensusSummary?.verified_pack_langs) ? masterCensusSummary.verified_pack_langs : []),
-    ...(Array.isArray(masterCensusSummary?.celf_250_active_langs) ? masterCensusSummary.celf_250_active_langs : []),
-    ...(Array.isArray(masterCensusSummary?.tier2_nt_human_ot_workshop_corpora)
-      ? masterCensusSummary.tier2_nt_human_ot_workshop_corpora
-      : []),
-    "fr",
-    "pt",
-    "ar",
-    "sw",
-    "ceb",
-    "tgl",
-    "vie",
-    "yor",
-    String(activeTallerLang || "").trim().toLowerCase(),
-  ];
-  for (const raw of extraCodes) {
-    const code = String(raw || "").trim().toLowerCase();
-    if (!code || seen.has(code)) continue;
-    seen.add(code);
-    out.push({
-      code,
-      labelEs: `🌐 ${code.toUpperCase()} (Revisión comunitaria)`,
-      labelEn: `🌐 ${code.toUpperCase()} (Community review)`,
-    });
-  }
-  return out;
-}
-
 export function formatLock8StatusBadge(status = "PASS", uiLocale = "es") {
   const isEn = String(uiLocale || "es").trim().toLowerCase().startsWith("en");
   const cleanStatus = humanizeUiCopy(String(status || "PASS"), uiLocale);
@@ -170,67 +125,33 @@ export function renderWorkshop5LangsSwitcherHtml(
   availableWorkshopLangs = null,
 ) {
   const isEn = String(uiLocale || "es").trim().toLowerCase().startsWith("en");
-  const normActive = String(activeTallerLang || "es").trim().toLowerCase() || "es";
-  const catalogLangs = resolveWorkshopCatalogLangs(
-    masterCensusSummary,
-    normActive,
-    availableWorkshopLangs,
-  );
-  const cleanActive = catalogLangs.some((l) => l.code === normActive)
-    ? normActive
-    : "es";
+  const cleanActive = String(activeTallerLang || "es").trim().toLowerCase() || "es";
   const tier2Corpora = Array.isArray(masterCensusSummary?.tier2_nt_human_ot_workshop_corpora)
     ? masterCensusSummary.tier2_nt_human_ot_workshop_corpora
     : Array.isArray(availableWorkshopLangs) && availableWorkshopLangs.length > 0
       ? availableWorkshopLangs
       : ["stp"];
-  const pivotCodes = new Set(WORKSHOP_CORE_CC0_LANGS.map((e) => e.code));
-  const pillEntries = catalogLangs.filter((e) => pivotCodes.has(e.code) || e.code === cleanActive);
-  const extraEntries = catalogLangs.filter((e) => !pivotCodes.has(e.code) && e.code !== cleanActive);
-  const formatEntryLabel = (entry) => {
-    const raw = isEn ? entry.labelEn : entry.labelEs;
-    const suffix = tier2Corpora.includes(entry.code)
-      ? ` · ${humanizeUiCopy("Taller comunitario OT", uiLocale)}`
-      : "";
-    return `${raw}${suffix}`;
-  };
-  const buttonsHtml = pillEntries.map((entry) => {
-    const active = entry.code === cleanActive;
-    return (
-      `<button type="button" class="uls-chip workshop-lang-switch-btn${active ? " is-selected" : ""}" ` +
-      `data-taller-lang-pick="${entry.code}" aria-pressed="${active ? "true" : "false"}">` +
-      `${formatEntryLabel(entry)}` +
-      `</button>`
-    );
-  }).join("");
-  const extraSelectHtml = extraEntries.length > 0
-    ? `<select id="tallerExtraLangSelect" class="ek-select-compact" data-taller-lang-select="true" aria-label="${isEn ? "More workshop languages" : "Más idiomas de taller"}">` +
-    `<option value="">${isEn ? `More languages (${extraEntries.length})` : `Más idiomas (${extraEntries.length})`}</option>` +
-    extraEntries.map((entry) => `<option value="${entry.code}">${formatEntryLabel(entry)}</option>`).join("") +
-    `</select>`
-    : "";
-  const activeEntry = catalogLangs.find((e) => e.code === cleanActive) || WORKSHOP_CORE_CC0_LANGS[0];
+  const activeBadgeLabel = cleanActive === "he" || cleanActive === "grc"
+    ? (isEn ? `Original source · ${cleanActive.toUpperCase()}` : `Fuente original · ${cleanActive.toUpperCase()}`)
+    : tier2Corpora.includes(cleanActive)
+      ? `${isEn ? "NT verified + Community OT" : "NT verificado + AT comunitario"}: ${cleanActive.toUpperCase()}`
+      : `${isEn ? "Community edition" : "Edición comunitaria"}: ${cleanActive.toUpperCase()}`;
   const activeFocusHint = cleanActive === "he"
     ? (isEn ? "Source check · Hebrew Bible (WLC) roots, imperatives & proper names" : "Fuente original · Biblia Hebrea (WLC): raíces, imperativos y nombres propios")
     : cleanActive === "grc"
       ? (isEn ? "Source check · Greek NT & LXX lexical lemmas and clauses" : "Fuente original · Griego (LXX + SBLGNT): léxico y cláusulas")
       : cleanActive === "stp"
         ? (isEn ? "O'dam field workshop · New Testament + community OT review" : "Taller O'dam · Nuevo Testamento + revisión comunitaria AT")
-        : (isEn ? `Community review · Active edition: ${activeEntry.labelEn}` : `Revisión comunitaria · Edición activa: ${activeEntry.labelEs}`);
-  const activeBadgeLabel = cleanActive === "he" || cleanActive === "grc"
-    ? (isEn ? `Original source · ${cleanActive.toUpperCase()}` : `Fuente original · ${cleanActive.toUpperCase()}`)
-    : tier2Corpora.includes(cleanActive)
-      ? `${isEn ? "NT verified + Community OT" : "NT verificado + AT comunitario"}: ${cleanActive.toUpperCase()}`
-      : `${isEn ? "Community edition" : "Edición comunitaria"}: ${cleanActive.toUpperCase()}`;
+        : (isEn ? `Community review · Active edition: ${cleanActive.toUpperCase()}` : `Revisión comunitaria · Edición activa: ${cleanActive.toUpperCase()}`);
 
   return (
-    `<section id="workshop5LangsSwitcher" class="ek-card-muted ek-span-full ek-stack-sm" data-active-taller-lang="${escapeHtml(cleanActive)}" data-tier2-corpora="${escapeHtml(tier2Corpora.join(","))}" data-workshop-langs-count="${catalogLangs.length}">` +
+    `<section id="workshopActiveCorpusBadge" class="ek-card-muted ek-span-full ek-stack-sm" data-workshop-corpus-unified="true" data-active-taller-lang="${escapeHtml(cleanActive)}" data-tier2-corpora="${escapeHtml(tier2Corpora.join(","))}">` +
     `<div class="ek-row-between">` +
-    `<strong class="ek-title-sm" data-workshop-lang-banner="${escapeHtml(cleanActive)}">🌍 ${isEn ? `Community Review · Active: ${cleanActive.toUpperCase()} (${catalogLangs.length})` : `Colaboración · Activo: ${cleanActive.toUpperCase()} (${catalogLangs.length})`}</strong>` +
+    `<strong class="ek-title-sm" data-workshop-lang-banner="${escapeHtml(cleanActive)}">🌍 <bdi>${formatIsoLangPillBadge(cleanActive, "")}</bdi> · ${isEn ? "Unified Reading Language" : "Idioma activo unificado"}</strong>` +
     `<span class="uls-badge" data-tier2-workshop-badge="true">${escapeHtml(activeBadgeLabel)}</span>` +
     `</div>` +
-    `<p class="ek-meta" data-workshop-lang-focus="${escapeHtml(cleanActive)}">${escapeHtml(activeFocusHint)}</p>` +
-    `<div class="ek-row-wrap" role="group" aria-label="${isEn ? "Select CC0 Workshop Language" : "Seleccionar idioma de kit de taller CC0"}">${buttonsHtml}${extraSelectHtml}</div>` +
+    `<p class="ek-meta ek-m-0" data-workshop-lang-focus="${escapeHtml(cleanActive)}">${escapeHtml(activeFocusHint)}</p>` +
+    `<button type="button" class="uls-chip" data-open-corpus-drawer="true">${isEn ? "Change language in top selector" : "Cambiar idioma en selector superior"}</button>` +
     `</section>`
   );
 }
@@ -426,6 +347,16 @@ export function createWorkshopAuditHandlers({
     }
   };
   const onAuditClick = async (e) => {
+    const openCorpusBtn = e?.target?.closest
+      ? e.target.closest("[data-open-corpus-drawer]")
+      : e?.target?.getAttribute?.("data-open-corpus-drawer")
+        ? e.target
+        : null;
+    if (openCorpusBtn) {
+      const corpusBtn = getEl?.("sovereignCorpusLangBtn", targetDoc);
+      corpusBtn?.click?.();
+      return true;
+    }
     const langPickBtn = e?.target?.closest
       ? e.target.closest("[data-taller-lang-pick]")
       : e?.target?.getAttribute?.("data-taller-lang-pick")

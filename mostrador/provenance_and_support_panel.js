@@ -137,6 +137,7 @@ export function renderEditorialAuditAttestationHtml({
     `</div>` +
     `<div class="ek-stack-sm ek-mt-sm" data-audit-breakdown="true"${explicitUserVerification ? "" : " hidden"}>` +
     `<span class="uls-badge" data-ed25519-gate="${ed25519GateAttr}">${ed25519BadgeText} · Zero-Truncation=${zeroTrunc ? "OK" : "PENDING"}</span>` +
+    `<div class="tech-details ek-mt-xs" data-advanced-audit="true" data-technical-plane="true"><strong class="tech-details-summary">${isEn ? "🔬 R&D Telemetry & Corpus Metrics" : "🔬 Métricas I+D y Telemetría del Corpus"}</strong>` +
     `<div class="eight-locks-pda-bar" data-eight-locks-bar="true">${eightLocksPillsHtml}</div>` +
     `<div class="ek-row-wrap" data-master-census-7keys="true">` +
     `<span class="uls-badge" data-census-key="living_languages">🌍 ${totalLangs.toLocaleString("en-US")} ${isEn ? "langs" : "lenguas"} · ${macroRegions} ${isEn ? "regions" : "regiones"} · ${subclades} ${isEn ? "subfamilies" : "subfamilias"}</span>` +
@@ -155,6 +156,7 @@ export function renderEditorialAuditAttestationHtml({
       `🧾 ${isEn ? "Constructive Pericope Receipt" : "Recibo Constructivo de Perícopa"}: <code>${escapeHtml(String(pericopeReceipt.batchId || ""))}</code> · MATTR=${Number(pericopeReceipt.mattr || 0).toFixed(3)} · SHA-256=<code>${escapeHtml(String(pericopeReceipt.sha256Prefix || ""))}</code>${ledgerBlake3Root ? ` · BLAKE3=<code>${escapeHtml(String(ledgerBlake3Root).slice(0, 12))}</code>` : ""}` +
       `</div>`
       : "") +
+    `</div>` +
     `</div>` +
     `</div>`
   );

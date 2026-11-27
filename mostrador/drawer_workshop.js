@@ -77,57 +77,63 @@ if (!isCurrent()) return "";
 const currentVerseText =
 state.lastNavResult?.chapter?.verses?.[String(state.verse)] || "";
 const osis = `${state.book}.${state.chapter}.${state.verse}`;
-if (!state.lastNavResult?.matrix?.rows) {
+const fieldWorkshopActiveLang = String(state.workshopLang || state.activeTallerLang || state.lang || "stp").trim().toLowerCase() || "stp";
+
+// Hidratación en paralelo sin bloqueo en cascada (ARB-EKOVOZ-145 / Promise.allSettled)
 const loadMatFn =
 typeof dataLayer?.loadChapterMatrix === "function"
 ? dataLayer.loadChapterMatrix.bind(dataLayer)
 : typeof dataLayer?.loadMatrixChapter === "function"
 ? dataLayer.loadMatrixChapter.bind(dataLayer)
 : null;
-if (loadMatFn) {
-try {
-const matRes = await loadMatFn(state.book || "GEN", state.chapter || 1);
-const rows = Array.isArray(matRes?.rows)
-? matRes.rows
-: Array.isArray(matRes?.data?.rows)
-? matRes.data.rows
-: null;
+
+const [
+matSettled,
+formulaicSettled,
+primaryStrongSettled,
+ladderSettled,
+fwSettled,
+overlaysSettled,
+censusSettled,
+annSettled,
+blindSettled,
+] = await Promise.allSettled([
+!state.lastNavResult?.matrix?.rows && loadMatFn ? loadMatFn(state.book || "GEN", state.chapter || 1) : Promise.resolve(null),
+!state.formulaicIndexHydrated && typeof dataLayer?.loadJson === "function" ? dataLayer.loadJson("data/formulaic_index.json") : Promise.resolve(null),
+resolvePrimaryStrongForVerse(state, dataLayer),
+typeof dataLayer.loadElicitationLadder250 === "function" ? dataLayer.loadElicitationLadder250() : Promise.resolve([]),
+typeof dataLayer.loadFieldWorkshopData === "function" ? dataLayer.loadFieldWorkshopData(fieldWorkshopActiveLang) : Promise.resolve(null),
+loadLiveCascadeOverlaysIdb(state.lang),
+!state.masterCensusSummary && typeof dataLayer.loadMasterCensusSummary === "function" ? dataLayer.loadMasterCensusSummary() : Promise.resolve(null),
+!state.annotationIndexReport && typeof dataLayer?.loadAnnotationIndexReport === "function" ? dataLayer.loadAnnotationIndexReport() : Promise.resolve(null),
+!state.blindCalibrationReport && typeof dataLayer?.loadBlindCalibrationReport === "function" ? dataLayer.loadBlindCalibrationReport() : Promise.resolve(null),
+]);
+
+if (matSettled.status === "fulfilled" && matSettled.value) {
+const matRes = matSettled.value;
+const rows = Array.isArray(matRes?.rows) ? matRes.rows : Array.isArray(matRes?.data?.rows) ? matRes.data.rows : null;
 if (rows && rows.length > 0) {
 if (!state.lastNavResult) state.lastNavResult = {};
 state.lastNavResult.matrix = { rows };
 }
-} catch {
-// Mantener operación degradada limpia cuando matrix_tier0 no está disponible
 }
-}
-}
-if (!state.formulaicIndexHydrated && typeof dataLayer?.loadJson === "function") {
-try {
-const fj = await dataLayer.loadJson("data/formulaic_index.json");
-if (fj) {
-hydrateFormulaicParallelsIndex(fj);
+if (formulaicSettled.status === "fulfilled" && formulaicSettled.value) {
+hydrateFormulaicParallelsIndex(formulaicSettled.value);
 state.formulaicIndexHydrated = true;
 }
-} catch {
-// Non-fatal
-}
-}
-const rawPrimaryStrong = await resolvePrimaryStrongForVerse(state, dataLayer);
+const rawPrimaryStrong = primaryStrongSettled.status === "fulfilled" ? primaryStrongSettled.value : "";
 const activeStrongId = rawPrimaryStrong || resolveDefaultStrongForPassage(state.book, [], "");
 state.activeStrongId = activeStrongId;
-const rawLadder250 =
-typeof dataLayer.loadElicitationLadder250 === "function"
-? await dataLayer.loadElicitationLadder250()
-: [];
+
+const rawLadder250 = ladderSettled.status === "fulfilled" ? ladderSettled.value : [];
 const ladder250 = Array.isArray(rawLadder250)
 ? rawLadder250
 : Array.isArray(rawLadder250?.items)
 ? rawLadder250.items
 : [];
 state.celfLadder250 = ladder250;
-const fieldWorkshopActiveLang = String(state.workshopLang || state.activeTallerLang || state.lang || "stp").trim().toLowerCase() || "stp";
-if (typeof dataLayer.loadFieldWorkshopData === "function") {
-const fwData = await dataLayer.loadFieldWorkshopData(fieldWorkshopActiveLang);
+
+const fwData = fwSettled.status === "fulfilled" ? fwSettled.value : null;
 if (fwData) {
 hydrateFieldWorkshopData(fwData, ladder250);
 state.availableWorkshopLangs = Array.isArray(fwData.available_workshop_langs)
@@ -136,39 +142,24 @@ state.availableWorkshopLangs = Array.isArray(fwData.available_workshop_langs)
 state.topUncertaintyQueue = Array.isArray(fwData.top_uncertainty_queue)
 ? fwData.top_uncertainty_queue
 : [];
-} else {
+} else if (fwSettled.status === "fulfilled") {
 state.availableWorkshopLangs = [];
 state.topUncertaintyQueue = [];
 }
-}
-const persistedOverlays = await loadLiveCascadeOverlaysIdb(state.lang).catch(() => []);
+
+const persistedOverlays = overlaysSettled.status === "fulfilled" && Array.isArray(overlaysSettled.value) ? overlaysSettled.value : [];
 if (persistedOverlays.length > 0) {
 state.liveCascadeOverlays = persistedOverlays;
 applyOverlayEntriesToLiveState(state, persistedOverlays);
 }
-if (!state.masterCensusSummary && typeof dataLayer.loadMasterCensusSummary === "function") {
-try {
-const censusData = await dataLayer.loadMasterCensusSummary();
-if (censusData) state.masterCensusSummary = censusData;
-} catch {
-// Non-fatal
+if (censusSettled.status === "fulfilled" && censusSettled.value) {
+state.masterCensusSummary = censusSettled.value;
 }
+if (annSettled.status === "fulfilled" && annSettled.value) {
+state.annotationIndexReport = annSettled.value;
 }
-if (!state.annotationIndexReport && typeof dataLayer?.loadAnnotationIndexReport === "function") {
-try {
-const ann = await dataLayer.loadAnnotationIndexReport();
-if (ann) state.annotationIndexReport = ann;
-} catch {
-// Non-fatal
-}
-}
-if (!state.blindCalibrationReport && typeof dataLayer?.loadBlindCalibrationReport === "function") {
-try {
-const blind = await dataLayer.loadBlindCalibrationReport();
-if (blind) state.blindCalibrationReport = blind;
-} catch {
-// Non-fatal
-}
+if (blindSettled.status === "fulfilled" && blindSettled.value) {
+state.blindCalibrationReport = blindSettled.value;
 }
 if (!isCurrent()) return "";
 const i18nInstance = typeof getI18n === "function" ? getI18n() : null;
@@ -262,19 +253,6 @@ tallerHost.innerHTML = renderWorkshopAuditSubtabHtml({
 mod,
 state,
 });
-const catalogHost = getEl("tallerArtifactsCatalog", targetDoc);
-if (catalogHost && tallerHost !== catalogHost && catalogHost.children) {
-const dupIds = new Set([
-"externalAudit8LocksPanel",
-"uncertaintyQueue60Panel",
-"tier3aDialectContinuumPanel",
-]);
-for (const child of Array.from(catalogHost.children)) {
-if (child !== tallerHost && dupIds.has(child.id) && typeof child.remove === "function") {
-child.remove();
-}
-}
-}
 };
 state.refreshWorkshopAuditSubtab = renderAuditSubtabPanels;
 renderAuditSubtabPanels();

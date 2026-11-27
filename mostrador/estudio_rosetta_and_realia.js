@@ -479,12 +479,22 @@ export function searchPhilologyRosettaIndex(
     const families = idx?.consonantal_root_families || PHILOLOGY_ROSETTA_DEFAULT_INDEX.consonantal_root_families;
     for (const fam of Object.values(families || {})) {
       const firstMember = fam.strong_members?.[0] || { strong: "H1254", lemma: fam.root_consonants };
+      const attestedRef = fam.sample_ref
+        ? normalizeRefCode(fam.sample_ref, "")
+        : "";
       const defaultRef =
-        fam.root_consonants === "רעה"
+        attestedRef ||
+        (fam.root_consonants === "רעה"
           ? "PSA.23.1"
           : fam.root_consonants === "שׁלם"
             ? "NUM.6.26"
-            : "GEN.1.1";
+            : fam.root_consonants === "ישׁע"
+              ? "PSA.27.1"
+              : fam.root_consonants === "אמר"
+                ? "GEN.1.3"
+                : fam.root_consonants === "ברא" || fam.root_consonants === "אלה" || fam.root_consonants === "ראשׁ"
+                  ? "GEN.1.1"
+                  : "");
       items.push({
         category: "roots",
         id: fam.root_consonants,

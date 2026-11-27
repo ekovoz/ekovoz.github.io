@@ -59,7 +59,7 @@ export function renderLocalizedFelicesPlateCardHtml({
     `<circle cx="32" cy="10" r="4" fill="none" stroke="currentColor" stroke-width="1.4" />` +
     `<line x1="42" y1="10" x2="62" y2="10" stroke="currentColor" stroke-width="1.2" />` +
     `</svg>` +
-    `<span class="felices-localized-plate-meta">${escapeHtml(plateWord)} ${Number(plateIndex) || 1} / ${Number(totalPlates) || 27} · ${escapeHtml(badgeLang)}</span>` +
+    `<span class="felices-localized-plate-meta uls-badge is-active-lang" data-active-lang-pill="true"><bdi>${escapeHtml(plateWord)} ${Number(plateIndex) || 1} / ${Number(totalPlates) || 27} · ${escapeHtml(badgeLang)}</bdi></span>` +
     `</div>` +
     `<blockquote class="felices-localized-plate-verse">${escapeHtml(verseText || "")}</blockquote>` +
     `<footer class="felices-localized-plate-ref">${escapeHtml(refLabel || "")}</footer>` +
@@ -185,14 +185,17 @@ export function bindFelicesStageEvents(ctx = {}) {
     felOptShare.addEventListener("click", () => transitionSheet("share", targetDoc));
   }
   const felPlateSel = getEl("felicesPlateSelect", targetDoc);
+  const felDichaSel = getEl("felicesDichaSelect", targetDoc);
+  felPlateSel?.setAttribute?.("data-selector-unified", "true");
+  felDichaSel?.setAttribute?.("data-selector-unified", "true");
   if (felPlateSel && typeof felPlateSel.addEventListener === "function") {
     felPlateSel.addEventListener("change", (e) => {
       const maxPlates = Number(BIBLE_CONSTANTS?.FELICES_PLATES_COUNT) || 27;
       const pIdx = Math.max(1, Math.min(maxPlates, Number(e?.target?.value || felPlateSel.value) || 24));
       setActivePlateIndex(pIdx, targetDoc);
+      if (felDichaSel && felDichaSel.value) state.activeDichaIndex = Number(felDichaSel.value) || state.activeDichaIndex || 1;
     });
   }
-  const felDichaSel = getEl("felicesDichaSelect", targetDoc);
   if (felDichaSel && typeof felDichaSel.addEventListener === "function") {
     felDichaSel.addEventListener("change", (e) => {
       const dIdx = Math.max(1, Math.min(12, Number(e?.target?.value || felDichaSel.value) || 1));

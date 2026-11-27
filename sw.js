@@ -1,8 +1,8 @@
-// Ekovoz Service Worker clásico (v54.0.0 — Bóveda Soberana ekovoz-mostrador-v54, supersede ekovoz-mostrador-v20..v53, RC-00..RC-11)
+// Ekovoz Service Worker clásico (v55.0.0 — Bóveda Soberana ekovoz-mostrador-v55, supersede ekovoz-mostrador-v20..v54, RC-00..RC-11 + HIG11)
 // Cero sentencias ESM `export`/`import` para registro clásico universal; lógica pura espejo de `web/mostrador/sw_routing_core.js`.
 // Opt-in persistido en CacheStorage para sobrevivir la suspensión efímera de 30s; fallback HTML restringido a `mode === "navigate"`.
 
-const CACHE_NAME = "ekovoz-mostrador-v54";
+const CACHE_NAME = "ekovoz-mostrador-v55";
 const OPT_IN_META_KEY = "/__ekovoz_meta/offline-opt-in";
 
 const SUPPORTED_BOOK_NAMES_LANGS = new Set([

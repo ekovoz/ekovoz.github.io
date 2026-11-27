@@ -13,9 +13,9 @@ export const MOSTRADOR_DOM_SCOPE_CONTRACTS = [
   { id: "stpLexiconSearchInput", intent: "workshop", selector: "#stpLexiconSearchInput", scopeRoot: "#bibleFieldWorkshopSheet" },
   { id: "stpLexiconResultsRows", intent: "workshop", selector: "#stpLexiconResultsRows", scopeRoot: "#bibleFieldWorkshopSheet" },
   { id: "dunningKeyTermsGlossaryPanel", intent: "workshop", selector: "#dunningKeyTermsGlossaryPanel", scopeRoot: "#bibleFieldWorkshopSheet" },
-  { id: "externalAudit8LocksPanel", intent: "workshop", selector: "#externalAudit8LocksPanel", scopeRoot: "#bibleFieldWorkshopSheet" },
-  { id: "uncertaintyQueue60Panel", intent: "workshop", selector: "#uncertaintyQueue60Panel", scopeRoot: "#bibleFieldWorkshopSheet" },
-  { id: "tier3aDialectContinuumPanel", intent: "workshop", selector: "#tier3aDialectContinuumPanel", scopeRoot: "#bibleFieldWorkshopSheet" },
+  { id: "externalAudit8LocksPanel", intent: "workshop", selector: "#tallerArtifactsDynamicList", scopeRoot: "#bibleFieldWorkshopSheet" },
+  { id: "uncertaintyQueue60Panel", intent: "workshop", selector: "#tallerArtifactsDynamicList", scopeRoot: "#bibleFieldWorkshopSheet" },
+  { id: "tier3aDialectContinuumPanel", intent: "workshop", selector: "#tallerArtifactsDynamicList", scopeRoot: "#bibleFieldWorkshopSheet" },
 ];
 
 /**
@@ -51,8 +51,8 @@ export const ARTIFACT_PROJECTION_SCHEMA = [
       "tier3a_continuums",
       "total_sentences",
     ],
-    targetSelectors: ["#bibleFieldWorkshopSheet", "#tier3aDialectContinuumPanel"],
-    domSlots: ["#bibleFieldWorkshopSheet", "#tier3aDialectContinuumPanel"],
+    targetSelectors: ["#bibleFieldWorkshopSheet", "#tallerArtifactsDynamicList"],
+    domSlots: ["#bibleFieldWorkshopSheet", "#tallerArtifactsDynamicList"],
   },
   {
     intent: "workshop",
@@ -73,15 +73,15 @@ export const ARTIFACT_PROJECTION_SCHEMA = [
       "#stpLexiconSearchInput",
       "#stpLexiconResultsRows",
       "#dunningKeyTermsGlossaryPanel",
-      "#uncertaintyQueue60Panel",
-      "#externalAudit8LocksPanel",
+      "#tallerArtifactsDynamicList",
+      "#tallerArtifactsCatalog",
     ],
     domSlots: [
       "#stpLexiconSearchInput",
       "#stpLexiconResultsRows",
       "#dunningKeyTermsGlossaryPanel",
-      "#uncertaintyQueue60Panel",
-      "#externalAudit8LocksPanel",
+      "#tallerArtifactsDynamicList",
+      "#tallerArtifactsCatalog",
     ],
   },
   {

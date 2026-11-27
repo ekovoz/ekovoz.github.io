@@ -942,7 +942,7 @@ template_module = "mostrador/provenance_and_support_panel.js"
 module          = "mostrador/provenance_and_support_panel.js"
 handler         = "verifyLocalEkpackFileBuffer"
 test_file       = "tests/web/hig4_reactive_parity.test.mjs"
-test_name       = "SLICE_EKO_HIG4_11_12: compact studyMatrixDownloadCard, vault tier0/fonts metadata, local ekpack verifier, and single G3 Sauvola pill"
+test_name       = "SLICE_EKO_HIG4_11_12: study omits matrix download banner clutter, vault tier0/fonts metadata, local ekpack verifier, and single G3 Sauvola pill"
 
 [capability.workshop_modernize_readability_audit]
 surface         = "public-ui"

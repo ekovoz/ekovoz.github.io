@@ -796,6 +796,13 @@ const prevSheet = state.activeSheet || null;
 const nextSheet = mode === "open" ? openSheet(store, normalized) : mode === "close" ? closeSheet(store) : toggleSheet(store, normalized);
 const willOpen = Boolean(nextSheet);
 
+// Proyección síncrona inmediata del cascarón (< 16 ms, Nah 2004 / ARB-EKOVOZ-145) antes de hidratar datos.
+if (willOpen && prevSheet !== nextSheet) {
+syncActiveChromeProjection(targetDoc);
+}
+projectSurfaceLayoutFromState(state, targetDoc, getEl);
+syncUrlFromState(targetDoc, { push: false });
+
 if (willOpen && nextSheet === "study") await hydrateStudyDrawer(targetDoc);
 else if (willOpen && nextSheet === "field") await hydrateImproveDrawer(targetDoc);
 else if (willOpen && nextSheet === "print") { await updateDoseLinks(targetDoc); await hydratePrintDrawerPanels(targetDoc); }
@@ -815,43 +822,18 @@ return state.activeSheet;
 
 async function setUiLocale(requestedLocale, targetDoc = doc) {
 let available = ["en", "es"];
-try {
-const idx = await dataLayer.loadI18nIndex();
-if (idx && Array.isArray(idx.locales)) {
-available = idx.locales.map((l) => l.code || l);
-}
-} catch {
-// keep default available list
-}
+try { const idx = await dataLayer.loadI18nIndex(); if (idx && Array.isArray(idx.locales)) available = idx.locales.map((l) => l.code || l); } catch { }
 const resolved = negotiate([requestedLocale], available, "en");
 const enCatalog = (await dataLayer.loadUiCatalog("en")) || {};
-const activeCatalog =
-resolved === "en"
-? enCatalog
-: (await dataLayer.loadUiCatalog(resolved)) || enCatalog;
-i18nInstance = createI18n({
-locale: resolved,
-catalogs: { en: enCatalog, [resolved]: activeCatalog },
-});
+const activeCatalog = resolved === "en" ? enCatalog : (await dataLayer.loadUiCatalog(resolved)) || enCatalog;
+i18nInstance = createI18n({ locale: resolved, catalogs: { en: enCatalog, [resolved]: activeCatalog } });
 state.uiLocale = resolved;
 if (targetDoc) {
-applyToDom(targetDoc, i18nInstance, {
-book: state.book,
-chapter: state.chapter,
-verse: state.verse,
-lang: state.lang,
-uiLocale: resolved,
-});
+applyToDom(targetDoc, i18nInstance, { book: state.book, chapter: state.chapter, verse: state.verse, lang: state.lang, uiLocale: resolved });
 applyAriaLabelsToDom(targetDoc, activeCatalog);
 applyStaticChromeTranslations(targetDoc, resolved, state);
 const ulsCurr = getEl("ulsCurrentLang", targetDoc);
-if (ulsCurr) {
-ulsCurr.textContent = resolved.startsWith("en")
-? "English"
-: resolved.startsWith("es")
-? "Español"
-: resolved.toUpperCase();
-}
+if (ulsCurr) ulsCurr.textContent = resolved.startsWith("en") ? "English" : resolved.startsWith("es") ? "Español" : resolved.toUpperCase();
 const ulsSel = getEl("langSelect", targetDoc);
 if (ulsSel) ulsSel.value = resolved;
 updateSealDom(state.seal, targetDoc);
@@ -862,6 +844,7 @@ renderPrintDrawerPanelsSync(targetDoc);
 hydrateShareAndAuditDrawer(targetDoc);
 }
 syncI18nUiFromState(state, targetDoc);
+void updateUI(targetDoc);
 syncActiveChromeProjection(targetDoc);
 syncUrlFromState(targetDoc, { push: false });
 }

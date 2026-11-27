@@ -179,7 +179,7 @@ export function renderOralPorticoWasmConsole({
     : (isEn ? "🔊 Device Voice: Off" : "🔊 Voz del dispositivo: Apagada");
 
   oralBanner.innerHTML =
-    `<div id="bibleAudioCadenceBar" class="mostrador-audio-cadence-bar" data-portico-compact="true" ` +
+    `<div id="bibleAudioCadenceBar" class="mostrador-audio-cadence-bar" data-portico-compact="true" data-syllable-mode="inline-readable" ` +
     `data-wpm="${prosody.wpm}" ` +
     `data-target-bits-per-sec="${prosody.targetBitsPerSec}" ` +
     `data-elapsed-ms="${prosody.elapsedMs}" ` +
@@ -208,7 +208,7 @@ export function renderOralPorticoWasmConsole({
     `</div>` +
     (prosody.syllables.length > 0
       ? `<div class="prosody-syllable-strip oral-portico-secondary ek-mt-xs">` +
-      `<span class="uls-badge" data-prosodic-cursor="true">${isEn ? `Syllable #${prosody.activeSyllableIndex + 1}/${prosody.syllables.length}: «${escapeHtml(prosody.activeSyllable)}»` : `Sílaba #${prosody.activeSyllableIndex + 1}/${prosody.syllables.length}: «${escapeHtml(prosody.activeSyllable)}»`}</span> ` +
+      `<span class="prosody-syllable-context" data-prosodic-cursor="true">${isEn ? `Cadence (${prosody.activeSyllableIndex + 1}/${prosody.syllables.length}): «${escapeHtml(prosody.activeSyllable)}»` : `Cadencia (${prosody.activeSyllableIndex + 1}/${prosody.syllables.length}): «${escapeHtml(prosody.activeSyllable)}»`}</span> · ` +
       `${syllablesHtml}</div>`
       : "") +
     `</div>`;

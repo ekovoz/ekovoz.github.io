@@ -415,16 +415,7 @@ const workCtx = resolveActiveWorkDrawerContext(state);
 const workBannerHtml = workCtx.isSisterWork
 ? `<aside class="work-context-drawer-banner" data-work-context="${escHtml(workCtx.activeWork)}"><strong>${escHtml(workCtx.bannerText)}</strong></aside>`
 : "";
-const isEnStudy = String(state.uiLocale || "es").trim().toLowerCase().startsWith("en");
-const hasMatrixRows = Array.isArray(matrixChapter?.rows) && matrixChapter.rows.length > 0;
-const studyMatrixCardHtml =
-`<div id="studyMatrixDownloadCard" class="ek-row-between ek-meta ek-mb-xs" data-matrix-tier0="true">` +
-`<span>📚 ${isEnStudy ? (hasMatrixRows ? "Original Study (15 col) · Technical pack" : "Word-by-word pack offline · Available in Share → Offline") : (hasMatrixRows ? "Estudio Original (15 col) · Paquete técnico" : "Análisis palabra por palabra · Disponible en Compartir → Sin red")}</span>` +
-`<span class="ek-row-wrap">` +
-`<a id="btnStudyDownloadMatrixTier0" class="uls-chip ek-btn-link" href="data/packs/matrix_tier0.ekpack" download="matrix_tier0.ekpack">⬇️ ${isEnStudy ? "Original Matrix (.ekpack)" : "Matriz Original (.ekpack)"}</a>` +
-`<button type="button" id="btnOpenProBovedaFromStudy" class="uls-chip" data-action="open-pro-boveda">🔐 ${isEnStudy ? "Vault & Verification" : "Bóveda y verificación"}</button>` +
-`</span></div>`;
-const html = workBannerHtml + studyMatrixCardHtml + mod.renderStudy14ColDrawerHtml(matrixChapter, studyOpts);
+const html = workBannerHtml + mod.renderStudy14ColDrawerHtml(matrixChapter, studyOpts);
 const container =
 getEl("leipzig14ColStratumAction", targetDoc) ||
 getEl("bibleEasyDrawerPanel", targetDoc);
@@ -772,8 +763,12 @@ proBovedaStudyBtn._proVaultBound = true;
 proBovedaStudyBtn.addEventListener("click", async () => {
 patchStoreState(ctx, { activeSubtabBySheet: { ...(state.activeSubtabBySheet || {}), share: "graphics" } }, "sheet");
 await transitionSheet?.("share", targetDoc, { fromUser: true });
-const det = getEl("shareProBovedaDetails", targetDoc);
-if (det) { det.open = true; det.removeAttribute?.("hidden"); }
+const authCard = getEl("shareAuthenticityUnifiedCard", targetDoc);
+if (authCard) {
+authCard.removeAttribute?.("hidden");
+authCard.scrollIntoView?.({ behavior: "smooth", block: "nearest" });
+authCard.focus?.();
+}
 });
 }
 

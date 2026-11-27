@@ -249,6 +249,15 @@ export function bindCorpusPolyglotAndUiPreferences({
       await applyCorpusLanguageSelection(e?.target?.value || langSelect.value || "es");
     });
   }
+  const corpusOfflineBtn = getEl("btnCorpusOfflineDownload", targetDoc);
+  if (corpusOfflineBtn && typeof corpusOfflineBtn.addEventListener === "function") {
+    corpusOfflineBtn.addEventListener("click", () => {
+      const shareTabBtn = getEl("btnOpenShareAndAuditSheet", targetDoc);
+      const meshSubtabBtn = getEl("btnDosisSubtabMesh", targetDoc);
+      shareTabBtn?.click?.();
+      meshSubtabBtn?.click?.();
+    });
+  }
 
   const corpusDrawer = getEl("bibleLanguageAndRegisterDrawer", targetDoc);
   const projectOnDemandSilWindow = async (rawQuery = "") => {

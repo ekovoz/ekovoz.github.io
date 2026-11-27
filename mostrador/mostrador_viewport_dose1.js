@@ -24,8 +24,7 @@ import {
   ordinalOf,
   planBimodalClientPrint,
   planDose1,
-  resolveCanonicalBlockCode,
-  syncDose2AndDose3LinksForActiveLang,
+  syncDose2AndDose3LinksForActiveLang
 } from "./dosis.js";
 import { projectChapterWithLiveOverlays } from "./drawer_workshop.js";
 import { renderChapterPericopesRibbonHtml } from "./evangelios.js";
@@ -69,11 +68,11 @@ export function renderMostradorViewportFromState({
 
   const pericopesRibbon = getEl("bibleChapterPericopesRibbon", targetDoc);
   if (pericopesRibbon) {
-    const ribbonHtml = renderChapterPericopesRibbonHtml(
-      state.book,
-      state.chapter,
-      state.uiLocale || state.lang || "es",
-    );
+    const uiL = String(state.uiLocale || state.lang || "es").toLowerCase();
+    const rawRibbonHtml = renderChapterPericopesRibbonHtml(state.book, state.chapter, state.uiLocale || state.lang || "es");
+    const ribbonHtml = String(rawRibbonHtml || "")
+      .replace(/<strong>\u05E4 v\.(\d+)<\/strong>/g, (_, vn) => `<strong>${uiL.startsWith("en") ? "Major pause (פ)" : "Pausa mayor · Petuhah פ"} · v.${vn}</strong>`)
+      .replace(/<strong>\u05E1 v\.(\d+)<\/strong>/g, (_, vn) => `<strong>${uiL.startsWith("en") ? "Pause (ס)" : "Pausa · Setumah ס"} · v.${vn}</strong>`);
     pericopesRibbon.innerHTML = ribbonHtml;
     pericopesRibbon.hidden = !String(ribbonHtml || "").trim();
   }
@@ -159,6 +158,9 @@ export function renderMostradorViewportFromState({
     if (res.status === STATUS.UNAVAILABLE && state.lastMatrixFallbackHtml) {
       baseHtml += state.lastMatrixFallbackHtml;
     }
+  }
+  if (/data-book="(?:JOB|PSA|PRO|ECC|SNG|LAM)"/.test(baseHtml)) {
+    baseHtml = baseHtml.replace(/(<\/sup>\s*)—(?=\s*<\/span>)/g, "$1").replace(/\s+—(?=\s*<\/span>)/g, "");
   }
   viewport.innerHTML = baseHtml;
   if (typeof viewport.querySelector === "function") {

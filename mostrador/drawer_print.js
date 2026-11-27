@@ -268,7 +268,7 @@ const doseCardsHost = getEl("mostradorDoseCards", targetDoc);
 const syncDoseScope = () => {
 const active = String(state.activeDoseScope || scopeSel?.value || "1");
 state.activeDoseScope = active;
-doseCardsHost?.querySelectorAll?.("[data-dose]")?.forEach?.((c) => { c.hidden = String(c.getAttribute("data-dose")) !== active; });
+doseCardsHost?.querySelectorAll?.("[data-dose]")?.forEach?.((c) => { const m = String(c.getAttribute("data-dose")) === active; c.hidden = !m; const cta = c.querySelector?.(".dose-card-cta, a[id^='linkDose']"); cta?.classList?.toggle?.("btn-modal-action", m); cta?.classList?.toggle?.("btn-modal-secondary", !m); });
 };
 if (scopeSel && typeof scopeSel.addEventListener === "function" && !scopeSel._scopeBound) {
 scopeSel._scopeBound = true;

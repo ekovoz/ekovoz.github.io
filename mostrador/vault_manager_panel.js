@@ -167,16 +167,16 @@ export function renderVaultStorageManagerHtml({
     const humanMetaLine = meta ? formatVaultEditionMetadata({ ...meta, lang: langCode, booksCount: meta?.booksCount || 66 }, isEn ? "en" : "es") : "";
     const metaDetailsHtml = meta
       ? `<div class="tech-details vault-pack-meta-details" data-pack-meta-details="true">` +
-        `<div class="ek-meta ek-stack-xs">` +
-        `<span>${escapeHtml(humanMetaLine)}</span>` +
-        `<span class="ek-stack-xs" data-contextual-meta="true">` +
-        `<span><strong>${isEn ? "Canon:" : "Canon:"}</strong> ${escapeHtml(formatEditorialTraditionLabel(meta.versificationTradition || "eng", isEn ? "en" : "es"))} · ${escapeHtml(Array.isArray(meta.diachronicVariants) && meta.diachronicVariants.length ? meta.diachronicVariants.join(", ") : "canonical")}</span>` +
-        (meta.merkleRootSha256 ? `<span><strong>Merkle:</strong> <code>${escapeHtml(String(meta.merkleRootSha256).slice(0, 16))}…</code></span>` : "") +
-        (meta.contentDigestSha256 ? `<span><strong>Digest:</strong> <code>${escapeHtml(String(meta.contentDigestSha256).slice(0, 16))}…</code></span>` : "") +
-        (meta.origin_url ? `<span><strong>origin_url:</strong> <code>${escapeHtml(String(meta.origin_url))}</code></span>` : "") +
-        (meta.metaZstdSha256 ? `<span><strong>metaZstdSha256:</strong> <code>${escapeHtml(String(meta.metaZstdSha256).slice(0, 16))}…</code></span>` : "") +
-        `</span>` +
-        `</div></div>`
+      `<div class="ek-meta ek-stack-xs">` +
+      `<span>${escapeHtml(humanMetaLine)} · </span>` +
+      `<div class="ek-stack-xs" data-contextual-meta="true">` +
+      `<span><strong>${isEn ? "Canon:" : "Canon:"}</strong> ${escapeHtml(formatEditorialTraditionLabel(meta.versificationTradition || "eng", isEn ? "en" : "es"))} · ${escapeHtml(Array.isArray(meta.diachronicVariants) && meta.diachronicVariants.length ? meta.diachronicVariants.join(", ") : "canonical")}</span>` +
+      (meta.merkleRootSha256 ? `<span><strong>Merkle:</strong> <code>${escapeHtml(String(meta.merkleRootSha256).slice(0, 16))}…</code></span>` : "") +
+      (meta.contentDigestSha256 ? `<span><strong>Digest:</strong> <code>${escapeHtml(String(meta.contentDigestSha256).slice(0, 16))}…</code></span>` : "") +
+      (meta.origin_url ? `<span><strong>origin_url:</strong> <code>${escapeHtml(String(meta.origin_url))}</code></span>` : "") +
+      (meta.metaZstdSha256 ? `<span><strong>metaZstdSha256:</strong> <code>${escapeHtml(String(meta.metaZstdSha256).slice(0, 16))}…</code></span>` : "") +
+      `</div>` +
+      `</div></div>`
       : "";
     const packErr = errorByLang?.[langCode] ? String(errorByLang[langCode]) : "";
     return (

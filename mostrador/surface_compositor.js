@@ -164,18 +164,22 @@ export function projectSurfaceLayoutFromState(state = {}, rootDoc, getEl) {
   projectStoreAttributesToDom(state, rootDoc);
   projectAllSubtabsFromState(state, rootDoc);
   const techPlaneOn = isTechnicalPlaneEnabled(state, rootDoc?.location?.search || "");
+  const syncDetailsPlane = (selector, forceUnhide) => {
+    for (const det of Array.from(rootDoc.querySelectorAll(selector))) {
+      if (forceUnhide) det.hidden = false;
+      if (det.tagName !== "DETAILS") continue;
+      if (techPlaneOn && !det.open) {
+        det.open = true;
+        det.setAttribute?.("data-auto-opened-by-tech", "1");
+      } else if (!techPlaneOn && det.getAttribute?.("data-auto-opened-by-tech") === "1") {
+        det.open = false;
+        det.removeAttribute?.("data-auto-opened-by-tech");
+      }
+    }
+  };
   if (typeof rootDoc.querySelectorAll === "function") {
-    for (const techEl of Array.from(rootDoc.querySelectorAll('[data-technical-plane="true"]'))) {
-      techEl.hidden = false;
-      if (techEl.tagName === "DETAILS" && techPlaneOn) {
-        techEl.open = true;
-      }
-    }
-    for (const ctxDet of Array.from(rootDoc.querySelectorAll('details[data-contextual-details="true"]'))) {
-      if (techPlaneOn) {
-        ctxDet.open = true;
-      }
-    }
+    syncDetailsPlane('[data-technical-plane="true"]', true);
+    syncDetailsPlane('details[data-contextual-details="true"]', false);
   }
 
   const showEvangelios = isWorkVisible("evangelios", state);

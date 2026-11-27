@@ -305,49 +305,8 @@
 <button type="button" id="quickWorkLangFa" class="uls-chip" data-i18n-autonym="true" data-corpus-lang="fa" data-work-scope="felices" hidden><span class="ek-iso-tag">FA</span> فارسی</button>
 </div>
                     <section id="corpusGeoFilterDetails" class="tech-details ek-mt-xs">
-                        <strong class="ek-title-sm" data-i18n-autonym="true">Filtros geográficos SIL (región y
-                            país)</strong>
-                        <div id="bibleGeoFunnel" class="geo-funnel-row ek-mt-xs" aria-label="Geographic 3-Tap Funnel">
-                            <select id="bibleSelectRegion" aria-label="World Region">
-                                <option value="americas-mesoamerica" data-i18n="region.americas-mesoamerica">Mesoamerica
-                                    &amp;
-                                    North America</option>
-                                <option value="americas-north" data-i18n="region.americas-north">Indigenous North
-                                    America
-                                    &amp;
-                                    Arctic</option>
-                                <option value="europe-west" data-i18n="region.europe-west">Western Europe &amp;
-                                    Mediterranean
-                                </option>
-                                <option value="europe-east" data-i18n="region.europe-east">Eastern Europe &amp; Northern
-                                    Eurasia
-                                </option>
-                                <option value="anatolia-central-asia" data-i18n="region.anatolia-central-asia">Anatolia,
-                                    Caucasus &amp; Central Asia</option>
-                                <option value="mena-caucasus" data-i18n="region.mena-caucasus">Middle East &amp; North
-                                    Africa
-                                </option>
-                                <option value="africa-sahel-horn" data-i18n="region.africa-sahel-horn">Horn of Africa
-                                    &amp;
-                                    Sahel</option>
-                                <option value="africa-sub-saharan" data-i18n="region.africa-sub-saharan">Sub-Saharan
-                                    Africa
-                                </option>
-                                <option value="south-asia" data-i18n="region.south-asia">South Asia</option>
-                                <option value="east-asia" data-i18n="region.east-asia">East Asia</option>
-                                <option value="southeast-asia" data-i18n="region.southeast-asia">Mainland &amp; Insular
-                                    Southeast Asia</option>
-                                <option value="oceania-pacific" data-i18n="region.oceania-pacific">Oceania, Papua New
-                                    Guinea
-                                    &amp; Pacific</option>
-                            </select>
-                            <select id="bibleSelectCountry" aria-label="Country or Subregion">
-                                <option value="MX-DUR">Durango &amp; Sierra Madre Occidental</option>
-                                <option value="MX-OAX">Oaxaca &amp; South</option>
-                                <option value="MX-GEN">Spanish &amp; English (Bridge Languages)</option>
-                                <option value="EG-LEV">Levant &amp; Nile Valley</option>
-                                <option value="CN-JP-KR">Sinosphere &amp; Archipelagos</option>
-                            </select>
+                        <strong class="ek-title-sm" data-i18n-autonym="true">Descarga sin conexión y selector de corpus (24 Biblias)</strong>
+                        <div id="bibleGeoFunnel" class="geo-funnel-row ek-mt-xs" aria-label="Corpus and Offline Download">
                             <select id="bibleSelectLang" aria-label="Reading Language">
                                 <option value="es" selected>Español Siglo XXI (es)</option>
                                 <option value="es-1909">Español Clásica 1909 (es-1909)</option>
@@ -383,6 +342,7 @@
                                 <option value="aud">Au'dam (aud · Draft)</option>
                                 <option value="kgv">Kalamang (kgv · Draft)</option>
                             </select>
+                            <button type="button" id="btnCorpusOfflineDownload" class="uls-chip" data-i18n-autonym="true">📥 Descargar Biblia para usar sin internet</button>
                         </div>
                     </section>
                 </div>
@@ -939,9 +899,6 @@
             <div id="cascadeImpactPreviewList" data-workshop-subtab-panel="ladder"></div>
             <div id="tallerArtifactsCatalog" class="taller-artifacts-grid" data-workshop-subtab-panel="audit">
                 <div id="tallerArtifactsDynamicList" class="taller-artifacts-dynamic-list"></div>
-                <section id="externalAudit8LocksPanel" aria-label="8 Deterministic Audit Locks"></section>
-                <section id="uncertaintyQueue60Panel" aria-label="Top 60 Uncertainty Verse Queue"></section>
-                <section id="tier3aDialectContinuumPanel" aria-label="Tier 3A Dialect Continuums"></section>
             </div>
         </section>
         <!-- Drawer 4: Offline Sharing, Optical LT Fountain & Save for Offline Use -->
@@ -1010,11 +967,6 @@
                     class="ek-status-panel">
                 </div>
                 <div id="editorialProvenanceCardHost" data-dosis-subtab-panel="graphics" hidden></div>
-                <section id="shareProBovedaDetails" class="r9-stratum-accordion" data-pro-boveda="true"
-                    data-contextual-details="true" hidden>
-                    <h4 class="ek-title-sm" data-i18n-autonym="true">Verificación avanzada y auditoría</h4>
-                    <p class="ek-meta ek-m-0" data-i18n-autonym="true">Incluye verificación criptográfica local de archivos .ekpack, DOI Zenodo y respaldo bajo Berna 15.3 arriba.</p>
-                </section>
             </section>
             <div id="shareOpenGraphCardPanel" data-dosis-subtab-panel="graphics" data-slot-order="0" hidden></div>
         </section>

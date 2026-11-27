@@ -293,6 +293,10 @@ export async function searchMultiBookConcordance({
     scope === "vault"
       ? Array.from(new Set([cleanActive, ...(candidateBooks || []).map((b) => String(b).toUpperCase())]))
       : [cleanActive];
+  const scopeLabel =
+    scope === "vault"
+      ? `Multi-libro (${booksToScan.length} libros)`
+      : `Libro actual (${cleanActive})`;
   const allHits = [];
   for (const bookCode of booksToScan) {
     if (allHits.length >= maxResults) break;
@@ -305,11 +309,18 @@ export async function searchMultiBookConcordance({
           query: cleanQuery,
           limit: maxResults - allHits.length,
         });
-        allHits.push(...hits);
+        for (const h of hits) {
+          h.scopeMode = scope;
+          h.scopeSummary = scopeLabel;
+          allHits.push(h);
+        }
       }
     } catch {
       // Non-fatal skip for missing book in partial offline portion
     }
   }
-  return allHits.slice(0, maxResults);
+  const sliced = allHits.slice(0, maxResults);
+  sliced.scopeMode = scope;
+  sliced.scopeSummary = scopeLabel;
+  return sliced;
 }
