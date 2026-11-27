@@ -169,6 +169,10 @@ const HUMAN_PHILOLOGY_LABELS = Object.freeze({
     es: "Texto griego fuente",
     en: "Greek source text",
   }),
+  "01_UTO_AZTECAN": Object.freeze({
+    es: "Familia lingüística Uto-Azteca",
+    en: "Uto-Aztecan language family",
+  }),
 });
 
 export function isExpertVocabularyEnabled(searchStr = "") {
@@ -204,6 +208,7 @@ export function humanizeUiCopy(rawText, uiLocale = "es", { allowExpert = false }
     [/\((?:6\s+Tradiciones Textuales\s*)?UBS\)/gi, isEn ? "(Historical Manuscript Traditions)" : "(Tradiciones Textuales Históricas)"],
     [/\bUBS\b/g, isEn ? "Historical Editions" : "Ediciones Históricas"],
     [/\bOpenTimestamps\b/gi, isEn ? "public integrity records" : "sellos públicos de fecha"],
+    [/\b01_UTO_AZTECAN\b/gi, isEn ? "Uto-Aztecan language family" : "Familia lingüística Uto-Azteca"],
     [/\bSauvola \+ Kanungo\b/gi, isEn ? "photocopy clarity model" : "simulación de fotocopia rural"],
     [/\bNT\+Taller OT\b/gi, isEn ? "NT verified + OT workbook" : "NT verificado + taller AT"],
     [/\bWLC\b/g, isEn ? "Hebrew source" : "Hebreo fuente"],
@@ -280,8 +285,11 @@ export function formatIsoLangPillBadge(langCode = "", label = "", { prefix = "" 
 
 const SAUVOLA_STEP_LABELS = Object.freeze({
   "1_GRAYSCALE_LUMINANCE": Object.freeze({ es: "1. Contraste y escala de grises", en: "1. Grayscale contrast balance" }),
+  "2_BILATERAL_EDGE_FILTER": Object.freeze({ es: "2. Definición nítida de letras", en: "2. Crisp glyph edge preservation" }),
   "2_INTEGRAL_SAUVOLA_THRESHOLD": Object.freeze({ es: "2. Umbral adaptativo de papel", en: "2. Adaptive paper thresholding" }),
+  "3_INTEGRAL_IMAGE_MOMENTS": Object.freeze({ es: "3. Balance local de luz y papel", en: "3. Local light & paper balance" }),
   "3_DESPECKLE_CONTOUR_FILTER": Object.freeze({ es: "3. Limpieza de manchas e impresor", en: "3. Ink speckle cleanup" }),
+  "4_SAUVOLA_LOCAL_THRESHOLD": Object.freeze({ es: "4. Separación limpia de tinta y fondo", en: "4. Clean ink-to-paper separation" }),
   "4_BILATERAL_HALO_PRESERVATION": Object.freeze({ es: "4. Definición nítida de letras", en: "4. Crisp glyph edge preservation" }),
   "5_EULER_TOPOLOGY_GUARD": Object.freeze({ es: "5. Verificación de trazos cerrados", en: "5. Closed-stroke legibility guard" }),
 });
@@ -297,10 +305,13 @@ export function formatSauvolaStepLabel(stepCode = "", uiLocale = "es") {
 export function formatVaultEditionMetadata(pack = {}, uiLocale = "es") {
   const isEn = String(uiLocale || "es").trim().toLowerCase().startsWith("en");
   const lang = String(pack?.lang || pack?.code || "es").trim();
-  const booksCount = Number(pack?.booksCount || pack?.books || 66);
+  const defaultBooks = lang.toLowerCase() === "stp" ? 27 : 66;
+  const booksCount = Number(pack?.booksCount || pack?.books || defaultBooks);
   const labelMap = { es: "Español", "es-1909": "Español (1909)", en: "English", pt: "Português", fr: "Français", de: "Deutsch", it: "Italiano", he: "עברית", grc: "Ελληνικά", stp: "O'dam (Tepehuano)" };
   const langName = labelMap[lang.toLowerCase()] || lang.toUpperCase();
-  const scope = booksCount >= 66 ? (isEn ? "66 books" : "66 libros") : `${booksCount} ${isEn ? "books" : "libros"}`;
+  const scope = (lang.toLowerCase() === "stp" && booksCount <= 27)
+    ? (isEn ? `${booksCount} books (NT)` : `${booksCount} libros (NT)`)
+    : (booksCount >= 66 ? (isEn ? "66 books" : "66 libros") : `${booksCount} ${isEn ? "books" : "libros"}`);
   const note = pack?.subsettedBiblical ? (isEn ? "embedded script fonts" : "fuentes incluidas") : (isEn ? "ready offline" : "lista sin conexión");
   return `${langName} · ${scope} · ${note}`;
 }

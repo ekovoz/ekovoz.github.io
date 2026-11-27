@@ -292,8 +292,8 @@ export function renderProgressiveTwoStrataDiglossicBridge({
   return (
     `<section class="diglossic-parallel-bridge" data-diglossic-bridge="true"${gmisScaffoldAttr} data-progressive-strata="2" data-total-verses="${verseNums.length}" data-lang="${escapeHtml(lang)}" data-bridge-lang="${escapeHtml(bridgeSpec.code)}" data-sovereign-tier="${escapeHtml(sovereignTier)}" data-epistemic-seal="${sealCode}" data-epistemic-honesty="ZERO_SYNTHETIC_BIBLE">` +
     `<header class="diglossic-bridge-header">` +
-    `<span><strong>Columna Materna (<code>${escapeHtml(lang)}</code>):</strong> ${isHumanMaternalPortion ? "Porción Humana Verificada" : "Andamiaje Interlineal de Campo (0% Texto Sintético)"}</span>` +
-    `<span><strong>Lengua Puente Siglo XXI (<code>${escapeHtml(bridgeSpec.code)}</code>):</strong> ${escapeHtml(bridgeSpec.label)}</span>` +
+    `<span><strong>Columna Materna (<code>${escapeHtml(lang)}</code>):</strong> ${isHumanMaternalPortion ? "Porción Humana Verificada" : `<span data-technical-plane="true">Andamiaje Interlineal de Campo (0% Texto Sintético)</span>`}</span>` +
+    `<span><strong>Lengua Puente Siglo XXI (<code>${escapeHtml(bridgeSpec.code)}</code>):</strong> <span data-technical-plane="true">${escapeHtml(bridgeSpec.label)}</span></span>` +
     `</header>` +
     rowsHtml.join("\n") +
     `</section>`

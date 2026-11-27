@@ -10,6 +10,7 @@ import {
   buildEditionRenderSpecBytes16,
   resolveNumericEditionId,
 } from "./dosis_editions_catalog.js";
+import { buildClassCStealthSpec } from "./stealth_filename.js";
 import { sha256HexBytes } from "./offline_font_bundle.js";
 import {
   decodeRfc8878RawZstdFrameJs,
@@ -1000,6 +1001,12 @@ export async function runWorkerTandaJob(payload = {}, emitProgress = () => { }) 
     orientation = "",
     dir = "ltr",
     booklet4n = false,
+    stealthMode = false,
+    blockNumber = 1,
+    furigana = false,
+    kinsoku = false,
+    zwsp = false,
+    uiLocale = "es",
     maxPagesPerTanda = 50,
     wasmUrl = "",
     fontUrl = "",
@@ -1147,6 +1154,16 @@ export async function runWorkerTandaJob(payload = {}, emitProgress = () => { }) 
     });
   }
 
+  const appliedScriptFeatures = {
+    furigana: Boolean(furigana && resolvedScript === "Jpan"),
+    kinsoku: Boolean(kinsoku && resolvedScript === "Jpan"),
+    zwsp: Boolean(zwsp && ["Thai", "Laoo", "Khmr", "Mymr"].includes(resolvedScript)),
+  };
+  const stealthSpec = stealthMode
+    ? buildClassCStealthSpec({ blockNumber, uiLocale, kind: totalTandas > 1 ? "dosis3" : "dosis1" })
+    : null;
+  const stealthReceipt = stealthSpec ? stealthSpec.verifyCleanReceipt(stealthSpec.sanitizePdfMeta()) : null;
+
   // Cuando hay múltiples tandas (`totalTandas > 1`), ejecutamos `StreamingPdfSession` por `BlobParts[]`
   // (`1` sola incrustación `/FontFile2` por fuente y `0` descarte de `tandas[1..N]`, `M_RAM <= 6 MiB`).
   if (totalTandas > 1 && typeof wasmExports.wasm_pdf_session_begin === "function") {
@@ -1191,6 +1208,9 @@ export async function runWorkerTandaJob(payload = {}, emitProgress = () => { }) 
       wasmFontEmbedded: true,
       streamingSessionUsed: true,
       booklet4n: Boolean(booklet4n),
+      stealthMode: Boolean(stealthMode),
+      stealthReceipt,
+      appliedScriptFeatures,
       editionId: resolvedEditionId,
       editionSpecBytes16: effectiveSpecBytes,
       editionMode: Number(editionMode) || 0,
@@ -1276,6 +1296,9 @@ export async function runWorkerTandaJob(payload = {}, emitProgress = () => { }) 
     wasmFontEmbedded: true,
     streamingSessionUsed: false,
     booklet4n: Boolean(booklet4n),
+    stealthMode: Boolean(stealthMode),
+    stealthReceipt,
+    appliedScriptFeatures,
     editionId: resolvedEditionId,
     editionSpecBytes16: effectiveSpecBytes,
     editionMode: Number(editionMode) || 0,

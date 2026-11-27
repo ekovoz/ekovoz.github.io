@@ -759,6 +759,7 @@ authCard.setAttribute("data-two-layer-valid", String(twoLayer.valid));
 if (authCard && provHost.parentNode === authCard && typeof authCard.insertBefore === "function" && authCard.firstChild && authCard.firstChild !== provHost) {
 authCard.insertBefore(provHost, authCard.firstChild);
 }
+provHost.removeAttribute?.("hidden");
 provHost.innerHTML = renderEditorialProvenanceCardHtml(state.editorialProvenance || null, state.uiLocale || "es");
 bindProvenanceVerifierEvents(provHost, state.editorialProvenance || null, state.uiLocale || "es", { dataLayer });
 if (!state.editorialProvenance && dataLayer && typeof dataLayer.loadEditorialProvenance === "function") {

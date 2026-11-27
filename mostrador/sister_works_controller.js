@@ -21,6 +21,7 @@ import {
 import { isRtlLocale } from "./i18n.js";
 import { parseBiblicalCoordinateReference } from "./reference.js";
 import { resolveSafeDownloadFilename } from "./stealth_filename.js";
+import { WORK_DRAWER_ADAPTERS } from "./projection_contract.js";
 
 /**
  * Expande una referencia bíblica puntual o rango de versículos (ej. `"MAT 5:1-16"`, `"MAT.5.1-12"`, `"MAT.5.3"`)
@@ -296,8 +297,9 @@ export function syncSisterWorksTabsDom(cleanWork = "biblia", getElFn) {
   applySec(bibSec, cleanWork === "biblia");
   applySec(felSec, cleanWork === "felices");
   applySec(evaSec, cleanWork === "evangelios");
-  // Keep global Harel drawers accessible across all 3 canonical works (Biblia, Felices, Evangelios · D3-R8)
-  const showGlobalDrawers = ["biblia", "felices", "evangelios"].includes(cleanWork) || Boolean(drawersHost?.getAttribute?.("data-inspector-open") === "true");
+  // Keep global Harel drawers symmetric across registered work adapters (R11 draft gating handled by surface_compositor)
+  const hasDrawerAdapter = Boolean(WORK_DRAWER_ADAPTERS[cleanWork]);
+  const showGlobalDrawers = hasDrawerAdapter || Boolean(drawersHost?.getAttribute?.("data-inspector-open") === "true");
   applySec(drawersHost, showGlobalDrawers);
 
   if (tabBib) tabBib.setAttribute("aria-selected", cleanWork === "biblia" ? "true" : "false");

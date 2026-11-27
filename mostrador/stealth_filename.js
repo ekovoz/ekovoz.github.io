@@ -89,3 +89,39 @@ export function resolveSafeDownloadFilename(state = {}, artifactSpec = {}) {
       return `ekovoz-${curLang}-${bookLower}-${chapter}.${ext}`;
   }
 }
+
+/**
+ * Especificación extrema Clase-C (`D6'`, PoPETs 2017): portada, cornisas, nombre de archivo
+ * y diccionario /Info neutrales, más recibo auditable sin tokens de origen bíblico.
+ */
+export function buildClassCStealthSpec({ blockNumber = 1, uiLocale = "es", kind = "dosis1" } = {}) {
+  const isEn = String(uiLocale || "es").trim().toLowerCase().startsWith("en");
+  const cleanBlk = Math.max(1, Number(blockNumber) || 1);
+  const ext = String(KIND_EXT_MAP[kind] || "pdf").toLowerCase();
+  const filename = stealthNeutralFilenameWeb(cleanBlk, ext === "html" ? "html" : "pdf");
+  const neutralTitle = isEn ? `Reading Notes ${String(cleanBlk).padStart(2, "0")}` : `Notas de Lectura ${String(cleanBlk).padStart(2, "0")}`;
+  const neutralHeader = isEn ? "Study Workbook" : "Cuaderno de Lectura";
+  const sanitizePdfMeta = () => ({
+    title: neutralTitle,
+    author: "",
+    subject: "",
+    creator: "",
+    producer: "",
+    keywords: "",
+  });
+  const verifyCleanReceipt = (meta = {}) => {
+    const joined = [filename, meta.title, meta.author, meta.creator, meta.producer, meta.subject].join(" ");
+    const forbidden = /(biblia|bible|ekovoz|evangelio|gospel|jes[uú]s|cristo|christ)/i.test(joined);
+    return {
+      verified: !forbidden,
+      neutralCover: true,
+      zeroOriginMetadata: !forbidden && !meta.author && !meta.creator,
+      filename,
+      neutralTitle,
+      label: isEn
+        ? `Verified discreet copy: neutral cover ("${neutralTitle}"), 0 origin metadata, filename "${filename}"`
+        : `Copia discreta verificada: portada neutra («${neutralTitle}»), 0 metadatos de origen, archivo «${filename}»`,
+    };
+  };
+  return { filename, neutralTitle, neutralHeader, sanitizePdfMeta, verifyCleanReceipt };
+}

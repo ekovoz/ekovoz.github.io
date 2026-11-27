@@ -299,17 +299,24 @@ export function bindProvenanceVerifierEvents(containerEl, provenance = null, uiL
 
 export function bindSupportContactDialog({ state = {}, store = null, doc = null, getEl } = {}) {
   const resolve = typeof getEl === "function" ? (id) => getEl(id, doc) : (id) => doc?.getElementById?.(id) || null;
+  const isEn = String(state.uiLocale || "es").trim().toLowerCase().startsWith("en");
+  const aboutHost = resolve("aboutGuidesVerifyDynamicHost");
+  if (aboutHost) {
+    aboutHost.innerHTML =
+      `<div class="ek-stack-xs">` +
+      `<p class="ek-meta ek-m-0">${isEn ? "Open verification: local Ed25519 signature + Merkle SHA-256 receipt + Zenodo DOI archive + Berne 15.3 open-authorship metadata and 34 llms/*.md technical guides." : "Verificación abierta: firma local Ed25519 + recibo Merkle SHA-256 + archivo DOI Zenodo + aviso Convenio de Berna 15.3 y las 34 guías llms/*.md."}</p>` +
+      `<a class="uls-chip" href="data/packs/packs_manifest.json" target="_blank" rel="noopener">${isEn ? "Ed25519 + Merkle packs manifest" : "Manifiesto Ed25519 + Merkle de .ekpack"}</a>` +
+      `</div>`;
+  }
   const btn = resolve("footerContactBtn");
   const dialog = resolve("supportContactDialog");
   const body = resolve("supportContactDialogBody");
   const closeBtn = resolve("btnCloseSupportDialog");
   if (!btn || !dialog || !body) return false;
-
-  const isEn = String(state.uiLocale || "es").trim().toLowerCase().startsWith("en");
   const renderForm = () => {
     body.innerHTML =
       `<form id="supportContactForm" class="support-contact-form">` +
-      `<p class="support-intro">${isEn ? "Offline-first incident & collaboration channel. No trackers; direct fallback to ProtonMail." : "Canal discreto de soporte e incidencias. Sin rastreadores y con respaldo directo a ProtonMail."}</p>` +
+      `<p class="support-intro">${isEn ? "Offline-first incident & collaboration channel. No trackers; direct fallback via encrypted email." : "Canal discreto de soporte e incidencias. Sin rastreadores y con respaldo directo por correo cifrado."}</p>` +
       `<label class="support-field-label">${isEn ? "Category" : "Categoría"}<select id="supportTopicSelect" name="topic"><option value="bug">${isEn ? "Bug / Layout issue" : "Fallo visual o técnico"}</option><option value="translation">${isEn ? "Translation fix" : "Corrección de traducción"}</option><option value="offline">${isEn ? "Offline packs / Print" : "Paquetes offline / Impresión"}</option></select></label>` +
       `<label class="support-field-label">${isEn ? "Message" : "Mensaje"}<textarea id="supportMessageInput" name="message" rows="3" placeholder="${isEn ? "Describe passage, device or screenshot..." : "Describe el pasaje, dispositivo o incidencia..."}"></textarea></label>` +
       `<label class="support-honeypot-field" hidden aria-hidden="true">Website<input type="text" id="supportHoneypotInput" name="website_hp" tabindex="-1" autocomplete="off" /></label>` +
@@ -360,7 +367,7 @@ export function bindSupportContactDialog({ state = {}, store = null, doc = null,
       const link = resolve("supportProtonFallbackLink");
       if (link) link.href = mailto;
       if (status) {
-        status.textContent = isEn ? "Ready to send via ProtonMail (requires internet)." : "Listo para enviar por ProtonMail (requiere conexión).";
+        status.textContent = isEn ? "Ready to send via encrypted email (requires internet)." : "Listo para enviar por correo cifrado (requiere conexión).";
         status.setAttribute?.("data-honeypot-blocked", "false");
       }
     });

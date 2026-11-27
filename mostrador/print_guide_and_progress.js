@@ -244,6 +244,12 @@ export async function executeDose2And3WorkerDispatch({
     orientation: state.orientation || "portrait",
     includeBoldFont: true,
     dir,
+    stealthMode: Boolean(state.stealthMode),
+    blockNumber: state.activeBlockNumber || 1,
+    furigana: state.printFurigana !== false,
+    kinsoku: state.printKinsoku !== false,
+    zwsp: state.printZwsp !== false,
+    uiLocale: state.uiLocale || "es",
     maxPagesPerTanda: 0,
   };
   const onProgress = (prog = {}) => {

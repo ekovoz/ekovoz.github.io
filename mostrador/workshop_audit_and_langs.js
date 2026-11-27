@@ -240,7 +240,7 @@ export function renderWorkshopAuditSubtabHtml({
   state = {},
 } = {}) {
   const activeTallerLang =
-    String(state.lang || state.activeTallerLang || "es")
+    String(state.workshopLang || state.activeTallerLang || state.lang || "es")
       .trim()
       .toLowerCase() || "es";
   const uiLocale = state.uiLocale || "es";
@@ -291,14 +291,25 @@ export function renderWorkshopAuditSubtabHtml({
   const isEnAudit = String(uiLocale || "es").trim().toLowerCase().startsWith("en");
   const annTotals = state.annotationIndexReport?.totals || null;
   const blindRows = Array.isArray(state.blindCalibrationReport) ? state.blindCalibrationReport : [];
+  const rawChVerses = state.lastNavResult?.chapter?.verses;
+  const chapterSampleText = rawChVerses
+    ? Object.values(rawChVerses).slice(0, 6).map((v) => (typeof v === "string" ? v : v?.text || "")).join(" ").trim()
+    : "";
+  const activeModernize = state.externalModernizeAudit || (chapterSampleText
+    ? computeClientModernizeReadabilityAudit(chapterSampleText, uiLocale)
+    : null);
+  const flowBadgeText = isEnAudit
+    ? "Live in browser (web-live: ExtractRosetta, ModernizeAudit) · Batch CLI (cli-batch: ekovoz census)"
+    : "En vivo en navegador (web-live: ExtractRosetta, ModernizeAudit) · Lote CLI (cli-batch: ekovoz census)";
   const coverageSummaryHtml =
-    annTotals || blindRows.length > 0 || state.externalModernizeAudit
-      ? `<section id="workshopCoverageCalibrationCard" class="ek-card-muted ek-mt-sm" data-annotation-tokens="${Number(annTotals?.ot_tokens || 0) + Number(annTotals?.nt_tokens || 0)}" data-blind-calibration-rows="${blindRows.length}"${state.externalModernizeAudit ? ` data-modernize-aoa="${state.externalModernizeAudit.aoaYears}" data-modernize-mdd="${state.externalModernizeAudit.mdd}"` : ""}>` +
+    annTotals || blindRows.length > 0 || activeModernize
+      ? `<section id="workshopCoverageCalibrationCard" class="ek-card-muted ek-mt-sm" data-annotation-tokens="${Number(annTotals?.ot_tokens || 0) + Number(annTotals?.nt_tokens || 0)}" data-blind-calibration-rows="${blindRows.length}"${activeModernize ? ` data-modernize-aoa="${activeModernize.aoaYears}" data-modernize-mdd="${activeModernize.mdd}"` : ""}>` +
       `<div class="ek-row-between">` +
       `<strong>⚖️ ${isEnAudit ? "Quality & Source Text Calibration" : "Calibración de Calidad y Fuentes Originales"}</strong>` +
-      `<span class="uls-badge">${blindRows.length || 48} ${isEnAudit ? "calibrated samples" : "muestras calibradas"}${annTotals ? ` · ${(Number(annTotals.ot_tokens || 0) + Number(annTotals.nt_tokens || 0)).toLocaleString("en-US")} ${isEnAudit ? "tokens" : "palabras"}` : ""}${state.externalModernizeAudit ? ` · ${state.externalModernizeAudit.label}` : ""}</span>` +
+      `<span class="uls-badge">${blindRows.length || 48} ${isEnAudit ? "calibrated samples" : "muestras calibradas"}${annTotals ? ` · ${(Number(annTotals.ot_tokens || 0) + Number(annTotals.nt_tokens || 0)).toLocaleString("en-US")} ${isEnAudit ? "tokens" : "palabras"}` : ""}${activeModernize ? ` · ${activeModernize.label}` : ""}</span>` +
       `</div>` +
       `<p class="ek-meta ek-m-0 ek-mt-xs">${isEnAudit ? "Covers Hebrew/Greek lexical alignments and 12-language clarity checks across GEN, PSA, ISA, JON." : "Cubre alineación léxica hebreo/griego y verificación de claridad en 12 lenguas sobre GEN, PSA, ISA y JON."}</p>` +
+      `<p class="ek-meta ek-m-0 ek-mt-xs" data-workshop-flow-honesty="true">${flowBadgeText}</p>` +
       `</section>`
       : "";
   const cldfBundle = buildWorkshopCldfCsvAndJson({
@@ -368,13 +379,10 @@ export function createWorkshopAuditHandlers({
     if (targetId === "tallerExtraLangSelect" || e?.target?.getAttribute?.("data-taller-lang-select")) {
       const pickedExtra = String(e?.target?.value || "").trim().toLowerCase();
       if (pickedExtra) {
+        state.workshopLang = pickedExtra;
         state.activeTallerLang = pickedExtra;
-        state.lang = pickedExtra;
-        if (typeof navigate === "function") {
-          await navigate({ lang: pickedExtra, register: state.register }, targetDoc);
-          hydrateBookAndChapterSelectors?.(targetDoc);
-        }
         state.refreshWorkshopAuditSubtab?.();
+        (state.refreshPatchPreview || refreshPatchPreview)?.();
       }
       return;
     }
@@ -426,13 +434,10 @@ export function createWorkshopAuditHandlers({
     const pickedTallerLang = langPickBtn?.getAttribute?.("data-taller-lang-pick");
     if (pickedTallerLang) {
       const cleanPicked = String(pickedTallerLang).toLowerCase();
+      state.workshopLang = cleanPicked;
       state.activeTallerLang = cleanPicked;
-      state.lang = cleanPicked;
-      if (typeof navigate === "function") {
-        await navigate({ lang: cleanPicked, register: state.register }, targetDoc);
-        hydrateBookAndChapterSelectors?.(targetDoc);
-      }
       state.refreshWorkshopAuditSubtab?.();
+      (state.refreshPatchPreview || refreshPatchPreview)?.();
       return true;
     }
     const uqPageBtn = e?.target?.closest

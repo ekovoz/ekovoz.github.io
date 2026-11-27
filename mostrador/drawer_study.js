@@ -467,10 +467,11 @@ auditDetails.className = "r9-stratum-accordion ek-mt-sm";
 const auditSummary = targetDoc.createElement("summary");
 const isEnLoc = String(state.uiLocale || "es").toLowerCase().startsWith("en");
 auditSummary.textContent = isEnLoc
-? "🧬 Philological Roots & 12-Language Calibration Summary"
-: "🧬 Resumen filológico de raíces y calibración en 12 lenguas";
+  ? "🧬 Roots in this passage vs global search (12 languages)"
+  : "🧬 En este pasaje vs búsqueda global (12 lenguas)";
 summarySlot = targetDoc.createElement("div");
 summarySlot.id = "philologyRosettaSummarySlot";
+summarySlot.setAttribute?.("data-passage-ref", `${state.book}.${state.chapter}.${state.verse}`);
 auditDetails.appendChild(auditSummary);
 auditDetails.appendChild(summarySlot);
 staticRosettaHostEl.appendChild(auditDetails);

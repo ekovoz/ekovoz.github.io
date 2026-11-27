@@ -383,6 +383,7 @@ function normalizeIntentId(rawIntent) {
   if (!rawIntent) return "read";
   const clean = String(rawIntent).trim().toLowerCase();
   if (clean === "field" || clean === "improve" || clean === "workshop") return "workshop";
+  if (clean === "vault") return "print";
   if (clean === "dosis" || clean === "share") return "share";
   if (clean === "study" || clean === "print" || clean === "read") return clean;
   return "read";

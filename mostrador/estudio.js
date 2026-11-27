@@ -582,7 +582,7 @@ export function renderStudyStrataCards(matrixShard, options = {}) {
     if (!uniqueNsm.has(key) && r.c13_nsm_65 && r.c13_nsm_65 !== "∅") uniqueNsm.set(key, r);
   }
   const { contentRows: nsmContent, functionRows: nsmFunc } = partitionContentAndFunctionRows(Array.from(uniqueNsm.values()), isClosedClassFunctionTag);
-  const renderNsmLi = (r) => `<li data-nsm-strong="${escapeHtml(r.c07_strong_id)}"><code>${escapeHtml(r.c07_strong_id)}</code> <strong>${escapeHtml(r.c05_orig_text)}</strong> (${escapeHtml(r.c12_gloss_es)}) → <span class="nsm-human-gloss">${escapeHtml(formatNsmSentenceCase(formatHumanReadable15ColFields(r, uiLocale).nsmHuman))}</span></li>`;
+  const renderNsmLi = (r) => `<li data-nsm-strong="${escapeHtml(r.c07_strong_id)}"><strong>${escapeHtml(r.c05_orig_text)}</strong> · <span class="nsm-lexical-gloss">${escapeHtml(r.c12_gloss_es)}</span> <code>${escapeHtml(r.c07_strong_id)}</code> → <span class="nsm-human-gloss">${escapeHtml(formatNsmSentenceCase(formatHumanReadable15ColFields(r, uiLocale).nsmHuman))}</span></li>`;
   const nsmPrimary = (nsmContent.length > 0 ? nsmContent : nsmFunc).slice(0, 8);
   const nsmExtraFunc = nsmContent.length > 0 ? nsmFunc.slice(0, 6) : [];
   const nsmHeading = humanizeUiCopy(isEn ? `Stratum 1 · Universal Semantic Primitives NSM-65 (${book} ${chapter}:${verse})` : `Estrato 1 · Primitivos Semánticos Universales NSM-65 (${book} ${chapter}:${verse})`, uiLocale);
@@ -621,27 +621,11 @@ export function renderStudyStrataCards(matrixShard, options = {}) {
     const matchedUnits = nsmLexicon.metrology_units.filter(
       (u) => u.sample_ref === activeOsis || (u.strong_code && verseStrongSet.has(normalizeStrongKey(u.strong_code)))
     );
-    const offset = ((verse - 1) * 2) % Math.max(1, nsmLexicon.metrology_units.length - 3);
-    const windowUnits = nsmLexicon.metrology_units.slice(offset, offset + 3).map((u) => ({
+    metrologyEntries = matchedUnits.slice(0, 4).map((u) => ({
       biblical_name: `${u.term_es} (${u.unit_id})`,
       modern_equivalent: u.si_equivalence,
       local_illustration: u.everyday_isomorphism,
     }));
-    metrologyEntries = [
-      ...matchedUnits.map((u) => ({
-        biblical_name: `${u.term_es} (${u.unit_id})`,
-        modern_equivalent: u.si_equivalence,
-        local_illustration: u.everyday_isomorphism,
-      })),
-      CANONICAL_METROLOGY_FALLBACK[0],
-      ...windowUnits,
-    ].slice(0, 4);
-  } else {
-    const startIdx = (verse - 1) % 3;
-    metrologyEntries = [
-      CANONICAL_METROLOGY_FALLBACK[0],
-      ...CANONICAL_METROLOGY_FALLBACK.slice(startIdx + 1, startIdx + 4),
-    ];
   }
 
   const hydratedCulturalMap = getHydratedCulturalGlossesMap();

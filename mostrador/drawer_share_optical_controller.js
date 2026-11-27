@@ -273,7 +273,7 @@ qrPanel.innerHTML =
 `<p id="opticalNyquistChannelHint" class="ek-meta ek-m-0 ek-mb-sm" data-optical-max-kb="4">${isEn ? "Physical QR limit <= 4–16 KB (1–3 chapters / verses). For the full Bible (~1 MB), export portable HTML or USB package." : "Límite físico QR <= 4–16 KB (pasajes y capítulos). Para Biblia completa (~1 MB), usa HTML portable o paquete USB."}</p>` +
 `<div class="ek-row-gap-lg">` +
 `<div id="qrBeamMatrixHost" class="qrbeam-matrix-host"><span id="qrBeamMatrixSvgSlot">${svgMarkup}</span><canvas id="qrBeamMatrixCanvas" width="174" height="174" aria-hidden="true" hidden></canvas></div>` +
-`<div class="tech-details" data-advanced-audit="true">` +
+`<div class="tech-details" data-advanced-audit="true" data-technical-plane="true">` +
 `<p class="qrbeam-desc">${isEn ? `ECO-GRID 29×29 (${packetBytes.byteLength} B ≤ 66 B): Systematic Pass (0..${encoder.K - 1}) + ECOM digest trailer + SplitMix64 LT repair tail.` : `ECO-GRID 29×29 (${packetBytes.byteLength} B ≤ 66 B): Pase sistemático (0..${encoder.K - 1}) + cierre ECOM + cola LT SplitMix64.`}</p>` +
 `</div>` +
 `</div></div>`;

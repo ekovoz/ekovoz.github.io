@@ -190,7 +190,7 @@ export function renderImproveDrawerHtml({
     `</label>` +
     `</div>` +
     `<label class="ek-label">` +
-    `<span data-i18n="improve.current">${t("improve.current")}</span>` +
+    `<span data-i18n="improve.current">${t("improve.current")} (${patch.kind === "verse" ? (isEn ? "L1 verse" : "verso L1") : (isEn ? "L2 term/root" : "término L2")})</span>` +
     `<input id="improveOldSurfaceInput" class="ek-input" type="text" value="${patch.old_surface.replace(/"/g, "&quot;")}">` +
     `</label>` +
     `<label class="ek-label">` +
@@ -213,8 +213,8 @@ export function renderImproveDrawerHtml({
       `</details>` +
       `</div>`
       : "") +
-    `<section id="improveCommunityVotesDetails" class="hig-tech-meta">` +
-    `<strong class="ek-title-sm">${isEn ? "🗳️ Community consensus votes" : "🗳️ Votos de consenso comunitario"}</strong>` +
+    `<section id="improveCommunityVotesDetails" class="hig-tech-meta ek-card-muted" data-technical-plane="true">` +
+    `<strong class="ek-title-sm">${isEn ? "🗳️ Community consensus votes (Pro)" : "🗳️ Votos de consenso comunitario (Pro)"}</strong>` +
     `<div class="ek-stack-sm ek-mt-sm">` +
     `<label class="ek-label-sm">${isEn ? "Reviewer ID" : "ID revisor"} <input id="improveVoteReviewerIdInput" class="ek-input" type="text" placeholder="hablante_1"></label>` +
     `<label class="ek-label-sm hig-toggle-row"><input id="improveVoteGoldSeedsCheck" type="checkbox"> <span>${isEn ? "Passed 2 Gold Seeds" : "Aprobó 2 semillas de oro"}</span></label>` +

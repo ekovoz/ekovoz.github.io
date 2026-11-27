@@ -5,6 +5,7 @@
 // degradación morfológica estocástica de Kanungo (1994) y característica de Euler 8-conexa exacta por bit-quads 2×2 de Gray (1971).
 // ============================================================================
 
+import { formatSauvolaStepLabel } from "./human_labels.js";
 import { extractGlyphContoursWithWorkerWasm } from "./tanda_print_worker.js";
 
 /**
@@ -1178,6 +1179,13 @@ export function evaluateOpticalSauvolaPhotocopyOracle({
   const t1 = typeof performance !== "undefined" && typeof performance.now === "function" ? performance.now() : Date.now();
   const elapsedMs = Number(Math.max(0.01, t1 - t0).toFixed(3));
 
+  const stages5 = Object.freeze([
+    "1_GRAYSCALE_LUMINANCE",
+    "2_BILATERAL_EDGE_FILTER",
+    "3_INTEGRAL_IMAGE_MOMENTS",
+    "4_SAUVOLA_LOCAL_THRESHOLD",
+    "5_EULER_TOPOLOGY_GUARD",
+  ]);
   const baseResult = Object.freeze({
     genIndex: gen,
     sauvolaK: Number(k.toFixed(2)),
@@ -1198,13 +1206,8 @@ export function evaluateOpticalSauvolaPhotocopyOracle({
     contrastLabel: `${Number(contrastRatio).toFixed(2)}:1`,
     wcagPassAaa: contrastRatio >= 7.0,
     elapsedMs,
-    stages5: Object.freeze([
-      "1_GRAYSCALE_LUMINANCE",
-      "2_BILATERAL_EDGE_FILTER",
-      "3_INTEGRAL_IMAGE_MOMENTS",
-      "4_SAUVOLA_LOCAL_THRESHOLD",
-      "5_EULER_TOPOLOGY_GUARD",
-    ]),
+    stages5,
+    stages5Labels: Object.freeze(stages5.map((step) => formatSauvolaStepLabel(step, "es"))),
   });
 
   if (ORACLE_RESULT_LRU_32.size >= 32) {

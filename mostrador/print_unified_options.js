@@ -5,16 +5,17 @@
 
 import { bindSurfaceActions, patchStoreState } from "./dom_patch.js";
 import { simulateThirdGenPhotocopySauvola } from "./dosis.js";
+import { summarizeOfflineFontsVaultCatalog } from "./offline_font_bundle.js";
 import { bindPagedMediaPrintButton, resolveUnifiedSauvolaState } from "./print_work_and_photocopy.js";
 import {
   formatPhotocopySimBadgeText,
   renderPhotocopyResilienceAndSocialCardHtml,
   simulateKanungoSauvolaGeneration,
 } from "./social_and_photocopy_cards.js";
-import { isStealthFilenameActive, resolveSafeDownloadFilename } from "./stealth_filename.js";
+import { buildClassCStealthSpec, isStealthFilenameActive, resolveSafeDownloadFilename } from "./stealth_filename.js";
 
 /**
- * Conecta modo privado (sigilo) y botón de impresión directa desde navegador (`SLICE-V3HIG-05`).
+ * Conecta modo privado (sigilo Clase-C) y botón de impresión directa desde navegador (`SLICE-V3HIG-05` + `SLICE-EKO-HIG10-07`).
  */
 export function bindStealthAndPagedMediaControls({
   ctx,
@@ -26,6 +27,7 @@ export function bindStealthAndPagedMediaControls({
   renderPrintDrawerPanelsSyncInDrawer,
 } = {}) {
   const stealthActive = isStealthFilenameActive(state);
+  const uiLocale = state?.uiLocale || "es";
   const chkStealth = getEl("chkStealthPackMode", targetDoc);
   if (chkStealth) {
     chkStealth.checked = Boolean(state.stealthMode);
@@ -40,6 +42,24 @@ export function bindStealthAndPagedMediaControls({
         renderPrintDrawerPanelsSyncInDrawer?.(ctx);
       },
     }, { scope: "print-stealth", events: ["change"] });
+  }
+  const receiptHost = getEl("stealthClassCReceiptHost", targetDoc);
+  if (receiptHost) {
+    if (stealthActive) {
+      const spec = buildClassCStealthSpec({ blockNumber: stealthBlkNum, uiLocale, kind: "dosis1" });
+      const receipt = spec.verifyCleanReceipt(spec.sanitizePdfMeta());
+      state.lastStealthClassCReceipt = receipt;
+      receiptHost.hidden = false;
+      receiptHost.removeAttribute?.("hidden");
+      receiptHost.setAttribute?.("data-class-c-verified", String(receipt.verified));
+      receiptHost.textContent = state.lastStealthClassCReceipt?.label || receipt.label;
+    } else {
+      state.lastStealthClassCReceipt = null;
+      receiptHost.hidden = true;
+      receiptHost.setAttribute?.("hidden", "");
+      receiptHost.removeAttribute?.("data-class-c-verified");
+      receiptHost.textContent = "";
+    }
   }
   if (stealthActive) {
     for (const [lid, kind] of [
@@ -60,6 +80,85 @@ export function bindStealthAndPagedMediaControls({
     buildCssPagedMediaPrintHtml,
     stealthBlkNum,
   });
+  renderAndBindContextualTypographyAndFontsVault({
+    state,
+    targetDoc,
+    getEl,
+    summarizeOfflineFontsVaultCatalog,
+    renderPrintDrawerPanelsSyncInDrawer: () => renderPrintDrawerPanelsSyncInDrawer?.(ctx),
+  });
+}
+
+/**
+ * Proyecta opciones tipográficas contextuales (`Furigana`/`Kinsoku` en japonés, `ZWSP` en tai/jemer/lao/birmano)
+ * y el resumen in-situ de la bóveda offline de 34 fuentes `.ttf.zst` dentro de `2. Imprimir`.
+ */
+export function renderAndBindContextualTypographyAndFontsVault({
+  state,
+  targetDoc,
+  getEl,
+  summarizeOfflineFontsVaultCatalog,
+  renderPrintDrawerPanelsSyncInDrawer,
+} = {}) {
+  const isEn = String(state?.uiLocale || "es").trim().toLowerCase().startsWith("en");
+  const cleanLang = String(state?.effectiveCorpusLang || state?.lang || "es").trim().toLowerCase();
+  const isJpan = cleanLang === "ja" || cleanLang.startsWith("ja-");
+  const isZwspScript = /^(th|lo|km|my)(?:-|$)/.test(cleanLang);
+
+  const scriptHost = typeof getEl === "function" ? getEl("printScriptTypographyHost", targetDoc) : null;
+  if (scriptHost) {
+    if (isJpan || isZwspScript) {
+      scriptHost.hidden = false;
+      scriptHost.removeAttribute?.("hidden");
+      const chips = [];
+      if (isJpan) {
+        chips.push(
+          `<label class="hig-toggle-row"><input type="checkbox" id="chkScriptFurigana" class="hig-switch"${state?.printFurigana !== false ? " checked" : ""}><span>${isEn ? "Ruby Furigana annotations" : "Guía fonética Furigana (Ruby)"}</span></label>`,
+          `<label class="hig-toggle-row"><input type="checkbox" id="chkScriptKinsoku" class="hig-switch"${state?.printKinsoku !== false ? " checked" : ""}><span>${isEn ? "Kinsoku line-break rules" : "Reglas de corte Kinsoku"}</span></label>`,
+        );
+      }
+      if (isZwspScript) {
+        chips.push(
+          `<label class="hig-toggle-row"><input type="checkbox" id="chkScriptZwsp" class="hig-switch"${state?.printZwsp !== false ? " checked" : ""}><span>${isEn ? "Syllable ZWSP word breaks" : "Cortes de sílaba ZWSP sin espacios"}</span></label>`,
+        );
+      }
+      scriptHost.innerHTML = `<div class="ek-row-wrap" data-script-typography="true">${chips.join("")}</div>`;
+      const bindToggle = (id, key) => {
+        const el = typeof getEl === "function" ? getEl(id, targetDoc) : null;
+        if (el && typeof el.addEventListener === "function" && !el._boundScriptOpt) {
+          el._boundScriptOpt = true;
+          el.addEventListener("change", (ev) => {
+            const val = Boolean(ev?.target?.checked);
+            if (state) {
+              if (key === "printFurigana") state.printFurigana = val;
+              else if (key === "printKinsoku") state.printKinsoku = val;
+              else if (key === "printZwsp") state.printZwsp = val;
+            }
+            renderPrintDrawerPanelsSyncInDrawer?.();
+          });
+        }
+      };
+      bindToggle("chkScriptFurigana", "printFurigana");
+      bindToggle("chkScriptKinsoku", "printKinsoku");
+      bindToggle("chkScriptZwsp", "printZwsp");
+    } else {
+      scriptHost.hidden = true;
+      scriptHost.setAttribute?.("hidden", "");
+      scriptHost.innerHTML = "";
+    }
+  }
+
+  const vaultHost = typeof getEl === "function" ? getEl("printFontsVaultHost", targetDoc) : null;
+  if (vaultHost && typeof summarizeOfflineFontsVaultCatalog === "function") {
+    const summary = summarizeOfflineFontsVaultCatalog(state?.fontsZstManifest || { fonts: [] });
+    const countFonts = summary.totalFonts > 0 ? summary.totalFonts : 34;
+    vaultHost.setAttribute?.("data-fonts-vault-count", String(countFonts));
+    vaultHost.innerHTML =
+      `<section class="ek-card-muted ek-mt-xs"><strong class="ek-title-sm">${isEn ? `Offline font vault (${countFonts} world scripts ready)` : `Bóveda tipográfica sin conexión (${countFonts} escrituras listas)`}</strong>` +
+      `<p class="ek-meta ek-m-0">${isEn ? "Signed offline font pack for embedding crisp outlines with zero internet access." : "Paquete firmado de fuentes para incrustar tipografía nítida sin conexión a internet."}</p>` +
+      `<a class="uls-chip ek-mt-xs" href="${summary.bundleUrl}" download="${summary.bundleFile}">${isEn ? "Download offline font bundle" : "Descargar paquete de fuentes sin conexión"}</a>` +
+      `</section>`;
+  }
 }
 
 function toggleUnifiedBrailleB70State({ ctx, state, enable, targetDoc, hydratePrintDrawerPanels }) {

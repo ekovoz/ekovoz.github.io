@@ -505,7 +505,9 @@ export const SINGLE_OWNER_CAPABILITY_MAP = Object.freeze({
   editions16: Object.freeze({ owner: "#bibleEditionsCatalogGrid", storeKey: "edition", plane: "editorial" }),
   typology12x16: Object.freeze({ owner: "#bibleBranchAndTypologyPanel", storeKey: "activeTypologyId", plane: "editorial" }),
   brailleB70: Object.freeze({ owner: "#btnQuickBrailleB70", storeKey: "edition", plane: "editorial" }),
+  quickPrintStage: Object.freeze({ owner: "#btnQuickPrintStage", storeKey: "activeIntent", plane: "editorial" }),
   technicalAuditPlane: Object.freeze({ owner: "#btnToggleTechnicalPlane", storeKey: "surfacePlane", plane: "technical" }),
+  exitTechnicalPlanePill: Object.freeze({ owner: "#btnExitTechnicalPlanePill", storeKey: "surfacePlane", plane: "technical" }),
 });
 
 /**

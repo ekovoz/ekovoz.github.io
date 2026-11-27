@@ -7,6 +7,7 @@
 
 import { getActivePlateIndex, setActivePlateIndex, setPaperFormat, syncFelicesWithCorpusLang, syncI18nUiFromState } from "../i18n_ui.js";
 import { HAREL_SHEET_MAP, LIFE_TRAILS_ANCHORS, escapeHtml, lookupWordTokenStrongEntry, projectCrossWorkCoordinate } from "./bridge_and_chapter.js";
+import { bindChromeAndPlaneEvents, filterCorpusLanguageDrawerByWork, syncAppearanceTriggerBadge } from "./chrome_and_plane_bindings.js";
 import { searchMultiBookConcordance } from "./concordance_search.js";
 import { bindSurfaceActions } from "./dom_patch.js";
 import { normalizeEditionSlug } from "./dosis.js";
@@ -14,12 +15,12 @@ import { DEFAULT_PRINT_CONFIG } from "./dosis_profiles_schema.js";
 import { syncActiveStrongInStudyDrawer, bindLifeTrailsNavigation } from "./drawer_hydrators.js";
 import { resolvePrintStageDescriptorsForTier } from "./print_stage_ribbon.js";
 import { bindCorpusPolyglotAndUiPreferences } from "./polyglot_picker_view.js";
-import { isTechnicalPlaneEnabled, resolvePublicOrPreviewWork } from "./projection_contract.js";
+import { resolvePublicOrPreviewWork } from "./projection_contract.js";
 import { bindSupportContactDialog } from "./provenance_and_support_panel.js";
 import { ROSETTA_66_BOOKS, parseBiblicalCoordinateReference, searchSpotlightCorpus } from "./reference.js";
 import { syncSisterWorksTabsDom } from "./sister_works_controller.js";
 import { APPEARANCE_FONT_BINDINGS, APPEARANCE_SCALE_BINDINGS, APPEARANCE_THEME_BINDINGS, ORTHO_PROFILE_BINDINGS, ROVING_TABLIST_SELECTORS, SISTER_WORK_TAB_BINDINGS } from "./stage_bindings_schema.js";
-import { createNativeDialogController, setActiveWork, setSurfacePlane } from "./state_store.js";
+import { createNativeDialogController, setActiveWork } from "./state_store.js";
 
 /**
  * Conecta los listeners declarativos del escenario principal sobre `targetDoc` con contexto inyectado.
@@ -333,119 +334,21 @@ export function bindStageDomEvents(ctx = {}) {
 
   const appearanceBtn = getEl("btnAppearanceMenu", targetDoc);
   const appearancePopover = getEl("appearancePopover", targetDoc);
-  const closeAppearancePopover = () => {
-    if (!appearancePopover || appearancePopover.hidden) return;
-    appearancePopover.hidden = true;
-    appearanceBtn?.setAttribute?.("aria-expanded", "false");
-    if (state.activeModal === "appearance") state.activeModal = null;
-  };
-  if (appearanceBtn && typeof appearanceBtn.addEventListener === "function") {
-    appearanceBtn.addEventListener("click", () => {
-      if (!appearancePopover) return;
-      const nextHidden = !appearancePopover.hidden;
-      if (!nextHidden) {
-        const corpD = getEl("bibleLanguageAndRegisterDrawer", targetDoc);
-        if (corpD) corpD.open = false;
-      }
-      appearancePopover.hidden = nextHidden;
-      appearanceBtn.setAttribute("aria-expanded", nextHidden ? "false" : "true");
-      state.activeModal = nextHidden ? null : "appearance";
-      if (!nextHidden && appearancePopover.style) {
-        appearancePopover.style.maxHeight = "calc(100dvh - 64px)";
-        appearancePopover.style.overflowY = "auto";
-        const winW = Number(targetDoc?.defaultView?.innerWidth || (typeof window !== "undefined" ? window.innerWidth : 0)) || 0;
-        if (winW > 0 && typeof appearancePopover.getBoundingClientRect === "function") {
-          const rect = appearancePopover.getBoundingClientRect();
-          if (rect.left < 8) { appearancePopover.style.right = "auto"; appearancePopover.style.left = "8px"; }
-          else if (rect.right > winW - 8) { appearancePopover.style.left = "auto"; appearancePopover.style.right = "8px"; }
-        }
-      }
-    });
-  }
-  if (typeof targetDoc.addEventListener === "function" && !targetDoc._appearanceDismissBound) {
-    targetDoc._appearanceDismissBound = true;
-    targetDoc.addEventListener("keydown", (ev) => { if (ev?.key === "Escape") closeAppearancePopover(); });
-  }
-
-  const applyStorePatchAndProject = (patch = {}, domain = "appearance") => {
-    const targetStore = ctx.store || state.store;
-    if (targetStore && typeof targetStore.setState === "function") {
-      targetStore.setState(patch, domain);
-    } else {
-      Object.assign(state, patch);
-    }
-    if (typeof ctx.syncActiveChromeProjection === "function") {
-      ctx.syncActiveChromeProjection(targetDoc);
-    } else if (targetDoc?.documentElement?.setAttribute) {
-      if (state.activeIntent) targetDoc.documentElement.setAttribute("data-intent", state.activeIntent);
-      if (state.appearanceTheme) targetDoc.documentElement.setAttribute("data-theme", state.appearanceTheme);
-      if (state.fontFamily) targetDoc.documentElement.setAttribute("data-font-family", state.fontFamily);
-      targetDoc.documentElement.style?.setProperty?.("--bible-font-scale", String(state.fontScale || 1.0));
-    }
-  };
-
-  for (const [themeBtnId, themeKey] of APPEARANCE_THEME_BINDINGS) {
-    const tThemeBtn = getEl(themeBtnId, targetDoc);
-    if (tThemeBtn && typeof tThemeBtn.addEventListener === "function") {
-      tThemeBtn.addEventListener("click", () => {
-        applyStorePatchAndProject({ appearanceTheme: themeKey }, "appearance");
-        for (const [id, key] of APPEARANCE_THEME_BINDINGS) {
-          getEl(id, targetDoc)?.setAttribute?.("aria-pressed", key === themeKey ? "true" : "false");
-        }
-      });
-    }
-  }
-
-  for (const [fontBtnId, fontKey] of APPEARANCE_FONT_BINDINGS) {
-    const fBtn = getEl(fontBtnId, targetDoc);
-    if (fBtn && typeof fBtn.addEventListener === "function") {
-      fBtn.addEventListener("click", () => {
-        applyStorePatchAndProject({ fontFamily: fontKey }, "appearance");
-        getEl("btnFontSerif", targetDoc)?.setAttribute?.("aria-pressed", fontKey === "serif" ? "true" : "false");
-        getEl("btnFontSans", targetDoc)?.setAttribute?.("aria-pressed", fontKey === "sans" ? "true" : "false");
-      });
-    }
-  }
-
-  for (const [scaleBtnId, delta] of APPEARANCE_SCALE_BINDINGS) {
-    const sBtn = getEl(scaleBtnId, targetDoc);
-    if (sBtn && typeof sBtn.addEventListener === "function") {
-      sBtn.addEventListener("click", () => {
-        const cur = Number(state.fontScale) || 1.0;
-        const nextScale = Number(Math.max(0.85, Math.min(1.5, cur + delta)).toFixed(2));
-        applyStorePatchAndProject({ fontScale: nextScale }, "appearance");
-      });
-    }
-  }
-  const techBtn = getEl("btnToggleTechnicalPlane", targetDoc);
-  if (techBtn && typeof techBtn.addEventListener === "function") {
-    const syncTechBtnDom = () => {
-      const on = isTechnicalPlaneEnabled(state, targetDoc?.defaultView?.location?.search || "");
-      techBtn.setAttribute("aria-pressed", on ? "true" : "false");
-      techBtn.textContent = isEnRole ? (on ? "🛠️ Technical / R&D Mode (On)" : "🛠️ Technical / R&D Mode") : (on ? "🛠️ Modo Técnico / I+D (Activo)" : "🛠️ Modo Técnico / I+D");
-    };
-    syncTechBtnDom();
-    techBtn.addEventListener("click", () => {
-      const next = isTechnicalPlaneEnabled(state, targetDoc?.defaultView?.location?.search || "") ? "editorial" : "technical";
-      const targetStore = ctx.store || state.store;
-      if (targetStore) setSurfacePlane(targetStore, next);
-      else state.surfacePlane = next;
-      ctx.syncActiveChromeProjection?.(targetDoc);
-      syncTechBtnDom();
-    });
-  }
-
-  const corpusLangBtn = getEl("sovereignCorpusLangBtn", targetDoc);
-  const corpusDrawer = getEl("bibleLanguageAndRegisterDrawer", targetDoc);
-  if (corpusLangBtn && typeof corpusLangBtn.addEventListener === "function") {
-    corpusLangBtn.addEventListener("click", () => {
-      if (!corpusDrawer) return;
-      corpusDrawer.open = !corpusDrawer.open;
-      corpusLangBtn.setAttribute("aria-expanded", corpusDrawer.open ? "true" : "false");
-      if (corpusDrawer.open) setTimeout(() => { try { getEl("quickLangFilterInput", targetDoc)?.focus({ preventScroll: true }); } catch { } }, 0);
-      syncBodyWorkAndOverlayAttrs(targetDoc);
-    });
-  }
+  const closeAppearancePopover = bindChromeAndPlaneEvents({
+    state,
+    store,
+    targetDoc,
+    getEl,
+    isEnRole,
+    syncActiveChromeProjection: ctx.syncActiveChromeProjection,
+    syncBodyWorkAndOverlayAttrs,
+    transitionSheet,
+    appearances: {
+      themes: APPEARANCE_THEME_BINDINGS,
+      fonts: APPEARANCE_FONT_BINDINGS,
+      scales: APPEARANCE_SCALE_BINDINGS,
+    },
+  });
 
   const refInput = getEl("mostradorRefInput", targetDoc);
   const refBtn = getEl("btnGoReference", targetDoc);
@@ -731,6 +634,8 @@ export function bindStageDomEvents(ctx = {}) {
     }
     syncBodyWorkAndOverlayAttrs(docRef);
     syncSisterWorksTabsDom(cleanWork, (id) => getEl(id, docRef));
+    filterCorpusLanguageDrawerByWork(cleanWork, docRef, getEl);
+    closeAppearancePopover();
 
     const projected = projectCrossWorkCoordinate({
       fromWork: prevWork,
@@ -804,9 +709,6 @@ export function bindStageDomEvents(ctx = {}) {
     targetDoc._oralTriggerBound = true;
     targetDoc.addEventListener("click", (ev) => {
       const tgt = ev?.target;
-      if (appearancePopover && !appearancePopover.hidden && tgt !== appearanceBtn && !appearanceBtn?.contains?.(tgt) && !appearancePopover.contains?.(tgt)) {
-        closeAppearancePopover();
-      }
       const trig = tgt?.closest?.("[data-oral-portico-trigger]") || (tgt?.getAttribute?.("data-oral-portico-trigger") ? tgt : null);
       if (trig) getEl("btnToggleAudioNarakeet", targetDoc)?.click?.();
     });

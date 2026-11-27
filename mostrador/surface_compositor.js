@@ -247,6 +247,24 @@ export function projectSurfaceLayoutFromState(state = {}, rootDoc, getEl) {
     camVideo.hidden = true;
   }
 
+  const exitProPill = resolveEl("btnExitTechnicalPlanePill");
+  if (exitProPill) {
+    exitProPill.hidden = !techPlaneOn;
+    exitProPill.setAttribute?.("aria-pressed", techPlaneOn ? "true" : "false");
+  }
+
+  const appBtn = resolveEl("btnAppearanceMenu");
+  if (appBtn && typeof appBtn.textContent === "string") {
+    const isoCode = String(state.uiLocale || "es").trim().split(/[-_]/)[0].toUpperCase().slice(0, 3) || "ES";
+    appBtn.textContent = `Aa · ${isoCode}`;
+  }
+
+  const appPop = resolveEl("appearancePopover");
+  if (appPop && !appPop.hidden && (hasOpenSheet || (state.activeModal && state.activeModal !== "appearance"))) {
+    appPop.hidden = true;
+    resolveEl("btnAppearanceMenu")?.setAttribute?.("aria-expanded", "false");
+  }
+
   const lexHost = resolveEl("stpLexiconExplorerHost");
   if (lexHost) {
     const activeFieldSubtab = activeSubtabs.field || "patch";
@@ -404,11 +422,13 @@ export function applyInitialSurfaceModeFromUrl({ store, state, search = "", doc,
         : sheetParam
       : intentParam === "workshop" || intentParam === "field" || intentParam === "improve"
         ? "field"
-        : ["study", "print", "share"].includes(intentParam)
-          ? intentParam
-          : isStudio
-            ? "study"
-            : null;
+        : intentParam === "vault"
+          ? "print"
+          : ["study", "print", "share"].includes(intentParam)
+            ? intentParam
+            : isStudio
+              ? "study"
+              : null;
   const resolvedIntent =
     targetSheet === "field"
       ? "workshop"
@@ -421,18 +441,24 @@ export function applyInitialSurfaceModeFromUrl({ store, state, search = "", doc,
             : "read";
 
   const mobileOpen = isMobileSheetViewport(doc?.defaultView);
+  const vaultRequested = intentParam === "vault";
   if (store && typeof store.setState === "function") {
     if (isStudio) setSurfacePlane(store, "technical");
+    if (vaultRequested) setSheetSubtab(store, "print", "doses");
     setActiveIntent(store, resolvedIntent, { mobileSheetOpen: mobileOpen });
   } else if (state && typeof state === "object") {
     if (isStudio) state.surfacePlane = "technical";
+    if (vaultRequested) {
+      state.activeSubtabBySheet = Object.freeze({ ...(state.activeSubtabBySheet || DEFAULT_SUBTABS_BY_SHEET), print: "doses" });
+      state.vaultRequested = true;
+    }
     state.activeIntent = resolvedIntent;
     state.activeSheet = targetSheet;
     state.mobileSheetOpen = Boolean(targetSheet && mobileOpen);
   }
   const snap = store?.getState?.() || state || {};
   projectSurfaceLayoutFromState(snap, doc, getEl);
-  return { activeIntent: snap.activeIntent || resolvedIntent, activeSheet: snap.activeSheet };
+  return { activeIntent: snap.activeIntent || resolvedIntent, activeSheet: snap.activeSheet, vaultRequested };
 }
 
 /**

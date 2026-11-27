@@ -11,11 +11,24 @@ import { buildEditionRenderSpecBytes16, resolveNumericEditionId } from "./dosis_
 import { isRtlLocale } from "./i18n.js";
 import { mountOfflineFontNoticeWithLocalImporter } from "./offline_font_bundle.js";
 import { resolveEditionSubstrateForProfile } from "./print_config_projector.js";
+import {
+  auditFoldedPageOrder,
+  bindImpositionAndLayoutButtons,
+  renderImpositionDuplexSvgDiagram,
+  resolveDuplexFlipEdge,
+} from "./print_imposition_and_duplex_svg.js";
 import { renderPhysicalPrintGuideHtml } from "./print_guide_and_progress.js";
 import { resolveActiveWorkDrawerContext } from "./projection_contract.js";
 import { updatePrintConfig } from "./state_store.js";
 import { resolveSafeDownloadFilename } from "./stealth_filename.js";
 import { encodePaperFormatCode } from "./tanda_print_worker.js";
+
+export {
+  auditFoldedPageOrder,
+  bindImpositionAndLayoutButtons,
+  renderImpositionDuplexSvgDiagram,
+  resolveDuplexFlipEdge,
+};
 
 export function normalizeStandardPaperFormat(raw = "a4") {
 const clean = String(raw || "a4").trim().toLowerCase();
@@ -445,32 +458,6 @@ renderPrintDrawerPanelsSyncInDrawer(ctx);
 }
 }
 
-export function resolveDuplexFlipEdge(
-orientation = "portrait",
-foliationMode = "saddle_stitch",
-uiLocale = "es",
-) {
-const isEn = String(uiLocale || "es").trim().toLowerCase().startsWith("en");
-const isLandscape = String(orientation || "portrait").trim().toLowerCase() === "landscape";
-const isSaddle = String(foliationMode || "saddle_stitch").trim().toLowerCase() === "saddle_stitch";
-const isShortEdge = isLandscape || isSaddle;
-const edge = isShortEdge ? "short" : "long";
-const labelEs = isShortEdge ? "borde corto" : "borde largo";
-const labelEn = isShortEdge ? "short edge" : "long edge";
-const toggleLabelEs = `Impresión a doble cara (voltear por el ${labelEs})`;
-const toggleLabelEn = `Double-sided printing (flip on ${labelEn})`;
-const step2Es = `Paso 1: Imprime caras impares (anverso). Paso 2: Voltea el pliego por el ${labelEs} e imprime caras pares (reverso)`;
-const step2En = `Step 1: Print odd pages (front). Step 2: Flip sheet along the ${labelEn} and print even pages (back)`;
-return {
-edge,
-isShortEdge,
-labelEs,
-labelEn,
-toggleLabel: isEn ? toggleLabelEn : toggleLabelEs,
-step2Text: isEn ? step2En : step2Es,
-};
-}
-
 export function renderFieldRefugeAndChecklistHtml(profilesArtifact = null, uiLocale = "es") {
 const isEn = String(uiLocale || "es").trim().toLowerCase().startsWith("en");
 const fieldPdfs = profilesArtifact?.field_pdfs || {};
@@ -631,67 +618,6 @@ state.dose3LastCompletedTandas = targetMacroCount;
 state._dose3Streamed16Of16 = Boolean(state.generateFull66BookBible && targetMacroCount === 16);
 }
 return true;
-}
-
-export function bindImpositionAndLayoutButtons({
-state,
-targetDoc,
-getEl,
-computeSaddleStitchImpositionPlan,
-computeKindlePrintBudget,
-renderImpositionAndLayoutPreviewHtml,
-} = {}) {
-const renderReactivePreview = (mode = "imposition") => {
-const resolvedMode = mode === "layout" ? "layout" : "imposition";
-if (state) state.activePrintPreviewMode = resolvedMode;
-const host = getEl("impositionBookletPreviewHost", targetDoc);
-if (!host) return;
-const curOrientation = String(state.orientation || "portrait").toLowerCase() === "landscape" ? "landscape" : "portrait";
-const curPaper = state.paperFormat || "a4";
-const curCols = state.columns || 2;
-const curFontPt = state.fontSizePt || 9.5;
-const imp = computeSaddleStitchImpositionPlan({ totalPages: 16, paperThicknessMm: 0.09, rtl: isRtlLocale(state.lang) });
-const budgetCalc = computeKindlePrintBudget({
-fontPt: curFontPt,
-columns: curCols,
-orientation: curOrientation,
-paper: curPaper,
-uiLocale: state.uiLocale || "es",
-});
-const curIsEn = String(state.uiLocale || "es").trim().toLowerCase().startsWith("en");
-const summaryBanner = curIsEn
-? `<div class="ek-meta ek-mt-xs" data-reactive-imposition="true"><strong>${imp.sheetCount} folded sheets · Constant folio ${imp.folioSumConstant}</strong> · ${escapeHtml(budgetCalc.summaryText)}</div>`
-: `<div class="ek-meta ek-mt-xs" data-reactive-imposition="true"><strong>${imp.sheetCount} pliegos doblados · Folio constante ${imp.folioSumConstant}</strong> · ${escapeHtml(budgetCalc.summaryText)}</div>`;
-host.setAttribute?.("data-reactive-layout", "true");
-host.innerHTML =
-renderImpositionAndLayoutPreviewHtml({
-mode,
-paper: curPaper,
-pageCount: 16,
-columns: curCols,
-fontPt: curFontPt,
-orientation: curOrientation,
-dir: isRtlLocale(state.lang) ? "rtl" : "ltr",
-uiLocale: state.uiLocale || "es",
-}) + summaryBanner;
-};
-for (const ctrlId of [
-"kindleFontSizeSlider",
-"kindleColumnSelector",
-"kindlePaperFormatSelector",
-"kindleOrientationSelector",
-"bibleFoliationModeSelect",
-]) {
-const ctrl = getEl(ctrlId, targetDoc);
-if (ctrl && typeof ctrl.addEventListener === "function" && !ctrl._reactiveLayoutBound) {
-ctrl._reactiveLayoutBound = true;
-ctrl.addEventListener("change", () => renderReactivePreview("layout"));
-if (ctrlId === "kindleFontSizeSlider") {
-ctrl.addEventListener("input", () => renderReactivePreview("layout"));
-}
-}
-}
-renderReactivePreview(state.activePrintPreviewMode || "imposition");
 }
 
 export function bindPagedMediaPrintButton({

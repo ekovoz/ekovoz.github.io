@@ -34,10 +34,13 @@ export function renderElicitSessionCardHtml(sessionData = null, uiLocale = "es",
   const activeRung = String(options?.activeRung || "ALL").trim();
   const list = rawList.filter((it) => {
     if (activeRung && activeRung !== "ALL" && String(it?.rung || "") !== activeRung) return false;
-    if (activeBook && String(options?.filterByBook) === "true" && !String(it?.verse_id || "").toUpperCase().startsWith(`${activeBook}.`)) return false;
     return true;
   });
-  const effectiveList = list.length > 0 ? list : rawList;
+  const bookMatched = activeBook
+    ? list.filter((it) => String(it?.verse_id || "").toUpperCase().startsWith(`${activeBook}.`))
+    : [];
+  const isGlobalPriorityScope = Boolean(activeBook && bookMatched.length === 0);
+  const effectiveList = bookMatched.length > 0 ? bookMatched : (list.length > 0 ? list : rawList);
   const total = effectiveList.length || 1;
   const reqIdx = Number(options?.index) || 0;
   const idx = ((reqIdx % total) + total) % total;
@@ -57,11 +60,14 @@ export function renderElicitSessionCardHtml(sessionData = null, uiLocale = "es",
   const framesList = Array.isArray(top.covered_syntactic_frames) ? top.covered_syntactic_frames : [];
   const gainBits = Number(top.marginal_gain_bits || 0).toFixed(2);
   const vRef = esc(top.verse_id || "GEN.3.1");
+  const cardHeading = isGlobalPriorityScope
+    ? (isEn ? `Global Priority Elicitation ${idx + 1}/${effectiveList.length || 250} · ${vRef}` : `Prioridad global (Elicitación) ${idx + 1}/${effectiveList.length || 250} · ${vRef}`)
+    : (isEn ? `Field Elicitation Step ${idx + 1}/${effectiveList.length || 250} · ${vRef}` : `Elicitación en Campo ${idx + 1}/${effectiveList.length || 250} · ${vRef}`);
 
   return (
-    `<section id="workshopElicitSessionCard" class="ek-card-muted ek-mt-sm" data-elicit-ref="${vRef}" data-elicit-index="${idx}" data-elicit-total="${effectiveList.length || 250}" data-elicit-bits="${esc(gainBits)}">` +
+    `<section id="workshopElicitSessionCard" class="ek-card-muted ek-mt-sm" data-elicit-ref="${vRef}" data-elicit-index="${idx}" data-elicit-total="${effectiveList.length || 250}" data-elicit-bits="${esc(gainBits)}" data-elicit-scope="${isGlobalPriorityScope ? "global-priority" : "book-match"}">` +
     `<div class="ek-row-between">` +
-    `<strong>🎙️ ${isEn ? "Field Elicitation Step" : "Elicitación en Campo"} ${idx + 1}/${effectiveList.length || 250} · ${vRef}</strong>` +
+    `<strong>🎙️ ${cardHeading}</strong>` +
     `<span class="uls-badge">+${esc(gainBits)} bits</span>` +
     `</div>` +
     `<blockquote class="evangelios-passage-blockquote">${esc(promptText)}</blockquote>` +
@@ -113,7 +119,7 @@ export function renderStpLedgerProgressHtml(masterCensus = null, uiLocale = "es"
 }
 
 /**
- * Construye paquetes descargables CSV y CLDF-JSON del taller activo (`ExportTaller` / `CldfMirror`).
+ * Construye paquetes descargables CSV y CLDF-JSON completos del taller activo (`ExportTaller` / `CldfMirror`).
  */
 export function buildWorkshopCldfCsvAndJson({
   rows = [],
@@ -128,7 +134,7 @@ export function buildWorkshopCldfCsvAndJson({
   const resolvedLadder = Array.isArray(ladderItems) ? ladderItems : Array.isArray(ladderItems?.items) ? ladderItems.items : [];
   const normalizedRows = (Array.isArray(rows) && rows.length > 0
     ? rows
-    : resolvedLadder.slice(0, 12).map((it, idx) => ({
+    : resolvedLadder.map((it, idx) => ({
       verse_id: it.verse_id || `${safeBook}.${safeChap}.${idx + 1}`,
       rung: it.rung || "Rung1",
       strong_ids: Array.isArray(it.covered_high_freq_strongs) ? it.covered_high_freq_strongs.join(";") : "",

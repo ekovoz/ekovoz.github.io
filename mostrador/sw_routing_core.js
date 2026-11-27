@@ -5,7 +5,7 @@
 // fallback /index.html estricto a mode=navigate, 0 respuestas opaque).
 // ============================================================================
 
-export const CACHE_NAME = "ekovoz-mostrador-v51";
+export const CACHE_NAME = "ekovoz-mostrador-v53";
 export const OPT_IN_META_KEY = "/__ekovoz_meta/offline-opt-in";
 
 export const SUPPORTED_BOOK_NAMES_LANGS = new Set([
@@ -38,6 +38,7 @@ export const SHELL_CORE_ASSETS = [
   "/i18n_ui.js",
   "/mostrador/bridge_and_chapter.js",
   "/mostrador/canonical_versification.js",
+  "/mostrador/chrome_and_plane_bindings.js",
   "/mostrador/concordance_search.js",
   "/mostrador/chrome_static_i18n.js",
   "/mostrador/diglossic_chapter_renderer.js",
@@ -100,6 +101,7 @@ export const SHELL_CORE_ASSETS = [
   "/mostrador/print_config_projector.js",
   "/mostrador/polyglot_picker_view.js",
   "/mostrador/print_guide_and_progress.js",
+  "/mostrador/print_imposition_and_duplex_svg.js",
   "/mostrador/print_stage_ribbon.js",
   "/mostrador/print_unified_options.js",
   "/mostrador/print_work_and_photocopy.js",

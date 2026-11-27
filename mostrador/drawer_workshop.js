@@ -54,7 +54,7 @@ const earlyDynamicHost = getEl?.("tallerArtifactsDynamicList", targetDoc);
 if (earlyDynamicHost && !String(earlyDynamicHost.innerHTML || "").includes("workshop5LangsSwitcher")) {
 const renderEarlySwitcher = () => {
 earlyDynamicHost.innerHTML = renderWorkshop5LangsSwitcherHtml(
-state?.lang || state?.activeTallerLang || "es",
+state?.workshopLang || state?.activeTallerLang || state?.lang || "es",
 state?.masterCensusSummary || null,
 state?.uiLocale || "es",
 state?.availableWorkshopLangs || null,
@@ -125,7 +125,7 @@ const ladder250 = Array.isArray(rawLadder250)
 ? rawLadder250.items
 : [];
 state.celfLadder250 = ladder250;
-const fieldWorkshopActiveLang = String(state.lang || "stp").trim().toLowerCase() || "stp";
+const fieldWorkshopActiveLang = String(state.workshopLang || state.activeTallerLang || state.lang || "stp").trim().toLowerCase() || "stp";
 if (typeof dataLayer.loadFieldWorkshopData === "function") {
 const fwData = await dataLayer.loadFieldWorkshopData(fieldWorkshopActiveLang);
 if (fwData) {
