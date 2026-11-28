@@ -209,6 +209,7 @@ export function createDataLayer({ source, cacheLimit = 32 } = {}) {
   const jsonCache = createLru(cacheLimit);
   const bytesCache = createLru(Math.max(8, Math.floor(cacheLimit / 2)));
   const ekpackHeaderCache = createLru(16);
+  const failedPackProbes = new Set();
   const sourceGetRangeBytes = source && (source.getRangeBytes || source.readRangeBytes);
   let generation = 0;
   let playerWasmPromise = null;
@@ -325,15 +326,19 @@ export function createDataLayer({ source, cacheLimit = 32 } = {}) {
     if (!out.includes(`data/packs/${baseLang}.ekpack`)) {
       out.push(`data/packs/${baseLang}.ekpack`);
     }
-    return out;
+    return out.filter((p) => !failedPackProbes.has(p));
   }
 
   async function resolvePackHeaderInfo(baseLang) {
     const candidates = await resolvePackCandidatePaths(baseLang);
     for (const relPack of candidates) {
+      if (failedPackProbes.has(relPack)) continue;
       const hdrInfo = await ekpackHeaderCache.get(relPack, async () => {
         const headProbe = await readEkpackSlice(relPack, 0, 98303);
-        if (!headProbe || headProbe.byteLength < 32) return null;
+        if (!headProbe || headProbe.byteLength < 32) {
+          if (source?.isFetchNetworkSource) failedPackProbes.add(relPack);
+          return null;
+        }
         const preamble = parseEkpackPreamble32Js(headProbe);
         if (!preamble) return null;
         const f0End = preamble.frame0Offset + preamble.frame0ByteLen;

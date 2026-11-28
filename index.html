@@ -103,64 +103,7 @@
                     aria-expanded="false" aria-controls="bibleLanguageAndRegisterDrawer">
                     🌍 <span id="sovereignActiveCorpusLabel">Español · 24 Biblias</span>
                 </button>
-                <button type="button" class="uls-chip" id="btnAppearanceMenu" data-i18n-autonym="true"
-                    aria-expanded="false" aria-controls="appearancePopover"
-                    aria-label="Appearance &amp; UI Language">Aa</button>
-            </div>
-        </div>
-        <div id="appearancePopover" hidden role="region"
-            aria-label="Typography, Theme, Reading Register and Menu Language">
-            <div class="appearance-group" role="group" aria-label="Theme">
-                <button type="button" id="btnThemeLight" class="uls-chip" data-i18n="top.theme.light"
-                    aria-pressed="true">☀️
-                    Día</button>
-                <button type="button" id="btnThemeSepia" class="uls-chip" data-i18n="top.theme.sepia"
-                    aria-pressed="false">📜 Sepia</button>
-                <button type="button" id="btnThemeDark" class="uls-chip" data-i18n="top.theme.dark"
-                    aria-pressed="false">🌙
-                    Noche</button>
-            </div>
-            <div class="appearance-group" role="group" aria-label="Font and Text Size">
-                <button type="button" id="btnFontSerif" class="uls-chip" data-i18n-autonym="true"
-                    aria-pressed="true">Serif</button>
-                <button type="button" id="btnFontSans" class="uls-chip" data-i18n-autonym="true"
-                    aria-pressed="false">Sans</button>
-                <button type="button" id="btnScaleDown" class="uls-chip" data-i18n-autonym="true"
-                    aria-label="Decrease text size">A-</button>
-                <button type="button" id="btnScaleUp" class="uls-chip" data-i18n-autonym="true"
-                    aria-label="Increase text size">A+</button>
-            </div>
-            <div class="appearance-group" role="group" aria-label="Reading Mode">
-                <button type="button" id="toggleRollMode" class="uls-chip" data-i18n="mostrador.register.roll_toggle"
-                    aria-pressed="false">📄 Page view ↔ Continuous scroll</button>
-            </div>
-            <div id="bibleRegisterSelector" class="register-selector-group ek-row-wrap ek-mb-sm" role="group"
-                aria-label="Reading Mode">
-                <button type="button" id="btnRegIntergeneracional" class="uls-chip" data-register="intergeneracional"
-                    data-i18n="mostrador.register.intergenerational">🕊️ Clear
-                    contemporary reading</button>
-                <button type="button" id="btnRegClasica" class="uls-chip" data-register="clasica"
-                    data-i18n="mostrador.register.classic">📜 Classic tradition
-                    (1909)</button>
-                <button type="button" id="btnRegBilingue" class="uls-chip" data-register="bilingue"
-                    data-i18n="mostrador.register.bilingual">👥 Side-by-side
-                    bilingual (62/38)</button>
-                <select id="bibleBridgeLangSelect" aria-label="Bridge Language (62/38)">
-                    <option value="">Puente: Automático</option>
-                    <option value="es">Bridge: ES</option>
-                    <option value="en">Bridge: EN</option>
-                    <option value="fr">Bridge: FR</option>
-                    <option value="pt">Bridge: PT</option>
-                    <option value="ar">Bridge: AR</option>
-                    <option value="hi">Bridge: HI</option>
-                    <option value="id">Bridge: ID</option>
-                    <option value="ru">Bridge: RU</option>
-                    <option value="sw">Bridge: SW</option>
-                    <option value="zh-Hans">Bridge: ZH</option>
-                </select>
-            </div>
-            <div class="appearance-popover-row" role="group" aria-label="Menu Language">
-                <button type="button" class="uls-trigger-btn" id="ulsTriggerBtn" data-i18n-autonym="true"
+                <button type="button" class="uls-chip uls-trigger-btn" id="ulsTriggerBtn" data-i18n-autonym="true"
                     aria-haspopup="listbox" aria-expanded="false" aria-controls="langSelect">
                     <span id="ulsCurrentLang">Español</span>
                     <span class="uls-badge" id="ulsUiCountBadge">Menú · 18</span>
@@ -185,6 +128,36 @@
                     <option value="ur">اردو</option>
                     <option value="fa">فارسی</option>
                 </select>
+                <button type="button" class="uls-chip" id="btnAppearanceMenu" data-i18n-autonym="true"
+                    aria-expanded="false" aria-controls="appearancePopover"
+                    aria-label="Appearance &amp; Typography">Aa</button>
+            </div>
+        </div>
+        <div id="appearancePopover" hidden role="region"
+            aria-label="Typography, Theme and Scroll">
+            <div class="appearance-group" role="group" aria-label="Theme">
+                <button type="button" id="btnThemeLight" class="uls-chip" data-i18n="top.theme.light"
+                    aria-pressed="true">☀️
+                    Día</button>
+                <button type="button" id="btnThemeSepia" class="uls-chip" data-i18n="top.theme.sepia"
+                    aria-pressed="false">📜 Sepia</button>
+                <button type="button" id="btnThemeDark" class="uls-chip" data-i18n="top.theme.dark"
+                    aria-pressed="false">🌙
+                    Noche</button>
+            </div>
+            <div class="appearance-group" role="group" aria-label="Font and Text Size">
+                <button type="button" id="btnFontSerif" class="uls-chip" data-i18n-autonym="true"
+                    aria-pressed="true">Serif</button>
+                <button type="button" id="btnFontSans" class="uls-chip" data-i18n-autonym="true"
+                    aria-pressed="false">Sans</button>
+                <button type="button" id="btnScaleDown" class="uls-chip" data-i18n-autonym="true"
+                    aria-label="Decrease text size">A-</button>
+                <button type="button" id="btnScaleUp" class="uls-chip" data-i18n-autonym="true"
+                    aria-label="Increase text size">A+</button>
+            </div>
+            <div class="appearance-group" role="group" aria-label="Reading Mode">
+                <button type="button" id="toggleRollMode" class="uls-chip" data-i18n="mostrador.register.roll_toggle"
+                    aria-pressed="false">📄 Page view ↔ Continuous scroll</button>
             </div>
         </div>
         <!-- Global Orthogonal Corpus Language Funnel (Single-Purpose Language Picker: 24 Bibles + SIL 7,164) -->
@@ -193,6 +166,31 @@
             <summary hidden aria-hidden="true" data-i18n="mostrador.step1.title">
                 1. Choose language: 24 Bibles &amp; Portions or SIL Census (7,164)</summary>
             <div>
+                <div id="bibleRegisterSelector" class="register-selector-group ek-row-wrap ek-mb-sm" role="group"
+                    aria-label="Reading Register">
+                    <button type="button" id="btnRegIntergeneracional" class="uls-chip" data-register="intergeneracional"
+                        data-i18n="mostrador.register.intergenerational">🕊️ Clear
+                        contemporary reading</button>
+                    <button type="button" id="btnRegClasica" class="uls-chip" data-register="clasica"
+                        data-i18n="mostrador.register.classic">📜 Classic tradition
+                        (1909)</button>
+                    <button type="button" id="btnRegBilingue" class="uls-chip" data-register="bilingue"
+                        data-i18n="mostrador.register.bilingual">👥 Side-by-side
+                        bilingual (62/38)</button>
+                    <select id="bibleBridgeLangSelect" aria-label="Bridge Language (62/38)">
+                        <option value="">Puente: Automático</option>
+                        <option value="es">Bridge: ES</option>
+                        <option value="en">Bridge: EN</option>
+                        <option value="fr">Bridge: FR</option>
+                        <option value="pt">Bridge: PT</option>
+                        <option value="ar">Bridge: AR</option>
+                        <option value="hi">Bridge: HI</option>
+                        <option value="id">Bridge: ID</option>
+                        <option value="ru">Bridge: RU</option>
+                        <option value="sw">Bridge: SW</option>
+                        <option value="zh-Hans">Bridge: ZH</option>
+                    </select>
+                </div>
                 <div id="bibleOrthographyPills" class="chip-wrap-row ortho-pills-bar ek-mb-sm"
                     aria-label="Script Variants" hidden>
                     <button type="button" id="btnOrthoInali" class="uls-chip" data-i18n="ortho.inali" data-ortho="INALI"
@@ -386,8 +384,6 @@
                                 <option value="arp">Hinónoʼeitíít · Arapaho (arp · Porciones)</option>
                                 <option value="bre">Brezhoneg · Breton (bre · Porciones)</option>
                                 <option value="cha">Finuʼ Chamorro (cha · Porciones)</option>
-                                <option value="aud">Au'dam (aud · Draft)</option>
-                                <option value="kgv">Kalamang (kgv · Draft)</option>
                             </select>
                         </div>
                     </section>
@@ -761,6 +757,7 @@
                 <summary data-i18n="study.acc.orthography">✍️ Conditional Orthography &amp; Scriptio Continua</summary>
                 <div id="wfstAndScriptioContinuaHost"></div>
             </details>
+            <div id="proBovedaStudyAccordionSlot" data-study-subtab-panel="calibrate" hidden></div>
             <div id="philologyRosettaStaticHost" data-study-subtab-panel="calibrate" hidden class="rosetta-static-slot">
                 <select id="rosettaFilterCategorySelect" aria-label="Philology Rosetta Category">
                     <option value="all" selected data-i18n="rosetta.filter.all">All 5 alignment classes (4,036 tokens)
@@ -813,6 +810,9 @@
                     <select id="doseScopeSelect" class="ek-select-compact">
                         <option value="1" selected>Pasaje actual (~4 hojas)</option>
                         <option value="2">Sección o libro completo</option>
+                        <option value="preset:evangelios4">4 Evangelios (~80 pág.)</option>
+                        <option value="preset:nt27">Nuevo Testamento (27 libros · ~280 pág.)</option>
+                        <option value="preset:salmosProverbios">Salmos y Proverbios (~120 pág.)</option>
                         <option value="3">Biblia completa (66 libros)</option>
                     </select>
                 </label>

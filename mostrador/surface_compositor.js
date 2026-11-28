@@ -7,6 +7,7 @@
 import { HAREL_SHEET_MAP } from "./bridge_and_chapter.js";
 import { verifyArtifactProjectionClosure } from "./dom_projection_contracts.js";
 import {
+  EXCLUSIVE_VISIBILITY_SLOTS,
   SURFACE_SLOT_MANIFEST,
   WORK_LIFECYCLE,
   isTechnicalPlaneEnabled,
@@ -308,15 +309,10 @@ export function projectSurfaceLayoutFromState(state = {}, rootDoc, getEl) {
     closeSheetBtn.setAttribute?.("aria-label", isEn ? "Close panel" : "Cerrar panel");
   }
 
-  syncStickyDrawerContextHeader(
-    hasOpenSheet ? { ...state, activeSheet: normalizedSheet } : { ...state, activeSheet: null },
-    resolveEl,
-    rootDoc,
-  );
-  enforceSubtractiveSlotOwnership(
-    hasOpenSheet ? { ...state, activeSheet: normalizedSheet } : { ...state, activeSheet: null },
-    resolveEl,
-  );
+  const resolvedState = hasOpenSheet ? { ...state, activeSheet: normalizedSheet } : { ...state, activeSheet: null };
+  syncStickyDrawerContextHeader(resolvedState, resolveEl, rootDoc);
+  enforceSubtractiveSlotOwnership(resolvedState, resolveEl);
+  assertSlotVisibilityOwnership(rootDoc, resolvedState);
   return true;
 }
 
@@ -513,4 +509,61 @@ export function createSurfaceCompositor({ store, state, doc, getEl, onSubtabChan
       unbindSubtabs();
     },
   };
+}
+
+/**
+ * Audita que ninguna ranura bajo propiedad exclusiva del compositor viole su estado declarativo de visibilidad (`D1-HIG13`).
+ */
+export function assertSlotVisibilityOwnership(rootDoc, state = {}) {
+  const violations = [];
+  if (!rootDoc || typeof rootDoc.getElementById !== "function") {
+    return { ok: true, checked: 0, violations };
+  }
+  let checked = 0;
+  const search = rootDoc?.location?.search || "";
+  const techPlaneOn =
+    resolveWorkspaceMode(state, search) === "studio" || isTechnicalPlaneEnabled(state, search);
+  const exitProPill = rootDoc.getElementById("btnExitTechnicalPlanePill");
+  if (exitProPill && Object.prototype.hasOwnProperty.call(EXCLUSIVE_VISIBILITY_SLOTS, "btnExitTechnicalPlanePill")) {
+    checked += 1;
+    if (Boolean(exitProPill.hidden) !== !techPlaneOn) {
+      violations.push("btnExitTechnicalPlanePill");
+    }
+  }
+  const showEvangelios = isWorkVisible("evangelios", state);
+  const tabEvEl = rootDoc.getElementById("tabWorkEvangelios");
+  if (tabEvEl) {
+    checked += 1;
+    if (Boolean(tabEvEl.hidden) !== !showEvangelios) {
+      violations.push("tabWorkEvangelios");
+    }
+  }
+  const normalizedSheet = state.activeSheet === "improve" ? "field" : state.activeSheet || null;
+  for (const [sheetKey, cfg] of Object.entries(HAREL_SHEET_MAP)) {
+    const panel = rootDoc.getElementById(cfg.panelId);
+    if (!panel) continue;
+    checked += 1;
+    const expectedOpen = Boolean(normalizedSheet && sheetKey === normalizedSheet);
+    if (Boolean(panel.hidden) !== !expectedOpen) {
+      violations.push(cfg.panelId);
+    }
+  }
+  const activeSubtabs = state.activeSubtabBySheet || DEFAULT_SUBTABS_BY_SHEET;
+  if (typeof rootDoc.querySelectorAll === "function") {
+    for (const [groupName, sheetId] of Object.entries(SUBTAB_GROUP_TO_SHEET)) {
+      const activeSubtab = activeSubtabs[sheetId] || DEFAULT_SUBTABS_BY_SHEET[sheetId];
+      for (const panel of Array.from(rootDoc.querySelectorAll(`[data-${groupName}-subtab-panel]`))) {
+        checked += 1;
+        const val = panel.getAttribute?.(`data-${groupName}-subtab-panel`);
+        const isPinned = panel.getAttribute?.("data-status-visible") === "true";
+        const isIdleProgress =
+          panel.id === "tandaWorkerProgressWrap" && panel.getAttribute?.("data-worker-active") !== "true";
+        const expectedVisible = !isIdleProgress && (val === activeSubtab || isPinned);
+        if (Boolean(panel.hidden) !== !expectedVisible) {
+          violations.push(`${groupName}:${val}`);
+        }
+      }
+    }
+  }
+  return { ok: violations.length === 0, checked, violations };
 }

@@ -513,6 +513,27 @@ export const SINGLE_OWNER_CAPABILITY_MAP = Object.freeze({
 });
 
 /**
+ * Ranuras cuya propiedad `hidden` es de dominio exclusivo del compositor declarativo (`D1-HIG13`).
+ */
+export const EXCLUSIVE_VISIBILITY_SLOTS = Object.freeze({
+  btnExitTechnicalPlanePill: Object.freeze({ owner: "surface_compositor", stateKey: "surfacePlane" }),
+  appearancePopover: Object.freeze({ owner: "surface_compositor", stateKey: "activeModal" }),
+  bibleEasyDrawerPanel: Object.freeze({ owner: "surface_compositor", stateKey: "activeSheet" }),
+  biblePrintEditionsSheet: Object.freeze({ owner: "surface_compositor", stateKey: "activeSheet" }),
+  bibleFieldWorkshopSheet: Object.freeze({ owner: "surface_compositor", stateKey: "activeSheet" }),
+  bibleShareAndAuditSheet: Object.freeze({ owner: "surface_compositor", stateKey: "activeSheet" }),
+  stickyDrawerContextHeader: Object.freeze({ owner: "surface_compositor", stateKey: "activeSheet" }),
+  mobileSheetBackdrop: Object.freeze({ owner: "surface_compositor", stateKey: "mobileSheetOpen" }),
+  tabWorkEvangelios: Object.freeze({ owner: "surface_compositor", stateKey: "previewWorks" }),
+  evangeliosDraftPreviewBadge: Object.freeze({ owner: "surface_compositor", stateKey: "previewWorks" }),
+  shareAuthenticityUnifiedCard: Object.freeze({ owner: "surface_compositor", stateKey: "activeSubtabBySheet.share" }),
+  vaultStorageManagerHost: Object.freeze({ owner: "surface_compositor", stateKey: "activeSubtabBySheet.share" }),
+  externalAuditLiveResult: Object.freeze({ owner: "surface_compositor", stateKey: "activeSubtabBySheet.field" }),
+  bibleOpticalCameraVideo: Object.freeze({ owner: "surface_compositor", stateKey: "activeSubtabBySheet.share" }),
+  stpLexiconExplorerHost: Object.freeze({ owner: "surface_compositor", stateKey: "lang" }),
+});
+
+/**
  * Resuelve el espacio de trabajo explícito (`reader` | `studio`) (`D1-HIG12`).
  */
 export function resolveWorkspaceMode(state = {}, search = "") {

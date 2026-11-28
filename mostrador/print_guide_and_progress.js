@@ -321,31 +321,54 @@ export async function executeDose2And3WorkerDispatch({
 export function bindNaturalStagePresetsInDrawer({ state, targetDoc, getEl, hydratePrintDrawerPanels } = {}) {
   const host = typeof getEl === "function" ? getEl("printNaturalStagesHost", targetDoc) : null;
   if (!host) return false;
-  const lang = String(state?.effectiveCorpusLang || state?.lang || "es").toLowerCase();
-  const tier = lang === "he" || lang === "grc" ? 0 : lang === "stp" ? 2 : 1;
+  host.setAttribute?.("data-unified-into", "doseScopeSelect");
   host.innerHTML = renderNaturalStagePresetsHtml({
     activePresetId: state?.selectedNaturalStagePreset || "",
-    tier,
+    tier: 3,
     uiLocale: state?.uiLocale || "es",
   });
-  if (typeof host.addEventListener === "function" && !host._naturalPresetsBound) {
-    host._naturalPresetsBound = true;
-    host.addEventListener("click", async (ev) => {
-      const btn = ev?.target?.closest
-        ? ev.target.closest("[data-natural-stage-preset]")
-        : ev?.target?.getAttribute?.("data-natural-stage-preset")
-          ? ev.target
-          : null;
-      const presetId = String(btn?.getAttribute?.("data-natural-stage-preset") || "").trim();
-      if (!presetId) return;
-      state.selectedNaturalStagePreset = presetId;
+  return true;
+}
+
+/**
+ * Unifica `#doseScopeSelect` (Dosis 1/2/3 + Etapas) y garantiza 1 único CTA primario negro en `2. Imprimir`.
+ */
+export function bindUnifiedDoseScopeSelector({ state, targetDoc, getEl, hydratePrintDrawerPanels } = {}) {
+  const scopeSel = getEl("doseScopeSelect", targetDoc);
+  const doseCardsHost = getEl("mostradorDoseCards", targetDoc);
+  if (scopeSel && state.selectedNaturalStagePreset && !scopeSel.value?.startsWith?.("preset:")) {
+    scopeSel.value = `preset:${state.selectedNaturalStagePreset}`;
+  }
+  const syncDoseScope = () => {
+    const fallbackScope = state.selectedNaturalStagePreset ? `preset:${state.selectedNaturalStagePreset}` : (state.activeDoseScope || "1");
+    const rawScope = String(scopeSel?.value || fallbackScope);
+    if (rawScope.startsWith("preset:")) {
+      state.selectedNaturalStagePreset = rawScope.slice(7);
+      state.activeDoseScope = "3";
       state.userRequestedPdfBuild = true;
-      state.generateFull66BookBible = presetId === "biblia66";
+      state.generateFull66BookBible = false;
       state.lastHydratedWorkerTandaKey = "";
-      await hydratePrintDrawerPanels?.(targetDoc);
+    } else {
+      state.activeDoseScope = rawScope;
+      state.selectedNaturalStagePreset = "";
+    }
+    const active = String(state.activeDoseScope || "1");
+    doseCardsHost?.querySelectorAll?.("[data-dose]")?.forEach?.((c) => {
+      const m = String(c.getAttribute("data-dose")) === active;
+      c.hidden = !m;
+      const cta = c.querySelector?.(".dose-card-cta, a[id^='linkDose']");
+      cta?.classList?.toggle?.("btn-modal-action", m);
+      cta?.classList?.toggle?.("btn-modal-secondary", !m);
+    });
+  };
+  if (scopeSel && typeof scopeSel.addEventListener === "function" && !scopeSel._scopeBound) {
+    scopeSel._scopeBound = true;
+    scopeSel.addEventListener("change", async () => {
+      syncDoseScope();
+      if (String(scopeSel.value || "").startsWith("preset:")) await hydratePrintDrawerPanels?.(targetDoc);
     });
   }
-  return true;
+  syncDoseScope();
 }
 
 /**

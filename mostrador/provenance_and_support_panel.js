@@ -184,7 +184,27 @@ export function verifyLocalEkpackFileBuffer(bytes, { wasmMod = null, uiLocale = 
   return { valid, preamble, sha256Hex, wasmRuntimeReady: hasWasm, summary };
 }
 
-export function renderEditorialProvenanceCardHtml(provenance = null, uiLocale = "es") {
+export function renderMasterCensusBoardSectionHtml(masterCensus = null, uiLocale = "es") {
+  if (!masterCensus || typeof masterCensus !== "object") return "";
+  const isEn = String(uiLocale || "es").trim().toLowerCase().startsWith("en");
+  const entropy = masterCensus.formulaic_entropy || {};
+  const waves = Array.isArray(masterCensus.stp_ledger_summary?.waves) ? masterCensus.stp_ledger_summary.waves : [];
+  const tiersCount = Array.isArray(masterCensus.sovereign_tiers_4) ? masterCensus.sovereign_tiers_4.length : 4;
+  return (
+    `<section class="ek-card ek-mt-sm" data-master-census-board="true" data-shared-census-provenance="true">` +
+    `<strong>🌍 ${isEn ? "Master Living Languages Census" : "Censo Maestro de Lenguas Vivas"}</strong>` +
+    `<dl class="ek-specs-dl ek-mt-xs">` +
+    `<dt>${isEn ? "Living Languages / Regions / Clades" : "Lenguas Vivas / Regiones / Clados"}</dt>` +
+    `<dd>${Number(masterCensus.total_living_languages || 7164).toLocaleString("en-US")} · ${Number(masterCensus.total_macro_regions || 12)} · ${Number(masterCensus.total_phylogenetic_subclades || 380)} (${tiersCount} tiers)</dd>` +
+    `<dt>${isEn ? "Formulaic Entropy Reduction" : "Reducción de Entropía Formulaica"}</dt>` +
+    `<dd>${Number(entropy.deduplicated_verses || 0).toLocaleString("en-US")} / ${Number(entropy.total_verses || 31102).toLocaleString("en-US")} vv. (−${Number(entropy.reduction_pct || 0).toFixed(2)}% · ${Number(entropy.unique_templates || 0).toLocaleString("en-US")} templates)</dd>` +
+    `<dt>${isEn ? "OT Synthesis Waves" : "Oleadas AT"}</dt>` +
+    `<dd>${waves.length || 5} ${isEn ? "structured waves" : "oleadas estructurales"}</dd>` +
+    `</dl></section>`
+  );
+}
+
+export function renderEditorialProvenanceCardHtml(provenance = null, uiLocale = "es", { masterCensus = null } = {}) {
   const isEn = String(uiLocale || "es").trim().toLowerCase().startsWith("en");
   const p = provenance && typeof provenance === "object" ? { ...DEFAULT_PROVENANCE, ...provenance } : DEFAULT_PROVENANCE;
   const berne = p.berne_article_15_3 || DEFAULT_PROVENANCE.berne_article_15_3;
@@ -253,6 +273,7 @@ export function renderEditorialProvenanceCardHtml(provenance = null, uiLocale = 
     `</dl>` +
     llmsNavHtml +
     `<table id="distMerkleRootsTable" class="ek-table-compact ek-mt-xs"><thead><tr><th>${isEn ? "Surface" : "Superficie"}</th><th>Merkle Root</th></tr></thead><tbody>${merkleRowsHtml}</tbody></table>` +
+    renderMasterCensusBoardSectionHtml(masterCensus, uiLocale) +
     `</details>` +
     `</div>`
   );

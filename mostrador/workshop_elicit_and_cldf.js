@@ -195,8 +195,8 @@ export function renderModernizeRegisterDiffHtml({
   const changedClassic = clsWords.filter((w) => !modSet.has(w.toLowerCase().replace(/[.,;:!?¿¡"'()]/g, ""))).slice(0, 12);
   const pfx = esc(idPrefix || "workshop");
   return (
-    `<div id="${pfx}ModernizeDiffCard" class="ek-card-muted ek-mt-xs" data-modern-words="${modWords.length}" data-classic-words="${clsWords.length}">` +
-    `<div class="ek-row-between"><strong>🔄 ${isEn ? "Live Register Comparator (1909 ↔ Contemporary)" : "Comparador Vivo de Registro (1909 ↔ Actual)"}</strong>` +
+    `<div id="${pfx}ModernizeDiffCard" class="ek-card-muted ek-mt-xs" data-modern-words="${modWords.length}" data-classic-words="${clsWords.length}" data-modernize-unified="true">` +
+    `<div class="ek-row-between"><strong>🔄 ${isEn ? "Live Register Comparator & Readability (1909 ↔ Contemporary)" : "Comparador Vivo de Registro y Claridad (1909 ↔ Actual)"}</strong>` +
     `<span class="uls-badge">${changedModern.length} ${isEn ? "updated forms" : "formas actualizadas"}</span></div>` +
     `<label class="ek-label-sm ek-mt-xs" for="${pfx}ModernizeInput">${isEn ? "Compare active verse or paste classic text:" : "Comparar pasaje activo o pegar texto clásico:"}</label>` +
     `<textarea id="${pfx}ModernizeInput" class="ek-textarea-full ek-mt-xs" rows="2">${esc(classicText || modernText)}</textarea>` +
@@ -209,7 +209,7 @@ export function renderModernizeRegisterDiffHtml({
   );
 }
 
-export function bindElicitAndModernizeControls({ hostId = "", state, targetDoc, getEl, modernizeFn, refreshFn, switchToPatchFn } = {}) {
+export function bindElicitAndModernizeControls({ hostId = "", state, targetDoc, getEl, modernizeFn, auditReadabilityFn = null, refreshFn, switchToPatchFn } = {}) {
   const host = (hostId && getEl?.(hostId, targetDoc)) || getEl?.("tallerArtifactsCatalog", targetDoc) || getEl?.("tallerArtifactsDynamicList", targetDoc);
   if (host && typeof host.addEventListener === "function" && !host._elicitModBound) {
     host._elicitModBound = true;
@@ -236,7 +236,9 @@ export function bindElicitAndModernizeControls({ hostId = "", state, targetDoc, 
         const srcTxt = String(ev.target.value || "");
         const res = modernizeFn(srcTxt);
         const isEn = String(state?.uiLocale || "es").toLowerCase().startsWith("en");
-        outEl.innerHTML = `<p class="ek-m-0"><strong>${isEn ? "Contemporary:" : "Actual:"}</strong> ${esc(res?.text || srcTxt)} (${Number(res?.appliedTiers?.length || 0)} ${isEn ? "layers" : "capas"})</p>`;
+        const auditRes = typeof auditReadabilityFn === "function" ? auditReadabilityFn(res?.text || srcTxt, isEn ? "en" : "es") : null;
+        if (auditRes && state) state.externalModernizeAudit = auditRes;
+        outEl.innerHTML = `<p class="ek-m-0"><strong>${isEn ? "Contemporary:" : "Actual:"}</strong> ${esc(res?.text || srcTxt)} (${Number(res?.appliedTiers?.length || 0)} ${isEn ? "layers" : "capas"})${auditRes ? ` · <span class="uls-badge">${esc(auditRes.label)}</span>` : ""}</p>`;
       }
     });
   }

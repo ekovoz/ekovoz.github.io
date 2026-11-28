@@ -194,7 +194,7 @@ export function renderCascadeAndLadderHtml({
       })
       : "";
 
-  const showElicitationLadder = cleanLang !== "es" && cleanLang !== "en";
+  const showElicitationLadder = true;
   const seed250 = buildElicitationSeedPayload({
     lang: cleanLang,
     rung: activeRung && activeRung !== "ALL" ? activeRung : "Rung1SwadeshAndNsm65",
@@ -277,17 +277,27 @@ export function renderWorkshopAuditPanelsHtml({
         })
         .join("")
       : "";
-  const extPdaUnbalanced = Number(extAudit.pda_unbalanced_count ?? 0);
-  const extNormalizedCount = Number(extAudit.normalized_verses_count ?? 0);
-  const extFormatLabel = String(extAudit.detected_format || "USFM").replace(/_OOXML$/i, "");
-  const extTraditionLabel = formatEditorialTraditionLabel(extAudit.detected_tradition || "KJV", uiLocale);
   const hasLiveAuditEntries = Boolean(externalAuditResult && Number(externalAuditResult.entriesCount) > 0);
+  const extPdaUnbalanced = hasLiveAuditEntries
+    ? Number(externalAuditResult.pdaUnbalancedCount ?? externalAuditResult.unbalancedCount ?? 0)
+    : 0;
+  const extNormalizedCount = hasLiveAuditEntries ? Number(externalAuditResult.entriesCount ?? 0) : 0;
+  const extFormatLabel = hasLiveAuditEntries
+    ? String(externalAuditResult.detectedFormat || externalAuditResult.format || "USFM").replace(/_OOXML$/i, "")
+    : (isEn ? "Pending draft" : "Pendiente");
+  const extTraditionLabel = hasLiveAuditEntries
+    ? formatEditorialTraditionLabel(externalAuditResult.detectedTradition || extAudit.detected_tradition || "KJV", uiLocale)
+    : (isEn ? "local browser check" : "revisión local");
   const badgeHtml = hasLiveAuditEntries
     ? `<span class="uls-badge ek-badge-compact" data-audit-badge-state="${externalAuditResult.allPassed ? "verified" : "veto"}">${externalAuditResult.allPassed ? `✅ ${humanizeUiCopy("8/8 PASS", uiLocale)}` : "⛔ VETO"} (${externalAuditResult.passedCount}/${externalAuditResult.entriesCount})</span>`
     : `<span class="uls-badge ek-badge-compact" data-audit-badge-state="idle">⏳ ${isEn ? "Pending review · Paste or load draft" : "Pendiente de revisión · Pega o carga borrador"}</span>`;
-  const extMetaLine = isEn
-    ? `Format: ${extFormatLabel} (${extTraditionLabel}) · Normalized verses: ${extNormalizedCount} · Unbalanced quotes/brackets: ${extPdaUnbalanced}`
-    : `Formato: ${extFormatLabel} (${extTraditionLabel}) · Versículos normalizados: ${extNormalizedCount} · Comillas/paréntesis sin cierre: ${extPdaUnbalanced}`;
+  const extMetaLine = hasLiveAuditEntries
+    ? (isEn
+      ? `Format: ${extFormatLabel} (${extTraditionLabel}) · Normalized verses: ${extNormalizedCount} · Unbalanced quotes/brackets: ${extPdaUnbalanced}`
+      : `Formato: ${extFormatLabel} (${extTraditionLabel}) · Versículos normalizados: ${extNormalizedCount} · Comillas/paréntesis sin cierre: ${extPdaUnbalanced}`)
+    : (isEn
+      ? "Status: Ready · Paste USFM/text or load a draft to run 8 local integrity locks"
+      : "Estado: Listo · Pega texto o carga un borrador para correr los 8 candados locales");
   const auditResultSummaryHtml = externalAuditResult
     ? externalAuditResult.entriesCount === 0
       ? `<p class="ek-meta ek-mt-xs">${isEn ? "Paste USFM text or load .usfm/.txt/.docx (up to 8 MiB in browser; use the desktop edition for full books)." : "Pega texto USFM o carga .usfm/.txt/.docx (hasta 8 MiB en el navegador; para libros completos usa la edición de escritorio)."}</p>`
@@ -299,6 +309,7 @@ export function renderWorkshopAuditPanelsHtml({
     `<strong>🛡️ ${isEn ? "External Editorial Review · 8-Lock Audit" : "Revisión Editorial Externa · Auditoría 8 Candados"}</strong>` +
     badgeHtml +
     `</div>` +
+    `<div id="externalAuditLiveResult" aria-live="polite">${auditResultSummaryHtml}</div>` +
     `<p class="ek-meta ek-mt-xs" data-external-audit-summary="true">${escAud(extMetaLine)}</p>` +
     `<textarea id="externalAuditTextInput" class="ek-field-input ek-textarea-full ek-mt-xs" rows="3" placeholder="\\id GEN&#10;\\c 1&#10;\\v 1 Tu'xich jumai...">${escAud(externalAuditText || "")}</textarea>` +
     `<div class="ek-row-wrap ek-mt-xs">` +
@@ -306,11 +317,10 @@ export function renderWorkshopAuditPanelsHtml({
     `<input type="file" id="externalAuditFileInput" class="sr-only-file-input" accept=".usfm,.sfm,.txt,.docx" aria-label="${isEn ? "Load USFM, TXT or DOCX file" : "Cargar archivo USFM, TXT o DOCX"}"></label>` +
     `<button type="button" id="btnRunExternalAudit" class="uls-chip ek-btn-fitts">🔍 ${isEn ? "Audit 8 locks" : "Auditar 8 candados"}</button>` +
     `</div>` +
-    `<div id="externalAuditLiveResult" aria-live="polite">${auditResultSummaryHtml}</div>` +
     `</div>`;
 
   const uqTotal = UNCERTAINTY_QUEUE_60.length;
-  const uqPageSize = 15;
+  const uqPageSize = 12;
   const uqTotalPages = Math.max(1, Math.ceil(uqTotal / uqPageSize));
   const uqSafePage = Math.min(uqTotalPages, Math.max(1, Number(uqPage) || 1));
   const uqStart = (uqSafePage - 1) * uqPageSize;

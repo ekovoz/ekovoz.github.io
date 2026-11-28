@@ -221,7 +221,7 @@ export function bindChromeAndPlaneEvents({
     }
     if (techBtn) {
       techBtn.setAttribute?.("aria-pressed", on ? "true" : "false");
-      techBtn.textContent = enNow ? "Estudio Pro" : "Estudio Pro";
+      techBtn.textContent = enNow ? "Pro Studio" : "Estudio Pro";
     }
     if (exitProPill) {
       exitProPill.hidden = !on;
@@ -240,6 +240,9 @@ export function bindChromeAndPlaneEvents({
     else {
       state.surfacePlane = next;
       state.workspaceMode = nextWorkspace;
+    }
+    if (nextWorkspace === "studio" && !state.activeSheet && typeof transitionSheet === "function") {
+      void transitionSheet("study", targetDoc, { fromUser: true, mode: "open" });
     }
     syncActiveChromeProjection?.(targetDoc);
     syncPlaneButtonsDom();

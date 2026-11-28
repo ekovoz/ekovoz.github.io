@@ -5,7 +5,7 @@
 // ============================================================================
 
 import { escapeHtml } from "./bridge_and_chapter.js";
-import { formatEditorialTraditionLabel, formatVaultEditionMetadata } from "./human_labels.js";
+import { formatCopyForSurfacePlane, formatEditorialTraditionLabel, formatVaultEditionMetadata } from "./human_labels.js";
 import { DEEP_PROJECTION_SUBKEYS } from "./projection_contract.js";
 import {
   IDB_STORE_FONTS,
@@ -111,7 +111,10 @@ export function renderVaultStorageManagerHtml({
   fontsManifest = null,
   errorByLang = {},
   uiLocale = "es",
+  surfacePlane = "editorial",
+  workspaceMode = "reader",
 } = {}) {
+  const planeState = { surfacePlane, workspaceMode };
   const tier0BundleBytes = Number(fontsManifest?.tier0_offline_bundle_bytes || 825864);
   const totalFontsCount = Number(fontsManifest?.total_fonts || 34);
   const isEn = String(uiLocale || "es").trim().toLowerCase().startsWith("en");
@@ -165,14 +168,21 @@ export function renderVaultStorageManagerHtml({
       ? `✅ ${isEn ? "Ready" : "Listo"}${sizeStr ? ` · ${sizeStr}` : ""}`
       : `${isEn ? "Not downloaded" : "Disponible"}${sizeStr ? ` · ${sizeStr}` : ""}`;
     const humanMetaLine = meta ? formatVaultEditionMetadata({ ...meta, lang: langCode, booksCount: meta?.booksCount || 66 }, isEn ? "en" : "es") : "";
+    const techPackMeta = meta
+      ? (meta.merkleRootSha256 ? ` <span><strong>Merkle:</strong> <code>${escapeHtml(String(meta.merkleRootSha256).slice(0, 16))}…</code></span>` : "") +
+        (meta.contentDigestSha256 ? ` <span><strong>Digest:</strong> <code>${escapeHtml(String(meta.contentDigestSha256).slice(0, 16))}…</code></span>` : "") +
+        (meta.origin_url ? ` <span><strong>origin_url:</strong> <code>${escapeHtml(String(meta.origin_url))}</code></span>` : "") +
+        (meta.metaZstdSha256 ? ` <span><strong>metaZstdSha256:</strong> <code>${escapeHtml(String(meta.metaZstdSha256).slice(0, 16))}…</code></span>` : "")
+      : "";
     const metaDetailsHtml = meta
       ? `<div class="hig-tech-meta vault-pack-meta-details" data-pack-meta-details="true">` +
       `<span class="ek-meta">${escapeHtml(humanMetaLine)}</span> ` +
-      `<span><strong>${isEn ? "Canon:" : "Canon:"}</strong> ${escapeHtml(formatEditorialTraditionLabel(meta.versificationTradition || "eng", isEn ? "en" : "es"))} · ${escapeHtml(Array.isArray(meta.diachronicVariants) && meta.diachronicVariants.length ? meta.diachronicVariants.join(", ") : "canonical")}</span>` +
-      (meta.merkleRootSha256 ? ` <span><strong>Merkle:</strong> <code>${escapeHtml(String(meta.merkleRootSha256).slice(0, 16))}…</code></span>` : "") +
-      (meta.contentDigestSha256 ? ` <span><strong>Digest:</strong> <code>${escapeHtml(String(meta.contentDigestSha256).slice(0, 16))}…</code></span>` : "") +
-      (meta.origin_url ? ` <span><strong>origin_url:</strong> <code>${escapeHtml(String(meta.origin_url))}</code></span>` : "") +
-      (meta.metaZstdSha256 ? ` <span><strong>metaZstdSha256:</strong> <code>${escapeHtml(String(meta.metaZstdSha256).slice(0, 16))}…</code></span>` : "") +
+      `<span><strong>${isEn ? "Canon:" : "Canon:"}</strong> ${escapeHtml(formatEditorialTraditionLabel(meta.versificationTradition || "eng", isEn ? "en" : "es"))} · ${escapeHtml(Array.isArray(meta.diachronicVariants) && meta.diachronicVariants.length ? meta.diachronicVariants.join(", ") : (isEn ? "canonical" : "edición principal"))}</span>` +
+      formatCopyForSurfacePlane(
+        techPackMeta ? ` <span>${isEn ? "· Verified signature" : "· Firma verificada"}</span>` : "",
+        techPackMeta,
+        planeState,
+      ) +
       `</div>`
       : "";
     const packErr = errorByLang?.[langCode] ? String(errorByLang[langCode]) : "";
@@ -327,6 +337,8 @@ export async function hydrateVaultStorageManagerPanel(ctx = {}) {
       filterQuery: state.vaultFilterQuery || "",
       fontsManifest: state.fontsZstManifest || null,
       uiLocale: state.uiLocale || "es",
+      surfacePlane: state.surfacePlane || "editorial",
+      workspaceMode: state.workspaceMode || "reader",
     });
   };
   await renderNow();

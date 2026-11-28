@@ -84,7 +84,9 @@ export function renderPolyglotRecycledWindow(hostEl, entries = [], { activeLang 
       const label = cleanPolyglotLabel(item.displayLabel || item.name || code, code);
       const isSelected = Boolean(code && code === activeLang);
       row.hidden = false;
-      row.textContent = code ? `[${code.toUpperCase()}] ${label}` : label;
+      row.innerHTML = code
+        ? `[${escapeHtml(code.toUpperCase())}] <bdi dir="auto">${escapeHtml(label)}</bdi>`
+        : `<bdi dir="auto">${escapeHtml(label)}</bdi>`;
       row.setAttribute?.("data-corpus-lang", code);
       row.setAttribute?.("data-iso", String(item.iso639_3 || code));
       row.setAttribute?.("aria-selected", isSelected ? "true" : "false");
@@ -96,7 +98,7 @@ export function renderPolyglotRecycledWindow(hostEl, entries = [], { activeLang 
         const label = cleanPolyglotLabel(item.displayLabel || item.name || code, code);
         const sel = code === activeLang ? "true" : "false";
         const isoTag = code ? `<span class="ek-iso-tag">${escapeHtml(code.toUpperCase())}</span>` : "";
-        return `<button type="button" class="uls-chip polyglot-window-row" role="option" data-polyglot-row="pool" data-corpus-lang="${escapeHtml(code)}" aria-selected="${sel}">${isoTag}${escapeHtml(label)}</button>`;
+        return `<button type="button" class="uls-chip polyglot-window-row" role="option" data-polyglot-row="pool" data-corpus-lang="${escapeHtml(code)}" aria-selected="${sel}">${isoTag}<bdi dir="auto">${escapeHtml(label)}</bdi></button>`;
       })
       .join("");
   }
@@ -124,6 +126,19 @@ export function bindCorpusPolyglotAndUiPreferences({
   const regionSelect = getEl("bibleSelectRegion", targetDoc);
   const countrySelect = getEl("bibleSelectCountry", targetDoc);
   const langSelect = getEl("bibleSelectLang", targetDoc);
+  if (langSelect && langSelect.options) {
+    const allowDraftLangs =
+      Boolean(state?.previewEvangelios) ||
+      (Array.isArray(state?.previewWorks) && state.previewWorks.length > 0) ||
+      /[?&]preview=(?:1|true|all|aud|kgv)\b/i.test(String(targetDoc?.defaultView?.location?.search || state?.search || ""));
+    for (const opt of Array.from(langSelect.options)) {
+      const val = String(opt?.value || "").trim().toLowerCase();
+      if (val === "aud" || val === "kgv") {
+        opt.hidden = !allowDraftLangs;
+        opt.disabled = !allowDraftLangs;
+      }
+    }
+  }
   const langFilterInput = getEl("quickLangFilterInput", targetDoc);
   const windowHost = getEl("polyglotRecycledListHost", targetDoc);
   const bridgeSelect = getEl("bibleBridgeLangSelect", targetDoc);
@@ -423,5 +438,24 @@ export function bindCorpusPolyglotAndUiPreferences({
         })
         .catch(() => { });
     }
+  }
+}
+
+export function syncDraftCorpusOptionsDom(langSelectEl, targetDoc, allowDraft) {
+  if (!langSelectEl?.options) return;
+  const draftDefs = [["aud", "Au'dam (aud · Draft)"], ["kgv", "Kalamang (kgv · Draft)"]];
+  if (allowDraft && typeof langSelectEl.appendChild === "function" && targetDoc?.createElement) {
+    for (const [code, label] of draftDefs) {
+      if (!Array.from(langSelectEl.options).some((o) => String(o?.value || "").trim().toLowerCase() === code)) {
+        const opt = targetDoc.createElement("option");
+        opt.value = code;
+        opt.textContent = label;
+        langSelectEl.appendChild(opt);
+      }
+    }
+  }
+  for (const opt of Array.from(langSelectEl.options)) {
+    const v = String(opt?.value || "").trim().toLowerCase();
+    if (v === "aud" || v === "kgv") { opt.hidden = !allowDraft; opt.disabled = !allowDraft; }
   }
 }

@@ -7,6 +7,7 @@
 
 import { BIBLE_CONSTANTS } from "./data_layer.js";
 import { decodeSdbhHierarchicalCode, translateNsm65PrimePhrase } from "./estudio.js";
+import { renderMasterCensusBoardSectionHtml } from "./provenance_and_support_panel.js";
 
 function escHtml(val) {
   return String(val ?? "")
@@ -170,28 +171,14 @@ export function renderAnnotationAndBlindCalibrationCardHtml({
       `<dd>${Number(cs.tier1_count || 0).toLocaleString("en-US")} / ${Number(cs.tier2_count || 0).toLocaleString("en-US")} / ${Number(cs.tier3_count || 0).toLocaleString("en-US")} (${cs.eight_locks_all_passed ? "8/8" : "⚠"})</dd>` +
       (bv
         ? `<dt>${escHtml(normBook)} (${Number(bv.audited_verses || 0)} vv.)</dt>` +
-          `<dd>AoA ${Number(bv.mean_aoa_years || 0).toFixed(2)}y · MDD ${Number(bv.mean_mdd || 0).toFixed(2)} · ${Number(bv.mean_tokens || 0).toFixed(1)} tok/v · T1:${Number(bv.tier1_count || 0)} T2:${Number(bv.tier2_count || 0)} T3:${Number(bv.tier3_count || 0)}</dd>`
+        `<dd>AoA ${Number(bv.mean_aoa_years || 0).toFixed(2)}y · MDD ${Number(bv.mean_mdd || 0).toFixed(2)} · ${Number(bv.mean_tokens || 0).toFixed(1)} tok/v · T1:${Number(bv.tier1_count || 0)} T2:${Number(bv.tier2_count || 0)} T3:${Number(bv.tier3_count || 0)}</dd>`
         : "") +
       `</dl></section>`,
     );
   }
 
   if (masterCensus && typeof masterCensus === "object") {
-    const entropy = masterCensus.formulaic_entropy || {};
-    const waves = Array.isArray(masterCensus.stp_ledger_summary?.waves) ? masterCensus.stp_ledger_summary.waves : [];
-    const tiersCount = Array.isArray(masterCensus.sovereign_tiers_4) ? masterCensus.sovereign_tiers_4.length : 4;
-    parts.push(
-      `<section class="ek-card ek-mt-sm" data-master-census-board="true">` +
-      `<strong>🌍 ${isEn ? "Master Living Languages Census" : "Censo Maestro de Lenguas Vivas"}</strong>` +
-      `<dl class="ek-specs-dl ek-mt-xs">` +
-      `<dt>${isEn ? "Living Languages / Regions / Clades" : "Lenguas Vivas / Regiones / Clados"}</dt>` +
-      `<dd>${Number(masterCensus.total_living_languages || 7164).toLocaleString("en-US")} · ${Number(masterCensus.total_macro_regions || 12)} · ${Number(masterCensus.total_phylogenetic_subclades || 380)} (${tiersCount} tiers)</dd>` +
-      `<dt>${isEn ? "Formulaic Entropy Reduction" : "Reducción de Entropía Formulaica"}</dt>` +
-      `<dd>${Number(entropy.deduplicated_verses || 0).toLocaleString("en-US")} / ${Number(entropy.total_verses || 31102).toLocaleString("en-US")} vv. (−${Number(entropy.reduction_pct || 0).toFixed(2)}% · ${Number(entropy.unique_templates || 0).toLocaleString("en-US")} templates)</dd>` +
-      `<dt>${isEn ? "OT Synthesis Waves" : "Oleadas AT"}</dt>` +
-      `<dd>${waves.length || 5} ${isEn ? "structured waves" : "oleadas estructurales"}</dd>` +
-      `</dl></section>`,
-    );
+    parts.push(renderMasterCensusBoardSectionHtml(masterCensus, uiLocale));
   }
 
   return parts.join("");

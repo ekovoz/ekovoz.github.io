@@ -986,21 +986,15 @@ export function renderOfflineMeshEcoCardHtml({
     : `<span>📦 Frame 67 RLZ: ${isEn ? "not bundled for this language (standalone Zstd-22 pack)" : "no aplica a esta lengua (pack autónomo Zstd-22)"}</span>`;
   const rebaseHex = `0x${Number(probe.unicodeBlockBase || 0).toString(16).toUpperCase().padStart(4, "0")}`;
 
-  const packBadgesHtml = packs
-    .map((p) => {
-      const isSelected = p.lang === activePack.lang;
-      const kbSize = Math.max(1, Math.round(Number(p.bytes || 0) / 1024));
-      return (
-        `<a class="uls-chip eco-pack-download-link${isSelected ? " is-selected" : ""}" ` +
-        `data-eco-pack-lang="${p.lang}" ` +
-        `data-eco-pack-bytes="${p.bytes}" ` +
-        `data-eco-pack-sha256="${p.sha256}" ` +
-        `href="${p.url}" download="${p.file}">` +
-        `📦 ${p.file} (${kbSize} KB)` +
-        `</a>`
-      );
-    })
-    .join(" ");
+  const activeKb = Math.max(1, Math.round(Number(activePack.bytes || 0) / 1024));
+  const activePackDownloadHtml =
+    `<a class="uls-chip eco-pack-download-link is-selected" ` +
+    `data-eco-pack-lang="${activePack.lang}" ` +
+    `data-eco-pack-bytes="${activePack.bytes}" ` +
+    `data-eco-pack-sha256="${activePack.sha256}" ` +
+    `href="${activePack.url}" download="${activePack.file}">` +
+    `📦 ${activePack.file} (${activeKb} KB)` +
+    `</a>`;
 
   return (
     `<div id="offlineEcoMeshCard" class="offline-eco-mesh-card" ` +
@@ -1017,7 +1011,7 @@ export function renderOfflineMeshEcoCardHtml({
     `${storedRecord ? (isEn ? "✅ Verified offline pack" : "✅ Paquete verificado sin conexión") : (isEn ? `⚡ ${packs.length} offline languages ready` : `⚡ ${packs.length} idiomas listos sin conexión`)}` +
     `</span>` +
     `</div>` +
-    `<div class="ek-row-wrap ek-mb-sm">${packBadgesHtml}</div>` +
+    `<div class="ek-row-wrap ek-mb-sm">${activePackDownloadHtml}</div>` +
     `<div class="ek-row-wrap ek-gap-md">` +
     `<button type="button" id="btnInstallEcoPackOffline" class="uls-chip eco-action-btn ek-semibold" data-action="install-eco-pack" data-eco-lang="${activePack.lang}" data-i18n="share.mesh.install">⚡ ${isEn ? `Save ${activePack.file} for offline reading` : `Guardar ${activePack.file} sin internet`}</button>` +
     `<button type="button" id="btnOfflineOptInSwDownload" class="uls-chip eco-action-btn" data-action="opt-in-offline-pack" data-eco-lang="${activePack.lang}" data-i18n="share.mesh.preload">📥 ${isEn ? "Preload Offline Library" : "Precargar Biblioteca Offline"}</button>` +
@@ -1026,8 +1020,8 @@ export function renderOfflineMeshEcoCardHtml({
     `<label for="inputImportSneakernetBundle" id="btnImportSneakernetBundle" class="uls-chip eco-action-btn eco-action-label" data-action="import-sneakernet-bundle">📥 ${isEn ? "Load Offline File" : "Cargar archivo offline"}</label>` +
     `<input type="file" id="inputImportSneakernetBundle" accept=".ekpack,.json,.sneakernet.json" />` +
     `</div>` +
-    `<div id="offlineIndexedDbVaultStatus" class="ek-meta ek-mt-sm" data-vault-packs-count="${vaultPacks.length}">` +
-    `🗄️ ${isEn ? "Saved offline:" : "Guardados sin conexión:"} <strong>${vaultPacks.length}</strong> ${isEn ? "packs" : "paquetes"}${vaultPacks.length > 0 ? ` (${vaultPacks.map((vp) => vp.lang).join(", ")})` : ""}` +
+    `<div id="offlineIndexedDbVaultStatus" class="ek-meta ek-mt-sm" data-vault-packs-count="${vaultPacks.length}" data-static-fallback-notice="${storedRecord ? "false" : "true"}">` +
+    `🗄️ ${isEn ? "Saved offline:" : "Guardados sin conexión:"} <strong>${vaultPacks.length}</strong> ${isEn ? "packs" : "paquetes"}${vaultPacks.length > 0 ? ` (${vaultPacks.map((vp) => vp.lang).join(", ")})` : (isEn ? " · Pure-JS fallback active if packs/ or dist/ is not mounted locally." : " · Respaldo local en JS puro listo si packs/ o dist/ no están montados.")}` +
     `</div>` +
     `<section class="tech-details">` +
     `<strong class="ek-title-sm">${isEn ? "Technical details (Ed25519 · HTTP 206 · .ekpack)" : "Detalles técnicos (Ed25519 · HTTP 206 · .ekpack)"}</strong>` +

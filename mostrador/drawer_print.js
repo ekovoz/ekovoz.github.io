@@ -54,6 +54,7 @@ resolveGrambankTypologyPrintPreset,
 import {
 bindDose2And3LazySynthLinks,
 bindNaturalStagePresetsInDrawer,
+bindUnifiedDoseScopeSelector,
 collectBlockAndTandaVerses,
 executeDose2And3WorkerDispatch,
 } from "./print_guide_and_progress.js";
@@ -252,18 +253,7 @@ bindTypo(branchSel, typoSel);
 bindTypo(techBranchSel, techTypoSel);
 }
 
-const scopeSel = getEl("doseScopeSelect", targetDoc);
-const doseCardsHost = getEl("mostradorDoseCards", targetDoc);
-const syncDoseScope = () => {
-const active = String(state.activeDoseScope || scopeSel?.value || "1");
-state.activeDoseScope = active;
-doseCardsHost?.querySelectorAll?.("[data-dose]")?.forEach?.((c) => { const m = String(c.getAttribute("data-dose")) === active; c.hidden = !m; const cta = c.querySelector?.(".dose-card-cta, a[id^='linkDose']"); cta?.classList?.toggle?.("btn-modal-action", m); cta?.classList?.toggle?.("btn-modal-secondary", !m); });
-};
-if (scopeSel && typeof scopeSel.addEventListener === "function" && !scopeSel._scopeBound) {
-scopeSel._scopeBound = true;
-scopeSel.addEventListener("change", syncDoseScope);
-}
-syncDoseScope();
+bindUnifiedDoseScopeSelector({ state, targetDoc, getEl, hydratePrintDrawerPanels });
 const fieldPdfsHost = getEl("printFieldPdfsHost", targetDoc);
 if (fieldPdfsHost) {
 const portalsCleanHtml = renderCompactPdfPortalsSelectHtml(renderStaticPdfPortalsHtml(state.effectiveCorpusLang || state.lang || "es", state.uiLocale || "es"), state.uiLocale || "es");

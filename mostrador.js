@@ -87,6 +87,7 @@ import {
     resolveScriptioContinuaCodeForLang, segmentScriptioContinuaSyllables, transduceOrthographyWeb, transduceVerseWithReverseMap,
 } from "./mostrador/orthography_wfst.js";
 import { countPdfPages, extractPdfPages } from "./mostrador/pdf_pages.js";
+import { syncDraftCorpusOptionsDom } from "./mostrador/polyglot_picker_view.js";
 import { SINGLE_OWNER_CAPABILITY_MAP, projectStoreAttributesToDom, syncStickyDrawerContextHeader } from "./mostrador/projection_contract.js";
 import {
     ROSETTA_66_BOOKS, createReferenceResolver, normalizeBookAliasToken, parseBiblicalCoordinateReference, resolveBookCodeByAliasOrName,
@@ -343,15 +344,25 @@ export function createMostradorController(options = {}) {
 
     function syncActiveCorpusLabelDom(targetDoc = doc) {
         const corpusLbl = getEl("sovereignActiveCorpusLabel", targetDoc);
-        if (!corpusLbl) return;
-        const packsCount =
-            Array.isArray(state.availablePackLangs24) && state.availablePackLangs24.length > 0
-                ? state.availablePackLangs24.length
-                : 24;
-        corpusLbl.textContent = formatActiveCorpusBadgeText(state.lang, packsCount, state.uiLocale, {
-            activeWork: state.activeWork,
-            register: state.register,
-        });
+        if (corpusLbl) {
+            const packsCount =
+                Array.isArray(state.availablePackLangs24) && state.availablePackLangs24.length > 0
+                    ? state.availablePackLangs24.length
+                    : 24;
+            const rawBadge = formatActiveCorpusBadgeText(state.lang, packsCount, state.uiLocale, {
+                activeWork: state.activeWork,
+                register: state.register,
+            });
+            const sepIdx = rawBadge.indexOf(" · ");
+            if (sepIdx > 0 && "innerHTML" in corpusLbl) {
+                corpusLbl.innerHTML = `<bdi dir="auto">${escapeHtml(rawBadge.slice(0, sepIdx))}</bdi>${escapeHtml(rawBadge.slice(sepIdx))}`;
+            } else {
+                corpusLbl.textContent = rawBadge;
+            }
+        }
+        const allowDraft = Boolean(state.previewEvangelios) || (Array.isArray(state.previewWorks) && state.previewWorks.length > 0) ||
+            /[?&]preview=(?:1|true|all|aud|kgv)\b/i.test(String(targetDoc?.defaultView?.location?.search || state.search || ""));
+        syncDraftCorpusOptionsDom(getEl("bibleSelectLang", targetDoc), targetDoc, allowDraft);
     }
 
     function renderStateToDom(targetDoc = doc, { syncUrl = true, pushUrl = false } = {}) {

@@ -1,6 +1,7 @@
 // web/mostrador/evangelios.js — Acciones de Impresión, Estudio, Perícopas Masoréticas (Petuhah פ / Setumah ס),
 // Hilos Macro-Narrativos (52 semanas), Ecos AT->NT y las 12 Dichas Soberanas (`D4-R+`, `D7-B+`, `D8-B+`).
 
+import { formatCopyForSurfacePlane } from "./human_labels.js";
 import { ROSETTA_66_BOOKS } from "./reference.js";
 import {
   FELICES_PLATE_TO_BIBLE_COORDINATE,
@@ -663,10 +664,15 @@ export function renderEvangeliosPlateActionsHtml({
  * D5-A+: Renderiza la cinta horizontal de bloques de perícopa Masoréticas (`Petuhah פ` / `Setumah ס`)
  * y paralelos sinópticos (`#bibleChapterPericopesRibbon`) para navegación de capítulo en 1 toque.
  */
-export function renderChapterPericopesRibbonHtml(bookCode = "GEN", chapterNum = 1, uiLang = "es") {
+export function renderChapterPericopesRibbonHtml(bookCode = "GEN", chapterNum = 1, uiLang = "es", state = null) {
   const cleanBook = String(bookCode || "GEN").toUpperCase();
   const cleanChap = Math.max(1, Number(chapterNum) || 1);
   const key = `${cleanBook}.${cleanChap}`;
+  const fallbackTitle = formatCopyForSurfacePlane(
+    `${cleanBook} ${cleanChap}:1`,
+    `[פ Petuhah] ${cleanBook} ${cleanChap}:1`,
+    state,
+  );
   const rawList =
     Array.isArray(MASORETIC_AND_GOSPEL_PERICOPE_MAP[key]) &&
       MASORETIC_AND_GOSPEL_PERICOPE_MAP[key].length > 0
@@ -677,7 +683,7 @@ export function renderChapterPericopesRibbonHtml(bookCode = "GEN", chapterNum = 
           startVerse: 1,
           kind: "petuhah",
           marker: resolveCanonicalPericopeMarker(cleanBook, "petuhah"),
-          title: `[פ Petuhah] ${cleanBook} ${cleanChap}:1`,
+          title: fallbackTitle,
           synopticParallel: `${cleanBook}.${cleanChap}.1`,
         },
       ];

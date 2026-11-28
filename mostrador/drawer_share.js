@@ -326,8 +326,6 @@ export function hydrateShareAndAuditDrawerPanel(ctx = {}) {
             dlEntries: state.downloadsManifestEntries || [],
             isEn,
         });
-        const sharePacksDetailsEl = getEl("shareOfflinePacksDetails", targetDoc);
-        sharePacksDetailsEl?.removeAttribute?.("hidden");
         const authCardForDossiers = getEl("shareAuthenticityUnifiedCard", targetDoc);
         const proDossiersHtml = `<section id="shareProBovedaDossiersDetails" class="ek-card ek-mt-xs" data-pro-boveda="true" data-technical-plane="true"><strong class="ek-title-sm">${isEn ? "Authenticity Center: Guides (llms) & Manifest (110 assets)" : "Centro de Autenticidad: Guías (llms) y Manifiesto (110 activos)"}</strong><div id="shareProBovedaDossiersBody" class="ek-stack-sm ek-mt-xs"><a id="linkActiveLlmsManifest" class="uls-chip ek-btn-link" href="${escapeHtml(llmsHref)}" data-work="${escapeHtml(workCtx.activeWork)}">🤖 ${isEn ? "Open Text Guide (llms)" : "Índice textual limpio (llms)"}</a>${portabilityCardHtml}</div></section>`;
         if (authCardForDossiers && typeof targetDoc?.createElement === "function") { const dHost = getEl("shareProBovedaDossiersHost", targetDoc) || Object.assign(targetDoc.createElement("div"), { id: "shareProBovedaDossiersHost" }); if (!dHost.parentNode) authCardForDossiers.appendChild?.(dHost); dHost.innerHTML = proDossiersHtml; }
@@ -752,16 +750,20 @@ export function hydrateShareAndAuditDrawerPanel(ctx = {}) {
             authCard.insertBefore(provHost, authCard.firstChild);
         }
         provHost.removeAttribute?.("hidden");
-        provHost.innerHTML = renderEditorialProvenanceCardHtml(state.editorialProvenance || null, state.uiLocale || "es");
+        provHost.innerHTML = renderEditorialProvenanceCardHtml(state.editorialProvenance || null, state.uiLocale || "es", { masterCensus: state.masterCensusSummary || null });
         bindProvenanceVerifierEvents(provHost, state.editorialProvenance || null, state.uiLocale || "es", { dataLayer });
-        if (!state.editorialProvenance && dataLayer && typeof dataLayer.loadEditorialProvenance === "function") {
-            Promise.resolve(dataLayer.loadEditorialProvenance())
-                .then((prov) => {
-                    if (prov) {
-                        state.editorialProvenance = prov;
-                        provHost.innerHTML = renderEditorialProvenanceCardHtml(prov, state.uiLocale || "es");
+        if ((!state.editorialProvenance || !state.masterCensusSummary) && dataLayer) {
+            Promise.all([
+                !state.editorialProvenance && typeof dataLayer.loadEditorialProvenance === "function" ? dataLayer.loadEditorialProvenance() : Promise.resolve(state.editorialProvenance || null),
+                !state.masterCensusSummary && typeof dataLayer.loadMasterCensusSummary === "function" ? dataLayer.loadMasterCensusSummary() : Promise.resolve(state.masterCensusSummary || null),
+            ])
+                .then(([prov, census]) => {
+                    if (prov) state.editorialProvenance = prov;
+                    if (census) state.masterCensusSummary = census;
+                    if (prov || census) {
+                        provHost.innerHTML = renderEditorialProvenanceCardHtml(state.editorialProvenance || null, state.uiLocale || "es", { masterCensus: state.masterCensusSummary || null });
                         provHost._berneVerifierBound = false;
-                        bindProvenanceVerifierEvents(provHost, prov, state.uiLocale || "es", { dataLayer });
+                        bindProvenanceVerifierEvents(provHost, state.editorialProvenance || null, state.uiLocale || "es", { dataLayer });
                     }
                 })
                 .catch(() => { });

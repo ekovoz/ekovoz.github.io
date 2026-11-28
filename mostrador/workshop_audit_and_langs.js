@@ -6,7 +6,8 @@
 
 import { escapeHtml } from "./bridge_and_chapter.js";
 import { auditExternalFileClient, runClientExternalAudit8Locks } from "./concordance_search.js";
-import { formatIsoLangPillBadge, humanizeUiCopy } from "./human_labels.js";
+import { applySpanish21DiachronicRegister } from "./diachronic_register.js";
+import { formatCopyForSurfacePlane, formatIsoLangPillBadge, humanizeUiCopy } from "./human_labels.js";
 import { renderStpDraftCheckHtml } from "./mejorar.js";
 import {
   buildWorkshopCldfCsvAndJson,
@@ -218,9 +219,11 @@ export function renderWorkshopAuditSubtabHtml({
   const activeModernize = state.externalModernizeAudit || (chapterSampleText
     ? computeClientModernizeReadabilityAudit(chapterSampleText, uiLocale)
     : null);
-  const flowBadgeText = isEnAudit
-    ? "Local browser check · Full sync via CLI: ekovoz apply-patch"
-    : "Revisión local en navegador · Sincronización CLI: ekovoz apply-patch";
+  const flowBadgeText = formatCopyForSurfacePlane(
+    isEnAudit ? "Local check in browser · Offline-ready" : "Revisión local en navegador · Funciona sin conexión",
+    isEnAudit ? "Local browser check · Full sync via CLI: ekovoz apply-patch" : "Revisión local en navegador · Sincronización CLI: ekovoz apply-patch",
+    state,
+  );
   const coverageSummaryHtml =
     annTotals || blindRows.length > 0 || activeModernize
       ? `<section id="workshopCoverageCalibrationCard" class="ek-card-muted ek-mt-sm" data-annotation-tokens="${Number(annTotals?.ot_tokens || 0) + Number(annTotals?.nt_tokens || 0)}" data-blind-calibration-rows="${blindRows.length}"${activeModernize ? ` data-modernize-aoa="${activeModernize.aoaYears}" data-modernize-mdd="${activeModernize.mdd}"` : ""}>` +
@@ -267,7 +270,7 @@ export function renderWorkshopAuditSubtabHtml({
     cldfPreviewHtml +
     renderStpLedgerProgressHtml(state.masterCensusSummary || null, uiLocale) +
     `</details>`;
-  return switcherHtml + relocatedAuditHtml + elicitAndCldfHtml + coverageSummaryHtml + catalogHtml + sanitizedDraftHtml;
+  return switcherHtml + elicitAndCldfHtml + relocatedAuditHtml + coverageSummaryHtml + catalogHtml + sanitizedDraftHtml;
 }
 
 export function computeClientModernizeReadabilityAudit(rawText = "", uiLocale = "es") {
@@ -303,6 +306,76 @@ export function createWorkshopAuditHandlers({
   navigate,
   hydrateBookAndChapterSelectors,
 } = {}) {
+  let inputAuditSeq = 0;
+  const onAuditInput = (e) => {
+    const targetId = e?.target?.id || "";
+    if (targetId === "workshopModernizeInput") {
+      const modTxt = String(e.target.value ?? "");
+      const modRes = applySpanish21DiachronicRegister(modTxt);
+      const isEnMod = String(state.uiLocale || "es").trim().toLowerCase().startsWith("en");
+      const auditRes = computeClientModernizeReadabilityAudit(modRes?.text || modTxt, isEnMod ? "en" : "es");
+      state.externalModernizeAudit = auditRes;
+      const diffOut = getEl?.("workshopModernizeDiffOut", targetDoc);
+      if (diffOut) {
+        diffOut.innerHTML = `<p class="ek-m-0"><strong>${isEnMod ? "Contemporary:" : "Actual:"}</strong> ${escapeHtml(modRes?.text || modTxt)} (${Number(modRes?.appliedTiers?.length || 0)} ${isEnMod ? "layers" : "capas"}) · <span class="uls-badge">${escapeHtml(auditRes.label)}</span></p>`;
+      }
+      return;
+    }
+    if (targetId !== "externalAuditTextInput") return;
+    const seq = ++inputAuditSeq;
+    const rawDraft = String(e.target.value ?? "");
+    state.externalAuditText = rawDraft;
+    if (seq !== inputAuditSeq) return;
+    const isEn = String(state.uiLocale || "es").trim().toLowerCase().startsWith("en");
+    const liveEl = getEl?.("externalAuditLiveResult", targetDoc);
+    const panelEl = getEl?.("externalAudit8LocksPanel", targetDoc);
+    const summaryEl = panelEl?.querySelector?.("[data-external-audit-summary]");
+    const badgeEl = panelEl?.querySelector?.("[data-audit-badge-state]");
+    if (!rawDraft.trim()) {
+      state.externalAuditResult = null;
+      state.externalModernizeAudit = null;
+      if (liveEl) {
+        liveEl.innerHTML = `<p class="ek-meta ek-mt-xs">${isEn ? "Validate .usfm/.txt/.docx drafts (up to 8 MiB) right in your browser with the 8 integrity checks." : "Valida borradores .usfm/.txt/.docx (hasta 8 MiB) en tu navegador con los 8 candados de integridad."}</p>`;
+      }
+      if (badgeEl) {
+        badgeEl.setAttribute?.("data-audit-badge-state", "idle");
+        badgeEl.textContent = isEn ? "⏳ Pending review · Paste or load draft" : "⏳ Pendiente de revisión · Pega o carga borrador";
+      }
+      if (summaryEl) {
+        summaryEl.textContent = isEn
+          ? "Status: Ready · Paste USFM/text or load a draft to run 8 local integrity locks"
+          : "Estado: Listo · Pega texto o carga un borrador para correr los 8 candados locales";
+      }
+      return;
+    }
+    const res = runClientExternalAudit8Locks({
+      rawText: rawDraft,
+      oldSurface: oldInput?.value || "",
+    });
+    if (seq !== inputAuditSeq) return;
+    state.externalAuditResult = res;
+    state.externalModernizeAudit = computeClientModernizeReadabilityAudit(rawDraft, state.uiLocale || "es");
+    if (liveEl) {
+      const rowsHtml = (Array.isArray(res.results) ? res.results : [])
+        .slice(0, 8)
+        .map((r) => `<li><code>${escapeHtml(r.ref)}</code> · <strong>${r.passed ? `✅ ${humanizeUiCopy("PASS", state.uiLocale || "es")}` : `⛔ ${escapeHtml(r.status)}`}</strong> — ${escapeHtml(String(r.text || "").slice(0, 90))}</li>`)
+        .join("");
+      liveEl.innerHTML = res.entriesCount === 0
+        ? `<p class="ek-meta ek-mt-xs">${isEn ? "Paste USFM lines (\\v 1 ...) to check 8 locks live." : "Pega líneas USFM (\\v 1 ...) para revisar los 8 candados en vivo."}</p>`
+        : `<div class="ek-mt-xs" data-live-audit-passed="${res.allPassed}"><strong class="ek-title-sm">${res.allPassed ? "✅" : "⛔"} ${res.passedCount}/${res.entriesCount} ${isEn ? "units passed 8 locks (local check)" : "unidades pasaron los 8 candados (revisión local)"}</strong><ul>${rowsHtml}</ul></div>`;
+    }
+    if (badgeEl) {
+      badgeEl.setAttribute?.("data-audit-badge-state", res.entriesCount > 0 ? (res.allPassed ? "verified" : "veto") : "idle");
+      badgeEl.textContent = res.entriesCount > 0
+        ? `${res.allPassed ? `✅ ${humanizeUiCopy("8/8 PASS", state.uiLocale || "es")}` : "⛔ VETO"} (${res.passedCount}/${res.entriesCount})`
+        : (isEn ? "⏳ Pending review" : "⏳ Pendiente de revisión");
+    }
+    if (summaryEl) {
+      summaryEl.textContent = isEn
+        ? `Format: Live USFM · Normalized verses: ${res.entriesCount}`
+        : `Formato: USFM en vivo · Versículos normalizados: ${res.entriesCount}`;
+    }
+  };
   const onAuditChange = async (e) => {
     const targetId = e?.target?.id || "";
     if (targetId === "tallerExtraLangSelect" || e?.target?.getAttribute?.("data-taller-lang-select")) {
@@ -444,5 +517,5 @@ export function createWorkshopAuditHandlers({
     }
     return false;
   };
-  return { onAuditChange, onAuditClick };
+  return { onAuditInput, onAuditChange, onAuditClick };
 }

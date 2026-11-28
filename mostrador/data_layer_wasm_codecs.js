@@ -567,8 +567,11 @@ export function verifyRaptorQBlockInWasmLinearMemory(wasmMod, blockBytes, expect
 }
 
 /**
- * D1-C+ (`ARB-EKOVOZ-62`):
+ * D1-C+ (`ARB-EKOVOZ-62`, `SLICE-EKO-HIG13-24`):
  * Copia un frame PCM/Opus a `wasmExports.memory` de `ekovoz_player_wasm` e invoca `verify_audio_frame_crc16_in_place(ptr, len)`.
+ * Exportación WASM latente intencional bajo la invariante arquitectónica `0 Bytes de Audio` en red/mostrador:
+ * la aplicación web no descarga ni transmite audio binario; el helper permanece disponible para verificación
+ * local de integridad CRC-16 sobre búferes en memoria cuando una herramienta offline invoca `ekovoz_player_wasm`.
  */
 export function verifyAudioPcmCrc16InWasmLinearMemory(wasmMod, pcmBytes) {
   const exports = wasmMod?.exports || wasmMod;

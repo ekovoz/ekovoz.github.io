@@ -410,7 +410,7 @@ if (!primaryLinkMatch) return String(portalsRawHtml || "");
 const opts = Array.from(String(portalsRawHtml).matchAll(/href="(pdf\/([^"]+)\/index\.html)"[^>]*>([^<]+)<\/a>/g))
 .slice(1)
 .map((m) => `<option value="${m[1]}">${m[2]} · PDF</option>`).join("");
-return `<div class="ek-subcard ek-row-wrap"><strong class="ek-title-sm">🌐 ${isEn ? "PDF Portals (24 languages)" : "Portadas PDF (24 idiomas)"}</strong><a class="btn-modal-action" href="${primaryLinkMatch[1]}">${primaryLinkMatch[2]}</a>` +
+return `<div class="ek-subcard ek-row-wrap"><strong class="ek-title-sm">🌐 ${isEn ? "PDF Portals (24 languages)" : "Portadas PDF (24 idiomas)"}</strong><a class="btn-modal-secondary" href="${primaryLinkMatch[1]}">${primaryLinkMatch[2]}</a>` +
 `<select id="printPdfPortalSelect" class="ek-select-compact" aria-label="${isEn ? "Open PDF portal in another language" : "Abrir portada PDF en otro idioma"}"><option value="">${isEn ? "Other 24 languages…" : "Otros 24 idiomas…"}</option>${opts}</select></div>`;
 }
 

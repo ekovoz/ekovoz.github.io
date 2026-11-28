@@ -179,6 +179,16 @@ export function isExpertVocabularyEnabled(searchStr = "") {
   return /(?:^|[?&])expert=1(?:&|$)/i.test(String(searchStr || ""));
 }
 
+/**
+ * Política de copy consciente del plano (`SLICE-EKO-HIG13-19..20`): cero jerga dev en Lectura, trazabilidad completa en Estudio Pro.
+ */
+export function formatCopyForSurfacePlane(editorialCopy = "", technicalCopy = "", stateOrSearch = null) {
+  const isTech = typeof stateOrSearch === "string"
+    ? /(?:^|[?&])(?:mode=studio|expert=1)(?:&|$)/i.test(stateOrSearch)
+    : Boolean(stateOrSearch?.surfacePlane === "technical" || stateOrSearch?.workspaceMode === "studio");
+  return isTech ? String(technicalCopy ?? editorialCopy ?? "") : String(editorialCopy ?? technicalCopy ?? "");
+}
+
 export function humanizeTechnicalCode(rawCode, uiLocale = "es") {
   const clean = String(rawCode || "").trim();
   const isEn = String(uiLocale || "es").trim().toLowerCase().startsWith("en");
