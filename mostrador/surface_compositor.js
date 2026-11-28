@@ -246,7 +246,8 @@ export function projectSurfaceLayoutFromState(state = {}, rootDoc, getEl) {
       panel.hidden = !isOpen;
     }
     if (btn) {
-      btn.hidden = priority === "expert" && !techPlaneOn && !isOpen;
+      const belongsToActiveWorkspace = techPlaneOn ? priority === "expert" : priority === "primary";
+      btn.hidden = !belongsToActiveWorkspace && !isOpen;
       btn.setAttribute?.("data-open", isOpen ? "true" : "false");
       btn.setAttribute?.("aria-expanded", isOpen ? "true" : "false");
       btn.setAttribute?.("aria-pressed", isOpen ? "true" : "false");

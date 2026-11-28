@@ -218,6 +218,7 @@ export function bindChromeAndPlaneEvents({
     const enNow = String(state.uiLocale || (isEnRole ? "en" : "es")).toLowerCase().startsWith("en");
     if (readerBtn) {
       readerBtn.setAttribute?.("aria-pressed", on ? "false" : "true");
+      readerBtn.textContent = enNow ? "Print" : "Imprenta";
     }
     if (techBtn) {
       techBtn.setAttribute?.("aria-pressed", on ? "true" : "false");
@@ -241,14 +242,17 @@ export function bindChromeAndPlaneEvents({
       state.surfacePlane = next;
       state.workspaceMode = nextWorkspace;
     }
-    if (nextWorkspace === "studio" && !state.activeSheet && typeof transitionSheet === "function") {
+    const isCollaborateSheet =
+      state.activeSheet === "study" || state.activeSheet === "field" || state.activeSheet === "improve";
+    if (nextWorkspace === "studio" && !isCollaborateSheet && typeof transitionSheet === "function") {
       void transitionSheet("study", targetDoc, { fromUser: true, mode: "open" });
-    } else if (
-      nextWorkspace === "reader" &&
-      (state.activeSheet === "study" || state.activeSheet === "field" || state.activeSheet === "improve") &&
-      typeof transitionSheet === "function"
-    ) {
-      void transitionSheet(null, targetDoc, { fromUser: true, mode: "close" });
+    } else if (nextWorkspace === "reader" && isCollaborateSheet && typeof transitionSheet === "function") {
+      const winW = Number(targetDoc?.defaultView?.innerWidth || (typeof window !== "undefined" ? window.innerWidth : 0)) || 0;
+      if (winW > 0 && winW < 960) {
+        void transitionSheet(null, targetDoc, { fromUser: true, mode: "close" });
+      } else {
+        void transitionSheet("print", targetDoc, { fromUser: true, mode: "open" });
+      }
     }
     syncActiveChromeProjection?.(targetDoc);
     syncPlaneButtonsDom();
@@ -258,7 +262,7 @@ export function bindChromeAndPlaneEvents({
     readerBtn.addEventListener("click", () => toggleSurfacePlane("editorial"));
   }
   if (techBtn && typeof techBtn.addEventListener === "function") {
-    techBtn.addEventListener("click", () => toggleSurfacePlane(null));
+    techBtn.addEventListener("click", () => toggleSurfacePlane("technical"));
   }
   if (exitProPill && typeof exitProPill.addEventListener === "function") {
     exitProPill.addEventListener("click", () => toggleSurfacePlane("editorial"));
