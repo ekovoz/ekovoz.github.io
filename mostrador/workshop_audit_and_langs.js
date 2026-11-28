@@ -256,17 +256,18 @@ export function renderWorkshopAuditSubtabHtml({
     ? `<a id="btnExportWorkshopCsv" class="uls-chip ek-btn-link" href="${cldfBundle.csvHref}" download="${escapeHtml(cldfBundle.csvFilename)}">⬇️ ${isEnAudit ? `Export CSV (${cldfBundle.rowCount} rows)` : `Exportar CSV (${cldfBundle.rowCount} filas)`}</a>`
     : `<a id="btnExportWorkshopCsv" class="uls-chip ek-btn-link" href="#workshopDirectExportBar" aria-disabled="true" data-export-gated="true">⬇️ ${isEnAudit ? "Export CSV (0 rows)" : "Exportar CSV (0 filas)"}</a>`;
   const exportBarHtml =
-    `<div id="workshopDirectExportBar" class="ek-row-wrap ek-mt-sm" data-workshop-task="3">` +
-    csvCtaHtml +
+    `<div id="workshopDirectExportBar" class="ek-stack-xs ek-mt-sm" data-workshop-task="3">` +
+    `<strong class="ek-title-sm">📤 ${isEnAudit ? "3. Export · Vocabulary & Drafts" : "3. Exportar · Glosario y Borradores"}</strong>` +
+    `<div class="ek-row-wrap">${csvCtaHtml}` +
     `<a id="btnExportWorkshopCldfJson" class="uls-chip ek-btn-link" href="${cldfBundle.jsonHref}" download="${escapeHtml(cldfBundle.jsonFilename)}">📦 ${isEnAudit ? "Export open word-list JSON" : "Exportar glosario JSON"}</a>` +
-    `</div>`;
+    `</div></div>`;
   const cldfPreviewHtml = cldfBundle.previewSnippet
     ? `<pre id="workshopCldfMirrorPreview" class="ek-pre-compact" data-cldf-preview="true">${escapeHtml(cldfBundle.previewSnippet)}</pre>`
     : `<p id="workshopCldfMirrorPreview" class="ek-meta ek-m-0" data-cldf-preview="empty">${isEnAudit ? "Select a step in Task 2 to populate rows for CSV export." : "Selecciona pasos en la tarea 2 para poblar las filas del CSV."}</p>`;
   const elicitAndCldfHtml =
     exportBarHtml +
-    `<details id="workshopElicitCldfDetails" class="tech-details ek-mt-sm" data-cldf-rows="${cldfBundle.rowCount}">` +
-    `<summary>📤 ${isEnAudit ? "3. Export · Census Progress & Mirror Preview" : "3. Exportar · Avance y Vista Previa"}</summary>` +
+    `<details id="workshopElicitCldfDetails" class="tech-details ek-mt-xs" data-cldf-rows="${cldfBundle.rowCount}">` +
+    `<summary>${isEnAudit ? "Census Progress & Mirror Preview" : "Avance y vista previa de exportación"}</summary>` +
     cldfPreviewHtml +
     renderStpLedgerProgressHtml(state.masterCensusSummary || null, uiLocale) +
     `</details>`;

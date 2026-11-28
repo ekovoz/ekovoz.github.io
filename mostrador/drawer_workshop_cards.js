@@ -333,17 +333,20 @@ export function renderCrdtWalAndLockP2AuditCardHtml(workshopArtifact = null) {
     `data-lock-p2-error-reason="${escHtml(lockP2ErrorReason)}">` +
     `<div class="ek-row-between ek-mb-sm">` +
     `<strong>🪵 Historial comunitario (${rawLines} eventos → ${canonicalCount} cambios consolidados)</strong>` +
-    `<span class="uls-badge" data-lock-p2-veto-badge="true">🛑 Reversión segura (${escHtml(rollbackId)} · ${escHtml(rollbackStatus)} · error: ${escHtml(lockP2ErrorReason)})</span>` +
+    `<span class="uls-badge" data-lock-p2-veto-badge="true">🛑 Reversión segura lista</span>` +
     `</div>` +
-    `<div class="ek-row-wrap ek-mb-sm">${patchesPills}</div>` +
+    `<section id="walTechnicalSyncDetails" class="tech-details ek-mb-sm">` +
+    `<strong class="ek-title-sm">Historial de sincronización (WAL y copias P2)</strong>` +
+    `<div class="ek-row-wrap ek-my-xs">${patchesPills}</div>` +
     `<div class="ek-stack-sm ek-mb-sm">` +
-    `<label for="selectWalRollbackSnapshot" class="ek-label-sm">⏱️ Punto de restauración (${snapshots10.length} copias verificadas):</label>` +
+    `<label for="selectWalRollbackSnapshot" class="ek-label-sm">⏱️ Punto de restauración (${snapshots10.length} copias · ${escHtml(rollbackId)} · ${escHtml(rollbackStatus)} · error: ${escHtml(lockP2ErrorReason)}):</label>` +
     `<select id="selectWalRollbackSnapshot" class="ek-input" data-wal-snapshots-count="${snapshots10.length}">${snapshotOptionsHtml}</select>` +
     `<button type="button" id="btnRestoreWalSnapshot" class="uls-chip ek-btn-fitts ek-self-start" data-action="restore-wal-snapshot">🔄 Previsualizar / Restaurar copia</button>` +
     `</div>` +
     `<div id="walSnapshotRollbackPreviewBox" class="ek-box-dashed ek-mb-sm" data-wal-preview-active="true">` +
     `Copia activa: <code>${escHtml(snapshots10[0]?.patch_id || "PATCH-STP-L2-0001")}</code> (${escHtml(snapshots10[0]?.target_ref || "GEN.1.1")}) · Protección lista para restauración atómica.` +
     `</div>` +
+    `</section>` +
     `<div class="ek-row-wrap ek-text-secondary" data-tech-key="root_notes_stp">` +
     `<span>📒 Notas de raíces verificadas: <strong>${rootNotes.length}</strong> raíces${rootCascadeSummary}:</span> ${rootNotesPillsHtml}` +
     rootNotesDetailsHtml +

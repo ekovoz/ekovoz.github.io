@@ -55,6 +55,8 @@ export function renderCascadeAndLadderHtml({
   previewWorks = null,
   elicitSessionIndex = 0,
   ladderScope = "passage",
+  surfacePlane = "editorial",
+  workspaceMode = "reader",
 } = {}) {
   const isEn = String(uiLocale || "es").trim().toLowerCase().startsWith("en");
   const cleanLang = sanitizePipeField(lang || "stp").toLowerCase();
@@ -178,6 +180,8 @@ export function renderCascadeAndLadderHtml({
       externalAuditText,
       externalAuditResult,
       activeTier3aPair,
+      surfacePlane,
+      workspaceMode,
     })
     : "";
 
@@ -257,9 +261,17 @@ export function renderWorkshopAuditPanelsHtml({
   externalAuditText = "",
   externalAuditResult = null,
   activeTier3aPair = "",
+  surfacePlane = "editorial",
+  workspaceMode = "reader",
 } = {}) {
   const isEn = String(uiLocale || "es").trim().toLowerCase().startsWith("en");
   const cleanLang = sanitizePipeField(lang || "stp").toLowerCase();
+  const isStudioMode = surfacePlane === "technical" || workspaceMode === "studio";
+  const auditPlaceholder = isStudioMode
+    ? "\\id GEN\n\\c 1\n\\v 1 Tu'xich jumai..."
+    : isEn
+      ? "Paste a verse or draft here (e.g. In the beginning...)"
+      : "Pega aquí un versículo o borrador (ej. En el principio...)";
   const escAud = (v) =>
     String(v ?? "")
       .replace(/&/g, "&amp;")
@@ -290,28 +302,28 @@ export function renderWorkshopAuditPanelsHtml({
     : (isEn ? "local browser check" : "revisión local");
   const badgeHtml = hasLiveAuditEntries
     ? `<span class="uls-badge ek-badge-compact" data-audit-badge-state="${externalAuditResult.allPassed ? "verified" : "veto"}">${externalAuditResult.allPassed ? `✅ ${humanizeUiCopy("8/8 PASS", uiLocale)}` : "⛔ VETO"} (${externalAuditResult.passedCount}/${externalAuditResult.entriesCount})</span>`
-    : `<span class="uls-badge ek-badge-compact" data-audit-badge-state="idle">⏳ ${isEn ? "Pending review · Paste or load draft" : "Pendiente de revisión · Pega o carga borrador"}</span>`;
+    : `<span class="uls-badge ek-badge-compact" data-audit-badge-state="idle">⏳ ${isEn ? "Pending review" : "Pendiente de revisión"}</span>`;
   const extMetaLine = hasLiveAuditEntries
     ? (isEn
-      ? `Format: ${extFormatLabel} (${extTraditionLabel}) · Normalized verses: ${extNormalizedCount} · Unbalanced quotes/brackets: ${extPdaUnbalanced}`
-      : `Formato: ${extFormatLabel} (${extTraditionLabel}) · Versículos normalizados: ${extNormalizedCount} · Comillas/paréntesis sin cierre: ${extPdaUnbalanced}`)
+      ? `Format: ${extFormatLabel} (${extTraditionLabel}) · Verses: ${extNormalizedCount} · Unbalanced: ${extPdaUnbalanced}`
+      : `Formato: ${extFormatLabel} (${extTraditionLabel}) · Versículos: ${extNormalizedCount} · Sin cierre: ${extPdaUnbalanced}`)
     : (isEn
-      ? "Status: Ready · Paste USFM/text or load a draft to run 8 local integrity locks"
-      : "Estado: Listo · Pega texto o carga un borrador para correr los 8 candados locales");
+      ? "Local browser check (0 network) · 8 quality gates"
+      : "Revisión local sin internet · 8 controles de calidad");
   const auditResultSummaryHtml = externalAuditResult
     ? externalAuditResult.entriesCount === 0
-      ? `<p class="ek-meta ek-mt-xs">${isEn ? "Paste USFM text or load .usfm/.txt/.docx (up to 8 MiB in browser; use the desktop edition for full books)." : "Pega texto USFM o carga .usfm/.txt/.docx (hasta 8 MiB en el navegador; para libros completos usa la edición de escritorio)."}</p>`
-      : `<div class="ek-mt-xs" data-live-audit-passed="${externalAuditResult.allPassed}"><strong class="ek-title-sm">${externalAuditResult.allPassed ? "✅" : "⛔"} ${externalAuditResult.passedCount}/${externalAuditResult.entriesCount} ${isEn ? "units passed 8 locks (local check)" : "unidades pasaron los 8 candados (revisión local)"}</strong><ul>${auditRowsHtml}</ul></div>`
-    : `<p class="ek-meta ek-mt-xs">${isEn ? "Validate .usfm/.txt/.docx drafts (up to 8 MiB) right in your browser with the 8 integrity checks." : "Valida borradores .usfm/.txt/.docx (hasta 8 MiB) en tu navegador con los 8 candados de integridad."}</p>`;
+      ? `<p class="ek-meta ek-mt-xs">${isEn ? "Paste a passage or load .usfm/.txt/.docx (<=8 MiB local)." : "Pega un pasaje o carga .usfm/.txt/.docx (<=8 MiB local)."}</p>`
+      : `<div class="ek-mt-xs" data-live-audit-passed="${externalAuditResult.allPassed}"><strong class="ek-title-sm">${externalAuditResult.allPassed ? "✅" : "⛔"} ${externalAuditResult.passedCount}/${externalAuditResult.entriesCount} ${isEn ? "units passed (local check)" : "unidades aprobadas (local)"}</strong><ul>${auditRowsHtml}</ul></div>`
+    : `<p class="ek-meta ek-mt-xs">${isEn ? "Validate drafts locally in your browser." : "Valida borradores localmente en tu navegador."}</p>`;
   const externalAuditHtml =
     `<div id="externalAudit8LocksPanel" class="ek-card-muted ek-mt-sm" data-audit-lang="${escAud(cleanLang)}" data-external-audit-8-locks="true" data-all-8-locks-passed="${hasLiveAuditEntries ? Boolean(externalAuditResult.allPassed) : false}" data-pda-unbalanced="${extPdaUnbalanced}" data-normalized-verses="${extNormalizedCount}">` +
     `<div class="ek-row-between">` +
-    `<strong>🛡️ ${isEn ? "External Editorial Review · 8-Lock Audit" : "Revisión Editorial Externa · Auditoría 8 Candados"}</strong>` +
+    `<strong>🛡️ ${isEn ? "External Editorial Review · 8 checks" : "Revisión Editorial Externa · 8 controles"}</strong>` +
     badgeHtml +
     `</div>` +
     `<div id="externalAuditLiveResult" aria-live="polite">${auditResultSummaryHtml}</div>` +
     `<p class="ek-meta ek-mt-xs" data-external-audit-summary="true">${escAud(extMetaLine)}</p>` +
-    `<textarea id="externalAuditTextInput" class="ek-field-input ek-textarea-full ek-mt-xs" rows="3" placeholder="\\id GEN&#10;\\c 1&#10;\\v 1 Tu'xich jumai...">${escAud(externalAuditText || "")}</textarea>` +
+    `<textarea id="externalAuditTextInput" class="ek-field-input ek-textarea-full ek-mt-xs" rows="3" placeholder="${escAud(auditPlaceholder)}">${escAud(externalAuditText || "")}</textarea>` +
     `<div class="ek-row-wrap ek-mt-xs">` +
     `<label for="externalAuditFileInput" class="uls-chip ek-file-picker-btn">📂 ${isEn ? "Load .usfm / .txt / .docx (<=8 MB)" : "Cargar .usfm / .txt / .docx (<=8 MB)"}` +
     `<input type="file" id="externalAuditFileInput" class="sr-only-file-input" accept=".usfm,.sfm,.txt,.docx" aria-label="${isEn ? "Load USFM, TXT or DOCX file" : "Cargar archivo USFM, TXT o DOCX"}"></label>` +

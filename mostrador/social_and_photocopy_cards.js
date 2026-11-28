@@ -199,6 +199,13 @@ export function renderEditorialGraphicsAndPrintSpecsCard({
   const headerStatusHtml = showHeaderContrastBadge
     ? `<span id="photocopyActiveStatusBadge" class="uls-badge" data-sauvola-pass="true">✅ ${isEn ? `Copy Gen ${activeSim.genIndex} · Contrast` : `Copia Gen. ${activeSim.genIndex} · Contraste`} ${activeSim.contrastLabel} ≥ 7.0:1 AAA</span>`
     : "";
+  const verdictHtml =
+    `<span id="photocopyLegibilityVerdict" class="uls-badge" data-sauvola-pass="true">` +
+    `✅ ${isEn ? `Readable through 3rd copy (G${activeSim.genIndex} · ${activeSim.contrastLabel})` : `Legible hasta 3ª fotocopia rural (G${activeSim.genIndex} · ${activeSim.contrastLabel})`}` +
+    `</span>`;
+  const genSliderLabel = isEn
+    ? `Photocopy wear simulation (G0–G5): G${activeSim.genIndex}`
+    : `Nivel de desgaste de fotocopia (G0–G5): G${activeSim.genIndex}`;
 
   return (
     `<div id="editorialGraphicsPhotocopyPanel" class="editorial-graphics-photocopy-card" ` +
@@ -211,14 +218,19 @@ export function renderEditorialGraphicsAndPrintSpecsCard({
     `data-social-card-dimensions="${fifthGenBilateral.socialCardDimensions}">` +
     `<div class="photocopy-header-row">` +
     `<strong>🖼️ ${isEn ? "Print Legibility & Photocopy Resilience" : "Legibilidad en Impresión y Fotocopia Rural"}</strong>` +
-    headerStatusHtml +
+    `${headerStatusHtml || verdictHtml}` +
     `</div>` +
-    `<div class="photocopy-badges-row photocopy-segmented-bar" role="group" aria-label="${isEn ? "Photocopy generations" : "Generaciones de fotocopia"}">${genBadges}</div>` +
     `<div class="photocopy-controls-row">` +
+    `<label for="inputPhotocopyGenSlider" class="photocopy-slider-label">🖨️ ${escHtml(genSliderLabel)}</label>` +
+    `<input id="inputPhotocopyGenSlider" class="photocopy-slider-input" type="range" min="0" max="5" step="1" value="${activeSim.genIndex}" aria-label="${escHtml(genSliderLabel)}" />` +
     `<label for="inputSauvolaK" class="photocopy-slider-label">🎛️ ${isEn ? `Copy contrast level (${activeSim.sauvolaK.toFixed(2)}):` : `Nivel de contraste de copia (${activeSim.sauvolaK.toFixed(2)}):`}</label>` +
     `<input id="inputSauvolaK" class="photocopy-slider-input" type="range" min="0.15" max="0.40" step="0.01" value="${activeSim.sauvolaK.toFixed(2)}" />` +
-    `<div class="photocopy-badges-row" data-advanced-audit="true" data-technical-plane="true">${stagesBadges}</div>` +
     `</div>` +
+    `<div class="ek-mt-xs"><button type="button" id="btnTogglePhotocopyLevels" class="uls-chip" aria-expanded="false" aria-controls="photocopyAdvancedDetails">${isEn ? "🎛️ Photocopy levels (Orig–G5) & steps" : "🎛️ Ver niveles Orig–G5 y pasos"}</button></div>` +
+    `<section id="photocopyAdvancedDetails" class="photocopy-gen-details ek-mt-xs" hidden>` +
+    `<div class="photocopy-badges-row photocopy-segmented-bar" role="group" aria-label="${isEn ? "Photocopy generations" : "Generaciones de fotocopia"}">${genBadges}</div>` +
+    `<div class="photocopy-badges-row ek-mt-xs" data-advanced-audit="true">${stagesBadges}</div>` +
+    `</section>` +
     `<div class="photocopy-preview-caption">` +
     `<img class="photocopy-preview-img" alt="Photocopy Specimen Preview" src="${specimenData.svgDataUrl}" />` +
     `<span>${isEn ? `White-paper black-ink specimen (${escHtml(refLabel)}) verified for community copying.` : `Espécimen papel blanco / tinta negra (${escHtml(refLabel)}) verificado para copiado comunitario.`}</span>` +
@@ -234,35 +246,59 @@ export function buildOpenGraphSocialCardSvg1200x630({
   text = "En el principio creó Dios los cielos y la tierra.",
   lang = "es",
   uiLocale = "es",
+  framingPreset = "balanced",
 } = {}) {
   const isEn = String(uiLocale || "es").trim().toLowerCase().startsWith("en");
   const refLabel = `${String(book || "GEN").toUpperCase()} ${Number(chapter) || 1}:${Number(verse) || 1}`;
+  const presetKey = ["balanced", "bold_verse", "high_contrast"].includes(framingPreset) ? framingPreset : "balanced";
+  const palette = presetKey === "high_contrast"
+    ? { bg: "#000000", card: "#09090b", border: "#ffffff", accent: "#ffffff", ink: "#ffffff", meta: "#e4e4e7", size: 40, wrap: 40 }
+    : presetKey === "bold_verse"
+      ? { bg: "#12161f", card: "#181e29", border: "#d4a359", accent: "#f3c778", ink: "#ffffff", meta: "#cbd5e1", size: 44, wrap: 36 }
+      : { bg: "#12161f", card: "#181e29", border: "#d4a359", accent: "#d4a359", ink: "#f8fafc", meta: "#cbd5e1", size: 38, wrap: 44 };
   const lines = wrapSvgTextLines(
     String(text || "En el principio creó Dios los cielos y la tierra."),
-    44,
+    palette.wrap,
     5,
   );
   const tspans = lines
-    .map((line, idx) => `<tspan x="96" dy="${idx === 0 ? 0 : 50}">${escHtml(line)}</tspan>`)
+    .map((line, idx) => `<tspan x="96" dy="${idx === 0 ? 0 : Math.round(palette.size * 1.28)}">${escHtml(line)}</tspan>`)
     .join("");
   const footerText = isEn
     ? "Ekovoz · Public Domain CC0 · Offline Multilingual Bible"
     : "Ekovoz · Dominio Público CC0 · Lectura sin internet";
   const svgMarkup =
-    `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">` +
-    `<rect width="1200" height="630" fill="#12161f"/>` +
-    `<rect x="48" y="48" width="1104" height="534" rx="24" fill="#181e29" stroke="#d4a359" stroke-width="3"/>` +
-    `<text x="96" y="135" fill="#d4a359" font-family="serif" font-size="38" font-weight="bold">EKOVOZ · ${escHtml(refLabel)} (${escHtml(String(lang).toUpperCase())})</text>` +
-    `<text x="96" y="215" fill="#f8fafc" font-family="serif" font-size="38">${tspans}</text>` +
-    `<text x="96" y="535" fill="#cbd5e1" font-family="sans-serif" font-size="26">${escHtml(footerText)}</text>` +
+    `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" data-framing-preset="${presetKey}">` +
+    `<rect width="1200" height="630" fill="${palette.bg}"/>` +
+    `<rect x="48" y="48" width="1104" height="534" rx="24" fill="${palette.card}" stroke="${palette.border}" stroke-width="3"/>` +
+    `<text x="96" y="135" fill="${palette.accent}" font-family="serif" font-size="38" font-weight="bold">EKOVOZ · ${escHtml(refLabel)} (${escHtml(String(lang).toUpperCase())})</text>` +
+    `<text x="96" y="215" fill="${palette.ink}" font-family="serif" font-size="${palette.size}">${tspans}</text>` +
+    `<text x="96" y="535" fill="${palette.meta}" font-family="sans-serif" font-size="26">${escHtml(footerText)}</text>` +
     `</svg>`;
   return {
     width: 1200,
     height: 630,
     dimensions: "1200x630",
+    framingPreset: presetKey,
     svgMarkup,
     svgDataUrl: `data:image/svg+xml;utf8,${encodeURIComponent(svgMarkup)}`,
   };
+}
+
+export function renderSocialCardFramingPresetSelectorHtml({
+  framingPreset = "balanced",
+  uiLocale = "es",
+} = {}) {
+  const isEn = String(uiLocale || "es").trim().toLowerCase().startsWith("en");
+  const cur = ["balanced", "bold_verse", "high_contrast"].includes(framingPreset) ? framingPreset : "balanced";
+  return (
+    `<label class="ek-label-sm">${isEn ? "Card framing" : "Encuadre"} ` +
+    `<select id="socialCardFramingPresetSelect" class="ek-select-compact" aria-label="${escHtml(isEn ? "Social card framing preset" : "Ajuste de encuadre de tarjeta")}">` +
+    `<option value="balanced"${cur === "balanced" ? " selected" : ""}>${isEn ? "Balanced Serif" : "Equilibrado"}</option>` +
+    `<option value="bold_verse"${cur === "bold_verse" ? " selected" : ""}>${isEn ? "Large Verse" : "Versículo amplio"}</option>` +
+    `<option value="high_contrast"${cur === "high_contrast" ? " selected" : ""}>${isEn ? "High Contrast AAA" : "Alto contraste AAA"}</option>` +
+    `</select></label>`
+  );
 }
 
 export function renderPhotocopyResilienceAndSocialCardHtml(opts = {}) {

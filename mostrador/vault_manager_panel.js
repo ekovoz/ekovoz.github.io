@@ -167,17 +167,33 @@ export function renderVaultStorageManagerHtml({
     const statusBadge = downloaded
       ? `✅ ${isEn ? "Ready" : "Listo"}${sizeStr ? ` · ${sizeStr}` : ""}`
       : `${isEn ? "Not downloaded" : "Disponible"}${sizeStr ? ` · ${sizeStr}` : ""}`;
+    const canonFallbackMap = {
+      es: isEn ? "Spanish canonical (66 books)" : "Canon español (66 libros)",
+      "es-1909": isEn ? "Spanish 1909 tradition" : "Tradición clásica 1909",
+      en: "ProtestantKjv",
+      he: isEn ? "Masoretic Hebrew (WLC)" : "Hebreo masorético (WLC)",
+      grc: isEn ? "Greek (LXX / SRGNT)" : "Griego bíblico (LXX/SRGNT)",
+      matrix_tier0: isEn ? "Bimodal Original (WLC + LXX)" : "Matriz Original (he + grc)",
+      stp: isEn ? "O'dam (NT + OT Workshop)" : "O'dam (NT + Taller AT)",
+    };
+    const lcNorm = String(langCode).toLowerCase();
+    const isEngLang = lcNorm === "en" || lcNorm === "eng";
+    const rawTrad = String(meta?.versificationTradition || "").trim();
+    const resolvedTradition =
+      !rawTrad || (!isEngLang && rawTrad.toLowerCase() === "eng")
+        ? canonFallbackMap[lcNorm] || formatEditorialTraditionLabel(langCode, isEn ? "en" : "es")
+        : rawTrad;
     const humanMetaLine = meta ? formatVaultEditionMetadata({ ...meta, lang: langCode, booksCount: meta?.booksCount || 66 }, isEn ? "en" : "es") : "";
     const techPackMeta = meta
       ? (meta.merkleRootSha256 ? ` <span><strong>Merkle:</strong> <code>${escapeHtml(String(meta.merkleRootSha256).slice(0, 16))}…</code></span>` : "") +
-        (meta.contentDigestSha256 ? ` <span><strong>Digest:</strong> <code>${escapeHtml(String(meta.contentDigestSha256).slice(0, 16))}…</code></span>` : "") +
-        (meta.origin_url ? ` <span><strong>origin_url:</strong> <code>${escapeHtml(String(meta.origin_url))}</code></span>` : "") +
-        (meta.metaZstdSha256 ? ` <span><strong>metaZstdSha256:</strong> <code>${escapeHtml(String(meta.metaZstdSha256).slice(0, 16))}…</code></span>` : "")
+      (meta.contentDigestSha256 ? ` <span><strong>Digest:</strong> <code>${escapeHtml(String(meta.contentDigestSha256).slice(0, 16))}…</code></span>` : "") +
+      (meta.origin_url ? ` <span><strong>origin_url:</strong> <code>${escapeHtml(String(meta.origin_url))}</code></span>` : "") +
+      (meta.metaZstdSha256 ? ` <span><strong>metaZstdSha256:</strong> <code>${escapeHtml(String(meta.metaZstdSha256).slice(0, 16))}…</code></span>` : "")
       : "";
     const metaDetailsHtml = meta
       ? `<div class="hig-tech-meta vault-pack-meta-details" data-pack-meta-details="true">` +
       `<span class="ek-meta">${escapeHtml(humanMetaLine)}</span> ` +
-      `<span><strong>${isEn ? "Canon:" : "Canon:"}</strong> ${escapeHtml(formatEditorialTraditionLabel(meta.versificationTradition || "eng", isEn ? "en" : "es"))} · ${escapeHtml(Array.isArray(meta.diachronicVariants) && meta.diachronicVariants.length ? meta.diachronicVariants.join(", ") : (isEn ? "canonical" : "edición principal"))}</span>` +
+      `<span><strong>Canon:</strong> ${escapeHtml(formatEditorialTraditionLabel(resolvedTradition, isEn ? "en" : "es"))} · ${escapeHtml(Array.isArray(meta.diachronicVariants) && meta.diachronicVariants.length ? meta.diachronicVariants.join(", ") : (isEn ? "canonical" : "edición principal"))}</span>` +
       formatCopyForSurfacePlane(
         techPackMeta ? ` <span>${isEn ? "· Verified signature" : "· Firma verificada"}</span>` : "",
         techPackMeta,
@@ -258,7 +274,7 @@ export function renderVaultStorageManagerHtml({
     `</section>` +
     (remainingCodes.length > 0
       ? `<section id="vaultMorePacksDetails" class="r9-stratum-accordion ek-mt-xs"${cleanFilter ? ' data-filtered="true"' : ""}>` +
-      `<strong class="ek-title-sm">📚 ${isEn ? `Search & download other offline languages (${remainingCodes.length})` : `Buscar y descargar otros idiomas sin conexión (${remainingCodes.length})`}</strong>` +
+      `<strong class="ek-title-sm">📚 ${isEn ? `Other offline languages (${remainingCodes.length})` : `Otros idiomas sin conexión (${remainingCodes.length})`}</strong>` +
       `<div class="ek-mt-xs">` +
       `<input type="search" id="vaultPacksFilterInput" class="ek-input-compact ek-mb-xs" value="${escapeHtml(filterQuery)}" placeholder="${isEn ? "Filter language (pt, fr, ar, stp...)" : "Filtrar idioma (pt, fr, ar, stp...)"}">` +
       `<ul class="vault-pack-list vault-pack-list-compact">${remainingRowsHtml}</ul>` +

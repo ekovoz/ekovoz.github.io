@@ -993,7 +993,7 @@ export function renderOfflineMeshEcoCardHtml({
     `data-eco-pack-bytes="${activePack.bytes}" ` +
     `data-eco-pack-sha256="${activePack.sha256}" ` +
     `href="${activePack.url}" download="${activePack.file}">` +
-    `📦 ${activePack.file} (${activeKb} KB)` +
+    `📦 ${String(activePack.lang || "es").toUpperCase()} · ${isEn ? "Offline Edition" : "Edición sin internet"} (${activeKb} KB)` +
     `</a>`;
 
   return (
@@ -1013,7 +1013,7 @@ export function renderOfflineMeshEcoCardHtml({
     `</div>` +
     `<div class="ek-row-wrap ek-mb-sm">${activePackDownloadHtml}</div>` +
     `<div class="ek-row-wrap ek-gap-md">` +
-    `<button type="button" id="btnInstallEcoPackOffline" class="uls-chip eco-action-btn ek-semibold" data-action="install-eco-pack" data-eco-lang="${activePack.lang}" data-i18n="share.mesh.install">⚡ ${isEn ? `Save ${activePack.file} for offline reading` : `Guardar ${activePack.file} sin internet`}</button>` +
+    `<button type="button" id="btnInstallEcoPackOffline" class="uls-chip eco-action-btn ek-semibold" data-action="install-eco-pack" data-eco-lang="${activePack.lang}" data-i18n="share.mesh.install">⚡ ${isEn ? `Save ${String(activePack.lang || "es").toUpperCase()} for offline reading` : `Guardar ${String(activePack.lang || "es").toUpperCase()} sin internet`}</button>` +
     `<button type="button" id="btnOfflineOptInSwDownload" class="uls-chip eco-action-btn" data-action="opt-in-offline-pack" data-eco-lang="${activePack.lang}" data-i18n="share.mesh.preload">📥 ${isEn ? "Preload Offline Library" : "Precargar Biblioteca Offline"}</button>` +
     `<button type="button" id="btnOfflineListIndexedDbPacks" class="uls-chip eco-action-btn" data-action="list-indexeddb-packs" data-eco-lang="${activePack.lang}" data-i18n="share.mesh.savedList">🗄️ ${isEn ? `Saved languages (${vaultPacks.length})` : `Idiomas guardados (${vaultPacks.length})`}</button>` +
     `<button type="button" id="btnExportSneakernetBundle" class="uls-chip eco-action-btn" data-action="export-sneakernet-bundle" data-eco-lang="${activePack.lang}" data-i18n="share.mesh.exportFile">📤 ${isEn ? "Share Offline File" : "Compartir archivo offline"}</button>` +

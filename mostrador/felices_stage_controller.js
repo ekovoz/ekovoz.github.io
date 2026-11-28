@@ -88,15 +88,37 @@ export function bindFelicesStageEvents(ctx = {}) {
     hydrateShareAndAuditDrawer,
   } = ctx;
 
+  const syncFelicesCoverAndCtaContext = (coordPlateIndex) => {
+    const plateIdx = Number(coordPlateIndex ?? state.activePlateIndex ?? 1);
+    const baseLang = String(state.lang || "es").split("-")[0].toLowerCase();
+    const isCoverPlate = plateIdx === 1 && baseLang === "es";
+    const frame = getEl("focalPlateFrame", targetDoc);
+    const img = getEl("focalPlateImg", targetDoc);
+    for (const el of [frame, img]) {
+      if (!el?.setAttribute || !el?.removeAttribute) continue;
+      if (isCoverPlate) el.setAttribute("data-plate-cover", "true");
+      else el.removeAttribute("data-plate-cover");
+    }
+    for (const dlId of ["linkSheets", "linkBooklet"]) {
+      getEl(dlId, targetDoc)?.setAttribute?.("data-cta-balanced", "true");
+    }
+    const drawersHost = getEl("sovereignGlobalDrawersHost", targetDoc);
+    if (drawersHost?.setAttribute && drawersHost?.removeAttribute) {
+      if (state.activeWork === "felices") drawersHost.setAttribute("data-work-context", "felices");
+      else drawersHost.removeAttribute("data-work-context");
+    }
+  };
   const felicesSec = getEl("felicesSovereignSection", targetDoc);
   if (felicesSec) {
     felicesSec.setAttribute?.("data-desktop-fold-compact", "true");
     felicesSec.setAttribute?.("data-pdf-above-fold", "true");
   }
+  syncFelicesCoverAndCtaContext(state.activePlateIndex);
 
   registerPlateCoordinateListener(async (coord) => {
     if (!coord) return;
     state.activePlateIndex = coord.plateIndex;
+    syncFelicesCoverAndCtaContext(coord.plateIndex);
     if (coord.dichaIndex) state.activeDichaIndex = coord.dichaIndex;
     if (state.activeWork === "felices") {
       if (coord.book) state.book = coord.book;

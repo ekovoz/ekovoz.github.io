@@ -707,6 +707,11 @@ export function buildEditionRenderSpecBytes16(profileIdOrMode = 0, overrides = {
   buf[11] = (edId === 11 ? 4 : overrides.paperCode !== undefined ? overrides.paperCode : p.paper) & 0xff;
   buf[12] = p.rw & 0xff;
   buf[13] = p.m & 0xff;
+  const rawExt =
+    overrides.extFlags !== undefined
+      ? Number(overrides.extFlags)
+      : (overrides.outlineBookmarks ? 1 : 0) | (overrides.knuthPlassStrict ? 2 : 0);
+  buf[14] = rawExt & 0xff;
   return buf;
 }
 

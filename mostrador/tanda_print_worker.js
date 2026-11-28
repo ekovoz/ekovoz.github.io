@@ -1116,6 +1116,9 @@ export async function runWorkerTandaJob(payload = {}, emitProgress = () => { }) 
       columns: Math.max(1, Math.min(3, Number(columns) || 2)),
       fontTenthsPt,
       paperCode,
+      extFlags: payload.extFlags,
+      outlineBookmarks: Boolean(payload.outlineBookmarks),
+      knuthPlassStrict: Boolean(payload.knuthPlassStrict),
     },
   );
 

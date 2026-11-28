@@ -56,7 +56,7 @@ import {
     renderEditorialAuditAttestationHtml,
     renderEditorialProvenanceCardHtml,
 } from "./provenance_and_support_panel.js";
-import { buildOpenGraphSocialCardSvg1200x630 } from "./social_and_photocopy_cards.js";
+import { buildOpenGraphSocialCardSvg1200x630, renderSocialCardFramingPresetSelectorHtml } from "./social_and_photocopy_cards.js";
 import { resolveSafeDownloadFilename } from "./stealth_filename.js";
 import { hydrateVaultStorageManagerPanel, renderPortabilityResearchCardHtml } from "./vault_manager_panel.js";
 
@@ -207,7 +207,6 @@ export function hydrateShareAndAuditDrawerPanel(ctx = {}) {
     const workAdapter = resolveWorkDrawerAdapter(state);
     const shareSheetEl = getEl("bibleShareAndAuditSheet", targetDoc);
     if (shareSheetEl) {
-        shareSheetEl.removeAttribute?.("hidden");
         shareSheetEl.setAttribute?.("data-work-share-target", workAdapter.shareTarget || "biblia_quine");
         shareSheetEl.setAttribute?.("data-unified-offline-vault", "true");
         const qrHost = getEl("bibleOpticalQrStreamPanel", targetDoc);
@@ -395,21 +394,15 @@ export function hydrateShareAndAuditDrawerPanel(ctx = {}) {
         const ogHost = ensureShareChildHost("shareOpenGraphCardPanel", "graphics");
         if (ogHost) {
             const blk = resolveCanonicalBlockCode(state.book || "GEN", state.chapter || 1, state.verse || 1);
-            const ogCard = buildOpenGraphSocialCardSvg1200x630({
-                book: state.book || "GEN",
-                chapter: state.chapter || 1,
-                verse: state.verse || 1,
-                text: activeVerseText,
-                lang: activeLang,
-                uiLocale: state.uiLocale || "es",
-            });
+            const preset = state.socialCardFramingPreset || "balanced";
+            const ogCard = buildOpenGraphSocialCardSvg1200x630({ book: state.book || "GEN", chapter: state.chapter || 1, verse: state.verse || 1, text: activeVerseText, lang: activeLang, uiLocale: state.uiLocale || "es", framingPreset: preset });
             const ogFilename = resolveSafeDownloadFilename(state, { kind: "opengraph_svg", blockNumber: blk.blockNumber || 1 });
-            ogHost.innerHTML =
-                `<div class="share-opengraph-card" data-social-card-dimensions="1200x630">` +
-                `<span class="share-opengraph-caption">${isEn ? "Social Card <code>1200×630</code> ready to share offline:" : "Tarjeta Social <code>1200×630</code> lista para compartir:"}</span>` +
-                `<img class="share-opengraph-img" src="${ogCard.svgDataUrl}" alt="OpenGraph 1200x630" />` +
-                `<a id="btnDownloadSocialCard1200x630" class="uls-chip share-opengraph-dl" href="${ogCard.svgDataUrl}" download="${escapeHtml(ogFilename)}">🖼️ ${isEn ? "Download Social Card 1200×630 (SVG)" : "Descargar Tarjeta Social 1200×630 (SVG)"}</a>` +
-                `</div>`;
+            ogHost.innerHTML = `<div class="share-opengraph-card" data-social-card-dimensions="1200x630" data-framing-preset="${escapeHtml(preset)}"><span class="share-opengraph-caption">${isEn ? "Social Card 1200×630 ready to share offline:" : "Tarjeta Social 1200×630 lista para compartir:"}</span>${renderSocialCardFramingPresetSelectorHtml({ framingPreset: preset, uiLocale: state.uiLocale || "es" })}<img class="share-opengraph-img" src="${ogCard.svgDataUrl}" alt="OpenGraph 1200x630" /><a id="btnDownloadSocialCard1200x630" class="uls-chip share-opengraph-dl" href="${ogCard.svgDataUrl}" download="${escapeHtml(ogFilename)}">🖼️ ${isEn ? "Download Social Card 1200×630 (SVG)" : "Descargar Tarjeta Social 1200×630 (SVG)"}</a></div>`;
+            const presetSel = getEl("socialCardFramingPresetSelect", targetDoc);
+            if (presetSel?.addEventListener && !presetSel._presetBound) {
+                presetSel._presetBound = true;
+                presetSel.addEventListener("change", (e) => { state.socialCardFramingPreset = String(e?.target?.value || presetSel.value || "balanced"); hydrateShareAndAuditDrawer?.(targetDoc); });
+            }
         }
 
         const installEcoBtn = getEl("btnInstallEcoPackOffline", targetDoc);

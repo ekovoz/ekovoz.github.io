@@ -220,19 +220,15 @@
                         (TFNG ↔ LATN)</button>
                 </div>
                 <div id="corpusTabPanelBibles" role="region" aria-label="24 Verified Bibles and 7,164 Languages">
+                    <div id="corpusModeTabsBar" class="subtabs-bar" role="tablist" aria-label="Selector de idioma">
+                        <button type="button" id="btnCorpusTabBibles" class="uls-chip" role="tab" aria-selected="true"
+                            aria-controls="corpusPanelBibles" data-i18n-autonym="true">Biblias listas (24)</button>
+                        <button type="button" id="btnCorpusTabExplorer" class="uls-chip" role="tab" aria-selected="false"
+                            aria-controls="corpusPanelExplorer" data-i18n-autonym="true">Explorar 7,164 lenguas</button>
+                    </div>
+                    <div id="corpusPanelBibles" role="tabpanel" aria-labelledby="btnCorpusTabBibles">
                     <p id="corpusVerifiedSectionTitle" class="ek-title-sm ek-mt-xs" data-i18n="corpus.verified.heading">
                         Biblias verificadas (24)</p>
-                    <p id="corpusExplorerSectionTitle" class="ek-meta ek-mt-sm" data-i18n="corpus.explorer.heading">
-                        Explorador global SIL (7,164 lenguas)</p>
-                    <div class="ek-mt-sm">
-                        <input type="search" id="quickLangFilterInput" class="field-search-input"
-                            data-i18n-attr="placeholder:corpus.search.placeholder"
-                            placeholder="Search 7,164 languages (ISO, autonym, country)...">
-                    </div>
-                    <div id="polyglotWindowCountBadge" class="ek-meta ek-mt-xs" aria-live="polite"
-                        data-total-sil="7164"></div>
-                    <div id="polyglotRecycledListHost" class="polyglot-recycled-window ek-mt-xs"
-                        data-polyglot-window="true" role="listbox" aria-label="Filtered languages window"></div>
                     <div id="bibleVerifiedCorpusPills" class="chip-wrap-row" role="group"
                         aria-label="24 Verified Bibles and Portions">
                         <button type="button" id="quickLangEs" class="uls-chip" data-i18n-autonym="true"
@@ -348,6 +344,19 @@
                             data-corpus-lang="fa" data-work-scope="felices" hidden><span class="ek-iso-tag">FA</span>
                             فارسی</button>
                     </div>
+                    </div>
+                    <div id="corpusPanelExplorer" role="tabpanel" aria-labelledby="btnCorpusTabExplorer" hidden>
+                    <p id="corpusExplorerSectionTitle" class="ek-meta ek-mt-sm" data-i18n="corpus.explorer.heading">
+                        Explorador global SIL (7,164 lenguas)</p>
+                    <div class="ek-mt-sm">
+                        <input type="search" id="quickLangFilterInput" class="field-search-input"
+                            data-i18n-attr="placeholder:corpus.search.placeholder"
+                            placeholder="Search 7,164 languages (ISO, autonym, country)...">
+                    </div>
+                    <div id="polyglotWindowCountBadge" class="ek-meta ek-mt-xs" aria-live="polite"
+                        data-total-sil="7164"></div>
+                    <div id="polyglotRecycledListHost" class="polyglot-recycled-window ek-mt-xs"
+                        data-polyglot-window="true" role="listbox" aria-label="Filtered languages window"></div>
                     <section id="corpusGeoFilterDetails" class="tech-details ek-mt-xs">
                         <strong class="ek-title-sm" data-i18n-autonym="true">Selector por región y país (7,164
                             lenguas)</strong>
@@ -387,6 +396,7 @@
                             </select>
                         </div>
                     </section>
+                    </div>
                 </div>
             </div>
         </details>
@@ -401,10 +411,6 @@
                 <span id="epistemicStatusSeal" class="uls-badge" data-seal="seal.loading"
                     data-i18n="seal.loading">Loading verified passage…</span>
             </div>
-            <button type="button" id="btnQuickPrintStage" class="uls-chip ek-foveal-print-btn"
-                data-quick-print-role="1-tap-passage" aria-label="Imprimir pasaje en 1 toque (4 hojas PDF)"
-                data-i18n="mostrador.quick_print_cta" data-i18n-attr="aria-label:mostrador.quick_print_cta_aria">🖨️
-                Imprimir pasaje (4 hojas)</button>
         </div>
         <!-- Step 1: Compact Single-Row Spatial Navigation Above the Fold (y <= 116px) -->
         <div id="bibleSpatialNav" class="spatial-nav-bar" aria-label="Book and Chapter Navigator">

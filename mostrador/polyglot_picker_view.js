@@ -142,6 +142,27 @@ export function bindCorpusPolyglotAndUiPreferences({
   const langFilterInput = getEl("quickLangFilterInput", targetDoc);
   const windowHost = getEl("polyglotRecycledListHost", targetDoc);
   const bridgeSelect = getEl("bibleBridgeLangSelect", targetDoc);
+  const tabBiblesBtn = getEl("btnCorpusTabBibles", targetDoc);
+  const tabExplorerBtn = getEl("btnCorpusTabExplorer", targetDoc);
+  const panelBibles = getEl("corpusPanelBibles", targetDoc);
+  const panelExplorer = getEl("corpusPanelExplorer", targetDoc);
+  const setCorpusPickerTab = (tab = "bibles") => {
+    const isExplorer = tab === "explorer";
+    if (panelBibles) panelBibles.hidden = isExplorer;
+    if (panelExplorer) panelExplorer.hidden = !isExplorer;
+    tabBiblesBtn?.setAttribute?.("aria-selected", isExplorer ? "false" : "true");
+    tabExplorerBtn?.setAttribute?.("aria-selected", isExplorer ? "true" : "false");
+    state.activeCorpusTab = isExplorer ? "explorer" : "bibles";
+  };
+  if (tabBiblesBtn && typeof tabBiblesBtn.addEventListener === "function") {
+    tabBiblesBtn.addEventListener("click", () => setCorpusPickerTab("bibles"));
+  }
+  if (tabExplorerBtn && typeof tabExplorerBtn.addEventListener === "function") {
+    tabExplorerBtn.addEventListener("click", () => {
+      setCorpusPickerTab("explorer");
+      setTimeout(() => { try { langFilterInput?.focus?.({ preventScroll: true }); } catch { } }, 0);
+    });
+  }
   if (bridgeSelect) {
     localizeBridgeLangSelectLabels(bridgeSelect, state.uiLocale || "es");
   }
@@ -305,6 +326,7 @@ export function bindCorpusPolyglotAndUiPreferences({
 
   if (langFilterInput && typeof langFilterInput.addEventListener === "function") {
     langFilterInput.addEventListener("input", async (e) => {
+      setCorpusPickerTab("explorer");
       await projectOnDemandSilWindow(e?.target?.value ?? langFilterInput.value ?? "");
     });
   }

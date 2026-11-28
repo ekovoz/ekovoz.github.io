@@ -308,7 +308,7 @@ test_name = "d3_b_plus_philology_rosetta_index_consonantal_root_lxx_mt_bridge_an
 exposure_tier = "drawer-secondary"
 [capability.multi_signature_4n_imposition_and_80_blocks]
 surface   = "public-ui"
-selector  = "#btnQuickPrintStage"
+selector  = "#btnOpenPrintEditionsSheet"
 module    = "mostrador/dosis.js"
 handler   = "computeMultiSignatureImposition"
 test_file = "mostrador/dosis.test.mjs"
@@ -869,7 +869,7 @@ surface       = "public-ui"
 exposure_tier = "primary-stage"
 release_stage = "public"
 intent        = "print"
-selector      = "#btnQuickPrintStage"
+selector      = "#btnOpenPrintEditionsSheet"
 module        = "mostrador/print_stage_ribbon.js"
 handler       = "resolvePrintStageDescriptorsForTier"
 test_file     = "tests/web/print_first_stage_r13.test.mjs"
@@ -917,7 +917,7 @@ selector      = "#polyglotRecycledListHost"
 module        = "mostrador/polyglot_picker_view.js"
 handler       = "renderPolyglotRecycledWindow"
 test_file     = "tests/web/polyglot_7k_and_workshop_v3.test.mjs"
-test_name     = "SLICE_V3HIG_10: stage_dom_bindings < 840 LOC, uiLocale en #appearancePopover y ventana reciclada <= 36 filas"
+test_name     = "SLICE_V3HIG_10: stage_dom_bindings < 840 LOC, uiLocale en top bar y ventana reciclada <= 36 filas"
 
 [capability.study_verse_viewmodel]
 surface         = "public-ui"
@@ -1067,8 +1067,18 @@ editorial_audit_unblocked = "#editorialAuditStatusPanel"
 felices_compiled_languages = 18
 optical_relay_rx_gated = "#btnOpticalRelayTx"
 workshop_scope_toggle = "#btnWorkshopLadderScopePassage"
-sw_cache_version = "ekovoz-mostrador-v57"
+sw_cache_version = "ekovoz-mostrador-v58"
 pro_boveda_study_accordion_slot = "#proBovedaStudyAccordionSlot"
 master_census_board_helper = "renderMasterCensusBoardSectionHtml"
 declarative_visibility_slots = "EXCLUSIVE_VISIBILITY_SLOTS"
 r11_draft_works = ["evangelios"]
+wave_b_root_remediation = [
+  "SLICE-EKO-RC17_pdf_outlines_and_knuth_plass",
+  "SLICE-EKO-RC18_print_page_contour_preview",
+  "SLICE-EKO-RC19_study_bicanonical_and_diachronic",
+  "SLICE-EKO-RC20_oral_audio_crc_and_qrbeam_progress",
+  "SLICE-EKO-RC21_social_framing_and_cli_ci_reference",
+  "SLICE-EKO-RC22_felices_cover_and_48px_ergos_fixes",
+  "SLICE-EKO-RC23_quine_progressive_idb_vault",
+  "SLICE-EKO-RC24_sw_parnas_seams_v58",
+]

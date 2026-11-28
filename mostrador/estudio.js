@@ -432,7 +432,7 @@ export function renderStudy14ColDrawerHtml(matrixShard, options = {}) {
         `<div data-col="c12_gloss_es" class="leipzig-primary-gloss">${escapeHtml(r.c12_gloss_es)}</div>` +
         `<div data-col="c13_nsm_65" class="leipzig-nsm-gloss"${formatNonEmptyCoreMeaning(nsmDisplay, uiLocale) ? "" : " hidden"}>${escapeHtml(formatNonEmptyCoreMeaning(nsmDisplay, uiLocale))}</div>` +
         `<div data-col="c14_target_gloss" class="leipzig-target-gloss"${suppressVisibleTarget ? " hidden" : ""}>${isEn ? "Target" : "Meta"}: ${escapeHtml(rawTarget)}</div>` +
-        `<details class="tech-details leipzig-tech-morph">` +
+        `<details class="tech-details leipzig-tech-morph" data-contextual-details="true">` +
         `<summary>${isEn ? "Linguistic codes" : "Códigos lingüísticos"} (${escapeHtml(r.c07_strong_id)})</summary>` +
         `<div class="leipzig-codes-row">` +
         `<code>${escapeHtml(r.c03_source_corpus)} · ${escapeHtml(maculaFrame)} · ord ${escapeHtml(r.c01_ordinal_31102)}</code> ` +

@@ -274,6 +274,17 @@ export function renderEditorialProvenanceCardHtml(provenance = null, uiLocale = 
     llmsNavHtml +
     `<table id="distMerkleRootsTable" class="ek-table-compact ek-mt-xs"><thead><tr><th>${isEn ? "Surface" : "Superficie"}</th><th>Merkle Root</th></tr></thead><tbody>${merkleRowsHtml}</tbody></table>` +
     renderMasterCensusBoardSectionHtml(masterCensus, uiLocale) +
+    `<section id="cliCiOnlyCommandsReference" class="ek-subcard ek-mt-xs" data-technical-plane="true" data-cli-ci-count="7">` +
+    `<strong>⌨️ ${isEn ? "Maintainer CLI/CI Commands (Reproducible Build)" : "Comandos CLI/CI de Mantenedor (Compilación Reproducible)"}</strong>` +
+    `<ul class="ek-list-compact ek-mt-xs">` +
+    `<li><code>FetchSources</code> · <code>ekovoz-cli fetch-sources</code></li>` +
+    `<li><code>BuildMatrix</code> · <code>ekovoz-cli build-matrix</code></li>` +
+    `<li><code>NewLang</code> · <code>ekovoz-cli new-lang &lt;iso&gt;</code></li>` +
+    `<li><code>NewWork</code> · <code>ekovoz-cli new-work &lt;slug&gt;</code></li>` +
+    `<li><code>VerifyCanon</code> · <code>cargo test --workspace -j 1</code></li>` +
+    `<li><code>CompleteBible</code> · <code>ekovoz-cli compile --work biblia --lang all</code></li>` +
+    `<li><code>SyncJsConstants</code> · <code>cargo run -p xtask -j 1 -- build-web</code></li>` +
+    `</ul></section>` +
     `</details>` +
     `</div>`
   );

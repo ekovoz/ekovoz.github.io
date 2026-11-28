@@ -276,24 +276,6 @@ export function bindChromeAndPlaneEvents({
     });
   }
 
-  const quickPrintBtn = getEl("btnQuickPrintStage", targetDoc);
-  if (quickPrintBtn && typeof quickPrintBtn.addEventListener === "function") {
-    quickPrintBtn.addEventListener("click", async () => {
-      closeAppearancePopover();
-      state.activeDoseScope = "1";
-      const scopeSel = getEl("doseScopeSelect", targetDoc);
-      if (scopeSel) scopeSel.value = "1";
-      if (typeof transitionSheet === "function") {
-        await transitionSheet("print", targetDoc, { fromUser: true });
-      }
-      const btnDose1 = getEl("btnDose1Sheets", targetDoc);
-      if (btnDose1 && typeof btnDose1.focus === "function") {
-        try { btnDose1.focus({ preventScroll: true }); } catch { }
-      }
-      onQuickPrintOpen?.();
-    });
-  }
-
   const aboutBtn = getEl("btnOpenAboutGuidesVerify", targetDoc);
   const aboutDialog = getEl("aboutGuidesVerifyDialog", targetDoc);
   const aboutCloseBtn = getEl("btnCloseAboutGuidesDialog", targetDoc);

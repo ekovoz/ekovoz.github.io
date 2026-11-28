@@ -155,8 +155,17 @@ export function renderAndBindContextualTypographyAndFontsVault({
     vaultHost.setAttribute?.("data-fonts-vault-count", String(countFonts));
     vaultHost.innerHTML =
       `<div class="ek-row-between ek-card-muted ek-mt-xs">` +
-      `<span class="ek-meta">🔤 ${isEn ? `Script font ready · ${countFonts} scripts ready for offline PDF` : `${countFonts} escrituras listas para impresión PDF`}</span>` +
+      `<span class="ek-meta">🔤 ${isEn ? `${countFonts} scripts ready for offline PDF` : `${countFonts} escrituras listas para impresión PDF`}</span>` +
+      `<button type="button" id="btnPrintFontsOpenVault" class="uls-chip" data-open-vault-tab="mesh">🗄️ ${isEn ? "Vault" : "Bóveda"}</button>` +
       `</div>`;
+    const vaultBtn = typeof getEl === "function" ? getEl("btnPrintFontsOpenVault", targetDoc) : null;
+    if (vaultBtn && typeof vaultBtn.addEventListener === "function" && !vaultBtn._vaultLinkBound) {
+      vaultBtn._vaultLinkBound = true;
+      vaultBtn.addEventListener("click", () => {
+        getEl("btnOpenShareAndAuditSheet", targetDoc)?.click?.();
+        getEl("btnDosisSubtabMesh", targetDoc)?.click?.();
+      });
+    }
   }
 }
 
@@ -281,7 +290,22 @@ export function renderAndBindPhotocopyPanel({
   });
   if (typeof graphicsHost.addEventListener === "function" && !graphicsHost._photocopyBound) {
     graphicsHost._photocopyBound = true;
+    graphicsHost.addEventListener("change", (e) => {
+      if (e?.target?.id === "inputPhotocopyGenSlider") {
+        state.photocopyGen = Number(e.target.value) || 0;
+        renderPrintDrawerPanelsSyncInDrawer?.(ctx);
+      }
+    });
     graphicsHost.addEventListener("click", (e) => {
+      if (e?.target?.id === "btnTogglePhotocopyLevels" || e?.target?.closest?.("#btnTogglePhotocopyLevels")) {
+        const panel = getEl("photocopyAdvancedDetails", targetDoc);
+        const btn = getEl("btnTogglePhotocopyLevels", targetDoc);
+        if (panel) {
+          panel.hidden = !panel.hidden;
+          btn?.setAttribute?.("aria-expanded", panel.hidden ? "false" : "true");
+        }
+        return;
+      }
       const genBtn = e?.target?.closest
         ? e.target.closest("[data-photocopy-gen]")
         : e?.target?.getAttribute?.("data-photocopy-gen")

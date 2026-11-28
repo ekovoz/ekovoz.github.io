@@ -224,6 +224,8 @@ export async function hydrateImproveDrawerPanel(ctx = {}) {
                 activeTier3aPair: state.activeTier3aPair || "",
                 previewWorks: Array.isArray(state.previewWorks) ? state.previewWorks : [],
                 elicitSessionIndex: state.elicitSessionIndex || 0,
+                surfacePlane: state.surfacePlane || "editorial",
+                workspaceMode: state.workspaceMode || "reader",
             });
         }
 
@@ -357,6 +359,8 @@ export function bindImproveFormControlsInDrawer(mod, ctx = {}) {
                 externalAuditResult: state.externalAuditResult || null,
                 activeTier3aPair: state.activeTier3aPair || "",
                 ladderScope: state.workshopLadderScope || "passage",
+                surfacePlane: state.surfacePlane || "editorial",
+                workspaceMode: state.workspaceMode || "reader",
             });
         }
         state.refreshWorkshopAuditSubtab?.();

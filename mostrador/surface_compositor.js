@@ -166,9 +166,8 @@ export function projectSurfaceLayoutFromState(state = {}, rootDoc, getEl) {
   projectStoreAttributesToDom(state, rootDoc);
   projectAllSubtabsFromState(state, rootDoc);
   const techPlaneOn = resolveWorkspaceMode(state, rootDoc?.location?.search || "") === "studio" || isTechnicalPlaneEnabled(state, rootDoc?.location?.search || "");
-  const syncDetailsPlane = (selector, forceUnhide) => {
+  const syncDetailsPlane = (selector) => {
     for (const det of Array.from(rootDoc.querySelectorAll(selector))) {
-      if (forceUnhide) det.hidden = false;
       if (det.tagName !== "DETAILS") continue;
       if (techPlaneOn && !det.open) {
         det.open = true;
@@ -180,8 +179,8 @@ export function projectSurfaceLayoutFromState(state = {}, rootDoc, getEl) {
     }
   };
   if (typeof rootDoc.querySelectorAll === "function") {
-    syncDetailsPlane('[data-technical-plane="true"]', true);
-    syncDetailsPlane('details[data-contextual-details="true"]', false);
+    syncDetailsPlane('[data-technical-plane="true"]');
+    syncDetailsPlane('details[data-contextual-details="true"]');
   }
 
   const showEvangelios = isWorkVisible("evangelios", state);

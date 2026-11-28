@@ -5,7 +5,7 @@
 // fallback /index.html estricto a mode=navigate, 0 respuestas opaque).
 // ============================================================================
 
-export const CACHE_NAME = "ekovoz-mostrador-v57";
+export const CACHE_NAME = "ekovoz-mostrador-v58";
 export const OPT_IN_META_KEY = "/__ekovoz_meta/offline-opt-in";
 
 export const SUPPORTED_BOOK_NAMES_LANGS = new Set([
@@ -86,6 +86,9 @@ export const SHELL_CORE_ASSETS = [
   "/mostrador/optical_grid_codec.js",
   "/mostrador/optical_wasm_bridge.js",
   "/mostrador/oral_portico_wasm.js",
+  "/mostrador/oral_audio_crc_verifier.js",
+  "/mostrador/print_page_contour_preview.js",
+  "/mostrador/study_bicanonical_and_diachronic.js",
   "/mostrador/estudio.js",
   "/mostrador/estudio_rosetta_and_realia.js",
   "/mostrador/estudio_schemas.js",

@@ -6,6 +6,10 @@
 
 import { escapeHtml } from "./bridge_and_chapter.js";
 import { STATUS, computeProsodyAndSyllableAlignmentInWasm } from "./data_layer.js";
+import {
+  bindOralAudioCrcVerifierEvents,
+  renderOralAudioCrcVerifierHtml,
+} from "./oral_audio_crc_verifier.js";
 
 function stopOralPorticoAnimationLoop(state) {
   if (!state) return;
@@ -211,7 +215,12 @@ export function renderOralPorticoWasmConsole({
       `<span class="prosody-syllable-context" data-prosodic-cursor="true">${isEn ? `Cadence (${prosody.activeSyllableIndex + 1}/${prosody.syllables.length}): «${escapeHtml(prosody.activeSyllable)}»` : `Cadencia (${prosody.activeSyllableIndex + 1}/${prosody.syllables.length}): «${escapeHtml(prosody.activeSyllable)}»`}</span> · ` +
       `${syllablesHtml}</div>`
       : "") +
+    renderOralAudioCrcVerifierHtml({
+      uiLocale: state.uiLocale || state.lang || "es",
+      lastResult: state.lastOralAudioCrcResult || null,
+    }) +
     `</div>`;
+  bindOralAudioCrcVerifierEvents({ containerEl: oralBanner, dataLayer, state, getEl, targetDoc });
 
   oralBanner._porticoMountKey = mountKey;
   oralBanner._porticoSyllableSpans =

@@ -22,6 +22,7 @@ import { parseBiblicalCoordinateReference } from "./reference.js";
 import { hydrateOnomasticonAndUbsPanels, renderFormulaicParallelsCardHtml } from "./study_onomasticon_and_ubs.js";
 import { buildRosettaMultiPivotCompareHtml, summarizeAnnotationIndexTotals, summarizeDiachronicAndBlindCalibration } from "./study_verse_viewmodel.js";
 import { renderModernizeRegisterDiffHtml } from "./workshop_elicit_and_cldf.js";
+import { renderStudyBicanonicalAndDiachronicPanelHtml } from "./study_bicanonical_and_diachronic.js";
 
 export const HAREL_STUDY_SUBTABS = ["words", "rosetta", "calibrate"];
 
@@ -37,8 +38,8 @@ function renderProBovedaStudyAccordionHtml(uiLocale = "es") {
   const isEn = String(uiLocale || "es").trim().toLowerCase().startsWith("en");
   return (
     `<details id="proBovedaCalibrationDetails" class="r9-stratum-accordion ek-mt-sm" data-pro-boveda="true" data-contextual-details="true">` +
-    `<summary>🔬 ${isEn ? "Vault & Verification · I+D Calibration & Corpus Metrics (chrF++, AoA, MDD)" : "Bóveda y verificación · Calibración I+D y Métricas (chrF++, AoA, MDD)"}</summary>` +
-    `<div id="proBovedaStudyCalibSlot" class="ek-mt-xs"><p class="ek-meta">${isEn ? "Open to load linguistic benchmark matrices on demand." : "Abre para cargar matrices de calibración I+D bajo demanda."}</p></div>` +
+    `<summary>🔬 ${isEn ? "Vault & Verification · Quality & Corpus Metrics" : "Bóveda y verificación · Calibración y métricas editoriales"}</summary>` +
+    `<div id="proBovedaStudyCalibSlot" class="ek-mt-xs"><p class="ek-meta">${isEn ? "Open to load linguistic benchmark matrices on demand (chrF++, AoA, MDD)." : "Abre para cargar matrices de calibración I+D bajo demanda (chrF++, AoA, MDD)."}</p></div>` +
     `</details>`
   );
 }
@@ -864,7 +865,14 @@ export async function hydrateStudyDrawerPanel(ctx = {}) {
         uiLocale: state.uiLocale || "es",
       }) +
       `</section>`;
-    diachronicAuditPanel.innerHTML = `${modernizeStudyHtml}${diachronicAuditPanel.innerHTML || ""}${unifiedCtxHtml}${corpusMetricsHtml}`;
+    const bicanonDiaHtml = renderStudyBicanonicalAndDiachronicPanelHtml({
+      book: state.book || "GEN",
+      chapter: state.chapter || 1,
+      verse: state.verse || 1,
+      verseText: chapterVerses[activeV] || "",
+      uiLocale: state.uiLocale || "es",
+    });
+    diachronicAuditPanel.innerHTML = `${modernizeStudyHtml}${diachronicAuditPanel.innerHTML || ""}${bicanonDiaHtml}${unifiedCtxHtml}${corpusMetricsHtml}`;
     const diaSearchInp = getEl("diachronicSubstitutionsSearchInput", targetDoc);
     const diaTierSel = getEl("diachronicTierFilterSelect", targetDoc);
     const refreshDiachronicRulesList = () => {

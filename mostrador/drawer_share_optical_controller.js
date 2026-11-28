@@ -45,6 +45,26 @@ h = Math.imul(h, 0x01000193) >>> 0;
 return h.toString(16).padStart(8, "0");
 }
 
+export function formatHumanQrBeamProgress({
+receivedBlocks = 0,
+totalBlocks = 1,
+fps = "6.67",
+uiLocale = "es",
+} = {}) {
+const isEn = String(uiLocale || "es").trim().toLowerCase().startsWith("en");
+const safeTotal = Math.max(1, Number(totalBlocks) || 1);
+const safeReceived = Math.max(0, Math.min(safeTotal, Number(receivedBlocks) || 0));
+const pct = Math.min(100, Math.round((safeReceived / safeTotal) * 100));
+const isFast = Number(fps) >= 9.5;
+const speedLabel = isFast
+? (isEn ? "Fast transfer" : "Transferencia rápida")
+: (isEn ? "Safe mode (low-light)" : "Modo seguro (poca luz)");
+const label = isEn
+? `${speedLabel} · Block ${safeReceived} of ${safeTotal} (${pct}%)`
+: `${speedLabel} · Bloque ${safeReceived} de ${safeTotal} (${pct}%)`;
+return { pct, receivedBlocks: safeReceived, totalBlocks: safeTotal, speedLabel, label };
+}
+
 /**
 * Construye una trama óptica `ECO-GRID 29×29`:
 * - `0 <= seq < K`: pase sistemático `ECO1` (`degree = 1`, `indices = [seq]`).
@@ -258,6 +278,12 @@ if (activeQrMode !== "receive") rxPanelEl.innerHTML = "";
 }
 
 const initialCaption = formatOpticalStreamCaption({ currentFrame: grid.seq + 1, totalFrames: encoder.K, bytes: packetBytes.byteLength, fps: activeCadenceKey, parityDropped: grid.parityBit }, isEn ? "en" : "es");
+const humanProgress = formatHumanQrBeamProgress({
+receivedBlocks: Math.min(encoder.K, grid.seq + 1),
+totalBlocks: encoder.K,
+fps: activeCadenceKey,
+uiLocale: isEn ? "en" : "es",
+});
 qrPanel.innerHTML =
 `<div id="qrBeamStreamRoot" class="mostrador-qrbeam-stream" data-fps="${activeCadenceKey}" data-nyquist-safe="${Boolean(nyquistCheck?.valid ?? nyquistCheck?.nyquistSafe)}" data-nyquist-channel-limit="4096" data-lt-peeling-decoded="${ltComplete}" data-eco1-bytes="${packetBytes.byteLength}" data-packet-kind="${txFrame.packetKind}" data-systematic-phase="${isSystematicPhase}" data-ecom-frame="${isEndOfStreamEcom}" data-frame-interval-ms="${cadencePreset.intervalMs}" data-total-blocks="${encoder.K}" data-seq="${grid.seq}" data-degree="${grid.degree}" data-parity="${grid.parityBit}" data-qr-mode="${activeQrMode}">` +
 `<div class="subtabs-bar ek-mb-sm" role="tablist" aria-label="${isEn ? "Optical transfer mode" : "Modo de transferencia óptica"}">` +
@@ -270,10 +296,11 @@ qrPanel.innerHTML =
 `<button type="button" id="btnToggleQrBeamAutoPlay" class="uls-chip qrbeam-btn">${isPlaying ? (isEn ? "⏸ Pause Beam" : "⏸ Pausar Emisión") : isEn ? "▶ Auto Beam" : "▶ Emisión Continua"}</button>` +
 `<button type="button" id="btnNextQrBeamFrame" class="uls-chip qrbeam-btn">⏭ ${isEn ? "Next Frame" : "Siguiente cuadro"} (#${grid.seq + 1})</button>` +
 `</div></div>` +
+`<div id="opticalHumanProgressWrap" class="ek-mt-xs ek-mb-xs"${humanProgress.pct > 0 ? "" : " hidden"}><progress id="opticalRxHumanProgress" max="100" value="${humanProgress.pct}"${humanProgress.pct > 0 ? "" : " hidden"}>${humanProgress.pct}%</progress> <span id="opticalHumanProgressLabel" class="ek-meta">${escapeHtml(humanProgress.label)}</span></div>` +
 `<p id="opticalNyquistChannelHint" class="ek-meta ek-m-0 ek-mb-sm" data-optical-max-kb="4">${isEn ? "Physical QR limit <= 4–16 KB (1–3 chapters / verses). For the full Bible (~1 MB), export portable HTML or USB package." : "Límite físico QR <= 4–16 KB (pasajes y capítulos). Para Biblia completa (~1 MB), usa HTML portable o paquete USB."}</p>` +
 `<div class="ek-row-gap-lg">` +
 `<div id="qrBeamMatrixHost" class="qrbeam-matrix-host"><span id="qrBeamMatrixSvgSlot">${svgMarkup}</span><canvas id="qrBeamMatrixCanvas" width="174" height="174" aria-hidden="true" hidden></canvas></div>` +
-`<p class="ek-meta ek-m-0">${escapeHtml(phaseLabel)} · ${isEn ? "Point another camera to receive this passage without internet." : "Apunta la cámara de otro teléfono para recibir este pasaje sin internet."}</p>` +
+`<p class="ek-meta ek-m-0">${escapeHtml(phaseLabel)} · ${isEn ? "Point another camera to receive this pasaje sin internet." : "Apunta la cámara de otro teléfono para recibir este pasaje sin internet."}</p>` +
 `<p class="qrbeam-desc" data-advanced-audit="true" data-technical-plane="true">${isEn ? `Optical Grid 29×29 (${packetBytes.byteLength} B ≤ 66 B): Pass (0..${encoder.K - 1}) + integrity digest + Fountain repair.` : `Matriz óptica 29×29 (${packetBytes.byteLength} B ≤ 66 B): Bloques (0..${encoder.K - 1}) + verificación + reparación.`}</p>` +
 `</div></div>`;
 
