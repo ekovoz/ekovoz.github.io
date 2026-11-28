@@ -17,41 +17,41 @@ export {
 
 export const MASORETIC_AND_GOSPEL_PERICOPE_MAP = {
   "GEN.1": [
-    { beforeVerse: 1, kind: "petuhah", marker: "פ", title: "Proemio Cósmico y Día Primero (Luz)" },
-    { beforeVerse: 6, kind: "petuhah", marker: "פ", title: "Día Segundo (Expansión / Raqia)" },
-    { beforeVerse: 9, kind: "petuhah", marker: "פ", title: "Día Tercero (Mares, Tierra y Semilla)" },
-    { beforeVerse: 14, kind: "petuhah", marker: "פ", title: "Día Cuarto (Lumbreras y Estaciones)" },
-    { beforeVerse: 20, kind: "petuhah", marker: "פ", title: "Día Quinto (Aves y Grandes Cetáceos)" },
-    { beforeVerse: 24, kind: "petuhah", marker: "פ", title: "Día Sexto (Imagen de Dios / Tselem)" },
+    { beforeVerse: 1, kind: "petuhah", marker: "פ", title: "" },
+    { beforeVerse: 6, kind: "petuhah", marker: "פ", title: "" },
+    { beforeVerse: 9, kind: "petuhah", marker: "פ", title: "" },
+    { beforeVerse: 14, kind: "petuhah", marker: "פ", title: "" },
+    { beforeVerse: 20, kind: "petuhah", marker: "פ", title: "" },
+    { beforeVerse: 24, kind: "petuhah", marker: "פ", title: "" },
   ],
   "PSA.23": [
-    { beforeVerse: 1, kind: "petuhah", marker: "פ", title: "YHWH el Pastor en Dehesas de Paz" },
-    { beforeVerse: 4, kind: "setumah", marker: "ס", title: "Travesía por el Valle de Sombra de Muerte" },
-    { beforeVerse: 5, kind: "setumah", marker: "ס", title: "El Banquete del Anfitrión y la Casa de YHWH" },
+    { beforeVerse: 1, kind: "petuhah", marker: "פ", title: "" },
+    { beforeVerse: 4, kind: "setumah", marker: "ס", title: "" },
+    { beforeVerse: 5, kind: "setumah", marker: "ס", title: "" },
   ],
   "ISA.53": [
-    { beforeVerse: 1, kind: "setumah", marker: "ס", title: "El Renuevo Despreciado y Varón de Dolores" },
-    { beforeVerse: 4, kind: "petuhah", marker: "פ", title: "Sustitución Penal: Cordero Silencioso" },
-    { beforeVerse: 10, kind: "setumah", marker: "ס", title: "Exaltación del Siervo Justo" },
+    { beforeVerse: 1, kind: "setumah", marker: "ס", title: "" },
+    { beforeVerse: 4, kind: "petuhah", marker: "פ", title: "" },
+    { beforeVerse: 10, kind: "setumah", marker: "ס", title: "" },
   ],
   "MAT.5": [
-    { beforeVerse: 1, kind: "petuhah", marker: "פ", title: "Ascenso al Monte y Apertura de Boca" },
-    { beforeVerse: 3, kind: "setumah", marker: "ס", title: "Las Nueve Dichas del Reino (Makarioi)" },
-    { beforeVerse: 13, kind: "petuhah", marker: "פ", title: "Sal de la Tierra y Luz del Mundo" },
-    { beforeVerse: 17, kind: "setumah", marker: "ס", title: "Plenitud de la Torá y los Profetas" },
+    { beforeVerse: 1, kind: "petuhah", marker: "פ", title: "" },
+    { beforeVerse: 3, kind: "setumah", marker: "ס", title: "" },
+    { beforeVerse: 13, kind: "petuhah", marker: "פ", title: "" },
+    { beforeVerse: 17, kind: "setumah", marker: "ס", title: "" },
   ],
   "JHN.1": [
-    { beforeVerse: 1, kind: "petuhah", marker: "פ", title: "Prólogo del Logos Eterno (vv. 1–5)" },
-    { beforeVerse: 6, kind: "setumah", marker: "ס", title: "Testimonio de Juan sobre la Luz (vv. 6–13)" },
-    { beforeVerse: 14, kind: "petuhah", marker: "פ", title: "Encarnación: Habitar en Tienda / Shekinah (vv. 14–18)" },
-    { beforeVerse: 19, kind: "petuhah", marker: "פ", title: "La Voz en el Desierto y el Cordero de Dios (vv. 19–34)" },
-    { beforeVerse: 35, kind: "setumah", marker: "ס", title: "Los Primeros Discípulos y la Escalera de Jacob (vv. 35–51)" },
+    { beforeVerse: 1, kind: "petuhah", marker: "פ", title: "" },
+    { beforeVerse: 6, kind: "setumah", marker: "ס", title: "" },
+    { beforeVerse: 14, kind: "petuhah", marker: "פ", title: "" },
+    { beforeVerse: 19, kind: "petuhah", marker: "פ", title: "" },
+    { beforeVerse: 35, kind: "setumah", marker: "ס", title: "" },
   ],
   "ROM.1": [
-    { beforeVerse: 1, kind: "petuhah", marker: "פ", title: "Saludo Apostólico y Evangelio Prometido (vv. 1–7)" },
-    { beforeVerse: 8, kind: "setumah", marker: "ס", title: "Acción de Gracias y Anhelo por Roma (vv. 8–15)" },
-    { beforeVerse: 16, kind: "petuhah", marker: "פ", title: "Tesis Central: Justicia de Dios por la Fe (vv. 16–17)" },
-    { beforeVerse: 18, kind: "petuhah", marker: "פ", title: "Revelación en la Creación y Condición Humana (vv. 18–32)" },
+    { beforeVerse: 1, kind: "petuhah", marker: "פ", title: "" },
+    { beforeVerse: 8, kind: "setumah", marker: "ס", title: "" },
+    { beforeVerse: 16, kind: "petuhah", marker: "פ", title: "" },
+    { beforeVerse: 18, kind: "petuhah", marker: "פ", title: "" },
   ],
 };
 
@@ -139,7 +139,7 @@ export function hydratePericopesAndGlosses(artifact) {
             ? "setumah"
             : "petuhah",
           marker: item.marker || "פ",
-          title: item.title || "",
+          title: "",
           synopticParallel: item.synopticParallel || "",
         }));
       }
@@ -668,11 +668,6 @@ export function renderChapterPericopesRibbonHtml(bookCode = "GEN", chapterNum = 
   const cleanBook = String(bookCode || "GEN").toUpperCase();
   const cleanChap = Math.max(1, Number(chapterNum) || 1);
   const key = `${cleanBook}.${cleanChap}`;
-  const fallbackTitle = formatCopyForSurfacePlane(
-    `${cleanBook} ${cleanChap}:1`,
-    `[פ Petuhah] ${cleanBook} ${cleanChap}:1`,
-    state,
-  );
   const rawList =
     Array.isArray(MASORETIC_AND_GOSPEL_PERICOPE_MAP[key]) &&
       MASORETIC_AND_GOSPEL_PERICOPE_MAP[key].length > 0
@@ -683,17 +678,16 @@ export function renderChapterPericopesRibbonHtml(bookCode = "GEN", chapterNum = 
           startVerse: 1,
           kind: "petuhah",
           marker: resolveCanonicalPericopeMarker(cleanBook, "petuhah"),
-          title: fallbackTitle,
+          title: "",
           synopticParallel: `${cleanBook}.${cleanChap}.1`,
         },
       ];
 
   return rawList
-    .map((pb, idx) => {
+    .map((pb) => {
       const vStart = Number(pb.beforeVerse ?? pb.startVerse ?? 1) || 1;
       const marker = resolveCanonicalPericopeMarker(cleanBook, pb.kind, pb.marker);
-      const rawTitle = String(pb.title || `Perícopa ${idx + 1} (v.${vStart})`);
-      const title = stripEditorialPericopePrefix(rawTitle);
+      const coordinateLabel = `${cleanBook} ${cleanChap}:${vStart}`;
       const synoptic = String(pb.synopticParallel || `${cleanBook}.${cleanChap}.${vStart}`);
       return (
         `<button type="button" class="uls-chip chapter-pericope-ribbon-chip" ` +
@@ -701,7 +695,7 @@ export function renderChapterPericopesRibbonHtml(bookCode = "GEN", chapterNum = 
         `data-synoptic-jump="${escapeHtml(synoptic)}" ` +
         `data-pericope-kind="${escapeHtml(pb.kind || "petuhah")}" ` +
         `data-ui-lang="${escapeHtml(uiLang)}">` +
-        `<strong>${escapeHtml(marker)} v.${vStart}</strong> · <span>${escapeHtml(title)}</span>` +
+        `<strong>${escapeHtml(marker)} v.${vStart}</strong> · <span>${escapeHtml(coordinateLabel)}</span>` +
         `</button>`
       );
     })

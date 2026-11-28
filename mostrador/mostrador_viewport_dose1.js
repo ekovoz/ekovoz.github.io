@@ -68,13 +68,9 @@ export function renderMostradorViewportFromState({
 
   const pericopesRibbon = getEl("bibleChapterPericopesRibbon", targetDoc);
   if (pericopesRibbon) {
-    const uiL = String(state.uiLocale || state.lang || "es").toLowerCase();
     const rawRibbonHtml = renderChapterPericopesRibbonHtml(state.book, state.chapter, state.uiLocale || state.lang || "es");
-    const ribbonHtml = String(rawRibbonHtml || "")
-      .replace(/<strong>\u05E4 v\.(\d+)<\/strong>/g, (_, vn) => `<strong>${uiL.startsWith("en") ? "Major pause (פ)" : "Pausa mayor · Petuhah פ"} · v.${vn}</strong>`)
-      .replace(/<strong>\u05E1 v\.(\d+)<\/strong>/g, (_, vn) => `<strong>${uiL.startsWith("en") ? "Pause (ס)" : "Pausa · Setumah ס"} · v.${vn}</strong>`);
-    pericopesRibbon.innerHTML = ribbonHtml;
-    pericopesRibbon.hidden = !String(ribbonHtml || "").trim();
+    pericopesRibbon.innerHTML = String(rawRibbonHtml || "");
+    pericopesRibbon.hidden = true;
   }
 
   const packedBookTiers =
