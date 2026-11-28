@@ -938,7 +938,7 @@ export function resolveLocalizedBookMeta(bookNamesDoc, bookCode, fallbackMeta = 
     const nsm = String(
       found.nsm_subtitle ||
       CANONICAL_NSM_BOOK_SUBTITLES[code] ||
-      `Libro de ${name} (${chapters} capítulos en palabras sencillas NSM-65)`,
+      `Libro de ${name} (${chapters} capítulos)`,
     );
     return {
       code,
@@ -953,7 +953,7 @@ export function resolveLocalizedBookMeta(bookNamesDoc, bookCode, fallbackMeta = 
   const fallbackName = String(fallbackMeta?.es || fallbackMeta?.en || code);
   const fallbackNsm =
     CANONICAL_NSM_BOOK_SUBTITLES[code] ||
-    `Libro de ${fallbackName} en palabras sencillas NSM-65`;
+    `Libro de ${fallbackName}`;
   return {
     code,
     ordinal: fallbackMeta?.ord || 1,

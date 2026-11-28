@@ -23,6 +23,41 @@ import { APPEARANCE_FONT_BINDINGS, APPEARANCE_SCALE_BINDINGS, APPEARANCE_THEME_B
 import { createNativeDialogController, setActiveWork } from "./state_store.js";
 
 /**
+ * Renderiza el paso actual de la Brújula dentro de `#bibleCoordinateCompassGrid`:
+ * Paso 1 = 66 libros; Paso 2 = cuadrícula táctil de capítulos `1..N` al seleccionar un libro (>1 cap.).
+ */
+export function renderCompassBooksOrChaptersGridHtml({ state = {}, resolveLocalizedBookMeta = null } = {}) {
+  const isEn = String(state.uiLocale || state.lang || "es").trim().toLowerCase().startsWith("en");
+  const selectedCode = state.compassSelectedBook ? String(state.compassSelectedBook).trim().toUpperCase() : "";
+  const bookMeta = selectedCode ? ROSETTA_66_BOOKS.find((b) => b.code === selectedCode) : null;
+  if (bookMeta) {
+    const locMeta = typeof resolveLocalizedBookMeta === "function" ? resolveLocalizedBookMeta(state.localizedBookNames, bookMeta.code, bookMeta) : null;
+    const bookTitle = locMeta?.name || (String(state.lang || "es").startsWith("es") ? bookMeta.es || bookMeta.en : bookMeta.en);
+    const maxCh = Math.max(1, Number(locMeta?.chapters || bookMeta.chapters) || 1);
+    const hdr =
+      `<div class="ek-span-full ek-row-wrap">` +
+      `<button type="button" id="btnCompassBackToBooks" class="uls-chip" data-compass-back="books">← ${isEn ? "66 Books" : "66 Libros"}</button>` +
+      `<strong>${escapeHtml(bookTitle)} <span class="ek-meta">(${maxCh} ${isEn ? "ch." : "cap."})</span></strong>` +
+      `</div>`;
+    const chCells = [];
+    for (let c = 1; c <= maxCh; c += 1) {
+      const active = bookMeta.code === state.book && c === Number(state.chapter) ? ' aria-current="true"' : "";
+      chCells.push(
+        `<button type="button" class="uls-chip compass-book-cell compass-chapter-cell" data-compass-chapter="${c}" data-compass-book-target="${escapeHtml(bookMeta.code)}"${active}><strong>${c}</strong></button>`,
+      );
+    }
+    return `${hdr}${chCells.join("")}`;
+  }
+  return ROSETTA_66_BOOKS.map((b) => {
+    const active = b.code === state.book ? ' aria-current="true"' : "";
+    const locMeta = typeof resolveLocalizedBookMeta === "function" ? resolveLocalizedBookMeta(state.localizedBookNames, b.code, b) : null;
+    const title = locMeta?.name || (String(state.lang || "es").startsWith("es") ? b.es || b.en : b.en);
+    const nsmSub = locMeta?.nsmSubtitle || "";
+    return `<button type="button" class="uls-chip compass-book-cell" data-compass-book="${escapeHtml(b.code)}" data-chapters="${b.chapters}" data-nsm-subtitle="${escapeHtml(nsmSub)}" title="${escapeHtml(nsmSub ? `${title} — ${nsmSub}` : title)}"${active}><strong>${escapeHtml(b.code)}</strong><small class="compass-book-title">${escapeHtml(title)}</small></button>`;
+  }).join("");
+}
+
+/**
  * Conecta los listeners declarativos del escenario principal sobre `targetDoc` con contexto inyectado.
  */
 export function bindStageDomEvents(ctx = {}) {
@@ -64,6 +99,10 @@ export function bindStageDomEvents(ctx = {}) {
   const switchCompassTab = (tabName) => {
     state.activeCompassTab = tabName === "trails" ? "trails" : tabName === "concordance" ? "concordance" : "books";
     const mode = state.activeCompassTab;
+    if (mode === "books") {
+      state.compassSelectedBook = null;
+      if (typeof hydrateCompassGrid === "function") hydrateCompassGrid(targetDoc);
+    }
     for (const [bId, key, pId] of cTabs) {
       getEl(bId, targetDoc)?.setAttribute?.("aria-selected", mode === key ? "true" : "false");
       const p = getEl(pId, targetDoc);
@@ -182,6 +221,7 @@ export function bindStageDomEvents(ctx = {}) {
   });
 
   const closeCompassModalDialog = () => {
+    state.compassSelectedBook = null;
     compassDialogCtrl.close();
     state.activeModal = null;
     syncBodyWorkAndOverlayAttrs(targetDoc);
@@ -189,6 +229,7 @@ export function bindStageDomEvents(ctx = {}) {
 
   if (compassBtn && typeof compassBtn.addEventListener === "function") {
     compassBtn.addEventListener("click", () => {
+      state.compassSelectedBook = null;
       hydrateCompassGrid(targetDoc);
       if (compassModal) {
         if (compassDialogCtrl.isOpen()) {
@@ -210,14 +251,55 @@ export function bindStageDomEvents(ctx = {}) {
 
   if (compassGrid && typeof compassGrid.addEventListener === "function") {
     compassGrid.addEventListener("click", async (e) => {
-      const target = e?.target?.closest ? e.target.closest("[data-compass-book]") : e?.target;
+      const backEl = e?.target?.closest
+        ? e.target.closest("[data-compass-back]")
+        : e?.target?.getAttribute?.("data-compass-back")
+          ? e.target
+          : null;
+      if (backEl) {
+        state.compassSelectedBook = null;
+        hydrateCompassGrid(targetDoc);
+        if (typeof compassGrid.scrollTop === "number") compassGrid.scrollTop = 0;
+        return;
+      }
+      const chEl = e?.target?.closest
+        ? e.target.closest("[data-compass-chapter]")
+        : e?.target?.getAttribute?.("data-compass-chapter")
+          ? e.target
+          : null;
+      if (chEl) {
+        const chNum = Math.max(1, Number(chEl.getAttribute?.("data-compass-chapter") || chEl.dataset?.compassChapter) || 1);
+        const bookTarget =
+          chEl.getAttribute?.("data-compass-book-target") ||
+          chEl.dataset?.compassBookTarget ||
+          state.compassSelectedBook ||
+          state.book;
+        state.compassSelectedBook = null;
+        closeCompassModalDialog();
+        await navigate({ book: bookTarget, chapter: chNum, verse: 1 }, targetDoc);
+        hydrateBookAndChapterSelectors(targetDoc);
+        return;
+      }
+      const target = e?.target?.closest
+        ? e.target.closest("[data-compass-book]")
+        : e?.target?.getAttribute?.("data-compass-book")
+          ? e.target
+          : null;
       const bookCode = target?.getAttribute
         ? target.getAttribute("data-compass-book")
         : target?.dataset?.compassBook;
       if (bookCode) {
-        closeCompassModalDialog();
-        await navigate({ book: bookCode, chapter: 1, verse: 1 }, targetDoc);
-        hydrateBookAndChapterSelectors(targetDoc);
+        const bookMeta = ROSETTA_66_BOOKS.find((b) => b.code === bookCode);
+        if (bookMeta && Number(bookMeta.chapters) <= 1) {
+          state.compassSelectedBook = null;
+          closeCompassModalDialog();
+          await navigate({ book: bookCode, chapter: 1, verse: 1 }, targetDoc);
+          hydrateBookAndChapterSelectors(targetDoc);
+          return;
+        }
+        state.compassSelectedBook = bookCode;
+        hydrateCompassGrid(targetDoc);
+        if (typeof compassGrid.scrollTop === "number") compassGrid.scrollTop = 0;
       }
     });
   }

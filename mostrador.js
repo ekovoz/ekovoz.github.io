@@ -96,7 +96,7 @@ import {
     bindSisterWorksStageEvents, buildEvangeliosWeekOptionsHtml, renderEvangeliosStageCardHtml,
     resolveEvangeliosActiveSelection, syncSisterWorksTabsDom,
 } from "./mostrador/sister_works_controller.js";
-import { bindStageDomEvents } from "./mostrador/stage_dom_bindings.js";
+import { bindStageDomEvents, renderCompassBooksOrChaptersGridHtml } from "./mostrador/stage_dom_bindings.js";
 import {
     closeSheet, createEkovozStore, createGuardedStateProxy, openSheet, setActiveIntent, toggleSheet,
 } from "./mostrador/state_store.js";
@@ -228,22 +228,8 @@ export function createMostradorController(options = {}) {
     function hydrateCompassGrid(targetDoc = doc) {
         const grid = getEl("bibleCoordinateCompassGrid", targetDoc);
         if (!grid) return;
-        const cells = ROSETTA_66_BOOKS.map((b) => {
-            const active = b.code === state.book ? ' aria-current="true"' : "";
-            const locMeta = resolveLocalizedBookMeta(state.localizedBookNames, b.code, b);
-            const title = locMeta.name || (state.lang.startsWith("es") ? b.es || b.en : b.en);
-            const nsmSub = locMeta.nsmSubtitle || "";
-            return `<button type="button" class="uls-chip compass-book-cell" data-compass-book="${escapeHtml(
-                b.code
-            )}" data-nsm-subtitle="${escapeHtml(nsmSub)}" title="${escapeHtml(
-                nsmSub ? `${title} — ${nsmSub}` : title
-            )}"${active}><strong>${escapeHtml(
-                b.code
-            )}</strong><small class="compass-book-title">${escapeHtml(
-                title.slice(0, 10)
-            )}</small></button>`;
-        });
-        grid.innerHTML = cells.join("");
+        grid.setAttribute?.("data-compass-step", state.compassSelectedBook ? "chapters" : "books");
+        grid.innerHTML = renderCompassBooksOrChaptersGridHtml({ state, resolveLocalizedBookMeta });
     }
 
     function hydrateBookAndChapterSelectors(targetDoc = doc) {
