@@ -241,14 +241,16 @@ export function projectSurfaceLayoutFromState(state = {}, rootDoc, getEl) {
     const isOpen = hasOpenSheet && sheetKey === normalizedSheet;
     const panel = resolveEl(cfg.panelId);
     const btn = resolveEl(cfg.buttonId);
+    const priority = resolveDrawerChromePriority(sheetKey);
     if (panel) {
       panel.hidden = !isOpen;
     }
     if (btn) {
+      btn.hidden = priority === "expert" && !techPlaneOn && !isOpen;
       btn.setAttribute?.("data-open", isOpen ? "true" : "false");
       btn.setAttribute?.("aria-expanded", isOpen ? "true" : "false");
       btn.setAttribute?.("aria-pressed", isOpen ? "true" : "false");
-      btn.setAttribute?.("data-chrome-priority", resolveDrawerChromePriority(sheetKey));
+      btn.setAttribute?.("data-chrome-priority", priority);
       btn.setAttribute?.("data-chrome-salience", isOpen ? "active" : "idle");
     }
   }

@@ -221,12 +221,12 @@ export function bindChromeAndPlaneEvents({
     }
     if (techBtn) {
       techBtn.setAttribute?.("aria-pressed", on ? "true" : "false");
-      techBtn.textContent = enNow ? "Pro Studio" : "Estudio Pro";
+      techBtn.textContent = enNow ? "Collaborate" : "Colaborar";
     }
     if (exitProPill) {
       exitProPill.hidden = !on;
       exitProPill.setAttribute?.("aria-pressed", on ? "true" : "false");
-      exitProPill.textContent = enNow ? "Exit Pro Studio" : "Salir de Estudio Pro";
+      exitProPill.textContent = enNow ? "Exit Collaborate" : "Salir de Colaborar";
     }
   };
   syncPlaneButtonsDom();
@@ -243,6 +243,12 @@ export function bindChromeAndPlaneEvents({
     }
     if (nextWorkspace === "studio" && !state.activeSheet && typeof transitionSheet === "function") {
       void transitionSheet("study", targetDoc, { fromUser: true, mode: "open" });
+    } else if (
+      nextWorkspace === "reader" &&
+      (state.activeSheet === "study" || state.activeSheet === "field" || state.activeSheet === "improve") &&
+      typeof transitionSheet === "function"
+    ) {
+      void transitionSheet(null, targetDoc, { fromUser: true, mode: "close" });
     }
     syncActiveChromeProjection?.(targetDoc);
     syncPlaneButtonsDom();
